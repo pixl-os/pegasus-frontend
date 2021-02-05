@@ -89,20 +89,23 @@ void register_api_classes()
 
 void on_app_close(AppCloseType type)
 {
+    QString AppCloseTypeName;
     ScriptRunner::run(ScriptEvent::QUIT);
     switch (type) {
         case AppCloseType::REBOOT:
+            AppCloseTypeName = "Reboot";
             ScriptRunner::run(ScriptEvent::REBOOT);
             break;
         case AppCloseType::SHUTDOWN:
+            AppCloseTypeName = "Shutdown";
             ScriptRunner::run(ScriptEvent::SHUTDOWN);
             break;
         default: break;
     }
-
-    Log::info(LOGMSG("Closing Pegasus, goodbye!"));
+    
+    Log::info(LOGMSG("Closing Pegasus, goodbye! %1...").arg(AppCloseTypeName));
     Log::close();
-
+    
     QCoreApplication::quit();
     switch (type) {
         case AppCloseType::REBOOT:
