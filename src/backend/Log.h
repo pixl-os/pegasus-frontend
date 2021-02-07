@@ -32,6 +32,7 @@ public:
     virtual ~LogSink();
     NO_COPY_NO_MOVE(LogSink)
 
+    virtual void debug(const QString&) = 0;
     virtual void info(const QString&) = 0;
     virtual void warning(const QString&) = 0;
     virtual void error(const QString&) = 0;
@@ -47,10 +48,12 @@ public:
     static void init_qttest();
     static void close();
 
+    static void debug(const QString& message);
     static void info(const QString& message);
     static void warning(const QString& message);
     static void error(const QString& message);
 
+    static void debug(const QString& tag, const QString& message);
     static void info(const QString& tag, const QString& message);
     static void warning(const QString& tag, const QString& message);
     static void error(const QString& tag, const QString& message);
