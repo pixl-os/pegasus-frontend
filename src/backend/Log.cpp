@@ -81,7 +81,7 @@ private:
     static constexpr auto m_pre_error = "[e]";
     static constexpr auto m_fmt_reset = "";
 #else
-    static constexpr auto m_pre_debug = "[d]";
+    static constexpr auto m_pre_debug = "\x1b[34m[d]";
     static constexpr auto m_pre_info = "[i]";
     static constexpr auto m_pre_warning = "\x1b[93m[w]";
     static constexpr auto m_pre_error = "\x1b[91m[e]";
