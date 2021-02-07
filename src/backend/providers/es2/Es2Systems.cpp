@@ -78,19 +78,48 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
         { QLatin1String("extension"), QString() },
         { QLatin1String("command"), QString() },
         { QLatin1String("platform"), QString() },
+        { QLatin1String("theme"), QString() },
         { QLatin1String("emulators"), QString() },
     };
+    //emulators/emulator attributes
+    static const QString name_attribute = "name";
+    static const QString priority_attribute = "priority";
+    QString name;
+    quint32 priority;
+        
+    
     // read
     while (xml.readNextStartElement()) {
         const auto it = find_by_str_ref(xml_props, xml.name());
-
-        if (it != xml_props.end(){
-            Log::info(log_tag, LOGMSG("xml.readElementText(): %1").arg(xml.readElementText()));
-            it->second = xml.readElementText();
+        if (it != xml_props.end()){
+            if (xml.name() == "emulators"){
+                while (xml.readNextStartElement()) {
+                    if (xml.name() == "emulator"){
+                        QString emulatorName = xml.attributes().value("name").toString();
+                        Log::info(log_tag, LOGMSG("Emulateur name: %1").arg(emulatorName));
+                    
+                        while (xml.readNextStartElement()) {
+                            if (xml.name() == "cores"){
+                                while (xml.readNextStartElement()) {
+                                    if (xml.name() == "core"){
+                                        QString corePriority = xml.attributes().value("priority").toString();
+                                        QString coreName = xml.readElementText();
+                                        Log::info(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                QString elementRead = xml.readElementText();
+                Log::info(log_tag, LOGMSG("xml.readElementText(): %1").arg(elementRead));
+                it->second = elementRead;
+            }
         }
         else{
-                Log::info(log_tag, LOGMSG("Skipped element: xml.readElementText(): %1").arg(xml.readElementText()));
-                xml.skipCurrentElement();
+            xml.skipCurrentElement();
         }
     
     }
