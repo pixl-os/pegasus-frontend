@@ -38,6 +38,9 @@ namespace logsinks {
 
 class QtLog : public LogSink {
 public:
+    void debug(const QString& msg) override {
+        qDebug().noquote().nospace() << msg;
+    }
     void info(const QString& msg) override {
         qInfo().noquote().nospace() << msg;
     }
@@ -55,7 +58,9 @@ public:
     Terminal()
         : m_stream(stdout)
     {}
-
+    void debug(const QString& msg) override {
+        colorlog(m_pre_debug, msg);
+    }
     void info(const QString& msg) override {
         colorlog(m_pre_info, msg);
     }
@@ -70,11 +75,13 @@ private:
     QTextStream m_stream;
 
 #ifdef Q_OS_WIN
+    static constexpr auto m_pre_debug = "[d]";
     static constexpr auto m_pre_info = "[i]";
     static constexpr auto m_pre_warning = "[w]";
     static constexpr auto m_pre_error = "[e]";
     static constexpr auto m_fmt_reset = "";
 #else
+    static constexpr auto m_pre_debug = "[d]";
     static constexpr auto m_pre_info = "[i]";
     static constexpr auto m_pre_warning = "\x1b[93m[w]";
     static constexpr auto m_pre_error = "\x1b[91m[e]";
@@ -101,6 +108,12 @@ public:
         m_stream.setDevice(&m_file);
     }
 
+    void debug(const QString& msg) override {
+        if (Q_UNLIKELY(!m_file.isOpen()))
+            return;
+
+        datelog(m_marker_info, msg);
+    }
     void info(const QString& msg) override {
         if (Q_UNLIKELY(!m_file.isOpen()))
             return;
@@ -126,6 +139,7 @@ private:
     QFile m_file;
     QTextStream m_stream;
 
+    static constexpr auto m_marker_debug = "[d]";
     static constexpr auto m_marker_info = "[i]";
     static constexpr auto m_marker_warning = "[w]";
     static constexpr auto m_marker_error = "[e]";
@@ -178,6 +192,8 @@ void on_qt_message(QtMsgType type, const QMessageLogContext& context, const QStr
     const QString prepared_msg = qFormatLogMessage(type, context, msg);
     switch (type) {
         case QtMsgType::QtDebugMsg:
+            Log::debug(prepared_msg);
+            break;
         case QtMsgType::QtInfoMsg:
             Log::info(prepared_msg);
             break;
@@ -236,6 +252,7 @@ void Log::close()
         const QString combi_msg = QStringLiteral("%1: %2").arg(tag, message); \
         Log::method(combi_msg); \
     }
+FORALLSINK_CALLER(debug)
 FORALLSINK_CALLER(info)
 FORALLSINK_CALLER(warning)
 FORALLSINK_CALLER(error)
