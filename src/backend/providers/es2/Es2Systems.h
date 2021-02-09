@@ -18,11 +18,18 @@
 #pragma once
 
 #include <QString>
+#include <QList>
 #include <vector>
 
 
 namespace providers {
 namespace es2 {
+
+struct EmulatorsEntry {
+    QString name;
+    QString core;
+    int priority;
+};
 
 struct SystemEntry {
     QString name;
@@ -31,8 +38,8 @@ struct SystemEntry {
     QString extensions;
     QString platforms;
     QString launch_cmd;
+    QList <EmulatorsEntry> emulators;
 };
-
 
 std::vector<SystemEntry> find_systems(const QString&, const std::vector<QString>&);
 

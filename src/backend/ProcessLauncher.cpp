@@ -50,11 +50,17 @@ void replace_env_vars(QString& param)
 void replace_variables(QString& param, const QFileInfo& finfo)
 {
     param
-        .replace(QLatin1String("{file.path}"), QDir::toNativeSeparators(finfo.absoluteFilePath()))
+        .replace(QLatin1String("{file.path}"), "/recalbox/share/roms/nes/Duck\\ Hunt\\ \\(World\\).zip") //QDir::toNativeSeparators(finfo.absoluteFilePath()))
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
-        .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()));
-
+        .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()))
+        .replace(QLatin1String("{system.shortname}"),"nes")
+        .replace(QLatin1String("{emulator.name}"),"libretro")
+        .replace(QLatin1String("{emulator.core}"),"fceumm")
+        .replace(QLatin1String("{emulator.ratio}"),"auto")
+        .replace(QLatin1String("{emulator.netplay}"),"")
+        .replace(QLatin1String("{controllers.config}"),"-p1index 0 -p1guid 030000005e040000a102000000010000 -p1name \"Xbox 360 Wireless Receiver\" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event3");
+        
     replace_env_vars(param);
 }
 
@@ -65,7 +71,7 @@ bool contains_slash(const QString& str)
 
 QString serialize_command(const QString& cmd, const QStringList& args)
 {
-    return (QStringList(QDir::toNativeSeparators(cmd)) + args).join(QLatin1String("`,`"));
+    return (QStringList(QDir::toNativeSeparators(cmd)) + args).join(QLatin1String(" "));
 }
 
 QString processerror_to_string(QProcess::ProcessError error)
@@ -167,8 +173,10 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     replace_variables(workdir, gamefile.fileinfo());
     workdir = helpers::abs_workdir(workdir, game.launchCmdBasedir(), default_workdir);
 
-
     beforeRun(gamefile.fileinfo().absoluteFilePath());
+    
+    Log::debug(LOGMSG("Executing the following command line: '%1'").arg(command));
+    
     runProcess(command, args, workdir);
 }
 
@@ -190,7 +198,8 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
     m_process->setProcessChannelMode(QProcess::ForwardedChannels);
     m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
     m_process->setWorkingDirectory(workdir);
-    m_process->start(command, args, QProcess::ReadOnly);
+    m_process->start("python", QStringList() << "-V",QProcess::ReadWrite); // ;-)
+    int exitcode = system("serialize_command(command, args)")
     m_process->waitForStarted(-1);
 }
 
@@ -205,6 +214,7 @@ void ProcessLauncher::onTeardownComplete()
 void ProcessLauncher::onProcessStarted()
 {
     Q_ASSERT(m_process);
+    Log::debug(LOGMSG("Program: %1").arg(m_process->program()));
     Log::info(LOGMSG("Process %1 started").arg(m_process->processId()));
     Log::info(SEPARATOR);
     emit processLaunchOk();

@@ -70,6 +70,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
         QLatin1String("extension"),
         QLatin1String("command"),
     }};
+    
     // all supported properties
     HashMap<QLatin1String, QString> xml_props {
         { QLatin1String("name"), QString() },
@@ -82,21 +83,18 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
         { QLatin1String("emulators"), QString() },
     };
     //emulators/emulator attributes
-    static const QString name_attribute = "name";
-    static const QString priority_attribute = "priority";
-    QString name;
-    quint32 priority;
-        
+    QList< providers::es2::EmulatorsEntry> SystemEmulators;
     
     // read
     while (xml.readNextStartElement()) {
         const auto it = find_by_str_ref(xml_props, xml.name());
         if (it != xml_props.end()){
             if (xml.name() == "emulators"){
-                while (xml.readNextStartElement()) {
+                while (xml.readNextStartElement()){
                     if (xml.name() == "emulator"){
+                        int i = 0;
                         QString emulatorName = xml.attributes().value("name").toString();
-                        Log::info(log_tag, LOGMSG("Emulateur name: %1").arg(emulatorName));
+                        Log::debug(log_tag,LOGMSG("Emulateur name: %1").arg(emulatorName));
                     
                         while (xml.readNextStartElement()) {
                             if (xml.name() == "cores"){
@@ -104,7 +102,9 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                                     if (xml.name() == "core"){
                                         QString corePriority = xml.attributes().value("priority").toString();
                                         QString coreName = xml.readElementText();
-                                        Log::info(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
+                                        Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
+                                        SystemEmulators.append({ emulatorName, coreName, corePriority.toInt()});
+                                        i = i + 1;
                                     }
                                 }
                             }
@@ -114,7 +114,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
             }
             else{
                 QString elementRead = xml.readElementText();
-                Log::info(log_tag, LOGMSG("xml.readElementText(): %1").arg(elementRead));
+                Log::debug(log_tag, LOGMSG("System entry : %1").arg(elementRead));
                 it->second = elementRead;
             }
         }
@@ -148,7 +148,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
     QString shortname = std::move(xml_props[QLatin1String("name")]);
 
     QString launch_cmd = xml_props[QLatin1String("command")]
-        .replace (QLatin1String("%%CONTROLLERSCONFIG%%"), QLatin1String("{controllers.config}"))
+        .replace (QLatin1String("%CONTROLLERSCONFIG%"), QLatin1String("{controllers.config}"))
         .replace(QLatin1String("%SYSTEM%"), QLatin1String("{system.shortname}"))
         .replace(QLatin1String("%ROM%"), QLatin1String("{file.path}"))
         .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
@@ -165,6 +165,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
         std::move(xml_props[QLatin1String("extension")]),
         std::move(xml_props[QLatin1String("platform")]),
         std::move(launch_cmd), // assumed to be absolute
+        std::move(SystemEmulators),
     };
 }
 } // namespace
