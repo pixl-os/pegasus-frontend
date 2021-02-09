@@ -50,6 +50,11 @@ void replace_env_vars(QString& param)
 
 void replace_variables(QString& param, const QFileInfo& finfo)
 {
+    
+    const model::Game& game = *gamefile.parentGame()
+    
+    
+    
     param
         .replace(QLatin1String("{file.path}"), "/recalbox/share/roms/nes/Duck\\ Hunt\\ \\(World\\).zip") //QDir::toNativeSeparators(finfo.absoluteFilePath()))
         .replace(QLatin1String("{file.name}"), finfo.fileName())
@@ -200,7 +205,7 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
     m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
     m_process->setWorkingDirectory(workdir);
     m_process->start("python", QStringList() << "-V",QProcess::ReadWrite); // ;-)
-    int exitcode = system("serialize_command(command, args)")
+    int exitcode = system(qPrintable(serialize_command(command, args)));
     m_process->waitForStarted(-1);
 }
 
