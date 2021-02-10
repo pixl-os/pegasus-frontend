@@ -63,6 +63,9 @@ struct GameData {
         QString launch_cmd;
         QString launch_workdir;
         QString relative_basedir; // TODO: check if needed
+        QString system_shortname;
+        QString emulator_name;
+        QString emulator_core;
     } launch_params;
 };
 
@@ -99,6 +102,9 @@ public:
     GETTER(const QString&, launchCmd, launch_params.launch_cmd)
     GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
     GETTER(const QString&, launchCmdBasedir, launch_params.relative_basedir)
+    GETTER(const QString&, SystemShortName, launch_params.system_shortname)
+    GETTER(const QString&, EmulatorName, launch_params.emulator_name)
+    GETTER(const QString&, EmulatorCore, launch_params.emulator_core)
 #undef GETTER
 
 
@@ -116,6 +122,9 @@ public:
     SETTER(QString, LaunchCmd, launch_params.launch_cmd)
     SETTER(QString, LaunchWorkdir, launch_params.launch_workdir)
     SETTER(QString, LaunchCmdBasedir, launch_params.relative_basedir)
+    SETTER(QString, SystemShortname, launch_params.system_shortname)
+    SETTER(QString, EmulatorName, launch_params.emulator_name)
+    SETTER(QString, EmulatorCore, launch_params.emulator_core)
 
     Game& setFavorite(bool val);
 #undef SETTER
