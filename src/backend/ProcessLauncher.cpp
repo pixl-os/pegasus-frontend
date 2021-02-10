@@ -47,13 +47,14 @@ void replace_env_vars(QString& param)
     }
 }
 
-void replace_variables(QString& param, const QFileInfo& finfo)
+void replace_variables(QString& param, const model::GameFile* q_gamefile)
 {
+    Q_ASSERT(q_gamefile);
     
-    const model::Game& game = *gamefile.parentGame()
-    
-    
-    
+    const model::GameFile& gamefile = *q_gamefile;
+    const model::Game& game = *gamefile.parentGame();
+    const QFileInfo& finfo = gamefile.fileinfo();
+        
     param
         .replace(QLatin1String("{file.path}"), "/recalbox/share/roms/nes/Duck\\ Hunt\\ \\(World\\).zip") //QDir::toNativeSeparators(finfo.absoluteFilePath()))
         .replace(QLatin1String("{file.name}"), finfo.fileName())
@@ -130,7 +131,7 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
 void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 {
     Q_ASSERT(q_gamefile);
-
+    
     const model::GameFile& gamefile = *q_gamefile;
     const model::Game& game = *gamefile.parentGame();
 
@@ -146,7 +147,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
     QStringList args = ::utils::tokenize_command(raw_launch_cmd);
     for (QString& arg : args)
-        replace_variables(arg, gamefile.fileinfo());
+        replace_variables(arg, &gamefile);
 
     QString command = args.isEmpty() ? QString() : args.takeFirst();
     if (command.isEmpty()) {
@@ -175,7 +176,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
         : gamefile.fileinfo().absolutePath();
 
     QString workdir = game.launchWorkdir();
-    replace_variables(workdir, gamefile.fileinfo());
+    replace_variables(workdir, &gamefile);
     workdir = helpers::abs_workdir(workdir, game.launchCmdBasedir(), default_workdir);
 
     beforeRun(gamefile.fileinfo().absoluteFilePath());
