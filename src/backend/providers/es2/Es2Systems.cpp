@@ -93,7 +93,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                 while (xml.readNextStartElement()){
                     if (xml.name() == "emulator"){
                         QString emulatorName = xml.attributes().value("name").toString();
-                        Log::debug(log_tag,LOGMSG("Emulateur name: %1").arg(emulatorName));
+                        //Log::debug(log_tag,LOGMSG("Emulateur name: %1").arg(emulatorName));
                     
                         while (xml.readNextStartElement()) {
                             if (xml.name() == "cores"){
@@ -101,7 +101,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                                     if (xml.name() == "core"){
                                         QString corePriority = xml.attributes().value("priority").toString();
                                         QString coreName = xml.readElementText();
-                                        Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
+                                        //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
                                         SystemEmulators.append({ emulatorName, coreName, corePriority.toInt()});
                                     }
                                 }
@@ -112,7 +112,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
             }
             else{
                 QString elementRead = xml.readElementText();
-                Log::debug(log_tag, LOGMSG("System entry : %1").arg(elementRead));
+                //Log::debug(log_tag, LOGMSG("System entry : %1").arg(elementRead));
                 it->second = elementRead;
             }
         }

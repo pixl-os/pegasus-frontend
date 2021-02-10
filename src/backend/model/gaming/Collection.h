@@ -34,7 +34,7 @@ struct EmulatorsEntry {
     QString core;
     int priority;
 };
-    
+  
 struct CollectionData {
     explicit CollectionData(QString name);
 
@@ -72,7 +72,7 @@ public:
     GETTER(const QString&, commonLaunchCmd, common_launch_cmd)
     GETTER(const QString&, commonLaunchWorkdir, common_launch_workdir)
     GETTER(const QString&, commonLaunchCmdBasedir, common_relative_basedir)
-    GETTER(const QList<EmulatorsEntry>&, commonEmulators, common_emulators)
+    GETTER(const QList<EmulatorsEntry> &, commonEmulators, common_emulators)
 #undef GETTER
 
 
@@ -85,7 +85,7 @@ public:
     SETTER(QString, CommonLaunchCmd, common_launch_cmd)
     SETTER(QString, CommonLaunchWorkdir, common_launch_workdir)
     SETTER(QString, CommonLaunchCmdBasedir, common_relative_basedir)
-    SETTER(QList<EmulatorsEntry>, commonEmulators, common_emulators)
+    SETTER(QList<EmulatorsEntry>, CommonEmulators, common_emulators)
     Collection& setShortName(QString val) { m_data.set_short_name(std::move(val)); return *this; }
 #undef SETTER
 

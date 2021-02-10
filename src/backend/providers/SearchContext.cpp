@@ -86,7 +86,11 @@ model::Game* SearchContext::create_game_for(model::Collection& collection)
     (*game_ptr)
         .setLaunchCmd(collection.commonLaunchCmd())
         .setLaunchWorkdir(collection.commonLaunchWorkdir())
-        .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
+        .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir())
+        .setSystemShortname(collection.shortName())
+        .setEmulatorName(collection.commonEmulators()[0].name)
+        .setEmulatorCore(collection.commonEmulators()[0].core); //TO DO: take by priority
+        
 
     m_collection_games[&collection].emplace_back(game_ptr);
     return game_ptr;
@@ -172,6 +176,12 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
         game.setLaunchWorkdir(collection.commonLaunchWorkdir());
     if (game.launchCmdBasedir().isEmpty())
         game.setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
+    if (game.systemShortName().isEmpty())
+        game.setSystemShortname(collection.shortName());
+    if (game.emulatorName().isEmpty())
+        game.setEmulatorName(collection.commonEmulators()[0].name);//TO DO: take by priority
+    if (game.emulatorCore().isEmpty())
+        game.setEmulatorCore(collection.commonEmulators()[0].core); //TO DO: take by priority
 
     return *this;
 }

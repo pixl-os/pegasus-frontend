@@ -105,9 +105,22 @@ size_t find_games_for(
     const std::vector<QString>& filename_blacklist)
 {
     model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
+
     collection
         .setShortName(sysentry.shortname)
-        .setCommonLaunchCmd(sysentry.launch_cmd);
+        .setCommonLaunchCmd(sysentry.launch_cmd); 
+    
+    struct model::EmulatorsEntry Emulator;
+    QList<model::EmulatorsEntry> AllEmulators;
+    
+    for (int n = 0; n < sysentry.emulators.count(); n++)
+    {
+        Emulator.name = sysentry.emulators[n].name;
+        Emulator.core = sysentry.emulators[n].core;
+        Emulator.priority = sysentry.emulators[n].priority;
+        AllEmulators.append(Emulator);
+    }
+    collection.setCommonEmulators(AllEmulators);
 
     // find all (sub-)directories, but ignore 'media'
     const QStringList dirs = [&sysentry]{
