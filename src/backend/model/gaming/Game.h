@@ -102,9 +102,9 @@ public:
     GETTER(const QString&, launchCmd, launch_params.launch_cmd)
     GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
     GETTER(const QString&, launchCmdBasedir, launch_params.relative_basedir)
-    GETTER(const QString&, SystemShortName, launch_params.system_shortname)
-    GETTER(const QString&, EmulatorName, launch_params.emulator_name)
-    GETTER(const QString&, EmulatorCore, launch_params.emulator_core)
+    GETTER(const QString&, systemShortName, launch_params.system_shortname)
+    GETTER(const QString&, emulatorName, launch_params.emulator_name)
+    GETTER(const QString&, emulatorCore, launch_params.emulator_core)
 #undef GETTER
 
 

@@ -21,7 +21,6 @@
 #include <QList>
 #include <vector>
 
-
 namespace providers {
 namespace es2 {
 
