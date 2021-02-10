@@ -83,12 +83,12 @@ FocusScope {
         focus: true
 
         onShowSettingsScreen: root.openScreen("menu/SettingsScreen.qml")
-        onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")
+//        onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")
 
         onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
-        onRequestQuit: root.requestQuit()
+//        onRequestQuit: root.requestQuit()
     }
 
     Loader {

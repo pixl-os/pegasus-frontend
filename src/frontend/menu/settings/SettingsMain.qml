@@ -28,7 +28,7 @@ FocusScope {
     signal openKeySettings
     signal openGamepadSettings
     signal openGameDirSettings
-    signal openProviderSettings
+//    signal openProviderSettings
 
     width: parent.width
     height: parent.height
@@ -231,24 +231,24 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
 
-                    KeyNavigation.down: optFullscreen
-                }
-
-                ToggleOption {
-                    id: optFullscreen
-
-                    label: qsTr("Fullscreen mode") + api.tr
-                    note: qsTr("On some platforms this setting may have no effect.") + api.tr
-
-                    checked: api.internal.settings.fullscreen
-                    onCheckedChanged: {
-                        focus = true;
-                        api.internal.settings.fullscreen = checked;
-                    }
-                    onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optKeyboardConfig
                 }
+
+//                ToggleOption {
+//                    id: optFullscreen
+
+//                    label: qsTr("Fullscreen mode") + api.tr
+//                    note: qsTr("On some platforms this setting may have no effect.") + api.tr
+
+//                    checked: api.internal.settings.fullscreen
+//                    onCheckedChanged: {
+//                        focus = true;
+//                        api.internal.settings.fullscreen = checked;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+
+//                    KeyNavigation.down: optKeyboardConfig
+//                }
 
                 SectionTitle {
                     text: qsTr("Controls") + api.tr
@@ -293,34 +293,34 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
 
-                    KeyNavigation.down: optEditGameDirs
+//                    KeyNavigation.down: optEditGameDirs
                 }
 
-                SectionTitle {
-                    text: qsTr("Gaming") + api.tr
-                }
-                SimpleButton {
-                    id: optEditGameDirs
+//                SectionTitle {
+//                    text: qsTr("Gaming") + api.tr
+//                }
+//                SimpleButton {
+//                    id: optEditGameDirs
 
-                    label: qsTr("Set game directories...") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openGameDirSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
+//                    label: qsTr("Set game directories...") + api.tr
+//                    onActivate: {
+//                        focus = true;
+//                        root.openGameDirSettings();
+//                    }
+//                    onFocusChanged: container.onFocus(this)
 
-                    KeyNavigation.down: optEditProviders
-                }
-                SimpleButton {
-                    id: optEditProviders
+//                    KeyNavigation.down: optEditProviders
+//                }
+//                SimpleButton {
+//                    id: optEditProviders
 
-                    label: qsTr("Enable/disable data sources...") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openProviderSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                }
+//                    label: qsTr("Enable/disable data sources...") + api.tr
+//                    onActivate: {
+//                        focus = true;
+//                        root.openProviderSettings();
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                }
 
                 Item {
                     width: parent.width
