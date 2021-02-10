@@ -83,14 +83,28 @@ model::Collection* SearchContext::get_or_create_collection(const QString& name)
 model::Game* SearchContext::create_game_for(model::Collection& collection)
 {
     auto* const game_ptr = new model::Game();
+
     (*game_ptr)
         .setLaunchCmd(collection.commonLaunchCmd())
         .setLaunchWorkdir(collection.commonLaunchWorkdir())
         .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir())
-        .setSystemShortname(collection.shortName())
-        .setEmulatorName(collection.commonEmulators()[0].name)
-        .setEmulatorCore(collection.commonEmulators()[0].core); //TO DO: take by priority
-        
+        .setSystemShortname(collection.shortName());
+
+    //for to take into account priority=1 as default emulator and core
+    for (int n = 0;n < collection.commonEmulators().count(); n++)
+    {
+        //if only one or to initialize with one value
+        if (n == 0)
+        {    
+            (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
+            (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core); 
+        }
+        else if(collection.commonEmulators()[n-1].priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower
+        {
+            (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
+            (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core);
+        }
+    }
 
     m_collection_games[&collection].emplace_back(game_ptr);
     return game_ptr;
