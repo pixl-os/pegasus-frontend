@@ -47,6 +47,26 @@ void replace_env_vars(QString& param)
     }
 }
 
+QString PathMakeEscaped(QString param)
+{
+  std::string escaped = param.toUtf8().constData();
+
+  static std::string invalidChars = " '\"\\!$^&*(){}[]?;<>";
+  const char* invalids = invalidChars.c_str();
+  for(int i = escaped.size(); --i >= 0; )
+  {
+    char c = escaped.c_str()[i];
+    for(int j = invalidChars.size(); --j >= 0; )
+      if (c == invalids[j])
+      {
+        escaped.insert(i, "\\");
+        break;
+      }
+  }
+
+  return QString::fromStdString(escaped);
+}
+
 void replace_variables(QString& param, const model::GameFile* q_gamefile)
 {
     Q_ASSERT(q_gamefile);
@@ -54,9 +74,9 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     const model::GameFile& gamefile = *q_gamefile;
     const model::Game& game = *gamefile.parentGame();
     const QFileInfo& finfo = gamefile.fileinfo();
-        
+    
     param
-        .replace(QLatin1String("{file.path}"), "/recalbox/share/roms/nes/Duck\\ Hunt\\ \\(World\\).zip") //QDir::toNativeSeparators(finfo.absoluteFilePath()))
+        .replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())))
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
         .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()))
