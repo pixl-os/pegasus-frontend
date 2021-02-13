@@ -31,7 +31,7 @@
 
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
-
+    
 void replace_env_vars(QString& param)
 {
     const auto env = QProcessEnvironment::systemEnvironment();
@@ -76,6 +76,8 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     const model::Game& game = *gamefile.parentGame();
     const QFileInfo& finfo = gamefile.fileinfo();
     
+    //Log::debug(LOGMSG("Pad 0: '%1'").arg(QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio"))));
+        
     param
         .replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())))
         .replace(QLatin1String("{file.name}"), finfo.fileName())
@@ -84,7 +86,7 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         .replace(QLatin1String("{system.shortname}"),game.systemShortName())
         .replace(QLatin1String("{emulator.name}"),game.emulatorName())
         .replace(QLatin1String("{emulator.core}"),game.emulatorCore())
-        .replace(QLatin1String("{emulator.ratio}"),"auto")
+        .replace(QLatin1String("{emulator.ratio}"),QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio")))
         .replace(QLatin1String("{emulator.netplay}"),"")
         .replace(QLatin1String("{controllers.config}"),"-p1index 0 -p1guid 030000005e040000a102000000010000 -p1name \"Xbox 360 Wireless Receiver\" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event3");
         
