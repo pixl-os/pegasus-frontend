@@ -52,7 +52,7 @@ FocusScope {
 
     ScreenHeader {
         id: header
-        text: qsTr("Settings > Controls") + api.tr
+        text: qsTr("Controls > Change Controls") + api.tr
         z: 2
     }
 

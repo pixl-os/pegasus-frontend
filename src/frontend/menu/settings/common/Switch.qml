@@ -38,25 +38,6 @@ Item {
     }
 
 
-    MouseArea {
-        id: mouseArea
-
-        anchors.fill: parent
-        onClicked: toggle();
-    }
-
-    Rectangle {
-        id: thumb
-
-        width: parent.height
-        height: parent.height
-        radius: height * 0.5
-
-        color: "#bbb"
-
-        anchors.left: parent.left
-    }
-
     Rectangle {
         id: track
 
@@ -71,11 +52,34 @@ Item {
     }
 
 
+    MouseArea {
+        id: mouseArea
+
+        anchors.fill: parent
+        onClicked: toggle();
+    }
+
+    Rectangle {
+        id: thumb
+
+        width: parent.height
+        height: parent.height
+        radius: height * 0.5
+
+        color: "#9d0808"
+
+        anchors.left: parent.left
+    }
+
+
+
+
+
     states: State {
         name: "checked"; when: checked
-        PropertyChanges { target: thumb; color: "#3aa" }
-        PropertyChanges { target: track; color: "#3aa" }
-        PropertyChanges { target: track; opacity: 0.5 }
+        PropertyChanges { target: thumb; color: "#269121" }
+        PropertyChanges { target: track; color: "#bbb" }
+        PropertyChanges { target: track; opacity: 0.3 }
         AnchorChanges {
             target: thumb
             anchors.left: undefined

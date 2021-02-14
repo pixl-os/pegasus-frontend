@@ -31,10 +31,10 @@ Window {
     visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
 
-    onClosing: {
-        theme.source = "";
-        api.internal.system.quit();
-    }
+//    onClosing: {
+//        theme.source = "";
+//        api.internal.system.quit();
+//    }
 
     FontLoader { id: sansFont; source: "/fonts/Roboto-Regular.ttf" }
     FontLoader { id: sansBoldFont; source: "/fonts/Roboto-Bold.ttf" }
@@ -144,10 +144,10 @@ Window {
                 powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;
             }
-            function onRequestQuit() {
-                theme.source = "";
-                api.internal.system.quit();
-            }
+//            function onRequestQuit() {
+//                theme.source = "";
+//                api.internal.system.quit();
+//            }
         }
         PegasusUtils.HorizontalSwipeArea {
             id: menuSwipe

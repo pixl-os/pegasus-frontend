@@ -69,6 +69,7 @@ FocusScope {
             color: "#999"
             font.pixelSize: fontSize * 0.8
             font.family: globalFonts.sans
+            font.italic: true
         }
     }
 

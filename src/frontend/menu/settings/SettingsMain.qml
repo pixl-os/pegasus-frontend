@@ -25,9 +25,9 @@ FocusScope {
     id: root
 
     signal close
-    signal openKeySettings
-    signal openGamepadSettings
-    signal openGameDirSettings
+//    signal openKeySettings
+//    signal openGamepadSettings
+//    signal openGameDirSettings
 //    signal openProviderSettings
 
     width: parent.width
@@ -58,7 +58,7 @@ FocusScope {
 
     ScreenHeader {
         id: header
-        text: qsTr("Settings") + api.tr
+        text: qsTr("Settings") + api.trs
         z: 2
     }
 
@@ -105,7 +105,7 @@ FocusScope {
                 }
 
                 SectionTitle {
-                    text: qsTr("General") + api.tr
+                    text: qsTr("System") + api.tr
                     first: true
                 }
                
@@ -203,6 +203,97 @@ FocusScope {
                 }
 
                 MultivalueOption {
+                    id: optSoundSettings
+
+                    focus: true
+
+                    label: qsTr("Sound Settings") + api.tr
+                    value: api.internal.settings.locales.currentName
+
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optVideoSettings
+                    KeyNavigation.up: optKeyboardLanguage
+                }
+
+                MultivalueOption {
+                    id: optVideoSettings
+
+                    focus: true
+
+                    label: qsTr("Video Settings") + api.tr
+                    value: api.internal.settings.locales.currentName
+
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optNetworkSettings
+                }
+
+                MultivalueOption {
+                    id: optNetworkSettings
+
+                    focus: true
+
+                    label: qsTr("Network Settings") + api.tr
+                    value: api.internal.settings.locales.currentName
+
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optUpdateSettings
+                }
+
+                MultivalueOption {
+                    id: optUpdateSettings
+
+                    focus: true
+
+                    label: qsTr("Update Settings") + api.tr
+                    value: api.internal.settings.locales.currentName
+
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optStorageSettings
+                }
+
+                MultivalueOption {
+                    id: optStorageSettings
+
+                    focus: true
+
+                    label: qsTr("Storage Settings") + api.tr
+                    value: api.internal.settings.locales.currentName
+
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optLanguage
+                }
+
+                SectionTitle {
+                    text: qsTr("System Language") + api.tr
+                    first: true
+                }
+
+                MultivalueOption {
                     id: optLanguage
 
                     focus: true
@@ -216,22 +307,24 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
 
-                    KeyNavigation.down: optTheme
+                    KeyNavigation.down: optKeyboardLanguage
                 }
 
                 MultivalueOption {
-                    id: optTheme
+                    id: optKeyboardLanguage
 
-                    label: qsTr("Theme") + api.tr
-                    value: api.internal.settings.themes.currentName
+                    focus: true
+
+                    label: qsTr("Keyboard Language") + api.tr
+                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
-                        themeBox.focus = true;
+                        localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
 
-                    KeyNavigation.down: optKeyboardConfig
+                    KeyNavigation.down: optSoundSettings
                 }
 
 //                ToggleOption {
@@ -250,51 +343,51 @@ FocusScope {
 //                    KeyNavigation.down: optKeyboardConfig
 //                }
 
-                SectionTitle {
-                    text: qsTr("Controls") + api.tr
-                }
+//                SectionTitle {
+//                    text: qsTr("Controls") + api.tr
+//                }
 
-                SimpleButton {
-                    id: optKeyboardConfig
+//                SimpleButton {
+//                    id: optKeyboardConfig
 
-                    label: qsTr("Change controls...") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openKeySettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
+//                    label: qsTr("Change controls...") + api.tr
+//                    onActivate: {
+//                        focus = true;
+//                        root.openKeySettings();
+//                    }
+//                    onFocusChanged: container.onFocus(this)
 
-                    KeyNavigation.down: optGamepadConfig
-                }
+//                    KeyNavigation.down: optGamepadConfig
+//                }
 
-                SimpleButton {
-                    id: optGamepadConfig
+//                SimpleButton {
+//                    id: optGamepadConfig
 
-                    label: qsTr("Change gamepad layout...") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openGamepadSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
+//                    label: qsTr("Change gamepad layout...") + api.tr
+//                    onActivate: {
+//                        focus = true;
+//                        root.openGamepadSettings();
+//                    }
+//                    onFocusChanged: container.onFocus(this)
 
-                    KeyNavigation.down: optHideMouse
-                }
+//                    KeyNavigation.down: optHideMouse
+//                }
 
-                ToggleOption {
-                    id: optHideMouse
+//                ToggleOption {
+//                    id: optHideMouse
 
-                    label: qsTr("Enable mouse support") + api.tr
-                    note: qsTr("By default the cursor is visible if there are any pointer devices connected.") + api.tr
+//                    label: qsTr("Enable mouse support") + api.tr
+//                    note: qsTr("By default the cursor is visible if there are any pointer devices connected.") + api.tr
 
-                    checked: api.internal.settings.mouseSupport
-                    onCheckedChanged: {
-                        focus = true;
-                        api.internal.settings.mouseSupport = checked;
-                    }
-                    onFocusChanged: container.onFocus(this)
+//                    checked: api.internal.settings.mouseSupport
+//                    onCheckedChanged: {
+//                        focus = true;
+//                        api.internal.settings.mouseSupport = checked;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
 
 //                    KeyNavigation.down: optEditGameDirs
-                }
+//                }
 
 //                SectionTitle {
 //                    text: qsTr("Gaming") + api.tr

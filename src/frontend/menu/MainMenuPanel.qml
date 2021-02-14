@@ -29,7 +29,12 @@ FocusScope {
     enabled: focus
 
     signal close
-    signal showSettingsScreen
+    signal showAccountSettings
+    signal showControllersSettings
+    signal showGamesSettings
+    signal showInterfaceSettings
+    signal showSystemSettings
+//    signal showSettingsScreen
 //    signal showHelpScreen
 
     signal requestShutdown
@@ -64,11 +69,71 @@ FocusScope {
         anchors.bottomMargin: vpx(30)
 
         PrimaryMenuItem {
-            id: mbSettings
+            id: mbAccountSettings
+            text: qsTr("Account") + api.tr
+            onActivated: {
+                focus = true;
+                root.showAccountSettings();
+            }
+            selected: focus
+
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
+
+            KeyNavigation.down: mbControllersSettings
+        }
+
+        PrimaryMenuItem {
+            id: mbControllersSettings
+            text: qsTr("Controllers") + api.tr
+            onActivated: {
+                focus = true;
+                root.showControllersSettings();
+            }
+            selected: focus
+
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
+
+            KeyNavigation.down: mbInterfaceSettings
+        }
+
+        PrimaryMenuItem {
+            id: mbInterfaceSettings
+            text: qsTr("Interface") + api.tr
+            onActivated: {
+                focus = true;
+                root.showInterfaceSettings();
+            }
+            selected: focus
+
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
+
+            KeyNavigation.down: mbGamesSettings
+        }
+
+        PrimaryMenuItem {
+            id: mbGamesSettings
+            text: qsTr("Games") + api.tr
+            onActivated: {
+                focus = true;
+                root.showGamesSettings();
+            }
+            selected: focus
+
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
+
+            KeyNavigation.down: mbSystemSettings
+        }
+
+        PrimaryMenuItem {
+            id: mbSystemSettings
             text: qsTr("Settings") + api.tr
             onActivated: {
                 focus = true;
-                root.showSettingsScreen();
+                root.showSystemSettings();
             }
             selected: focus
 
@@ -143,6 +208,7 @@ FocusScope {
 //                    KeyNavigation.down: mbQuitShutdown
 //                }
             ]
+            KeyNavigation.down: mbAccountSettings
         }
     }
 

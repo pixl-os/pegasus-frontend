@@ -20,7 +20,7 @@ import QtQuick 2.0
 
 Rectangle {
     id: root
-    color: "#222"
+    color: "#000"
     anchors.fill: parent
 
     property real progress: api.internal.meta.loadingProgress
