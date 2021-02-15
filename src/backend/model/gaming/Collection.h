@@ -27,9 +27,14 @@
 
 namespace model { class Assets; }
 namespace model { class Game; }
-
-
 namespace model {
+
+struct EmulatorsEntry {
+    QString name;
+    QString core;
+    int priority;
+};
+  
 struct CollectionData {
     explicit CollectionData(QString name);
 
@@ -42,6 +47,7 @@ struct CollectionData {
     QString common_launch_cmd;
     QString common_launch_workdir;
     QString common_relative_basedir;
+    QList <EmulatorsEntry> common_emulators;
 
     void set_short_name(const QString&);
     const QString& short_name() const { return m_short_name; }
@@ -66,6 +72,7 @@ public:
     GETTER(const QString&, commonLaunchCmd, common_launch_cmd)
     GETTER(const QString&, commonLaunchWorkdir, common_launch_workdir)
     GETTER(const QString&, commonLaunchCmdBasedir, common_relative_basedir)
+    GETTER(const QList<EmulatorsEntry> &, commonEmulators, common_emulators)
 #undef GETTER
 
 
@@ -78,6 +85,7 @@ public:
     SETTER(QString, CommonLaunchCmd, common_launch_cmd)
     SETTER(QString, CommonLaunchWorkdir, common_launch_workdir)
     SETTER(QString, CommonLaunchCmdBasedir, common_relative_basedir)
+    SETTER(QList<EmulatorsEntry>, CommonEmulators, common_emulators)
     Collection& setShortName(QString val) { m_data.set_short_name(std::move(val)); return *this; }
 #undef SETTER
 
