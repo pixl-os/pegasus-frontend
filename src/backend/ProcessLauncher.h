@@ -58,6 +58,9 @@ private slots:
 
 private:
     QProcess* m_process;
+
+    QString globalCommand;
+    QStringList globalArgs;
     
     //! Recalbox configuration
     RecalboxConf mConfiguration;
