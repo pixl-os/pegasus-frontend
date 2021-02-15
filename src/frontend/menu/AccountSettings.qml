@@ -51,6 +51,7 @@ FocusScope {
 //        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
 //        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
         onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
+        onOpenMenuBoxSettings: root.openModal("settings/MenuBox.qml")
 //        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
     }
 

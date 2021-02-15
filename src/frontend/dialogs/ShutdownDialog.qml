@@ -21,10 +21,9 @@ import QtQuick 2.0
 GenericOkCancelDialog
 {
     focus: true
-
     title: qsTr("Shutdown") + api.tr
     message: qsTr("The system will shut down. Are you sure?") + api.tr
-    symbol: "\u23FB"
+//    symbol: "\u23FB"
 
     onAccept: api.internal.system.shutdown()
 }

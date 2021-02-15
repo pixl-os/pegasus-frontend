@@ -58,7 +58,7 @@ FocusScope {
 
     ScreenHeader {
         id: header
-        text: qsTr("Settings") + api.trs
+        text: qsTr("Settings") + api.tr
         z: 2
     }
 
@@ -223,8 +223,6 @@ FocusScope {
                 MultivalueOption {
                     id: optVideoSettings
 
-                    focus: true
-
                     label: qsTr("Video Settings") + api.tr
                     value: api.internal.settings.locales.currentName
 
@@ -239,8 +237,6 @@ FocusScope {
 
                 MultivalueOption {
                     id: optNetworkSettings
-
-                    focus: true
 
                     label: qsTr("Network Settings") + api.tr
                     value: api.internal.settings.locales.currentName
@@ -257,8 +253,6 @@ FocusScope {
                 MultivalueOption {
                     id: optUpdateSettings
 
-                    focus: true
-
                     label: qsTr("Update Settings") + api.tr
                     value: api.internal.settings.locales.currentName
 
@@ -273,8 +267,6 @@ FocusScope {
 
                 MultivalueOption {
                     id: optStorageSettings
-
-                    focus: true
 
                     label: qsTr("Storage Settings") + api.tr
                     value: api.internal.settings.locales.currentName
@@ -296,8 +288,6 @@ FocusScope {
                 MultivalueOption {
                     id: optLanguage
 
-                    focus: true
-
                     label: qsTr("Language") + api.tr
                     value: api.internal.settings.locales.currentName
 
@@ -313,8 +303,6 @@ FocusScope {
                 MultivalueOption {
                     id: optKeyboardLanguage
 
-                    focus: true
-
                     label: qsTr("Keyboard Language") + api.tr
                     value: api.internal.settings.locales.currentName
 
@@ -327,93 +315,25 @@ FocusScope {
                     KeyNavigation.down: optSoundSettings
                 }
 
-//                ToggleOption {
-//                    id: optFullscreen
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
 
-//                    label: qsTr("Fullscreen mode") + api.tr
-//                    note: qsTr("On some platforms this setting may have no effect.") + api.tr
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
 
-//                    checked: api.internal.settings.fullscreen
-//                    onCheckedChanged: {
-//                        focus = true;
-//                        api.internal.settings.fullscreen = checked;
-//                    }
-//                    onFocusChanged: container.onFocus(this)
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
 
-//                    KeyNavigation.down: optKeyboardConfig
-//                }
-
-//                SectionTitle {
-//                    text: qsTr("Controls") + api.tr
-//                }
-
-//                SimpleButton {
-//                    id: optKeyboardConfig
-
-//                    label: qsTr("Change controls...") + api.tr
-//                    onActivate: {
-//                        focus = true;
-//                        root.openKeySettings();
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-
-//                    KeyNavigation.down: optGamepadConfig
-//                }
-
-//                SimpleButton {
-//                    id: optGamepadConfig
-
-//                    label: qsTr("Change gamepad layout...") + api.tr
-//                    onActivate: {
-//                        focus = true;
-//                        root.openGamepadSettings();
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-
-//                    KeyNavigation.down: optHideMouse
-//                }
-
-//                ToggleOption {
-//                    id: optHideMouse
-
-//                    label: qsTr("Enable mouse support") + api.tr
-//                    note: qsTr("By default the cursor is visible if there are any pointer devices connected.") + api.tr
-
-//                    checked: api.internal.settings.mouseSupport
-//                    onCheckedChanged: {
-//                        focus = true;
-//                        api.internal.settings.mouseSupport = checked;
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-
-//                    KeyNavigation.down: optEditGameDirs
-//                }
-
-//                SectionTitle {
-//                    text: qsTr("Gaming") + api.tr
-//                }
-//                SimpleButton {
-//                    id: optEditGameDirs
-
-//                    label: qsTr("Set game directories...") + api.tr
-//                    onActivate: {
-//                        focus = true;
-//                        root.openGameDirSettings();
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-
-//                    KeyNavigation.down: optEditProviders
-//                }
-//                SimpleButton {
-//                    id: optEditProviders
-
-//                    label: qsTr("Enable/disable data sources...") + api.tr
-//                    onActivate: {
-//                        focus = true;
-//                        root.openProviderSettings();
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-//                }
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
 
                 Item {
                     width: parent.width

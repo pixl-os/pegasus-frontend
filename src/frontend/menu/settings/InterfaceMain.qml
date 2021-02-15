@@ -110,6 +110,8 @@ FocusScope {
                 SimpleButton {
                     id: optScreensaverSettings
 
+                    focus: true
+
                     label: qsTr("Screensaver settings") + api.tr
                     onActivate: {
                         focus = true;
@@ -174,44 +176,25 @@ FocusScope {
                     KeyNavigation.down: optScreensaverSettings
                 }
 
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
 
-//                MultivalueOption {
-//                    id: optxxx
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
 
-//                    focus: true
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
 
-//                    label: qsTr("xxx") + api.tr
-//                    value: api.internal.settings.locales.currentName
-
-//                    onActivate: {
-//                        focus = true;
-//                        localeBox.focus = true;
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-
-//                    KeyNavigation.down: optxxx
-//                }
-
-//                SectionTitle {
-//                    text: qsTr("xxx") + api.tr
-//                    first: true
-//                }
-
-//                ToggleOption {
-//                    id: optxxx
-
-//                    label: qsTr("xxx") + api.tr
-//                    note: qsTr("xxx") + api.tr
-
-//                    checked: api.internal.settings.fullscreen
-//                    onCheckedChanged: {
-//                        focus = true;
-////                        api.internal.settings.fullscreen = checked;
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-
-//                    KeyNavigation.down: optxxx
-//                }
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
 
                 Item {
                     width: parent.width

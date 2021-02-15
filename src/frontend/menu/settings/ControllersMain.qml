@@ -110,6 +110,8 @@ FocusScope {
                 SimpleButton {
                     id: optPairControllers
 
+                    focus: true
+
                     label: qsTr("Pair Bluetooth Controllers") + api.tr
                     onActivate: {
                         focus = true;
@@ -201,6 +203,26 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
 
                     KeyNavigation.down: optPairControllers
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
                 }
 
                 Item {

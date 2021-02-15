@@ -112,6 +112,8 @@ FocusScope {
                 MultivalueOption {
                     id: optGameRatio
 
+                    focus: true
+
                     label: qsTr("Game Ratio") + api.tr
 
                     onActivate: {
@@ -202,8 +204,6 @@ FocusScope {
                 MultivalueOption {
                     id: optShaders
 
-                    focus: true
-
                     label: qsTr("Shaders") + api.tr
 //                    value: api.internal.settings.locales.currentName
 
@@ -254,6 +254,26 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
 
                     KeyNavigation.down: optGameRatio
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
                 }
 
                 Item {

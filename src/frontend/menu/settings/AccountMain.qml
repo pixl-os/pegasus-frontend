@@ -28,9 +28,11 @@ FocusScope {
 //    signal openKeySettings
 //    signal openGamepadSettings
     signal openGameDirSettings
+    signal openMenuBoxSettings
 
     width: parent.width
     height: parent.height
+
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
@@ -110,6 +112,7 @@ FocusScope {
                 ToggleOption {
                     id: optRetroachievementActivate
 
+                    focus: true
                     label: qsTr("Activate Retroachievement") + api.tr
                     note: qsTr("Unlock Trophées") + api.tr
 
@@ -127,46 +130,16 @@ FocusScope {
                 SimpleButton {
                     id: optRetroachievementLoginIn
 
-                    focus: true
-
                     label: qsTr("Connect Retroachievement") + api.tr
 
                     onActivate: {
                         focus = true;
-                        root.openGameDirSettings();
+                        root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
 
                     KeyNavigation.down: optNetplayActivate
                 }
-//                SimpleButton {
-//                    id: optRetroachievementLogin
-
-//                    focus: true
-
-//                    label: qsTr("Retroachievement Login") + api.tr
-
-//                    onActivate: {
-//                        focus = true;
-//                        root.openGameDirSettings();
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-
-//                    KeyNavigation.down: opRetroachievementPswd
-//                }
-
-//                SimpleButton {
-//                    id: opRetroachievementPswd
-
-//                    label: qsTr("Retroachivement Password") + api.tr
-//                    onActivate: {
-//                        focus = true;
-//                        root.openGameDirSettings();
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-
-//                    KeyNavigation.down: optNetplayActivate
-//                }
 
                 SectionTitle {
                     text: qsTr("Netplay") + api.tr
@@ -195,14 +168,12 @@ FocusScope {
                 MultivalueOption {
                     id: optNetplayNickname
 
-                    focus: true
-
                     label: qsTr("Netplay Nickname") + api.tr
 //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
-                        root.openGameDirSettings();
+                        root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
 
@@ -234,14 +205,12 @@ FocusScope {
                 SimpleButton {
                     id: optNetplayPswd
 
-                    focus: true
-
                     label: qsTr("Netplay Password") + api.tr
 //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
-                        root.openGameDirSettings();
+                        root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
 
@@ -250,7 +219,27 @@ FocusScope {
 
                 Item {
                     width: parent.width
-                    height: bottom.heigh + vpx(25)
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
+                }
+
+                Item {
+                    width: parent.width
+                    height: vpx(25)
                 }
             }
         }

@@ -8,8 +8,6 @@
         <file>assets/pbar-left.png</file>
         <file>assets/pbar-right.png</file>
         <file>assets/pbar.png</file>
-        <file>assets/qr-docs.png</file>
-        <file>assets/qt-logo.png</file>
         <file>assets/gamepad/a.svg</file>
         <file>assets/gamepad/b.svg</file>
         <file>assets/gamepad/base.svg</file>
@@ -84,5 +82,7 @@
         <file>menu/settings/InterfaceMain.qml</file>
         <file>menu/settings/BiosChecking.qml</file>
         <file>menu/settings/AdvancedEmulator.qml</file>
+        <file>menu/settings/MenuBox.qml</file>
+        <file>assets/recalbox-next.svg</file>
     </qresource>
 </RCC>

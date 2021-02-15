@@ -47,7 +47,7 @@ FocusScope {
         height: vpx(3)
         anchors.bottom: parent.bottom
 
-        color: "#3aa"
+        color: "#bbb"
         visible: parent.focus || mouseArea.containsMouse
     }
 

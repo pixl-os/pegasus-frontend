@@ -90,7 +90,7 @@ FocusScope {
         anchors.rightMargin: height * 0.04
         visible: x < parent.width
 
-        color: "#eee"
+        color: "#333"
         radius: vpx(8)
 
         MouseArea {
@@ -141,7 +141,7 @@ FocusScope {
 
             width: ListView.view.width
             height: root.itemHeight
-            color: highlighted ? "#dedede" : "#eee"
+            color: highlighted ? "#555" : "#333"
 
             Text {
                 id: label
@@ -151,7 +151,7 @@ FocusScope {
                 anchors.verticalCenter: parent.verticalCenter
 
                 text: model.name
-                color: "#444"
+                color: "#bbb"
                 font.pixelSize: root.textSize
                 font.family: globalFonts.sans
             }

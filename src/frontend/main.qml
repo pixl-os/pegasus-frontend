@@ -95,8 +95,13 @@ Window {
             }
             onApiThemePathChanged: source = Qt.binding(getThemeFile)
 
+//            Keys.onPressed: {
+//                if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
+//                    event.accepted = true;
+//                    mainMenu.focus = true;
+//                }
             Keys.onPressed: {
-                if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
+                if (api.keys.isMenu(event)) {
                     event.accepted = true;
                     mainMenu.focus = true;
                 }
