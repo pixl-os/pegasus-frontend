@@ -28,10 +28,9 @@
 #include <QDir>
 #include <QRegularExpression>
 
-
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
-    
+
 void replace_env_vars(QString& param)
 {
     const auto env = QProcessEnvironment::systemEnvironment();
@@ -76,10 +75,10 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     const model::Game& game = *gamefile.parentGame();
     const QFileInfo& finfo = gamefile.fileinfo();
     
-    //Log::debug(LOGMSG("Pad 0: '%1'").arg(QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio"))));
-        
+    Log::debug(LOGMSG("Param not updated: '%1'").arg(param));
+    
+    param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())));
     param
-        .replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())))
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
         .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()))
@@ -89,8 +88,11 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         .replace(QLatin1String("{emulator.ratio}"),QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio")))
         .replace(QLatin1String("{emulator.netplay}"),"")
         .replace(QLatin1String("{controllers.config}"),"-p1index 0 -p1guid 030000005e040000a102000000010000 -p1name \"Xbox 360 Wireless Receiver\" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event3");
-        
+
     replace_env_vars(param);
+    
+    Log::debug(LOGMSG("Param updated: '%1'").arg(param));    
+
 }
 
 bool contains_slash(const QString& str)
@@ -204,8 +206,6 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
     beforeRun(gamefile.fileinfo().absoluteFilePath());
     
-    Log::debug(LOGMSG("Executing the following command line: '%1'").arg(command));
-    
     runProcess(command, args, workdir);
 }
 
@@ -225,27 +225,53 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
 
     // run the command
     m_process->setProcessChannelMode(QProcess::ForwardedChannels);
+    
     m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
+    
     m_process->setWorkingDirectory(workdir);
-    m_process->start("python", QStringList() << "-V",QProcess::ReadWrite); // ;-)
-    int exitcode = system(qPrintable(serialize_command(command, args)));
-    m_process->waitForStarted(-1);
+    
+    //init of global Command
+    globalCommand = "";
+        
+    // 2 ways to launch: in case of Python to launch retroarch, we can't use only Qprocess
+    if (command.contains("python"))
+    {
+        emit processLaunchOk(); // to stop front-end
+        // put command and args in global variables to launch when Front-end Tear Down is Completed !
+        globalCommand = command;
+        globalArgs = args;
+    }
+    else
+    {
+        m_process->start(command, args, QProcess::ReadOnly);
+        m_process->waitForStarted(-1);
+    }
+  
 }
 
 void ProcessLauncher::onTeardownComplete()
 {
     Q_ASSERT(m_process);
 
-    m_process->waitForFinished(-1);
+    if(globalCommand.length() != 0)
+    {
+        int exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+    }
+    else
+    {
+        m_process->waitForFinished(-1);
+    }
     emit processFinished();
 }
 
 void ProcessLauncher::onProcessStarted()
 {
     Q_ASSERT(m_process);
+
     Log::debug(LOGMSG("Program: %1").arg(m_process->program()));
     Log::info(LOGMSG("Process %1 started").arg(m_process->processId()));
     Log::info(SEPARATOR);
+
     emit processLaunchOk();
 }
 
@@ -272,6 +298,7 @@ void ProcessLauncher::onProcessError(QProcess::ProcessError error)
 void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exitstatus)
 {
     Q_ASSERT(m_process);
+    
     Log::info(SEPARATOR);
 
     switch (exitstatus) {
@@ -298,9 +325,10 @@ void ProcessLauncher::beforeRun(const QString& game_path)
 void ProcessLauncher::afterRun()
 {
     Q_ASSERT(m_process);
+    
     m_process->deleteLater();
     m_process = nullptr;
-
+    
     ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
     TerminalKbd::disable();
 }
