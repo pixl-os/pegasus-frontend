@@ -39,6 +39,7 @@ FocusScope {
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
+            api.internal.recalbox.saveParameters();
             root.close();
         }
     }
@@ -106,6 +107,38 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("General") + api.tr
                     first: true
+                }
+                
+                ToggleOption {
+                    id: optDebugMode
+
+                    label: qsTr("Debug mode") + api.tr
+                    note: qsTr("Give me your log baby !!! ;-)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("emulationstation.debuglogs")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("emulationstation.debuglogs",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optVideoMode
+                }
+                
+                MultivalueOption {
+                    id: optVideoMode
+
+                    focus: true
+
+                    label: qsTr("video mode") + api.tr
+                    value: api.internal.recalbox.getStringParameter("global.videomode")
+
+                    onActivate: {
+                        focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optLanguage
                 }
 
                 MultivalueOption {
