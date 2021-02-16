@@ -53,17 +53,12 @@ HEADERS += \
     $$PWD/os/system/Mutex.h \
     $$PWD/os/system/Thread.h \
     $$PWD/os/system/ThreadPool.h \
-    $$PWD/sdl2/ISynchronousEvent.h \
-    $$PWD/sdl2/ISyncTimer.h \
-    $$PWD/sdl2/SyncronousEvent.h \
-    $$PWD/sdl2/SyncronousEventService.h \
-    $$PWD/sdl2/SyncTimer.h \
     $$PWD/storage/Allocator.h \
     $$PWD/storage/Array.h \
     $$PWD/storage/Common.h \
     $$PWD/storage/Queue.h \
     $$PWD/storage/rHashMap.h \
-    $$PWD/storage/Stack.h
+    $$PWD/storage/Stack.h \
     
 SOURCES += \
     $$PWD/CommandTokenizer.cpp \
@@ -102,7 +97,18 @@ SOURCES += \
     $$PWD/os/fs/watching/FileSystemWatcher.cpp \
     $$PWD/os/system/Mutex.cpp \
     $$PWD/os/system/Thread.cpp \
-    $$PWD/sdl2/SyncronousEvent.cpp \
-    $$PWD/sdl2/SyncronousEventService.cpp \
-    $$PWD/sdl2/SyncTimer.cpp
+    
+!isEmpty(USE_SDL_GAMEPAD) {
+    HEADERS += $$PWD/GamepadManagerSDL2.h
+    HEADERS += $$PWD/sdl2/ISynchronousEvent.h
+    HEADERS += $$PWD/sdl2/ISyncTimer.h
+    HEADERS += $$PWD/sdl2/SyncronousEvent.h
+    HEADERS += $$PWD/sdl2/SyncronousEventService.h
+    HEADERS += $$PWD/sdl2/SyncTimer.h
+
+    SOURCES += $$PWD/sdl2/SyncronousEvent.cpp
+    SOURCES += $$PWD/sdl2/SyncronousEventService.cpp
+    SOURCES += $$PWD/sdl2/SyncTimer.cpp
+} 
+
     
