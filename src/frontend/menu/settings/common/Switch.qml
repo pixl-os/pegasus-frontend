@@ -37,7 +37,6 @@ Item {
         }
     }
 
-
     Rectangle {
         id: track
 
@@ -45,12 +44,11 @@ Item {
         height: parent.height * 0.5
         radius: height * 0.5
 
-        color: "#bbb"
+        color: "#dd0c0c"
         opacity: 0.3
 
         anchors.centerIn: parent
     }
-
 
     MouseArea {
         id: mouseArea
@@ -66,19 +64,15 @@ Item {
         height: parent.height
         radius: height * 0.5
 
-        color: "#9d0808"
+        color: "#bbbbbb"
 
         anchors.left: parent.left
     }
 
-
-
-
-
     states: State {
         name: "checked"; when: checked
-        PropertyChanges { target: thumb; color: "#269121" }
-        PropertyChanges { target: track; color: "#bbb" }
+        PropertyChanges { target: thumb; color: "#bbbbbb" }
+        PropertyChanges { target: track; color: "#15e20b" }
         PropertyChanges { target: track; opacity: 0.3 }
         AnchorChanges {
             target: thumb

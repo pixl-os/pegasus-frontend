@@ -205,9 +205,11 @@ FocusScope {
                 MultivalueOption {
                     id: optSoundSettings
 
+                    // set focus only on first item
                     focus: true
 
                     label: qsTr("Sound Settings") + api.tr
+                    note: qsTr("Sound configuration ...") + api.tr
                     value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -215,7 +217,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optVideoSettings
                     KeyNavigation.up: optKeyboardLanguage
                 }
@@ -224,6 +225,7 @@ FocusScope {
                     id: optVideoSettings
 
                     label: qsTr("Video Settings") + api.tr
+                    note: qsTr("set your display and resolution") + api.tr
                     value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -231,7 +233,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optNetworkSettings
                 }
 
@@ -239,6 +240,7 @@ FocusScope {
                     id: optNetworkSettings
 
                     label: qsTr("Network Settings") + api.tr
+                    note: qsTr("Settings network wifi or else") + api.tr
                     value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -246,7 +248,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optUpdateSettings
                 }
 
@@ -254,6 +255,7 @@ FocusScope {
                     id: optUpdateSettings
 
                     label: qsTr("Update Settings") + api.tr
+                    note: qsTr("Update configuration menu") + api.tr
                     value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -261,7 +263,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optStorageSettings
                 }
 
@@ -269,6 +270,7 @@ FocusScope {
                     id: optStorageSettings
 
                     label: qsTr("Storage Settings") + api.tr
+                    note: qsTr("Show Storage capacity and choose other storage") + api.tr
                     value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -276,7 +278,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optLanguage
                 }
 
@@ -289,6 +290,7 @@ FocusScope {
                     id: optLanguage
 
                     label: qsTr("Language") + api.tr
+                    note: qsTr("Set your language interface") + api.tr
                     value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -296,7 +298,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optKeyboardLanguage
                 }
 
@@ -304,6 +305,7 @@ FocusScope {
                     id: optKeyboardLanguage
 
                     label: qsTr("Keyboard Language") + api.tr
+                    note: qsTr("set your keyboard layout") + api.tr
                     value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -311,33 +313,12 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optSoundSettings
                 }
 
                 Item {
                     width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
+                    height: vpx(30)
                 }
             }
         }

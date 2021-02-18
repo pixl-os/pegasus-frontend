@@ -41,6 +41,7 @@ FocusScope {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
+            api.internal.recalbox.saveParameters();
         }
     }
 
@@ -111,46 +112,64 @@ FocusScope {
 
                 MultivalueOption {
                     id: optGameRatio
-
+                    // set focus only on first item
                     focus: true
 
-                    label: qsTr("Game Ratio") + api.tr
+                    label: qsTr("Game Ratio") + api.tr                    
+                    note: qsTr("Set ratio for all emulators (auto,4/3,16/9,16/10,custom)") + api.tr
 
                     onActivate: {
                         focus = true;
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optSmoothGame
                     KeyNavigation.up: optAdvancedEmulator
+                    KeyNavigation.down: optPixelPerfect
+                }
+
+                ToggleOption {
+                    id: optPixelPerfect
+
+                    label: qsTr("Pixel Perfect") + api.tr
+                    note: qsTr("Once enabled, your screen will be cropped, and you will have a pixel perfect image") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.integerscale")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("global.integerscale",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSmoothGame
                 }
 
                 ToggleOption {
                     id: optSmoothGame
 
                     label: qsTr("Smooth Games") + api.tr
-                    note: qsTr("Add Smooth pixel effects") + api.tr
+                    note: qsTr("Set smooth for all emulators") + api.tr
 
-//                    checked: api.internal.settings.fullscreen
+                    checked: api.internal.recalbox.getBoolParameter("global.smooth")
                     onCheckedChanged: {
                         focus = true;
-//                        api.internal.settings.fullscreen = checked;
+                        api.internal.recalbox.setBoolParameter("global.smooth",checked);
                     }
-                    KeyNavigation.down: optGameRewind
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optShaders
                 }
 
-                ToggleOption {
-                    id: optGameRewind
+                MultivalueOption {
+                    id: optShaders
 
-                    label: qsTr("Game Rewind") + api.tr
-                    note: qsTr("Only work with Retroarch") + api.tr
+                    label: qsTr("Shaders") + api.tr
+                    note: qsTr("Set prefered Shader effect") + api.tr
 
-//                    checked: api.internal.settings.fullscreen
-                    onCheckedChanged: {
+//                    value: api.internal.settings.locales.currentName
+
+                    onActivate: {
                         focus = true;
-//                        api.internal.settings.fullscreen = checked;
+                        localeBox.focus = true;
                     }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optShowFramerate
                 }
 
@@ -160,86 +179,65 @@ FocusScope {
                     label: qsTr("Show Framerate") + api.tr
                     note: qsTr("Show FPS in game") + api.tr
 
-//                    checked: api.internal.settings.fullscreen
+                    checked: api.internal.recalbox.getBoolParameter("global.framerate")
                     onCheckedChanged: {
                         focus = true;
-//                        api.internal.settings.fullscreen = checked;
+                        api.internal.recalbox.setBoolParameter("global.framerate",checked);
                     }
-                    KeyNavigation.down: optAutoSave
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGameRewind
                 }
 
                 SectionTitle {
-                    text: qsTr("Save/Load") + api.tr
+                    text: qsTr("Gameplay Option") + api.tr
                     first: true
+                }
+
+                ToggleOption {
+                    id: optGameRewind
+
+                    label: qsTr("Game Rewind") + api.tr
+                    note: qsTr("Set rewind for all emulators 'Only work with Retroarch' ") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.rewind")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("global.rewind",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optAutoSave
                 }
 
                 ToggleOption {
                     id: optAutoSave
 
-                    label: qsTr("Auto Saves") + api.tr
-                    note: qsTr("Auto Saves your Games") + api.tr
+                    label: qsTr("Auto Save/load") + api.tr
+                    note: qsTr("Set autosave/load savestate for all emulators") + api.tr
 
-//                    checked: api.internal.settings.fullscreen
+                    checked: api.internal.recalbox.getBoolParameter("global.autosave")
                     onCheckedChanged: {
                         focus = true;
-//                        api.internal.settings.fullscreen = checked;
-                    }
-                    KeyNavigation.down: optAutoLoad
-                }
-
-                ToggleOption {
-                    id: optAutoLoad
-
-                    label: qsTr("Auto Load") + api.tr
-                    note: qsTr("Auto Load your Games") + api.tr
-
-//                    checked: api.internal.settings.fullscreen
-                    onCheckedChanged: {
-                        focus = true;
-//                        api.internal.settings.fullscreen = checked;
-                    }
-                    KeyNavigation.down: optShaders
-                }
-
-                MultivalueOption {
-                    id: optShaders
-
-                    label: qsTr("Shaders") + api.tr
-//                    value: api.internal.settings.locales.currentName
-
-                    onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
+                        api.internal.recalbox.setBoolParameter("global.autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optPixelPerfect
+                    KeyNavigation.down: optBiosChecking
                 }
 
-                ToggleOption {
-                    id: optPixelPerfect
-
-                    label: qsTr("Pixel Perfect") + api.tr
-                    note: qsTr("Set Interger Scale") + api.tr
-
-//                    checked: api.internal.settings.fullscreen
-                    onCheckedChanged: {
-                        focus = true;
-//                        api.internal.settings.fullscreen = checked;
-                    }
-                    KeyNavigation.down: optBiosChecking
+                SectionTitle {
+                    text: qsTr("Other Option") + api.tr
+                    first: true
                 }
 
                 SimpleButton {
                     id: optBiosChecking
 
                     label: qsTr("Bios Checking") + api.tr
+                    note: qsTr("Check all necessary bios !") + api.tr
                     onActivate: {
                         focus = true;
                         root.openBiosChecking_Settings();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optAdvancedEmulator
                 }
 
@@ -247,38 +245,19 @@ FocusScope {
                     id: optAdvancedEmulator
 
                     label: qsTr("Advandced Emulator Settings") + api.tr
+                    note: qsTr("choose emulator, ratio and more by system") + api.tr
+
                     onActivate: {
                         focus = true;
                         root.openAdvancedEmulator_Settings();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optGameRatio
                 }
 
                 Item {
                     width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
+                    height: vpx(30)
                 }
             }
         }

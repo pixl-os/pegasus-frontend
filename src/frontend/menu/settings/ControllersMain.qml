@@ -110,15 +110,16 @@ FocusScope {
                 SimpleButton {
                     id: optPairControllers
 
+                    // set focus only on first item
                     focus: true
 
                     label: qsTr("Pair Bluetooth Controllers") + api.tr
+                    note: qsTr("pair bluetooth controllers ") + api.tr
                     onActivate: {
                         focus = true;
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optKeyboardConfig
                 }
 
@@ -126,25 +127,25 @@ FocusScope {
                     id: optKeyboardConfig
 
                     label: qsTr("Change Controls") + api.tr
+                    note: qsTr("change control assignation") + api.tr
                     onActivate: {
                         focus = true;
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optGamepadConfig
                 }
 
                 SimpleButton {
                     id: optGamepadConfig
 
-                    label: qsTr("Change gamepad layout") + api.tr
+                    label: qsTr("gamepad layout") + api.tr
+                    note: qsTr("Show game layout configuration controller") + api.tr
                     onActivate: {
                         focus = true;
                         root.openGamepadSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optInputP1
                 }
 
@@ -156,78 +157,54 @@ FocusScope {
                 SimpleButton {
                     id: optInputP1
 
-                    label: qsTr("Controllers Input players 1") + api.tr
+                    label: qsTr("Input players 1") + api.tr
                     onActivate: {
                         focus = true;
                         root.openInputP1();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optInputP2
                 }
 
                 SimpleButton {
                     id: optInputP2
 
-                    label: qsTr("Controllers Input players 2") + api.tr
+                    label: qsTr("Input players 2") + api.tr
                     onActivate: {
                         focus = true;
                         root.openInputP2();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optInputP3
                 }
 
                 SimpleButton {
                     id: optInputP3
 
-                    label: qsTr("Controllers Input players 3") + api.tr
+                    label: qsTr("Input players 3") + api.tr
                     onActivate: {
                         focus = true;
                         root.openInputP3();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optInputP4
                 }
 
                 SimpleButton {
                     id: optInputP4
 
-                    label: qsTr("Controllers Input players 4") + api.tr
+                    label: qsTr("Input players 4") + api.tr
                     onActivate: {
                         focus = true;
                         root.openInputP4();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optPairControllers
                 }
 
                 Item {
                     width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
+                    height: vpx(30)
                 }
             }
         }

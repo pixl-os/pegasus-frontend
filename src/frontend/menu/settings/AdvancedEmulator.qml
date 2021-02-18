@@ -52,7 +52,7 @@ FocusScope {
 
     ScreenHeader {
         id: header
-        text: qsTr("Games > Advanced Emulator ") + api.tr
+        text: qsTr("Games > Advanced Emulator") + api.tr
         z: 2
     }
 }

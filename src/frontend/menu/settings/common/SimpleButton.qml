@@ -22,6 +22,7 @@ FocusScope {
     id: root
 
     property alias label: label.text
+    property alias note: sublabel.text
 
     readonly property int fontSize: vpx(22)
     readonly property int horizontalPadding: vpx(30)
@@ -30,7 +31,8 @@ FocusScope {
 
 
     width: parent.width
-    height: fontSize * 2.5
+//    height: fontSize * 2.5
+    height: labelContainer.height + fontSize * 1.25
 
     Keys.onPressed: {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
@@ -51,17 +53,46 @@ FocusScope {
         visible: parent.focus || mouseArea.containsMouse
     }
 
-    Text {
-        id: label
+    Column {
+        id: labelContainer
+        anchors {
+            left: parent.left; leftMargin: horizontalPadding
+            right: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+        }
 
-        anchors.left: parent.left
-        anchors.leftMargin: horizontalPadding
-        anchors.verticalCenter: parent.verticalCenter
+        spacing: fontSize * 0.25
+        height: label.height + (sublabel.text ? spacing + sublabel.height : 0)
 
-        color: "#eee"
-        font.pixelSize: fontSize
-        font.family: globalFonts.sans
+
+        Text {
+            id: label
+
+            color: "#eee"
+            font.pixelSize: fontSize
+            font.family: globalFonts.sans
+        }
+
+        Text {
+            id: sublabel
+
+            color: "#999"
+            font.pixelSize: fontSize * 0.8
+            font.family: globalFonts.sans
+            font.italic: true
+        }
     }
+//    Text {
+//        id: label
+
+//        anchors.left: parent.left
+//        anchors.leftMargin: horizontalPadding
+//        anchors.verticalCenter: parent.verticalCenter
+
+//        color: "#eee"
+//        font.pixelSize: fontSize
+//        font.family: globalFonts.sans
+//    }
 
     MouseArea {
         id: mouseArea

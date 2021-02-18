@@ -80,18 +80,37 @@ FocusScope {
 
 
     Rectangle {
+        id: rectangle
+        height: parent.height * 0.52
+        width: height * 1.005
+        color: "#222"
+
+        radius: vpx(8)
+
+        anchors.centerIn: parent
+    }
+
+    Rectangle {
         id: box
 
-        width: vpx(280)
-        height: parent.height * 0.84
-        anchors.verticalCenter: parent.verticalCenter
+//        width: vpx(280)
+//        height: parent.height * 0.84
+//        anchors.verticalCenter: parent.verticalCenter
 
-        anchors.left: parent.right
-        anchors.rightMargin: height * 0.04
-        visible: x < parent.width
+//        anchors.left: parent.right
+//        anchors.rightMargin: height * 0.04
+//        visible: x < parent.width
 
+//        color: "#333"
+//        radius: vpx(8)
+
+        height: parent.height * 0.5
+        width: height * 1.0
         color: "#333"
+
         radius: vpx(8)
+
+        anchors.centerIn: parent
 
         MouseArea {
             anchors.fill: parent
@@ -141,14 +160,16 @@ FocusScope {
 
             width: ListView.view.width
             height: root.itemHeight
+            radius: vpx(8)
             color: highlighted ? "#555" : "#333"
 
             Text {
                 id: label
 
-                anchors.right: parent.right
-                anchors.rightMargin: vpx(24)
+//                anchors.right: parent.right
+//                anchors.rightMargin: vpx(24)
                 anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
 
                 text: model.name
                 color: "#bbb"
@@ -163,6 +184,7 @@ FocusScope {
             }
         }
     }
+
 
 
     states: State {

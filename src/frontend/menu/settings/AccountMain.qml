@@ -32,7 +32,6 @@ FocusScope {
 
     width: parent.width
     height: parent.height
-
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
@@ -41,6 +40,7 @@ FocusScope {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
+            api.internal.recalbox.saveParameters();
         }
     }
 
@@ -111,19 +111,19 @@ FocusScope {
 
                 ToggleOption {
                     id: optRetroachievementActivate
-
+                    // set focus only on first item
                     focus: true
+
                     label: qsTr("Activate Retroachievement") + api.tr
                     note: qsTr("Unlock Trophées") + api.tr
 
-//                    checked: api.internal.settings.fullscreen
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements")
                     onCheckedChanged: {
                         focus = true;
-//                        api.internal.settings.fullscreen = checked;
+                        api.internal.recalbox.setBoolParameter("global.retroachievements",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.up: optNetplayPswd
+                    KeyNavigation.up: optNetplayInformation
                     KeyNavigation.down: optRetroachievementLoginIn
                 }
 
@@ -131,13 +131,28 @@ FocusScope {
                     id: optRetroachievementLoginIn
 
                     label: qsTr("Connect Retroachievement") + api.tr
+                    note: qsTr("Connect your account retroachievement") + api.tr
 
                     onActivate: {
                         focus = true;
                         root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optHardcoreRetroachievementActivate
+                }
 
+                ToggleOption {
+                    id: optHardcoreRetroachievementActivate
+
+                    label: qsTr("Hardcore Retroachievement") + api.tr
+                    note: qsTr("Unlock Trophées without cheats and rewind") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.hardcore")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayActivate
                 }
 
@@ -152,16 +167,14 @@ FocusScope {
                     label: qsTr("Activate Netplay") + api.tr
                     note: qsTr("Play with your friends online") + api.tr
 
-//                    checked: api.internal.settings.fullscreen
+                    checked: api.internal.recalbox.getBoolParameter("global.netplay")
                     onCheckedChanged: {
                         focus = true;
-//                        api.internal.settings.fullscreen = checked;
+                        api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
 //                        pop menu if activate
 //                        root.openGameDirSettings();
-
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optNetplayNickname
                 }
 
@@ -169,6 +182,8 @@ FocusScope {
                     id: optNetplayNickname
 
                     label: qsTr("Netplay Nickname") + api.tr
+                    note: qsTr("Set your Netplay nickname") + api.tr
+
 //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -176,7 +191,6 @@ FocusScope {
                         root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optNetplayPswdActivate
                 }
 
@@ -198,7 +212,6 @@ FocusScope {
 //                        root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optNetplayPswd
                 }
 
@@ -206,6 +219,8 @@ FocusScope {
                     id: optNetplayPswd
 
                     label: qsTr("Netplay Password") + api.tr
+                    note: qsTr("Set your password game room") + api.tr
+
 //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
@@ -213,33 +228,27 @@ FocusScope {
                         root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optNetplayInformation
+                }
 
+                SimpleButton {
+                    id: optNetplayInformation
+
+                    label: qsTr("Netplay Information") + api.tr
+                    note: qsTr("Show netplay information roms etc ...") + api.tr
+//                    value: api.internal.settings.locales.currentName
+
+                    onActivate: {
+                        focus = true;
+                        root.openMenuBoxSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRetroachievementActivate
                 }
 
                 Item {
                     width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
+                    height: vpx(30)
                 }
             }
         }

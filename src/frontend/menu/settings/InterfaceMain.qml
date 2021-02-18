@@ -110,15 +110,17 @@ FocusScope {
                 SimpleButton {
                     id: optScreensaverSettings
 
+                    // set focus only on firt item
                     focus: true
 
                     label: qsTr("Screensaver settings") + api.tr
+                    note: qsTr("set screensaver on dim, demo mode, etc") + api.tr
+
                     onActivate: {
                         focus = true;
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.up: optTheme
                     KeyNavigation.down: optScreenHelp
                 }
@@ -139,6 +141,7 @@ FocusScope {
                         focus = true;
 //                        api.internal.settings.fullscreen = checked;
                     }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPopupSettings
                 }
 
@@ -151,20 +154,20 @@ FocusScope {
                     id: optPopupSettings
 
                     label: qsTr("Popup settings") + api.tr
+                    note: qsTr("configure popup animation and more") + api.tr
                     onActivate: {
                         focus = true;
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optTheme
-
                 }
 
                 MultivalueOption {
                     id: optTheme
 
                     label: qsTr("Theme") + api.tr
+                    note: qsTr("Change theme system interface") + api.tr
                     value: api.internal.settings.themes.currentName
 
                     onActivate: {
@@ -172,33 +175,12 @@ FocusScope {
                         themeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-
                     KeyNavigation.down: optScreensaverSettings
                 }
 
                 Item {
                     width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
-                }
-
-                Item {
-                    width: parent.width
-                    height: vpx(25)
+                    height: vpx(30)
                 }
             }
         }
