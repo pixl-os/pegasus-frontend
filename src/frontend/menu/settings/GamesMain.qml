@@ -111,7 +111,7 @@ FocusScope {
                     property string parameterName : "global.ratio"
 
                     label: qsTr("Game Ratio") + api.tr                    
-                    note: qsTr("Set ratio for all emulators (auto,4/3,16/9,16/10,custom)") + api.tr
+                    note: qsTr("Set ratio for all emulators (auto,4/3,16/9,16/10,etc...)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -155,19 +155,27 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.smooth",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optShaders
+                    KeyNavigation.down: optGlobalShader
                 }
                 MultivalueOption {
-                    id: optShaders
+                    id: optGlobalShader
+                    //property to manage parameter name
+                    property string parameterName : "global.shaderset"
 
                     label: qsTr("Shaders") + api.tr
                     note: qsTr("Set prefered Shader effect") + api.tr
 
-//                    value: api.internal.settings.locales.currentName
-
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGlobalShader;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optShowFramerate

@@ -19,6 +19,14 @@ QStringList GetParametersList(QString Parameter)
         //system.kblayout=us
         ListOfValue << "fr" << "en" << "de" << "us" << "es";
     }
+    else if (Parameter == "global.shaderset")
+    {
+        //## Shader set
+        //## Automatically select shaders for all systems
+        //## (none, retro, scanlines)
+        //global.shaderset=none
+        ListOfValue << "none" << "retro" << "scanline";
+    }
     else
     {
         ListOfValue << QString("error: Parameters list for '%1' not found").arg(Parameter);
