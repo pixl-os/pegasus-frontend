@@ -3,8 +3,10 @@
 #pragma once
 
 //For recalbox
-#include "RecalboxConf.h"
+#include "ParametersList.h"
 
+#include "RecalboxConf.h"
+#include "utils/QmlHelpers.h"
 #include <QObject>
 
 namespace model {
@@ -12,7 +14,8 @@ namespace model {
 /// Provides a recalbox.conf interface for the frontend layer
 class Recalbox : public QObject {
     Q_OBJECT
-
+    QML_CONST_PROPERTY(model::ParametersList, parameterslist)
+    
 public:
     explicit Recalbox(QObject* parent = nullptr);
    

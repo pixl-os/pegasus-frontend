@@ -59,6 +59,9 @@ signals:
 
     // triggers translation update
     void localeChanged();
+    
+    // triggers list of parameters update
+    void parameterChanged();
 
     // Api events for QML -- no const here
     void eventLoadingStarted();

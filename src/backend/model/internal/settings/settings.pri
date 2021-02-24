@@ -5,6 +5,7 @@ HEADERS += \
     $$PWD/Settings.h \
     $$PWD/Themes.h \
     $$PWD/Recalbox.h \
+    $$PWD/ParametersList.h \
 
 SOURCES += \
     $$PWD/KeyEditor.cpp \
@@ -13,3 +14,4 @@ SOURCES += \
     $$PWD/Settings.cpp \
     $$PWD/Themes.cpp \
     $$PWD/Recalbox.cpp \
+    $$PWD/ParametersList.cpp \
