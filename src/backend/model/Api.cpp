@@ -40,6 +40,8 @@ ApiObject::ApiObject(const backend::CliArgs& args, QObject* parent)
             this, &ApiObject::onThemeChanged);
     connect(&m_internal.settings(), &model::Settings::providerReloadingRequested,
             this, &ApiObject::startScanning);
+    connect(&m_internal.recalbox().parameterslist(), &model::ParametersList::parameterChanged,
+            this, &ApiObject::parameterChanged);
 
     connect(&m_providerman, &ProviderManager::progressChanged,
             &m_internal.meta(), &model::Meta::onSearchProgressChanged);
