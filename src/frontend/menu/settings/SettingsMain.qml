@@ -39,6 +39,7 @@ FocusScope {
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
+            api.internal.recalbox.saveParameters();
             root.close();
         }
     }
@@ -83,7 +84,7 @@ FocusScope {
         }
 
         FocusScope {
-            id: content
+            id: content 
 
             focus: true
             enabled: focus
@@ -106,6 +107,99 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("General") + api.tr
                     first: true
+                }
+               
+                MultivalueOption {
+                    id: optKbLayout
+                    
+                    //property to manage parameter name
+                    property string parameterName : "system.kblayout"
+                    
+                    focus: true
+
+                    label: qsTr("Keyboard Layout") + api.tr 
+                    
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optKbLayout;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: {
+                        container.onFocus(this);
+                    }
+
+                    KeyNavigation.down: optGlobalRatio
+                    
+                }
+
+                MultivalueOption {
+                    id: optGlobalRatio
+                    
+                    //property to manage parameter name
+                    property string parameterName : "global.ratio"
+                    
+                    focus: true
+
+                    label: qsTr("Ratio") + api.tr 
+                    
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGlobalRatio;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: {
+                        container.onFocus(this);
+                    }
+
+                    KeyNavigation.down: optDebugMode
+                }   
+               
+                ToggleOption {
+                    id: optDebugMode
+
+                    label: qsTr("Debug mode") + api.tr
+                    note: qsTr("Give me your log baby !!! ;-)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("emulationstation.debuglogs")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("emulationstation.debuglogs",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optVideoMode
+                }
+                
+                MultivalueOption {
+                    id: optVideoMode
+
+                    focus: true
+
+                    label: qsTr("video mode") + api.tr
+                    value: api.internal.recalbox.getStringParameter("global.videomode")
+
+                    onActivate: {
+                        focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optLanguage
                 }
 
                 MultivalueOption {
@@ -236,7 +330,28 @@ FocusScope {
         }
     }
 
+    MultivalueBox {
+        id: parameterslistBox
+        z: 3
+        
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
+        
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
 
+        onClose: content.focus = true
+        onSelect: {
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
+        }
+    }
+    
     MultivalueBox {
         id: localeBox
         z: 3
