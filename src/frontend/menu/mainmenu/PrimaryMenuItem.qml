@@ -15,11 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.8
+import QtQuick 2.12
 
 GenericMenuItem {
     z: 1000
-    activeColor: "#555"
-    inactiveColor: "#333"
+    activeColor: "#333"
+    inactiveColor: "#222"
     textSizePx: vpx(50)
 }

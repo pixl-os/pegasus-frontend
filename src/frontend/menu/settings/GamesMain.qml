@@ -17,8 +17,8 @@
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.0
-import QtQuick.Window 2.2
+import QtQuick 2.12
+import QtQuick.Window 2.12
 
 
 FocusScope {
@@ -44,25 +44,20 @@ FocusScope {
             api.internal.recalbox.saveParameters();
         }
     }
-
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
-
     ScreenHeader {
         id: header
         text: qsTr("Games") + api.tr
         z: 2
     }
-
     Flickable {
         id: container
 
@@ -83,7 +78,6 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
-
         FocusScope {
             id: content
 
@@ -104,29 +98,37 @@ FocusScope {
                     width: parent.width
                     height: header.height + vpx(25)
                 }
-
                 SectionTitle {
                     text: qsTr("Game Screen") + api.tr
                     first: true
-                }
-
+                }                
                 MultivalueOption {
-                    id: optGameRatio
+                    id: optGlobalGameRatio
                     // set focus only on first item
                     focus: true
+
+                    //property to manage parameter name
+                    property string parameterName : "global.ratio"
 
                     label: qsTr("Game Ratio") + api.tr                    
                     note: qsTr("Set ratio for all emulators (auto,4/3,16/9,16/10,custom)") + api.tr
 
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGlobalGameRatio;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optAdvancedEmulator
                     KeyNavigation.down: optPixelPerfect
                 }
-
                 ToggleOption {
                     id: optPixelPerfect
 
@@ -141,7 +143,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSmoothGame
                 }
-
                 ToggleOption {
                     id: optSmoothGame
 
@@ -156,7 +157,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optShaders
                 }
-
                 MultivalueOption {
                     id: optShaders
 
@@ -172,7 +172,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optShowFramerate
                 }
-
                 ToggleOption {
                     id: optShowFramerate
 
@@ -187,12 +186,10 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGameRewind
                 }
-
                 SectionTitle {
                     text: qsTr("Gameplay Option") + api.tr
                     first: true
                 }
-
                 ToggleOption {
                     id: optGameRewind
 
@@ -207,7 +204,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAutoSave
                 }
-
                 ToggleOption {
                     id: optAutoSave
 
@@ -222,12 +218,10 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optBiosChecking
                 }
-
                 SectionTitle {
                     text: qsTr("Other Option") + api.tr
                     first: true
                 }
-
                 SimpleButton {
                     id: optBiosChecking
 
@@ -240,7 +234,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAdvancedEmulator
                 }
-
                 SimpleButton {
                     id: optAdvancedEmulator
 
@@ -252,18 +245,36 @@ FocusScope {
                         root.openAdvancedEmulator_Settings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGameRatio
+                    KeyNavigation.down: optGlobalGameRatio
                 }
-
                 Item {
                     width: parent.width
-                    height: vpx(30)
+                    height: implicitHeight + vpx(30)
                 }
             }
         }
     }
+    MultivalueBox {
+        id: parameterslistBox
+        z: 3
 
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
 
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+
+        onClose: content.focus = true
+        onSelect: {
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
+        }
+    }
     MultivalueBox {
         id: localeBox
         z: 3

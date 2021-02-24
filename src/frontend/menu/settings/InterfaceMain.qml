@@ -17,8 +17,8 @@
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.0
-import QtQuick.Window 2.2
+import QtQuick 2.12
+import QtQuick.Window 2.12
 
 
 FocusScope {
@@ -39,27 +39,23 @@ FocusScope {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
+            api.internal.recalbox.saveParameters();
         }
     }
-
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
-
     ScreenHeader {
         id: header
         text: qsTr("Interface") + api.tr
         z: 2
     }
-
     Flickable {
         id: container
 
@@ -80,7 +76,6 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
-
         FocusScope {
             id: content
 
@@ -101,12 +96,10 @@ FocusScope {
                     width: parent.width
                     height: header.height + vpx(25)
                 }
-
                 SectionTitle {
                     text: qsTr("Screensaver") + api.tr
                     first: true
                 }
-
                 SimpleButton {
                     id: optScreensaverSettings
 
@@ -124,12 +117,10 @@ FocusScope {
                     KeyNavigation.up: optTheme
                     KeyNavigation.down: optScreenHelp
                 }
-
                 SectionTitle {
                     text: qsTr("Help Menu") + api.tr
                     first: true
                 }
-
                 ToggleOption {
                     id: optScreenHelp
 
@@ -144,12 +135,10 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPopupSettings
                 }
-
                 SectionTitle {
                     text: qsTr("Customize interface") + api.tr
                     first: true
                 }
-
                 SimpleButton {
                     id: optPopupSettings
 
@@ -162,7 +151,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTheme
                 }
-
                 MultivalueOption {
                     id: optTheme
 
@@ -177,7 +165,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optScreensaverSettings
                 }
-
                 Item {
                     width: parent.width
                     height: vpx(30)
@@ -185,8 +172,6 @@ FocusScope {
             }
         }
     }
-
-
     MultivalueBox {
         id: localeBox
         z: 3

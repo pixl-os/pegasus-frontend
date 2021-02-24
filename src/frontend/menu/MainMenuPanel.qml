@@ -17,7 +17,7 @@
 
 import "mainmenu"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.8
+import QtQuick 2.12
 
 
 FocusScope {
@@ -50,19 +50,15 @@ FocusScope {
             root.close();
         }
     }
-
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
-
     Rectangle {
         color: "#333"
         anchors.fill: parent
     }
-
     Column {
         width: parent.width
         anchors.bottom: parent.bottom
@@ -82,7 +78,6 @@ FocusScope {
 
             KeyNavigation.down: mbControllersSettings
         }
-
         PrimaryMenuItem {
             id: mbControllersSettings
             text: qsTr("Controllers") + api.tr
@@ -97,7 +92,6 @@ FocusScope {
 
             KeyNavigation.down: mbInterfaceSettings
         }
-
         PrimaryMenuItem {
             id: mbInterfaceSettings
             text: qsTr("Interface") + api.tr
@@ -112,7 +106,6 @@ FocusScope {
 
             KeyNavigation.down: mbGamesSettings
         }
-
         PrimaryMenuItem {
             id: mbGamesSettings
             text: qsTr("Games") + api.tr
@@ -127,7 +120,6 @@ FocusScope {
 
             KeyNavigation.down: mbSystemSettings
         }
-
         PrimaryMenuItem {
             id: mbSystemSettings
             text: qsTr("Settings") + api.tr
@@ -142,17 +134,6 @@ FocusScope {
 
             KeyNavigation.down: scopeQuit
         }
-//        PrimaryMenuItem {
-//            id: mbHelp
-//            text: qsTr("Help") + api.tr
-//            onActivated: {
-//                focus = true;
-//                root.showHelpScreen();
-//            }
-//            selected: focus
-
-//            KeyNavigation.down: scopeQuit
-//        }
         RollableMenuItem {
             id: scopeQuit
             name: qsTr("Quit") + api.tr
@@ -172,7 +153,6 @@ FocusScope {
                     mbHelp.focus = true;
                 }
             }
-
             entries: [
                 SecondaryMenuItem {
                     id: mbQuitShutdown
@@ -211,7 +191,6 @@ FocusScope {
             KeyNavigation.down: mbAccountSettings
         }
     }
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: close()

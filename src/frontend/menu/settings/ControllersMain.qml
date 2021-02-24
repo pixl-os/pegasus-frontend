@@ -17,9 +17,8 @@
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.0
-import QtQuick.Window 2.2
-
+import QtQuick 2.12
+import QtQuick.Window 2.12
 
 FocusScope {
     id: root
@@ -28,6 +27,7 @@ FocusScope {
     signal openKeySettings
     signal openGamepadSettings
     signal openGameDirSettings
+    signal openAdvancedControllersConfiguration
 
     width: parent.width
     height: parent.height
@@ -39,27 +39,23 @@ FocusScope {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
+            api.internal.recalbox.saveParameters();
         }
     }
-
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
-
     ScreenHeader {
         id: header
         text: qsTr("Controllers") + api.tr
         z: 2
     }
-
     Flickable {
         id: container
 
@@ -80,7 +76,6 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
-
         FocusScope {
             id: content
 
@@ -96,17 +91,14 @@ FocusScope {
 
                 width: root.width * 0.7
                 height: implicitHeight
-
                 Item {
                     width: parent.width
                     height: header.height + vpx(25)
                 }
-
                 SectionTitle {
                     text: qsTr("Controllers") + api.tr
                     first: true
                 }
-
                 SimpleButton {
                     id: optPairControllers
 
@@ -122,7 +114,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optKeyboardConfig
                 }
-
                 SimpleButton {
                     id: optKeyboardConfig
 
@@ -135,7 +126,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamepadConfig
                 }
-
                 SimpleButton {
                     id: optGamepadConfig
 
@@ -146,14 +136,24 @@ FocusScope {
                         root.openGamepadSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optAdvancedControllers
+                }
+                SimpleButton {
+                    id: optAdvancedControllers
+
+                    label: qsTr("Advanced Controllers Configuration") + api.tr
+                    note: qsTr("Choose your drivers or Spécial Controllers") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openAdvancedControllersConfiguration();
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optInputP1
                 }
-
                 SectionTitle {
                     text: qsTr("Controllers Input") + api.tr
                     first: true
                 }
-
                 SimpleButton {
                     id: optInputP1
 
@@ -165,7 +165,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optInputP2
                 }
-
                 SimpleButton {
                     id: optInputP2
 
@@ -177,7 +176,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optInputP3
                 }
-
                 SimpleButton {
                     id: optInputP3
 
@@ -189,7 +187,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optInputP4
                 }
-
                 SimpleButton {
                     id: optInputP4
 
@@ -201,16 +198,13 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPairControllers
                 }
-
                 Item {
                     width: parent.width
-                    height: vpx(30)
+                    height: implicitHeight + vpx(30)
                 }
             }
         }
     }
-
-
     MultivalueBox {
         id: localeBox
         z: 3

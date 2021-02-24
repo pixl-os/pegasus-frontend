@@ -19,8 +19,8 @@ import "gamepad/preview" as GamepadPreview
 import "gamepad"
 import "qrc:/qmlutils" as PegasusUtils
 import Pegasus.Model 0.12
-import QtQuick 2.8
-import QtQuick.Window 2.2
+import QtQuick 2.12
+import QtQuick.Window 2.12
 
 
 FocusScope {
@@ -36,10 +36,8 @@ FocusScope {
         root.stopEscapeTimer();
         root.close();
     }
-
     readonly property var gamepad: gamepadList.model.get(gamepadList.currentIndex)
     readonly property bool hasGamepads: gamepad !== null
-
 
     property ConfigField recordingField: null
     function recordConfig(configField) {
@@ -52,7 +50,6 @@ FocusScope {
         if (recordingField !== null)
             recordingField.recording = true;
     }
-
     property real escapeDelay: 1500
     property real escapeStartTime: 0
     property real escapeProgress: 0
@@ -69,13 +66,11 @@ FocusScope {
                 root.triggerClose();
         }
     }
-
     function stopEscapeTimer() {
         escapeTimer.stop();
         escapeStartTime = 0;
         escapeProgress = 0;
     }
-
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -89,14 +84,12 @@ FocusScope {
             stopEscapeTimer();
         }
     }
-
     Connections {
         target: api.internal.gamepad
         function onButtonConfigured() { recordConfig(null); }
         function onAxisConfigured() { recordConfig(null); }
         function onConfigurationCanceled() { recordConfig(null); }
     }
-
     Rectangle {
         id: deviceSelect
         width: parent.width
@@ -113,7 +106,6 @@ FocusScope {
             highlighted: deviceSelect.focus
             text: qsTr("No gamepads connected") + api.tr
         }
-
         ListView {
             id: gamepadList
             anchors.fill: parent
@@ -136,7 +128,6 @@ FocusScope {
             }
         }
     }
-
     Rectangle {
         width: parent.width
         color: "#222"
@@ -145,7 +136,6 @@ FocusScope {
             bottom: parent.bottom
         }
     }
-
     FocusScope {
         id: layoutArea
         width: parent.width
@@ -153,7 +143,6 @@ FocusScope {
             top: deviceSelect.bottom
             bottom: footer.top
         }
-
         property int horizontalOffset: vpx(-560)
         property int verticalSpacing: vpx(170)
 
@@ -168,7 +157,6 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: -parent.verticalSpacing
             }
-
             ConfigField {
                 focus: true
                 id: configL1
@@ -209,7 +197,6 @@ FocusScope {
                 KeyNavigation.down: configDpadUp
             }
         }
-
         ConfigGroup {
             label: qsTr("dpad") + api.tr
             anchors {
@@ -217,7 +204,6 @@ FocusScope {
                 leftMargin: parent.horizontalOffset
                 verticalCenter: parent.verticalCenter
             }
-
             ConfigField {
                 id: configDpadUp
                 text: qsTr("up") + api.tr
@@ -295,7 +281,6 @@ FocusScope {
                 KeyNavigation.down: configLeftStickX
             }
         }
-
         ConfigGroup {
             label: qsTr("left stick") + api.tr
             anchors {
@@ -304,7 +289,6 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: parent.verticalSpacing
             }
-
             ConfigField {
                 id: configLeftStickX
                 text: qsTr("x axis") + api.tr
@@ -362,7 +346,6 @@ FocusScope {
                 KeyNavigation.right: configR3
             }
         }
-
         ConfigGroup {
             label: qsTr("right back") + api.tr
             alignment: Text.AlignRight
@@ -372,7 +355,6 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: -parent.verticalSpacing
             }
-
             ConfigField {
                 id: configR1
                 text: qsTr("shoulder") + api.tr
@@ -410,7 +392,6 @@ FocusScope {
                 KeyNavigation.down: configA
             }
         }
-
         ConfigGroup {
             label: qsTr("abxy") + api.tr
             alignment: Text.AlignRight
@@ -419,7 +400,6 @@ FocusScope {
                 rightMargin: parent.horizontalOffset
                 verticalCenter: parent.verticalCenter
             }
-
             ConfigField {
                 id: configA
                 text: "a"
@@ -493,7 +473,6 @@ FocusScope {
                 KeyNavigation.down: configRightStickX
             }
         }
-
         ConfigGroup {
             label: qsTr("right stick") + api.tr
             alignment: Text.AlignRight
@@ -503,7 +482,6 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: parent.verticalSpacing
             }
-
             ConfigField {
                 id: configRightStickX
                 text: qsTr("x axis") + api.tr
@@ -557,7 +535,6 @@ FocusScope {
                 }
             }
         }
-
         Column {
             spacing: vpx(1)
             anchors {
@@ -565,7 +542,6 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: vpx(-220)
             }
-
             ConfigGroupLabel {
                 text: qsTr("center") + api.tr
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -634,16 +610,12 @@ FocusScope {
                     KeyNavigation.right: configR1
                 }
             }
-
-
         }
-
         GamepadPreview.Container {
             id: padPreview
             gamepad: root.gamepad
         }
     }
-
     Item {
         id: footer
         width: parent.width
@@ -657,7 +629,6 @@ FocusScope {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
         }
-
         Canvas {
             width: backButtonIcon.width + vpx(4)
             height: width
@@ -681,7 +652,6 @@ FocusScope {
                 ctx.fill();
             }
         }
-
         // TODO: replace this with an SVG icon
         Rectangle {
             id: backButtonIcon
@@ -697,7 +667,6 @@ FocusScope {
                 verticalCenterOffset: vpx(1)
                 margins: vpx(10)
             }
-
             Text {
                 text: "B"
                 color: escapeStartTime ? "#eee" : "#777"
@@ -708,7 +677,6 @@ FocusScope {
                 anchors.centerIn: parent
             }
         }
-
         Text {
             id: label
             text: qsTr("hold down to quit") + api.tr
@@ -727,13 +695,11 @@ FocusScope {
             }
         }
     }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.triggerClose()
     }
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.triggerClose()

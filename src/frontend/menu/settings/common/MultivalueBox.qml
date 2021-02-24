@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.6
+import QtQuick 2.12
 
 
 FocusScope {
@@ -36,7 +36,6 @@ FocusScope {
         root.close();
     }
 
-
     anchors.fill: parent
     enabled: focus
     visible: focus || animClosing.running
@@ -55,13 +54,10 @@ FocusScope {
             triggerClose();
         }
     }
-
     Component.onCompleted: {
         if (list.currentIndex > 0)
             list.positionViewAtIndex(list.currentIndex, ListView.Center);
     }
-
-
     Rectangle {
         id: shade
 
@@ -77,19 +73,16 @@ FocusScope {
             onClicked: root.triggerClose()
         }
     }
-
-
     Rectangle {
         id: rectangle
         height: parent.height * 0.52
         width: height * 1.005
-        color: "#222"
+        color: "#333"
 
         radius: vpx(8)
 
         anchors.centerIn: parent
     }
-
     Rectangle {
         id: box
 
@@ -106,20 +99,22 @@ FocusScope {
 
         height: parent.height * 0.5
         width: height * 1.0
-        color: "#333"
+        color: "#222"
 
         radius: vpx(8)
 
         anchors.centerIn: parent
 
-        MouseArea {
-            anchors.fill: parent
-        }
+//        MouseArea {
+//            id: mouseArea
+//            anchors.fill: parent
+//            hoverEnabled: true
+//        }
 
         Item {
             anchors.fill: parent
-            anchors.topMargin: parent.radius
-            anchors.bottomMargin: parent.radius
+//            anchors.topMargin: parent.radius
+//            anchors.bottomMargin: parent.radius
             clip: true
 
             ListView {
@@ -151,7 +146,6 @@ FocusScope {
         }
 
     }
-
     Component {
         id: listItem
 
@@ -161,7 +155,7 @@ FocusScope {
             width: ListView.view.width
             height: root.itemHeight
             radius: vpx(8)
-            color: highlighted ? "#555" : "#333"
+            color: highlighted ? "#444" : "#222"
 
             Text {
                 id: label
@@ -184,9 +178,6 @@ FocusScope {
             }
         }
     }
-
-
-
     states: State {
         name: "open"
         AnchorChanges {
@@ -195,7 +186,6 @@ FocusScope {
             anchors.right: root.right
         }
     }
-
     readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
     readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]
 

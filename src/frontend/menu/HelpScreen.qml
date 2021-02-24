@@ -17,7 +17,7 @@
 
 import "help"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.6
+import QtQuick 2.12
 
 
 MenuScreen {
@@ -37,8 +37,6 @@ MenuScreen {
         anchors.fill: parent
         onSwipeRight: root.close()
     }
-
-
     Flickable {
         width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
@@ -79,7 +77,6 @@ MenuScreen {
                     padding: bodyFontSize
                 }
             }
-
             Column {
                 id: help
                 width: parent.width
@@ -106,7 +103,6 @@ MenuScreen {
                     height: bodyFontSize
                 }
             }
-
             Column {
                 id: licenses
                 width: parent.width

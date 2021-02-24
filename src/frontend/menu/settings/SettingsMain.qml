@@ -17,8 +17,8 @@
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.0
-import QtQuick.Window 2.2
+import QtQuick 2.12
+import QtQuick.Window 2.12
 
 
 FocusScope {
@@ -41,27 +41,23 @@ FocusScope {
             event.accepted = true;
             api.internal.recalbox.saveParameters();
             root.close();
+            api.internal.recalbox.saveParameters();
         }
     }
-
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
-
     ScreenHeader {
         id: header
         text: qsTr("Settings") + api.tr
         z: 2
     }
-
     Flickable {
         id: container
 
@@ -82,7 +78,6 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
-
         FocusScope {
             id: content 
 
@@ -103,73 +98,10 @@ FocusScope {
                     width: parent.width
                     height: header.height + vpx(25)
                 }
-
                 SectionTitle {
                     text: qsTr("System") + api.tr
                     first: true
-                }
-               
-                MultivalueOption {
-                    id: optKbLayout
-                    
-                    //property to manage parameter name
-                    property string parameterName : "system.kblayout"
-                    
-                    focus: true
-
-                    label: qsTr("Keyboard Layout") + api.tr 
-                    
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optKbLayout;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-                    onFocusChanged: {
-                        container.onFocus(this);
-                    }
-
-                    KeyNavigation.down: optGlobalRatio
-                    
-                }
-
-                MultivalueOption {
-                    id: optGlobalRatio
-                    
-                    //property to manage parameter name
-                    property string parameterName : "global.ratio"
-                    
-                    focus: true
-
-                    label: qsTr("Ratio") + api.tr 
-                    
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalRatio;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-                    onFocusChanged: {
-                        container.onFocus(this);
-                    }
-
-                    KeyNavigation.down: optDebugMode
-                }   
-               
+                }  
                 ToggleOption {
                     id: optDebugMode
 
@@ -182,45 +114,47 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("emulationstation.debuglogs",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optVideoMode
+                    KeyNavigation.up: optKbLayout
+                    KeyNavigation.down: optOutputAudio
                 }
-                
-                MultivalueOption {
-                    id: optVideoMode
-
-                    focus: true
-
-                    label: qsTr("video mode") + api.tr
-                    value: api.internal.recalbox.getStringParameter("global.videomode")
-
-                    onActivate: {
-                        focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-
-                    KeyNavigation.down: optLanguage
+                SectionTitle {
+                    text: qsTr("Sound Configuration") + api.tr
+                    first: true
                 }
-
                 MultivalueOption {
-                    id: optSoundSettings
+                    id: optOutputAudio
 
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Sound Settings") + api.tr
-                    note: qsTr("Sound configuration ...") + api.tr
-                    value: api.internal.settings.locales.currentName
+                    label: qsTr("Output") + api.tr
+                    note: qsTr("Choose Audio Output") + api.tr
+//                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optVideoSettings
-                    KeyNavigation.up: optKeyboardLanguage
+                    KeyNavigation.down: optOutputVolume
                 }
+                SimpleButton {
+                    id: optOutputVolume
 
+                    label: qsTr("Volume") + api.tr
+                    note: qsTr("Set audio Volume") + api.tr
+                    onActivate: {
+                        focus = true;
+//                        localeBox.focus = true;
+
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optVideoSettings
+                }
+                SectionTitle {
+                    text: qsTr("Video Configuration") + api.tr
+                    first: true
+                }
                 MultivalueOption {
                     id: optVideoSettings
 
@@ -235,7 +169,10 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetworkSettings
                 }
-
+                SectionTitle {
+                    text: qsTr("Network") + api.tr
+                    first: true
+                }
                 MultivalueOption {
                     id: optNetworkSettings
 
@@ -250,7 +187,10 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optUpdateSettings
                 }
-
+                SectionTitle {
+                    text: qsTr("Update System") + api.tr
+                    first: true
+                }
                 MultivalueOption {
                     id: optUpdateSettings
 
@@ -263,29 +203,42 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optStorageSettings
+                    KeyNavigation.down: optStorageDevices
                 }
-
+                SectionTitle {
+                    text: qsTr("Storage Configuration") + api.tr
+                    first: true
+                }
                 MultivalueOption {
-                    id: optStorageSettings
+                    id: optStorageDevices
 
-                    label: qsTr("Storage Settings") + api.tr
-                    note: qsTr("Show Storage capacity and choose other storage") + api.tr
+                    label: qsTr("Storage device") + api.tr
+                    note: qsTr("change to over storage") + api.tr
                     value: api.internal.settings.locales.currentName
-
+//                  need list !!!!!!! NETWORK, INTERNAL, ANYEXTERNAL
                     onActivate: {
                         focus = true;
-                        localeBox.focus = true;
+//                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageCapacity
+                }
+                SimpleButton {
+                    id: optStorageCapacity
+
+                    label: qsTr("Storage Capacity") + api.tr
+                    note: qsTr("Show Storage capacity") + api.tr
+                    onActivate: {
+                        focus = true;
+//                        localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optLanguage
                 }
-
                 SectionTitle {
                     text: qsTr("System Language") + api.tr
                     first: true
                 }
-
                 MultivalueOption {
                     id: optLanguage
 
@@ -298,40 +251,47 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optKeyboardLanguage
+                    KeyNavigation.down: optKbLayout
                 }
-
                 MultivalueOption {
-                    id: optKeyboardLanguage
+                    id: optKbLayout
 
-                    label: qsTr("Keyboard Language") + api.tr
-                    note: qsTr("set your keyboard layout") + api.tr
-                    value: api.internal.settings.locales.currentName
+                    //property to manage parameter name
+                    property string parameterName : "system.kblayout"
+
+                    label: qsTr("Keyboard Layout") + api.tr
+                    note: qsTr("Change keyboard layout language") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
 
                     onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optKbLayout;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSoundSettings
+                    onFocusChanged: container.onFocus(this);
+                    KeyNavigation.down: optDebugMode
                 }
-
                 Item {
                     width: parent.width
-                    height: vpx(30)
+                    height: implicitHeight + vpx(30)
                 }
             }
         }
     }
-
     MultivalueBox {
         id: parameterslistBox
         z: 3
-        
+
         //properties to manage parameter
         property string parameterName
         property MultivalueOption callerid
-        
+
         //reuse same model
         model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
@@ -345,7 +305,6 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
         }
     }
-    
     MultivalueBox {
         id: localeBox
         z: 3

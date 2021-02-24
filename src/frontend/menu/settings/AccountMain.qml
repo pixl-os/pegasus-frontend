@@ -43,25 +43,20 @@ FocusScope {
             api.internal.recalbox.saveParameters();
         }
     }
-
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
-
     ScreenHeader {
         id: header
         text: qsTr("Account") + api.tr
         z: 2
     }
-
     Flickable {
         id: container
 
@@ -82,7 +77,6 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
-
         FocusScope {
             id: content
 
@@ -103,12 +97,10 @@ FocusScope {
                     width: parent.width
                     height: header.height + vpx(25)
                 }
-
                 SectionTitle {
                     text: qsTr("Retroachievement") + api.tr
                     first: true
                 }
-
                 ToggleOption {
                     id: optRetroachievementActivate
                     // set focus only on first item
@@ -126,7 +118,6 @@ FocusScope {
                     KeyNavigation.up: optNetplayInformation
                     KeyNavigation.down: optRetroachievementLoginIn
                 }
-
                 SimpleButton {
                     id: optRetroachievementLoginIn
 
@@ -140,7 +131,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optHardcoreRetroachievementActivate
                 }
-
                 ToggleOption {
                     id: optHardcoreRetroachievementActivate
 
@@ -155,12 +145,10 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayActivate
                 }
-
                 SectionTitle {
                     text: qsTr("Netplay") + api.tr
                     first: true
                 }
-
                 ToggleOption {
                     id: optNetplayActivate
 
@@ -177,7 +165,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayNickname
                 }
-
                 MultivalueOption {
                     id: optNetplayNickname
 
@@ -193,12 +180,10 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayPswdActivate
                 }
-
                 SectionTitle {
                     text: qsTr("Password Netplay") + api.tr
                     first: true
                 }
-
                 ToggleOption {
                     id: optNetplayPswdActivate
 
@@ -214,7 +199,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayPswd
                 }
-
                 SimpleButton {
                     id: optNetplayPswd
 
@@ -230,7 +214,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayInformation
                 }
-
                 SimpleButton {
                     id: optNetplayInformation
 
@@ -245,16 +228,13 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRetroachievementActivate
                 }
-
                 Item {
                     width: parent.width
-                    height: vpx(30)
+                    height: implicitHeight + vpx(30)
                 }
             }
         }
     }
-
-
     MultivalueBox {
         id: localeBox
         z: 3

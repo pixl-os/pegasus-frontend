@@ -17,7 +17,7 @@
 
 import "common"
 import "gamedireditor"
-import QtQuick 2.6
+import QtQuick 2.12
 
 
 FocusScope {
@@ -40,15 +40,12 @@ FocusScope {
         else
             root.close();
     }
-
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.closeMaybe();
         }
     }
-
-
     property var selectedIndices: [] // we don't have Set yet
     function isSelected(index) {
         return selectedIndices.indexOf(index) >= 0;
@@ -62,8 +59,6 @@ FocusScope {
 
         selectedIndicesChanged();
     }
-
-
     Timer {
         readonly property real step: interval / 1000
 
@@ -90,8 +85,6 @@ FocusScope {
         api.internal.settings.removeGameDirs(selectedIndices);
         selectedIndices = [];
     }
-
-
     Rectangle {
         id: shade
 
@@ -105,8 +98,6 @@ FocusScope {
             onClicked: root.closeMaybe()
         }
     }
-
-
     Rectangle {
         height: parent.height * 0.8
         width: height * 1.5
@@ -146,12 +137,9 @@ FocusScope {
             event.accepted = true;
             root.stopDeletion();
         }
-
-
         MouseArea {
             anchors.fill: parent
         }
-
         Text {
             id: info
 
@@ -170,7 +158,6 @@ FocusScope {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
         }
-
         Rectangle {
             anchors.top: info.bottom
             anchors.bottom: footer.top
@@ -198,10 +185,8 @@ FocusScope {
                     if (isComplete)
                         root.mSettingsChanged = true;
                 }
-
                 property bool isComplete: false
                 Component.onCompleted: isComplete = true
-
 
                 MouseArea {
                     anchors.fill: parent
@@ -216,7 +201,6 @@ FocusScope {
                 }
             }
         }
-
         Item {
             id: footer
 
@@ -256,7 +240,6 @@ FocusScope {
             }
         }
     }
-
     Component {
         id: listEntry
 
@@ -275,8 +258,6 @@ FocusScope {
                     root.toggleIndex(index);
                 }
             }
-
-
             Rectangle {
                 anchors.fill: parent
                 color: "#d55"
@@ -289,7 +270,6 @@ FocusScope {
                 color: "#924"
                 visible: parent.selected && deleteTimer.running && width > 0
             }
-
             Text {
                 id: label
                 text: modelData
@@ -305,7 +285,6 @@ FocusScope {
                 rightPadding: leftPadding
                 elide: Text.ElideRight
             }
-
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
@@ -313,8 +292,6 @@ FocusScope {
             }
         }
     }
-
-
     ReloadQuestion {
         id: reloadDialog
         onAccept: {
@@ -328,8 +305,6 @@ FocusScope {
             root.close();
         }
     }
-
-
     FilePicker {
         id: filePicker
 

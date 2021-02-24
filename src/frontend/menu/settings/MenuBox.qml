@@ -17,7 +17,9 @@
 
 import "common"
 import "gamedireditor"
-import QtQuick 2.6
+import QtQuick 2.12
+import QtQuick.Layouts 1.0
+import QtQuick.VirtualKeyboard 2.15
 
 
 FocusScope {
@@ -39,59 +41,16 @@ FocusScope {
             reloadDialog.focus = true;
         else
             root.close();
+            inputPanel.close();
     }
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.closeMaybe();
+            inputPanel.closeMaybe();
         }
     }
-
-
-//    property var selectedIndices: [] // we don't have Set yet
-//    function isSelected(index) {
-//        return selectedIndices.indexOf(index) >= 0;
-//    }
-//    function toggleIndex(idx) {
-//        var arrayIdx = selectedIndices.indexOf(idx);
-//        if (arrayIdx > -1)
-//            selectedIndices.splice(arrayIdx, 1);
-//        else
-//            selectedIndices.push(idx);
-
-//        selectedIndicesChanged();
-//    }
-
-
-//    Timer {
-//        readonly property real step: interval / 1000
-
-//        id: deleteTimer
-//        interval: 16
-//        repeat: true
-//        onTriggered: deletionPercent += step
-//    }
-//    property real deletionPercent: 0.0
-
-//    function startDeletion() {
-//        deletionPercent = 0.0;
-//        deleteTimer.start();
-//    }
-//    function stopDeletion() {
-//        deleteTimer.stop();
-//        deletionPercent = 0.0;
-//    }
-//    onDeletionPercentChanged: {
-//        if (deletionPercent < 1.0)
-//            return;
-
-//        stopDeletion();
-//        api.internal.settings.removeGameDirs(selectedIndices);
-//        selectedIndices = [];
-//    }
-
-
     Rectangle {
         id: shade
 
@@ -105,13 +64,11 @@ FocusScope {
             onClicked: root.closeMaybe()
         }
     }
-
-
     Rectangle {
+        id: boxMenu
         height: parent.height * 0.5
         width: height * 1.5
-        color: "#444"
-
+        color: "#333"
         radius: vpx(8)
 
         anchors.centerIn: parent
@@ -146,20 +103,17 @@ FocusScope {
             event.accepted = true;
             root.stopDeletion();
         }
-
-
         MouseArea {
             anchors.fill: parent
         }
-
         Text {
             id: info
 
             text: qsTr("bla bla bla") + api.tr
-            color: "#eee"
+            color: "#999"
             font.family: globalFonts.sans
             font.pixelSize: vpx(18)
-            lineHeight: 1.15
+            lineHeight: 0.7
 
             anchors.top: parent.top
             width: parent.width
@@ -169,13 +123,13 @@ FocusScope {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
         }
-
         Rectangle {
             anchors.top: info.bottom
             anchors.bottom: footer.top
-            width: parent.width - vpx(40)
+            width: parent.width - vpx(20)
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#333"
+            color: "#222"
+            radius: vpx(8)
 
             ListView {
                 id: list
@@ -201,7 +155,6 @@ FocusScope {
                 property bool isComplete: false
                 Component.onCompleted: isComplete = true
 
-
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
@@ -215,19 +168,19 @@ FocusScope {
                 }
             }
         }
-
         Item {
             id: footer
 
             width: parent.width
-            height: buttonRow.height * 1.75
+            height: buttonRow.height
+//                    * 1.75
             anchors.bottom: parent.bottom
 
             Row {
                 id: buttonRow
 
                 anchors.centerIn: parent
-                spacing: height * 0.75
+//                spacing: height * 0.75
 
                 GameDirEditorButton {
                     id: buttonAdd
@@ -236,8 +189,7 @@ FocusScope {
                     image2: "qrc:/buttons/ps_triangle.png"
                     text: qsTr("Add new") + api.tr
 
-                    onPress: filePicker.focus = true
-
+//                    onPress: filePicker.focus = true
                     KeyNavigation.right: buttonDel
                 }
                 GameDirEditorButton {
@@ -255,7 +207,13 @@ FocusScope {
             }
         }
     }
-
+//  keyboard input
+    InputPanel {
+        id: inputPanel
+        width: footer.width // + vpx(200)
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: boxMenu.bottom
+    }
     Component {
         id: listEntry
 
@@ -274,37 +232,33 @@ FocusScope {
                     root.toggleIndex(index);
                 }
             }
+//            Rectangle {
+//                anchors.fill: parent
+//                color: "#d55"
+//                visible: parent.selected
+//            }
+//            Rectangle {
+//                id: deleteFill
+//                height: parent.height
+//                width: parent.width * deletionPercent
+//                color: "#924"
+//                visible: parent.selected && deleteTimer.running && width > 0
+//            }
+//            Text {
+//                id: label
+//                text: modelData
+//                verticalAlignment: Text.AlignVCenter
+//                lineHeight: 2
 
+//                color: "#eee"
+//                font.family: globalFonts.sans
+//                font.pixelSize: vpx(18)
 
-            Rectangle {
-                anchors.fill: parent
-                color: "#d55"
-                visible: parent.selected
-            }
-            Rectangle {
-                id: deleteFill
-                height: parent.height
-                width: parent.width * deletionPercent
-                color: "#924"
-                visible: parent.selected && deleteTimer.running && width > 0
-            }
-
-            Text {
-                id: label
-                text: modelData
-                verticalAlignment: Text.AlignVCenter
-                lineHeight: 2
-
-                color: "#eee"
-                font.family: globalFonts.sans
-                font.pixelSize: vpx(18)
-
-                width: parent.width
-                leftPadding: parent.height * 0.5
-                rightPadding: leftPadding
-                elide: Text.ElideRight
-            }
-
+//                width: parent.width
+//                leftPadding: parent.height * 0.5
+//                rightPadding: leftPadding
+//                elide: Text.ElideRight
+//            }
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
@@ -312,8 +266,6 @@ FocusScope {
             }
         }
     }
-
-
     ReloadQuestion {
         id: reloadDialog
         onAccept: {

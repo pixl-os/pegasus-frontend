@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/themes">
-        <file>pegasus-theme-grid/theme.cfg</file>
-        <file>pegasus-theme-grid/theme.qml</file>
         <file>pegasus-theme-grid/layer_filter/CheckBox.qml</file>
         <file>pegasus-theme-grid/layer_filter/FilterLayer.qml</file>
         <file>pegasus-theme-grid/layer_filter/FilterPanel.qml</file>
@@ -98,5 +96,7 @@
         <file>pegasus-theme-grid/assets/logos/xbox.svg</file>
         <file>pegasus-theme-grid/assets/logos/zmachine.svg</file>
         <file>pegasus-theme-grid/assets/logos/zxspectrum.svg</file>
+        <file>pegasus-theme-grid/theme.qml</file>
+        <file>pegasus-theme-grid/theme.cfg</file>
     </qresource>
 </RCC>

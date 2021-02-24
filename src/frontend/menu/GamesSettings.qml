@@ -17,8 +17,8 @@
 
 import "settings"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.8
-import QtQuick.Window 2.2
+import QtQuick 2.12
+import QtQuick.Window 2.12
 
 
 FocusScope {
@@ -55,8 +55,6 @@ FocusScope {
 //        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
 //        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
     }
-
-
     Loader {
         id: modal
         asynchronous: true
@@ -74,8 +72,6 @@ FocusScope {
             root.state = "";
         }
     }
-
-
     Loader {
         id: subscreen
         asynchronous: true
@@ -95,8 +91,6 @@ FocusScope {
             root.state = "";
         }
     }
-
-
     states: [
         State {
             name: "sub"
@@ -111,7 +105,6 @@ FocusScope {
             }
         }
     ]
-
     // fancy easing curves, a la material design
     readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
     readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]

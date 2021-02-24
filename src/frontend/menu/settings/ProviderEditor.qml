@@ -16,7 +16,7 @@
 
 
 import "common"
-import QtQuick 2.6
+import QtQuick 2.12
 
 
 FocusScope {
@@ -46,8 +46,6 @@ FocusScope {
             root.closeMaybe();
         }
     }
-
-
     Rectangle {
         id: shade
 
@@ -61,8 +59,6 @@ FocusScope {
             onClicked: root.closeMaybe()
         }
     }
-
-
     Rectangle {
         height: parent.height * 0.7
         width: height
@@ -72,11 +68,9 @@ FocusScope {
 
         anchors.centerIn: parent
 
-
         MouseArea {
             anchors.fill: parent
         }
-
         Text {
             id: info
 
@@ -95,7 +89,6 @@ FocusScope {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
         }
-
         Rectangle {
             anchors.top: info.bottom
             anchors.bottom: footer.top
@@ -116,7 +109,6 @@ FocusScope {
 
                 visible: api.internal.settings.providers.count === 0
             }
-
             ListView {
                 id: list
                 anchors.fill: parent
@@ -132,7 +124,6 @@ FocusScope {
                 highlightMoveDuration: 0
             }
         }
-
         Item {
             id: footer
 
@@ -141,7 +132,6 @@ FocusScope {
             anchors.bottom: parent.bottom
         }
     }
-
     Component {
         id: listEntry
 
@@ -158,7 +148,6 @@ FocusScope {
                 color: "#555"
                 visible: parent.highlighted
             }
-
             Text {
                 id: label
                 text: model.name
@@ -174,7 +163,6 @@ FocusScope {
                 rightPadding: leftPadding
                 elide: Text.ElideRight
             }
-
             Switch {
                 id: onoff
                 anchors.right: parent.right
@@ -190,11 +178,9 @@ FocusScope {
                     if (isComplete)
                         root.mSettingsChanged = true;
                 }
-
                 property bool isComplete: false
                 Component.onCompleted: isComplete = true
             }
-
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
@@ -207,7 +193,6 @@ FocusScope {
             }
         }
     }
-
     ReloadQuestion {
         id: reloadDialog
         onAccept: {
