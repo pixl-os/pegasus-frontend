@@ -19,6 +19,7 @@
 
 #include "Log.h"
 #include "ScriptRunner.h"
+#include "RecalboxConf.h"
 
 #ifdef WITH_SDL_GAMEPAD
 #  include "GamepadManagerSDL2.h"
@@ -115,6 +116,39 @@ void GamepadManager::bkOnConnected(int device_id, QString name)
     m_devices->append(new Gamepad(device_id, name, m_devices));
 
     Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_id), name));
+    Log::debug(m_log_tag, LOGMSG("From device_id : %1").arg(device_id));
+#ifdef WITH_SDL_GAMEPAD
+    Log::debug(m_log_tag, LOGMSG("From path : %1").arg(SDL_JoystickDevicePathById(device_id)));
+   
+    //Get GUID
+    constexpr size_t GUID_LEN = 33; // 16x2 + null
+    std::array<char, GUID_LEN> guid_raw_str;
+    const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_id);
+    SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());    
+    // concatenation doesn't work with QLatin1Strings...
+    const auto guid_str = QLatin1String(guid_raw_str.data()).trimmed();
+    Log::debug(m_log_tag, LOGMSG("With gUId : %1").arg(guid_str));
+    // const auto name = QLatin1String(SDL_JoystickNameForIndex(device_idx));
+    // constexpr auto default_mapping("," // emscripten default
+        // "a:b0,b:b1,x:b2,y:b3,"
+        // "dpup:b12,dpdown:b13,dpleft:b14,dpright:b15,"
+        // "leftshoulder:b4,rightshoulder:b5,lefttrigger:b6,righttrigger:b7,"
+        // "back:b8,start:b9,guide:b16,"
+        // "leftstick:b10,rightstick:b11,"
+        // "leftx:a0,lefty:a1,rightx:a2,righty:a3");
+
+    //persistence saved in recalbox.conf
+    const QString Parameter = QString("pegasus.pad%1").arg(device_id);
+    const QString Value = QString("%1:%2:%3").arg(name,guid_str,SDL_JoystickDevicePathById(device_id));
+    Log::debug(m_log_tag, LOGMSG("Saved as %1=%2").arg(Parameter,Value));
+    RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), Value.toUtf8().constData());
+    //save in file for test purpose
+    RecalboxConf::Instance().Save();
+    Log::debug(LOGMSG("Recalbox.conf saved."));
+#endif    
+    
+    //TO DO : save info in file to know that controller is connected with /dev/input/event? info + finger print ?!
+    
     emit connected(device_id);
 }
 
@@ -129,6 +163,9 @@ void GamepadManager::bkOnDisconnected(int device_id)
     }
 
     Log::info(m_log_tag, LOGMSG("Disconnected device %1 (%2)").arg(pretty_id(device_id), name));
+    
+    //TO DO: update file to know that controller is disconnected
+    
     emit disconnected(std::move(name));
 }
 
