@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#define LEGACY_STRING(x) x, sizeof(x)-1
+
 class Strings
 {
   private:
@@ -20,6 +22,8 @@ class Strings
 
   public:
     typedef std::vector<std::string> Vector;
+
+    static const std::string Empty;
 
     static unsigned int UpperChar(const std::string& utf8string)
     {
@@ -61,6 +65,12 @@ class Strings
 
     static int CountChar(const std::string& source, char c);
 
+    static bool Contains(const std::string& source, const char* what);
+
+    static bool Contains(const std::string& source, const std::string& what);
+
+    static bool Contains(const char* source, const char* what);
+
     static std::string ToLowerUTF8(const std::string& _string);
 
     static std::string ToUpperUTF8(const std::string& _string);
@@ -74,6 +84,8 @@ class Strings
     static std::string Trim(const std::string& _string, const char* _trimwhat);
 
     static std::string Replace(const std::string& _string, const std::string& _replace, const std::string& _with);
+
+    static std::string Replace(const std::string& _string, const std::string& _replace, const char* _with, int _withLength);
 
     static void ReplaceAllIn(std::string& _string, const std::string& _replace, const std::string& _with);
 
@@ -91,9 +103,21 @@ class Strings
 
     static Vector Split(const std::string& _string, char splitter, bool multipleSplittersAsOne = false);
 
+    static Vector Split(const std::string& _string, char splitter, int max, bool multipleSplittersAsOne = false);
+
+    static Vector SplitQuotted(const std::string& _string, char splitter);
+
+    static Vector SplitQuotted(const std::string& _string, char splitter, int max);
+
+    static bool SplitAt(const std::string& _string, char splitter, std::string& left, std::string& middle, std::string& right, bool trim);
+
     static std::string Join(const std::vector<std::string>& _string, const std::string& joiner);
 
     static std::string Join(const std::vector<const char*>& _string, const std::string& joiner);
+
+    static std::string Join(const std::vector<std::string>& _string, char joiner);
+
+    static std::string Join(const std::vector<const char*>& _string, char joiner);
 
     static std::string Format(const char* _string, ...);
 

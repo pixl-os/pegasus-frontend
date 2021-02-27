@@ -59,6 +59,7 @@ HEADERS += \
     $$PWD/storage/Queue.h \
     $$PWD/storage/rHashMap.h \
     $$PWD/storage/Stack.h \
+    $$PWD/storage/Set.h \
     
 SOURCES += \
     $$PWD/CommandTokenizer.cpp \
