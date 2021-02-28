@@ -68,7 +68,7 @@ FocusScope {
             id: titleBar
             width: parent.width
             height: titleText.height
-            color: "#444"
+            color: themeColor.main
 
             Text {
                 id: titleText
@@ -77,7 +77,7 @@ FocusScope {
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 text: qsTr("This game has multiple entries, which one would you like to launch?") + api.tr
-                color: "#eee"
+                color: themeColor.textTitle
                 font.pixelSize: root.titleTextSize
                 font.family: globalFonts.sans
 
@@ -92,7 +92,7 @@ FocusScope {
         Rectangle {
             width: parent.width
             height: Math.min(entryList.fullHeight, root.height * 0.5)
-            color: "#333"
+            color: themeColor.secondary
 
             ListView {
                 id: entryList
@@ -133,7 +133,7 @@ FocusScope {
                         id: label
                         anchors.centerIn: parent
                         text: modelData.name
-                        color: "#eee"
+                        color: themeColor.textTitle
                         font {
                             pixelSize: root.textSize
                             family: globalFonts.sans

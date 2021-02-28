@@ -94,7 +94,8 @@ FocusScope {
         id: deviceSelect
         width: parent.width
         height: vpx(70)
-        color: "#333"
+        color: themeColor.screenHeader
+        opacity: 0.75
         anchors.top: parent.top
 
         focus: true
@@ -130,7 +131,7 @@ FocusScope {
     }
     Rectangle {
         width: parent.width
-        color: "#222"
+        color: themeColor.main
         anchors {
             top: deviceSelect.bottom
             bottom: parent.bottom

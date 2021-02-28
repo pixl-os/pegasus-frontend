@@ -28,7 +28,7 @@ FocusScope {
 
     Rectangle {
         anchors.fill: parent
-        color: "#222"
+        color: themeColor.main
     }
     MouseArea {
         anchors.fill: parent

@@ -28,7 +28,7 @@ Column {
     Text {
         id: title
 
-        color: "#eee"
+        color: themeColor.textTitle
         font.pixelSize: fontSize
         font.family: globalFonts.sans
         font.bold: true

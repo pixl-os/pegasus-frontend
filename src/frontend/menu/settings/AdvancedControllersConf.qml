@@ -92,7 +92,7 @@ FocusScope {
                     height: header.height + vpx(25)
                 }
                 SectionTitle {
-                    text: qsTr("PS3 Controllers") + api.tr
+                    text: qsTr("Sony Controllers") + api.tr
                     first: true
                 }
                 ToggleOption {
@@ -102,8 +102,8 @@ FocusScope {
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Enable Controllers") + api.tr
-                    note: qsTr("Enable PS3 controllers support") + api.tr
+                    label: qsTr("Enable controllers") + api.tr
+                    note: qsTr("Enable Sony Playstation 3,4,5 controllers support") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.ps3.enabled")
                     onCheckedChanged: {
@@ -122,7 +122,7 @@ FocusScope {
                     // ## official -> sixad drivers, support official and gasia sisaxis
                     // ## shanwan -> shanwan drivers, support official and shanwan sisaxis
                     // controllers.ps3.driver=bluez
-                    label: qsTr("Ps3 controllers Drivers") + api.tr
+                    label: qsTr("Sony controllers drivers Bluetooth") + api.tr
                     note: qsTr("Choose a driver between bluez, official and shanwan") + api.tr
 
 //                    value: api.internal.settings.locales.currentName

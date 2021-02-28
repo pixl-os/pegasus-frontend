@@ -40,15 +40,15 @@ FocusScope {
         if (mSettingsChanged)
             reloadDialog.focus = true;
         else
-            root.close();
             inputPanel.close();
+            root.close();
     }
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.closeMaybe();
-            inputPanel.closeMaybe();
+//            inputPanel.closeMaybe();
         }
     }
     Rectangle {
@@ -68,7 +68,7 @@ FocusScope {
         id: boxMenu
         height: parent.height * 0.5
         width: height * 1.5
-        color: "#333"
+        color: themeColor.main
         radius: vpx(8)
 
         anchors.centerIn: parent
@@ -110,7 +110,7 @@ FocusScope {
             id: info
 
             text: qsTr("bla bla bla") + api.tr
-            color: "#999"
+            color: themeColor.textTitle
             font.family: globalFonts.sans
             font.pixelSize: vpx(18)
             lineHeight: 0.7
@@ -128,7 +128,7 @@ FocusScope {
             anchors.bottom: footer.top
             width: parent.width - vpx(20)
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#222"
+            color: themeColor.secondary
             radius: vpx(8)
 
             ListView {
@@ -213,6 +213,10 @@ FocusScope {
         width: footer.width // + vpx(200)
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: boxMenu.bottom
+
+        function close() {
+                InputPanel.visible = false;
+        }
     }
     Component {
         id: listEntry

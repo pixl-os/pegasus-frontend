@@ -27,6 +27,7 @@ FocusScope {
     signal close
 //    signal openKeySettings
 //    signal openGamepadSettings
+    signal openNetplayInformation
     signal openGameDirSettings
     signal openMenuBoxSettings
 
@@ -115,7 +116,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.retroachievements",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetplayInformation
+                    KeyNavigation.up: optNetplayPswdViewer
                     KeyNavigation.down: optRetroachievementLoginIn
                 }
                 SimpleButton {
@@ -143,11 +144,25 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optNetplayActivate
+                    KeyNavigation.down: optNetplayInformation
                 }
                 SectionTitle {
                     text: qsTr("Netplay") + api.tr
                     first: true
+                }
+                SimpleButton {
+                    id: optNetplayInformation
+
+                    label: qsTr("Netplay Information") + api.tr
+                    note: qsTr("Show netplay information roms etc ...") + api.tr
+//                    value: api.internal.settings.locales.currentName
+
+                    onActivate: {
+                        focus = true;
+                        root.openNetplayInformation();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optNetplayActivate
                 }
                 ToggleOption {
                     id: optNetplayActivate
@@ -158,7 +173,7 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("global.netplay")
                     onCheckedChanged: {
                         focus = true;
-                        api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
+                        api.internal.recalbox.setBoolParameter("global.netplay.active",checked);
 //                        pop menu if activate
 //                        root.openGameDirSettings();
                     }
@@ -178,52 +193,84 @@ FocusScope {
                         root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optNetplayPswdActivate
+                    KeyNavigation.down: optNetplayPswdClientActivate
                 }
                 SectionTitle {
                     text: qsTr("Password Netplay") + api.tr
                     first: true
                 }
                 ToggleOption {
-                    id: optNetplayPswdActivate
+                    id: optNetplayPswdClientActivate
 
-                    label: qsTr("Activate Password Netplay") + api.tr
-                    note: qsTr("Set password on your game room") + api.tr
+                    label: qsTr("Activate password Netplay players") + api.tr
+                    note: qsTr("Set password for other players join your game") + api.tr
 
-//                    checked: api.internal.settings.fullscreen
+                    checked: api.internal.recalbox.getBoolParameter("netplay.password.useforplayer")
                     onCheckedChanged: {
                         focus = true;
-//                        api.internal.settings.fullscreen = checked;
+                        api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
+//                        pop menu if activate
 //                        root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optNetplayPswd
+                    KeyNavigation.down: optNetplayPswdClient
                 }
-                SimpleButton {
-                    id: optNetplayPswd
+                MultivalueOption {
+                    id: optNetplayPswdClient
+                    //property to manage parameter name
+                    property string parameterName : "netplay.password.client"
 
-                    label: qsTr("Netplay Password") + api.tr
-                    note: qsTr("Set your password game room") + api.tr
-
-//                    value: api.internal.settings.locales.currentName
-
+                    label: qsTr("Password Netplay players") + api.tr
+                    note: qsTr("Choose password for players session") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
-                        focus = true;
-                        root.openMenuBoxSettings();
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optNetplayPswdClient;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optNetplayInformation
+                    KeyNavigation.down: optNetplayPswdViewerActivate
                 }
-                SimpleButton {
-                    id: optNetplayInformation
+                ToggleOption {
+                    id: optNetplayPswdViewerActivate
 
-                    label: qsTr("Netplay Information") + api.tr
-                    note: qsTr("Show netplay information roms etc ...") + api.tr
-//                    value: api.internal.settings.locales.currentName
+                    label: qsTr("Activate password for Netplay viewer") + api.tr
+                    note: qsTr("Set password for viewer ") + api.tr
 
-                    onActivate: {
+                    checked: api.internal.recalbox.getBoolParameter("netplay.password.useforviewer")
+                    onCheckedChanged: {
                         focus = true;
-                        root.openMenuBoxSettings();
+                        api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
+//                        pop menu if activate
+//                        root.openGameDirSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optNetplayPswdViewer
+                }
+                MultivalueOption {
+                    id: optNetplayPswdViewer
+                    //property to manage parameter name
+                    property string parameterName : "netplay.password.viewer"
+
+                    label: qsTr("Password Netplay Spectator") + api.tr
+                    note: qsTr("Set password for netplay spectator") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optNetplayPswdViewer
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRetroachievementActivate
@@ -233,6 +280,27 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
             }
+        }
+    }
+    MultivalueBox {
+        id: parameterslistBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
+
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+
+        onClose: content.focus = true
+        onSelect: {
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
         }
     }
     MultivalueBox {

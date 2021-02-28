@@ -49,7 +49,7 @@ FocusScope {
         height: vpx(3)
         anchors.bottom: parent.bottom
 
-        color: "#bbb"
+        color: themeColor.underline
         visible: parent.focus || mouseArea.containsMouse
     }
 
@@ -68,7 +68,7 @@ FocusScope {
         Text {
             id: label
 
-            color: "#eee"
+            color: themeColor.textLabel
             font.pixelSize: fontSize
             font.family: globalFonts.sans
         }
@@ -76,7 +76,7 @@ FocusScope {
         Text {
             id: sublabel
 
-            color: "#999"
+            color: themeColor.textSublabel
             font.pixelSize: fontSize * 0.8
             font.family: globalFonts.sans
             font.italic: true

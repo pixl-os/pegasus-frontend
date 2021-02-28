@@ -78,7 +78,7 @@ FocusScope {
 
         Rectangle {
             anchors.fill: parent
-            color: "#444"
+            color: themeColor.main
             opacity: (root.focus && root.parentFocus) ? 0.75 : 0.25
         }
 
@@ -86,7 +86,7 @@ FocusScope {
             id: nameLabel
 
             text: entries[eventId].name
-            color: "#eee"
+            color: themeColor.textLabel
             font.pixelSize: root.textSize
             font.family: globalFonts.sans
             font.bold: (root.focus && root.parentFocus)

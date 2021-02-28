@@ -101,7 +101,7 @@ FocusScope {
     Rectangle {
         height: parent.height * 0.8
         width: height * 1.5
-        color: "#444"
+        color: themeColor.main
 
         radius: vpx(8)
 
@@ -145,7 +145,7 @@ FocusScope {
 
             text: qsTr("Pegasus will look for collection files (metadata.pegasus.txt or "
                      + "metadata.txt)\nin the following directories:") + api.tr
-            color: "#eee"
+            color: themeColor.textLabel
             font.family: globalFonts.sans
             font.pixelSize: vpx(18)
             lineHeight: 1.15
@@ -163,7 +163,7 @@ FocusScope {
             anchors.bottom: footer.top
             width: parent.width - vpx(40)
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#333"
+            color: themeColor.main
 
             ListView {
                 id: list
@@ -276,7 +276,7 @@ FocusScope {
                 verticalAlignment: Text.AlignVCenter
                 lineHeight: 2
 
-                color: "#eee"
+                color: themeColor.textLabel
                 font.family: globalFonts.sans
                 font.pixelSize: vpx(18)
 

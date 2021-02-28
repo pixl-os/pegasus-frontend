@@ -11,7 +11,7 @@ QStringList GetParametersList(QString Parameter)
     {   
         //## Set ratio for all emulators (auto,4/3,16/9,16/10,custom) - default value: auto / index 0
         //global.ratio=auto
-        ListOfValue << "auto" << "4/3" << "16/9" << "16/10" << "16/15" << "21/9" << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12" << "19/14" << "30/17" << "32/9" << "squarepixel" << "config" << "custom" << "coreprovided" << "none";
+        ListOfValue << "none" << "auto" << "4/3" << "16/9" << "16/10" << "16/15" << "21/9" << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12" << "19/14" << "30/17" << "32/9" << "squarepixel" << "config" << "custom" << "coreprovided";
     }
     else if (Parameter == "system.kblayout")
     {   
@@ -26,6 +26,11 @@ QStringList GetParametersList(QString Parameter)
         //## (none, retro, scanlines)
         //global.shaderset=none
         ListOfValue << "none" << "retro" << "scanline";
+    }
+    else if (Parameter == "netplay.password.client" || "netplay.password.viewer")
+    {
+        //global.netplay.nickname= ?
+        ListOfValue << "|P/4/C-M/4/N|" << "[SpAcE.iNvAdErS]" << ">sUpEr.MaRi0.bRoSs<" << "{SoNiC.tHe.HeDgEhOg}" << "(Q/B/E/R/T-@;&?@#)" << "~AnOtHeR.wOrLd!~" << "(/T\E/T\R/I\S)" << "$m00n.p4tR0I$" << "*M.E.T.A.L.S.L.U.G*" << "OuTruN-hAn60uT" << "[L*E*M*M*I*N*G*S]" << "@-G|a|U|n|L|e|T-@" << "%.BuBBLe.B00Ble.%" << "!.CaStLeVaNiA.!" << "=B@mBeR.J4cK=";
     }
     else
     {

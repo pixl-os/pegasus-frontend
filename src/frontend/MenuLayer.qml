@@ -51,7 +51,7 @@ FocusScope {
         anchors.bottom: parent.bottom
         anchors.right: menuPanel.left
 
-        color: "black"
+        color: "#000"
         opacity: root.focus ? 0.75 : 0
         visible: opacity > 0.001 && width > 0
         Behavior on opacity { NumberAnimation { duration: 300 } }
@@ -112,7 +112,7 @@ FocusScope {
 
         Rectangle {
             anchors.fill: parent
-            color: "#222"
+            color: themeColor.main
             z: -1
         }
     }

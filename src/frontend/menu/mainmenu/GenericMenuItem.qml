@@ -44,7 +44,7 @@ Rectangle {
             right: parent.right; rightMargin: vpx(32)
             verticalCenter: parent.verticalCenter
         }
-        color: "#eee"
+        color: themeColor.textTitle
         font {
             bold: true
             pixelSize: textSizePx

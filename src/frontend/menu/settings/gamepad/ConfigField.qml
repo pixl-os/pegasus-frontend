@@ -28,7 +28,7 @@ Rectangle {
         if (recording) return "#c33";
         if (pressed) return "#353";
         if (activeFocus) return "#3aa"
-        return "#333";
+        return themeColor.secondary;
     }
 
     anchors {
@@ -39,7 +39,7 @@ Rectangle {
 
     Text {
         id: label
-        color: "#eee"
+        color: themeColor.textLabel
         font {
             family: globalFonts.sans
             pixelSize: vpx(18)

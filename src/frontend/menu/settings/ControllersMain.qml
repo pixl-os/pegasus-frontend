@@ -129,7 +129,7 @@ FocusScope {
                 SimpleButton {
                     id: optGamepadConfig
 
-                    label: qsTr("gamepad layout") + api.tr
+                    label: qsTr("Gamepad layout") + api.tr
                     note: qsTr("Show game layout configuration controller") + api.tr
                     onActivate: {
                         focus = true;

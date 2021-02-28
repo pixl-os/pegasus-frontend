@@ -77,8 +77,7 @@ FocusScope {
         id: rectangle
         height: parent.height * 0.52
         width: height * 1.005
-        color: "#333"
-
+        color: themeColor.secondary
         radius: vpx(8)
 
         anchors.centerIn: parent
@@ -98,18 +97,17 @@ FocusScope {
 //        radius: vpx(8)
 
         height: parent.height * 0.5
-        width: height * 1.0
-        color: "#222"
-
+        width:  height * 1.0
+        color: themeColor.main
         radius: vpx(8)
 
         anchors.centerIn: parent
 
-//        MouseArea {
-//            id: mouseArea
-//            anchors.fill: parent
-//            hoverEnabled: true
-//        }
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+        }
 
         Item {
             anchors.fill: parent
@@ -155,7 +153,7 @@ FocusScope {
             width: ListView.view.width
             height: root.itemHeight
             radius: vpx(8)
-            color: highlighted ? "#444" : "#222"
+            color: highlighted ? themeColor.secondary : themeColor.main
 
             Text {
                 id: label
@@ -166,7 +164,7 @@ FocusScope {
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 text: model.name
-                color: "#bbb"
+                color: themeColor.textValue
                 font.pixelSize: root.textSize
                 font.family: globalFonts.sans
             }

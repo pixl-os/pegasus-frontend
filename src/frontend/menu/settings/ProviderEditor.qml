@@ -62,7 +62,7 @@ FocusScope {
     Rectangle {
         height: parent.height * 0.7
         width: height
-        color: "#444"
+        color: themeColor.secondary
 
         radius: vpx(8)
 
@@ -94,7 +94,7 @@ FocusScope {
             anchors.bottom: footer.top
             width: parent.width - vpx(30)
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#333"
+            color: themeColor.main
 
             Text {
                 text: qsTr("(nothing on this platform)") + api.tr
@@ -145,7 +145,7 @@ FocusScope {
 
             Rectangle {
                 anchors.fill: parent
-                color: "#555"
+                color: themeColor.main
                 visible: parent.highlighted
             }
             Text {
@@ -154,7 +154,7 @@ FocusScope {
                 verticalAlignment: Text.AlignVCenter
                 lineHeight: 2.5
 
-                color: "#eee"
+                color: themeColor.textTilte
                 font.family: globalFonts.sans
                 font.pixelSize: vpx(18)
 

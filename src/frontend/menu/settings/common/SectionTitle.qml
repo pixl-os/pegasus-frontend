@@ -21,7 +21,7 @@ import QtQuick 2.12
 Text {
     property bool first: false
 
-    color: "#bbb"
+    color: themeColor.textSectionTitle
 
     font.pixelSize: vpx(22)
     font.family: globalFonts.sans

@@ -70,7 +70,7 @@ FocusScope {
             id: titleBar
             width: parent.width
             height: root.titleTextSize * 2.25
-            color: "#333"
+            color: themeColor.main
 
             Text {
                 id: titleText
@@ -81,7 +81,7 @@ FocusScope {
                     leftMargin: root.titleTextSize * 0.75
                 }
 
-                color: "#eee"
+                color: themeColor.textTitle
                 font {
                     bold: true
                     pixelSize: root.titleTextSize
@@ -95,7 +95,7 @@ FocusScope {
         Rectangle {
             width: parent.width
             height: messageText.height + 3 * root.textSize
-            color: "#555"
+            color: themeColor.secondary
 
             Text {
                 id: messageText
@@ -106,7 +106,7 @@ FocusScope {
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
 
-                color: "#eee"
+                color: themeColor.textTitle
                 font {
                     pixelSize: root.textSize
                     family: globalFonts.sans
@@ -134,7 +134,7 @@ FocusScope {
                 anchors.centerIn: parent
 
                 text: qsTr("Ok") + api.tr
-                color: "#eee"
+                color: themeColor.textTitle
                 font {
                     pixelSize: root.textSize
                     family: globalFonts.sans

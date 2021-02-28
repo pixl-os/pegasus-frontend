@@ -20,13 +20,13 @@ import QtQuick 2.12
 Rectangle {
     property alias text: label.text
 
-    color: "#444"
+    color: themeColor.secondary
     width: label.width + vpx(10)
     height: vpx(20)
 
     Text {
         id: label
-        color: "#eee"
+        color: themeColor.textTitle
         font {
             family: globalFonts.sans
             pixelSize: parent.height

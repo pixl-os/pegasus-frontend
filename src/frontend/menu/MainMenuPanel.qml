@@ -56,7 +56,7 @@ FocusScope {
         onClicked: root.close()
     }
     Rectangle {
-        color: "#333"
+        color: themeColor.main
         anchors.fill: parent
     }
     Column {

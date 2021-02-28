@@ -36,6 +36,31 @@ Window {
 //        api.internal.system.quit();
 //    }
 
+    // Color palette set with 'themeColor.main' or else
+    property var themeColor: {
+        return {
+//            main:               "#333",
+//            secondary:          "#222",
+//            screenHeader:       "#222",
+//            screenUnderline:    "#555",
+//            underline:          "green",
+//            textTitle:          "#eee",
+//            textLabel:          "#eee",
+//            textSublabel:       "#999",
+//            textSectionTitle:   "green",
+//            textValue:          "#c0c0c0",
+            main:               "#404040",
+            secondary:          "#606060",
+            screenHeader:       "#606060",
+            screenUnderline:    "#32CD32",
+            underline:          "#32CD32",
+            textTitle:          "#B0E0E6",
+            textLabel:          "#eee",
+            textSublabel:       "#999",
+            textSectionTitle:   Qt.rgba( 0, 255, 0, 0.5),
+            textValue:          "#eee",
+        }
+    }
     FontLoader { id: sansFont; source: "/fonts/Roboto-Regular.ttf" }
     FontLoader { id: sansBoldFont; source: "/fonts/Roboto-Bold.ttf" }
     FontLoader { id: monoFont; source: "/fonts/RobotoMono-Regular.ttf" }
@@ -232,7 +257,6 @@ Window {
                 api.internal.meta.resetLoadingState();
             }
         }
-
         onSkinLoadingChanged: hideMaybe()
         onDataLoadingChanged: hideMaybe()
     }
