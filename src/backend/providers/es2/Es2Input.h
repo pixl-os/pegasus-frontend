@@ -5,6 +5,12 @@
 #include <QString>
 #include <QList>
 #include <vector>
+#include <QFile>
+//for DOM xml usage
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomAttr>
+
 
 /* #example of es_input.cfg
 <?xml version="1.0"?>
@@ -57,10 +63,14 @@ struct inputAttribut {
 
 struct inputConfigEntry {
     inputConfigAttribut inputConfigAttributs;
-    QList <inputAttribut> inputAttributs;
+    QList <inputAttribut> inputElements;
 };
 
 inputConfigEntry find_input(const QString&, const std::vector<QString>&, const QString&, const QString&);
+bool save_input(const QString&, QFile&, inputConfigEntry&);
+
+// for future if needed: bool delete_input(const QString&, QFile&, inputConfigEntry&);
+
 
 } // namespace es2
 } // namespace providers
