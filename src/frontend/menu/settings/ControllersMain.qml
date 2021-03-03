@@ -24,7 +24,7 @@ FocusScope {
     id: root
 
     signal close
-    signal openKeySettings
+//    signal openKeySettings
     signal openGamepadSettings
     signal openGameDirSettings
     signal openAdvancedControllersConfiguration
@@ -107,18 +107,6 @@ FocusScope {
 
                     label: qsTr("Pair Bluetooth Controllers") + api.tr
                     note: qsTr("pair bluetooth controllers ") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openKeySettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optKeyboardConfig
-                }
-                SimpleButton {
-                    id: optKeyboardConfig
-
-                    label: qsTr("Change Controls") + api.tr
-                    note: qsTr("change control assignation") + api.tr
                     onActivate: {
                         focus = true;
                         root.openKeySettings();

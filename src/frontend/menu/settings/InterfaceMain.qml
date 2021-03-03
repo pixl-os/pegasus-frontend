@@ -25,7 +25,7 @@ FocusScope {
     id: root
 
     signal close
-    //    signal openKeySettings
+        signal openKeySettings
     //    signal openGamepadSettings
     //    signal openGameDirSettings
 
@@ -133,11 +133,23 @@ FocusScope {
                         //                        api.internal.settings.fullscreen = checked;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optPopupSettings
+                    KeyNavigation.down: optMenuControlsConfig
                 }
                 SectionTitle {
                     text: qsTr("Customize interface") + api.tr
                     first: true
+                }
+                SimpleButton {
+                    id: optMenuControlsConfig
+
+                    label: qsTr("Change menu controls") + api.tr
+                    note: qsTr("change control assignation only in menu") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openKeySettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optPopupSettings
                 }
                 SimpleButton {
                     id: optPopupSettings
