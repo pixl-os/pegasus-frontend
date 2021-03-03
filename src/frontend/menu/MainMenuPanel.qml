@@ -34,12 +34,12 @@ FocusScope {
     signal showGamesSettings
     signal showInterfaceSettings
     signal showSystemSettings
-//    signal showSettingsScreen
-//    signal showHelpScreen
+    //    signal showSettingsScreen
+    //    signal showHelpScreen
 
     signal requestShutdown
     signal requestReboot
-//    signal requestQuit
+    //    signal requestQuit
 
     Keys.onPressed: {
         if (event.isAutoRepeat)
@@ -141,8 +141,8 @@ FocusScope {
             enabled: callable
             visible: callable
             readonly property bool callable: mbQuitShutdown.callable
-                || mbQuitReboot.callable
-//                || mbQuitExit.callable
+                                             || mbQuitReboot.callable
+            //                || mbQuitExit.callable
 
             Component.onCompleted: {
                 const first_callable = [mbQuitShutdown, mbQuitReboot].find(e => e.callable);
@@ -176,17 +176,17 @@ FocusScope {
 
                     KeyNavigation.down: mbQuitShutdown
                 }
-//                SecondaryMenuItem {
-//                    id: mbQuitExit
-//                    text: qsTr("Exit Pegasus") + api.tr
-//                    onActivated: requestQuit()
+                //                SecondaryMenuItem {
+                //                    id: mbQuitExit
+                //                    text: qsTr("Exit Pegasus") + api.tr
+                //                    onActivated: requestQuit()
 
-//                    readonly property bool callable: api.internal.meta.allowAppClose
-//                    enabled: callable
-//                    visible: callable
+                //                    readonly property bool callable: api.internal.meta.allowAppClose
+                //                    enabled: callable
+                //                    visible: callable
 
-//                    KeyNavigation.down: mbQuitShutdown
-//                }
+                //                    KeyNavigation.down: mbQuitShutdown
+                //                }
             ]
             KeyNavigation.down: mbAccountSettings
         }

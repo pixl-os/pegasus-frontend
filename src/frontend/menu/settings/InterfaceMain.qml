@@ -25,9 +25,9 @@ FocusScope {
     id: root
 
     signal close
-//    signal openKeySettings
-//    signal openGamepadSettings
-//    signal openGameDirSettings
+    //    signal openKeySettings
+    //    signal openGamepadSettings
+    //    signal openGameDirSettings
 
     width: parent.width
     height: parent.height
@@ -127,10 +127,10 @@ FocusScope {
                     label: qsTr("On Screen Help Menu") + api.tr
                     note: qsTr("Show Help navigation on bottom screen") + api.tr
 
-//                    checked: api.internal.settings.fullscreen
+                    //                    checked: api.internal.settings.fullscreen
                     onCheckedChanged: {
                         focus = true;
-//                        api.internal.settings.fullscreen = checked;
+                        //                        api.internal.settings.fullscreen = checked;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPopupSettings

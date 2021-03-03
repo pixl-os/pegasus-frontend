@@ -27,9 +27,9 @@ FocusScope {
     signal close
     signal openBiosChecking_Settings
     signal openAdvancedEmulator_Settings
-//    signal openKeySettings
-//    signal openGamepadSettings
-//    signal openGameDirSettings
+    //    signal openKeySettings
+    //    signal openGamepadSettings
+    //    signal openGameDirSettings
 
     width: parent.width
     height: parent.height
@@ -101,7 +101,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Game Screen") + api.tr
                     first: true
-                }                
+                }
                 MultivalueOption {
                     id: optGlobalGameRatio
                     // set focus only on first item
@@ -110,7 +110,7 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "global.ratio"
 
-                    label: qsTr("Game Ratio") + api.tr                    
+                    label: qsTr("Game Ratio") + api.tr
                     note: qsTr("Set ratio for all emulators (auto,4/3,16/9,16/10,etc...)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)

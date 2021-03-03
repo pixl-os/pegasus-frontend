@@ -57,7 +57,7 @@ Window {
             textTitle:          "#B0E0E6",
             textLabel:          "#eee",
             textSublabel:       "#999",
-            textSectionTitle:   Qt.rgba( 0, 255, 0, 0.5),
+            textSectionTitle:   "#32CD32",
             textValue:          "#eee",
         }
     }

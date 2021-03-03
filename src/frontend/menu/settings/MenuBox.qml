@@ -16,16 +16,19 @@
 
 
 import "common"
-import "gamedireditor"
 import QtQuick 2.12
 import QtQuick.Layouts 1.0
+import QtQuick.Controls 2.15 as Controls
 import QtQuick.VirtualKeyboard 2.15
-
+import QtQuick.VirtualKeyboard.Settings 2.15
+import QtQuick.Window 2.12
 
 FocusScope {
     id: root
 
     property bool mSettingsChanged: false
+    //disable handwriting
+    property bool handwritingInputPanelActive: false
 
     signal close
 
@@ -37,20 +40,21 @@ FocusScope {
     Behavior on opacity { PropertyAnimation { duration: 150 } }
 
     function closeMaybe() {
-        if (mSettingsChanged)
-            reloadDialog.focus = true;
-        else
-            inputPanel.close();
-            root.close();
+        root.close();
     }
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.closeMaybe();
-//            inputPanel.closeMaybe();
         }
     }
+    //    change keyboard style
+    Component.onCompleted: {
+        VirtualKeyboardSettings.styleName = "retro"
+        VirtualKeyboardSettings.fullScreenMode = false;
+    }
+
     Rectangle {
         id: shade
 
@@ -64,223 +68,65 @@ FocusScope {
             onClicked: root.closeMaybe()
         }
     }
-    Rectangle {
-        id: boxMenu
-        height: parent.height * 0.5
-        width: height * 1.5
-        color: themeColor.main
-        radius: vpx(8)
+    Flickable {
+        id: flickable
+        anchors.fill: parent
+        contentWidth: content.width
+        contentHeight: content.height
+        interactive: contentHeight > height
+        flickableDirection: Flickable.VerticalFlick
 
-        anchors.centerIn: parent
+        property real scrollMarginVertical: 10
 
-        // TODO: proper gamepad button mapping
-        Keys.onPressed: {
-            if (event.isAutoRepeat)
-                return;
+        Column {
+            id: textEditors
+            anchors.topMargin: vpx(200)
+            spacing: vpx(20)
+            //           y: 720 / 3
+            width: parent.width - 26
 
-            var do_remove = event.key === Qt.Key_Delete || api.keys.isDetails(event);
-            var do_add = api.keys.isFilters(event);
-            if (!do_add && !do_remove)
-                return;
-
-            event.accepted = true;
-
-            if (do_remove) {
-                if (list.focus && !root.isSelected(list.currentIndex))
-                    root.toggleIndex(list.currentIndex);
-
-                root.startDeletion();
+            Text {
+                color: themeColor.underline
+                text: "message de connexion a faire !! "
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.pixelSize: 20
             }
-            if (do_add)
-                filePicker.focus = true;
-        }
-        Keys.onReleased: {
-            if (event.isAutoRepeat)
-                return;
-            if (event.key !== Qt.Key_Delete && !api.keys.isDetails(event))
-                return;
-
-            event.accepted = true;
-            root.stopDeletion();
-        }
-        MouseArea {
-            anchors.fill: parent
-        }
-        Text {
-            id: info
-
-            text: qsTr("bla bla bla") + api.tr
-            color: themeColor.textTitle
-            font.family: globalFonts.sans
-            font.pixelSize: vpx(18)
-            lineHeight: 0.7
-
-            anchors.top: parent.top
-            width: parent.width
-            padding: font.pixelSize * lineHeight
-
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.WordWrap
+            TextField {
+                id: pseudoInput
+                width: parent.width / 2.5
+                horizontalAlignment: TextInput.AlignHCenter
+                placeholderText: "Pseudo"
+                text: api.internal.recalbox.getStringParameter("global.retroachievements.username")
+                anchors.horizontalCenter: parent.horizontalCenter
+                echoMode: TextInput.Normal
+                enterKeyAction: EnterKeyAction.Next
+                onAccepted: api.internal.recalbox.setStringParameter("global.retroachievements.username", pseudoInput.text)
+            }
+            TextField {
+                id: passwordInput
+                width: parent.width / 2.5
+                placeholderText: "password"
+                text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
+                horizontalAlignment: TextInput.AlignHCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                echoMode: TextInput.PasswordEchoOnEdit
+                //                enterKeyAction: EnterKeyAction.Next
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+                onAccepted: api.internal.recalbox.setStringParameter("global.retroachievements.password", passwordInput.text)
+            }
         }
         Rectangle {
-            anchors.top: info.bottom
-            anchors.bottom: footer.top
-            width: parent.width - vpx(20)
-            anchors.horizontalCenter: parent.horizontalCenter
-            color: themeColor.secondary
+            id: validationButton
+            color: themeColor.main
             radius: vpx(8)
-
-            ListView {
-                id: list
-                anchors.fill: parent
-                clip: true
-
-                model: api.internal.settings.gameDirs
-                delegate: listEntry
-
-                focus: true
-                highlightRangeMode: ListView.ApplyRange
-                preferredHighlightBegin: height * 0.5 - vpx(18) * 1.25
-                preferredHighlightEnd: height * 0.5 + vpx(18) * 1.25
-                highlightMoveDuration: 0
-
-                KeyNavigation.down: buttonAdd
-
-                onModelChanged: {
-                    if (isComplete)
-                        root.mSettingsChanged = true;
-                }
-
-                property bool isComplete: false
-                Component.onCompleted: isComplete = true
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
-                        if (new_idx < 0)
-                            return;
-
-                        list.currentIndex = new_idx;
-                        root.toggleIndex(new_idx);
-                    }
-                }
+            anchors.centerIn: textEditors
+            anchors.top: TextField.bottom
+            width: parent.width / 2.5
+            height: TextField.height
+            Text {
+                text: qsTr("Connexion")
+                horizontalAlignment: validationButton.AlignHCenter
             }
-        }
-        Item {
-            id: footer
-
-            width: parent.width
-            height: buttonRow.height
-//                    * 1.75
-            anchors.bottom: parent.bottom
-
-            Row {
-                id: buttonRow
-
-                anchors.centerIn: parent
-//                spacing: height * 0.75
-
-                GameDirEditorButton {
-                    id: buttonAdd
-
-                    image1: "qrc:/buttons/xb_y.png"
-                    image2: "qrc:/buttons/ps_triangle.png"
-                    text: qsTr("Add new") + api.tr
-
-//                    onPress: filePicker.focus = true
-                    KeyNavigation.right: buttonDel
-                }
-                GameDirEditorButton {
-                    id: buttonDel
-
-                    image1: "qrc:/buttons/xb_x.png"
-                    image2: "qrc:/buttons/ps_square.png"
-                    text: qsTr("Remove selected") + api.tr
-
-                    onPress: root.startDeletion();
-                    onRelease: root.stopDeletion();
-
-                    KeyNavigation.up: list
-                }
-            }
-        }
-    }
-//  keyboard input
-    InputPanel {
-        id: inputPanel
-        width: footer.width // + vpx(200)
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: boxMenu.bottom
-
-        function close() {
-                InputPanel.visible = false;
-        }
-    }
-    Component {
-        id: listEntry
-
-        Rectangle {
-            readonly property bool highlighted: ListView.view.focus
-                                                && (ListView.isCurrentItem || mouseArea.containsMouse)
-            readonly property bool selected: root.isSelected(index)
-
-            width: parent.width
-            height: label.height
-            color: highlighted ? "#585858" : "transparent"
-
-            Keys.onPressed: {
-                if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    root.toggleIndex(index);
-                }
-            }
-//            Rectangle {
-//                anchors.fill: parent
-//                color: "#d55"
-//                visible: parent.selected
-//            }
-//            Rectangle {
-//                id: deleteFill
-//                height: parent.height
-//                width: parent.width * deletionPercent
-//                color: "#924"
-//                visible: parent.selected && deleteTimer.running && width > 0
-//            }
-//            Text {
-//                id: label
-//                text: modelData
-//                verticalAlignment: Text.AlignVCenter
-//                lineHeight: 2
-
-//                color: "#eee"
-//                font.family: globalFonts.sans
-//                font.pixelSize: vpx(18)
-
-//                width: parent.width
-//                leftPadding: parent.height * 0.5
-//                rightPadding: leftPadding
-//                elide: Text.ElideRight
-//            }
-            MouseArea {
-                id: mouseArea
-                anchors.fill: parent
-                hoverEnabled: true
-            }
-        }
-    }
-    ReloadQuestion {
-        id: reloadDialog
-        onAccept: {
-            list.focus = true;
-            root.mSettingsChanged = false;
-            api.internal.settings.reloadProviders();
-        }
-        onCancel: {
-            list.focus = true;
-            root.mSettingsChanged = false;
-            root.close();
         }
     }
 }

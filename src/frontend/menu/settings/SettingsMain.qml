@@ -25,10 +25,10 @@ FocusScope {
     id: root
 
     signal close
-//    signal openKeySettings
-//    signal openGamepadSettings
-//    signal openGameDirSettings
-//    signal openProviderSettings
+    //    signal openKeySettings
+    //    signal openGamepadSettings
+    //    signal openGameDirSettings
+    //    signal openProviderSettings
 
     width: parent.width
     height: parent.height
@@ -79,7 +79,7 @@ FocusScope {
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
         FocusScope {
-            id: content 
+            id: content
 
             focus: true
             enabled: focus
@@ -101,7 +101,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("System") + api.tr
                     first: true
-                }  
+                }
                 ToggleOption {
                     id: optDebugMode
 
@@ -129,7 +129,7 @@ FocusScope {
 
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose Audio Output") + api.tr
-//                    value: api.internal.settings.locales.currentName
+                    //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
@@ -145,7 +145,7 @@ FocusScope {
                     note: qsTr("Set audio Volume") + api.tr
                     onActivate: {
                         focus = true;
-//                        localeBox.focus = true;
+                        //                        localeBox.focus = true;
 
                     }
                     onFocusChanged: container.onFocus(this)
@@ -215,10 +215,10 @@ FocusScope {
                     label: qsTr("Storage device") + api.tr
                     note: qsTr("change to over storage") + api.tr
                     value: api.internal.settings.locales.currentName
-//                  need list !!!!!!! NETWORK, INTERNAL, ANYEXTERNAL
+                    //                  need list !!!!!!! NETWORK, INTERNAL, ANYEXTERNAL
                     onActivate: {
                         focus = true;
-//                        localeBox.focus = true;
+                        //                        localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optStorageCapacity
@@ -230,7 +230,7 @@ FocusScope {
                     note: qsTr("Show Storage capacity") + api.tr
                     onActivate: {
                         focus = true;
-//                        localeBox.focus = true;
+                        //                        localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optLanguage

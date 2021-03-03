@@ -65,9 +65,9 @@ MenuScreen {
                 }
                 Text {
                     property string programInfo: qsTr("Pegasus Frontend, version <tt>%1</tt> (%2)")
-                        .arg(api.internal.meta.gitRevision)
-                        .arg(api.internal.meta.gitDate)
-                        + api.tr
+                    .arg(api.internal.meta.gitRevision)
+                    .arg(api.internal.meta.gitDate)
+                    + api.tr
 
                     text: programInfo + "<br>Copyright \u00a9 2017-2020 Mátyás Mustoha"
                     color: "#eee"
@@ -86,7 +86,7 @@ MenuScreen {
                 }
                 Text {
                     text: qsTr("You can find the documentation and user guide on the following address:")
-                        + api.tr
+                          + api.tr
                     color: "#eee"
                     font.pixelSize: bodyFontSize
                     font.family: globalFonts.sans
@@ -124,9 +124,9 @@ MenuScreen {
 
                     Text {
                         text: "This program is free software: you can redistribute it and/or modify "
-                            + "it under the terms of the GNU General Public License as published by "
-                            + "the Free Software Foundation, either version 3 of the License, or "
-                            + "(at your option) any later version."
+                              + "it under the terms of the GNU General Public License as published by "
+                              + "the Free Software Foundation, either version 3 of the License, or "
+                              + "(at your option) any later version."
                         color: licenses.textColor
                         lineHeight: licenses.textLineHeight
                         font.pixelSize: licenses.textSize
@@ -138,9 +138,9 @@ MenuScreen {
                     }
                     Text {
                         text: "This program is distributed in the hope that it will be useful, "
-                            + "but WITHOUT ANY WARRANTY; without even the implied warranty of "
-                            + "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "
-                            + "GNU General Public License for more details."
+                              + "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+                              + "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "
+                              + "GNU General Public License for more details."
                         color: licenses.textColor
                         lineHeight: licenses.textLineHeight
                         font.pixelSize: licenses.textSize
@@ -152,8 +152,8 @@ MenuScreen {
                     }
                     Text {
                         text: "You should have received a copy of the full license along with this "
-                            + "program. If not, you can also find it on the following address: "
-                            + "<tt>http://pegasus-frontend.org/license</tt>."
+                              + "program. If not, you can also find it on the following address: "
+                              + "<tt>http://pegasus-frontend.org/license</tt>."
                         color: licenses.textColor
                         lineHeight: licenses.textLineHeight
                         font.pixelSize: licenses.textSize
@@ -220,9 +220,9 @@ MenuScreen {
                 }
                 Text {
                     text: "All trademarks, service marks, trade names, trade dress, product names "
-                        + "and logos are property of their respective owners. All company, product "
-                        + "and service names used in this product are for identification purposes "
-                        + "only. Use of these names, logos, and brands does not imply endorsement."
+                          + "and logos are property of their respective owners. All company, product "
+                          + "and service names used in this product are for identification purposes "
+                          + "only. Use of these names, logos, and brands does not imply endorsement."
                     color: licenses.textColor
                     lineHeight: licenses.textLineHeight
                     font.pixelSize: licenses.textSize

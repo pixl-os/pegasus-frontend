@@ -42,7 +42,7 @@ FocusScope {
     visible: 0 < (x + width) && x < Window.window.width
 
 
-     ControllersMain {
+    ControllersMain {
         id: main
         focus: true
         anchors.right: parent.right
@@ -52,7 +52,7 @@ FocusScope {
         onOpenAdvancedControllersConfiguration: root.openScreen("settings/AdvancedControllersConf.qml")
         onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
         onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
-//        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
+        //        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
     }
     Loader {
         id: modal

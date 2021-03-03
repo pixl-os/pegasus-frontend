@@ -41,16 +41,16 @@ FocusScope {
     enabled: focus
     visible: 0 < (x + width) && x < Window.window.width
 
-     SettingsMain {
+    SettingsMain {
         id: main
         focus: true
         anchors.right: parent.right
 
         onClose: root.close()
-//        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
-//        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
-//        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
-//        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
+        //        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
+        //        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
+        //        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
+        //        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
     }
     Loader {
         id: modal

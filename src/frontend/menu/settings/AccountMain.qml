@@ -25,8 +25,8 @@ FocusScope {
     id: root
 
     signal close
-//    signal openKeySettings
-//    signal openGamepadSettings
+    //    signal openKeySettings
+    //    signal openGamepadSettings
     signal openNetplayInformation
     signal openGameDirSettings
     signal openMenuBoxSettings
@@ -124,7 +124,6 @@ FocusScope {
 
                     label: qsTr("Connect Retroachievement") + api.tr
                     note: qsTr("Connect your account retroachievement") + api.tr
-
                     onActivate: {
                         focus = true;
                         root.openMenuBoxSettings();
@@ -155,7 +154,7 @@ FocusScope {
 
                     label: qsTr("Netplay Information") + api.tr
                     note: qsTr("Show netplay information roms etc ...") + api.tr
-//                    value: api.internal.settings.locales.currentName
+                    //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
@@ -174,8 +173,8 @@ FocusScope {
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("global.netplay.active",checked);
-//                        pop menu if activate
-//                        root.openGameDirSettings();
+                        //                        pop menu if activate
+                        //                        root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayNickname
@@ -186,7 +185,7 @@ FocusScope {
                     label: qsTr("Netplay Nickname") + api.tr
                     note: qsTr("Set your Netplay nickname") + api.tr
 
-//                    value: api.internal.settings.locales.currentName
+                    //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
@@ -209,8 +208,8 @@ FocusScope {
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
-//                        pop menu if activate
-//                        root.openGameDirSettings();
+                        //                        pop menu if activate
+                        //                        root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayPswdClient
@@ -247,8 +246,8 @@ FocusScope {
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
-//                        pop menu if activate
-//                        root.openGameDirSettings();
+                        //                        pop menu if activate
+                        //                        root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayPswdViewer

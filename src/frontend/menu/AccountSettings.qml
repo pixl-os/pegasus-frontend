@@ -42,15 +42,15 @@ FocusScope {
     visible: 0 < (x + width) && x < Window.window.width
 
 
-     AccountMain {
+    AccountMain {
         id: main
         focus: true
         anchors.right: parent.right
 
         onClose: root.close()
-//        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
-//        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
-//        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
+        //        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
+        //        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
+        //        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
         onOpenNetplayInformation: root.openScreen("settings/NetplayInformation.qml")
         onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
         onOpenMenuBoxSettings: root.openModal("settings/MenuBox.qml")

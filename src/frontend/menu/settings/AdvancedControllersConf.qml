@@ -125,7 +125,7 @@ FocusScope {
                     label: qsTr("Sony controllers drivers Bluetooth") + api.tr
                     note: qsTr("Choose a driver between bluez, official and shanwan") + api.tr
 
-//                    value: api.internal.settings.locales.currentName
+                    //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;
