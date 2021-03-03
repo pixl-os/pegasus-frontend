@@ -31,8 +31,8 @@ Item {
         height: width
         anchors.centerIn: parent
 
-        color: "#222"
-        border { width: 1.5; color: "#aaa" }
+        color: themeColor.main
+        border { width: 1.5; color: themeColor.textSublabel }
         radius: width * 0.5
     }
 
@@ -71,7 +71,7 @@ Item {
         height: width
         anchors.centerIn: parent
 
-        color: pressed ? "#393": "#3cc"
+        color: pressed ? "#393": themeColor.underline
         radius: width * 0.5
 
         visible: pressed || padContainer.currentButton === (side + "3")
@@ -82,7 +82,7 @@ Item {
         height: vpx(2)
         anchors.centerIn: parent
 
-        color: "#3cc"
+        color: themeColor.underline
         visible: padContainer.currentButton === (side + "x")
     }
     Rectangle {

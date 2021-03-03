@@ -27,7 +27,7 @@ Rectangle {
     color: {
         if (recording) return "#c33";
         if (pressed) return "#353";
-        if (activeFocus) return "#3aa"
+        if (activeFocus) return themeColor.underline
         return themeColor.secondary;
     }
 

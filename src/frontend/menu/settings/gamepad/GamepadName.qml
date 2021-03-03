@@ -20,7 +20,7 @@ import QtQuick 2.12
 Text {
     property bool highlighted
 
-    color: highlighted ? "#3cc" : themeColor.textTitle
+    color: highlighted ? themeColor.underline : themeColor.textTitle
     anchors {
         left: parent.left; leftMargin: vpx(25)
         verticalCenter: parent.verticalCenter
