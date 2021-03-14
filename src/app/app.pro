@@ -1,5 +1,5 @@
 TARGET = pegasus-fe
-CONFIG += c++11 warn_on exceptions_off rtti_off
+CONFIG += c++11 warn_on exceptions rtti_off debug
 
 SOURCES += main.cpp
 DEFINES *= $${COMMON_DEFINES}
