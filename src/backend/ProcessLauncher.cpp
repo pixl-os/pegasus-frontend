@@ -23,7 +23,14 @@
 #include "model/gaming/GameFile.h"
 #include "platform/TerminalKbd.h"
 #include "utils/CommandTokenizer.h"
-#include "utils/PathTools.h"
+#include "utils/Strings.h"
+
+//to access es_input.cfg
+#include "providers/es2/Es2Provider.h"
+
+//For recalbox
+#include "RecalboxConf.h"
+
 
 #include <QDir>
 #include <QRegularExpression>
@@ -78,6 +85,7 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     Log::debug(LOGMSG("Param not updated: '%1'").arg(param));
     
     param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())));
+    
     param
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
@@ -86,12 +94,52 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         .replace(QLatin1String("{emulator.name}"),game.emulatorName())
         .replace(QLatin1String("{emulator.core}"),game.emulatorCore())
         .replace(QLatin1String("{emulator.ratio}"),QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio")))
-        .replace(QLatin1String("{emulator.netplay}"),"")
-        .replace(QLatin1String("{controllers.config}"),"-p1index 0 -p1guid 030000005e040000a102000000010000 -p1name \"Xbox 360 Wireless Receiver\" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event3");
+        .replace(QLatin1String("{emulator.netplay}"),"");
 
+    if(param == "{controllers.config}")
+    {
+        // Fill from ES/Recalbox configuration methods
+        std::string uuid, name, path;
+        std::string command = "";
+        
+        int MaxInputDevices = 10;
+        //to access ES provider
+        providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
+                      
+        for(int player = 0; player < MaxInputDevices; ++player)
+        {
+            path = "";
+            uuid = "";
+            name = "";
+
+            if (Strings::SplitAt(RecalboxConf::Instance().GetPadPegasus(player), ':', uuid, name, path, true))
+            {
+              //example of example : -p1index 0 -p1guid 030000005e040000a102000000010000 -p1name \"Xbox 360 Wireless Receiver\" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event3
+              //                       -p1index 0 -p1guid 030000005e040000a102000000010000 -p1name "X360 Wireless Controller" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event19 -p2index 1 -p2guid 030000005e040000a102000000010000 -p2name "X360 Wireless Controller" -p2nbaxes 4 -p2nbhats 1 -p2nbbuttons 17 -p2devicepath /dev/input/event20 -system 64dd -rom /recalbox/share/roms/64dd/Super\ Mario\ 64\ -\ Disk\ Version\ \(Japan\)\ \(Proto\).ndd -emulator libretro -core parallel_n64 -ratio custom 
+              //const InputDevice& device = mIdToDevices[pad.Identifier];
+
+              const providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(QString::fromStdString(name), QString::fromStdString(uuid));
+              
+              if (inputConfigEntry.inputConfigAttributs.deviceName == QString::fromStdString(name))
+              {//Device found 
+                  std::string p(" -p"); p.append(Strings::ToString(player + 1)); 
+                  command.append(p).append("index ").append(Strings::ToString(player)) //TO DO: see how to manage order between connection order/player order.
+                         .append(p).append("guid ").append(uuid)
+                         .append(p).append("name \"").append(name + "\"")
+                         .append(p).append("nbaxes ").append(inputConfigEntry.inputConfigAttributs.deviceNbAxes.toUtf8().constData())
+                         .append(p).append("nbhats ").append(inputConfigEntry.inputConfigAttributs.deviceNbHats.toUtf8().constData())
+                         .append(p).append("nbbuttons ").append(inputConfigEntry.inputConfigAttributs.deviceNbButtons.toUtf8().constData())
+                         .append(p).append("devicepath ").append(path);
+              }
+            }
+
+        }
+        param.replace(QLatin1String("{controllers.config}"),QString::fromStdString(command));
+    }
+    
     replace_env_vars(param);
     
-    Log::debug(LOGMSG("Param updated: '%1'").arg(param));    
+    Log::debug(LOGMSG("Param updated: '%1'").arg(param));
 
 }
 
@@ -160,17 +208,15 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     const model::GameFile& gamefile = *q_gamefile;
     const model::Game& game = *gamefile.parentGame();
 
-    const QString raw_launch_cmd =
+    QString raw_launch_cmd =
 #if defined(Q_OS_LINUX) && defined(PEGASUS_INSIDE_FLATPAK)
         QLatin1String("flatpak-spawn --host ") % game.launchCmd();
 #else
         game.launchCmd();
 #endif
 
-
-    // TODO: in the future, check the gamefile's own launch command first
-
     QStringList args = ::utils::tokenize_command(raw_launch_cmd);
+    
     for (QString& arg : args)
         replace_variables(arg, &gamefile);
 
@@ -202,6 +248,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
     QString workdir = game.launchWorkdir();
     replace_variables(workdir, &gamefile);
+    
     workdir = helpers::abs_workdir(workdir, game.launchCmdBasedir(), default_workdir);
 
     beforeRun(gamefile.fileinfo().absoluteFilePath());
@@ -256,6 +303,9 @@ void ProcessLauncher::onTeardownComplete()
     if(globalCommand.length() != 0)
     {
         int exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+        if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
+        else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
+        
     }
     else
     {
