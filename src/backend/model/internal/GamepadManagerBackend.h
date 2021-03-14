@@ -43,7 +43,8 @@ signals:
     void connected(int, QString);
     void disconnected(int);
     void nameChanged(int, QString);
-
+    void removed(int);
+    
     void buttonChanged(int, GamepadButton, bool);
     void axisChanged(int, GamepadAxis, double);
 

@@ -14,12 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+//to access es_input.cfg
+#include "providers/es2/Es2Provider.h"
 
 #include "GamepadManagerSDL2.h"
 
 #include "Log.h"
 #include "Paths.h"
 #include "utils/StdStringHelpers.h"
+//to access recalbox.conf
+#include "RecalboxConf.h"
 
 #include <QDataStream>
 #include <QFile>
@@ -36,6 +40,12 @@ constexpr auto USERCFG_FILE = "/sdl_controllers.txt";
 constexpr uint16_t version(uint16_t major, uint16_t minor, uint16_t micro)
 {
     return major * 1000u + minor * 100u + micro;
+}
+
+unsigned constexpr const_hash(char const *input) {
+    return *input ?
+    static_cast<unsigned int>(*input) + 33 * const_hash(input + 1) :
+    5381;
 }
 
 std::unique_ptr<char, void(*)(void*)> freeable_str(char* const str)
@@ -63,6 +73,7 @@ uint16_t linked_sdl_version()
 
 QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)
 {
+    //Log::debug(LOGMSG("QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)"));
     if (version(2, 0, 9) <= linked_ver)
         return QLatin1String("209");
 
@@ -74,6 +85,7 @@ QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)
 
 bool load_internal_gamepaddb(uint16_t linked_ver)
 {
+    //Log::debug(LOGMSG("bool load_internal_gamepaddb(uint16_t linked_ver)"));
     const QString path = QLatin1String(":/sdl2/gamecontrollerdb_")
         % gamepaddb_file_suffix(linked_ver)
         % QLatin1String(".txt");
@@ -99,6 +111,7 @@ bool load_internal_gamepaddb(uint16_t linked_ver)
 
 void try_register_default_mapping(int device_idx)
 {
+    //Log::debug(LOGMSG("try_register_default_mapping"));
     std::array<char, GUID_LEN> guid_raw_str;
     const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
     SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());
@@ -230,6 +243,7 @@ std::string generate_button_str(int button_idx)
 }
 std::string generate_binding_str(const SDL_GameControllerButtonBind& bind)
 {
+    //Log::debug(LOGMSG("std::string generate_binding_str(const SDL_GameControllerButtonBind& bind)"));
     switch (bind.bindType) {
         case SDL_CONTROLLER_BINDTYPE_BUTTON:
             return generate_button_str(bind.value.button);
@@ -244,6 +258,7 @@ std::string generate_binding_str(const SDL_GameControllerButtonBind& bind)
 
 void write_mappings(const std::vector<std::string>& mappings)
 {
+    //Log::debug(LOGMSG("void write_mappings(const std::vector<std::string>& mappings)"));
     const QString db_path = paths::writableConfigDir() + QLatin1String(USERCFG_FILE);
 
     QFile db_file(db_path);
@@ -257,32 +272,258 @@ void write_mappings(const std::vector<std::string>& mappings)
     for (const std::string& mapping : mappings)
         db_stream << mapping.data() << '\n';
 }
+
+void update_es_input(int device_idx, std::string new_mapping)
+{
+    Log::debug(LOGMSG("Controller full Mapping data:`%1`").arg(QString::fromStdString(new_mapping)));
+    
+    //example of Pegasus Mapping data: 
+    //030000005e040000a102000000010000,X360 Wireless Controller,
+    //a:b0,b:b1,back:b8,dpdown:b16,dpleft:b13,dpright:b14,dpup:b15,guide:b10,
+    //leftshoulder:b4,leftstick:b11,lefttrigger:b6,leftx:a0,lefty:a1,rightshoulder:b5,
+    //rightstick:b12,righttrigger:b7,rightx:a2,righty:a3,start:b9,x:b2,y:b3,platform:Linux,
+    
+    providers::es2::inputConfigEntry inputConfigEntry;
+    
+    QString FullMappingData = QString::fromStdString(new_mapping);
+        
+    QStringList ListMappingData = FullMappingData.split(",");
+        
+    //GET GUID
+    inputConfigEntry.inputConfigAttributs.deviceGUID = ListMappingData.at(0);
+    
+    //GET NAME
+    inputConfigEntry.inputConfigAttributs.deviceName = ListMappingData.at(1);
+    
+    //SET TYPE
+    inputConfigEntry.inputConfigAttributs.type = "joystick"; //TO DO: or keyboard ???
+    
+    //SET INPUTS
+    int NbAxis = 0;
+    int NbHats = 0;
+    int NbButtons = 0;
+    int NbKeys = 0;
+    for (int i = 2; i < ListMappingData.size(); i++)
+    {
+        
+        QStringList InputData = ListMappingData.at(i).split(":");
+        
+        QString name;
+        
+        QString InputName = InputData.at(0);
+        Log::debug(LOGMSG("InputName:`%1`").arg(InputName));
+        
+        switch(const_hash(InputName.toStdString().c_str())) // to get name of input as "a", "b", "rightx", etc...
+        {
+            case const_hash(""):
+                //to ignore empty field
+                continue;
+            break;
+            case const_hash("platform"):
+                //to ignore platform
+                continue;
+            break;
+            case const_hash("a"):
+                name = "b"; //inversed due to the fact that pegasus is based on xbox 360 pad but recalbox on super nintendo pad 
+            break;
+            case const_hash("b"):
+                name = "a"; //inversed due to the fact that pegasus is based on xbox 360 pad but recalbox on super nintendo pad 
+            break;
+            case const_hash("x"): //inversed due to the fact that pegasus is based on xbox 360 pad but recalbox on super nintendo pad 
+                name = "y";
+            break;
+            case const_hash("y"):
+                name = "x"; //inversed due to the fact that pegasus is based on xbox 360 pad but recalbox on super nintendo pad 
+            break;
+            case const_hash("back"):
+                name = "select";
+            break;
+            case const_hash("start"):
+                name = "start";
+            break;
+            case const_hash("guide"):
+                name = "hotkey";
+            break;
+            case const_hash("dpdown"):
+                name = "down";
+            break;
+            case const_hash("dpup"):
+                name = "up";
+            break;
+            case const_hash("dpright"):
+                name = "right";
+            break;
+            case const_hash("dpleft"):
+                name = "left";
+            break;
+            case const_hash("leftshoulder"):
+                name = "l1";
+            break;
+            case const_hash("rightshoulder"):
+                name = "r1";
+            break;
+             case const_hash("lefttrigger"):
+                name = "l2";
+            break;
+            case const_hash("righttrigger"):
+                name = "r2";
+            break;           
+             case const_hash("leftstick"):
+                name = "l3";
+            break;
+            case const_hash("rightstick"):
+                name = "r3";
+            break;               
+            case const_hash("righty"):
+                name = "joystick2up";
+            break;
+            case const_hash("rightx"):
+                name = "joystick2left";
+            break;           
+             case const_hash("lefty"):
+                name = "joystick1up";
+            break;
+            case const_hash("leftx"):
+                name = "joystick1left";
+            break;             
+        }
+
+        //with default value
+        QString value = "0";
+        QString type;
+        QString code = "-1";
+
+        // Sign?
+        int sign = 0;
+        int shift = 0;
+        QString InputSign = InputData.at(1).at(0);
+        switch(const_hash(InputSign.toStdString().c_str()))
+        {
+            case const_hash("-"): { sign = -1; shift = 1; break; }
+            case const_hash("+"): { sign = +1; shift = 1; break; }
+            default: break;
+        }
+                
+        QString InputType = InputData.at(1).at(0 + shift);
+        Log::debug(LOGMSG("InputType:`%1`").arg(InputType));
+        
+        QString id=InputData.at(1).mid(1,InputData.at(1).size()-1);
+        
+        switch (const_hash(InputType.toStdString().c_str())) // to get type as "a" axis or "b" button
+        {
+            case const_hash("a"):
+                NbAxis = NbAxis + 1;
+                type = "axis";
+                if (sign == 0) value = "-1"; // non-signed axes are affected to joysticks: always left or up
+                else value = QString::number(sign); // Otherwise, take the sign as-is
+                code = QString::number(SDL_JoystickAxisEventCodeById(device_idx, id.toInt()));
+            break;
+            case const_hash("b"):
+                NbButtons = NbButtons + 1;
+                type = "button";
+                value = "1";
+                code = QString::number(SDL_JoystickButtonEventCodeById(device_idx, id.toInt()));
+                Log::debug(LOGMSG("code:`%1`").arg(code));
+            break;
+            case const_hash("h"):
+                NbHats = NbHats + 1;
+                type = "hat";
+                //set code and value after due to id to change
+            break;
+            // case const_hash("k"):
+                // //for future used ;-)
+                // NbKeys = NbKeys + 1;
+                // type = "key";
+                // value = "1";
+            // break;
+            
+        }
+
+        if(type == "hat")        
+        {//if hat format of id value is : X.Y, need to split
+            QStringList HatData = id.split(".");
+            id = HatData.at(0);
+            value = HatData.at(1);
+            code = QString::number(SDL_JoystickHatEventCodeById(device_idx, id.toInt()));
+        }
+        
+        Log::debug(LOGMSG("id:`%1`").arg(id));
+        
+        inputConfigEntry.inputElements.append({ name
+                                               ,type
+                                               ,id
+                                               ,value
+                                               ,code});
+        
+    }
+    // Open joystick & add to our list
+    SDL_Joystick* joy = SDL_JoystickOpen(device_idx);
+    if (joy == nullptr)
+    {
+        Log::warning(LOGMSG("Numbers of Axis/Hats/Buttons are calculated for es_input.cfg update."));
+    }
+    else
+    {
+        NbAxis = SDL_JoystickNumAxes(joy);
+        NbHats = SDL_JoystickNumHats(joy);
+        NbButtons = SDL_JoystickNumButtons(joy);
+        
+        //We could read from SDL to have same name as initial es_input.cfg
+        //but we keep that for futur used: 
+        //inputConfigEntry.inputConfigAttributs.deviceName = QString::fromStdString(SDL_JoystickName(joy));
+        //Keep name from SDL file finally
+        
+        Log::debug(LOGMSG("Name from Pegasus: %1 / Name from SDL function : %2").arg(ListMappingData.at(1),QString::fromStdString(SDL_JoystickName(joy))));
+        inputConfigEntry.inputConfigAttributs.deviceName = ListMappingData.at(1);
+    }
+    
+    //SET NBAXIS
+    inputConfigEntry.inputConfigAttributs.deviceNbAxes = QString::number(NbAxis);
+    Log::debug(LOGMSG("NbAxis:`%1`").arg(NbAxis));
+    //SET NBHATS
+    inputConfigEntry.inputConfigAttributs.deviceNbHats = QString::number(NbHats);
+    Log::debug(LOGMSG("NbHats:`%1`").arg(NbHats));
+    //SET NBBUTTONS
+    inputConfigEntry.inputConfigAttributs.deviceNbButtons = QString::number(NbButtons);
+    Log::debug(LOGMSG("NbButtons:`%1`").arg(NbButtons));
+    
+    providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
+    bool status = Provider->save_input_data(inputConfigEntry);
+              
+}
+
 } // namespace
 
 
 namespace model {
 
+GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
+    : GamepadManagerBackend(parent)
+    , m_sdl_version(linked_sdl_version())
+    , m_log_tag(QStringLiteral("GamepadManagerSDL2"))
+{
+    //Log::debug(LOGMSG("GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent"));
+    connect(&m_poll_timer, &QTimer::timeout, this, &GamepadManagerSDL2::poll);
+}
+
 bool GamepadManagerSDL2::RecordingState::is_active() const
 {
+    //Log::debug(LOGMSG("bool GamepadManagerSDL2::RecordingState::is_active() const"));
     return device >= 0;
 }
+
 void GamepadManagerSDL2::RecordingState::reset()
 {
+    //Log::debug(LOGMSG("GamepadManagerSDL2::RecordingState::reset()"));
     device = -1;
     target_button = GamepadButton::INVALID;
     target_axis = GamepadAxis::INVALID;
     value.clear();
 }
 
-GamepadManagerSDL2::GamepadManagerSDL2(QObject* parent)
-    : GamepadManagerBackend(parent)
-    , m_sdl_version(linked_sdl_version())
-{
-    connect(&m_poll_timer, &QTimer::timeout, this, &GamepadManagerSDL2::poll);
-}
-
 void GamepadManagerSDL2::start(const backend::CliArgs& args)
 {
+    //Log::debug(LOGMSG("void GamepadManagerSDL2::start(const backend::CliArgs& args)"));    
     if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
         Log::info(LOGMSG("Failed to initialize SDL2. Gamepad support may not work."));
         print_sdl_error();
@@ -302,13 +543,15 @@ void GamepadManagerSDL2::start(const backend::CliArgs& args)
 
 GamepadManagerSDL2::~GamepadManagerSDL2()
 {
-    // Make sure the polling stops before the devices disappear
+    //Log::debug(LOGMSG("GamepadManagerSDL2::~GamepadManagerSDL2()"));
     m_poll_timer.stop();
-    m_idx_to_device.clear();
+    m_iid_to_device.clear();
+    SDL_Quit();
 }
 
 void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
 {
+    //Log::debug(m_log_tag, LOGMSG("GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)"));
     constexpr size_t GUID_HEX_CNT = 16;
     constexpr size_t GUID_STR_LEN = GUID_HEX_CNT * 2;
 
@@ -385,6 +628,7 @@ void GamepadManagerSDL2::cancel_recording()
 
 void GamepadManagerSDL2::poll()
 {
+    //Log::debug(LOGMSG("void GamepadManagerSDL2::poll()"));
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
@@ -392,15 +636,18 @@ void GamepadManagerSDL2::poll()
                 // ignored in favor of SDL_JOYDEVICEADDED
                 break;
             case SDL_CONTROLLERDEVICEREMOVED:
+                Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEREMOVED"));
                 remove_pad_by_iid(event.cdevice.which);
                 break;
             case SDL_CONTROLLERDEVICEREMAPPED:
-                // ignored, could be logged
+                Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEREMAPPED"));
                 break;
             case SDL_JOYDEVICEADDED:
+                Log::debug(LOGMSG("SDL: SDL_JOYDEVICEADDED"));
                 add_controller_by_idx(event.jdevice.which);
                 break;
             case SDL_JOYDEVICEREMOVED:
+                Log::debug(LOGMSG("SDL: SDL_JOYDEVICEREMOVED"));
                 // ignored in favor of SDL_CONTROLLERDEVICEREMOVED
                 break;
             case SDL_CONTROLLERBUTTONUP:
@@ -435,115 +682,307 @@ void GamepadManagerSDL2::poll()
 
 void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 {
-    Q_ASSERT(m_idx_to_device.count(device_idx) == 0);
+    Log::debug(LOGMSG("GamepadManagerSDL2::add_controller_by_idx"));
+    Log::debug(m_log_tag, LOGMSG("int device_idx : %1").arg(device_idx));
+    try{
+        Q_ASSERT(m_idx_to_iid.count(device_idx) == 0);
+        Log::debug(LOGMSG("m_idx_to_iid(device_idx).count(%1): %2").arg(QString::number(device_idx),QString::number(m_idx_to_iid.count(device_idx))));
+        
+        if (!SDL_IsGameController(device_idx))
+        {
+            Log::debug(LOGMSG("Not SDL_IsGameController(device_idx)"));
+            try_register_default_mapping(device_idx);
+        }
+        SDL_GameController* const pad = SDL_GameControllerOpen(device_idx);
+        if (!pad) {
+            Log::error(LOGMSG("SDL2: could not open gamepad %1").arg(pretty_idx(device_idx)));
+            print_sdl_error();
+            return;
+        }
 
-    if (!SDL_IsGameController(device_idx))
-        try_register_default_mapping(device_idx);
+        const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
+        if (!mapping)
+            Log::info(m_log_tag, LOGMSG("SDL2: layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
 
-    SDL_GameController* const pad = SDL_GameControllerOpen(device_idx);
-    if (!pad) {
-        Log::error(LOGMSG("SDL2: could not open gamepad %1").arg(pretty_idx(device_idx)));
-        print_sdl_error();
-        return;
+        QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
+        
+        Log::debug(m_log_tag, LOGMSG("Device name : %1").arg(name));
+
+        SDL_Joystick* const joystick = SDL_GameControllerGetJoystick(pad);
+        const SDL_JoystickID iid = SDL_JoystickInstanceID(joystick);
+        Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
+
+        m_idx_to_iid.emplace(device_idx,iid);
+        m_iid_to_idx.emplace(iid, device_idx);
+        m_iid_to_device.emplace(iid, device_ptr(pad, SDL_GameControllerClose));
+        
+        Log::debug(m_log_tag, LOGMSG("device_idx : %1").arg(device_idx));
+        Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
+            
+        //Get GUID
+        constexpr size_t GUID_LEN = 33; // 16x2 + null
+        std::array<char, GUID_LEN> guid_raw_str;
+        
+        const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
+        
+        SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());    
+        
+        // concatenation doesn't work with QLatin1Strings...
+        const auto guid_str = QLatin1String(guid_raw_str.data()).trimmed();
+        Log::debug(m_log_tag, LOGMSG("With gUId : %1").arg(guid_str));
+
+        //persistence saved in recalbox.conf
+        const QString Parameter = QString("pegasus.pad%1").arg(device_idx);
+       // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
+        const QString Value = QString("%1:%2:%3").arg(guid_str,name,SDL_JoystickDevicePathById(device_idx));
+        Log::debug(m_log_tag, LOGMSG("Saved as %1=%2").arg(Parameter,Value));
+        RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), Value.toUtf8().constData());
+        
+        //save in file for test purpose
+        RecalboxConf::Instance().Save();
+
+        emit connected(device_idx, name);
+        }
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur 1: %1.\n").arg(Exp.what()));
+    } 
+    catch ( const std::bad_alloc & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
+    } 
+    catch ( const std::out_of_range & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
     }
-
-    const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
-    if (!mapping)
-        Log::info(LOGMSG("SDL2: layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
-
-    QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
-
-    SDL_Joystick* const joystick = SDL_GameControllerGetJoystick(pad);
-    const SDL_JoystickID iid = SDL_JoystickInstanceID(joystick);
-
-    m_idx_to_device.emplace(device_idx, device_ptr(pad, SDL_GameControllerClose));
-    m_iid_to_idx.emplace(iid, device_idx);
-
-    emit connected(device_idx, name);
 }
 
 void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
 {
-    Q_ASSERT(m_iid_to_idx.count(instance_id) == 1);
-    Q_ASSERT(m_idx_to_device.count(m_iid_to_idx.at(instance_id)) == 1);
+    Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)"));
+    try{
+        Q_ASSERT(m_iid_to_idx.count(instance_id) == 1);
+        Q_ASSERT(m_iid_to_device.count(instance_id) == 1);
 
-    const int device_idx = m_iid_to_idx.at(instance_id);
-    m_idx_to_device.erase(device_idx);
-    m_iid_to_idx.erase(instance_id);
+        const int device_idx = m_iid_to_idx.at(instance_id);
+        Log::debug(m_log_tag, LOGMSG("int device_idx : %1").arg(device_idx));
+        
+        //erase existing device index/device and instance id
+        m_iid_to_device.erase(instance_id);
+        m_iid_to_idx.erase(instance_id);
+        m_idx_to_iid.erase(device_idx);
+        
+        if (m_recording.device == device_idx)
+            cancel_recording();
 
-    if (m_recording.device == device_idx)
-        cancel_recording();
+        emit disconnected(device_idx);
+        Log::debug(LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
+        
+        const QString RemovedPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_idx));
+        std::string initial_path = "";
+        std::string initial_uuid = "";
+        std::string initial_name = "";
+        Strings::SplitAt(RemovedPadPegasus.toUtf8().constData(), ':', initial_uuid, initial_name, initial_path, true);
+        
+        //persistence saved in recalbox.conf (to remove this pad) and reorder others (after this pad)
+        int MaxInputDevices = 10;
+        for(int i = device_idx; (RecalboxConf::Instance().GetPadPegasus(i) != "") && (i < MaxInputDevices); i++)
+        {
+            std::string path = "";
+            std::string uuid = "";
+            std::string name = "";         
+            const QString Parameter = QString("pegasus.pad%1").arg(i);
+            const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(i+1));
+            Strings::SplitAt(NextPadPegasus.toUtf8().constData(), ':', uuid, name, path, true);
+            Log::debug(LOGMSG("pegasus.pad%1=%2:%3:%4").arg(QString::number(i+1),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
+            
+            if (path != "")
+            {   
+                //replace the existing one by the next one
+                RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), NextPadPegasus.toUtf8().constData());
+                //shift device data by index and recreate record
+                const SDL_JoystickID iid = m_idx_to_iid.at(i+1);
+                Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
+                
+                m_idx_to_iid.emplace(i,iid);
+                //remove before to recreate
+                m_iid_to_idx.erase(iid);
+                m_iid_to_idx.emplace(iid,i);
+                //remove shifted value also
+                m_idx_to_iid.erase(i+1);
+                
+                //to change name in gamepad info
+                Log::debug(m_log_tag, LOGMSG("name : %1").arg(QString::fromStdString(name)));
+                emit nameChanged(i, QString::fromStdString(name));
+            }
+            else
+            {//erase existing record in recalbox.conf (no need to clear hasmaps already erase and udpated)
+               RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), "");
+               emit removed(i); // remove last one in all cases
+            }
+        }
+        
+        //save in file for test purpose
+        RecalboxConf::Instance().Save();
 
-    emit disconnected(device_idx);
+    }
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur 2: %1.\n").arg(Exp.what()));
+    } 
+    catch ( const std::bad_alloc & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
+    } 
+    catch ( const std::out_of_range & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
+    }
 }
 
 void GamepadManagerSDL2::fwd_button_event(SDL_JoystickID instance_id, Uint8 button, bool pressed)
 {
-    const int device_idx = m_iid_to_idx.at(instance_id);
-    emit buttonChanged(device_idx, translate_button(button), pressed);
+    //Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::fwd_button_event(SDL_JoystickID instance_id, Uint8 button, bool pressed)"));
+    //catch exception to avoid issue !!!
+    try{
+        const int device_idx = m_iid_to_idx.at(instance_id);
+        emit buttonChanged(device_idx, translate_button(button), pressed);
+    }
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur 3: %1.\n").arg(Exp.what()));
+    } 
+    catch ( const std::bad_alloc & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
+    } 
+    catch ( const std::out_of_range & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
+    }    
 }
 
 void GamepadManagerSDL2::fwd_axis_event(SDL_JoystickID instance_id, Uint8 axis, Sint16 value)
 {
-    const int device_idx = m_iid_to_idx.at(instance_id);
-
-    const GamepadButton button = detect_trigger_axis(axis);
-    if (button != GamepadButton::INVALID) {
-        emit buttonChanged(device_idx, button, value != 0);
-        return;
+    //catch exception to avoid issue !!! can help in case of deconnection to any controller ;-)
+    try{
+        const int device_idx = m_iid_to_idx.at(instance_id);
+        const GamepadButton button = detect_trigger_axis(axis);
+        if (button != GamepadButton::INVALID) {
+            emit buttonChanged(device_idx, button, value != 0);
+            return;
+        }
+        const double dblval = value / static_cast<double>(std::numeric_limits<Sint16>::max());
+        emit axisChanged(device_idx, translate_axis(axis), dblval);
     }
-
-    const double dblval = value / static_cast<double>(std::numeric_limits<Sint16>::max());
-    emit axisChanged(device_idx, translate_axis(axis), dblval);
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug("GamepadManagerSDL2::fwd_axis_event", LOGMSG("Erreur : %1.\n").arg(Exp.what()));
+    } 
+    catch ( const std::bad_alloc & ) 
+    { 
+        Log::debug("GamepadManagerSDL2::fwd_axis_event", LOGMSG("Erreur : mémoire insuffisante.\n")); 
+    } 
+    catch ( const std::out_of_range & ) 
+    { 
+        Log::debug("GamepadManagerSDL2::fwd_axis_event", LOGMSG("Erreur : débordement de mémoire.\n")); 
+    }
 }
 
 void GamepadManagerSDL2::record_joy_button_maybe(SDL_JoystickID instance_id, Uint8 button)
 {
-    if (!m_recording.is_active())
-        return;
+    //Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::record_joy_button_maybe(SDL_JoystickID instance_id, Uint8 button)"));
+    //catch exception to avoid issue !!!
+    try{
 
-    const int device_idx = m_iid_to_idx.at(instance_id);
-    if (m_recording.device != device_idx)
-        return;
+        if (!m_recording.is_active())
+            return;
 
-    m_recording.value = generate_button_str(button);
-    finish_recording();
+        const int device_idx = m_iid_to_idx.at(instance_id);
+        if (m_recording.device != device_idx)
+            return;
+
+        m_recording.value = generate_button_str(button);
+        finish_recording();
+        }
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur 5: %1.\n").arg(Exp.what()));
+    } 
+    catch ( const std::bad_alloc & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
+    } 
+    catch ( const std::out_of_range & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
+    }
 }
 
 void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8 axis, Sint16 axis_value)
 {
-    if (!m_recording.is_active())
-        return;
+    //Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8 axis, Sint16 axis_value)"));
+    try{
+        if (!m_recording.is_active())
+            return;
 
-    const int device_idx = m_iid_to_idx.at(instance_id);
-    if (m_recording.device != device_idx)
-        return;
+        const int device_idx = m_iid_to_idx.at(instance_id);
+        if (m_recording.device != device_idx)
+            return;
 
-    constexpr Sint16 deadzone = std::numeric_limits<Sint16>::max() / 2;
-    if (-deadzone < axis_value && axis_value < deadzone)
-        return;
+        constexpr Sint16 deadzone = std::numeric_limits<Sint16>::max() / 2;
+        if (-deadzone < axis_value && axis_value < deadzone)
+            return;
 
-    if (axis_value == std::numeric_limits<Sint16>::min()) // some triggers start from negative
-        return;
+        if (axis_value == std::numeric_limits<Sint16>::min()) // some triggers start from negative
+            return;
 
-    m_recording.value = generate_axis_str(axis);
-    finish_recording();
+        m_recording.value = generate_axis_str(axis);
+        finish_recording();
+        }
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur 6: %1.\n").arg(Exp.what()));
+    } 
+    catch ( const std::bad_alloc & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
+    } 
+    catch ( const std::out_of_range & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
+    }
 }
 
 void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 hat, Uint8 hat_value)
 {
-    if (!m_recording.is_active())
-        return;
+    //Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 hat, Uint8 hat_value)"));
+    try{
+        if (!m_recording.is_active())
+            return;
 
-    const int device_idx = m_iid_to_idx.at(instance_id);
-    if (m_recording.device != device_idx)
-        return;
+        const int device_idx = m_iid_to_idx.at(instance_id);
+        if (m_recording.device != device_idx)
+            return;
 
-    if (hat_value == SDL_HAT_CENTERED)
-        return;
+        if (hat_value == SDL_HAT_CENTERED)
+            return;
 
-    m_recording.value = generate_hat_str(hat, hat_value);
-    finish_recording();
+        m_recording.value = generate_hat_str(hat, hat_value);
+        finish_recording();
+    }
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur 7: %1.\n").arg(Exp.what()));
+    } 
+    catch ( const std::bad_alloc & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
+    } 
+    catch ( const std::out_of_range & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
+    }
 }
 
 std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const field, const char* const recording_field,
@@ -564,57 +1003,74 @@ std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const fie
 
 std::string GamepadManagerSDL2::generate_mapping(int device_idx)
 {
-    Q_ASSERT(m_idx_to_device.count(device_idx) == 1);
-    const device_ptr& pad_ptr = m_idx_to_device.at(device_idx);
+    //Log::debug(LOGMSG("GamepadManagerSDL2::generate_mapping"));
+    try{
+        Q_ASSERT(m_iid_to_device.count(m_idx_to_iid.at(device_idx)) == 1);
+        
+        const device_ptr& pad_ptr = m_iid_to_device.at(m_idx_to_iid.at(device_idx));
 
-    std::array<char, GUID_LEN> guid_raw_str;
-    const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
-    SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());
+        std::array<char, GUID_LEN> guid_raw_str;
+        const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
+        SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());
 
-    std::vector<std::string> list;
-        list.emplace_back(utils::trimmed(guid_raw_str.data()));
-        list.emplace_back(SDL_GameControllerName(pad_ptr.get()));
+        std::vector<std::string> list;
+            list.emplace_back(utils::trimmed(guid_raw_str.data()));
+            list.emplace_back(SDL_GameControllerName(pad_ptr.get()));
 
-    const char* const recording_field = m_recording.is_active()
-        ? (m_recording.target_button != GamepadButton::INVALID)
-            ? to_fieldname(m_recording.target_button)
-            : to_fieldname(m_recording.target_axis)
-        : nullptr;
+        const char* const recording_field = m_recording.is_active()
+            ? (m_recording.target_button != GamepadButton::INVALID)
+                ? to_fieldname(m_recording.target_button)
+                : to_fieldname(m_recording.target_axis)
+            : nullptr;
 
-#define GEN(TYPE, MAX) \
-    for (int idx = 0; idx < MAX; idx++) { \
-        const auto item = static_cast<SDL_GameController##TYPE>(idx); \
-    \
-        const char* const field = SDL_GameControllerGetStringFor##TYPE(item); \
-        const auto current_bind = SDL_GameControllerGetBindFor##TYPE(pad_ptr.get(), item); \
-    \
-        std::string mapping = generate_mapping_for_field(field, recording_field, current_bind); \
-        if (!mapping.empty()) \
-            list.emplace_back(std::move(mapping)); \
+        #define GEN(TYPE, MAX) \
+            for (int idx = 0; idx < MAX; idx++) { \
+                const auto item = static_cast<SDL_GameController##TYPE>(idx); \
+            \
+                const char* const field = SDL_GameControllerGetStringFor##TYPE(item); \
+                const auto current_bind = SDL_GameControllerGetBindFor##TYPE(pad_ptr.get(), item); \
+            \
+                std::string mapping = generate_mapping_for_field(field, recording_field, current_bind); \
+                if (!mapping.empty()) \
+                    list.emplace_back(std::move(mapping)); \
+            }
+
+            GEN(Button, SDL_CONTROLLER_BUTTON_MAX)
+            GEN(Axis, SDL_CONTROLLER_AXIS_MAX)
+        #undef GEN
+
+        std::sort(list.begin() + 2, list.end());
+        if (version(2, 0, 5) <= m_sdl_version)
+            list.emplace_back(std::string("platform:") + SDL_GetPlatform());
+
+        size_t out_len = 0;
+        for (const std::string& item : list)
+            out_len += item.size() + 1;
+
+        std::string out;
+        out.reserve(out_len);
+        for (std::string& item : list)
+            out += std::move(item) + ',';
+
+        return out;
     }
-
-    GEN(Button, SDL_CONTROLLER_BUTTON_MAX)
-    GEN(Axis, SDL_CONTROLLER_AXIS_MAX)
-#undef GEN
-
-    std::sort(list.begin() + 2, list.end());
-    if (version(2, 0, 5) <= m_sdl_version)
-        list.emplace_back(std::string("platform:") + SDL_GetPlatform());
-
-    size_t out_len = 0;
-    for (const std::string& item : list)
-        out_len += item.size() + 1;
-
-    std::string out;
-    out.reserve(out_len);
-    for (std::string& item : list)
-        out += std::move(item) + ',';
-
-    return out;
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur 8: %1.\n").arg(Exp.what()));
+    } 
+    catch ( const std::bad_alloc & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
+    } 
+    catch ( const std::out_of_range & ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
+    }
 }
 
 void GamepadManagerSDL2::update_mapping_store(std::string new_mapping)
 {
+    //Log::debug(LOGMSG("void GamepadManagerSDL2::update_mapping_store(std::string new_mapping)"));
     const auto it = std::find_if(m_custom_mappings.begin(), m_custom_mappings.end(),
         [&new_mapping](const std::string& mapping){
             return mapping.compare(0, GUID_LEN, new_mapping, 0, GUID_LEN) == 0;
@@ -634,6 +1090,9 @@ void GamepadManagerSDL2::finish_recording()
         print_sdl_error();
         return;
     }
+
+    //added to update es_input.cfg for configgen interface
+    update_es_input(m_recording.device, new_mapping);
 
     update_mapping_store(std::move(new_mapping));
     write_mappings(m_custom_mappings);
