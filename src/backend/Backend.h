@@ -21,6 +21,8 @@
 
 #include <memory>
 
+#include "RecalboxConf.h"
+
 class ApiObject;
 class FrontendLayer;
 class ProcessLauncher;
@@ -42,6 +44,9 @@ public:
 private:
     // frontend <-> api <-> launcher
     // NOTE: unique_ptr had forward declaration issues
+    
+    //! Recalbox configuration
+    RecalboxConf mConfiguration;    
     ApiObject* m_api;
     FrontendLayer* m_frontend;
     ProcessLauncher* m_launcher;
