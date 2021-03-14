@@ -19,11 +19,8 @@ namespace {
 
 QString es_input_xml(const std::vector<QString>& possible_config_dirs)
 {
-    //Log::debug(LOGMSG("The possible_config_dirs are '%1'").arg(possible_config_dirs));
     for (const QString& dir_path : possible_config_dirs) {
-        //Log::debug(LOGMSG("The dir_path is '%1'").arg(dir_path));
         QString xml_path = dir_path + QStringLiteral("es_input.cfg");
-        //Log::debug(LOGMSG("The xml_path is '%1'").arg(xml_path));
         if (QFileInfo::exists(xml_path))
             return xml_path;
     }
@@ -33,9 +30,9 @@ QString es_input_xml(const std::vector<QString>& possible_config_dirs)
 
 providers::es2::inputConfigEntry find_input_entry(const QString& log_tag, QXmlStreamReader& xml, const QString& Name, const QString& GUID)
 {
-    Q_ASSERT(xml.isStartElement() && xml.name() == "inputConfig");
-
-    providers::es2::inputConfigEntry inputEntry;
+    Q_ASSERT(xml.isStartElement() && (xml.name() == "inputList"));
+    
+    providers::es2::inputConfigEntry inputConfigEntry;
     
     // read
     while (xml.readNextStartElement()) {
@@ -43,19 +40,17 @@ providers::es2::inputConfigEntry find_input_entry(const QString& log_tag, QXmlSt
         QString deviceName = xml.attributes().value("deviceName").toString();
         QString deviceGUID = xml.attributes().value("deviceGUID").toString();
         
-        //Log::debug(log_tag, LOGMSG("es_input.cfg - %1 found : %2/%3").arg(xml.name(),deviceName,deviceGUID));
-        
         if ((deviceName == Name) && (deviceGUID == GUID)){
             
-                inputEntry.inputConfigAttributs.type = xml.attributes().value("type").toString();
-                inputEntry.inputConfigAttributs.deviceName = deviceName;
-                inputEntry.inputConfigAttributs.deviceGUID = deviceGUID;
-                inputEntry.inputConfigAttributs.deviceNbAxes = xml.attributes().value("deviceNbAxes").toString();
-                inputEntry.inputConfigAttributs.deviceNbHats = xml.attributes().value("deviceNbHats").toString();
-                inputEntry.inputConfigAttributs.deviceNbButtons = xml.attributes().value("deviceNbButtons").toString();
+                inputConfigEntry.inputConfigAttributs.type = xml.attributes().value("type").toString();
+                inputConfigEntry.inputConfigAttributs.deviceName = deviceName;
+                inputConfigEntry.inputConfigAttributs.deviceGUID = deviceGUID;
+                inputConfigEntry.inputConfigAttributs.deviceNbAxes = xml.attributes().value("deviceNbAxes").toString();
+                inputConfigEntry.inputConfigAttributs.deviceNbHats = xml.attributes().value("deviceNbHats").toString();
+                inputConfigEntry.inputConfigAttributs.deviceNbButtons = xml.attributes().value("deviceNbButtons").toString();
                 while (xml.readNextStartElement()){
                     if (xml.name() == "input"){
-                        inputEntry.inputElements.append({ xml.attributes().value("name").toString()
+                        inputConfigEntry.inputElements.append({ xml.attributes().value("name").toString()
                                                           ,xml.attributes().value("type").toString()
                                                           ,xml.attributes().value("id").toString()
                                                           ,xml.attributes().value("value").toString()
@@ -76,7 +71,7 @@ providers::es2::inputConfigEntry find_input_entry(const QString& log_tag, QXmlSt
         return {};
 
     return {
-        std::move(inputEntry),
+        std::move(inputConfigEntry),
     };
 }
 
@@ -94,6 +89,7 @@ bool add_input_entry(const QString& log_tag, QFile& xml_file, const providers::e
         Log::debug(log_tag, LOGMSG("Problem to set DOM content to add input in es_input.cfg"));
         return false;
     }
+    xml_file.close();
 // <?xml version="1.0"?>
 // <inputList>
 	// <inputConfig type="keyboard" deviceName="Keyboard" deviceGUID="-1" deviceNbAxes="0" deviceNbHats="0" deviceNbButtons="120">
@@ -164,7 +160,12 @@ bool add_input_entry(const QString& log_tag, QFile& xml_file, const providers::e
 
         inputConfig.appendChild(input);
     }
-    inputList.appendChild(inputConfig);
+
+    if(inputList.appendChild(inputConfig).isNull())
+    {
+        Log::error(log_tag, LOGMSG("Problem to add in es_input.cfg using new inputConfig"));
+        return false;
+    }
 
     if(!xml_file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
@@ -180,10 +181,126 @@ bool add_input_entry(const QString& log_tag, QFile& xml_file, const providers::e
 
 bool update_input_entry(const QString& log_tag, QFile& xml_file, const providers::es2::inputConfigEntry& input_to_save)
 {
-    //TO DO
-    return false; // return as fault for the moment
-}
+    //open xml file to read content and create XML DOM object
+    if (!xml_file.open(QIODevice::ReadOnly))
+    {
+        Log::debug(log_tag, LOGMSG("Problem to open es_input.cfg in readonly"));
+        return false;
+    }    
+    QDomDocument doc;
+    if (!doc.setContent(&xml_file))
+    {
+        Log::debug(log_tag, LOGMSG("Problem to set DOM content to add input in es_input.cfg"));
+        return false;
+    }
+    xml_file.close();
+// <?xml version="1.0"?>
+// <inputList>
+	// <inputConfig type="keyboard" deviceName="Keyboard" deviceGUID="-1" deviceNbAxes="0" deviceNbHats="0" deviceNbButtons="120">
+		// <input name="a" type="key" id="115" value="1" code="168" />
+		// <input name="b" type="key" id="97" value="1" code="168" />
+		// <input name="down" type="key" id="1073741905" value="1" code="168" />
+		// <input name="hotkey" type="key" id="32" value="1" code="168" />
+		// <input name="left" type="key" id="1073741904" value="1" code="168" />
+		// <input name="pagedown" type="key" id="1073741902" value="1" code="168" />
+		// <input name="pageup" type="key" id="1073741899" value="1" code="168" />
+		// <input name="right" type="key" id="1073741903" value="1" code="168" />
+		// <input name="select" type="key" id="32" value="1" code="168" />
+		// <input name="start" type="key" id="13" value="1" code="168" />
+		// <input name="up" type="key" id="1073741906" value="1" code="168" />
+	// </inputConfig>
+// </inputList>
+    
+    QDomElement inputList = doc.documentElement();  // as root
+    
+    //find old child
+    QDomElement oldInputConfig;
+    QDomNode n = inputList.firstChild();
+    while (!n.isNull()) {
+        if (n.isElement()) {
+            QDomElement e = n.toElement();
+            if (e.tagName() == "inputConfig")
+            {
+                if((e.attribute("deviceName") == input_to_save.inputConfigAttributs.deviceName) && (e.attribute("deviceGUID") == input_to_save.inputConfigAttributs.deviceGUID))
+                {
+                    Log::warning(log_tag, LOGMSG("previous input config found for %1/%2").arg(input_to_save.inputConfigAttributs.deviceName,input_to_save.inputConfigAttributs.deviceGUID));
+                    oldInputConfig = e;
+                    break;
+                }
+            }
+        }
+    n = n.nextSibling();
+    }
+    
+    QDomElement inputConfig = doc.createElement(QString("inputConfig"));
 
+    QDomAttr type = doc.createAttribute(QString("type"));
+    type.setValue(input_to_save.inputConfigAttributs.type);
+    inputConfig.setAttributeNode(type);
+    
+    QDomAttr deviceName = doc.createAttribute(QString("deviceName"));
+    deviceName.setValue(input_to_save.inputConfigAttributs.deviceName);
+    inputConfig.setAttributeNode(deviceName);
+    
+    QDomAttr deviceGUID = doc.createAttribute(QString("deviceGUID"));
+    deviceGUID.setValue(input_to_save.inputConfigAttributs.deviceGUID);
+    inputConfig.setAttributeNode(deviceGUID);
+
+    QDomAttr deviceNbAxes = doc.createAttribute(QString("deviceNbAxes"));
+    deviceNbAxes.setValue(input_to_save.inputConfigAttributs.deviceNbAxes);
+    inputConfig.setAttributeNode(deviceNbAxes);
+
+    QDomAttr deviceNbHats = doc.createAttribute(QString("deviceNbHats"));
+    deviceNbHats.setValue(input_to_save.inputConfigAttributs.deviceNbHats);
+    inputConfig.setAttributeNode(deviceNbHats);
+
+    QDomAttr deviceNbButtons = doc.createAttribute(QString("deviceNbButtons"));
+    deviceNbButtons.setValue(input_to_save.inputConfigAttributs.deviceNbButtons);
+    inputConfig.setAttributeNode(deviceNbButtons);
+    
+    for (int idx = 0; idx < input_to_save.inputElements.size(); idx++) {
+        QDomElement input = doc.createElement(QString("input"));
+        
+        QDomAttr name = doc.createAttribute(QString("name"));
+        name.setValue(input_to_save.inputElements.at(idx).name);
+        input.setAttributeNode(name);
+
+        QDomAttr type = doc.createAttribute(QString("type"));
+        type.setValue(input_to_save.inputElements.at(idx).type);
+        input.setAttributeNode(type);
+        
+        QDomAttr id = doc.createAttribute(QString("id"));
+        id.setValue(input_to_save.inputElements.at(idx).id);
+        input.setAttributeNode(id);
+
+        QDomAttr value = doc.createAttribute(QString("value"));
+        value.setValue(input_to_save.inputElements.at(idx).value);
+        input.setAttributeNode(value);
+
+        QDomAttr code = doc.createAttribute(QString("code"));
+        code.setValue(input_to_save.inputElements.at(idx).code);
+        input.setAttributeNode(code);
+
+        inputConfig.appendChild(input);
+    }
+    
+    if(inputList.replaceChild(inputConfig,oldInputConfig).isNull())
+    {
+        Log::error(log_tag, LOGMSG("Problem to update es_input.cfg using new inputConfig"));
+        return false;
+    }
+
+    if(!xml_file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        Log::error(log_tag, LOGMSG("Problem to open es_input.cfg in WriteOnly|Truncate"));
+        return false;
+    }
+    QTextStream out(&xml_file);
+    doc.save(out, 4);
+    xml_file.close();
+
+    return true;
+}
 
 } // namespace
 
@@ -221,7 +338,18 @@ inputConfigEntry find_input(const QString& log_tag, const std::vector<QString>& 
     if (xml.error())
         Log::error(log_tag, xml.errorString());
     xml_file.close();
+    
+    if (inputentry.inputConfigAttributs.deviceName != DeviceName)
+    {
+        Log::error(log_tag, LOGMSG("%1 input configuration not found from es_input.cfg").arg(DeviceName));
+    }
+    else
+    {
+        Log::info(log_tag, LOGMSG("%1 input configuration found from es_input.cfg").arg(DeviceName));
+    }
+
     return inputentry;
+
 }
 
 bool save_input(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const inputConfigEntry& input_to_save)

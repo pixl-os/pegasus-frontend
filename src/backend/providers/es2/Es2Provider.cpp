@@ -106,17 +106,24 @@ inputConfigEntry Es2Provider::load_input_data(const QString& DeviceName, const Q
     }();
 
     // Find input
-    const inputConfigEntry input = find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUID);
-    if (input.inputConfigAttributs.deviceName != DeviceName)
-    {
-        Log::error(display_name(), LOGMSG("%1 input configuration not found from es_input.cfg").arg(DeviceName));
-    }
-    else
-    {
-        Log::info(display_name(), LOGMSG("%1 input configuration found from es_input.cfg").arg(DeviceName));
-    }
-    return input;
+    return find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUID);
+
 }
+
+bool Es2Provider::save_input_data(const inputConfigEntry& input)
+{   
+    std::vector<QString> possible_config_dirs = [this]{
+        const auto option_it = options().find(QStringLiteral("installdir"));
+        return (option_it != options().cend())
+            ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
+            : default_config_paths();
+    }();
+    const inputConfigEntry& input_to_save = input;
+    // save input
+    return save_input(display_name(), possible_config_dirs, input_to_save);
+    
+}
+
 
 } // namespace es2
 } // namespace providers

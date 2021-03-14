@@ -11,7 +11,6 @@
 #include <QDomElement>
 #include <QDomAttr>
 
-
 /* #example of es_input.cfg
 <?xml version="1.0"?>
 <inputList>
@@ -67,7 +66,7 @@ struct inputConfigEntry {
 };
 
 inputConfigEntry find_input(const QString&, const std::vector<QString>&, const QString&, const QString&);
-bool save_input(const QString&, QFile&, inputConfigEntry&);
+bool save_input(const QString&, const std::vector<QString>&, const inputConfigEntry&);
 
 // for future if needed: bool delete_input(const QString&, QFile&, inputConfigEntry&);
 

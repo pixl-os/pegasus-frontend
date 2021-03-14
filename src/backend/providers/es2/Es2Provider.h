@@ -32,6 +32,7 @@ public:
 
     Provider& run(SearchContext&) final;
     inputConfigEntry load_input_data(const QString&, const QString&);
+    bool save_input_data(const inputConfigEntry&);
 };
 
 } // namespace es2
