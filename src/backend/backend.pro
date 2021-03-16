@@ -8,6 +8,8 @@ android: QT += androidextras
 
 isEmpty(USE_SDL_GAMEPAD): QT += gamepad
 
+!isEmpty(NO_LEGACY_SDL): DEFINES *= WITHOUT_LEGACY_SDL
+
 !isEmpty(INSIDE_FLATPAK): DEFINES *= PEGASUS_INSIDE_FLATPAK
 msvc: DEFINES *= _USE_MATH_DEFINES
 

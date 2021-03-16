@@ -416,14 +416,21 @@ void update_es_input(int device_idx, std::string new_mapping)
                 type = "axis";
                 if (sign == 0) value = "-1"; // non-signed axes are affected to joysticks: always left or up
                 else value = QString::number(sign); // Otherwise, take the sign as-is
+                #ifdef WITHOUT_LEGACY_SDL
+                code = "0"; //for QT creator test without SDL 1 compatibility
+                #else
                 code = QString::number(SDL_JoystickAxisEventCodeById(device_idx, id.toInt()));
+                #endif
             break;
             case const_hash("b"):
                 NbButtons = NbButtons + 1;
                 type = "button";
                 value = "1";
+                #ifdef WITHOUT_LEGACY_SDL
+                code = "0"; //for QT creator test without SDL 1 compatibility
+                #else
                 code = QString::number(SDL_JoystickButtonEventCodeById(device_idx, id.toInt()));
-                Log::debug(LOGMSG("code:`%1`").arg(code));
+                #endif                
             break;
             case const_hash("h"):
                 NbHats = NbHats + 1;
@@ -436,7 +443,6 @@ void update_es_input(int device_idx, std::string new_mapping)
                 // type = "key";
                 // value = "1";
             // break;
-            
         }
 
         if(type == "hat")        
@@ -444,8 +450,17 @@ void update_es_input(int device_idx, std::string new_mapping)
             QStringList HatData = id.split(".");
             id = HatData.at(0);
             value = HatData.at(1);
+            #ifdef WITHOUT_LEGACY_SDL
+            code = "0"; //for QT creator test without SDL 1 compatibility
+            #else
             code = QString::number(SDL_JoystickHatEventCodeById(device_idx, id.toInt()));
+            #endif 
         }
+        #ifdef WITHOUT_LEGACY_SDL
+        Log::debug(LOGMSG("code:`%1` - SDL 1 not supported !").arg(code)); //for QT creator test without SDL 1 compatibility
+        #else
+        Log::debug(LOGMSG("code:`%1`").arg(code));
+        #endif 
         
         Log::debug(LOGMSG("id:`%1`").arg(id));
         
@@ -633,6 +648,7 @@ void GamepadManagerSDL2::poll()
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
             case SDL_CONTROLLERDEVICEADDED:
+                Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEADDED"));
                 // ignored in favor of SDL_JOYDEVICEADDED
                 break;
             case SDL_CONTROLLERDEVICEREMOVED:
@@ -651,7 +667,15 @@ void GamepadManagerSDL2::poll()
                 // ignored in favor of SDL_CONTROLLERDEVICEREMOVED
                 break;
             case SDL_CONTROLLERBUTTONUP:
+                Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONUP"));
+                // also ignore input from other (non-recording) gamepads
+                if (!m_recording.is_active()) {
+                    const bool pressed = event.cbutton.state == SDL_PRESSED;
+                    fwd_button_event(event.cbutton.which, event.cbutton.button, pressed);
+                }
+                break;
             case SDL_CONTROLLERBUTTONDOWN:
+                Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONDOWN"));
                 // also ignore input from other (non-recording) gamepads
                 if (!m_recording.is_active()) {
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
@@ -659,19 +683,24 @@ void GamepadManagerSDL2::poll()
                 }
                 break;
             case SDL_CONTROLLERAXISMOTION:
+                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERAXISMOTION"));
                 if (!m_recording.is_active())
                     fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
                 break;
             case SDL_JOYBUTTONUP:
+                Log::debug(LOGMSG("SDL: SDL_JOYBUTTONUP"));
                 // ignored
                 break;
             case SDL_JOYBUTTONDOWN:
+                Log::debug(LOGMSG("SDL: SDL_JOYBUTTONDOWN"));
                 record_joy_button_maybe(event.jbutton.which, event.jbutton.button);
                 break;
             case SDL_JOYHATMOTION:
+                Log::debug(LOGMSG("SDL: SDL_JOYHATMOTION"));
                 record_joy_hat_maybe(event.jhat.which, event.jhat.hat, event.jhat.value);
                 break;
             case SDL_JOYAXISMOTION:
+                //Log::debug(LOGMSG("SDL: SDL_JOYAXISMOTION"));
                 record_joy_axis_maybe(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
                 break;
             default:
@@ -716,8 +745,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         m_iid_to_idx.emplace(iid, device_idx);
         m_iid_to_device.emplace(iid, device_ptr(pad, SDL_GameControllerClose));
         
-        Log::debug(m_log_tag, LOGMSG("device_idx : %1").arg(device_idx));
-        Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
+        Log::debug(m_log_tag, LOGMSG("device_idx : %1").arg(device_idx)); 
             
         //Get GUID
         constexpr size_t GUID_LEN = 33; // 16x2 + null
@@ -733,8 +761,15 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 
         //persistence saved in recalbox.conf
         const QString Parameter = QString("pegasus.pad%1").arg(device_idx);
-       // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
+        #ifdef WITHOUT_LEGACY_SDL
+        //for QT creator test without SDL 1 compatibility
+        Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
+        const QString Value = QString("%1:%2:%3").arg(guid_str,name,"/dev/input/bidon");
+        #else
+        // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
+        Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
         const QString Value = QString("%1:%2:%3").arg(guid_str,name,SDL_JoystickDevicePathById(device_idx));
+        #endif   
         Log::debug(m_log_tag, LOGMSG("Saved as %1=%2").arg(Parameter,Value));
         RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), Value.toUtf8().constData());
         
@@ -956,7 +991,7 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
 
 void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 hat, Uint8 hat_value)
 {
-    //Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 hat, Uint8 hat_value)"));
+    Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::record_joy_hat_maybe- instance_id = %1, hat = %2, hat_value = %3").arg(QString::number(instance_id),QString::number(hat),QString::number(hat_value)));
     try{
         if (!m_recording.is_active())
             return;
