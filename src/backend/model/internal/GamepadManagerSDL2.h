@@ -68,6 +68,7 @@ private:
         GamepadButton target_button = GamepadButton::INVALID;
         GamepadAxis target_axis = GamepadAxis::INVALID;
         std::string value;
+        std::string sign;
 
         bool is_active() const;
         void reset();
@@ -79,7 +80,7 @@ private:
     void finish_recording();
     void update_mapping_store(std::string);
 
-    std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&);
+    std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&, std::string mapping);
     std::string generate_mapping(int);
     std::vector<std::string> m_custom_mappings;
     void load_user_gamepaddb(const QString&);
