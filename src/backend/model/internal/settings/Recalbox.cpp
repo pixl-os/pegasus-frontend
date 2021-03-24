@@ -43,7 +43,6 @@ void Recalbox::setIntParameter(const QString& Parameter, const int& Value)
 void Recalbox::saveParameters()
     {
       RecalboxConf::Instance().Save();
-      Log::info(LOGMSG("Recalbox.conf saved."));
     }
 
 } // namespace model

@@ -1,7 +1,6 @@
 #include "Log.h"
 #include "RecalboxConf.h"
 #include <utils/Files.h>
-//#include <usernotifications/NotificationManager.h>
 
 static Path recalboxConfFile("/recalbox/share/system/recalbox.conf");
 static Path recalboxConfFileInit("/recalbox/share_init/system/recalbox.conf");
@@ -15,7 +14,6 @@ RecalboxConf::RecalboxConf()
 
 void RecalboxConf::OnSave()
 {
-    Log::debug(LOGMSG("Recalbox.conf saved."));
-  //NotificationManager::Instance().Notify(Notification::ConfigurationChanged, recalboxConfFile.ToString());
+    Log::info(LOGMSG("recalbox.conf file saved."));
 }
 
