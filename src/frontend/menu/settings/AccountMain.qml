@@ -55,7 +55,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Account") + api.tr
+        text: qsTr("Accounts") + api.tr
         z: 2
     }
     Flickable {
@@ -108,7 +108,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Activate Retroachievement") + api.tr
-                    note: qsTr("Unlock Trophées") + api.tr
+                    note: qsTr("Achievements to your favourite retro games.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements")
                     onCheckedChanged: {
@@ -123,7 +123,7 @@ FocusScope {
                     id: optRetroachievementLoginIn
 
                     label: qsTr("Connect Retroachievement") + api.tr
-                    note: qsTr("Connect your account retroachievement") + api.tr
+                    note: qsTr("Connect your account.") + api.tr
                     onActivate: {
                         focus = true;
                         root.openMenuBoxSettings();
@@ -135,12 +135,25 @@ FocusScope {
                     id: optHardcoreRetroachievementActivate
 
                     label: qsTr("Hardcore Retroachievement") + api.tr
-                    note: qsTr("Unlock Trophées without cheats and rewind") + api.tr
+                    note: qsTr("Unlock Trophées without cheats and rewind. \nOnly work with Retroarch.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.hardcore")
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScreenshootsAchievementActivate
+                }
+                ToggleOption {
+                    id: optScreenshootsAchievementActivate
+                    label: qsTr("Auto screenshot") + api.tr
+                    note: qsTr("Take an screenshot when an achievement is triggere.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayInformation
@@ -154,7 +167,6 @@ FocusScope {
 
                     label: qsTr("Netplay Information") + api.tr
                     note: qsTr("Show netplay information roms etc ...") + api.tr
-                    //                    value: api.internal.settings.locales.currentName
 
                     onActivate: {
                         focus = true;

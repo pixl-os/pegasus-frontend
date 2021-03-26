@@ -106,7 +106,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Pair Bluetooth Controllers") + api.tr
-                    note: qsTr("pair bluetooth controllers ") + api.tr
+                    note: qsTr("") + api.tr
                     onActivate: {
                         focus = true;
                         root.openKeySettings();
@@ -130,7 +130,7 @@ FocusScope {
                     id: optAdvancedControllers
 
                     label: qsTr("Advanced Controllers Configuration") + api.tr
-                    note: qsTr("Choose your drivers or Spécial Controllers") + api.tr
+                    note: qsTr("Choose your drivers or Special Controllers") + api.tr
                     onActivate: {
                         focus = true;
                         root.openAdvancedControllersConfiguration();

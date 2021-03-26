@@ -25,7 +25,7 @@ FocusScope {
     signal close()
     signal requestShutdown()
     signal requestReboot()
-//    signal requestQuit()
+    //    signal requestQuit()
 
     function triggerClose() {
         root.state = "";
@@ -82,20 +82,20 @@ FocusScope {
 
         focus: true
 
-//          add recalbox menu
-          onShowAccountSettings: root.openScreen("menu/AccountSettings.qml")
-          onShowControllersSettings: root.openScreen("menu/ControllersSettings.qml")
-          onShowGamesSettings: root.openScreen("menu/GamesSettings.qml")
-          onShowInterfaceSettings: root.openScreen("menu/InterfaceSettings.qml")
-          onShowSystemSettings: root.openScreen("menu/SystemSettings.qml")
+        // add recalbox menu
+        onShowAccountSettings: root.openScreen("menu/AccountSettings.qml")
+        onShowControllersSettings: root.openScreen("menu/ControllersSettings.qml")
+        onShowGamesSettings: root.openScreen("menu/GamesSettings.qml")
+        onShowInterfaceSettings: root.openScreen("menu/InterfaceSettings.qml")
+        onShowSystemSettings: root.openScreen("menu/SystemSettings.qml")
 
-//        onShowSettingsScreen: root.openScreen("menu/SettingsScreen.qml")
-//        onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")
+        // onShowSettingsScreen: root.openScreen("menu/SettingsScreen.qml")
+        // onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")
 
         onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
-//        onRequestQuit: root.requestQuit()
+        // onRequestQuit: root.requestQuit()
     }
 
     Loader {

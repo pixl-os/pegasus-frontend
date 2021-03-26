@@ -39,7 +39,6 @@ FocusScope {
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
-            api.internal.recalbox.saveParameters();
             root.close();
             api.internal.recalbox.saveParameters();
         }
@@ -97,25 +96,6 @@ FocusScope {
                 Item {
                     width: parent.width
                     height: header.height + vpx(25)
-                }
-                SectionTitle {
-                    text: qsTr("System") + api.tr
-                    first: true
-                }
-                ToggleOption {
-                    id: optDebugMode
-
-                    label: qsTr("Debug mode") + api.tr
-                    note: qsTr("Give me your log baby !!! ;-)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("emulationstation.debuglogs")
-                    onCheckedChanged: {
-                        focus = true;
-                        api.internal.recalbox.setBoolParameter("emulationstation.debuglogs",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optKbLayout
-                    KeyNavigation.down: optOutputAudio
                 }
                 SectionTitle {
                     text: qsTr("Sound Configuration") + api.tr
@@ -276,6 +256,25 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this);
                     KeyNavigation.down: optDebugMode
+                }
+                SectionTitle {
+                    text: qsTr("System") + api.tr
+                    first: true
+                }
+                ToggleOption {
+                    id: optDebugMode
+
+                    label: qsTr("Debug mode") + api.tr
+                    note: qsTr("Give me your log baby !!! ;-)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("emulationstation.debuglogs")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("emulationstation.debuglogs",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optKbLayout
+                    KeyNavigation.down: optOutputAudio
                 }
                 Item {
                     width: parent.width

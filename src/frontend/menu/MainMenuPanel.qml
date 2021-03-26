@@ -66,7 +66,7 @@ FocusScope {
 
         PrimaryMenuItem {
             id: mbAccountSettings
-            text: qsTr("Account") + api.tr
+            text: qsTr("Accounts") + api.tr
             onActivated: {
                 focus = true;
                 root.showAccountSettings();
