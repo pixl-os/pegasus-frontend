@@ -119,7 +119,11 @@ void GamepadManager::bkOnConnected(int device_id, QString name)
 
     Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_id), name));
     
+    //test with 2 seconds
+    emit showPopup(QStringLiteral("Connected device %1 (%2)").arg(pretty_id(device_id), name), 2);
+    
     emit connected(device_id);
+    
 }
 
 void GamepadManager::bkOnDisconnected(int device_id)

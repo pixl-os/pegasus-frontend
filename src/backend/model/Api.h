@@ -69,12 +69,14 @@ signals:
     void eventLoadingStarted();
     void eventSelectGameFile(model::Game* game);
     void eventLaunchError(QString msg);
+    void showPopup(QString message, int delay);
 
 public slots:
     // game launch communication
     void onGameFinished();
     void onGameLaunchOk();
     void onGameLaunchError(QString);
+    void onShowPopup(QString, int);
 
 private slots:
     // internal communication
