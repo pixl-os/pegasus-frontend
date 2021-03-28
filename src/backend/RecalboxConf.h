@@ -1,6 +1,8 @@
 //
 // Created by matthieu on 12/09/15.
 //
+// From recalbox ES and Integrated by BozoTheGeek 26/03/2021 in Pegasus Front-end
+//
 #pragma once
 
 #include <utils/IniFile.h>
@@ -10,7 +12,7 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
 {
   public:
     /*!
-     * @brief Confstructor
+     * @brief Constructor
      * @param initialConfigOnly true if only the original file has to be loaded
      */
     explicit RecalboxConf();

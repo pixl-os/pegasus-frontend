@@ -1,5 +1,10 @@
+//
+// From recalbox ES and Integrated by BozoTheGeek 26/03/2021 in Pegasus Front-end
+//
+
 #include "Log.h"
 #include "RecalboxConf.h"
+#include "ScriptManager.h"
 #include <utils/Files.h>
 
 static Path recalboxConfFile("/recalbox/share/system/recalbox.conf");
@@ -15,5 +20,6 @@ RecalboxConf::RecalboxConf()
 void RecalboxConf::OnSave()
 {
     Log::info(LOGMSG("recalbox.conf file saved."));
+    ScriptManager::Instance().Notify(Notification::ConfigurationChanged, recalboxConfFile.ToString());
 }
 

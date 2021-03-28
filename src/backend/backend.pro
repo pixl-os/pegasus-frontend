@@ -25,7 +25,8 @@ SOURCES += \
     AppSettings.cpp \
     Log.cpp \
     GamepadButtonNavigation.cpp \
-    RecalboxConf.cpp
+    RecalboxConf.cpp \
+    ScriptManager.cpp
 
 HEADERS += \
     Backend.h \
@@ -39,7 +40,8 @@ HEADERS += \
     AppSettings.h \
     Log.h \
     GamepadButtonNavigation.h \
-    RecalboxConf.h
+    RecalboxConf.h \
+    ScriptManager.h
 
 include(imggen/imggen.pri)
 include(model/model.pri)
