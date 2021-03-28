@@ -217,6 +217,7 @@ Window {
             // need QtQuick.Controls 2.15
             //genericPopup.setSource("dialogs/GenericPopup.qml",{ "msg": msg, "delay": time });
             //genericPopup.focus = true;
+            //TO DO
         }
         function onEventLoadingStarted() {
             splashScreen.focus = true;
