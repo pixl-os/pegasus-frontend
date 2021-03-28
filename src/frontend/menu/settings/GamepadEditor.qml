@@ -42,15 +42,29 @@ FocusScope {
 
 
     property ConfigField recordingField: null
+    
     function recordConfig(configField) {
+        
+        //console.log("function recordConfig(configField)");
+        //console.log("configField : ",configField);
+        //console.log("recordingField : ",recordingField);
+        //if (recordingField !== null) console.log("recordingField.recording : ",recordingField.recording);
+        
         // turn off the previously recording field
         if (recordingField !== null && configField !== recordingField)
+           {
             recordingField.recording = false;
-
+            //console.log("recordingField.recording = false");
+           }
+        
         // turn on the currently recording one
         recordingField = configField
         if (recordingField !== null)
+           {
             recordingField.recording = true;
+            //console.log("recordingField.recording = true");
+           }
+    
     }
 
     property real escapeDelay: 1500
@@ -92,9 +106,18 @@ FocusScope {
 
     Connections {
         target: api.internal.gamepad
-        function onButtonConfigured() { recordConfig(null); }
-        function onAxisConfigured() { recordConfig(null); }
-        function onConfigurationCanceled() { recordConfig(null); }
+        function onButtonConfigured() { 
+                                        //console.log("function onButtonConfigured()");
+                                        recordConfig(null); 
+                                      }
+        function onAxisConfigured() { 
+                                        //console.log("function onAxisConfigured()");
+                                        recordConfig(null); 
+                                    }
+        function onConfigurationCanceled() {
+                                            //console.log("function onConfigurationCanceled()");
+                                            recordConfig(null); 
+                                            }
     }
 
     Rectangle {
@@ -181,7 +204,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L1);
                 }
@@ -200,7 +223,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L2);
                 }
@@ -229,7 +252,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Up);
                 }
@@ -248,7 +271,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Down);
                 }
@@ -267,7 +290,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Left);
                 }
@@ -286,7 +309,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Right);
                 }
@@ -316,7 +339,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.LeftX);
                 }
@@ -335,7 +358,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.LeftY);
                 }
@@ -354,7 +377,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L3);
                 }
@@ -384,7 +407,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R1);
                 }
@@ -402,7 +425,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R2);
                 }
@@ -424,14 +447,21 @@ FocusScope {
                 id: configA
                 text: "a"
                 onActiveFocusChanged:
-                    if (activeFocus) padPreview.currentButton = "a"
-
+                {
+                    //console.log("GamepadEditor.qml : activeFocus = ",activeFocus);
+                    if (activeFocus) {
+                        //console.log("GamepadEditor.qml : onActiveFocusChanged");
+                        padPreview.currentButton = "a";
+                    }
+                }
                 pressed: gamepad && gamepad.buttonSouth
                 Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                    //console.log("GamepadEditor.qml : Keys.onPressed");
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
+                    //console.log("GamepadEditor.qml : Keys.onReleased of a");
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.South);
                 }
@@ -449,7 +479,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.East);
                 }
@@ -467,7 +497,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.West);
                 }
@@ -485,7 +515,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.North);
                 }
@@ -515,7 +545,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.RightX);
                 }
@@ -533,7 +563,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.RightY);
                 }
@@ -551,7 +581,7 @@ FocusScope {
                     event.accepted = true;
                     recordConfig(this);
                 }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                     event.accepted = true;
                     api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R3);
                 }
@@ -585,7 +615,7 @@ FocusScope {
                         event.accepted = true;
                         recordConfig(this);
                     }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                         event.accepted = true;
                         api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Select);
                     }
@@ -605,7 +635,7 @@ FocusScope {
                         event.accepted = true;
                         recordConfig(this);
                     }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                         event.accepted = true;
                         api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Guide);
                     }
@@ -624,7 +654,7 @@ FocusScope {
                         event.accepted = true;
                         recordConfig(this);
                     }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
                         event.accepted = true;
                         api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Start);
                     }
