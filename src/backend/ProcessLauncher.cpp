@@ -24,6 +24,7 @@
 #include "platform/TerminalKbd.h"
 #include "utils/CommandTokenizer.h"
 #include "utils/Strings.h"
+#include "utils/PathTools.h"
 
 //to access es_input.cfg
 #include "providers/es2/Es2Provider.h"
