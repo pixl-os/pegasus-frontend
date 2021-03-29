@@ -70,7 +70,7 @@ SOURCES += \
     $$PWD/Http.cpp \
     $$PWD/IniFile.cpp \
     $$PWD/KeySequenceTools.cpp \
-    $$PWD/PathCheck.cpp \
+    $$PWD/PathTools.cpp \
     $$PWD/rLog.cpp \
     $$PWD/RootFolders.cpp \
     $$PWD/SqliteDb.cpp \
