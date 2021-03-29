@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.8
+import QtQuick 2.12
 
 // FIXME: this class is a copy of PadButton
 Item {
@@ -38,7 +38,7 @@ Item {
 
     Rectangle {
         id: highlight
-        color: pressed ? "#393": "#3cc"
+        color: pressed ? "#393": themeColor.underline
         width: height * 1.25
         height: parent.height * 0.4
         anchors {

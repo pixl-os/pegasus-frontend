@@ -15,13 +15,14 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import QtQuick 2.12
 
 
 FocusScope {
     id: root
 
     property alias label: label.text
+    property alias note: sublabel.text
 
     readonly property int fontSize: vpx(22)
     readonly property int horizontalPadding: vpx(30)
@@ -30,7 +31,8 @@ FocusScope {
 
 
     width: parent.width
-    height: fontSize * 2.5
+//    height: fontSize * 2.5
+    height: labelContainer.height + fontSize * 1.25
 
     Keys.onPressed: {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
@@ -47,21 +49,50 @@ FocusScope {
         height: vpx(3)
         anchors.bottom: parent.bottom
 
-        color: "#3aa"
+        color: themeColor.underline
         visible: parent.focus || mouseArea.containsMouse
     }
 
-    Text {
-        id: label
+    Column {
+        id: labelContainer
+        anchors {
+            left: parent.left; leftMargin: horizontalPadding
+            right: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+        }
 
-        anchors.left: parent.left
-        anchors.leftMargin: horizontalPadding
-        anchors.verticalCenter: parent.verticalCenter
+        spacing: fontSize * 0.25
+        height: label.height + (sublabel.text ? spacing + sublabel.height : 0)
 
-        color: "#eee"
-        font.pixelSize: fontSize
-        font.family: globalFonts.sans
+
+        Text {
+            id: label
+
+            color: themeColor.textLabel
+            font.pixelSize: fontSize
+            font.family: globalFonts.sans
+        }
+
+        Text {
+            id: sublabel
+
+            color: themeColor.textSublabel
+            font.pixelSize: fontSize * 0.8
+            font.family: globalFonts.sans
+            font.italic: true
+        }
     }
+//    Text {
+//        id: label
+
+//        anchors.left: parent.left
+//        anchors.leftMargin: horizontalPadding
+//        anchors.verticalCenter: parent.verticalCenter
+
+//        color: "#eee"
+//        font.pixelSize: fontSize
+//        font.family: globalFonts.sans
+//    }
 
     MouseArea {
         id: mouseArea

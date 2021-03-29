@@ -17,7 +17,7 @@
 
 import "mainmenu"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.8
+import QtQuick 2.12
 
 
 FocusScope {
@@ -29,12 +29,17 @@ FocusScope {
     enabled: focus
 
     signal close
-    signal showSettingsScreen
-    signal showHelpScreen
+    signal showAccountSettings
+    signal showControllersSettings
+    signal showGamesSettings
+    signal showInterfaceSettings
+    signal showSystemSettings
+    //    signal showSettingsScreen
+    //    signal showHelpScreen
 
     signal requestShutdown
     signal requestReboot
-    signal requestQuit
+    //    signal requestQuit
 
     Keys.onPressed: {
         if (event.isAutoRepeat)
@@ -45,46 +50,87 @@ FocusScope {
             root.close();
         }
     }
-
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
-
     Rectangle {
-        color: "#333"
+        color: themeColor.main
         anchors.fill: parent
     }
-
     Column {
         width: parent.width
         anchors.bottom: parent.bottom
         anchors.bottomMargin: vpx(30)
 
         PrimaryMenuItem {
-            id: mbSettings
-            text: qsTr("Settings") + api.tr
+            id: mbAccountSettings
+            text: qsTr("Accounts") + api.tr
             onActivated: {
                 focus = true;
-                root.showSettingsScreen();
+                root.showAccountSettings();
             }
             selected: focus
 
             enabled: api.internal.meta.allowSettings
             visible: enabled
 
-            KeyNavigation.down: mbHelp
+            KeyNavigation.down: mbControllersSettings
         }
         PrimaryMenuItem {
-            id: mbHelp
-            text: qsTr("Help") + api.tr
+            id: mbControllersSettings
+            text: qsTr("Controllers") + api.tr
             onActivated: {
                 focus = true;
-                root.showHelpScreen();
+                root.showControllersSettings();
             }
             selected: focus
+
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
+
+            KeyNavigation.down: mbInterfaceSettings
+        }
+        PrimaryMenuItem {
+            id: mbInterfaceSettings
+            text: qsTr("Interface") + api.tr
+            onActivated: {
+                focus = true;
+                root.showInterfaceSettings();
+            }
+            selected: focus
+
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
+
+            KeyNavigation.down: mbGamesSettings
+        }
+        PrimaryMenuItem {
+            id: mbGamesSettings
+            text: qsTr("Games") + api.tr
+            onActivated: {
+                focus = true;
+                root.showGamesSettings();
+            }
+            selected: focus
+
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
+
+            KeyNavigation.down: mbSystemSettings
+        }
+        PrimaryMenuItem {
+            id: mbSystemSettings
+            text: qsTr("Settings") + api.tr
+            onActivated: {
+                focus = true;
+                root.showSystemSettings();
+            }
+            selected: focus
+
+            enabled: api.internal.meta.allowSettings
+            visible: enabled
 
             KeyNavigation.down: scopeQuit
         }
@@ -95,11 +141,11 @@ FocusScope {
             enabled: callable
             visible: callable
             readonly property bool callable: mbQuitShutdown.callable
-                || mbQuitReboot.callable
-                || mbQuitExit.callable
+                                             || mbQuitReboot.callable
+            //                || mbQuitExit.callable
 
             Component.onCompleted: {
-                const first_callable = [mbQuitShutdown, mbQuitReboot, mbQuitExit].find(e => e.callable);
+                const first_callable = [mbQuitShutdown, mbQuitReboot].find(e => e.callable);
                 if (first_callable) {
                     first_callable.focus = true;
                     scopeQuit.focus = true;
@@ -107,7 +153,6 @@ FocusScope {
                     mbHelp.focus = true;
                 }
             }
-
             entries: [
                 SecondaryMenuItem {
                     id: mbQuitShutdown
@@ -129,23 +174,23 @@ FocusScope {
                     enabled: callable
                     visible: callable
 
-                    KeyNavigation.down: mbQuitExit
-                },
-                SecondaryMenuItem {
-                    id: mbQuitExit
-                    text: qsTr("Exit Pegasus") + api.tr
-                    onActivated: requestQuit()
-
-                    readonly property bool callable: api.internal.meta.allowAppClose
-                    enabled: callable
-                    visible: callable
-
                     KeyNavigation.down: mbQuitShutdown
                 }
+                //                SecondaryMenuItem {
+                //                    id: mbQuitExit
+                //                    text: qsTr("Exit Pegasus") + api.tr
+                //                    onActivated: requestQuit()
+
+                //                    readonly property bool callable: api.internal.meta.allowAppClose
+                //                    enabled: callable
+                //                    visible: callable
+
+                //                    KeyNavigation.down: mbQuitShutdown
+                //                }
             ]
+            KeyNavigation.down: mbAccountSettings
         }
     }
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: close()

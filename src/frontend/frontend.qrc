@@ -8,8 +8,6 @@
         <file>assets/pbar-left.png</file>
         <file>assets/pbar-right.png</file>
         <file>assets/pbar.png</file>
-        <file>assets/qr-docs.png</file>
-        <file>assets/qt-logo.png</file>
         <file>assets/gamepad/a.svg</file>
         <file>assets/gamepad/b.svg</file>
         <file>assets/gamepad/base.svg</file>
@@ -30,7 +28,6 @@
         <file>menu/HelpScreen.qml</file>
         <file>menu/MainMenuPanel.qml</file>
         <file>menu/MenuScreen.qml</file>
-        <file>menu/SettingsScreen.qml</file>
         <file>menu/help/QrBox.qml</file>
         <file>menu/help/SectionTitle.qml</file>
         <file>menu/mainmenu/GenericMenuItem.qml</file>
@@ -73,5 +70,21 @@
         <file>dialogs/MultifileSelector.qml</file>
         <file>dialogs/Shade.qml</file>
         <file>dialogs/GenericOkDialog.qml</file>
+        <file>menu/AccountSettings.qml</file>
+        <file>menu/SystemSettings.qml</file>
+        <file>menu/GamesSettings.qml</file>
+        <file>menu/ControllersSettings.qml</file>
+        <file>menu/InterfaceSettings.qml</file>
+        <file>menu/settings/AccountMain.qml</file>
+        <file>menu/settings/ControllersMain.qml</file>
+        <file>menu/settings/GamesMain.qml</file>
+        <file>menu/settings/InterfaceMain.qml</file>
+        <file>menu/settings/BiosChecking.qml</file>
+        <file>menu/settings/AdvancedEmulator.qml</file>
+        <file>menu/settings/MenuBox.qml</file>
+        <file>assets/recalbox-next.svg</file>
+        <file>menu/settings/AdvancedControllersConf.qml</file>
+        <file>menu/settings/NetplayInformation.qml</file>
+        <file>menu/settings/common/TextField.qml</file>
     </qresource>
 </RCC>

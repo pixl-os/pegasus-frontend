@@ -47,8 +47,6 @@ FocusScope {
         }
     }
 
-
-
     Shade {
         id: shade
         onCancel: root.cancel()
@@ -60,156 +58,168 @@ FocusScope {
         width: dialogBox.width
         height: dialogBox.height
     }
+
+//    Rectangle {
+//        anchors.centerIn: dialogBox
+//        width: dialogBox.width
+//        height: dialogBox.height
+//        radius: vpx(8)
+//        color: "#484"
+//    }
+
     Column {
-        id: dialogBox
+            id: dialogBox
 
-        width: parent.height * 0.66
-        anchors.centerIn: parent
-        scale: 0.5
+            width: parent.height * 0.66
+            anchors.centerIn: parent
+//            scale: 0.5
 
-        Behavior on scale { NumberAnimation { duration: 125 } }
+            Behavior on opacity { NumberAnimation { duration: 125 } }
 
-        // title bar
-        Rectangle {
-            id: titleBar
-            width: parent.width
-            height: root.titleTextSize * 2.25
-            color: "#333"
-
-            Text {
-                id: titleText
-
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    leftMargin: root.titleTextSize * 0.75
-                }
-
-                color: "#eee"
-                font {
-                    bold: true
-                    pixelSize: root.titleTextSize
-                    family: globalFonts.sans
-                }
-            }
-
-            Text {
-                id: symbolText
-
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    right: parent.right
-                    rightMargin: root.titleTextSize * 0.75
-                }
-
-                color: "#6ff"
-                font {
-                    bold: true
-                    pixelSize: root.titleTextSize
-                    family: globalFonts.sans
-                }
-            }
-        }
-
-
-        // text area
-        Rectangle {
-            width: parent.width
-            height: messageText.height + 3 * root.textSize
-            color: "#555"
-
-            Text {
-                id: messageText
-
-                anchors.centerIn: parent
-                width: parent.width - 2 * root.textSize
-
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-
-                color: "#eee"
-                font {
-                    pixelSize: root.textSize
-                    family: globalFonts.sans
-                }
-            }
-        }
-
-        // button row
-        Row {
-            width: parent.width
-            height: root.textSize * 2
-
+            // title bar
             Rectangle {
-                id: okButton
+                id: titleBar
+                width: parent.width
+                height: root.titleTextSize * 2.25
+                color: "#222"
+                radius: vpx(8)
 
-                width: parent.width * 0.5
-                height: root.textSize * 2.25
-                color: (focus || okMouseArea.containsMouse) ? "#3c4" : "#666"
+                Text {
+                    id: titleText
 
-                Keys.onPressed: {
-                    if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        root.accept();
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: parent.left
+                        leftMargin: root.titleTextSize * 0.75
+                    }
+
+                    color: "#999"
+                    font {
+                        bold: true
+                        pixelSize: root.titleTextSize
+                        family: globalFonts.sans
                     }
                 }
 
                 Text {
-                    anchors.centerIn: parent
+                    id: symbolText
 
-                    text: qsTr("Ok") + api.tr
-                    color: "#eee"
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        right: parent.right
+                        rightMargin: root.titleTextSize * 0.75
+                    }
+
+                    color: "#6ff"
+                    font {
+                        bold: true
+                        pixelSize: root.titleTextSize
+                        family: globalFonts.sans
+                    }
+                }
+            }
+
+            // text area
+            Rectangle {
+                width: parent.width
+                height: messageText.height + 3 * root.textSize
+                color: "#222"
+                radius: vpx(8)
+
+                Text {
+                    id: messageText
+
+                    anchors.centerIn: parent
+                    width: parent.width - 2 * root.textSize
+
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+
+                    color: "#999"
                     font {
                         pixelSize: root.textSize
                         family: globalFonts.sans
                     }
                 }
-
-                MouseArea {
-                    id: okMouseArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: root.accept()
-                }
             }
 
-            Rectangle {
-                id: cancelButton
+            // button row
+            Row {
+                width: parent.width
+                height: root.textSize * 2
 
-                focus: true
+                Rectangle {
+                    id: okButton
 
-                width: parent.width * 0.5
-                height: root.textSize * 2.25
-                color: (focus || cancelMouseArea.containsMouse) ? "#f43" : "#666"
+                    width: parent.width * 0.5
+                    height: root.textSize * 2.25
+                    color: (focus || okMouseArea.containsMouse) ? "green" : "#222"
+                    radius: vpx(8)
 
-                KeyNavigation.left: okButton
-                Keys.onPressed: {
-                    if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        root.cancel();
+                    Keys.onPressed: {
+                        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                            event.accepted = true;
+                            root.accept();
+                        }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+
+                        text: qsTr("Ok") + api.tr
+                        color: "#999"
+                        font {
+                            pixelSize: root.textSize
+                            family: globalFonts.sans
+                        }
+                    }
+
+                    MouseArea {
+                        id: okMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: root.accept()
                     }
                 }
 
-                Text {
-                    anchors.centerIn: parent
+                Rectangle {
+                    id: cancelButton
 
-                    text: qsTr("Cancel") + api.tr
-                    color: "#eee"
-                    font {
-                        pixelSize: root.textSize
-                        family: globalFonts.sans
+                    focus: true
+
+                    width: parent.width * 0.5
+                    height: root.textSize * 2.25
+                    color: (focus || cancelMouseArea.containsMouse) ? "#ccef1b08" : "#222"
+                    radius: vpx(8)
+
+                    KeyNavigation.left: okButton
+                    Keys.onPressed: {
+                        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                            event.accepted = true;
+                            root.cancel();
+                        }
                     }
-                }
 
-                MouseArea {
-                    id: cancelMouseArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: root.cancel()
+                    Text {
+                        anchors.centerIn: parent
+
+                        text: qsTr("Cancel") + api.tr
+                        color: "#999"
+                        font {
+                            pixelSize: root.textSize
+                            family: globalFonts.sans
+                        }
+                    }
+
+                    MouseArea {
+                        id: cancelMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: root.cancel()
+                    }
                 }
             }
         }
-    }
 
     states: [
         State {

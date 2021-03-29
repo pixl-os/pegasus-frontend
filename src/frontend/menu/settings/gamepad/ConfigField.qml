@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.8
+import QtQuick 2.12
 
 Rectangle {
     property alias text: label.text
@@ -27,8 +27,8 @@ Rectangle {
     color: {
         if (recording) return "#c33";
         if (pressed) return "#353";
-        if (activeFocus) return "#3aa"
-        return "#333";
+        if (activeFocus) return themeColor.underline
+        return themeColor.secondary;
     }
 
     anchors {
@@ -39,7 +39,7 @@ Rectangle {
 
     Text {
         id: label
-        color: "#eee"
+        color: themeColor.textLabel
         font {
             family: globalFonts.sans
             pixelSize: vpx(18)

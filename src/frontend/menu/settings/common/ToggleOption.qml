@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.7
+import QtQuick 2.12
 
 
 FocusScope {
@@ -39,7 +39,7 @@ FocusScope {
         height: vpx(3)
         anchors.bottom: parent.bottom
 
-        color: "#3aa"
+        color: themeColor.underline
         visible: parent.focus || mouseArea.containsMouse
     }
 
@@ -58,7 +58,7 @@ FocusScope {
         Text {
             id: label
 
-            color: "#eee"
+            color: themeColor.textLabel
             font.pixelSize: fontSize
             font.family: globalFonts.sans
         }
@@ -66,9 +66,10 @@ FocusScope {
         Text {
             id: sublabel
 
-            color: "#999"
+            color: themeColor.textSublabel
             font.pixelSize: fontSize * 0.8
             font.family: globalFonts.sans
+            font.italic: true
         }
     }
 

@@ -15,40 +15,40 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import "common"
+//import "keyeditor"
+import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
+import QtQuick.Window 2.12
 
 
-Item {
-    property alias text: title.text
+FocusScope {
+    id: root
 
-    width: parent.width
-    height: vpx(70)
+    signal close
 
-    Rectangle {
+    anchors.fill: parent
+    enabled: focus
+    visible: 0 < (x + width) && x < Window.window.width
+
+    Keys.onPressed: {
+        if (api.keys.isCancel(event) && !event.isAutoRepeat) {
+            event.accepted = true;
+            root.close();
+        }
+    }
+    PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
-        color: themeColor.screenHeader
-        opacity: 0.75
+        onSwipeRight: root.close()
     }
-
-    Text {
-        id: title
-
-        color: themeColor.textTitle
-        font.pixelSize: vpx(36)
-        font.family: globalFonts.sans
-
-        anchors.left: parent.horizontalCenter
-        anchors.leftMargin: parent.width * -0.4
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: vpx(10)
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: root.close()
     }
-
-    Rectangle {
-        width: parent.width * 0.97
-        height: vpx(1)
-        color: themeColor.screenUnderline
-
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
+    ScreenHeader {
+        id: header
+        text: qsTr("Games > Advanced Emulator") + api.tr
+        z: 2
     }
 }

@@ -18,8 +18,8 @@
 import "common"
 import "keyeditor"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.6
-import QtQuick.Window 2.2
+import QtQuick 2.12
+import QtQuick.Window 2.12
 
 
 FocusScope {
@@ -37,25 +37,20 @@ FocusScope {
             root.close();
         }
     }
-
-
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
-
     ScreenHeader {
         id: header
-        text: qsTr("Settings > Controls") + api.tr
+        text: qsTr("Controls > Change Controls") + api.tr
         z: 2
     }
-
     KeyEditorResetButton {
         anchors.bottom: header.bottom
         anchors.bottomMargin: vpx(16)
@@ -66,7 +61,6 @@ FocusScope {
         KeyNavigation.down: content
         onActivated: api.internal.settings.keyEditor.resetKeys()
     }
-
     ListView {
         id: content
 
@@ -101,7 +95,6 @@ FocusScope {
         preferredHighlightBegin: height * 0.25
         preferredHighlightEnd: height * 0.75
     }
-
     KeyEditorRecorder {
         id: recoder
         onClose: content.focus = true
