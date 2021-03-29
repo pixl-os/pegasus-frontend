@@ -990,7 +990,21 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
             // return;
         // }
         
-        m_recording.sign = axis_value > 0 ? '+' : '-';
+        //ignored sign if Left or right sticks
+        QString axis_field_name = QString::fromStdString(to_fieldname(m_recording.target_axis));
+        //Log::info(m_log_tag, LOGMSG("m_recording.target_axis : %1").arg(axis_field_name));
+
+        //no sign necessary if stick left or right
+        if ((axis_field_name != "rightx") \
+        && (axis_field_name != "righty") \
+        && (axis_field_name != "leftx") \
+        && (axis_field_name != "lefty"))
+        {
+            m_recording.sign = axis_value > 0 ? '+' : '-';
+        }
+        else m_recording.sign = "";
+        
+        //Log::info(m_log_tag, LOGMSG("m_recording.sign : %1").arg(QString::fromStdString(m_recording.sign)));    
         
         m_recording.value = generate_axis_str(axis);
         
