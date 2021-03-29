@@ -23,6 +23,8 @@
 #include "providers/es2/Es2Metadata.h"
 #include "providers/es2/Es2Systems.h"
 
+
+
 #include <QDir>
 #include <QStringBuilder>
 
@@ -35,6 +37,7 @@ std::vector<QString> default_config_paths()
         QStringLiteral("/etc/emulationstation/"),
     };
 }
+
 } // namespace
 
 
@@ -47,12 +50,17 @@ Es2Provider::Es2Provider(QObject* parent)
 
 Provider& Es2Provider::run(SearchContext& sctx)
 {
+    
     std::vector<QString> possible_config_dirs = [this]{
         const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
             ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
             : default_config_paths();
     }();
+    
+    for (int i = 0; i < possible_config_dirs.size(); ++i) {
+        Log::info(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
+    }
 
     // Find systems
     const std::vector<SystemEntry> systems = find_systems(display_name(), possible_config_dirs);
@@ -87,6 +95,35 @@ Provider& Es2Provider::run(SearchContext& sctx)
 
     return *this;
 }
+
+inputConfigEntry Es2Provider::load_input_data(const QString& DeviceName, const QString& DeviceGUID)
+{   
+    std::vector<QString> possible_config_dirs = [this]{
+        const auto option_it = options().find(QStringLiteral("installdir"));
+        return (option_it != options().cend())
+            ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
+            : default_config_paths();
+    }();
+
+    // Find input
+    return find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUID);
+
+}
+
+bool Es2Provider::save_input_data(const inputConfigEntry& input)
+{   
+    std::vector<QString> possible_config_dirs = [this]{
+        const auto option_it = options().find(QStringLiteral("installdir"));
+        return (option_it != options().cend())
+            ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
+            : default_config_paths();
+    }();
+    const inputConfigEntry& input_to_save = input;
+    // save input
+    return save_input(display_name(), possible_config_dirs, input_to_save);
+    
+}
+
 
 } // namespace es2
 } // namespace providers

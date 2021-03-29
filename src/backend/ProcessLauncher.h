@@ -20,9 +20,6 @@
 #include <QObject>
 #include <QProcess>
 
-//For recalbox
-#include "RecalboxConf.h"
-
 namespace model { class GameFile; }
 
 
@@ -61,10 +58,7 @@ private:
 
     QString globalCommand;
     QStringList globalArgs;
-    
-    //! Recalbox configuration
-    RecalboxConf mConfiguration;
-    
+  
     void runProcess(const QString&, const QStringList&, const QString&);
 
     void beforeRun(const QString&);

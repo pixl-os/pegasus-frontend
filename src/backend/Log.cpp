@@ -25,6 +25,9 @@
 #include <QFile>
 #include <QTextStream>
 
+//For recalbox
+#include "RecalboxConf.h"
+
 #if defined(Q_OS_ANDROID) && defined(QT_DEBUG)
 #include <android/log.h>
 #endif // defined(Q_OS_ANDROID) && defined(QT_DEBUG)
@@ -39,7 +42,7 @@ namespace logsinks {
 class QtLog : public LogSink {
 public:
     void debug(const QString& msg) override {
-        qDebug().noquote().nospace() << msg;
+        if (RecalboxConf::Instance().AsBool("emulationstation.debuglogs")) qDebug().noquote().nospace() << msg;
     }
     void info(const QString& msg) override {
         qInfo().noquote().nospace() << msg;
@@ -59,7 +62,7 @@ public:
         : m_stream(stdout)
     {}
     void debug(const QString& msg) override {
-        colorlog(m_pre_debug, msg);
+        if (RecalboxConf::Instance().AsBool("emulationstation.debuglogs")) colorlog(m_pre_debug, msg);
     }
     void info(const QString& msg) override {
         colorlog(m_pre_info, msg);
@@ -112,7 +115,7 @@ public:
         if (Q_UNLIKELY(!m_file.isOpen()))
             return;
 
-        datelog(m_marker_info, msg);
+        if (RecalboxConf::Instance().AsBool("emulationstation.debuglogs")) datelog(m_marker_info, msg);
     }
     void info(const QString& msg) override {
         if (Q_UNLIKELY(!m_file.isOpen()))
@@ -192,7 +195,7 @@ void on_qt_message(QtMsgType type, const QMessageLogContext& context, const QStr
     const QString prepared_msg = qFormatLogMessage(type, context, msg);
     switch (type) {
         case QtMsgType::QtDebugMsg:
-            Log::debug(prepared_msg);
+            if (RecalboxConf::Instance().AsBool("emulationstation.debuglogs")) Log::debug(prepared_msg);
             break;
         case QtMsgType::QtInfoMsg:
             Log::info(prepared_msg);

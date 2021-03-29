@@ -21,6 +21,11 @@
 
 #include <memory>
 
+#include "RecalboxConf.h"
+
+#include "ScriptManager.h"
+
+
 class ApiObject;
 class FrontendLayer;
 class ProcessLauncher;
@@ -30,8 +35,8 @@ namespace backend {
 
 class Backend {
 public:
-    explicit Backend();
-    explicit Backend(const CliArgs&);
+    //explicit Backend();
+    explicit Backend(const CliArgs&, char**);
     ~Backend();
 
     Backend(const Backend&) = delete;
@@ -42,6 +47,12 @@ public:
 private:
     // frontend <-> api <-> launcher
     // NOTE: unique_ptr had forward declaration issues
+    
+    //! Recalbox configuration
+    RecalboxConf mConfiguration;
+    //! Recalbox user script management
+    ScriptManager mScriptManager;
+    
     ApiObject* m_api;
     FrontendLayer* m_frontend;
     ProcessLauncher* m_launcher;

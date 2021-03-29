@@ -39,7 +39,7 @@ backend::CliArgs handle_cli_args(QGuiApplication&);
 bool request_runtime_permissions();
 bool portable_txt_present();
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char** env)
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
     Q_INIT_RESOURCE(frontend);
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     backend::CliArgs cli_args = handle_cli_args(app);
     cli_args.portable |= portable_txt_present();
 
-    backend::Backend backend(cli_args);
+    backend::Backend backend(cli_args, env);
     backend.start();
 
     return app.exec();

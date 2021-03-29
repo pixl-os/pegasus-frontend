@@ -119,6 +119,13 @@ void ApiObject::onGameLaunchError(QString msg)
     emit eventLaunchError(msg);
 }
 
+void ApiObject::onShowPopup(QString message, int delay)
+{
+    Log::debug(LOGMSG("void ApiObject::onShowPopup(QString message, int delay)"));
+    emit showPopup(message, delay);
+}
+
+
 void ApiObject::onGameFinished()
 {
     Q_ASSERT(m_launch_game_file);

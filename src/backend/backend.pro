@@ -1,12 +1,14 @@
 TEMPLATE = lib
 
-QT += qml quick sql
-CONFIG += c++11 staticlib warn_on exceptions_off
+QT += qml quick sql xml
+CONFIG += c++11 staticlib warn_on exceptions debug
 android: QT += androidextras
 
 !isEmpty(USE_SDL_GAMEPAD)|!isEmpty(USE_SDL_POWER): include($${TOP_SRCDIR}/thirdparty/link_to_sdl.pri)
 
 isEmpty(USE_SDL_GAMEPAD): QT += gamepad
+
+!isEmpty(NO_LEGACY_SDL): DEFINES *= WITHOUT_LEGACY_SDL
 
 !isEmpty(INSIDE_FLATPAK): DEFINES *= PEGASUS_INSIDE_FLATPAK
 msvc: DEFINES *= _USE_MATH_DEFINES
@@ -23,7 +25,8 @@ SOURCES += \
     AppSettings.cpp \
     Log.cpp \
     GamepadButtonNavigation.cpp \
-    RecalboxConf.cpp
+    RecalboxConf.cpp \
+    ScriptManager.cpp
 
 HEADERS += \
     Backend.h \
@@ -37,7 +40,8 @@ HEADERS += \
     AppSettings.h \
     Log.h \
     GamepadButtonNavigation.h \
-    RecalboxConf.h
+    RecalboxConf.h \
+    ScriptManager.h
 
 include(imggen/imggen.pri)
 include(model/model.pri)

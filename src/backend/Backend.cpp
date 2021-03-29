@@ -99,10 +99,12 @@ void on_app_close(AppCloseType type)
     switch (type) {
         case AppCloseType::REBOOT:
             AppCloseTypeName = "Reboot";
+            ScriptManager::Instance().Notify(Notification::Reboot,"normal");
             ScriptRunner::run(ScriptEvent::REBOOT);
             break;
         case AppCloseType::SHUTDOWN:
             AppCloseTypeName = "Shutdown";
+            ScriptManager::Instance().Notify(Notification::Shutdown,"normal");
             ScriptRunner::run(ScriptEvent::SHUTDOWN);
             break;
         default: break;
@@ -124,12 +126,11 @@ void on_app_close(AppCloseType type)
 }
 } // namespace
 
-
 namespace backend {
 
-Backend::Backend()
-    : Backend(CliArgs {})
-{}
+// Backend::Backend()
+    // : Backend(CliArgs {}, char[])
+// {}
 
 Backend::~Backend()
 {
@@ -142,7 +143,8 @@ Backend::~Backend()
 #endif
 }
 
-Backend::Backend(const CliArgs& args)
+Backend::Backend(const CliArgs& args, char** environment)
+  : mScriptManager(environment)
 {
     // Make sure this comes before any file related operations
     AppSettings::general.portable = args.portable;
@@ -174,6 +176,10 @@ Backend::Backend(const CliArgs& args)
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchError,
                      m_api, &ApiObject::onGameLaunchError);
 
+    //api asked to show popup to frontend
+    // QObject::connect(&m_api->internal().gamepad(), &model::GamepadManager::showPopup,
+                     // m_api, &ApiObject::onShowPopup);
+
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
                      m_frontend, &FrontendLayer::teardown);
 
@@ -198,6 +204,9 @@ Backend::Backend(const CliArgs& args)
 
 void Backend::start()
 {
+    // Script Manager
+    mScriptManager.Notify(Notification::Start, Strings::ToString(0));
+    
     m_frontend->rebuild();
     m_api->startScanning(); // TODO: Separate scanner
 }

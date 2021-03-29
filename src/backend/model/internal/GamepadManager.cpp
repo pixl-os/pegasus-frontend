@@ -67,6 +67,9 @@ GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
             this, &GamepadManager::bkOnDisconnected);
     connect(m_backend, &GamepadManagerBackend::nameChanged,
             this, &GamepadManager::bkOnNameChanged);
+    connect(m_backend, &GamepadManagerBackend::removed,
+            this, &GamepadManager::bkOnRemoved);
+            
 
     connect(m_backend, &GamepadManagerBackend::buttonConfigured,
             this, &GamepadManager::bkOnButtonCfg);
@@ -115,31 +118,69 @@ void GamepadManager::bkOnConnected(int device_id, QString name)
     m_devices->append(new Gamepad(device_id, name, m_devices));
 
     Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_id), name));
+    
+    //test with 2 seconds
+    emit showPopup(QStringLiteral("Connected device %1 (%2)").arg(pretty_id(device_id), name), 2);
+    
     emit connected(device_id);
+    
 }
 
 void GamepadManager::bkOnDisconnected(int device_id)
 {
     QString name;
-
-    const auto it = find_by_deviceid(*m_devices, device_id);
-    if (it != m_devices->constEnd()) {
-        name = (*it)->name();
-        m_devices->remove(*it);
+    
+    try{
+        QString name;
+        const auto it = find_by_deviceid(*m_devices, device_id);
+        if (it != m_devices->constEnd()) {
+            name = (*it)->name();
+            //finally, remove device independently in a second time
+        }
+        Log::info(m_log_tag, LOGMSG("Disconnected device %1 (%2)").arg(pretty_id(device_id), name));
+        emit disconnected(std::move(name));
     }
-
-    Log::info(m_log_tag, LOGMSG("Disconnected device %1 (%2)").arg(pretty_id(device_id), name));
-    emit disconnected(std::move(name));
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
+    } 
 }
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)
 {
-    const auto it = find_by_deviceid(*m_devices, device_id);
-    if (it != m_devices->constEnd()) {
-        Log::info(m_log_tag, LOGMSG("Set name of device %1 to '%2'").arg(pretty_id(device_id), name));
-        (*it)->setName(std::move(name));
+    //Log::info(m_log_tag, LOGMSG("void GamepadManager::bkOnNameChanged(int device_id, QString name)"));
+    try{
+        const auto it = find_by_deviceid(*m_devices, device_id);
+        if (it != m_devices->constEnd()) {
+            Log::debug(m_log_tag, LOGMSG("Set name of device %1 to '%2'").arg(pretty_id(device_id), name));
+            (*it)->setName(std::move(name));
+        }
     }
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
+    } 
 }
+
+void GamepadManager::bkOnRemoved(int device_id)
+{
+    //Log::info(m_log_tag, LOGMSG("void GamepadManager::bkOnRemoveDevice(int device_id)"));
+    try{
+        const auto it = find_by_deviceid(*m_devices, device_id);
+        if (it != m_devices->constEnd()) 
+        {
+            QString name;
+            name = (*it)->name();
+            m_devices->remove(*it);
+            Log::info(m_log_tag, LOGMSG("Remove device %1 (%2)").arg(pretty_id(device_id), name));
+        }
+    }
+    catch ( const std::exception & Exp ) 
+    { 
+        Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
+    }     
+}
+
 
 void GamepadManager::bkOnButtonCfg(int device_id, GamepadButton button)
 {

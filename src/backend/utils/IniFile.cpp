@@ -36,7 +36,7 @@ bool IniFile::IsValidKeyValue(const std::string& line, std::string& key, std::st
         size_t validated = line.find_first_not_of(_allowedCharacters);
         if (validated == std::string::npos || validated >= separatorPos) // Unknown characters after the = ?
         {
-          key = line.substr(0, separatorPos);
+          key = Strings::Trim(line.substr(0, separatorPos));
           value = line.substr(separatorPos + 1);
           return true;
         }
@@ -104,7 +104,7 @@ bool IniFile::Save()
   }
 
   // Save new
-  Files::SaveFile(mFilePath, Strings::Join(lines, "\n"));
+  Files::SaveFile(mFilePath, Strings::Join(lines, '\n'));
 
   OnSave();
   return true;
@@ -175,7 +175,7 @@ void IniFile::SetInt(const std::string& name, unsigned int value)
 
 void IniFile::SetList(const std::string& name, const std::vector<std::string>& values)
 {
-  mPendingWrites[name] = Strings::Join(values, ",");
+  mPendingWrites[name] = Strings::Join(values, ',');
 }
 
 bool IniFile::isInList(const std::string& name, const std::string& value) const
@@ -206,5 +206,18 @@ std::string IniFile::ExtractValue(const std::string& key) const
   std::string* item = mPendingWrites.try_get(key);
   if (item == nullptr) item = mConfiguration.try_get(key);
   return (item != nullptr) ? *item : std::string();
+}
+
+bool IniFile::HasKeyStartingWith(const std::string& startWidth)
+{
+  for (auto& it : mPendingWrites)
+    if (Strings::StartsWith(it.first, startWidth))
+      return true;
+
+  for (auto& it : mConfiguration)
+    if (Strings::StartsWith(it.first, startWidth))
+      return true;
+
+  return false;
 }
 

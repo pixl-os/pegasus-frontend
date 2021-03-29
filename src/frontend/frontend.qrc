@@ -86,5 +86,6 @@
         <file>menu/settings/AdvancedControllersConf.qml</file>
         <file>menu/settings/NetplayInformation.qml</file>
         <file>menu/settings/common/TextField.qml</file>
+        <file>dialogs/GenericPopup.qml</file>
     </qresource>
 </RCC>

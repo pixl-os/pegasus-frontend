@@ -18,7 +18,8 @@
 #pragma once
 
 #include "providers/Provider.h"
-
+//to add access to es_input.cfg from ES provider
+#include "providers/es2/Es2Input.h"
 
 namespace providers {
 namespace es2 {
@@ -30,6 +31,8 @@ public:
     explicit Es2Provider(QObject* parent = nullptr);
 
     Provider& run(SearchContext&) final;
+    inputConfigEntry load_input_data(const QString&, const QString&);
+    bool save_input_data(const inputConfigEntry&);
 };
 
 } // namespace es2

@@ -74,11 +74,14 @@ signals:
     void buttonConfigured(int deviceId, model::GamepadManager::GMButton button);
     void axisConfigured(int deviceId, model::GamepadManager::GMAxis axis);
     void configurationCanceled(int deviceId);
+    
+    void showPopup(QString message, int delay);
 
 private slots:
     void bkOnConnected(int, QString);
     void bkOnDisconnected(int);
     void bkOnNameChanged(int, QString);
+    void bkOnRemoved(int);
 
     void bkOnButtonCfg(int, GamepadButton);
     void bkOnAxisCfg(int, GamepadAxis);

@@ -222,7 +222,15 @@ Window {
         target: genericMessage.item
         function onClose() { content.focus = true; }
     }
-
+    
+    Loader {
+        id: genericPopup
+        anchors.fill: parent
+    }
+    Connections {
+        target: genericPopup.item
+        function onClose() { content.focus = true; }
+    }
 
     Connections {
         target: api
@@ -234,6 +242,12 @@ Window {
             genericMessage.setSource("dialogs/GenericOkDialog.qml",
                 { "title": qsTr("Error"), "message": msg });
             genericMessage.focus = true;
+        }
+        function onShowPopup(msg,time) {
+            // need QtQuick.Controls 2.15
+            //genericPopup.setSource("dialogs/GenericPopup.qml",{ "msg": msg, "delay": time });
+            //genericPopup.focus = true;
+            //TO DO
         }
         function onEventLoadingStarted() {
             splashScreen.focus = true;

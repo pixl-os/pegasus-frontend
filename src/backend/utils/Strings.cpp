@@ -10,6 +10,8 @@ unsigned short Strings::sCapitalToSmall[1 << (8 * sizeof(unsigned short))];
 
 bool Strings::sInitialized = Strings::sInitialize();
 
+const std::string Strings::Empty;
+
 bool Strings::sInitialize()
 {
   if (!sInitialized)
@@ -326,6 +328,16 @@ std::string Strings::Replace(const std::string& _string, const std::string& _rep
 	return string;
 }
 
+std::string Strings::Replace(const std::string& _string, const std::string& _replace, const char* _with, int _withLength)
+{
+  std::string string = _string;
+
+  for(int pos = 0; (pos = string.find(_replace, pos)) != (int)std::string::npos; )
+    string.replace(pos, 1, _with, _withLength);
+
+  return string;
+}
+
 void Strings::ReplaceAllIn(std::string& _string, const char _replace, const char* _with, int _withlength)
 {
   for(int pos = 0; (pos = _string.find(_replace, pos)) != (int)std::string::npos; pos += _withlength)
@@ -377,17 +389,17 @@ std::string Strings::RemoveParenthesis(const std::string& _string)
 	}
 
 	return Trim(string);
+}
 
-} // removeParenthesis
-
-Strings::Vector Strings::Split(const std::string& _string, char splitter, bool multipleSplittersAsOne)
+Strings::Vector Strings::Split(const std::string& _string, char splitter, int max, bool multipleSplittersAsOne)
 {
   Vector vector;
-  size_t       start = 0;
-  size_t       comma = _string.find(splitter);
+  size_t start = 0;
+  size_t comma = _string.find(splitter);
 
   while(comma != std::string::npos)
   {
+    if ((int)vector.size() == max - 1) comma = _string.size();
     vector.push_back(_string.substr(start, comma - start));
     start = multipleSplittersAsOne ? _string.find_first_not_of(splitter, comma) : comma + 1;
     comma = _string.find(splitter, start);
@@ -396,8 +408,12 @@ Strings::Vector Strings::Split(const std::string& _string, char splitter, bool m
     vector.push_back(_string.substr(start));
 
   return vector;
+}
 
-} // commaStringToVector
+Strings::Vector Strings::Split(const std::string& _string, char splitter, bool multipleSplittersAsOne)
+{
+  return Split(_string, splitter, INT32_MAX, multipleSplittersAsOne);
+}
 
 std::string Strings::Join(const std::vector<std::string>& _string, const std::string& joiner)
 {
@@ -416,6 +432,28 @@ std::string Strings::Join(const std::vector<const char*>& _string, const std::st
   for(const std::string& string : _string)
   {
     if (!result.empty()) result.append(joiner);
+    result.append(string);
+  }
+  return result;
+}
+
+std::string Strings::Join(const std::vector<std::string>& _string, char joiner)
+{
+  std::string result;
+  for(const std::string& string : _string)
+  {
+    if (!result.empty()) result.append(1, joiner);
+    result.append(string);
+  }
+  return result;
+}
+
+std::string Strings::Join(const std::vector<const char*>& _string, char joiner)
+{
+  std::string result;
+  for(const std::string& string : _string)
+  {
+    if (!result.empty()) result.append(1, joiner);
     result.append(string);
   }
   return result;
@@ -794,4 +832,71 @@ std::string Strings::Extract(const std::string& source, const char* starttag, co
   return std::string();
 }
 
+bool Strings::Contains(const std::string& source, const char* what)
+{
+  return (source.find(what) != std::string::npos);
+}
 
+bool Strings::Contains(const std::string& source, const std::string& what)
+{
+  return (source.find(what) != std::string::npos);
+}
+
+bool Strings::Contains(const char* source, const char* what)
+{
+  return (strstr(source, what) != nullptr);
+}
+
+bool Strings::SplitAt(const std::string& _string, char splitter, std::string& left, std::string& middle, std::string& right, bool trim)
+{
+  size_t pos = _string.find(splitter);
+  if (pos == std::string::npos) return false;
+  left  = _string.substr(0, pos);
+  
+  size_t pos2 = _string.substr(pos + 1).find(splitter);
+  if (pos2 == std::string::npos) return false;
+  middle = _string.substr(pos + 1, pos2);
+  
+  if (_string.length() <= (pos + 1 + pos2 + 1)) return false;
+  right = _string.substr(pos + 1 + pos2 + 1);
+  
+  if (trim)
+  {
+    left = Trim(left, " \t\r\n");
+    right = Trim(right, " \t\r\n");
+    middle = Trim(middle, " \t\r\n");
+  }
+
+  return true;
+}
+
+Strings::Vector Strings::SplitQuotted(const std::string& _string, char splitter)
+{
+  return SplitQuotted(_string, splitter, INT32_MAX);
+}
+
+Strings::Vector Strings::SplitQuotted(const std::string& _string, char splitter, int max)
+{
+  int Len = (int)_string.size();
+  const char* Current = _string.data();
+  const char* Last = Current;
+  const char* End = Current + Len;
+  bool Quoted = false;
+
+  Strings::Vector output;
+  if (max > 1)
+    for (; --Len >= 0; ++Current)
+    {
+      char C = Current[0];
+      if (C == '"') Quoted = !Quoted;
+      else if ((C == splitter) && !Quoted)
+      {
+        if (Last < Current) output.push_back(std::string(Last, (int)(Current - Last)));
+        Last = Current + 1;
+        if ((int)output.size() == max - 1) break;
+      }
+    }
+  output.push_back(std::string(Last, (int)(End - Last)));
+
+  return output;
+}

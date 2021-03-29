@@ -45,10 +45,18 @@ private:
     const uint16_t m_sdl_version;
     QTimer m_poll_timer;
 
+    const QString m_log_tag;
+
     using device_deleter = void(*)(SDL_GameController*);
     using device_ptr = std::unique_ptr<SDL_GameController, device_deleter>;
-    HashMap<int, const device_ptr> m_idx_to_device;
     HashMap<SDL_JoystickID, const int> m_iid_to_idx;
+
+    //added to manage better multiple devices connection/deconnection 
+    //and use iid as index for device and not idx (more used in the future to manage player order/sorting).
+    HashMap<int, const SDL_JoystickID> m_idx_to_iid;
+    HashMap<SDL_JoystickID, const device_ptr> m_iid_to_device;
+    
+    
 
     void add_controller_by_idx(int);
     void remove_pad_by_iid(SDL_JoystickID);
@@ -60,6 +68,7 @@ private:
         GamepadButton target_button = GamepadButton::INVALID;
         GamepadAxis target_axis = GamepadAxis::INVALID;
         std::string value;
+        std::string sign;
 
         bool is_active() const;
         void reset();
@@ -71,7 +80,7 @@ private:
     void finish_recording();
     void update_mapping_store(std::string);
 
-    std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&);
+    std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&, std::string mapping);
     std::string generate_mapping(int);
     std::vector<std::string> m_custom_mappings;
     void load_user_gamepaddb(const QString&);

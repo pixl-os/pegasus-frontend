@@ -117,6 +117,13 @@ class IniFile
     bool isInList(const std::string &name, const std::string &value) const;
 
     /*!
+     * @brief Check if there is at least one key starting with the given string
+     * @param startWidth String
+     * @return True if at least one key starts with the given string
+     */
+    bool HasKeyStartingWith(const std::string& startWidth);
+
+    /*!
      * @brief Check if the given line is a valide 'key=value'
      * @param line Text line to seek for key/value
      * @param key Extracted key if found
