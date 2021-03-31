@@ -89,6 +89,7 @@ enum class MetaType : unsigned char {
     LASTPLAYED,
     RELEASE,
     IMAGE,
+    THUMBNAIL,
     VIDEO,
     MARQUEE,
     FAVORITE,
@@ -110,6 +111,7 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
         { QStringLiteral("lastplayed"), MetaType::LASTPLAYED },
         { QStringLiteral("releasedate"), MetaType::RELEASE },
         { QStringLiteral("image"), MetaType::IMAGE },
+        { QStringLiteral("thumbnail"), MetaType::THUMBNAIL },
         { QStringLiteral("video"), MetaType::VIDEO },
         { QStringLiteral("marquee"), MetaType::MARQUEE },
         { QStringLiteral("favorite"), MetaType::FAVORITE },
@@ -118,6 +120,8 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
     , m_players_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
     , m_asset_type_map {  // TODO: C++14 with constexpr pair ctor
         { MetaType::IMAGE, AssetType::BOX_FRONT },
+        { MetaType::IMAGE, AssetType::SCREENSHOT },
+        { MetaType::THUMBNAIL, AssetType::BACKGROUND },
         { MetaType::MARQUEE, AssetType::ARCADE_MARQUEE },
         { MetaType::VIDEO, AssetType::VIDEO },
     }
