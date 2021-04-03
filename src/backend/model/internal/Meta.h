@@ -34,6 +34,9 @@ class Meta : public QObject {
 
     Q_PROPERTY(QString gitRevision MEMBER m_git_revision CONSTANT)
     Q_PROPERTY(QString gitDate MEMBER m_git_date CONSTANT)
+    Q_PROPERTY(QString buildName MEMBER m_build_name CONSTANT)
+    Q_PROPERTY(QString buildVersion MEMBER m_build_version CONSTANT)
+    Q_PROPERTY(QString buildDate MEMBER m_build_date CONSTANT)
     Q_PROPERTY(QString logFilePath MEMBER m_log_path CONSTANT)
 
     Q_PROPERTY(bool allowReboot MEMBER m_enable_menu_reboot CONSTANT)
@@ -69,6 +72,10 @@ signals:
 private:
     static const QString m_git_revision;
     static const QString m_git_date;
+    static const QString m_build_name;
+    static const QString m_build_version;
+    static const QString m_build_date;
+    
     const QString m_log_path;
 
     const bool m_enable_menu_reboot;
