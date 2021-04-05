@@ -20,6 +20,7 @@
 #include "Log.h"
 #include "Paths.h"
 #include "model/gaming/Assets.h"
+#include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
@@ -35,6 +36,20 @@
 
 
 namespace {
+
+HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::GameFile*>& filepath_to_entry_map)
+{
+    HashMap<QString, model::Game*> map;
+
+    // TODO: C++17
+    for (const auto& entry : filepath_to_entry_map) {
+        const QFileInfo finfo(entry.first);
+        QString path = ::clean_abs_dir(finfo) % '/' % finfo.completeBaseName();
+        map.emplace(std::move(path), entry.second->parentGame());
+    }
+
+    return map;
+}
 
 QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name)
 {
@@ -120,8 +135,7 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
     , m_players_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
     , m_asset_type_map {  // TODO: C++14 with constexpr pair ctor
         { MetaType::IMAGE, AssetType::BOX_FRONT },
-        { MetaType::IMAGE, AssetType::SCREENSHOT },
-        { MetaType::THUMBNAIL, AssetType::BACKGROUND },
+        { MetaType::THUMBNAIL, AssetType::SCREENSHOT },
         { MetaType::MARQUEE, AssetType::ARCADE_MARQUEE },
         { MetaType::VIDEO, AssetType::VIDEO },
     }
@@ -213,6 +227,9 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::S
     }
 
     const QDir xml_dir(sysentry.path);
+    
+    //Log::debug(m_log_tag, LOGMSG("sysentry.path:  %1").arg(sysentry.path));
+      
     const QString gamelist_path = find_gamelist_xml(m_config_dirs, xml_dir, sysentry.shortname);
     if (gamelist_path.isEmpty()) {
         Log::warning(m_log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
@@ -228,6 +245,117 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::S
 
     QXmlStreamReader xml(&xml_file);
     process_gamelist_xml(xml_dir, xml, sctx);
+    
+    //to add images stored by skraper and linked to gamelist/system of ES
+    add_skraper_media_metadata(xml_dir, sctx);
+    
+}
+
+void Metadata::add_skraper_media_metadata(const QDir& system_dir, const providers::SearchContext& sctx) const
+{
+    Log::info(m_log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
+    // NOTE: The entries are ordered by priority
+    const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
+        { AssetType::ARCADE_MARQUEE, {
+            QStringLiteral("screenmarquee"),
+            QStringLiteral("screenmarqueesmall"),
+            QStringLiteral("marquee"),
+        }},
+        { AssetType::BACKGROUND, {
+            QStringLiteral("fanart"),
+        }},
+        { AssetType::BOX_BACK, {
+            QStringLiteral("box2dback"),
+        }},
+        { AssetType::BOX_FRONT, {
+            QStringLiteral("box2dfront"),
+            QStringLiteral("supporttexture"),
+            QStringLiteral("box3d"),
+        }},
+        { AssetType::BOX_FULL, {
+            QStringLiteral("boxtexture"),
+        }},
+        { AssetType::BOX_SPINE, {
+            QStringLiteral("box2dside"),
+        }},
+        { AssetType::CARTRIDGE, {
+            QStringLiteral("support"),
+        }},
+        { AssetType::LOGO, {
+            QStringLiteral("wheel"),
+            QStringLiteral("wheelcarbon"),
+            QStringLiteral("wheelsteel"),
+        }},
+        { AssetType::SCREENSHOT, {
+            QStringLiteral("screenshot"),
+        }},
+        { AssetType::TITLESCREEN, {
+            QStringLiteral("screenshottitle"),
+        }},
+        { AssetType::UI_STEAMGRID, {
+            QStringLiteral("steamgrid"),
+        }},
+        { AssetType::VIDEO, {
+            QStringLiteral("videos"),
+        }},
+    };
+
+    const std::array<QString, 1> MEDIA_DIRS {
+        QStringLiteral("/media/"),
+    };
+
+    constexpr auto DIR_FILTERS = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto DIR_FLAGS = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+    
+    //all path name seems here but without extension !!!
+    const HashMap<QString, model::Game*> extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map()); 
+    //Log::debug(m_log_tag, LOGMSG("Nb elements in extless_path_to_game : %1").arg(QString::number(extless_path_to_game.size())));
+    
+    //Log::debug(m_log_tag, LOGMSG("Nb elements in sctx.current_filepath_to_entry_map() : %1").arg(QString::number(sctx.current_filepath_to_entry_map().size())));
+    //Log::debug(m_log_tag, LOGMSG("Nb elements in sctx.current_collection_to_entry_map() : %1").arg(QString::number(sctx.current_collection_to_entry_map().size())));
+
+    size_t found_assets_cnt = 0;
+
+    //Log::debug(m_log_tag, LOGMSG("Nb elements in MEDIA_DIRS : %1").arg(QString::number(MEDIA_DIRS.size())));
+    for (const QString& media_dir_subpath : MEDIA_DIRS) {
+        const QString game_media_dir = system_dir.path() % media_dir_subpath;
+        if (!QFileInfo::exists(game_media_dir)) 
+            {
+                Log::debug(m_log_tag, LOGMSG("%1 directory not found :-(").arg(game_media_dir));
+                continue;
+            }
+ 
+        //check existing asset directories in media
+        //Log::debug(m_log_tag, LOGMSG("Nb elements in ASSET_DIRS : %1").arg(QString::number(ASSET_DIRS.size())));
+        for (const auto& asset_dir_entry : ASSET_DIRS) {
+            const AssetType asset_type = asset_dir_entry.first;
+            const QStringList& dir_names = asset_dir_entry.second;
+            for (const QString& dir_name : dir_names) {
+                const QString search_dir = game_media_dir % dir_name;
+                //Log::debug(m_log_tag, LOGMSG("%1 is the directory to search !").arg(search_dir));
+                const int subpath_len = media_dir_subpath.length() + dir_name.length();
+                QDirIterator dir_it(search_dir, DIR_FILTERS, DIR_FLAGS);
+                while (dir_it.hasNext()) {
+                    dir_it.next();
+                    const QFileInfo finfo = dir_it.fileInfo();
+                    const QString game_path = ::clean_abs_dir(finfo).remove(system_dir.path().length(), subpath_len)
+                                            % '/' % finfo.completeBaseName();
+                    //Log::debug(m_log_tag, LOGMSG("%1 is the game path !").arg(game_path));
+                    const auto it = extless_path_to_game.find(game_path);
+                    if (it == extless_path_to_game.cend())
+                        continue;
+
+                    model::Game& game = *(it->second);
+                    game.assetsMut().add_file(asset_type, dir_it.filePath());
+                    //Log::debug(m_log_tag, LOGMSG("%1 asset added !").arg(dir_it.filePath()));
+                    found_assets_cnt++;
+                }
+            }
+        }
+    }
+ 
+     Log::info(m_log_tag, LOGMSG("%1 assets found").arg(QString::number(found_assets_cnt)));
+   
 }
 
 void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, HashMap<MetaType, QString, EnumHash>& xml_props) const

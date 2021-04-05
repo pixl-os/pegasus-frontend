@@ -143,8 +143,9 @@ size_t find_games_for(
                             || VEC_CONTAINS(platforms, QLatin1String("neogeo"));
 
 
-    // scan for game files
-
+    // scan for game files 
+    //TO DO: desactivate scan to avoid to lose time :-(
+    
     constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto entry_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = parse_filters(sysentry.extensions);
