@@ -113,6 +113,9 @@ QStringList configDirs()
             paths.replaceInStrings(regex, QStringLiteral("/pegasus-frontend"));
         }
 
+        //add recalbox root in configDirs
+        paths.append("/recalbox/share");
+
         paths.removeDuplicates();
         return paths;
     }();
