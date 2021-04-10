@@ -25,6 +25,10 @@
 #include <QSettings>
 #include <QtPlugin>
 
+//to initialize the web engine for QML usage
+//#include <qtwebengineglobal.h>
+#include <QtWebEngine>
+
 #ifdef Q_OS_ANDROID
 #include "backend/platform/AndroidHelpers.h"
 #endif
@@ -51,7 +55,12 @@ int main(int argc, char *argv[], char** env)
     QCoreApplication::addLibraryPath(QStringLiteral("lib/plugins"));
     QCoreApplication::addLibraryPath(QStringLiteral("lib"));
     QSettings::setDefaultFormat(QSettings::IniFormat);
-
+    
+    //to well initialize the web engine for QML usage
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QtWebEngine::initialize();
+    
     QGuiApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("pegasus-frontend"));
     app.setApplicationVersion(QStringLiteral(GIT_REVISION));
