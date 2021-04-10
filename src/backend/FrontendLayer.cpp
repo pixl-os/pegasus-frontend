@@ -28,6 +28,7 @@
 #include <QQmlContext>
 #include <QQmlNetworkAccessManagerFactory>
 
+#include "KeyEmitter.h"
 
 namespace {
 
@@ -65,8 +66,10 @@ void FrontendLayer::rebuild()
 #ifdef Q_OS_ANDROID
     m_engine->addImageProvider(QStringLiteral("androidicons"), new AndroidAppIconProvider);
 #endif
-
+    //to add keyEmitter to simulate press on some keyboard keys from controller
+    KeyEmitter *keyEmitter = new KeyEmitter(this);
     m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api);
+    m_engine->rootContext()->setContextProperty(QStringLiteral("keyEmitter"), keyEmitter);
     m_engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
 
     emit rebuildComplete();
