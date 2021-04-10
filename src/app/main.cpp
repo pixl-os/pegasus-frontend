@@ -46,6 +46,8 @@ bool portable_txt_present();
 int main(int argc, char *argv[], char** env)
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+    qputenv("QTWEBENGINE_DISABLE_SANDBOX", QByteArray("1"));
+    
     Q_INIT_RESOURCE(frontend);
     Q_INIT_RESOURCE(themes);
     Q_INIT_RESOURCE(qmlutils);
