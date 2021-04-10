@@ -298,6 +298,9 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, const provider
         { AssetType::VIDEO, {
             QStringLiteral("videos"),
         }},
+        { AssetType::MANUAL, {
+            QStringLiteral("manuals"),
+        }},
     };
 
     const std::array<QString, 1> MEDIA_DIRS {
