@@ -59,7 +59,7 @@ FocusScope {
         Text {
             id: revision
 
-            text: api.internal.meta.gitRevision + ", " + api.internal.meta.gitDate
+            text: api.internal.meta.buildName + "  BUILD: " + api.internal.meta.buildDate + " " + api.internal.meta.buildVersion  + " GIT: " + api.internal.meta.gitRevision + "," + api.internal.meta.gitDate
             color: "#eee"
             font.pixelSize: vpx(12)
             font.family: global.fonts.mono

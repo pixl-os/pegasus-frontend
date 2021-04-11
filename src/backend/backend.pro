@@ -41,7 +41,8 @@ HEADERS += \
     Log.h \
     GamepadButtonNavigation.h \
     RecalboxConf.h \
-    ScriptManager.h
+    ScriptManager.h \
+    KeyEmitter.h
 
 include(imggen/imggen.pri)
 include(model/model.pri)
