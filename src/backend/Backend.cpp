@@ -36,7 +36,6 @@
 #include "SortFilterProxyModel/filters/filtersqmltypes.h"
 #include "SortFilterProxyModel/proxyroles/proxyrolesqmltypes.h"
 #include "SortFilterProxyModel/sorters/sortersqmltypes.h"
-
 #include <QGuiApplication>
 #include <QQmlEngine>
 

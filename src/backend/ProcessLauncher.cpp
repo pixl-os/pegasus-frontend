@@ -113,7 +113,7 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
             uuid = "";
             name = "";
 
-            if (Strings::SplitAt(RecalboxConf::Instance().GetPadPegasus(player), ':', uuid, name, path, true))
+            if (Strings::SplitInThree(RecalboxConf::Instance().GetPadPegasus(player), ':', uuid, name, path, true))
             {
               //example of example : -p1index 0 -p1guid 030000005e040000a102000000010000 -p1name \"Xbox 360 Wireless Receiver\" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event3
               //                       -p1index 0 -p1guid 030000005e040000a102000000010000 -p1name "X360 Wireless Controller" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event19 -p2index 1 -p2guid 030000005e040000a102000000010000 -p2name "X360 Wireless Controller" -p2nbaxes 4 -p2nbhats 1 -p2nbbuttons 17 -p2devicepath /dev/input/event20 -system 64dd -rom /recalbox/share/roms/64dd/Super\ Mario\ 64\ -\ Disk\ Version\ \(Japan\)\ \(Proto\).ndd -emulator libretro -core parallel_n64 -ratio custom 
