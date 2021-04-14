@@ -109,8 +109,10 @@ class Strings
 
     static Vector SplitQuotted(const std::string& _string, char splitter, int max);
 
-    static bool SplitAt(const std::string& _string, char splitter, std::string& left, std::string& middle, std::string& right, bool trim);
-
+    static bool SplitAt(const std::string& _string, char splitter, std::string& left, std::string& right, bool trim);
+    
+    static bool SplitInThree(const std::string& _string, char splitter, std::string& left, std::string& middle, std::string& right, bool trim);
+    
     static std::string Join(const std::vector<std::string>& _string, const std::string& joiner);
 
     static std::string Join(const std::vector<const char*>& _string, const std::string& joiner);

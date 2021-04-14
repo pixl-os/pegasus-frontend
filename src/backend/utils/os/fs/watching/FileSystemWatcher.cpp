@@ -21,16 +21,16 @@ FileSystemWatcher::FileSystemWatcher()
 {
   mInotifyFd = inotify_init1(IN_NONBLOCK);
   if (mInotifyFd == -1)
-    LOG(LogError) << "Can't initialize inotify ! " << strerror(errno) << ".";
+  { LOG(LogError) << "[FileWatcher] Can't initialize inotify ! " << strerror(errno) << "."; }
 
   mEpollFd = epoll_create1(0);
   if (mEpollFd == -1)
-    LOG(LogError) << "Can't initialize epoll ! " << strerror(errno) << ".";
+  { LOG(LogError) << "[FileWatcher] Can't initialize epoll ! " << strerror(errno) << "."; }
 
   mInotifyEpollEvent.events = EPOLLIN | EPOLLET;
   mInotifyEpollEvent.data.fd = mInotifyFd;
   if (epoll_ctl(mEpollFd, EPOLL_CTL_ADD, mInotifyFd, &mInotifyEpollEvent) == -1)
-    LOG(LogError) << "Can't add inotify filedescriptor to epoll ! " << strerror(errno) << ".";
+  { LOG(LogError) << "[FileWatcher] Can't add inotify filedescriptor to epoll ! " << strerror(errno) << "."; }
 }
 
 FileSystemWatcher::~FileSystemWatcher()
@@ -38,10 +38,10 @@ FileSystemWatcher::~FileSystemWatcher()
   epoll_ctl(mEpollFd, EPOLL_CTL_DEL, mInotifyFd, nullptr);
 
   if (close(mInotifyFd) != 0)
-    LOG(LogError) << "Error closing notify fd.";
+  { LOG(LogError) << "[FileWatcher] Error closing notify fd."; }
 
   if (close(mEpollFd) != 0)
-    LOG(LogError) << "Error closing poll fd.";
+  { LOG(LogError) << "[FileWatcher] Error closing poll fd."; }
 }
 
 void FileSystemWatcher::WatchDirectoryRecursively(const Path& path)
@@ -56,8 +56,7 @@ void FileSystemWatcher::WatchDirectoryRecursively(const Path& path)
         WatchDirectoryRecursively(p);
     }
   }
-  else
-    LOG(LogError) << "Can´t watch Path! Path does not exist. Path: " + path.ToString();
+  else { LOG(LogError) << "[FileWatcher] Can´t watch Path! Path does not exist. Path: " + path.ToString(); }
 }
 
 void FileSystemWatcher::WatchFile(const Path& file)
@@ -70,15 +69,13 @@ void FileSystemWatcher::WatchFile(const Path& file)
     {
       int Error = errno;
       if (Error == 28)
-        LOG(LogError) << "Failed to watch! " << strerror(Error) << ". Please increase number of watches in "
-                         "\"/proc/sys/fs/inotify/max_user_watches\".";
+      { LOG(LogError) << "[FileWatcher] Failed to watch! " << strerror(Error) << ". Please increase number of watches in \"/proc/sys/fs/inotify/max_user_watches\"."; }
 
-      LOG(LogError) << "Failed to watch! " << strerror(Error) << ". Path: " << file.ToString();
+      { LOG(LogError) << "[FileWatcher] Failed to watch! " << strerror(Error) << ". Path: " << file.ToString(); }
     }
     mDirectorieMap.insert({wd, file });
   }
-  else
-    LOG(LogError) << "Can´t watch Path! Path does not exist. Path: " << file.ToString();
+  else { LOG(LogError) << "[FileWatcher] Can´t watch Path! Path does not exist. Path: " << file.ToString(); }
 }
 
 bool FileSystemWatcher::GetNextEvent(FileSystemEvent& fsevent)

@@ -3,7 +3,9 @@
 //   This software is dual-licensed to the public domain and under the following
 //   license: you are granted a perpetual, irrevocable license to copy, modify,
 //   publish, and distribute this file as you see fit.
-
+//
+// From recalbox ES and Integrated by BozoTheGeek in Pegasus Front-end
+//
 #pragma once
 
 #include <cstdlib>

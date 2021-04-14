@@ -63,7 +63,7 @@ template<typename T> class Stack : private Allocator
     T Pop(const T& thisone)
     {
       for(int i=fCount; --i>=0;)
-        if (__GET(i) == thisone) return Pop(i);
+        if (__GET(i) == thisone) return PopAt(i);
       return *((T*)nullptr);
     }
 

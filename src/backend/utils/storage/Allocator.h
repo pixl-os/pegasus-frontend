@@ -1,3 +1,6 @@
+//
+// From recalbox ES and Integrated by BozoTheGeek in Pegasus Front-end
+//
 #ifndef __GRANULAR_MEMORY_H__
 #define __GRANULAR_MEMORY_H__
 
@@ -49,7 +52,7 @@ class Allocator
         {
           while ((Multiplier >> 16) != 0)
           {
-            // Multiplier is too high, we must change the rLog of 2
+            // Multiplier is too high, we must change the Log of 2
             mLog2Granularity++;
             // Get the new aligned multiplier
             Multiplier = (size + (1 << (int)mLog2Granularity) - 1) >> mLog2Granularity;

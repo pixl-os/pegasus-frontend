@@ -1,7 +1,6 @@
 #pragma once
 
 #include <pthread.h>
-typedef pthread_mutex_t OSMutex;
 
 /*!
  * Simple encapsulation of unix's mutex and signal
@@ -31,27 +30,35 @@ class Mutex
     bool UnLock();
 
     /*!
-     * Send a signal to any thread waiting for the signal
-     * @return True if the operation is successful
+     * @brief Autolock class
      */
-    bool Signal();
+    class AutoLock
+    {
+      private:
+        //! Mutex to use
+        Mutex& mMutex;
 
-    /*!
-     * Wait for the signal to be send
-     * @return True if the operation is successful
-     */
-    bool WaitSignal();
+      public:
+        /*!
+         * @brief Build an autolock instance based and the given mutex, then lock the mutex
+         * @param mutex Mutex to use
+         */
+        explicit AutoLock(Mutex& mutex)
+          : mMutex(mutex)
+        {
+          mMutex.Lock();
+        }
 
-    /*!
-     * Wait for the signal to be send with timeout
-     * @param timeout in milliseconds
-     * @return True if the operation is successful
-     */
-    bool WaitSignal(long long milliseconds);
+        /*!
+         * @brief Unlock the given mutex on destruction
+         */
+        ~AutoLock()
+        {
+          mMutex.UnLock();
+        }
+    };
 
   private:
     //! Mutex handle
-    OSMutex mMutex;
-    //! Signal handle
-    pthread_cond_t mCondition;
+    pthread_mutex_t mMutex;
 };

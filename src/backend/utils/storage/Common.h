@@ -8,7 +8,7 @@
   #define __PACKED__ __attribute__((packed))
 #endif
 
-#define LOG_AND_EXIT(m) do{ LOG(LogError) << m; abort(); }while(0)
+#define LOG_AND_EXIT(m) do{ LOG(LogError) << "[FATAL]" << m; abort(); }while(0)
 #define FORCEINLINE_ATTRIBUTE __attribute((always_inline))
 
 #define long64 long long
