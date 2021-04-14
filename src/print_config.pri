@@ -39,6 +39,8 @@ else: printKeyVal("Battery info backend", "DISABLED")
 !isEmpty(ENABLE_APNG): printKeyVal("APNG support", "Enabled")
 else: printKeyVal("APNG support", "DISABLED")
 
+# Audio server
+printKeyVal("Audio server", "PulseAudio")
 
 # SDL2
 !isEmpty(USE_SDL_GAMEPAD)|!isEmpty(USE_SDL_POWER): {
@@ -55,6 +57,20 @@ else: printKeyVal("APNG support", "DISABLED")
     }
 }
 
+# PULSEAUDIO
+unix:!macx {
+    message("Linking to PULSE AUDIO")
+    isEmpty(PULSE_LIBS):isEmpty(PULSE_INCLUDES) {
+        unix|win32-g++: message("  - using pkg-config to find it")
+        else: error("Please set PULSE_LIBS and PULSE_INCLUDES")
+    }
+    else {
+        message("  - Libraries:")
+        for(part, PULSE_LIBS): message("    - $${part}")
+        message("  - Include paths:")
+        for(path, PULSE_INCLUDES): message("    - $${path}")
+    }
+}
 
 # Print Git revision
 message("Git revision: '$${GIT_REVISION}'")

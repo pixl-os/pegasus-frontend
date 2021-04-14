@@ -19,6 +19,7 @@
 
 #include "AppSettings.h"
 #include "Log.h"
+
 #include "FrontendLayer.h"
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
@@ -42,6 +43,8 @@
 #if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
 #include <SDL.h>
 #endif
+
+
 
 namespace model { class Key; }
 namespace model { class Keys; }
@@ -127,10 +130,6 @@ void on_app_close(AppCloseType type)
 
 namespace backend {
 
-// Backend::Backend()
-    // : Backend(CliArgs {}, char[])
-// {}
-
 Backend::~Backend()
 {
     delete m_launcher;
@@ -148,7 +147,9 @@ Backend::Backend(const CliArgs& args, char** environment)
     // Make sure this comes before any file related operations
     AppSettings::general.portable = args.portable;
 
+    //pegasus logs
     Log::init(args.silent);
+        
     print_metainfo();
     register_api_classes();
 
@@ -203,8 +204,25 @@ Backend::Backend(const CliArgs& args, char** environment)
 
 void Backend::start()
 {
-    // Script Manager
-    mScriptManager.Notify(Notification::Start, Strings::ToString(0));
+    // Hardware board
+    Board board;
+
+    // Save power for battery-powered devices
+    board.SetCPUGovernance(IBoardInterface::CPUGovernance::PowerSave);
+
+    // Audio controller
+    AudioController audioController;
+    audioController.SetVolume(audioController.GetVolume());
+    std::string originalAudioDevice = RecalboxConf::Instance().GetAudioOuput();
+    std::string fixedAudioDevice = audioController.SetDefaultPlayback(originalAudioDevice);
+    if (fixedAudioDevice != originalAudioDevice)
+    {
+      RecalboxConf::Instance().SetAudioOuput(fixedAudioDevice);
+      RecalboxConf::Instance().Save();
+    }
+    
+    // Script Manager start launch
+    ScriptManager::Instance().Notify(Notification::Start, Strings::ToString(0));
     
     m_frontend->rebuild();
     m_api->startScanning(); // TODO: Separate scanner
