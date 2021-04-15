@@ -825,7 +825,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
         std::string initial_path = "";
         std::string initial_uuid = "";
         std::string initial_name = "";
-        Strings::SplitAt(RemovedPadPegasus.toUtf8().constData(), ':', initial_uuid, initial_name, initial_path, true);
+        Strings::SplitInThree(RemovedPadPegasus.toUtf8().constData(), ':', initial_uuid, initial_name, initial_path, true);
         
         //persistence saved in recalbox.conf (to remove this pad) and reorder others (after this pad)
         int MaxInputDevices = 10;
@@ -836,7 +836,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             std::string name = "";         
             const QString Parameter = QString("pegasus.pad%1").arg(i);
             const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(i+1));
-            Strings::SplitAt(NextPadPegasus.toUtf8().constData(), ':', uuid, name, path, true);
+            Strings::SplitInThree(NextPadPegasus.toUtf8().constData(), ':', uuid, name, path, true);
             //Log::debug(LOGMSG("pegasus.pad%1=%2:%3:%4").arg(QString::number(i+1),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
             
             if (path != "")

@@ -1,11 +1,13 @@
+//
+// From recalbox ES and Integrated by BozoTheGeek in Pegasus Front-end
+//
 #pragma once
 
 #include <vector>
 #include <sys/sysinfo.h>
 #include <utils/rLog.h>
-#include "Thread.h"
-#include "Mutex.h"
-//#include "IThreadPoolWorkerInterface.h"
+#include <utils/os/system/Thread.h>
+#include <utils/os/system/Signal.h>
 
 template<class FeedObject, class ResultObject> class ThreadPool
 {
@@ -68,7 +70,7 @@ template<class FeedObject, class ResultObject> class ThreadPool
     {
       private:
         //! Signal to start new jobs
-        Mutex       mSignal;
+        Signal      mSignal;
         //! Manager
         ThreadPool& mParent;
 
@@ -83,7 +85,7 @@ template<class FeedObject, class ResultObject> class ThreadPool
         /*!
          * @brief Set the signal to wxake up the thread
          */
-        void Signal() { mSignal.Signal(); }
+        void Fire() { mSignal.Fire(); }
     };
 
     //! Name
@@ -160,7 +162,7 @@ template<class FeedObject, class ResultObject> class ThreadPool
       for(auto& thread : mThreads)
       {
         thread->Stop();
-        thread->Signal();
+        thread->Fire();
       }
 
       for (auto& thread : mThreads)
@@ -196,7 +198,7 @@ template<class FeedObject, class ResultObject> class ThreadPool
       mStackMutex.UnLock();
       if (mPermanent)
         for(auto& thread : mThreads)
-          thread->Signal();
+          thread->Fire();
     }
 
     /*!
@@ -290,8 +292,8 @@ void ThreadPool<FeedObject, ResultObject>::Run(int threadCount, bool async)
   if (threadCount <= 0)
     threadCount = get_nprocs_conf() * (threadCount == 0 ? 1 : -threadCount);
 
-  // rLog
-  LOG(LogDebug) << "Creating new threadpool '" << mThreadPoolName << "' using " << threadCount << " workers " << (mPermanent ? "permanently" : "one-shoot");
+  // Log
+  { LOG(LogDebug) << "[ThreadPool] Creating new threadpool '" << mThreadPoolName << "' using " << threadCount << " workers " << (mPermanent ? "permanently" : "one-shoot"); }
 
   // Sort by priority
   if (mQueue.size() > 1)

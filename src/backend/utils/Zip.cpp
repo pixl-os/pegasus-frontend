@@ -1,8 +1,11 @@
 //
 // Created by bkg2k on 10/12/2019.
 //
+// From recalbox ES and Integrated by BozoTheGeek in Pegasus Front-end
+//
 
 #include <utils/hash/Md5.h>
+#include <algorithm>
 #include "Zip.h"
 
 Zip::Zip(const Path& zipfile, bool write)
@@ -72,9 +75,17 @@ std::string Zip::Md5Composite() const
   if (mArchive != nullptr)
   {
     MD5 md5;
+
+    // Build sorted file list
+    std::vector<std::string> fileList;
     for(int i = zip_get_num_entries(mArchive, 0); --i >= 0; )
+      fileList.push_back(zip_get_name(mArchive, i, ZIP_FL_ENC_GUESS));
+    std::sort(fileList.begin(), fileList.end());
+
+    // Get MD5
+    for(const auto& fileName : fileList)
     {
-      zip_file_t* file = zip_fopen_index(mArchive, i, 0);
+      zip_file_t* file = zip_fopen(mArchive, fileName.data(), 0);
       if (file != nullptr)
       {
         char buffer[1 << 20]; // 1Mb buffer

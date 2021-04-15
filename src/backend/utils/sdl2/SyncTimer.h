@@ -1,7 +1,7 @@
 #pragma once
 
 #include <utils/os/system/Thread.h>
-#include <utils/os/system/Mutex.h>
+#include <utils/os/system/Signal.h>
 #include "ISyncTimer.h"
 #include "SyncronousEvent.h"
 #include "ISynchronousEvent.h"
@@ -22,7 +22,7 @@ class SyncTimer : private Thread, private ISynchronousEvent
     int mIdentifier;
 
     //! Signla to unlock the thread
-    Mutex mSignal;
+    Signal mSignal;
 
     //! Milliseconds before triggering the callback
     int mMilliseconds;
@@ -76,7 +76,7 @@ class SyncTimer : private Thread, private ISynchronousEvent
      */
     void Start(int milliseconds, bool repeat)
     {
-      mSignal.Signal();
+      mSignal.Fire();
       mMilliseconds = milliseconds;
       mRepeat = repeat;
       Thread::Start(mName);
@@ -87,7 +87,7 @@ class SyncTimer : private Thread, private ISynchronousEvent
      */
     void Cancel()
     {
-      mSignal.Signal();
+      mSignal.Fire();
       Thread::Stop();
     }
 

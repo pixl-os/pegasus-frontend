@@ -13,7 +13,6 @@ HEADERS += \
     $$PWD/PathTools.h \
     $$PWD/QmlHelpers.h \
     $$PWD/rLog.h \
-    $$PWD/RootFolders.h \
     $$PWD/SqliteDb.h \
     $$PWD/StdHelpers.h \
     $$PWD/StdStringHelpers.h \
@@ -51,15 +50,18 @@ HEADERS += \
     $$PWD/os/fs/watching/IFileSystemWatcherNotification.h \
     $$PWD/os/system/IThreadPoolWorkerInterface.h \
     $$PWD/os/system/Mutex.h \
+    $$PWD/os/system/ProcessTree.h \
     $$PWD/os/system/Thread.h \
     $$PWD/os/system/ThreadPool.h \
+    $$PWD/os/system/Signal.h \
     $$PWD/storage/Allocator.h \
     $$PWD/storage/Array.h \
     $$PWD/storage/Common.h \
+    $$PWD/storage/MessageFactory.h \
     $$PWD/storage/Queue.h \
     $$PWD/storage/rHashMap.h \
     $$PWD/storage/Stack.h \
-    $$PWD/storage/Set.h \
+    $$PWD/storage/Set.h
     
 SOURCES += \
     $$PWD/CommandTokenizer.cpp \
@@ -72,7 +74,6 @@ SOURCES += \
     $$PWD/KeySequenceTools.cpp \
     $$PWD/PathTools.cpp \
     $$PWD/rLog.cpp \
-    $$PWD/RootFolders.cpp \
     $$PWD/SqliteDb.cpp \
     $$PWD/StdStringHelpers.cpp \
     $$PWD/StrBoolConverter.cpp \
@@ -97,7 +98,9 @@ SOURCES += \
     $$PWD/os/fs/watching/FileNotifier.cpp \
     $$PWD/os/fs/watching/FileSystemWatcher.cpp \
     $$PWD/os/system/Mutex.cpp \
-    $$PWD/os/system/Thread.cpp \
+    $$PWD/os/system/ProcessTree.cpp \
+    $$PWD/os/system/Signal.cpp \
+    $$PWD/os/system/Thread.cpp
     
 !isEmpty(USE_SDL_GAMEPAD) {
     HEADERS += $$PWD/GamepadManagerSDL2.h

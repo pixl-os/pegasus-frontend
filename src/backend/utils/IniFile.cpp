@@ -1,6 +1,8 @@
 //
 // Created by thierry.imbert on 18/02/2020.
 //
+// From recalbox ES and Integrated by BozoTheGeek 12/04/2021 in Pegasus Front-end
+//
 
 #include "IniFile.h"
 
@@ -24,7 +26,7 @@ IniFile::IniFile(const Path& path)
 
 bool IniFile::IsValidKeyValue(const std::string& line, std::string& key, std::string& value)
 {
-  static std::string _allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-,;:/!?*+=<>()@\"'#&{}[]%$";
+  static std::string _allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-";
   if (!line.empty()) // Ignore empty line
   {
     bool comment = (line[0] == ';' || line[0] == '#');
@@ -40,9 +42,9 @@ bool IniFile::IsValidKeyValue(const std::string& line, std::string& key, std::st
           value = line.substr(separatorPos + 1);
           return true;
         }
-        else LOG(LogWarning) << "Invalid key: `" << line << '`';
+        else { LOG(LogWarning) << "[IniFile] Invalid key: `" << line << '`'; }
       }
-      else LOG(LogError) << "Invalid line: `" << line << '`';
+      else { LOG(LogError) << "[IniFile] Invalid line: `" << line << '`'; }
     }
   }
   return false;
@@ -104,7 +106,12 @@ bool IniFile::Save()
   }
 
   // Save new
+  bool boot = mFilePath.StartWidth("/boot/");
+  if (boot)
+    if (system("mount -o remount,rw /boot") != 0) LOG(LogError) <<"[IniFile] Error remounting boot partition (RW)";
   Files::SaveFile(mFilePath, Strings::Join(lines, '\n'));
+  if (boot)
+    if (system("mount -o remount,ro /boot") != 0) LOG(LogError) << "[IniFile] Error remounting boot partition (RW)";
 
   OnSave();
   return true;

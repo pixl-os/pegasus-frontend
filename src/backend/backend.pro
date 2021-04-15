@@ -26,6 +26,7 @@ SOURCES += \
     Log.cpp \
     GamepadButtonNavigation.cpp \
     RecalboxConf.cpp \
+    RootFolders.cpp \
     ScriptManager.cpp
 
 HEADERS += \
@@ -41,6 +42,7 @@ HEADERS += \
     Log.h \
     GamepadButtonNavigation.h \
     RecalboxConf.h \
+    RootFolders.h \
     ScriptManager.h \
     KeyEmitter.h
 
@@ -51,7 +53,12 @@ include(platform/platform.pri)
 include(providers/providers.pri)
 include(types/types.pri)
 include(utils/utils.pri)
+include(audio/audio.pri)
+include(hardware/hardware.pri)
+
 
 DEFINES *= $${COMMON_DEFINES}
 
 include($${TOP_SRCDIR}/thirdparty/thirdparty.pri)
+include($${TOP_SRCDIR}/thirdparty/link_to_pulse.pri)
+

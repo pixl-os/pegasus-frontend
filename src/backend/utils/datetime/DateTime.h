@@ -419,6 +419,10 @@ public:
     return result;
   }
 
+  /*!
+   * Copy constructor
+   */
+  DateTime& operator = (const DateTime& source) { if (&source != this) { mlow = source.mlow; mhigh = source.mhigh; } return *this; }
     /*!
    * Add a Timespan to the current DateTime
    * @param ts TimeSpan to add
@@ -559,12 +563,12 @@ public:
     month += mMonth;
     if (month < 1)
     {
-      mYear -= (short)((--month / 12) + 1);            // Month to 0-11
+      mYear = (short)(mYear - ((--month / 12) + 1));     // Month to 0-11
       mMonth = (char)((12 + month % 12) + 1); // Month to 1-12
     }
     if (month > 12)
     {
-      mYear += (short)(--month / 12);           // Month to 0-11
+      mYear = (short)(mYear + (--month / 12));           // Month to 0-11
       mMonth = (char)((month % 12) + 1); // Month to 1-12
     }
     if (mDay > DayPerMonth(mMonth, mYear)) mDay = (char)DayPerMonth(mMonth, mYear);
@@ -572,7 +576,7 @@ public:
   }
   DateTime& AddYears(int years)
   {
-    mYear += (short)years;
+    mYear = (short)(mYear + years);
     if (mDay > DayPerMonth(mMonth, mYear)) mDay = (char)DayPerMonth(mMonth, mYear); // 29 february case
     return *this;
   }

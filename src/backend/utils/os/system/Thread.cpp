@@ -13,7 +13,9 @@ Thread::Thread()
   static int sTotalCount = 0;
   memset(mName, 0, sizeof(mName));
   std::string strName = "thread " + std::to_string(++sTotalCount);
-  strncpy(mName, strName.c_str(), sizeof(mName));
+  int len = (int)strName.size() + 1;
+  if (len > (int)sizeof(mName)) len = (int)sizeof(mName);
+  strncpy(mName, strName.c_str(), len);
 }
 
 Thread::~Thread()
@@ -31,7 +33,7 @@ void Thread::Start(const std::string& name)
   mIsDone = false;
   mIsRunning = true;
   int err = pthread_create(&mHandle, nullptr, &Thread::StartThread, this);
-  if (err != 0) LOG(LogError) << "Error running thread " << mName;
+  if (err != 0) { LOG(LogError) << "[Thread] Error running thread " << mName; }
   pthread_setname_np(mHandle, mName);
 }
 
@@ -65,13 +67,13 @@ void* Thread::StartThread(void* thread_)
   Thread& thread = *((Thread*)(thread_));
   thread.mId = SelfId();
 
-  LOG(LogDebug) << "Thread " << thread.mName << " started!";
+  { LOG(LogDebug) << "[Thread] Thread " << thread.mName << " started!"; }
 
   thread.BeforeRun();
   thread.Run();
   thread.AfterRun();
 
-  LOG(LogDebug) << "Thread " << thread.mName << " exited!";
+  { LOG(LogDebug) << "[Thread] Thread " << thread.mName << " exited!"; }
 
   thread.mId = 0;
   return nullptr;

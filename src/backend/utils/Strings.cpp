@@ -847,7 +847,23 @@ bool Strings::Contains(const char* source, const char* what)
   return (strstr(source, what) != nullptr);
 }
 
-bool Strings::SplitAt(const std::string& _string, char splitter, std::string& left, std::string& middle, std::string& right, bool trim)
+bool Strings::SplitAt(const std::string& _string, char splitter, std::string& left, std::string& right, bool trim)
+{
+  size_t pos = _string.find(splitter);
+  if (pos == std::string::npos) return false;
+
+  left  = _string.substr(0, pos);
+  right = _string.substr(pos + 1);
+  if (trim)
+  {
+    left = Trim(left, " \t\r\n");
+    right = Trim(right, " \t\r\n");
+  }
+
+  return true;
+}
+
+bool Strings::SplitInThree(const std::string& _string, char splitter, std::string& left, std::string& middle, std::string& right, bool trim)
 {
   size_t pos = _string.find(splitter);
   if (pos == std::string::npos) return false;

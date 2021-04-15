@@ -31,6 +31,9 @@ else:unix: PRE_TARGETDEPS += "$${TOP_BUILDDIR}/src/backend/libbackend.a"
 # SDL2
 !isEmpty(USE_SDL_GAMEPAD)|!isEmpty(USE_SDL_POWER): include($${TOP_SRCDIR}/thirdparty/link_to_sdl.pri)
 
+# PULSE AUDIO
+include($${TOP_SRCDIR}/thirdparty/link_to_pulse.pri)
+
 # Gamepad backend
 isEmpty(USE_SDL_GAMEPAD): QT *= gamepad
 

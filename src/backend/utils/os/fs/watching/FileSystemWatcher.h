@@ -1,4 +1,7 @@
 /*! File watching, inspired from the Inotofy library from Erik Zenker */
+//
+// From recalbox ES and Integrated by BozoTheGeek in Pegasus Front-end
+//
 
 #pragma once
 

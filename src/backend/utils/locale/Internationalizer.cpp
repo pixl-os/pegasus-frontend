@@ -1,6 +1,8 @@
 //
 // Created by bkg2k on 15/01/2020.
 //
+// From recalbox ES and Integrated by BozoTheGeek in Pegasus Front-end
+//
 
 #include "Internationalizer.h"
 #include <utils/rLog.h>
@@ -108,7 +110,7 @@ bool Internationalizer::BuildStringIndexes()
     if ((keyOffset >= (int)sMoFlatFile.size()) ||
         (keyOffset + keyLength >= (int)sMoFlatFile.size()))
     {
-      LOG(LogError) << "Invalid .mo file. Index out of range";
+      { LOG(LogError) << "[Locale] Invalid .mo file. Index out of range"; }
       return false;
     }
     const char* key = ((char*)i32) + keyOffset;
@@ -119,7 +121,7 @@ bool Internationalizer::BuildStringIndexes()
     if ((transOffset >= (int)sMoFlatFile.size()) ||
         (transOffset + transLength >= (int)sMoFlatFile.size()))
     {
-      LOG(LogError) << "Invalid .mo file. Index out of range";
+      { LOG(LogError) << "[Locale] Invalid .mo file. Index out of range"; }
       return false;
     }
     const char* translated = ((char*)i32) + transOffset;
@@ -131,7 +133,7 @@ bool Internationalizer::BuildStringIndexes()
       int translatedSplit = 0;
       if (!HasPlural(translated, transLength, translatedSplit))
       {
-        LOG(LogError) << "Inconsistent plural form in .mo file. Ignored";
+        { LOG(LogError) << "[Locale] Inconsistent plural form in .mo file. Ignored"; }
         return false;
       }
 
@@ -189,8 +191,8 @@ bool Internationalizer::LoadMoFile(const std::string& culture, const Path& basep
   Path culturePath = basepath / realCulture / "LC_MESSAGES" / (applicationname + ".mo");
   if (!culturePath.Exists())
   {
-    // rLog
-    LOG(LogWarning) << "Locale: " << culturePath.ToString() << " not found.";
+    // Log
+    { LOG(LogWarning) << "[Locale] " << culturePath.ToString() << " not found."; }
     // Try to compose language only
     if (realCulture.size() > 2)
       culturePath = basepath / (realCulture = realCulture.substr(0, 2)) / "LC_MESSAGES" / (applicationname + ".mo");
@@ -198,13 +200,13 @@ bool Internationalizer::LoadMoFile(const std::string& culture, const Path& basep
     // Final check
     if (!culturePath.Exists())
     {
-      LOG(LogWarning) << "Locale: " << culturePath.ToString() << " not found.";
+      { LOG(LogWarning) << "[Locale] " << culturePath.ToString() << " not found."; }
       return false;
     }
   }
 
   // Load file
-  LOG(LogInfo) << "Locale: Using " << culturePath.ToString();
+  { LOG(LogInfo) << "[Locale] Using " << culturePath.ToString(); }
   sActiveLocale = realCulture;
   sMoFlatFile = Files::LoadFile(culturePath);
   return BuildStringIndexes();
@@ -253,7 +255,7 @@ std::string Internationalizer::GetText(const char* key, int keyLength)
             return std::string(Link.TranslatedString, Link.TranslatedLength);
     }
   }
-  LOG(LogDebug) << "Locale: " << sActiveLocale << " - Missing translation of '" << key << "'";
+  { LOG(LogDebug) << "[Locale] " << sActiveLocale << " - Missing translation of '" << key << "'"; }
   return std::string(key, keyLength);
 }
 

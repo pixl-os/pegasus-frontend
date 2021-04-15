@@ -104,6 +104,6 @@ std::string TimeSpan::ToStringFormat(const char* format) const
     }
   }
 
-  return std::move(result);
+  return result;
 }
 

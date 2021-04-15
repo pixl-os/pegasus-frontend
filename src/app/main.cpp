@@ -26,7 +26,6 @@
 #include <QtPlugin>
 
 //to initialize the web engine for QML usage
-//#include <qtwebengineglobal.h>
 #include <QtWebEngine>
 
 #ifdef Q_OS_ANDROID
