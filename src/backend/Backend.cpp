@@ -204,25 +204,21 @@ Backend::Backend(const CliArgs& args, char** environment)
 
 void Backend::start()
 {
-    // Hardware board
-    Board board;
-
     // Save power for battery-powered devices
-    board.SetCPUGovernance(IBoardInterface::CPUGovernance::PowerSave);
+    mBoard.SetCPUGovernance(IBoardInterface::CPUGovernance::PowerSave);
 
-    // Audio controller
-    AudioController audioController;
-    audioController.SetVolume(audioController.GetVolume());
-    std::string originalAudioDevice = RecalboxConf::Instance().GetAudioOuput();
-    std::string fixedAudioDevice = audioController.SetDefaultPlayback(originalAudioDevice);
+    // Audio controller initialisation
+    mAudioController.SetVolume(mAudioController.GetVolume());
+    std::string originalAudioDevice = mRecalboxConf.GetAudioOuput();
+    std::string fixedAudioDevice = mAudioController.SetDefaultPlayback(originalAudioDevice);
     if (fixedAudioDevice != originalAudioDevice)
     {
-      RecalboxConf::Instance().SetAudioOuput(fixedAudioDevice);
-      RecalboxConf::Instance().Save();
+      mRecalboxConf.SetAudioOuput(fixedAudioDevice);
+      mRecalboxConf.Save();
     }
     
     // Script Manager start launch
-    ScriptManager::Instance().Notify(Notification::Start, Strings::ToString(0));
+    mScriptManager.Notify(Notification::Start, Strings::ToString(0));
     
     m_frontend->rebuild();
     m_api->startScanning(); // TODO: Separate scanner
