@@ -5,8 +5,9 @@
 
 namespace {
 
+/******************************* section to initial variables used by GetParametersList in same name *************************************/
 QStringList ListOfInternalValue;
-    
+
 QStringList GetParametersList(QString Parameter)
 {
     QStringList ListOfValue;
@@ -52,7 +53,7 @@ QStringList GetParametersList(QString Parameter)
         //MusicsXorVideosSound,
         
         //pegasus sound layer parameters is not as ES.
-        ListOfValue << "videos and games" <<  "none";
+        ListOfValue << "sound activated" <<  "mute";
         //use internal values to match with ES modes
         ListOfInternalValue << "musicandvideosound" <<  "none";
     }
@@ -65,12 +66,13 @@ QStringList GetParametersList(QString Parameter)
         //audio.mode=musicandvideosound
 
         IAudioController::DeviceList playbackList = AudioController::Instance().GetPlaybackList();
+        
         for(const auto& playback : playbackList)
            {
-               Log::info(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+               Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
                ListOfValue.append(QString::fromStdString(playback.DisplayableName));
                
-               Log::info(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+               Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
                ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
            }
         if(ListOfValue.isEmpty())
@@ -178,13 +180,23 @@ void ParametersList::load_selected_parameter()
     //Check m_parameter to manage specific case with specific management/action
     if(m_parameter == "audio.device")
     {
-       //change audio device as selected 
-       //TO DO
+        //change audio device as selected 
+        std::string originalAudioDevice = RecalboxConf::Instance().GetAudioOuput();
+        std::string fixedAudioDevice = AudioController::Instance().SetDefaultPlayback(originalAudioDevice);
     }
     else if(m_parameter == "audio.mode")
     {
        //change audio mode as selected 
+       if(ListOfInternalValue.at(m_current_idx).toUtf8().constData() == "none")
+       {
+       //mute audio
        //TO DO
+       }
+       else
+       {
+       //unmute audio
+       //TO DO
+       }
     }
 }
 
