@@ -105,7 +105,7 @@ FocusScope {
 
         color: themeColor.textValue
         font.pixelSize: fontSize
-        font.family: awesome
+        font.family: globalFonts.sans
     }
 
     MouseArea {

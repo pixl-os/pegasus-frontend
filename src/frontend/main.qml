@@ -68,7 +68,7 @@ Window {
     FontLoader { id: condensedBoldFont; source: "/fonts/RobotoCondensed-Bold.ttf" }
     FontLoader { id: awesomeWebFont; source: "/fonts/fontawesome_webfont.ttf" }
 
-    // a globally avalable utility object
+    // a globally available utility object
     QtObject {
         id: global
 
@@ -90,6 +90,7 @@ Window {
         id: globalFonts
         readonly property string sans: global.fonts.sans
         readonly property string condensed: global.fonts.condensed
+        readonly property string awesome: global.fonts.awesome
     }
     function vpx(value) {
         return global.winScale * value;
