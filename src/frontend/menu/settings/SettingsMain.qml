@@ -102,18 +102,52 @@ FocusScope {
                     first: true
                 }
                 MultivalueOption {
-                    id: optOutputAudio
+                    id: optAudioMode
+                    
+                    //property to manage parameter name
+                    property string parameterName : "audio.mode"
 
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Output") + api.tr
-                    note: qsTr("Choose Audio Output") + api.tr
-                    //                    value: api.internal.settings.locales.currentName
+                    label: qsTr("Mode") + api.tr
+                    note: qsTr("Choose Audio Mode") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
 
                     onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optAudioMode;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optOutputAudio
+                }
+                MultivalueOption {
+                    id: optOutputAudio
+                    
+                    //property to manage parameter name
+                    property string parameterName : "audio.device"
+
+                    label: qsTr("Output") + api.tr
+                    note: qsTr("Choose Audio Output") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optOutputAudio;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optOutputVolume

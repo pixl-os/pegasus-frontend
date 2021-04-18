@@ -56,6 +56,12 @@ private:
     
     //! Script management
     ScriptManager mScriptManager;
+    
+    //! Board management
+    Board mBoard;
+    
+    //! Audio controller
+    AudioController mAudioController;
 
     ApiObject* m_api;
     FrontendLayer* m_frontend;
