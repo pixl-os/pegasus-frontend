@@ -66,7 +66,7 @@ Window {
     FontLoader { id: monoFont; source: "/fonts/RobotoMono-Regular.ttf" }
     FontLoader { id: condensedFont; source: "/fonts/RobotoCondensed-Regular.ttf" }
     FontLoader { id: condensedBoldFont; source: "/fonts/RobotoCondensed-Bold.ttf" }
-
+    FontLoader { id: awesomeWebFont; source: "/fonts/fontawesome_webfont.ttf" }
 
     // a globally avalable utility object
     QtObject {
@@ -80,6 +80,7 @@ Window {
             readonly property string condensed: condensedFont.name
             readonly property string condensedBold: condensedBoldFont.name
             readonly property string mono: monoFont.name
+            readonly property string awesome : awesomeWebFont.name
         }
     }
 
