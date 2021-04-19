@@ -121,6 +121,7 @@ ParameterEntry::ParameterEntry(QString Name)
 
 ParametersList::ParametersList(QObject* parent)
     : QAbstractListModel(parent)
+    , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
     , m_role_names({
         { Roles::Name, QByteArrayLiteral("name") },
     })
@@ -133,8 +134,19 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
 {
     //to get first row as default value
     const QString DefaultValue = m_parameterslist.at(0).name; 
-    //check in recalbox.conf
-    select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));  
+    
+    if(Parameter.contains("boot.", Qt::CaseInsensitive))
+    {
+        //check in recalbox-boot.conf
+        QString ParameterBoot = Parameter;
+        ParameterBoot.replace(QString("boot."), QString(""));
+        select_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));  
+    }
+    else
+    {
+        //check in recalbox.conf
+        select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));  
+    }
 }
 
 bool ParametersList::select_parameter(const QString& name)
@@ -154,7 +166,7 @@ bool ParametersList::select_parameter(const QString& name)
                 return true;
             }
         }
-        else // if internal value to check index from recalbox.conf stored value
+        else // if internal value to check index from recalbox.conf/recalbox-boot.conf stored value
         {
             if (ListOfInternalValue.at(idx) == name) {
                 m_current_idx = idx;
@@ -167,15 +179,30 @@ bool ParametersList::select_parameter(const QString& name)
     return false;
 }
 
-void ParametersList::load_selected_parameter()
+void ParametersList::save_selected_parameter()
 {
     const auto& value = m_parameterslist.at(m_current_idx);
-    //Log::debug(LOGMSG("ParametersList::load_selected_parameter() - parameter: `%1`").arg(value.name));
-        
-    //write parameter in recalbox.conf in all cases
-    if (ListOfInternalValue.size() == 0) RecalboxConf::Instance().SetString(m_parameter.toUtf8().constData(), value.name.toUtf8().constData());
-    //or internal value
-    else RecalboxConf::Instance().SetString(m_parameter.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
+    //Log::debug(LOGMSG("ParametersList::save_selected_parameter() - parameter: `%1`").arg(value.name));
+
+    //check in recalbox-boot.conf    
+    if(m_parameter.contains("boot.", Qt::CaseInsensitive))
+    {
+        QString ParameterBoot = m_parameter;
+        ParameterBoot.replace(QString("boot."), QString(""));
+        //write parameter in recalbox-boot.conf in all cases
+        if (ListOfInternalValue.size() == 0) m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), value.name.toUtf8().constData());
+        //or internal value
+        else m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
+        //write recalbox-boot.conf immediately (but don't ask to reboot systematically ;-)
+        m_RecalboxBootConf.Save();
+    }
+    else
+    {
+        //write parameter in recalbox.conf in all cases
+        if (ListOfInternalValue.size() == 0) RecalboxConf::Instance().SetString(m_parameter.toUtf8().constData(), value.name.toUtf8().constData());
+        //or internal value
+        else RecalboxConf::Instance().SetString(m_parameter.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
+    }
     
     //Check m_parameter to manage specific case with specific management/action
     if(m_parameter == "audio.device")
@@ -224,6 +251,7 @@ QVariant ParametersList::data(const QModelIndex& index, int role) const
 
 void ParametersList::setCurrentIndex(int idx_int)
 {
+    //Log::warning(LOGMSG("ParametersList::setCurrentIndex(int idx_int) : m_current_idx = %1").arg(m_current_idx));
     const auto idx = static_cast<size_t>(idx_int);
 
     // verify
@@ -234,9 +262,9 @@ void ParametersList::setCurrentIndex(int idx_int)
         Log::warning(LOGMSG("Invalid parameter index #%1").arg(idx));
         return;
     }
-    // load
+    // save
     m_current_idx = idx;
-    load_selected_parameter();
+    save_selected_parameter();
     //Log::debug(LOGMSG("emit parameterChanged();"));
     emit parameterChanged();
 }
@@ -253,7 +281,6 @@ QString ParametersList::currentName(const QString& Parameter) {
             m_parameter = Parameter;
             m_parameterslist = find_available_parameterslist(Parameter);
             select_preferred_parameter(Parameter);
-            load_selected_parameter();
             //to signal end of model's data
             emit QAbstractItemModel::endResetModel();
         }

@@ -31,7 +31,6 @@ RecalboxConf::RecalboxConf()
 
 void RecalboxConf::OnSave()
 {
-    Log::info(LOGMSG("recalbox.conf file saved."));
     ScriptManager::Instance().Notify(Notification::ConfigurationChanged, recalboxConfFile.ToString());
 }
 

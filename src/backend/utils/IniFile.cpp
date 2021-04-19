@@ -110,6 +110,7 @@ bool IniFile::Save()
   if (boot)
     if (system("mount -o remount,rw /boot") != 0) LOG(LogError) <<"[IniFile] Error remounting boot partition (RW)";
   Files::SaveFile(mFilePath, Strings::Join(lines, '\n'));
+  Log::info(LOGMSG("%1 saved.").arg(QString::fromStdString(mFilePath.ToString())));
   if (boot)
     if (system("mount -o remount,ro /boot") != 0) LOG(LogError) << "[IniFile] Error remounting boot partition (RW)";
 

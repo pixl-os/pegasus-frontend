@@ -2,7 +2,7 @@
 #pragma once
 
 #include "utils/MoveOnly.h"
-
+#include <utils/IniFile.h>
 #include <QAbstractListModel>
 
 namespace model {
@@ -39,13 +39,15 @@ private:
     const QHash<int, QByteArray> m_role_names;
     std::vector<ParameterEntry> m_parameterslist;
     QString m_parameter;
-    
 
+    //! Boot configuration file
+    IniFile m_RecalboxBootConf;
+    
     size_t m_current_idx;
 
     void select_preferred_parameter(const QString&);
     bool select_parameter(const QString&);
-    void load_selected_parameter();
+    void save_selected_parameter();
 
 };
 } // namespace model
