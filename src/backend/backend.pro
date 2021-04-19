@@ -27,7 +27,8 @@ SOURCES += \
     GamepadButtonNavigation.cpp \
     RecalboxConf.cpp \
     RootFolders.cpp \
-    ScriptManager.cpp
+    ScriptManager.cpp \
+    RecalboxSystem.cpp
 
 HEADERS += \
     Backend.h \
@@ -44,7 +45,8 @@ HEADERS += \
     RecalboxConf.h \
     RootFolders.h \
     ScriptManager.h \
-    KeyEmitter.h
+    KeyEmitter.h \
+    RecalboxSystem.h
 
 include(imggen/imggen.pri)
 include(model/model.pri)
@@ -55,6 +57,7 @@ include(types/types.pri)
 include(utils/utils.pri)
 include(audio/audio.pri)
 include(hardware/hardware.pri)
+include(storage/storage.pri)
 
 
 DEFINES *= $${COMMON_DEFINES}
