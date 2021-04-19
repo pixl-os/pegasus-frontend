@@ -225,14 +225,22 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optStorageDevices
+                    //property to manage parameter name
+                    property string parameterName : "boot.sharedevice"
 
                     label: qsTr("Storage device") + api.tr
                     note: qsTr("change to over storage") + api.tr
-                    value: api.internal.settings.locales.currentName
-                    //                  need list !!!!!!! NETWORK, INTERNAL, ANYEXTERNAL
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
-                        focus = true;
-                        //                        localeBox.focus = true;
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optStorageDevices;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optStorageCapacity

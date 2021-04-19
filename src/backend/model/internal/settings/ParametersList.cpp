@@ -2,11 +2,15 @@
 #include "Log.h"
 #include "Recalbox.h"
 #include "audio/AudioController.h"
+#include "storage/StorageDevices.h"
 
 namespace {
 
 /******************************* section to initial variables used by GetParametersList in same name *************************************/
 QStringList ListOfInternalValue;
+
+//! Storage devices
+StorageDevices mStorageDevices;
 
 QStringList GetParametersList(QString Parameter)
 {
@@ -80,6 +84,30 @@ QStringList GetParametersList(QString Parameter)
                ListOfValue.append("no device detected");
                ListOfInternalValue.append(""); //to empty parameter
            }            
+    }
+    else if (Parameter == "boot.sharedevice")
+    {
+        //# The `sharedevice` variable indicates where to find the SHARE folder/partition.
+        //# It can have the following values:
+        //#   INTERNAL      => the partition immediately following the partition mounted as /boot, on the same disk (e.g. `/dev/mmcblk0p2`)
+        //#                    (this is the default)
+        //#   RAM           => a temporary in-memory file system (tmpfs)
+        //#                    (use at your own risks, specially on boards with low memory!)
+        //#   ANYEXTERNAL   => any storage device other than the one the system booted on
+        //#                    (use this when you have several USB keys/drives, but plug only one at a time)
+        //#   DEV [FSUUID]  => the storage device with the [FSUUID] unique identifier
+        //#                    (use this if you plug multiple storage devices together but want a specific one to hold SHARE)
+        //#   NETWORK       => a network-mounted filesystem
+        //#                    (see complementary `sharenetwork_*` directives below)
+        //;sharedevice=INTERNAL
+
+        for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
+        {
+            Log::info(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
+            ListOfValue.append(QString::fromStdString(device.DisplayName));
+            Log::info(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
+            ListOfInternalValue.append(QString::fromStdString(device.UUID));
+        }
     }
     else
     {
