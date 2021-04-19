@@ -1,10 +1,14 @@
 //
 // Created by thierry.imbert on 18/02/2020.
 //
+// From recalbox ES and Integrated by BozoTheGeek 12/04/2021 in Pegasus Front-end
+//
+
 #pragma once
 
 #include <utils/os/fs/Path.h>
 #include <utils/storage/rHashMap.h>
+#include "Log.h"
 
 class IniFile
 {
