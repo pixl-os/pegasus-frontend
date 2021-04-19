@@ -32,6 +32,9 @@ public:
     
 private:
 
+    //! Boot configuration file
+    IniFile m_RecalboxBootConf;
+
 };
 
 } // namespace model
