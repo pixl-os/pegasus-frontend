@@ -241,16 +241,14 @@ void ParametersList::save_selected_parameter()
     }
     else if(m_parameter == "audio.mode")
     {
-       //change audio mode as selected 
-       if(ListOfInternalValue.at(m_current_idx).toUtf8().constData() == "none")
+       //change audio mode as selected
+       if(ListOfInternalValue.at(m_current_idx) == "none")
        {
-       //mute audio
-       //TO DO
+            AudioController::Instance().SetVolume(0);
        }
        else
        {
-       //unmute audio
-       //TO DO
+            AudioController::Instance().SetVolume(RecalboxConf::Instance().GetAudioVolume());
        }
     }
 }

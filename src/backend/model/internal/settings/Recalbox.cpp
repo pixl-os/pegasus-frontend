@@ -94,6 +94,14 @@ void Recalbox::setIntParameter(const QString& Parameter, const int& Value)
         else
         {
             RecalboxConf::Instance().SetInt(Parameter.toUtf8().constData(), Value);
+            
+            /********************* realtime action linked to any parameter (to avoid to create a new api just for that :-(***************/
+            if(Parameter == "audio.volume")
+              {
+                  //change audio volume as proposed 
+                  if(RecalboxConf::Instance().AsString("audio.mode") != "none") AudioController::Instance().SetVolume(Value);
+                  else AudioController::Instance().SetVolume(0); // to mute in all cases
+              }
         }
     }
     

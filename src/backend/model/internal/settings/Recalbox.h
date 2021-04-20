@@ -7,6 +7,8 @@
 
 #include "RecalboxConf.h"
 #include "utils/QmlHelpers.h"
+#include <audio/AudioController.h>
+
 #include <QObject>
 
 namespace model {

@@ -208,7 +208,8 @@ void Backend::start()
     mBoard.SetCPUGovernance(IBoardInterface::CPUGovernance::PowerSave);
 
     // Audio controller initialisation
-    mAudioController.SetVolume(mAudioController.GetVolume());
+    if(mRecalboxConf.AsString("audio.mode") != "none") mAudioController.SetVolume(mAudioController.GetVolume());
+    else mAudioController.SetVolume(0); // to mute in all cases
     std::string originalAudioDevice = mRecalboxConf.GetAudioOuput();
     std::string fixedAudioDevice = mAudioController.SetDefaultPlayback(originalAudioDevice);
     if (fixedAudioDevice != originalAudioDevice)
