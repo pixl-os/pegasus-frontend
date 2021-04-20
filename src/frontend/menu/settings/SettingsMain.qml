@@ -113,6 +113,7 @@ FocusScope {
                     label: qsTr("Mode") + api.tr
                     note: qsTr("Choose Audio Mode") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    font: globalFonts.ion
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -137,7 +138,8 @@ FocusScope {
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose Audio Output") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
-
+                    font: globalFonts.awesome
+                    
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
@@ -150,19 +152,42 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optAudioMode
                     KeyNavigation.down: optOutputVolume
                 }
-                SimpleButton {
+                SliderOption {
                     id: optOutputVolume
+                    
+                    //property to manage parameter name
+                    property string parameterName : "audio.volume"
 
+                    //property of SliderOption to set
                     label: qsTr("Volume") + api.tr
-                    note: qsTr("Set audio Volume") + api.tr
+                    note: qsTr("Set Audio Volume") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+                    //in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName) + "%"
+                                        
                     onActivate: {
                         focus = true;
-                        //                        localeBox.focus = true;
-
                     }
+                    
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";                        
+                        }
+                        
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        }
+                    
                     onFocusChanged: container.onFocus(this)
+                    
+                    KeyNavigation.up: optOutputAudio
                     KeyNavigation.down: optVideoSettings
                 }
                 SectionTitle {
@@ -181,6 +206,7 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optOutputVolume
                     KeyNavigation.down: optNetworkSettings
                 }
                 SectionTitle {
@@ -199,6 +225,7 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optVideoSettings
                     KeyNavigation.down: optUpdateSettings
                 }
                 SectionTitle {
@@ -217,6 +244,7 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optNetworkSettings
                     KeyNavigation.down: optStorageDevices
                 }
                 SectionTitle {
@@ -243,6 +271,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up:   optUpdateSettings
                     KeyNavigation.down: optStorageCapacity
                 }
                 SimpleButton {
@@ -255,6 +284,7 @@ FocusScope {
                         //                        localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optStorageDevices
                     KeyNavigation.down: optLanguage
                 }
                 SectionTitle {
@@ -273,6 +303,7 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optStorageCapacity
                     KeyNavigation.down: optKbLayout
                 }
                 MultivalueOption {
@@ -297,6 +328,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this);
+                    KeyNavigation.up: optLanguage
                     KeyNavigation.down: optDebugMode
                 }
                 SectionTitle {
@@ -311,12 +343,10 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("emulationstation.debuglogs")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("emulationstation.debuglogs",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optKbLayout
-                    KeyNavigation.down: optOutputAudio
                 }
                 Item {
                     width: parent.width
