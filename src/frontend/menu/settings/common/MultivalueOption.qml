@@ -24,6 +24,7 @@ FocusScope {
     property alias label: label.text
     property alias note: sublabel.text
     property alias value: value.text
+    property alias font: value.font.family 
 
     property int fontSize: vpx(22)
     property int horizontalPadding: vpx(30)
@@ -32,7 +33,6 @@ FocusScope {
 
 
     width: parent.width
-//    height: fontSize * 2.5
     height: labelContainer.height + fontSize * 1.25
 
     Keys.onPressed: {
@@ -83,18 +83,6 @@ FocusScope {
             font.italic: true
         }
     }
-
-//    Text {
-//        id: label
-
-//        anchors.left: parent.left
-//        anchors.leftMargin: horizontalPadding
-//        anchors.verticalCenter: parent.verticalCenter
-
-//        color: "#eee"
-//        font.pixelSize: fontSize
-//        font.family: globalFonts.sans
-//    }
 
     Text {
         id: value

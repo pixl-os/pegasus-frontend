@@ -67,6 +67,7 @@ Window {
     FontLoader { id: condensedFont; source: "/fonts/RobotoCondensed-Regular.ttf" }
     FontLoader { id: condensedBoldFont; source: "/fonts/RobotoCondensed-Bold.ttf" }
     FontLoader { id: awesomeWebFont; source: "/fonts/fontawesome_webfont.ttf" }
+    FontLoader { id: ionIconsFont; source: "/fonts/ionicons.ttf" }
 
     // a globally available utility object
     QtObject {
@@ -81,6 +82,7 @@ Window {
             readonly property string condensedBold: condensedBoldFont.name
             readonly property string mono: monoFont.name
             readonly property string awesome : awesomeWebFont.name
+            readonly property string ion : ionIconsFont.name
         }
     }
 
@@ -91,6 +93,7 @@ Window {
         readonly property string sans: global.fonts.sans
         readonly property string condensed: global.fonts.condensed
         readonly property string awesome: global.fonts.awesome
+        readonly property string ion: global.fonts.ion
     }
     function vpx(value) {
         return global.winScale * value;
