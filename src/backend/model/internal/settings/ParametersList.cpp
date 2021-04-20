@@ -57,7 +57,7 @@ QStringList GetParametersList(QString Parameter)
         //MusicsXorVideosSound,
         
         //pegasus sound layer parameters is not as ES.
-        ListOfValue << "sound activated" <<  "mute";
+        ListOfValue << "sound on \uf123" <<  "sound off \uf3a2"; // using ionIcons Font
         //use internal values to match with ES modes
         ListOfInternalValue << "musicandvideosound" <<  "none";
     }
@@ -74,7 +74,7 @@ QStringList GetParametersList(QString Parameter)
         for(const auto& playback : playbackList)
            {
                Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
-               ListOfValue.append(QString::fromStdString(playback.DisplayableName));
+               ListOfValue.append(QString::fromStdString(playback.DisplayableName)); // using Awesome Web Font
                
                Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
                ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
@@ -241,16 +241,14 @@ void ParametersList::save_selected_parameter()
     }
     else if(m_parameter == "audio.mode")
     {
-       //change audio mode as selected 
-       if(ListOfInternalValue.at(m_current_idx).toUtf8().constData() == "none")
+       //change audio mode as selected
+       if(ListOfInternalValue.at(m_current_idx) == "none")
        {
-       //mute audio
-       //TO DO
+            AudioController::Instance().SetVolume(0);
        }
        else
        {
-       //unmute audio
-       //TO DO
+            AudioController::Instance().SetVolume(RecalboxConf::Instance().GetAudioVolume());
        }
     }
 }
