@@ -160,8 +160,11 @@ ParametersList::ParametersList(QObject* parent)
 
 void ParametersList::select_preferred_parameter(const QString& Parameter)
 {
+    //Log::debug(LOGMSG("void ParametersList::select_preferred_parameter(const QString& Parameter) Parameter:`%1`").arg(Parameter));
     //to get first row as default value
-    const QString DefaultValue = m_parameterslist.at(0).name; 
+    QString DefaultValue;
+    if (ListOfInternalValue.size() == 0) DefaultValue = m_parameterslist.at(0).name;
+    else DefaultValue = ListOfInternalValue.at(0);
     
     if(Parameter.contains("boot.", Qt::CaseInsensitive))
     {
@@ -209,6 +212,7 @@ bool ParametersList::select_parameter(const QString& name)
 
 void ParametersList::save_selected_parameter()
 {
+    //Log::debug(LOGMSG("ParametersList::save_selected_parameter()"));
     const auto& value = m_parameterslist.at(m_current_idx);
     //Log::debug(LOGMSG("ParametersList::save_selected_parameter() - parameter: `%1`").arg(value.name));
 
