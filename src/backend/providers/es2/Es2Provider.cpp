@@ -13,7 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+//
+// Updated and integrated for recalbox by BozoTheGeek 03/05/2021
+//
 
 #include "Es2Provider.h"
 
@@ -23,11 +25,11 @@
 #include "providers/es2/Es2Metadata.h"
 #include "providers/es2/Es2Systems.h"
 
-
+//For recalbox
+#include "RecalboxConf.h"
 
 #include <QDir>
 #include <QStringBuilder>
-
 
 namespace {
 std::vector<QString> default_config_paths()
@@ -71,20 +73,25 @@ Provider& Es2Provider::run(SearchContext& sctx)
     const float progress_step = 1.f / (systems.size() * 2);
     float progress = 0.f;
 
-    // Load MAME blacklist, if exists
-    const std::vector<QString> mame_blacklist = read_mame_blacklists(display_name(), possible_config_dirs);
-
-    // Find games
+    // Find games (file by file) - take bios files also or other file hide
     for (const SystemEntry& sysentry : systems) {
-        const size_t found_games = find_games_for(sysentry, sctx, mame_blacklist);
-        Log::info(display_name(), LOGMSG("System `%1` provided %2 games")
-            .arg(sysentry.name, QString::number(found_games)));
-
-        progress += progress_step;
-        emit progressChanged(progress);
+            const size_t found_cores = create_collection_for(sysentry, sctx);
+            Log::info(display_name(), LOGMSG("System `%1` has %2 emulator/cores")
+                .arg(sysentry.name, QString::number(found_cores)));
+            
+            // Find games if not Gamelist Only activated
+            if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
+            {
+                // Load MAME blacklist, if exists
+                const std::vector<QString> mame_blacklist = read_mame_blacklists(display_name(), possible_config_dirs);
+                const size_t found_games = find_games_for(sysentry, sctx, mame_blacklist);
+                Log::info(display_name(), LOGMSG("System `%1` provided %2 games")
+                .arg(sysentry.name, QString::number(found_games)));
+            }
+            progress += progress_step;
+            emit progressChanged(progress);
     }
-
-    // Find assets
+    // Find assets and games in case of gamelist only
     const Metadata metahelper(display_name(), std::move(possible_config_dirs));
     for (const SystemEntry& sysentry : systems) {
         metahelper.find_metadata_for(sysentry, sctx);

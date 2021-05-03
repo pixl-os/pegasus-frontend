@@ -13,8 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-
+//
+// Updated and integrated for recalbox by BozoTheGeek 03/05/2021
+//
 #include "Es2Games.h"
 
 #include "Log.h"
@@ -99,11 +100,12 @@ std::vector<QString> read_mame_blacklists(const QString& log_tag, const std::vec
     return out;
 }
 
-size_t find_games_for(
+size_t create_collection_for(
     const SystemEntry& sysentry,
-    SearchContext& sctx,
-    const std::vector<QString>& filename_blacklist)
+    SearchContext& sctx)
+    
 {
+    size_t found_cores = 0;
     model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
 
     collection
@@ -119,8 +121,19 @@ size_t find_games_for(
         Emulator.core = sysentry.emulators[n].core;
         Emulator.priority = sysentry.emulators[n].priority;
         AllEmulators.append(Emulator);
+        found_cores++;
     }
     collection.setCommonEmulators(AllEmulators);
+    
+    return found_cores;
+}
+
+size_t find_games_for(
+    const SystemEntry& sysentry,
+    SearchContext& sctx,
+    const std::vector<QString>& filename_blacklist)
+{
+    model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
 
     // find all (sub-)directories, but ignore 'media'
     const QStringList dirs = [&sysentry]{
@@ -144,8 +157,6 @@ size_t find_games_for(
 
 
     // scan for game files 
-    //TO DO: desactivate scan to avoid to lose time :-(
-    
     constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto entry_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = parse_filters(sysentry.extensions);

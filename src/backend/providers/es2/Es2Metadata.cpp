@@ -13,7 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+//
+// Updated and integrated for recalbox by BozoTheGeek 03/05/2021
+//
 
 #include "Es2Metadata.h"
 
@@ -34,6 +36,8 @@
 #include <QStringBuilder>
 #include <QXmlStreamReader>
 
+//For recalbox
+#include "RecalboxConf.h"
 
 namespace {
 
@@ -165,7 +169,7 @@ HashMap<MetaType, QString, EnumHash> Metadata::parse_gamelist_game_node(QXmlStre
     return xml_props;
 }
 
-void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, const providers::SearchContext& sctx) const
+void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, providers::SearchContext& sctx, const QString& system_name) const
 {
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
@@ -179,6 +183,10 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         return;
     }
 
+    //need collection for gamelist only activated
+    model::Collection& collection = *sctx.get_or_create_collection(system_name);
+    
+    size_t found_games = 0;
     // read all <game> nodes
     while (xml.readNextStartElement()) {
         if (xml.name() != QLatin1String("game")) {
@@ -200,26 +208,45 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
             continue;
         }
 
-        // get the Game, if exists, and apply the properties
-
         const QFileInfo finfo = shell_to_finfo(xml_dir, shell_filepath);
-        if (!finfo.exists())
-            continue;
-
-        const QString filepath = ::clean_abs_path(finfo);
-        model::GameFile* const entry_ptr = sctx.gamefile_by_filepath(filepath);
+        const QString path = ::clean_abs_path(finfo);
+        
+        if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
+        {
+            // create game now in this case (don't care if exist or not on file system to go quicker)
+            model::Game* game_ptr = sctx.game_by_filepath(path);
+            if (!game_ptr) {
+                game_ptr = sctx.create_game_for(collection);
+                sctx.game_add_filepath(*game_ptr, std::move(path));
+            }    
+            sctx.game_add_to(*game_ptr, collection);
+            found_games++;
+        }
+        else
+        {    
+            // get the Game, if exists, and apply the properties
+            if (!finfo.exists())
+                continue;
+        }
+        model::GameFile* const entry_ptr = sctx.gamefile_by_filepath(path);
         if (!entry_ptr)  // ie. the file was not picked up by the system's extension list
             continue;
-
         apply_metadata(*entry_ptr, xml_dir, xml_props);
     }
+
+    if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
+    {    
+        Log::info(m_log_tag, LOGMSG("System `%1` gamelist provided %2 games")
+        .arg(system_name, QString::number(found_games)));     
+    }
+    
     if (xml.error()) {
         Log::warning(m_log_tag, xml.errorString());
         return;
     }
 }
 
-void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::SearchContext& sctx) const
+void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchContext& sctx) const
 {
     Q_ASSERT(!sysentry.name.isEmpty());
     Q_ASSERT(!sysentry.path.isEmpty());
@@ -248,7 +275,7 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::S
     }
 
     QXmlStreamReader xml(&xml_file);
-    process_gamelist_xml(xml_dir, xml, sctx);
+    process_gamelist_xml(xml_dir, xml, sctx, sysentry.name);
     
     //to add images stored by skraper and linked to gamelist/system of ES
     add_skraper_media_metadata(xml_dir, sctx);
