@@ -35,6 +35,7 @@
 #include <QFileInfo>
 #include <QStringBuilder>
 #include <QXmlStreamReader>
+#include <QElapsedTimer>
 
 //For recalbox
 #include "RecalboxConf.h"
@@ -236,7 +237,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
     if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
     {    
-        Log::info(m_log_tag, LOGMSG("System `%1` gamelist provided %2 games")
+        Log::info(m_log_tag, LOGMSG("Stats - System `%1` gamelist provided %2 games")
         .arg(system_name, QString::number(found_games)));     
     }
     
@@ -257,6 +258,9 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchC
         return;
     }
 
+    QElapsedTimer gamelist_timer;
+    gamelist_timer.start();
+
     const QDir xml_dir(sysentry.path);
     
     //Log::debug(m_log_tag, LOGMSG("sysentry.path:  %1").arg(sysentry.path));
@@ -266,7 +270,7 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchC
         Log::warning(m_log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
         return;
     }
-    Log::info(m_log_tag, LOGMSG("Found `%1`").arg(gamelist_path));
+    Log::info(m_log_tag, LOGMSG("Stats - Found `%1`").arg(gamelist_path));
 
     QFile xml_file(gamelist_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
@@ -276,9 +280,13 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchC
 
     QXmlStreamReader xml(&xml_file);
     process_gamelist_xml(xml_dir, xml, sctx, sysentry.name);
+    Log::info(LOGMSG("Stats - Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));    
     
     //to add images stored by skraper and linked to gamelist/system of ES
+    QElapsedTimer skraper_media_timer;
+    skraper_media_timer.start();
     add_skraper_media_metadata(xml_dir, sctx);
+    Log::info(LOGMSG("Stats - Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
     
 }
 
@@ -341,15 +349,14 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, const provider
     constexpr auto DIR_FILTERS = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto DIR_FLAGS = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
     
-    //all path name seems here but without extension !!!
-    const HashMap<QString, model::Game*> extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map()); 
     //Log::debug(m_log_tag, LOGMSG("Nb elements in extless_path_to_game : %1").arg(QString::number(extless_path_to_game.size())));
     
     //Log::debug(m_log_tag, LOGMSG("Nb elements in sctx.current_filepath_to_entry_map() : %1").arg(QString::number(sctx.current_filepath_to_entry_map().size())));
     //Log::debug(m_log_tag, LOGMSG("Nb elements in sctx.current_collection_to_entry_map() : %1").arg(QString::number(sctx.current_collection_to_entry_map().size())));
 
     size_t found_assets_cnt = 0;
-
+    bool gamepath_db_generated = false;
+    HashMap<QString, model::Game*> extless_path_to_game;
     //Log::debug(m_log_tag, LOGMSG("Nb elements in MEDIA_DIRS : %1").arg(QString::number(MEDIA_DIRS.size())));
     for (const QString& media_dir_subpath : MEDIA_DIRS) {
         const QString game_media_dir = system_dir.path() % media_dir_subpath;
@@ -358,7 +365,12 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, const provider
                 Log::debug(m_log_tag, LOGMSG("%1 directory not found :-(").arg(game_media_dir));
                 continue;
             }
- 
+        else if (!gamepath_db_generated) //first iteration only
+            {
+            //all path name seems here but without extension !!!
+            extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map()); 
+            gamepath_db_generated = true;
+            }            
         //check existing asset directories in media
         //Log::debug(m_log_tag, LOGMSG("Nb elements in ASSET_DIRS : %1").arg(QString::number(ASSET_DIRS.size())));
         for (const auto& asset_dir_entry : ASSET_DIRS) {
@@ -388,7 +400,7 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, const provider
         }
     }
  
-     Log::info(m_log_tag, LOGMSG("%1 assets found").arg(QString::number(found_assets_cnt)));
+     Log::info(m_log_tag, LOGMSG("Stats - %1 assets found").arg(QString::number(found_assets_cnt)));
    
 }
 
