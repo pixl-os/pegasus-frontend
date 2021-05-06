@@ -12,6 +12,14 @@ QStringList ListOfInternalValue;
 //! Storage devices
 StorageDevices mStorageDevices;
 
+//list of global and system values (example using snes system)
+//global or  snes.ratio=4/3 -> RATIO
+//global or  snes.shaders=/recalbox/share_init/shaders/scanline.glslp -> SHADERS
+
+//parameters for system to get from collection emulators and cores
+//snes.core=snes9x_next
+//neogeo.emulator=fba2x
+
 QStringList GetParametersList(QString Parameter)
 {
     QStringList ListOfValue;
@@ -19,7 +27,7 @@ QStringList GetParametersList(QString Parameter)
     //clean global internal values if needed
     ListOfInternalValue.clear();
     
-    if (Parameter == "global.ratio")
+    if (Parameter.endsWith(".ratio", Qt::CaseInsensitive) == true) // compatible for 'global.ratio' and '{system].ratio' (example: 'snes.ratio')
     {   
         //## Set ratio for all emulators (auto,4/3,16/9,16/10,custom) - default value: auto / index 0
         //global.ratio=auto
