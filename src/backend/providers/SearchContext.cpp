@@ -192,11 +192,25 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
         game.setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
     if (game.systemShortName().isEmpty())
         game.setSystemShortname(collection.shortName());
-    if (game.emulatorName().isEmpty())
-        game.setEmulatorName(collection.commonEmulators()[0].name);//TO DO: take by priority
-    if (game.emulatorCore().isEmpty())
-        game.setEmulatorCore(collection.commonEmulators()[0].core); //TO DO: take by priority
-
+    if (game.emulatorName().isEmpty() || game.emulatorCore().isEmpty())
+    {
+        //for to take into account priority=1 as default emulator and core
+        for (int n = 0;n < collection.commonEmulators().count(); n++)
+        {
+            //if only one or to initialize with one value
+            if (n == 0)
+            {    
+                game.setEmulatorName(collection.commonEmulators()[n].name);
+                game.setEmulatorCore(collection.commonEmulators()[n].core); 
+            }
+            else if(collection.commonEmulators()[n-1].priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower
+            {
+                game.setEmulatorName(collection.commonEmulators()[n].name);
+                game.setEmulatorCore(collection.commonEmulators()[n].core);
+            }
+        }
+    }
+        
     return *this;
 }
 

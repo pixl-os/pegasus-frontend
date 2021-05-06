@@ -114,7 +114,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optTheme
                     KeyNavigation.down: optScreenHelp
                 }
                 SectionTitle {
@@ -133,6 +132,7 @@ FocusScope {
                         //                        api.internal.settings.fullscreen = checked;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optScreensaverSettings
                     KeyNavigation.down: optMenuControlsConfig
                 }
                 SectionTitle {
@@ -149,6 +149,7 @@ FocusScope {
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optScreenHelp
                     KeyNavigation.down: optPopupSettings
                 }
                 SimpleButton {
@@ -161,6 +162,7 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optMenuControlsConfig
                     KeyNavigation.down: optTheme
                 }
                 MultivalueOption {
@@ -175,7 +177,22 @@ FocusScope {
                         themeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optScreensaverSettings
+                    KeyNavigation.up: optPopupSettings
+                    KeyNavigation.down: optGamelistsOnly
+                }
+                ToggleOption {
+                    id: optGamelistsOnly
+
+                    label: qsTr("Gamelist Only") + api.tr
+                    note: qsTr("Once enabled, only files from gamelist will be take into account. (Best game file loading ;-)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistonly")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("emulationstation.gamelistonly",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optTheme
                 }
                 Item {
                     width: parent.width

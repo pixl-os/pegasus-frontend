@@ -13,7 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+//
+// Updated and integrated for recalbox by BozoTheGeek 03/05/2021
+//
 
 #pragma once
 
@@ -30,6 +32,7 @@ namespace es2 {
 
 std::vector<QString> read_mame_blacklists(const QString&, const std::vector<QString>&);
 size_t find_games_for(const SystemEntry&, SearchContext&, const std::vector<QString>&);
+size_t create_collection_for(const SystemEntry&, SearchContext&);
 
 } // namespace es2
 } // namespace providers
