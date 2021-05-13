@@ -14,7 +14,7 @@ StorageDevices mStorageDevices;
 
 //list of global and system values (example using snes system)
 //global or  snes.ratio=4/3 -> RATIO
-//global or  snes.shaders=/recalbox/share_init/shaders/scanline.glslp -> SHADERS
+//global or  snes.shaders=/recalbox/share_init/shaders/scanline.glslp -> SHADERS -> TO DO
 
 //parameters for system to get from collection emulators and cores
 //snes.core=snes9x_next
@@ -116,6 +116,17 @@ QStringList GetParametersList(QString Parameter)
             Log::info(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
             ListOfInternalValue.append(QString::fromStdString(device.UUID));
         }
+    }
+    else if (Parameter.endsWith(".core", Qt::CaseInsensitive) == true) // compatible with all systems
+    {   
+        QString system_short_name = Parameter.split('.').at(0);
+       
+        //model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
+        
+    }
+    else if (Parameter.endsWith(".emulator", Qt::CaseInsensitive) == true) // compatible with all systems
+    {   
+        QString system_short_name = Parameter.split('.').at(0);
     }
     else
     {
