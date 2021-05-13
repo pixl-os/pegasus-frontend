@@ -1,22 +1,9 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Updated by BozoTheGeek 10/05/2021
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 
 import "common"
-//import "keyeditor"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
@@ -27,9 +14,13 @@ FocusScope {
 
     signal close
 
+    width: parent.width
+    height: parent.height
+    
     anchors.fill: parent
-    enabled: focus
     visible: 0 < (x + width) && x < Window.window.width
+
+    enabled: focus
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -50,5 +41,91 @@ FocusScope {
         id: header
         text: qsTr("Games > Advanced Emulator") + api.tr
         z: 2
+    }
+    Flickable {
+        id: container
+
+        width: content.width
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: header.bottom
+        anchors.bottom: parent.bottom
+        //{header.bottom + content.height}
+	    //flicking: false
+
+        //interactive: false
+
+        contentWidth: content.width
+        contentHeight: content.height
+
+        Behavior on contentY { PropertyAnimation { duration: 100 } }
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
+
+        readonly property int yBreakpoint: height * 0.7
+        readonly property int maxContentY: contentHeight - height
+
+        function onFocus(item) {
+            if (item.focus)
+                contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
+        }
+        FocusScope {
+            id: content
+
+            focus: true
+            enabled: focus
+
+            width: contentColumn.width
+            height: contentColumn.height
+
+            Column {
+                id: contentColumn
+                spacing: vpx(5)
+
+                width: root.width * 0.7
+                height: implicitHeight
+
+                // Item {
+                     // width: parent.width
+                     // height: header.height + vpx(25)
+                // }
+                Repeater {
+                   id: systemButtons
+                   model: api.collections
+                   SimpleButton {
+                        label: qsTr(modelData.name) + api.tr
+                        //note: qsTr("choose emulator, ratio and more by system") + api.tr
+                        
+                        // set focus only on first item
+                        focus: index == 0 ? true : false
+                        
+                        onActivate: {
+                            focus = true;
+                            //root.openAdvancedEmulator_Settings();
+                        }
+                        onFocusChanged: container.onFocus(this)
+                        KeyNavigation.up: (index != 0) ?  systemButtons.itemAt(index-1) : systemButtons.itemAt(systemButtons.count-1)
+                        KeyNavigation.down: (index < systemButtons.count) ? systemButtons.itemAt(index+1) : systemButtons.itemAt(0)
+                        Text {
+                            id: pointer
+
+                                anchors.right: parent.right
+                                anchors.rightMargin: horizontalPadding
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                color: themeColor.textValue
+                                font.pixelSize: fontSize
+                                font.family: globalFonts.ion
+                                
+                                text : "\uf3d1"
+                        }
+                    }
+
+                }
+                Item {
+                    width: parent.width
+                    height: implicitHeight + vpx(30)
+                }
+            }
+        }
     }
 }
