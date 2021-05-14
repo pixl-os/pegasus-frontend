@@ -39,11 +39,14 @@ bool AudioModeTools::CanDecodeVideoSound()
 
 AudioMode AudioModeTools::AudioModeFromString(const std::string& audioMode)
 {
-  if (audioMode == "musiconly") return AudioMode::MusicsOnly;
-  if (audioMode == "videosoundonly") return AudioMode::VideosSoundOnly;
+  //if (audioMode == "musiconly") return AudioMode::MusicsOnly; //-> not yet supported
+  //if (audioMode == "videosoundonly") return AudioMode::VideosSoundOnly; //-> not yet supported
   if (audioMode == "musicandvideosound") return AudioMode::MusicsAndVideosSound;
   if (audioMode == "none") return AudioMode::None;
-  return AudioMode::MusicsXorVideosSound;
+  //if (audioMode == "musicsxorvideossound") return AudioMode::MusicsXorVideosSound; //-> not yet supported
+  
+  //activate all sounds if not able to recognize/support the ES parameter
+  return AudioMode::MusicsAndVideosSound;
 }
 
 const std::string& AudioModeTools::AudioModeFromEnum(AudioMode audioMode)
