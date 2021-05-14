@@ -51,15 +51,15 @@ QStringList GetParametersList(QString Parameter)
         //or
         //audio.mode = none -> to deactivate sound
         
-        //##RFU / activated only for 
+        //##RFU / activated only for menu / bug ignored to activate the sounds 
         //MusicsOnly,
         //VideosSoundOnly,
         //MusicsXorVideosSound,
         
         //pegasus sound layer parameters is not as ES.
-        ListOfValue << "sound on \uf123" <<  "sound off \uf3a2"; // using ionIcons Font
+        ListOfValue << "All sounds on \uf123" <<  "sounds off \uf3a2" << "Not supported: Videos Sound only" << "Not supported: Musics Only" << "Not supported: Musics or Videos Sound";// using ionIcons Font
         //use internal values to match with ES modes
-        ListOfInternalValue << "musicandvideosound" <<  "none";
+        ListOfInternalValue << "musicandvideosound" <<  "none" << "videossoundonly" << "musicsonly" << "musicsxorvideossound";
     }
     else if (Parameter == "audio.device")
     {
