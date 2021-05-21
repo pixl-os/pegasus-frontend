@@ -13,11 +13,11 @@ FocusScope {
     id: root
 
     signal close
+    signal openEmulatorConfiguration(var system)
 
     width: parent.width
     height: parent.height
     
-    anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
@@ -49,10 +49,6 @@ FocusScope {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: header.bottom
         anchors.bottom: parent.bottom
-        //{header.bottom + content.height}
-	    //flicking: false
-
-        //interactive: false
 
         contentWidth: content.width
         contentHeight: content.height
@@ -84,24 +80,22 @@ FocusScope {
                 width: root.width * 0.7
                 height: implicitHeight
 
-                // Item {
-                     // width: parent.width
-                     // height: header.height + vpx(25)
-                // }
                 Repeater {
                    id: systemButtons
                    model: api.collections
                    SimpleButton {
                         label: qsTr(modelData.name) + api.tr
-                        //note: qsTr("choose emulator, ratio and more by system") + api.tr
-                        
+
                         // set focus only on first item
                         focus: index == 0 ? true : false
-                        
+
                         onActivate: {
+                            console.log("root.openEmulatorConfiguration()");
                             focus = true;
-                            //root.openAdvancedEmulator_Settings();
+                            root.openEmulatorConfiguration(modelData);
+
                         }
+                        
                         onFocusChanged: container.onFocus(this)
                         KeyNavigation.up: (index != 0) ?  systemButtons.itemAt(index-1) : systemButtons.itemAt(systemButtons.count-1)
                         KeyNavigation.down: (index < systemButtons.count) ? systemButtons.itemAt(index+1) : systemButtons.itemAt(0)

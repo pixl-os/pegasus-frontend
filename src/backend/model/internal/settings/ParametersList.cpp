@@ -39,7 +39,7 @@ QStringList GetParametersList(QString Parameter)
         //system.kblayout=us
         ListOfValue << "fr" << "en" << "de" << "us" << "es";
     }
-    else if (Parameter == "global.shaderset")
+    else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
     {
         //## Shader set
         //## Automatically select shaders for all systems
