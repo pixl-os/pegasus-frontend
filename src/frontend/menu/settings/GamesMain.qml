@@ -237,9 +237,24 @@ FocusScope {
 
                     label: qsTr("Bios Checking") + api.tr
                     note: qsTr("Check all necessary bios !") + api.tr
+
+                    Text {
+                            id: pointeroptBiosChecking
+
+                                anchors.right: parent.right
+                                anchors.rightMargin: horizontalPadding
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                color: themeColor.textValue
+                                font.pixelSize: vpx(30)
+                                font.family: globalFonts.ion
+                                
+                                text : "\uf3d1"
+                    }
+
                     onActivate: {
                         focus = true;
-                        root.openBiosCheckingSettings();
+                        //root.openBiosCheckingSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optAutoSave
@@ -250,6 +265,20 @@ FocusScope {
 
                     label: qsTr("Advandced Emulator Settings") + api.tr
                     note: qsTr("choose emulator, ratio and more by system") + api.tr
+
+                    Text {
+                            id: pointeroptAdvancedEmulator
+
+                                anchors.right: parent.right
+                                anchors.rightMargin: horizontalPadding
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                color: themeColor.textValue
+                                font.pixelSize: vpx(30)
+                                font.family: globalFonts.ion
+                                
+                                text : "\uf3d1"
+                    }
 
                     onActivate: {
                         focus = true;
