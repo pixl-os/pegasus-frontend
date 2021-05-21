@@ -12,6 +12,14 @@ QStringList ListOfInternalValue;
 //! Storage devices
 StorageDevices mStorageDevices;
 
+//list of global and system values (example using snes system)
+//global or  snes.ratio=4/3 -> RATIO
+//global or  snes.shaders=/recalbox/share_init/shaders/scanline.glslp -> SHADERS -> TO DO
+
+//parameters for system to get from collection emulators and cores
+//snes.core=snes9x_next
+//neogeo.emulator=fba2x
+
 QStringList GetParametersList(QString Parameter)
 {
     QStringList ListOfValue;
@@ -19,7 +27,7 @@ QStringList GetParametersList(QString Parameter)
     //clean global internal values if needed
     ListOfInternalValue.clear();
     
-    if (Parameter == "global.ratio")
+    if (Parameter.endsWith(".ratio", Qt::CaseInsensitive) == true) // compatible for 'global.ratio' and '{system].ratio' (example: 'snes.ratio')
     {   
         //## Set ratio for all emulators (auto,4/3,16/9,16/10,custom) - default value: auto / index 0
         //global.ratio=auto
@@ -31,7 +39,7 @@ QStringList GetParametersList(QString Parameter)
         //system.kblayout=us
         ListOfValue << "fr" << "en" << "de" << "us" << "es";
     }
-    else if (Parameter == "global.shaderset")
+    else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
     {
         //## Shader set
         //## Automatically select shaders for all systems
@@ -108,6 +116,17 @@ QStringList GetParametersList(QString Parameter)
             Log::info(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
             ListOfInternalValue.append(QString::fromStdString(device.UUID));
         }
+    }
+    else if (Parameter.endsWith(".core", Qt::CaseInsensitive) == true) // compatible with all systems
+    {   
+        QString system_short_name = Parameter.split('.').at(0);
+       
+        //model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
+        
+    }
+    else if (Parameter.endsWith(".emulator", Qt::CaseInsensitive) == true) // compatible with all systems
+    {   
+        QString system_short_name = Parameter.split('.').at(0);
     }
     else
     {

@@ -90,17 +90,19 @@ model::Game* SearchContext::create_game_for(model::Collection& collection)
         .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir())
         .setSystemShortname(collection.shortName());
 
-    //for to take into account priority=1 as default emulator and core
+    //for to take into account priority=1 (or lower value) as default emulator and core
+    int first_priority = 0;
     for (int n = 0;n < collection.commonEmulators().count(); n++)
     {
         //if only one or to initialize with one value
         if (n == 0)
-        {    
+        {   first_priority = collection.commonEmulators()[n].priority; 
             (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
             (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core); 
         }
-        else if(collection.commonEmulators()[n-1].priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower
+        else if(first_priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower (but number is higher ;-)
         {
+            first_priority = collection.commonEmulators()[n].priority;
             (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
             (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core);
         }
@@ -195,16 +197,19 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
     if (game.emulatorName().isEmpty() || game.emulatorCore().isEmpty())
     {
         //for to take into account priority=1 as default emulator and core
+        int first_priority = 0;
         for (int n = 0;n < collection.commonEmulators().count(); n++)
         {
             //if only one or to initialize with one value
             if (n == 0)
-            {    
+            {   
+                first_priority = collection.commonEmulators()[n].priority;  
                 game.setEmulatorName(collection.commonEmulators()[n].name);
                 game.setEmulatorCore(collection.commonEmulators()[n].core); 
             }
-            else if(collection.commonEmulators()[n-1].priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower
+            else if(first_priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower (but number is higher ;-)
             {
+                first_priority = collection.commonEmulators()[n].priority; 
                 game.setEmulatorName(collection.commonEmulators()[n].name);
                 game.setEmulatorCore(collection.commonEmulators()[n].core);
             }

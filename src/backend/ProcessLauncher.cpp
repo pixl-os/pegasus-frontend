@@ -87,16 +87,37 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     
     param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())));
     
+    QString shortname = game.systemShortName();
+    
     param
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
         .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()))
-        .replace(QLatin1String("{system.shortname}"),game.systemShortName())
-        .replace(QLatin1String("{emulator.name}"),game.emulatorName())
-        .replace(QLatin1String("{emulator.core}"),game.emulatorCore())
+        .replace(QLatin1String("{system.shortname}"),shortname)
         .replace(QLatin1String("{emulator.ratio}"),QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio")))
         .replace(QLatin1String("{emulator.netplay}"),"");
 
+    if(param == "{emulator.name}")
+    {   
+        QString emulator = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".emulator").toUtf8().constData()));
+        if(emulator != "")
+        {
+            param.replace(QLatin1String("{emulator.name}"),emulator);
+        }
+        else  param.replace(QLatin1String("{emulator.name}"),game.emulatorName());
+        
+    }            
+    
+    if(param == "{emulator.core}")
+    {
+        QString core = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".core").toUtf8().constData()));
+        if(core != "")
+        {
+            param.replace(QLatin1String("{emulator.core}"),core);
+        }
+        else  param.replace(QLatin1String("{emulator.core}"),game.emulatorCore());
+    }            
+    
     if(param == "{controllers.config}")
     {
         // Fill from ES/Recalbox configuration methods

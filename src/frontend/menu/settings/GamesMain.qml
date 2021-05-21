@@ -25,11 +25,8 @@ FocusScope {
     id: root
 
     signal close
-    signal openBiosChecking_Settings
-    signal openAdvancedEmulator_Settings
-    //    signal openKeySettings
-    //    signal openGamepadSettings
-    //    signal openGameDirSettings
+    signal openBiosCheckingSettings
+    signal openAdvancedEmulatorSettings
 
     width: parent.width
     height: parent.height
@@ -126,7 +123,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optAdvancedEmulator
                     KeyNavigation.down: optPixelPerfect
                 }
                 ToggleOption {
@@ -141,6 +137,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.integerscale",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optGlobalGameRatio
                     KeyNavigation.down: optSmoothGame
                 }
                 ToggleOption {
@@ -155,6 +152,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.smooth",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optPixelPerfect
                     KeyNavigation.down: optGlobalShader
                 }
                 MultivalueOption {
@@ -178,6 +176,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optSmoothGame
                     KeyNavigation.down: optShowFramerate
                 }
                 ToggleOption {
@@ -192,6 +191,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.framerate",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optGlobalShader
                     KeyNavigation.down: optGameRewind
                 }
                 SectionTitle {
@@ -210,6 +210,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optShowFramerate
                     KeyNavigation.down: optAutoSave
                 }
                 ToggleOption {
@@ -224,6 +225,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optGameRewind
                     KeyNavigation.down: optBiosChecking
                 }
                 SectionTitle {
@@ -235,11 +237,27 @@ FocusScope {
 
                     label: qsTr("Bios Checking") + api.tr
                     note: qsTr("Check all necessary bios !") + api.tr
+
+                    Text {
+                            id: pointeroptBiosChecking
+
+                                anchors.right: parent.right
+                                anchors.rightMargin: horizontalPadding
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                color: themeColor.textValue
+                                font.pixelSize: vpx(30)
+                                font.family: globalFonts.ion
+                                
+                                text : "\uf3d1"
+                    }
+
                     onActivate: {
                         focus = true;
-                        root.openBiosChecking_Settings();
+                        //root.openBiosCheckingSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optAutoSave
                     KeyNavigation.down: optAdvancedEmulator
                 }
                 SimpleButton {
@@ -248,12 +266,26 @@ FocusScope {
                     label: qsTr("Advandced Emulator Settings") + api.tr
                     note: qsTr("choose emulator, ratio and more by system") + api.tr
 
+                    Text {
+                            id: pointeroptAdvancedEmulator
+
+                                anchors.right: parent.right
+                                anchors.rightMargin: horizontalPadding
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                color: themeColor.textValue
+                                font.pixelSize: vpx(30)
+                                font.family: globalFonts.ion
+                                
+                                text : "\uf3d1"
+                    }
+
                     onActivate: {
                         focus = true;
-                        root.openAdvancedEmulator_Settings();
+                        root.openAdvancedEmulatorSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGlobalGameRatio
+                    KeyNavigation.up: optBiosChecking
                 }
                 Item {
                     width: parent.width

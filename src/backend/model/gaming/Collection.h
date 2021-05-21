@@ -96,6 +96,30 @@ public:
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
 
+    //need specific property and invokable function due to QList<struct> is not supported by QML layer
+    Q_PROPERTY(int emulatorsCount READ getEmulatorsCount CONSTANT)
+    Q_INVOKABLE QString GetNameAt (const int index) {return m_data.common_emulators.at(index).name;};
+    Q_INVOKABLE QString GetCoreAt (const int index) {return m_data.common_emulators.at(index).core;};
+    Q_INVOKABLE QString GetPriorityAt (const int index) {return QString::number(m_data.common_emulators.at(index).priority);};
+    
+    Q_INVOKABLE bool isDefaultEmulatorAt (const int index) {
+       // do loop to find the first priorioty (minimum number)
+       int first_priority = 0;
+       for (int n = 0;n < m_data.common_emulators.count(); n++)
+        {
+            //if only one or to initialize with one value
+            if (n == 0)
+            {    
+                first_priority = m_data.common_emulators.at(n).priority;
+            }
+            else if(first_priority > m_data.common_emulators.at(n).priority) //else we check if previous priority is lower
+            {
+                first_priority = m_data.common_emulators.at(n).priority;
+            }
+        }
+        if(m_data.common_emulators.at(index).priority == first_priority) return true;
+        else return false;
+    };
     Q_PROPERTY(QVariantMap extra READ extraMap CONSTANT)
     const QVariantMap& extraMap() const { return m_extra; }
     QVariantMap& extraMapMut() { return m_extra; }
@@ -111,7 +135,7 @@ public:
 
 public:
     explicit Collection(QString name, QObject* parent = nullptr);
-
+    int getEmulatorsCount() const { return m_data.common_emulators.count(); }
     void finalize();
 
 private:

@@ -48,12 +48,8 @@ FocusScope {
         anchors.right: parent.right
 
         onClose: root.close()
-        onOpenBiosChecking_Settings: root.openScreen("settings/BiosChecking.qml")
-        onOpenAdvancedEmulator_Settings: root.openScreen("settings/AdvancedEmulator.qml")
-        //        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
-        //        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
-        //        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
-        //        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
+        onOpenBiosCheckingSettings: root.openScreen("settings/BiosChecking.qml")
+        onOpenAdvancedEmulatorSettings: root.openScreen("settings/AdvancedEmulatorSettings.qml")
     }
     Loader {
         id: modal
