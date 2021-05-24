@@ -124,6 +124,7 @@ FocusScope {
                         root.openGamepadSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optPairControllers
                     KeyNavigation.down: optAdvancedControllers
                 }
                 SimpleButton {
@@ -136,6 +137,7 @@ FocusScope {
                         root.openAdvancedControllersConfiguration();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optGamepadConfig
                     KeyNavigation.down: optInputP1
                 }
                 SectionTitle {
@@ -151,6 +153,7 @@ FocusScope {
                         root.openInputP1();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optAdvancedControllers
                     KeyNavigation.down: optInputP2
                 }
                 SimpleButton {
@@ -162,6 +165,7 @@ FocusScope {
                         root.openInputP2();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optInputP1
                     KeyNavigation.down: optInputP3
                 }
                 SimpleButton {
@@ -173,6 +177,7 @@ FocusScope {
                         root.openInputP3();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optInputP2
                     KeyNavigation.down: optInputP4
                 }
                 SimpleButton {
@@ -184,7 +189,7 @@ FocusScope {
                         root.openInputP4();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optPairControllers
+                    KeyNavigation.up: optInputP3
                 }
                 Item {
                     width: parent.width

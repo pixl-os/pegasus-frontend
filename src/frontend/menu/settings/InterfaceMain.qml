@@ -126,9 +126,7 @@ FocusScope {
                     label: qsTr("On Screen Help Menu") + api.tr
                     note: qsTr("Show Help navigation on bottom screen") + api.tr
 
-                    //                    checked: api.internal.settings.fullscreen
                     onCheckedChanged: {
-                        focus = true;
                         //                        api.internal.settings.fullscreen = checked;
                     }
                     onFocusChanged: container.onFocus(this)
@@ -188,7 +186,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistonly")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("emulationstation.gamelistonly",checked);
                     }
                     onFocusChanged: container.onFocus(this)

@@ -48,9 +48,9 @@ FocusScope {
         onSwipeRight: root.close()
     }
     MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: root.close()
+         anchors.fill: parent
+         acceptedButtons: Qt.RightButton
+         onClicked: root.close()
     }
     ScreenHeader {
         id: header
@@ -347,7 +347,21 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optKbLayout
+                    KeyNavigation.down: optHideMouse
                 }
+                ToggleOption {
+                    id: optHideMouse
+
+                    label: qsTr("Enable mouse support") + api.tr
+                    note: qsTr("By default the cursor is visible if there are any pointer devices connected.") + api.tr
+                    
+                    checked: api.internal.settings.mouseSupport
+                    onCheckedChanged: {
+                        api.internal.settings.mouseSupport = checked;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDebugMode
+                }                
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
