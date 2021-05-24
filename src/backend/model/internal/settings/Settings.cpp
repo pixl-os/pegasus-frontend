@@ -29,6 +29,8 @@
 #include <QSet>
 #include <QTextStream>
 
+#include <unistd.h>
+
 
 namespace {
 
@@ -52,7 +54,12 @@ void change_mouse_support(bool enabled)
     if (enabled)
         QGuiApplication::restoreOverrideCursor();
     else
+    {   
         QGuiApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
+        QCursor::setPos(100, 100);
+        usleep(500);
+        QCursor::setPos(0, 0);
+    }
 }
 
 } // namespace

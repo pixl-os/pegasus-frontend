@@ -2,10 +2,15 @@
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
 ## [recalbox-integration] - 2021-05-24
-- Change lang module to use forked version
+- change lang module to use forked version
+- use repo forked in pegasus.pro
+- new en/fr language file for recalbox-integration menus
+- lang module merge remote to use branch recalbox-integration
+- fix mouse issue/display in menu (using also new parameter in settings menu)
+- best management of up/down navigation in menu
 
 ## [recalbox-integration] - 2021-05-23
-- Creation of this changelog file
+- creation of this changelog file
 
 ## [emulator-core-parameter-selection] - 2021-05-22
 - change parameterlist to work for global and {system}.ratio

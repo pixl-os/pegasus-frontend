@@ -112,11 +112,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.retroachievements",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetplayPswdViewer
                     KeyNavigation.down: optRetroachievementLoginIn
                 }
                 SimpleButton {
@@ -129,6 +127,7 @@ FocusScope {
                         root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optRetroachievementActivate
                     KeyNavigation.down: optHardcoreRetroachievementActivate
                 }
                 ToggleOption {
@@ -139,10 +138,10 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.hardcore")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optRetroachievementLoginIn
                     KeyNavigation.down: optScreenshootsAchievementActivate
                 }
                 ToggleOption {
@@ -152,10 +151,10 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optHardcoreRetroachievementActivate
                     KeyNavigation.down: optNetplayInformation
                 }
                 SectionTitle {
@@ -173,6 +172,7 @@ FocusScope {
                         root.openNetplayInformation();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optScreenshootsAchievementActivate
                     KeyNavigation.down: optNetplayActivate
                 }
                 ToggleOption {
@@ -183,12 +183,12 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.netplay")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.netplay.active",checked);
                         //                        pop menu if activate
                         //                        root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optNetplayInformation
                     KeyNavigation.down: optNetplayNickname
                 }
                 MultivalueOption {
@@ -204,6 +204,7 @@ FocusScope {
                         root.openMenuBoxSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up:optNetplayActivate
                     KeyNavigation.down: optNetplayPswdClientActivate
                 }
                 SectionTitle {
@@ -218,12 +219,12 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforplayer")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
                         //                        pop menu if activate
                         //                        root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optNetplayNickname
                     KeyNavigation.down: optNetplayPswdClient
                 }
                 MultivalueOption {
@@ -246,6 +247,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optNetplayPswdClientActivate
                     KeyNavigation.down: optNetplayPswdViewerActivate
                 }
                 ToggleOption {
@@ -256,12 +258,12 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforviewer")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
                         //                        pop menu if activate
                         //                        root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optNetplayPswdClient
                     KeyNavigation.down: optNetplayPswdViewer
                 }
                 MultivalueOption {
@@ -284,7 +286,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optRetroachievementActivate
+                    KeyNavigation.up: optNetplayPswdViewerActivate
                 }
                 Item {
                     width: parent.width
