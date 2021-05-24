@@ -20,8 +20,6 @@ qtHaveModule(testlib):!android {
     tests.CONFIG = no_default_install
 }
 
-# Translations
-TRANSLATIONS = lang/pegasus_en.ts lang/pegasus_fr.ts
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
 include($${TOP_SRCDIR}/src/print_config.pri)
