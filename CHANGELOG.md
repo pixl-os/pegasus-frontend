@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2021-05-24
+- Change lang module to use forked version
+
 ## [recalbox-integration] - 2021-05-23
 - Creation of this changelog file
 
