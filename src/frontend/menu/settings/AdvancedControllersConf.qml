@@ -285,7 +285,7 @@ FocusScope {
                     id: optJoyconControllers
                     //controllers.joycond.enabled=1
                     label: qsTr("Joycon Support") + api.tr
-                    note: qsTr("Use authentics Joycon pads") + api.tr
+                    note: qsTr("") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.joycond.enabled")
                     onCheckedChanged: {
