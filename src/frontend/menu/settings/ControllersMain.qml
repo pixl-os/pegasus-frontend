@@ -93,6 +93,11 @@ FocusScope {
                 width: root.width * 0.7
                 height: implicitHeight
 
+                Item {
+                    width: parent.width
+                    height: implicitHeight + vpx(30)
+                }
+
                 SectionTitle {
                     text: qsTr("Controllers") + api.tr
                     first: true
