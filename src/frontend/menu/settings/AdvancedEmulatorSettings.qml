@@ -46,7 +46,7 @@ FocusScope {
         onOpenEmulatorConfiguration: {
             console.log("onOpenEmulatorConfiguration");
             root.openScreenWithSystem("EmulatorConfiguration.qml", system);
-        }        
+        }
     }
     Loader {
         id: modal

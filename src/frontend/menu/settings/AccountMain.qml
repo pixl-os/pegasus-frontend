@@ -254,7 +254,7 @@ FocusScope {
                     id: optNetplayPswdViewerActivate
 
                     label: qsTr("Activate password for Netplay viewer") + api.tr
-                    note: qsTr("Set password for viewer ") + api.tr
+                    note: qsTr("Set password for viewer") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforviewer")
                     onCheckedChanged: {

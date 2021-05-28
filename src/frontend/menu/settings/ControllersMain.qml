@@ -106,7 +106,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Pair Bluetooth Controllers") + api.tr
-                    note: qsTr("") + api.tr
+                    note: qsTr("connect your pads") + api.tr
                     onActivate: {
                         focus = true;
                         root.openKeySettings();

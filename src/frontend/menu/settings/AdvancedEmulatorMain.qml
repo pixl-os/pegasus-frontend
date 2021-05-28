@@ -81,9 +81,9 @@ FocusScope {
                 height: implicitHeight
 
                 Repeater {
-                   id: systemButtons
-                   model: api.collections
-                   SimpleButton {
+                    id: systemButtons
+                    model: api.collections
+                    SimpleButton {
                         label: qsTr(modelData.name) + api.tr
 
                         // set focus only on first item
@@ -102,15 +102,15 @@ FocusScope {
                         Text {
                             id: pointer
 
-                                anchors.right: parent.right
-                                anchors.rightMargin: horizontalPadding
-                                anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+                            anchors.rightMargin: horizontalPadding
+                            anchors.verticalCenter: parent.verticalCenter
 
-                                color: themeColor.textValue
-                                font.pixelSize: fontSize
-                                font.family: globalFonts.ion
-                                
-                                text : "\uf3d1"
+                            color: themeColor.textValue
+                            font.pixelSize: fontSize
+                            font.family: globalFonts.ion
+
+                            text : "\uf3d1"
                         }
                     }
 
