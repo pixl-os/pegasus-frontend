@@ -60,13 +60,15 @@ FocusScope {
 
         width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
+        anchors.top: header.bottom
         anchors.bottom: parent.bottom
 
         contentWidth: content.width
         contentHeight: content.height
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
 
         readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
@@ -91,10 +93,6 @@ FocusScope {
                 width: root.width * 0.7
                 height: implicitHeight
 
-                Item {
-                    width: parent.width
-                    height: header.height + vpx(25)
-                }
                 SectionTitle {
                     text: qsTr("Game Screen") + api.tr
                     first: true
@@ -177,23 +175,24 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSmoothGame
-                    KeyNavigation.down: optShowFramerate
-                }
-                ToggleOption {
-                    id: optShowFramerate
-
-                    label: qsTr("Show Framerate") + api.tr
-                    note: qsTr("Show FPS in game") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.framerate")
-                    onCheckedChanged: {
-                        focus = true;
-                        api.internal.recalbox.setBoolParameter("global.framerate",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalShader
+//                    KeyNavigation.down: optShowFramerate
                     KeyNavigation.down: optGameRewind
                 }
+//                ToggleOption {
+//                    id: optShowFramerate
+
+//                    label: qsTr("Show Framerate") + api.tr
+//                    note: qsTr("Show FPS in game") + api.tr
+
+//                    checked: api.internal.recalbox.getBoolParameter("global.framerate")
+//                    onCheckedChanged: {
+//                        focus = true;
+//                        api.internal.recalbox.setBoolParameter("global.framerate",checked);
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.up: optGlobalShader
+//                    KeyNavigation.down: optGameRewind
+//                }
                 SectionTitle {
                     text: qsTr("Gameplay Option") + api.tr
                     first: true
@@ -226,40 +225,42 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optGameRewind
-                    KeyNavigation.down: optBiosChecking
+//                    KeyNavigation.down: optBiosChecking
+                    KeyNavigation.down: optAdvancedEmulator
+
                 }
                 SectionTitle {
                     text: qsTr("Other Option") + api.tr
                     first: true
                 }
-                SimpleButton {
-                    id: optBiosChecking
+//                SimpleButton {
+//                    id: optBiosChecking
 
-                    label: qsTr("Bios Checking") + api.tr
-                    note: qsTr("Check all necessary bios !") + api.tr
+//                    label: qsTr("Bios Checking") + api.tr
+//                    note: qsTr("Check all necessary bios !") + api.tr
 
-                    Text {
-                            id: pointeroptBiosChecking
+//                    Text {
+//                        id: pointeroptBiosChecking
 
-                                anchors.right: parent.right
-                                anchors.rightMargin: horizontalPadding
-                                anchors.verticalCenter: parent.verticalCenter
+//                        anchors.right: parent.right
+//                        anchors.rightMargin: horizontalPadding
+//                        anchors.verticalCenter: parent.verticalCenter
 
-                                color: themeColor.textValue
-                                font.pixelSize: vpx(30)
-                                font.family: globalFonts.ion
-                                
-                                text : "\uf3d1"
-                    }
+//                        color: themeColor.textValue
+//                        font.pixelSize: vpx(30)
+//                        font.family: globalFonts.ion
 
-                    onActivate: {
-                        focus = true;
-                        //root.openBiosCheckingSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optAutoSave
-                    KeyNavigation.down: optAdvancedEmulator
-                }
+//                        text : "\uf3d1"
+//                    }
+
+//                    onActivate: {
+//                        focus = true;
+//                        //root.openBiosCheckingSettings();
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.up: optAutoSave
+//                    KeyNavigation.down: optAdvancedEmulator
+//                }
                 SimpleButton {
                     id: optAdvancedEmulator
 
@@ -267,17 +268,17 @@ FocusScope {
                     note: qsTr("choose emulator, ratio and more by system") + api.tr
 
                     Text {
-                            id: pointeroptAdvancedEmulator
+                        id: pointeroptAdvancedEmulator
 
-                                anchors.right: parent.right
-                                anchors.rightMargin: horizontalPadding
-                                anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        anchors.rightMargin: horizontalPadding
+                        anchors.verticalCenter: parent.verticalCenter
 
-                                color: themeColor.textValue
-                                font.pixelSize: vpx(30)
-                                font.family: globalFonts.ion
-                                
-                                text : "\uf3d1"
+                        color: themeColor.textValue
+                        font.pixelSize: vpx(30)
+                        font.family: globalFonts.ion
+
+                        text : "\uf3d1"
                     }
 
                     onActivate: {
