@@ -47,6 +47,15 @@ QStringList GetParametersList(QString Parameter)
         //global.shaderset=none
         ListOfValue << "none" << "retro" << "scanline";
     }
+    else if (Parameter == "controllers.ps3.driver")
+    {
+        // ## Choose a driver between bluez, official and shanwan
+        // ## bluez -> bluez 5 + kernel drivers, support official and shanwan sisaxis
+        // ## official -> sixad drivers, support official and gasia sisaxis
+        // ## shanwan -> shanwan drivers, support official and shanwan sisaxis
+        // controllers.ps3.driver=bluez
+        ListOfValue << "bluez" << "official" << "shanwan";
+    }
     else if ((Parameter == "netplay.password.client") || (Parameter == "netplay.password.viewer"))
     {
         //global.netplay.nickname= ?

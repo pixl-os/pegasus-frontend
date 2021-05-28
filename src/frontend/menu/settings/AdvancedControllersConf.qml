@@ -97,8 +97,8 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optPs3Controllers
-                    //##Enable PS3 controllers support
                     //controllers.ps3.enabled=1
+
                     // set focus only on first item
                     focus: true
 
@@ -116,20 +116,20 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDriversPs3Controllers
-                    // need a list !!!!!!!!!!!!!!!
+                    property string parameterName :"controllers.ps3.driver"
                     // ## Choose a driver between bluez, official and shanwan
-                    // ## bluez -> bluez 5 + kernel drivers, support official and shanwan sisaxis
-                    // ## official -> sixad drivers, support official and gasia sisaxis
-                    // ## shanwan -> shanwan drivers, support official and shanwan sisaxis
                     // controllers.ps3.driver=bluez
                     label: qsTr("Sony controllers drivers Bluetooth") + api.tr
                     note: qsTr("Choose a driver between bluez, official and shanwan") + api.tr
 
-                    //                    value: api.internal.settings.locales.currentName
-
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
-                        focus = true;
-                        root.openMenuBoxSettings();
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optDriversPs3Controllers;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDB9Controllers
@@ -140,7 +140,6 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optDB9Controllers
-                    //## DB9 Controllers
                     //## Enable DB9 drivers for atari, megadrive, amiga controllers (0,1)
                     //controllers.db9.enabled=0
                     label: qsTr("Enable driver DB9") + api.tr
@@ -156,7 +155,6 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optDB9Arguments
-                    //## db9 arguments
                     //controllers.db9.args=map=??
                     label: qsTr("DB9 Arguement") + api.tr
                     note: qsTr("Enable DB9 Arguments Mapping for atari, megadrive, amiga controllers") + api.tr
@@ -175,7 +173,6 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optGameconControllers
-                    //## Gamecon controllers
                     //## Enable gamecon controllers, for nes, snes, psx (0,1)
                     //controllers.gamecon.enabled=0
                     label: qsTr("Gamecon controller") + api.tr
@@ -191,7 +188,6 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optGameconArguments
-                    //## gamecon_args
                     //controllers.gamecon.args=map=1 ???
                     label: qsTr("Gamecon controller") + api.tr
                     note: qsTr("Enable gamecon Arguments mapping, for nes, snes, psx") + api.tr
@@ -210,10 +206,9 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optArcadeStick
-                    //## XGaming's XArcade Tankstik and other compatible devices
                     //controllers.xarcade.enabled=1
                     label: qsTr("Enable driver XGaming's") + api.tr
-                    note: qsTr("XGaming's XArcade Tankstik and other compatible devices") + api.tr
+                    note: qsTr("XGaming's XArcade Tankstick and other compatible devices") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.xarcade.enabled")
                     onCheckedChanged: {
@@ -229,8 +224,6 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optWiiSensorsBars
-                    //# Wiimote sensor bar position
-                    //# set position to 1 for the sensor bar at the top of the screen, to 0 for the sensor bar at the bottom
                     //wii.sensorbar.position=1
 
                     label: qsTr("Wiimote sensor bar position") + api.tr
@@ -246,8 +239,6 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optRealWiimotes
-                    //# Real wiimotes must not be paired with recalbox system so that they can work with the wii emulator
-                    //# set realwiimotes to 1 to use authentics Wiimotes pads on default
                     //wii.realwiimotes=0
                     label: qsTr("Use authentics Wiimotes Controllers") + api.tr
                     note: qsTr("set realwiimotes to 1 to use authentics Wiimotes pads in dolphin-emu") + api.tr
@@ -262,9 +253,6 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optGcControllers
-                    //# Gamecube Pads
-                    //# Real gamecube pads work only in dolphin with "Wiiu adapter gamecube controllers" so that they can work with the gamecube emulator
-                    //# set realgamcubepads to 1 to use authentics Gamecube pads on default
                     //gamecube.realgamecubepads=0
                     label: qsTr("Use authentics Gamecube pads") + api.tr
                     note: qsTr("Real gamecube pads work only in dolphin with (Wiiu adapter gamecube controllers)") + api.tr
@@ -300,6 +288,27 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
             }
+        }
+    }
+    MultivalueBox {
+        id: parameterslistBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
+
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+
+        onClose: content.focus = true
+        onSelect: {
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
         }
     }
     MultivalueBox {
