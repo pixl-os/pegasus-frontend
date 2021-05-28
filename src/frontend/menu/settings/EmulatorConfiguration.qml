@@ -86,7 +86,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Game Screen") + api.tr
                     first: true
-                }                
+                }
                 MultivalueOption {
                     id: optSystemGameRatio
                     // set focus only on first item
@@ -194,9 +194,9 @@ FocusScope {
                 ButtonGroup  { id: radioGroup }
                 
                 Repeater {
-                   id: emulatorButtons
-                   model: system.emulatorsCount
-                   SimpleButton {
+                    id: emulatorButtons
+                    model: system.emulatorsCount
+                    SimpleButton {
                         label: qsTr(system.GetNameAt(index) + " " + system.GetCoreAt(index)) + api.tr
 
                         onActivate: {
@@ -212,7 +212,7 @@ FocusScope {
                         
                         RadioButton {
                             id: radioButton
- 
+
                             anchors.right: parent.right
                             anchors.rightMargin: horizontalPadding
                             anchors.verticalCenter: parent.verticalCenter
@@ -230,7 +230,7 @@ FocusScope {
                                 }
                                 else if (system.isDefaultEmulatorAt(index) && ((core == "") || (emulator == ""))){
                                     return true;
-                                }                                    
+                                }
                                 else return false;
                             }
                             ButtonGroup.group: radioGroup
@@ -238,15 +238,15 @@ FocusScope {
                         Text {
                             id: pointer
 
-                                anchors.right: radioButton.left
-                                anchors.rightMargin: horizontalPadding
-                                anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: radioButton.left
+                            anchors.rightMargin: horizontalPadding
+                            anchors.verticalCenter: parent.verticalCenter
 
-                                color: themeColor.textValue
-                                font.pixelSize: fontSize
-                                font.family: globalFonts.ion
-                                
-                                text : system.isDefaultEmulatorAt(index) ? ("(" + qsTr("Default") + ")" + api.tr): ""
+                            color: themeColor.textValue
+                            font.pixelSize: fontSize
+                            font.family: globalFonts.ion
+
+                            text : system.isDefaultEmulatorAt(index) ? ("(" + qsTr("Default") + ")" + api.tr): ""
                         }
                     }
 
