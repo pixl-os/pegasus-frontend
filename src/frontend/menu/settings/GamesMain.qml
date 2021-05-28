@@ -180,24 +180,23 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSmoothGame
-//                    KeyNavigation.down: optShowFramerate
+                    KeyNavigation.down: optShowFramerate
+                }
+                ToggleOption {
+                    id: optShowFramerate
+
+                    label: qsTr("Show Framerate") + api.tr
+                    note: qsTr("Show FPS in game") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.showfps")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("global.showfps",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optGlobalShader
                     KeyNavigation.down: optGameRewind
                 }
-//                ToggleOption {
-//                    id: optShowFramerate
-
-//                    label: qsTr("Show Framerate") + api.tr
-//                    note: qsTr("Show FPS in game") + api.tr
-
-//                    checked: api.internal.recalbox.getBoolParameter("global.framerate")
-//                    onCheckedChanged: {
-//                        focus = true;
-//                        api.internal.recalbox.setBoolParameter("global.framerate",checked);
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.up: optGlobalShader
-//                    KeyNavigation.down: optGameRewind
-//                }
                 SectionTitle {
                     text: qsTr("Gameplay Option") + api.tr
                     first: true

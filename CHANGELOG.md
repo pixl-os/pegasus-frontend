@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [**NEXT**]
+- add missing description
+- add menu selection for ps3 driver
+- rework sound slider
+- cleaning Menu
+- add fps option in menu  
+
 ## [recalbox-integration] - 2021-05-24
 - change lang module to use forked version
 - use repo forked in pegasus.pro
