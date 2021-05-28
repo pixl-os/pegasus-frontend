@@ -80,6 +80,9 @@ FocusScope {
     
     Slider {
         id: slider
+        width: 300
+        rotation: -180
+        orientation: Qt.Horizontal
         anchors.right: parent.right
         anchors.rightMargin: horizontalPadding
         anchors.verticalCenter: parent.verticalCenter
