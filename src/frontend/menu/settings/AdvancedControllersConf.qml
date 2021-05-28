@@ -56,13 +56,15 @@ FocusScope {
 
         width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
+        anchors.top: header.bottom
         anchors.bottom: parent.bottom
 
         contentWidth: content.width
         contentHeight: content.height
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
 
         readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
@@ -89,8 +91,9 @@ FocusScope {
 
                 Item {
                     width: parent.width
-                    height: header.height + vpx(25)
+                    height: implicitHeight + vpx(30)
                 }
+
                 SectionTitle {
                     text: qsTr("Sony Controllers") + api.tr
                     first: true
@@ -98,7 +101,6 @@ FocusScope {
                 ToggleOption {
                     id: optPs3Controllers
                     //controllers.ps3.enabled=1
-
                     // set focus only on first item
                     focus: true
 
@@ -111,7 +113,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.ps3.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optJoyconControllers
                     KeyNavigation.down: optDriversPs3Controllers
                 }
                 MultivalueOption {
@@ -281,7 +282,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.joycond.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optPs3Controllers
                 }
                 Item {
                     width: parent.width

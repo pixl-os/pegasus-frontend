@@ -25,9 +25,7 @@ FocusScope {
     id: root
 
     signal close
-        signal openKeySettings
-    //    signal openGamepadSettings
-    //    signal openGameDirSettings
+    signal openKeySettings
 
     width: parent.width
     height: parent.height
@@ -61,13 +59,15 @@ FocusScope {
 
         width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
+        anchors.top: header.bottom
         anchors.bottom: parent.bottom
 
         contentWidth: content.width
         contentHeight: content.height
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
 
         readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
@@ -94,75 +94,95 @@ FocusScope {
 
                 Item {
                     width: parent.width
-                    height: header.height + vpx(25)
+                    height: implicitHeight + vpx(30)
                 }
-                SectionTitle {
-                    text: qsTr("Screensaver") + api.tr
-                    first: true
-                }
-                SimpleButton {
-                    id: optScreensaverSettings
 
-                    // set focus only on firt item
-                    focus: true
+//                SectionTitle {
+//                    text: qsTr("Screensaver") + api.tr
+//                    first: true
+//                }
+//                SimpleButton {
+//                    id: optScreensaverSettings
 
-                    label: qsTr("Screensaver settings") + api.tr
-                    note: qsTr("set screensaver on dim, demo mode, etc") + api.tr
+//                    // set focus only on firt item
+//                    focus: true
 
-                    onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optScreenHelp
-                }
-                SectionTitle {
-                    text: qsTr("Help Menu") + api.tr
-                    first: true
-                }
-                ToggleOption {
-                    id: optScreenHelp
+//                    label: qsTr("Screensaver settings") + api.tr
+//                    note: qsTr("set screensaver on dim, demo mode, etc") + api.tr
 
-                    label: qsTr("On Screen Help Menu") + api.tr
-                    note: qsTr("Show Help navigation on bottom screen") + api.tr
+//                    onActivate: {
+//                        focus = true;
+//                        localeBox.focus = true;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.down: optScreenHelp
+//                }
+//                SectionTitle {
+//                    text: qsTr("Help Menu") + api.tr
+//                    first: true
+//                }
+//                ToggleOption {
+//                    id: optScreenHelp
 
-                    onCheckedChanged: {
-                        //                        api.internal.settings.fullscreen = checked;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optScreensaverSettings
-                    KeyNavigation.down: optMenuControlsConfig
-                }
+//                    label: qsTr("On Screen Help Menu") + api.tr
+//                    note: qsTr("Show Help navigation on bottom screen") + api.tr
+
+//                    onCheckedChanged: {
+//                        //api.internal.settings.fullscreen = checked;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.up: optScreensaverSettings
+//                    KeyNavigation.down: optMenuControlsConfig
+//                }
                 SectionTitle {
                     text: qsTr("Customize interface") + api.tr
                     first: true
                 }
                 SimpleButton {
                     id: optMenuControlsConfig
+                    //set focus only on firt item
+                    focus: true
 
                     label: qsTr("Change menu controls") + api.tr
                     note: qsTr("change control assignation only in menu") + api.tr
+
+                    Text {
+                        id: pointeroptMenuControlsConfig
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: horizontalPadding
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        color: themeColor.textValue
+                        font.pixelSize: vpx(30)
+                        font.family: globalFonts.ion
+
+                        text : "\uf3d1"
+                    }
+
                     onActivate: {
                         focus = true;
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optScreenHelp
-                    KeyNavigation.down: optPopupSettings
-                }
-                SimpleButton {
-                    id: optPopupSettings
-
-                    label: qsTr("Popup settings") + api.tr
-                    note: qsTr("configure popup animation and more") + api.tr
-                    onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optMenuControlsConfig
+//                    KeyNavigation.down: optPopupSettings
                     KeyNavigation.down: optTheme
+
                 }
+//                SimpleButton {
+//                    id: optPopupSettings
+
+//                    label: qsTr("Popup settings") + api.tr
+//                    note: qsTr("configure popup animation and more") + api.tr
+//                    onActivate: {
+//                        focus = true;
+//                        localeBox.focus = true;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.up: optMenuControlsConfig
+//                    KeyNavigation.down: optTheme
+//                }
                 MultivalueOption {
                     id: optTheme
 

@@ -24,7 +24,6 @@ FocusScope {
     id: root
 
     signal close
-//    signal openKeySettings
     signal openGamepadSettings
     signal openGameDirSettings
     signal openAdvancedControllersConfiguration
@@ -61,15 +60,17 @@ FocusScope {
 
         width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
+        anchors.top: header.bottom
         anchors.bottom: parent.bottom
 
         contentWidth: content.width
         contentHeight: content.height
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
 
-        readonly property int yBreakpoint: height * 0.5
+        readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
 
         function onFocus(item) {
@@ -91,10 +92,12 @@ FocusScope {
 
                 width: root.width * 0.7
                 height: implicitHeight
+
                 Item {
                     width: parent.width
-                    height: header.height + vpx(25)
+                    height: implicitHeight + vpx(30)
                 }
+
                 SectionTitle {
                     text: qsTr("Controllers") + api.tr
                     first: true
@@ -119,6 +122,21 @@ FocusScope {
 
                     label: qsTr("Gamepad layout") + api.tr
                     note: qsTr("Show game layout configuration controller") + api.tr
+
+                    Text {
+                        id: pointeroptGamepadConfig
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: horizontalPadding
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        color: themeColor.textValue
+                        font.pixelSize: vpx(30)
+                        font.family: globalFonts.ion
+
+                        text : "\uf3d1"
+                    }
+
                     onActivate: {
                         focus = true;
                         root.openGamepadSettings();
@@ -132,6 +150,21 @@ FocusScope {
 
                     label: qsTr("Advanced Controllers Configuration") + api.tr
                     note: qsTr("Choose your drivers or Special Controllers") + api.tr
+
+                    Text {
+                        id: pointeroptAdvancedControllers
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: horizontalPadding
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        color: themeColor.textValue
+                        font.pixelSize: vpx(30)
+                        font.family: globalFonts.ion
+
+                        text : "\uf3d1"
+                    }
+
                     onActivate: {
                         focus = true;
                         root.openAdvancedControllersConfiguration();

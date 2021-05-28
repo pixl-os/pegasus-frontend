@@ -62,15 +62,17 @@ FocusScope {
 
         width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
+        anchors.top: header.bottom
         anchors.bottom: parent.bottom
 
         contentWidth: content.width
         contentHeight: content.height
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
 
-        readonly property int yBreakpoint: height * 0.5
+        readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
 
         function onFocus(item) {
@@ -95,8 +97,9 @@ FocusScope {
 
                 Item {
                     width: parent.width
-                    height: header.height + vpx(25)
+                    height: implicitHeight + vpx(30)
                 }
+
                 SectionTitle {
                     text: qsTr("Sound Configuration") + api.tr
                     first: true
@@ -188,65 +191,66 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     
                     KeyNavigation.up: optOutputAudio
-                    KeyNavigation.down: optVideoSettings
-                }
-                SectionTitle {
-                    text: qsTr("Video Configuration") + api.tr
-                    first: true
-                }
-                MultivalueOption {
-                    id: optVideoSettings
-
-                    label: qsTr("Video Settings") + api.tr
-                    note: qsTr("set your display and resolution") + api.tr
-                    value: api.internal.settings.locales.currentName
-
-                    onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optOutputVolume
-                    KeyNavigation.down: optNetworkSettings
-                }
-                SectionTitle {
-                    text: qsTr("Network") + api.tr
-                    first: true
-                }
-                MultivalueOption {
-                    id: optNetworkSettings
-
-                    label: qsTr("Network Settings") + api.tr
-                    note: qsTr("Settings network wifi or else") + api.tr
-                    value: api.internal.settings.locales.currentName
-
-                    onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optVideoSettings
-                    KeyNavigation.down: optUpdateSettings
-                }
-                SectionTitle {
-                    text: qsTr("Update System") + api.tr
-                    first: true
-                }
-                MultivalueOption {
-                    id: optUpdateSettings
-
-                    label: qsTr("Update Settings") + api.tr
-                    note: qsTr("Update configuration menu") + api.tr
-                    value: api.internal.settings.locales.currentName
-
-                    onActivate: {
-                        focus = true;
-                        localeBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetworkSettings
+//                    KeyNavigation.down: optVideoSettings
                     KeyNavigation.down: optStorageDevices
                 }
+//                SectionTitle {
+//                    text: qsTr("Video Configuration") + api.tr
+//                    first: true
+//                }
+//                MultivalueOption {
+//                    id: optVideoSettings
+
+//                    label: qsTr("Video Settings") + api.tr
+//                    note: qsTr("set your display and resolution") + api.tr
+//                    value: api.internal.settings.locales.currentName
+
+//                    onActivate: {
+//                        focus = true;
+//                        localeBox.focus = true;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.up: optOutputVolume
+//                    KeyNavigation.down: optNetworkSettings
+//                }
+//                SectionTitle {
+//                    text: qsTr("Network") + api.tr
+//                    first: true
+//                }
+//                MultivalueOption {
+//                    id: optNetworkSettings
+
+//                    label: qsTr("Network Settings") + api.tr
+//                    note: qsTr("Settings network wifi or else") + api.tr
+//                    value: api.internal.settings.locales.currentName
+
+//                    onActivate: {
+//                        focus = true;
+//                        localeBox.focus = true;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.up: optVideoSettings
+//                    KeyNavigation.down: optUpdateSettings
+//                }
+//                SectionTitle {
+//                    text: qsTr("Update System") + api.tr
+//                    first: true
+//                }
+//                MultivalueOption {
+//                    id: optUpdateSettings
+
+//                    label: qsTr("Update Settings") + api.tr
+//                    note: qsTr("Update configuration menu") + api.tr
+//                    value: api.internal.settings.locales.currentName
+
+//                    onActivate: {
+//                        focus = true;
+//                        localeBox.focus = true;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.up: optNetworkSettings
+//                    KeyNavigation.down: optStorageDevices
+//                }
                 SectionTitle {
                     text: qsTr("Storage Configuration") + api.tr
                     first: true
@@ -271,22 +275,23 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up:   optUpdateSettings
-                    KeyNavigation.down: optStorageCapacity
-                }
-                SimpleButton {
-                    id: optStorageCapacity
-
-                    label: qsTr("Storage Capacity") + api.tr
-                    note: qsTr("Show Storage capacity") + api.tr
-                    onActivate: {
-                        focus = true;
-                        //                        localeBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optStorageDevices
+                    KeyNavigation.up: optUpdateSettings
+//                    KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optLanguage
                 }
+//                SimpleButton {
+//                    id: optStorageCapacity
+
+//                    label: qsTr("Storage Capacity") + api.tr
+//                    note: qsTr("Show Storage capacity") + api.tr
+//                    onActivate: {
+//                        focus = true;
+//                        //                        localeBox.focus = true;
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.up: optStorageDevices
+//                    KeyNavigation.down: optLanguage
+//                }
                 SectionTitle {
                     text: qsTr("System Language") + api.tr
                     first: true
@@ -361,7 +366,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDebugMode
-                }                
+                }
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)

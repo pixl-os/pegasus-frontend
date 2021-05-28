@@ -80,6 +80,11 @@ FocusScope {
                 width: root.width * 0.7
                 height: implicitHeight
 
+                Item {
+                    width: parent.width
+                    height: implicitHeight + vpx(30)
+                }
+
                 Repeater {
                     id: systemButtons
                     model: api.collections

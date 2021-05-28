@@ -9,7 +9,6 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
 
-
 FocusScope {
     id: root
 
@@ -83,6 +82,12 @@ FocusScope {
 
                 width: root.width * 0.7
                 height: implicitHeight
+
+                Item {
+                    width: parent.width
+                    height: implicitHeight + vpx(30)
+                }
+
                 SectionTitle {
                     text: qsTr("Game Screen") + api.tr
                     first: true
