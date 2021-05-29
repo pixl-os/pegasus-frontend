@@ -129,7 +129,7 @@ FocusScope {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: TextInput.AlignRight
-                        placeholderText: "Pseudo"
+                        placeholderText: qsTr("Pseudo") + api.tr
                         text: api.internal.recalbox.getStringParameter("global.retroachievements.username")
                         echoMode: TextInput.Normal
 //                        enterKeyAction: EnterKeyAction.Next
@@ -153,7 +153,7 @@ FocusScope {
                         width: parent.width / 2.7
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        placeholderText: "password"
+                        placeholderText: qsTr("Password") + api.tr
                         text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
                         horizontalAlignment: TextInput.AlignRight
                         echoMode: TextInput.PasswordEchoOnEdit
@@ -255,7 +255,7 @@ FocusScope {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: TextInput.AlignRight
-                        placeholderText: "Nickname"
+                        placeholderText: qsTr("Nickname") + api.tr
                         text: api.internal.recalbox.getStringParameter("global.netplay.nickname")
                         echoMode: TextInput.Normal
 //                        enterKeyAction: EnterKeyAction.Next
