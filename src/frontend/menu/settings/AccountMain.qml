@@ -121,11 +121,10 @@ FocusScope {
                 SimpleButton {
                     id: optRetroachievementUsername
                     label: qsTr("Connect Retroachievement") + api.tr
-                    note: qsTr("Set your username.") + api.tr
+                    note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/ ") + api.tr
 
                     TextField {
                         id: retroachievementUsername
-                        width: parent.width / 2.7
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: TextInput.AlignRight
@@ -145,12 +144,11 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementPassword
-                    label: qsTr("Connect Retroachievement") + api.tr
-                    note: qsTr("Set your password.") + api.tr
+//                    label: qsTr("Connect Retroachievement") + api.tr
+                    note: qsTr("then login with your username and password \nPlease valdidate with enter") + api.tr
 
                     TextField {
                         id: retroachievementPassword
-                        width: parent.width / 2.7
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         placeholderText: qsTr("Password") + api.tr
@@ -246,12 +244,11 @@ FocusScope {
                     id: optNetplayNickname
 
                     label: qsTr("Netplay Nickname") + api.tr
-                    note: qsTr("Set your Netplay nickname") + api.tr
+                    note: qsTr("Set your Netplay nickname, comfirm with enter") + api.tr
 
                     //value: api.internal.settings.locales.currentName
                     TextField {
                         id: netplayNickname
-                        width: parent.width / 2.7
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: TextInput.AlignRight
