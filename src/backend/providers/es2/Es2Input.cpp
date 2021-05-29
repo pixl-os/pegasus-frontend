@@ -28,6 +28,55 @@ QString es_input_xml(const std::vector<QString>& possible_config_dirs)
     return {};
 }
 
+//to get existing one from GUID (especially for fresh install)
+providers::es2::inputConfigEntry find_any_input_entry_by_guid(const QString& log_tag, QXmlStreamReader& xml, const QString& GUID)
+{
+    Q_ASSERT(xml.isStartElement() && (xml.name() == "inputList"));
+    
+    providers::es2::inputConfigEntry inputConfigEntry;
+    
+    // read
+    while (xml.readNextStartElement()) {
+        
+        QString deviceName = xml.attributes().value("deviceName").toString();
+        QString deviceGUID = xml.attributes().value("deviceGUID").toString();
+        
+        if ((deviceGUID == GUID)){
+            
+                inputConfigEntry.inputConfigAttributs.type = xml.attributes().value("type").toString();
+                inputConfigEntry.inputConfigAttributs.deviceName = deviceName;
+                inputConfigEntry.inputConfigAttributs.deviceGUID = deviceGUID;
+                inputConfigEntry.inputConfigAttributs.deviceNbAxes = xml.attributes().value("deviceNbAxes").toString();
+                inputConfigEntry.inputConfigAttributs.deviceNbHats = xml.attributes().value("deviceNbHats").toString();
+                inputConfigEntry.inputConfigAttributs.deviceNbButtons = xml.attributes().value("deviceNbButtons").toString();
+                while (xml.readNextStartElement()){
+                    if (xml.name() == "input"){
+                        inputConfigEntry.inputElements.append({ xml.attributes().value("name").toString()
+                                                          ,xml.attributes().value("type").toString()
+                                                          ,xml.attributes().value("id").toString()
+                                                          ,xml.attributes().value("value").toString()
+                                                          , xml.attributes().value("code").toString()});
+                        Log::debug(log_tag, LOGMSG("Input name %1 / type %2").arg(xml.attributes().value("name").toString(),xml.attributes().value("type").toString()));
+                        QString Text = xml.readElementText();
+                    }
+                    else{
+                        xml.skipCurrentElement();
+                    }
+                }                    
+            }
+        else{
+            xml.skipCurrentElement();
+            }
+    }
+    if (xml.error())
+        return {};
+
+    return {
+        std::move(inputConfigEntry),
+    };
+}
+
+//to get input by his GUID and Name (by this way, we could have several configuration for the same pad ;-)
 providers::es2::inputConfigEntry find_input_entry(const QString& log_tag, QXmlStreamReader& xml, const QString& Name, const QString& GUID)
 {
     Q_ASSERT(xml.isStartElement() && (xml.name() == "inputList"));
@@ -306,6 +355,53 @@ bool update_input_entry(const QString& log_tag, QFile& xml_file, const providers
 
 namespace providers {
 namespace es2 {
+
+inputConfigEntry find_any_input_by_guid(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const QString& DeviceGUID)
+{
+    const QString xml_path = es_input_xml(possible_config_dirs);
+    if (xml_path.isEmpty()) {
+        Log::info(log_tag, LOGMSG("No installation found"));
+        return {};
+    }
+    Log::info(log_tag, LOGMSG("Found `%1`").arg(xml_path));
+
+    QFile xml_file(xml_path);
+    if (!xml_file.open(QIODevice::ReadOnly)) {
+        Log::error(log_tag, LOGMSG("Could not open `%1`").arg(xml_path));
+        return {};
+    }
+
+    QXmlStreamReader xml(&xml_file);
+    if (!xml.readNextStartElement()) {
+        Log::error(log_tag, LOGMSG("Could not parse `%1`").arg(xml_path));
+        return {};
+    }
+    else Log::debug(log_tag, LOGMSG("The XML tag %1 has been found").arg(xml.name()));
+        
+    if (xml.name() != QLatin1String("inputList")) {
+        Log::error(log_tag, LOGMSG("`%1` does not have a `<inputList>` root node").arg(xml_path));
+        return {};
+    }
+
+    providers::es2::inputConfigEntry inputentry = find_any_input_entry_by_guid(log_tag, xml, DeviceGUID);
+    if (xml.error())
+        Log::error(log_tag, xml.errorString());
+    xml_file.close();
+    
+    if (inputentry.inputConfigAttributs.deviceGUID != DeviceGUID)
+    {
+        Log::error(log_tag, LOGMSG("input configuration with GUID:%1 not found from es_input.cfg").arg(inputentry.inputConfigAttributs.deviceGUID));
+    }
+    else
+    {
+        Log::info(log_tag, LOGMSG("%1 input configuration found from es_input.cfg").arg(inputentry.inputConfigAttributs.deviceName));
+    }
+
+    return inputentry;
+
+}
+
+
 
 inputConfigEntry find_input(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const QString& DeviceName, const QString& DeviceGUID)
 {

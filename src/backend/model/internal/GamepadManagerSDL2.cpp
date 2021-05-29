@@ -719,7 +719,7 @@ void GamepadManagerSDL2::poll()
 
 void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 {
-    //Log::debug(LOGMSG("GamepadManagerSDL2::add_controller_by_idx"));
+    Log::debug(LOGMSG("GamepadManagerSDL2::add_controller_by_idx"));
     //Log::debug(m_log_tag, LOGMSG("int device_idx : %1").arg(device_idx));
     try{
         Q_ASSERT(m_idx_to_iid.count(device_idx) == 0);
