@@ -9,6 +9,11 @@
 #include <utils/cplusplus/Bitflags.h>
 #include <utils/storage/rHashMap.h>
 
+#include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
+
+#include <QDir>
+
 //RFU
 //#include <systems/SystemData.h>
 //#include <mqtt/MqttClient.h>
@@ -62,7 +67,15 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param action Action to notify
      */
     //RFU
-    //void Notify(const FileData& game, Notification action) { Notify(game.getSystem(), &game, action, game.getPath().ToString()); }
+    void Notify(const model::GameFile* q_gamefile, Notification action) { 
+    
+                    const model::GameFile& gamefile = *q_gamefile;
+                    const model::Game& game = *gamefile.parentGame();
+                    const QFileInfo& finfo = gamefile.fileinfo();
+                
+                    Notify(&game, action, QDir::toNativeSeparators(finfo.absoluteFilePath()).toUtf8().constData()); 
+                
+                }
 
     /*!
      * @brief Update EmulationStation status file with system information
@@ -76,21 +89,14 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @brief
      * @param action Action to notify
      */
-    void Notify(Notification action) {  //RFU
-                                        //Notify(nullptr, nullptr, action, std::string());
-                                        Notify(action, std::string()); }
+    void Notify(Notification action) { Notify(nullptr, action, std::string()); }
 
     /*!
      * @brief
      * @param action Action to notify
      * @param actionParameters Optional action parameters
      */
-    void Notify(Notification action, const std::string& actionParameters); //{ //RFU
-                                                                            //Notify(nullptr, nullptr, action, actionParameters);
-                                                                            //Notify(action, actionParameters);    }
-
-
-    
+    void Notify(Notification action, const std::string& actionParameters) { Notify(nullptr, action, actionParameters); }
     
   private:
     /*!
@@ -113,6 +119,8 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      */
     struct ParamBag
     {
+      // Game
+      const model::Game* mGame;
       // Action
       Notification mAction;
       //! Action parameters
@@ -130,7 +138,8 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
        * @brief Default constructor
        */
       ParamBag()
-        : mActionParameters(),
+        : mGame(nullptr),
+          mActionParameters(),
           mAction(Notification::None)
           //RFU
           //mSystemData(nullptr),
@@ -146,8 +155,9 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
        * @param actionParameters Optional action parameters
        */
       //ParamBag(const SystemData* systemData, const FileData* fileData, Notification action, const std::string& actionParameters)
-      ParamBag(Notification action, const std::string& actionParameters)
-        : mActionParameters(actionParameters),
+      ParamBag(const model::Game* game, Notification action, const std::string& actionParameters)
+        : mGame(game),
+          mActionParameters(actionParameters),
           mAction(action)
           //RFU
           //mSystemData(systemData),
@@ -166,7 +176,8 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
       //(mSystemData != compareTo.mSystemData) ||
       //(mFileData != compareTo.mFileData) ||
                 
-        return ((mAction != compareTo.mAction) ||
+        return ((mGame != compareTo.mGame) ||
+                (mAction != compareTo.mAction) ||
                 (mActionParameters != compareTo.mActionParameters));
       }
     };
@@ -253,8 +264,8 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param play True if the target game is going to be launched
      * @param demo True if the target game is going ot be launched as demo
      */
-    //void Notify(Notification action, const std::string& actionParameters);
-
+    void Notify(const model::Game* game, Notification action, const std::string& actionParameters);
+    
     //RFU 
     //void Notify(const SystemData* system, const FileData* game, Notification action, const std::string& actionParameters);
     
@@ -281,17 +292,15 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param action Notification
      * @param actionParameters Notification parameters or empty string
      */
-    static void BuildStateCommons(std::string& output, Notification action, const std::string& actionParameters);
-    //RFU
-    //static void BuildStateCommons(std::string& output, const SystemData* system, const FileData* game, Notification action, const std::string& actionParameters);
+    //static void BuildStateCommons(std::string& output, Notification action, const std::string& actionParameters);
+    static void BuildStateCommons(std::string& output, const model::Game* game, Notification action, const std::string& actionParameters);
 
     /*!
      * @brief Build es_state.info game information into output string
      * @param output Output string
      * @param game Game or nullptr
      */
-    //RFU
-    //static void BuildStateGame(std::string& output, const FileData* game);
+    static void BuildStateGame(std::string& output, const model::Game* game);
     
     /*!
      * @brief Build es_state.info system information into output string

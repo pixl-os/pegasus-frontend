@@ -189,7 +189,7 @@ void ScriptManager::RunScripts(Notification action, const std::string& param)
   }
 }
 
-void ScriptManager::BuildStateCommons(std::string& output, Notification action, const std::string& actionParameters)
+void ScriptManager::BuildStateCommons(std::string& output, const model::Game* game, Notification action, const std::string& actionParameters)
 //RFU
 //void ScriptManager::BuildStateCommons(std::string& output, const SystemData* system, const FileData* game, Notification action, const std::string& actionParameters)
 {
@@ -199,65 +199,63 @@ void ScriptManager::BuildStateCommons(std::string& output, Notification action, 
 
   //RFU
   // System
-  // if (system != nullptr)
-    // output.append("System=").append(system->getFullName()).append(eol)
-          // .append("SystemId=").append(system->getName()).append(eol);
+  if (game != nullptr)
+    output.append("System=").append(eol) //empty for the moment
+          .append("SystemId=").append(game->systemShortName().toUtf8().constData()).append(eol);
   // else if (action == Notification::RunKodi)
     // output.append("System=kodi").append(eol)
           // .append("SystemId=kodi").append(eol);
-  // else
+  else
     output.append("System=").append(eol)
           .append("SystemId=").append(eol);
 
-  //RFU
   // Permanent game infos
-  // if (game != nullptr)
-    // output.append("Game=").append(game->getName()).append(eol)
-          // .append("GamePath=").append(game->getPath().ToString()).append(eol)
-          // .append("ImagePath=").append(game->Metadata().Image().ToString()).append(eol);
-  // else
+  if (game != nullptr)
+     output.append("Game=").append(game->title().toUtf8().constData()).append(eol)
+            .append("GamePath=").append(actionParameters).append(eol)
+            .append("ImagePath=").append(eol); //empty for the moment
+  else
     output.append("Game=").append(eol)
           .append("GamePath=").append(eol)
           .append("ImagePath=").append(eol);
 }
 
-//RFU
-// void ScriptManager::BuildStateGame(std::string& output, const FileData* game)
-// {
-  // std::string emulator;
-  // std::string core;
+void ScriptManager::BuildStateGame(std::string& output, const model::Game* game)
+{
+  std::string emulator;
+  std::string core;
 
-  // if (game == nullptr) return;
-  // output.append("IsFolder=").append(game->isFolder() ? "1" : "0").append(eol)
-        // .append("ThumbnailPath=").append(game->Metadata().Thumbnail().ToString()).append(eol)
-        // .append("VideoPath=").append(game->Metadata().Video().ToString()).append(eol)
-        // .append("Developer=").append(game->Metadata().Developer()).append(eol)
-        // .append("Publisher=").append(game->Metadata().Publisher()).append(eol)
-        // .append("Players=").append(game->Metadata().PlayersAsString()).append(eol)
-        // .append("Region=").append(game->Metadata().RegionAsString()).append(eol)
-        // .append("Genre=").append(game->Metadata().Genre()).append(eol)
-        // .append("GenreId=").append(game->Metadata().GenreIdAsString()).append(eol)
-        // .append("Favorite=").append(game->Metadata().Favorite() ? "1" : "0").append(eol)
-        // .append("Hidden=").append(game->Metadata().Hidden() ? "1" : "0").append(eol)
-        // .append("Adult=").append(game->Metadata().Adult() ? "1" : "0").append(eol);
+  if (game == nullptr) return;
+        output.append("IsFolder=").append(eol) //empty for the moment
+        .append("ThumbnailPath=").append(eol) //empty for the moment
+        .append("VideoPath=").append(eol) //empty for the moment
+        .append("Developer=").append(game->developerListConst().at(0).toUtf8().constData()).append(eol)
+        .append("Publisher=").append(game->publisherListConst().at(0).toUtf8().constData()).append(eol)
+        .append("Players=").append(std::to_string(game->playerCount())).append(eol)
+        .append("Region=").append(eol) //empty for the moment
+        .append("Genre=").append(game->genreListConst().at(0).toUtf8().constData()).append(eol)
+        .append("GenreId=").append(game->genreid().toUtf8().constData()).append(eol)
+        .append("Favorite=").append((game->isFavorite() ? "1" : "0")).append(eol)
+        .append("Hidden=").append(eol) //empty for the moment
+        .append("Adult=").append(eol); //empty for the moment;
 
-  // if (game->getSystem()->Manager().Emulators().GetGameEmulator(*game, emulator, core))
-    // output.append("Emulator=").append(emulator).append(eol)
-          // .append("Core=").append(core).append(eol);
-// }
+  if ((game->emulatorName() != "") && (game->emulatorCore() != ""))
+      output.append("Emulator=").append(game->emulatorName().toUtf8().constData()).append(eol)
+      .append("Core=").append(game->emulatorCore().toUtf8().constData()).append(eol);
+}
 
-// void ScriptManager::BuildStateSystem(std::string& output, const SystemData* system)
-// {
-  // std::string emulator;
-  // std::string core;
+/* void ScriptManager::BuildStateSystem(std::string& output, const SystemData* system)
+{
+  std::string emulator;
+  std::string core;
 
-  // if (system == nullptr) return;
+  if (system == nullptr) return;
 
-  // if (!system->IsVirtual())
-    // if (system->Manager().Emulators().GetDefaultEmulator(*system, emulator, core))
-      // output.append("DefaultEmulator=").append(emulator).append(eol)
-            // .append("DefaultCore=").append(core).append(eol);
-// }
+  if (!system->IsVirtual())
+    if (system->Manager().Emulators().GetDefaultEmulator(*system, emulator, core))
+      output.append("DefaultEmulator=").append(emulator).append(eol)
+            .append("DefaultCore=").append(core).append(eol);
+} */
 
 void ScriptManager::BuildStateCompatibility(std::string& output, Notification action)
 {
@@ -291,7 +289,7 @@ void ScriptManager::BuildStateCompatibility(std::string& output, Notification ac
   }
 }
 
-void ScriptManager::Notify(Notification action, const std::string& actionParameters)
+void ScriptManager::Notify(const model::Game* game, Notification action, const std::string& actionParameters)
 //RFU
 //void ScriptManager::Notify(const SystemData* system, const FileData* game, Notification action, const std::string& actionParameters)
 {
@@ -304,16 +302,24 @@ void ScriptManager::Notify(Notification action, const std::string& actionParamet
   // Check if it is the same event than in previous call
   //
   //ParamBag newBag(system, game, action, actionParameters);
-  ParamBag newBag(action, actionParameters);
+  ParamBag newBag(game, action, actionParameters);
+  
   if (newBag != mPreviousParamBag)
   {
     // Build all
     std::string output("Version=2.0"); output.append(eol);
-    BuildStateCommons(output, action, actionParameters);
+    BuildStateCommons(output, game, action, actionParameters);
+    
+    
     //RFU
     //BuildStateCommons(output, system, game, action, actionParameters);
-    //BuildStateGame(output, game);
+    
+    BuildStateGame(output, game);
+    
     //BuildStateSystem(output, system);
+    
+    
+    
     BuildStateCompatibility(output, action);
 
     // Save

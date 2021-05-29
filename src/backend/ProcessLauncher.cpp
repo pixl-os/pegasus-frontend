@@ -16,6 +16,7 @@
 
 
 #include "ProcessLauncher.h"
+#include "ScriptManager.h"
 
 #include "Log.h"
 #include "ScriptRunner.h"
@@ -273,8 +274,11 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     
     workdir = helpers::abs_workdir(workdir, game.launchCmdBasedir(), default_workdir);
 
+    //legacy script system (from pegasus)
     beforeRun(gamefile.fileinfo().absoluteFilePath());
     
+    //notify game launching for es_states.tmp (from recalbox)
+    ScriptManager::Instance().Notify(&gamefile, Notification::RunGame);
     runProcess(command, args, workdir);
 }
 
@@ -384,6 +388,9 @@ void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exits
             Log::warning(LOGMSG("The external program has crashed"));
             break;
     }
+    
+    //notify game finishing for es_states.tmp (from recalbox)
+    ScriptManager::Instance().Notify(Notification::EndGame);
 
     afterRun();
 }
