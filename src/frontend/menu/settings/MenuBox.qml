@@ -91,29 +91,29 @@ FocusScope {
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pixelSize: 20
             }
-            TextField {
-                id: pseudoInput
-                width: parent.width / 2.5
-                horizontalAlignment: TextInput.AlignHCenter
-                placeholderText: "Pseudo"
-                text: api.internal.recalbox.getStringParameter("global.retroachievements.username")
-                anchors.horizontalCenter: parent.horizontalCenter
-                echoMode: TextInput.Normal
-                enterKeyAction: EnterKeyAction.Next
-                onAccepted: api.internal.recalbox.setStringParameter("global.retroachievements.username", pseudoInput.text)
-            }
-            TextField {
-                id: passwordInput
-                width: parent.width / 2.5
-                placeholderText: "password"
-                text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
-                horizontalAlignment: TextInput.AlignHCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                echoMode: TextInput.PasswordEchoOnEdit
-                //                enterKeyAction: EnterKeyAction.Next
-                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
-                onAccepted: api.internal.recalbox.setStringParameter("global.retroachievements.password", passwordInput.text)
-            }
+//            TextField {
+//                id: pseudoInput
+//                width: parent.width / 2.5
+//                horizontalAlignment: TextInput.AlignHCenter
+//                placeholderText: "Pseudo"
+//                text: api.internal.recalbox.getStringParameter("global.retroachievements.username")
+//                anchors.horizontalCenter: parent.horizontalCenter
+//                echoMode: TextInput.Normal
+//                enterKeyAction: EnterKeyAction.Next
+//                onAccepted: api.internal.recalbox.setStringParameter("global.retroachievements.username", pseudoInput.text)
+//            }
+//            TextField {
+//                id: passwordInput
+//                width: parent.width / 2.5
+//                placeholderText: "password"
+//                text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
+//                horizontalAlignment: TextInput.AlignHCenter
+//                anchors.horizontalCenter: parent.horizontalCenter
+//                echoMode: TextInput.PasswordEchoOnEdit
+//                //                enterKeyAction: EnterKeyAction.Next
+//                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+//                onAccepted: api.internal.recalbox.setStringParameter("global.retroachievements.password", passwordInput.text)
+//            }
         }
         Rectangle {
             id: validationButton
