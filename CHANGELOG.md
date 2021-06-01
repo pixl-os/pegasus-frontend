@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file (focus on ch
 - add menu selection for ps3 driver
 - rework sound slider
 - cleaning Menu
-- add fps option in menu  
+- add fps option in menu
+- bump submodule lang
 
 ## [recalbox-integration] - 2021-05-24
 - change lang module to use forked version
