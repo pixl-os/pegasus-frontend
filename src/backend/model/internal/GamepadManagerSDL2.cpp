@@ -273,6 +273,191 @@ void write_mappings(const std::vector<std::string>& mappings)
         db_stream << mapping.data() << '\n';
 }
 
+std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry& inputConfigEntry)
+{
+
+    //example of Pegasus Mapping data: 
+    //030000005e040000a102000000010000,X360 Wireless Controller,
+    //a:b0,b:b1,back:b8,dpdown:b16,dpleft:b13,dpright:b14,dpup:b15,guide:b10,
+    //leftshoulder:b4,leftstick:b11,lefttrigger:b6,leftx:a0,lefty:a1,rightshoulder:b5,
+    //rightstick:b12,righttrigger:b7,rightx:a2,righty:a3,start:b9,x:b2,y:b3,platform:Linux,
+    
+    //QString FullMappingData = QString::fromStdString(new_mapping);
+        
+    QStringList ListMappingData; // = FullMappingData.split(",");
+    
+    //GET GUID
+    ListMappingData.append(inputConfigEntry.inputConfigAttributs.deviceGUID);
+    
+    //GET NAME
+    ListMappingData.append(inputConfigEntry.inputConfigAttributs.deviceName);
+    
+    //SET TYPE
+    //inputConfigEntry.inputConfigAttributs.type = "joystick"; //TO DO: or keyboard ???
+    
+    //SET INPUTS
+    // int NbAxis = 0;
+    // int NbHats = 0;
+    // int NbButtons = 0;
+    // int NbKeys = 0;
+    // for (int i = 2; i < ListMappingData.size(); i++)
+    // {
+    for (int idx = 0; idx < inputConfigEntry.inputElements.size(); idx++) {
+            
+        //QStringList InputData = ListMappingData.at(i).split(":");
+        //Log::info(LOGMSG("InputData size = %1").arg(QString::number(InputData.size())));
+
+        //with default value
+        QString name;
+        QString value = "";
+        QString type;
+        QString point = "";
+        
+        QString code = "-1";
+
+        // sign ?
+        QString sign = "";
+        QString InputSign = inputConfigEntry.inputElements.at(idx).value;
+        
+        switch(const_hash(InputSign.toStdString().c_str()))
+         {
+             case const_hash("-1"): { sign = "-"; break; }
+             case const_hash("1"): { sign = "+"; break; }
+             default: break;
+         }
+
+        // id ?
+        QString id=inputConfigEntry.inputElements.at(idx).id;
+                
+        // name ?
+        QString InputName = inputConfigEntry.inputElements.at(idx).name;
+        
+        Log::debug(LOGMSG("name:`%1`").arg(InputName));
+        
+        switch(const_hash(InputName.toStdString().c_str())) // to get name of input as "a", "b", "hotkey", etc...
+        {
+            case const_hash(""):
+                //to ignore empty field
+                continue;
+            break;
+            case const_hash("a"):
+                name = "b"; //inversed due to the fact that pegasus is based on xbox 360 pad but recalbox on super nintendo pad 
+            break;
+            case const_hash("b"):
+                name = "a"; //inversed due to the fact that pegasus is based on xbox 360 pad but recalbox on super nintendo pad 
+            break;
+            case const_hash("x"): //inversed due to the fact that pegasus is based on xbox 360 pad but recalbox on super nintendo pad 
+                name = "y";
+            break;
+            case const_hash("y"):
+                name = "x"; //inversed due to the fact that pegasus is based on xbox 360 pad but recalbox on super nintendo pad 
+            break;
+            case const_hash("select"):
+                name = "back";
+            break;
+            case const_hash("start"):
+                name = "start";
+            break;
+            case const_hash("hotkey"):
+                name = "guide";
+            break;
+            case const_hash("down"):
+                name = "dpdown";
+            break;
+            case const_hash("up"):
+                name = "dpup";
+            break;
+            case const_hash("right"):
+                name = "dpright";
+            break;
+            case const_hash("left"):
+                name = "dpleft";
+            break;
+            case const_hash("l1"):
+                name = "leftshoulder";
+            break;
+            case const_hash("r1"):
+                name = "rightshoulder";
+            break;
+             case const_hash("l2"):
+                name = "lefttrigger";
+            break;
+            case const_hash("r2"):
+                name = "righttrigger";
+            break;           
+             case const_hash("l3"):
+                name = "leftstick";
+            break;
+            case const_hash("r3"):
+                name = "rightstick";
+            break;               
+            case const_hash("joystick2up"):
+                name = "righty";
+                sign = ""; //cancel sign for this control
+            break;
+            case const_hash("joystick2left"):
+                name = "rightx";
+                sign = ""; //cancel sign for this control
+            break;           
+             case const_hash("joystick1up"):
+                name = "lefty";
+                sign = ""; //cancel sign for this control
+            break;
+            case const_hash("joystick1left"):
+                name = "leftx";
+                sign = ""; //cancel sign for this control
+            break;             
+        }
+        
+        // type ?
+        
+        QString InputType = inputConfigEntry.inputElements.at(idx).type;
+        
+        Log::debug(LOGMSG("type:`%1`").arg(InputType));
+        
+        switch (const_hash(InputType.toStdString().c_str())) // to get type as "a" axis or "b" button
+        {
+            case const_hash("axis"):
+                type = "a";
+                value = ""; //no value used
+                point = ""; //no point used
+            break;
+            case const_hash("button"):
+                type = "b";
+                sign = ""; // cancel sign in case of hat
+                value = ""; //no value used
+                point = ""; //no point used
+            break;
+            case const_hash("hat"):
+                type = "h";
+                sign = ""; // cancel sign in case of hat
+                point = "."; // set point as for hat
+                value = inputConfigEntry.inputElements.at(idx).value;
+            break;
+            // case const_hash("key"):
+                //for future used ;-)
+                // type = "k";
+            // break;
+        }
+
+        Log::debug(LOGMSG("id:`%1`").arg(id));
+        Log::debug(LOGMSG("sign:`%1`").arg(sign));
+        Log::debug(LOGMSG("point:`%1`").arg(point));
+        Log::debug(LOGMSG("value:`%1`").arg(value));
+        
+        ListMappingData.append(name + ":" + sign + type + id + point + value);
+    }
+
+    ListMappingData.append("platform:" + QString::fromStdString(SDL_GetPlatform()));
+
+    QString FullMappingData = ListMappingData.join(",") + ","; // add ',' at the end to be as we saved custom conf from controller settings
+
+    Log::debug(LOGMSG("Controller full Mapping data:`%1`").arg(FullMappingData));
+    
+    return FullMappingData.toUtf8().constData(); // to std::string
+    
+}
+
 void update_es_input(int device_idx, std::string new_mapping)
 {
     Log::debug(LOGMSG("Controller full Mapping data:`%1`").arg(QString::fromStdString(new_mapping)));
@@ -572,6 +757,57 @@ GamepadManagerSDL2::~GamepadManagerSDL2()
     SDL_Quit();
 }
 
+std::string GamepadManagerSDL2::get_user_gamepaddb_mapping(const QString& dir, const QString& guid_to_find)
+{
+    //Log::debug(m_log_tag, LOGMSG("GamepadManagerSDL2::get_user_gamepaddb_mapping(const QString& dir, const QString& guid_to_find)"));
+    constexpr size_t GUID_HEX_CNT = 16;
+    constexpr size_t GUID_STR_LEN = GUID_HEX_CNT * 2;
+
+    const QString path = dir + QLatin1String(USERCFG_FILE);
+    if (!QFileInfo::exists(path))
+        return "";
+
+    QFile db_file(path);
+    if (!db_file.open(QFile::ReadOnly | QFile::Text)) {
+        Log::warning(LOGMSG("SDL: could not open `%1`, ignored").arg(path));
+        return "";
+    }
+    Log::info(LOGMSG("SDL: loading controller mappings from `%1`").arg(path));
+
+    QTextStream db_stream(&db_file);
+    QString line;
+    int linenum = 0;
+    while (db_stream.readLineInto(&line)) {
+        linenum++;
+
+        if (line.startsWith('#'))
+            continue;
+
+        const std::string guid_str = line.left(GUID_STR_LEN).toStdString();
+        const bool has_comma = line.length() > static_cast<int>(GUID_STR_LEN)
+            && line.at(GUID_STR_LEN + 1) == QLatin1Char(',');
+        if (guid_str.length() != GUID_STR_LEN || has_comma) {
+            Log::warning(LOGMSG("SDL: in `%1` line #%2, the line format is incorrect, skipped")
+                .arg(path, QString::number(linenum)));
+            continue;
+        }
+        const auto bytes = QByteArray::fromHex(QByteArray::fromRawData(guid_str.data(), GUID_STR_LEN));
+        if (bytes.count() != GUID_HEX_CNT) {
+            Log::warning(LOGMSG("SDL: in `%1` line #%2, the GUID is incorrect, skipped")
+                .arg(path, QString::number(linenum)));
+            continue;
+        }
+
+        std::string new_mapping = line.toStdString();
+
+        if(guid_to_find.toUtf8().constData() == guid_str)
+        {
+            return new_mapping; //found
+        }
+    }
+    return ""; // not found
+}
+
 void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
 {
     //Log::debug(m_log_tag, LOGMSG("GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)"));
@@ -724,12 +960,16 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
     try{
         Q_ASSERT(m_idx_to_iid.count(device_idx) == 0);
         //Log::debug(LOGMSG("m_idx_to_iid(device_idx).count(%1): %2").arg(QString::number(device_idx),QString::number(m_idx_to_iid.count(device_idx))));
+
         
+        //if unknown by SDL
         if (!SDL_IsGameController(device_idx))
         {
             Log::debug(LOGMSG("Not SDL_IsGameController(device_idx)"));
             try_register_default_mapping(device_idx);
         }
+        
+        //if problem to connect this device
         SDL_GameController* const pad = SDL_GameControllerOpen(device_idx);
         if (!pad) {
             Log::error(LOGMSG("SDL2: could not open gamepad %1").arg(pretty_idx(device_idx)));
@@ -737,22 +977,27 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             return;
         }
 
+        //get mapping found by SDL
         const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
+        
+        //if no mapping, strange ?!
         if (!mapping)
             Log::error(m_log_tag, LOGMSG("SDL2: layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
 
+        //get the name found by sdl in assets/sdl2/gamecontrollerdb_209.txt or sdl_controllers.txt (user mappings)
+        Log::debug(m_log_tag, LOGMSG("Device name found by SDL (not trimmed): '%1'").arg(QLatin1String(SDL_GameControllerName(pad))));
         QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
-        
-        //Log::debug(m_log_tag, LOGMSG("Device name : %1").arg(name));
+        Log::debug(m_log_tag, LOGMSG("Device name found by SDL (trimmed): '%1'").arg(name));
 
         SDL_Joystick* const joystick = SDL_GameControllerGetJoystick(pad);
         const SDL_JoystickID iid = SDL_JoystickInstanceID(joystick);
+        
         //Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
 
         m_idx_to_iid.emplace(device_idx,iid);
         m_iid_to_idx.emplace(iid, device_idx);
         m_iid_to_device.emplace(iid, device_ptr(pad, SDL_GameControllerClose));
-        
+       
         //Log::debug(m_log_tag, LOGMSG("device_idx : %1").arg(device_idx)); 
             
         //Get GUID
@@ -765,8 +1010,38 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         
         // concatenation doesn't work with QLatin1Strings...
         const auto guid_str = QLatin1String(guid_raw_str.data()).trimmed();
-        //Log::debug(m_log_tag, LOGMSG("With gUId : %1").arg(guid_str));
+        Log::debug(m_log_tag, LOGMSG("With gUId : %1").arg(guid_str));
 
+        //check if gamepad has been configured by user previously using guid
+        std::string user_mapping = "";
+        for (const QString& dir : paths::configDirs())
+        {
+            user_mapping = get_user_gamepaddb_mapping(dir, guid_str);
+            if(user_mapping != "") break; //exit for if not empty
+        }
+        
+        //if no user mapping defined / else we do nothing because it seems a pad already configured by user
+        if (user_mapping == "")
+        {
+            Log::debug(m_log_tag, LOGMSG("no mapping in sdl_controllers.txt for this controller"));
+            //check if any es_input.cfg record exists for this GUID
+            providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
+            //check if we already saved this configuration (same guid/same name)
+            providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(name, guid_str);
+            Log::debug(m_log_tag, LOGMSG("inputConfigEntry.inputConfigAttributs.deviceName : '%1'").arg(inputConfigEntry.inputConfigAttributs.deviceName));
+        
+            //if nothing is in es_input with this name -> we update es_input with the SDL conf
+            if (inputConfigEntry.inputConfigAttributs.deviceName == "")
+            {
+                Log::debug(m_log_tag, LOGMSG("no mapping found in es_input.cfg for this controller"));
+                //get default mapping from SDL2
+                std::string existing_mapping = generate_mapping(device_idx);
+                //write user SDL2 mapping in es_input.cfg
+                Log::debug(m_log_tag, LOGMSG("save default SDL2 mapping in es_input.cfg to be able to play right now !"));
+                update_es_input(device_idx, existing_mapping);
+            }
+        }
+       
         //persistence saved in recalbox.conf
         const QString Parameter = QString("pegasus.pad%1").arg(device_idx);
         #ifdef WITHOUT_LEGACY_SDL
