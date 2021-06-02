@@ -1040,6 +1040,20 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 Log::debug(m_log_tag, LOGMSG("save default SDL2 mapping in es_input.cfg to be able to play right now !"));
                 update_es_input(device_idx, existing_mapping);
             }
+            else //if anything is in es_input with this name -> we update user conf (sdl_controllers.txt) and reload
+            {
+                Log::debug(m_log_tag, LOGMSG("mapping with same name found in es_input.cfg for this controller"));
+                //get default mapping from es_input.cfg to SDL2 format
+                std::string new_mapping = create_mapping_from_es_input(inputConfigEntry);
+                //write user SDL2 mapping in es_input.cfg
+                Log::debug(m_log_tag, LOGMSG("save es_input.cfg mapping in sdl_controllers.txt to be able to use this conf in menu !"));
+                update_mapping_store(std::move(new_mapping));
+                write_mappings(m_custom_mappings);
+                //force reload new mapping
+                Log::debug(m_log_tag, LOGMSG("Force reload new mapping for menu !"));
+                for (const QString& dir : paths::configDirs())
+                    load_user_gamepaddb(dir);
+            }
         }
        
         //persistence saved in recalbox.conf
