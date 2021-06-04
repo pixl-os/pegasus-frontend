@@ -2,10 +2,9 @@
 	path = lang
 	url = https://github.com/bozothegeek/pegasus-frontend-translations.git
 	branch = recalbox-integration
-[submodule "src/themes/pegasus-theme-grid"]
-	path = src/themes/gameOS
-	url = https://github.com/bozothegeek/gameOS.git
-	branch = recalbox-integration
 [submodule "thirdparty/SortFilterProxyModel"]
 	path = thirdparty/SortFilterProxyModel
 	url = https://github.com/mmatyas/SortFilterProxyModel.git
+[submodule "src/themes/gameOS"]
+	url = https://github.com/bozothegeek/gameOS.git
+	branch = recalbox-integration
