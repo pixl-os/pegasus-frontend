@@ -1,13 +1,21 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [**NEXT**]
+## [recalbox-integration] - 2021-06-04
 - add missing description
 - add menu selection for ps3 driver
 - rework sound slider
 - cleaning Menu
 - add fps option in menu
 - bump submodule lang
+- menu to add text entry
+- fix missing qstr
+- fix remove uneeded option and cleaning account main
+- controller : add function to find by guid only from es_input.cfg
+- controller : finally just recopy sdl2 conf to es_input if needed
+- controller : recopy es_input conf in user conf if empty
+- theme : change pegasus grid to game os as default submodule included
+
 
 ## [recalbox-integration] - 2021-05-24
 - change lang module to use forked version
