@@ -66,6 +66,8 @@ struct inputConfigEntry {
 };
 
 inputConfigEntry find_input(const QString&, const std::vector<QString>&, const QString&, const QString&);
+inputConfigEntry find_any_input_by_guid(const QString&, const std::vector<QString>&, const QString&);
+
 bool save_input(const QString&, const std::vector<QString>&, const inputConfigEntry&);
 
 // for future if needed: bool delete_input(const QString&, QFile&, inputConfigEntry&);

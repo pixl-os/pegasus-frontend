@@ -34,6 +34,7 @@ public:
 
     Provider& run(SearchContext&) final;
     inputConfigEntry load_input_data(const QString&, const QString&);
+    inputConfigEntry load_any_input_data_by_guid(const QString&);
     bool save_input_data(const inputConfigEntry&);
 };
 

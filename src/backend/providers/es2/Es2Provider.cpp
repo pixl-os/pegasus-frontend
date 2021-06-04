@@ -126,6 +126,20 @@ inputConfigEntry Es2Provider::load_input_data(const QString& DeviceName, const Q
 
 }
 
+inputConfigEntry Es2Provider::load_any_input_data_by_guid(const QString& DeviceGUID)
+{   
+    std::vector<QString> possible_config_dirs = [this]{
+        const auto option_it = options().find(QStringLiteral("installdir"));
+        return (option_it != options().cend())
+            ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
+            : default_config_paths();
+    }();
+
+    // Find input
+    return find_any_input_by_guid(display_name(), possible_config_dirs,DeviceGUID);
+
+}
+
 bool Es2Provider::save_input_data(const inputConfigEntry& input)
 {   
     std::vector<QString> possible_config_dirs = [this]{
