@@ -6,5 +6,6 @@
 	path = thirdparty/SortFilterProxyModel
 	url = https://github.com/mmatyas/SortFilterProxyModel.git
 [submodule "src/themes/gameOS"]
+	path = src/themes/gameOS
 	url = https://github.com/bozothegeek/gameOS.git
 	branch = recalbox-integration
