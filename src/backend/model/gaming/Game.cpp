@@ -104,6 +104,11 @@ void Game::launch()
         emit launchFileSelectorRequested();
 }
 
+void Game::loadRetroAchievements()
+{
+
+}
+
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 {
     for (model::GameFile* const gamefile : files) {

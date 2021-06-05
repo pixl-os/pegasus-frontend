@@ -33,6 +33,20 @@ namespace model { class Collection; }
 
 
 namespace model {
+	
+struct RetroAchievement {
+		int ID;
+		QString Title;
+		QString Description;
+		int Points;
+		QString Author;
+		QString BadgeName;
+		int Flags;
+		bool Unlocked;
+		int GameID;
+		bool HardcoreMode;
+};		
+	
 struct GameData {
     explicit GameData();
     explicit GameData(QString);
@@ -69,6 +83,9 @@ struct GameData {
         QString emulator_name;
         QString emulator_core;
     } launch_params;
+	
+	QList <RetroAchievement> retro_achievements;
+	
 };
 
 
@@ -102,7 +119,7 @@ public:
     GETTER(int, playTime, playstats.play_time)
     GETTER(const QDateTime&, lastPlayed, playstats.last_played)
     GETTER(bool, isFavorite, is_favorite)
-
+	GETTER(const QList<RetroAchievement> &, retroAchievements, retro_achievements)
     GETTER(const QString&, launchCmd, launch_params.launch_cmd)
     GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
     GETTER(const QString&, launchCmdBasedir, launch_params.relative_basedir)
@@ -173,7 +190,12 @@ public:
     const QVariantMap& extraMap() const { return m_extra; }
     QVariantMap& extraMapMut() { return m_extra; }
 
-
+    //need specific property and invokable function due to QList<struct> is not supported by QML layer
+    Q_PROPERTY(int retroAchievementsCount READ getRetroAchievementsCount CONSTANT)
+    Q_INVOKABLE QString GetTitleAt (const int index) {return m_data.retro_achievements.at(index).Title;};
+	Q_INVOKABLE QString GetBadgeAt (const int index) {return m_data.retro_achievements.at(index).BadgeName;};
+	Q_INVOKABLE bool isUnlockedAt (const int index) {return m_data.retro_achievements.at(index).Unlocked;};
+	
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
@@ -204,8 +226,9 @@ private slots:
 public:
     explicit Game(QObject* parent = nullptr);
     explicit Game(QString name, QObject* parent = nullptr);
-
+	int getRetroAchievementsCount() const { return m_data.retro_achievements.count(); };
     Q_INVOKABLE void launch();
+	Q_INVOKABLE void loadRetroAchievements();
 
     void finalize();
 };
