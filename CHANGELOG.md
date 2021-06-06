@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file (focus on ch
 - controller : finally just recopy sdl2 conf to es_input if needed
 - controller : recopy es_input conf in user conf if empty
 - theme : change pegasus grid to game os as default submodule included
+- fix gamesos theme build remove pdfjs folder
 
 
 ## [recalbox-integration] - 2021-05-24
