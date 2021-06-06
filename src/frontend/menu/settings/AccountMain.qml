@@ -170,7 +170,7 @@ FocusScope {
                     id: optHardcoreRetroachievementActivate
 
                     label: qsTr("Hardcore Retroachievement") + api.tr
-                    note: qsTr("Unlock Trophées without cheats and rewind. \nOnly work with Retroarch.") + api.tr
+                    note: qsTr("Unlock Trophées without cheats and rewind. \nOnly work with Retroarch cores.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.hardcore")
                     onCheckedChanged: {
@@ -244,7 +244,7 @@ FocusScope {
                     id: optNetplayNickname
 
                     label: qsTr("Netplay Nickname") + api.tr
-                    note: qsTr("Set your Netplay nickname, comfirm with enter") + api.tr
+                    note: qsTr("Set your Netplay nickname, \nPlease valdidate with enter") + api.tr
 
                     //value: api.internal.settings.locales.currentName
                     TextField {

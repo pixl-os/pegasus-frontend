@@ -124,9 +124,7 @@
         <file>gameOS/assets/images/logospng/atari5200.png</file>
         <file>gameOS/assets/images/logospng/atari7800.png</file>
         <file>gameOS/assets/images/logospng/atari800.png</file>
-        <file>gameOS/assets/images/logospng/atarijaguar.png</file>
         <file>gameOS/assets/images/logospng/atarijaguarcd.png</file>
-        <file>gameOS/assets/images/logospng/atarilynx.png</file>
         <file>gameOS/assets/images/logospng/atarist.png</file>
         <file>gameOS/assets/images/logospng/atomiswave.png</file>
         <file>gameOS/assets/images/logospng/c64.png</file>
@@ -147,7 +145,6 @@
         <file>gameOS/assets/images/logospng/fba.png</file>
         <file>gameOS/assets/images/logospng/fds.png</file>
         <file>gameOS/assets/images/logospng/futurepinball.png</file>
-        <file>gameOS/assets/images/logospng/gameandwatch.png</file>
         <file>gameOS/assets/images/logospng/gamegear.png</file>
         <file>gameOS/assets/images/logospng/gb.png</file>
         <file>gameOS/assets/images/logospng/gba.png</file>
@@ -174,7 +171,6 @@
         <file>gameOS/assets/images/logospng/ngp.png</file>
         <file>gameOS/assets/images/logospng/ngpc.png</file>
         <file>gameOS/assets/images/logospng/odyssey2.png</file>
-        <file>gameOS/assets/images/logospng/pc-fx.png</file>
         <file>gameOS/assets/images/logospng/pc.png</file>
         <file>gameOS/assets/images/logospng/pcengine.png</file>
         <file>gameOS/assets/images/logospng/pegasus.png</file>
@@ -190,7 +186,6 @@
         <file>gameOS/assets/images/logospng/scummvm.png</file>
         <file>gameOS/assets/images/logospng/sega32x.png</file>
         <file>gameOS/assets/images/logospng/segacd.png</file>
-        <file>gameOS/assets/images/logospng/sg-1000.png</file>
         <file>gameOS/assets/images/logospng/snes.png</file>
         <file>gameOS/assets/images/logospng/steam.png</file>
         <file>gameOS/assets/images/logospng/switch-alt.png</file>
@@ -206,8 +201,6 @@
         <file>gameOS/assets/images/logospng/wiiu.png</file>
         <file>gameOS/assets/images/logospng/wiiware.png</file>
         <file>gameOS/assets/images/logospng/windows.png</file>
-        <file>gameOS/assets/images/logospng/wonderswan.png</file>
-        <file>gameOS/assets/images/logospng/wonderswancolor.png</file>
         <file>gameOS/assets/images/logospng/x68000.png</file>
         <file>gameOS/assets/images/logospng/xbox.png</file>
         <file>gameOS/assets/images/logospng/xbox360.png</file>
@@ -275,5 +268,15 @@
         <file>gameOS/theme.cfg</file>
         <file>gameOS/theme.qml</file>
         <file>gameOS/utils.js</file>
+        <file>gameOS/assets/images/logospng/fbneo.png</file>
+        <file>gameOS/assets/images/logospng/gw.png</file>
+        <file>gameOS/assets/images/logospng/jaguar.png</file>
+        <file>gameOS/assets/images/logospng/lynx.png</file>
+        <file>gameOS/assets/images/logospng/naomi_color.png</file>
+        <file>gameOS/assets/images/logospng/pcfx.png</file>
+        <file>gameOS/assets/images/logospng/sg1000.png</file>
+        <file>gameOS/assets/images/logospng/wswan.png</file>
+        <file>gameOS/assets/images/logospng/wswanc.png</file>
+        <file>gameOS/CHANGELOG.md</file>
     </qresource>
 </RCC>
