@@ -192,9 +192,9 @@ public:
 
     //need specific property and invokable function due to QList<struct> is not supported by QML layer
     Q_PROPERTY(int retroAchievementsCount READ getRetroAchievementsCount CONSTANT)
-    Q_INVOKABLE QString GetTitleAt (const int index) {return m_data.retro_achievements.at(index).Title;};
-	Q_INVOKABLE QString GetBadgeAt (const int index) {return m_data.retro_achievements.at(index).BadgeName;};
-	Q_INVOKABLE bool isUnlockedAt (const int index) {return m_data.retro_achievements.at(index).Unlocked;};
+    Q_INVOKABLE QString GetRaTitleAt (const int index) {return m_data.retro_achievements.at(index).Title;};
+	Q_INVOKABLE QString GetRaBadgeAt (const int index) {return m_data.retro_achievements.at(index).BadgeName;};
+	Q_INVOKABLE bool isRaUnlockedAt (const int index) {return m_data.retro_achievements.at(index).Unlocked;};
 	
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
@@ -228,7 +228,7 @@ public:
     explicit Game(QString name, QObject* parent = nullptr);
 	int getRetroAchievementsCount() const { return m_data.retro_achievements.count(); };
     Q_INVOKABLE void launch();
-	Q_INVOKABLE void loadRetroAchievements();
+	Q_INVOKABLE void updateRetroAchievements();
 
     void finalize();
 };

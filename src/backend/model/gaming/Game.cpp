@@ -21,6 +21,10 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/GameFile.h"
 
+#include "providers/SearchContext.h"
+#include "providers/retroachievements/RetroAchievementsMetadata.h"
+
+#include "Log.h"
 
 namespace {
 QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
@@ -104,9 +108,21 @@ void Game::launch()
         emit launchFileSelectorRequested();
 }
 
-void Game::loadRetroAchievements()
+void Game::updateRetroAchievements()
 {
+	Log::debug(LOGMSG("Game::updateRetroAchievements()"));
+	//Create context and activate network and check availability
+	providers::SearchContext sctx;
+    sctx.enable_network();
+    if (!sctx.has_network())
+        return;
 
+	//check if recalbox.conf to know if credential available
+	//TO DO
+
+	//get JSON
+	const providers::retroAchievements::Metadata metahelper("Retroachievements");
+	//metahelper.fill_from_network(*this, sctx);
 }
 
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)
