@@ -111,18 +111,19 @@ void Game::launch()
 void Game::updateRetroAchievements()
 {
 	Log::debug(LOGMSG("Game::updateRetroAchievements()"));
+	//check if recalbox.conf to know if activated
+	//TO DO
 	//Create context and activate network and check availability
 	providers::SearchContext sctx;
     sctx.enable_network();
     if (!sctx.has_network())
+	{
+		Log::debug(LOGMSG("updateRetroAchievements : No network available !"));
         return;
-
-	//check if recalbox.conf to know if credential available
-	//TO DO
-
+	}
 	//get JSON
 	const providers::retroAchievements::Metadata metahelper("Retroachievements");
-	//metahelper.fill_from_network(*this, sctx);
+	metahelper.fill_from_network(*this, sctx);
 }
 
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)

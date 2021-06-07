@@ -11,19 +11,23 @@
 #include "model/gaming/Game.h"
 #include "providers/JsonCacheUtils.h"
 #include "providers/SearchContext.h"
-#include "utils/MoveOnly.h"
+#include "utils/CommandTokenizer.h"
+//#include "utils/MoveOnly.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
-#include <array>
+#include <QStringBuilder>
+//#include <array>
 
 
 namespace {
-
-bool apply_api_json(const QString&, model::Game& game, const QJsonDocument& json)
+bool apply_json(model::Game& game, const QJsonDocument& json)
 {
+    using QL1 = QLatin1String;
+
+
     if (json.isNull())
         return false;
 
@@ -31,72 +35,107 @@ bool apply_api_json(const QString&, model::Game& game, const QJsonDocument& json
     if (json_root.isEmpty())
         return false;
 
-
-    const auto desc = json_root[QLatin1String("description")].toObject();
-    if (!desc.isEmpty()) {
-        game.setSummary(desc[QLatin1String("lead")].toString().replace('\n', ' '))
-            .setDescription(desc[QLatin1String("full")].toString().replace('\n', ' '));
-    }
-
-    const auto date_raw = json_root[QLatin1String("release_date")].toString();
-    game.setReleaseDate(QDate::fromString(date_raw, Qt::ISODate));
-
-
-    model::Assets& assets = game.assetsMut();  // FIXME: update signals?
-
-    const auto images = json_root[QLatin1String("images")].toObject();
-    if (!images.isEmpty()) {
-        const QString prefix(QStringLiteral("https:"));
-
-        const QString box_front = images[QLatin1String("logo2x")].toString();
-        const QString background = images[QLatin1String("background")].toString();
-        const QString logo = images[QLatin1String("icon")].toString();
-
-        if (!box_front.isEmpty())
-            assets.add_uri(AssetType::BOX_FRONT, prefix + box_front);
-        if (!background.isEmpty())
-            assets.add_uri(AssetType::BACKGROUND, prefix + background);
-        if (!logo.isEmpty())
-            assets.add_uri(AssetType::LOGO, prefix + logo);
-    }
-
-    const auto screenshots = json_root[QLatin1String("screenshots")].toArray();
-    for (const auto& array_entry : screenshots) {
-        const auto screenshot = array_entry.toObject();
-        const auto url = screenshot[QLatin1String("formatter_template_url")].toString()
-            .replace(QStringLiteral("{formatter}"), QStringLiteral("ggvgm_2x"));
-
-        if (!url.isEmpty())
-            assets.add_uri(AssetType::SCREENSHOT, url);
-    }
-
-    return true;
-}
-
-bool apply_embed_json(const QString& raid, model::Game& game, const QJsonDocument& json)
-{
-    if (json.isNull())
+    const auto app_entry = json_root.begin().value().toObject();
+    if (app_entry.isEmpty())
         return false;
 
-    const auto json_root = json.object();
-    if (json_root.isEmpty())
+    const bool app_success = app_entry[QL1("success")].toBool();
+    if (!app_success)
         return false;
 
+    const auto app_data = app_entry[QL1("data")].toObject();
+    if (app_data.isEmpty())
+        return false;
 
-    const auto products = json_root[QLatin1String("products")].toArray();
-    for (const auto& products_entry : products) {
-        const auto product = products_entry.toObject();
+    // now the actual field reading
 
-        const auto id = product[QLatin1String("id")].toInt();
-        if (id == 0 || QString::number(id) != raid)
-            continue;
+    model::Assets& assets = game.assetsMut(); // FIXME: update signals
 
-        game.developerList().append(product[QLatin1String("developer")].toString());
-        game.publisherList().append(product[QLatin1String("publisher")].toString());
+    game.setTitle(app_data[QL1("name")].toString())
+        .setSummary(app_data[QL1("short_description")].toString())
+        .setDescription(app_data[QL1("about_the_game")].toString());
 
-        const auto genres = product[QLatin1String("genres")].toArray();
-        for (const auto& genres_entry : genres)
-            game.genreList().append(genres_entry.toString());
+    const auto reldate_obj = app_data[QL1("release_date")].toObject();
+    if (!reldate_obj.isEmpty()) {
+        const QString date_str = reldate_obj[QL1("date")].toString();
+
+        // FIXME: the date format will likely fail for non-English locales (see Qt docs)
+        const QDateTime datetime(QDateTime::fromString(date_str, QL1("d MMM, yyyy")));
+        if (datetime.isValid())
+            game.setReleaseDate(datetime.date());
+    }
+
+    const QString header_image = app_data[QL1("header_image")].toString();
+    assets
+        .add_uri(AssetType::LOGO, header_image)
+        .add_uri(AssetType::UI_STEAMGRID, header_image)
+        .add_uri(AssetType::BOX_FRONT, header_image);
+
+    const QJsonArray developer_arr = app_data[QL1("developers")].toArray();
+    for (const auto& arr_entry : developer_arr)
+        game.developerList().append(arr_entry.toString());
+
+    const QJsonArray publisher_arr = app_data[QL1("publishers")].toArray();
+    for (const auto& arr_entry : publisher_arr)
+        game.publisherList().append(arr_entry.toString());
+
+    const auto metacritic_obj = app_data[QL1("metacritic")].toObject();
+    if (!metacritic_obj.isEmpty()) {
+        const double score = metacritic_obj[QL1("score")].toDouble(-1);
+        if (0.0 <= score && score <= 100.0)
+            game.setRating(static_cast<float>(score / 100.0));
+    }
+
+    const auto genre_arr = app_data[QL1("genres")].toArray();
+    for (const auto& arr_entry : genre_arr) {
+        const auto genre_obj = arr_entry.toObject();
+        if (genre_obj.isEmpty())
+            break; // assume the rest will fail too
+
+        const QString genre = genre_obj[QL1("description")].toString();
+        if (!genre.isEmpty())
+            game.genreList().append(genre);
+    }
+
+    const auto category_arr = app_data[QL1("categories")].toArray();
+    for (const auto& arr_entry : category_arr) {
+        const auto cat_obj = arr_entry.toObject();
+        if (cat_obj.isEmpty())
+            break; // assume the rest will fail too
+
+        const QString category = cat_obj[QL1("description")].toString();
+        if (!category.isEmpty())
+            game.tagList().append(category);
+    }
+
+    const QString background_image = app_data[QL1("background")].toString();
+    if (!background_image.isEmpty())
+        assets.add_uri(AssetType::BACKGROUND, background_image);
+
+    const auto screenshots_arr = app_data[QL1("screenshots")].toArray();
+    for (const auto& arr_entry : screenshots_arr) {
+        const auto screenshot_obj = arr_entry.toObject();
+        if (screenshot_obj.isEmpty())
+            break; // assume the rest will fail too
+
+        const QString thumb_path = screenshot_obj[QL1("path_thumbnail")].toString();
+        if (!thumb_path.isEmpty())
+            assets.add_uri(AssetType::SCREENSHOT, thumb_path);
+    }
+
+    const auto movies_arr = app_data[QL1("movies")].toArray();
+    for (const auto& arr_entry : movies_arr) {
+        const auto movie_obj = arr_entry.toObject();
+        if (movie_obj.isEmpty())
+            break;
+
+        const auto webm_obj = movie_obj[QL1("webm")].toObject();
+        if (webm_obj.isEmpty())
+            break;
+
+        const QString p480_path = webm_obj[QL1("480")].toString();
+        if (!p480_path.isEmpty())
+            assets.add_uri(AssetType::VIDEO, p480_path);
     }
 
     return true;
@@ -109,78 +148,71 @@ namespace retroAchievements {
 
 Metadata::Metadata(QString log_tag)
     : m_log_tag(std::move(log_tag))
-    , m_json_cache_dir(QStringLiteral("ra"))
-    , m_json_api_suffix(QStringLiteral("_api"))
-    , m_json_embed_suffix(QStringLiteral("_embed"))
-{}
-
-bool Metadata::fill_from_cache(const QString& raid, model::Game& game) const
+    , m_json_cache_dir(QStringLiteral("retroachievements"))
 {
-    const QString entry_api = raid + m_json_api_suffix;
-    const QString entry_embed = raid + m_json_embed_suffix;
-
-    const auto json_api = providers::read_json_from_cache(m_log_tag, m_json_cache_dir, entry_api);
-    const bool json_api_success = apply_api_json(raid, game, json_api);
-    if (!json_api_success)
-        providers::delete_cached_json(m_log_tag, m_json_cache_dir, entry_api);
-
-    const auto json_embed = providers::read_json_from_cache(m_log_tag, m_json_cache_dir, entry_embed);
-    const bool json_embed_success = apply_embed_json(raid, game, json_embed);
-    if (!json_embed_success)
-        providers::delete_cached_json(m_log_tag, m_json_cache_dir, entry_embed);
-
-    return json_api_success && json_embed_success;
+	Log::debug(log_tag, LOGMSG("Creation of RetroAchievementsMetaData"));
 }
 
-void Metadata::fill_from_network(const QString& raid, model::Game& game, SearchContext& sctx) const
+bool Metadata::fill_from_cache(model::Game& game) const
 {
-    const QString api_url_str = QStringLiteral("https://api.ra.com/products/%1?expand=description,screenshots,videos").arg(raid);
-    const QString embed_url_str = QStringLiteral("https://embed.ra.com/games/ajax/filtered?mediaType=game&search=%1").arg(raid);
-    const QUrl api_url(api_url_str, QUrl::StrictMode);
-    const QUrl embed_url(embed_url_str, QUrl::StrictMode);
-    Q_ASSERT(api_url.isValid());
-    Q_ASSERT(embed_url.isValid());
-    if (Q_UNLIKELY(!api_url.isValid() || !embed_url.isValid()))
+	model::Game* const game_ptr = &game;
+    const auto json = providers::read_json_from_cache(m_log_tag, m_json_cache_dir, game_ptr->title());
+    const bool json_success = apply_json(game, json);
+    if (!json_success)
+        providers::delete_cached_json(m_log_tag, m_json_cache_dir, game_ptr->title());
+
+    return json_success;
+}
+
+void Metadata::fill_from_network(model::Game& game, SearchContext& sctx) const
+{
+	
+	//GET information from recalbox.conf
+	//TO DO
+	
+	//create url to get token
+	const QString url_str = QStringLiteral("http://retroachievements.org/dorequest.php?r=login&u=%1&p=%2").arg("bozothegeek","schwarzy");
+    
+	//
+	
+	//const QString embed_url_str = QStringLiteral("https://embed.ra.com/games/ajax/filtered?mediaType=game&search=%1").arg(raid);
+    
+	
+	const QUrl url(url_str, QUrl::StrictMode);
+	
+    //const QUrl embed_url(embed_url_str, QUrl::StrictMode);
+    
+	Q_ASSERT(url.isValid());
+    
+	//Q_ASSERT(embed_url.isValid());
+    
+	if (Q_UNLIKELY(!url.isValid()) // || !embed_url.isValid()))
         return;
 
-    // TODO: C++17
-    using JsonCallback = std::function<bool(const QString&, model::Game&, const QJsonDocument&)>;
-    const std::array<std::tuple<QUrl, QString, JsonCallback>, 2> requests {
-        std::make_tuple(api_url, m_json_api_suffix, apply_api_json),
-        std::make_tuple(embed_url, m_json_embed_suffix, apply_embed_json),
-    };
-
-    // TODO: C++17
     model::Game* const game_ptr = &game;
     QString log_tag = m_log_tag;
     QString json_cache_dir = m_json_cache_dir;
-    for (const auto& triplet : requests) {
-        const QString json_suffix = std::get<1>(triplet);
-        const JsonCallback& json_callback = std::get<2>(triplet);
-        sctx.schedule_download(std::get<0>(triplet), [log_tag, json_cache_dir, raid, game_ptr, json_suffix, json_callback](QNetworkReply* const reply){
-            if (reply->error()) {
-                Log::warning(log_tag, LOGMSG("Downloading metadata for `%1` failed: %2")
-                    .arg(game_ptr->title(), reply->errorString()));
-                return;
-            }
+    sctx.schedule_download(url, [game_ptr->title(), game_ptr, log_tag, json_cache_dir](QNetworkReply* const reply){
+        if (reply->error()) {
+            Log::warning(log_tag, LOGMSG("Downloading metadata for `%1` failed: %2")
+                .arg(game_ptr->title(), reply->errorString()));
+            return;
+        }
 
-            const QByteArray raw_data = reply->readAll();
-            const QJsonDocument json = QJsonDocument::fromJson(raw_data);
-            if (json.isNull()) {
-                Log::warning(log_tag, LOGMSG(
-                       "Failed to parse the response of the server for game '%1', "
-                       "either it's no longer available from the ra Store or the ra API has changed"
-                   ).arg(game_ptr->title()));
-                return;
-            }
+        const QByteArray raw_data = reply->readAll();
+        const QJsonDocument json = QJsonDocument::fromJson(raw_data);
+        if (json.isNull()) {
+            Log::warning(log_tag, LOGMSG(
+                   "Failed to parse the response of the server for game '%1', "
+                   "either it's no longer available from the Steam Store or the Steam API has changed"
+               ).arg(game_ptr->title()));
+            return;
+        }
 
-            const bool success = json_callback(raid, *game_ptr, json);
-            if (success) {
-                const QString json_name = raid + json_suffix;
-                providers::cache_json(log_tag, json_cache_dir, json_name, json.toJson(QJsonDocument::Compact));
-            }
-        });
-    }
+        const bool success = apply_json(*game_ptr, json);
+        if (success)
+            providers::cache_json(log_tag, json_cache_dir, game_ptr->title(), json.toJson(QJsonDocument::Compact));
+    });
 }
 
 } // namespace retroAchievements
