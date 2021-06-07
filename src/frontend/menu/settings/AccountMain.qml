@@ -109,7 +109,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Activate Retroachievement") + api.tr
-                    note: qsTr("Achievements to your favourite retro games.") + api.tr
+                    note: qsTr("Achievements to your favourites retro games.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements")
                     onCheckedChanged: {
@@ -170,7 +170,7 @@ FocusScope {
                     id: optHardcoreRetroachievementActivate
 
                     label: qsTr("Hardcore Retroachievement") + api.tr
-                    note: qsTr("Unlock Trophées without cheats and rewind. \nOnly work with Retroarch cores.") + api.tr
+                    note: qsTr("Unlock Trophies without cheats and rewind. \nOnly work with Retroarch cores.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.hardcore")
                     onCheckedChanged: {

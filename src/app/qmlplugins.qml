@@ -20,15 +20,16 @@
 // during the configuration step.
 
 
-import QtQuick 2.12
-import QtQuick.Layouts 1.12
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
 import QtQuick.Particles 2.12
 import QtQuick.Window 2.12
 
 import QtGraphicalEffects 1.0
-import QtMultimedia 5.12
+import QtMultimedia 5.15
+import QtWebEngine 1.9
 
-import QtQml.Models 2.12
+import QtQml.Models 2.15
 
 
 Item {}
