@@ -17,7 +17,7 @@
 
 import "common"
 import "gamedireditor"
-import QtQuick 2.12
+import QtQuick 2.15
 
 
 FocusScope {
