@@ -19,7 +19,7 @@ import QtQuick 2.15
 
 Rectangle {
     id: root
-    color: "#222"
+    color: "#000000"
     anchors.fill: parent
 
     property real progress: api.internal.meta.loadingProgress
@@ -31,14 +31,27 @@ Rectangle {
     Image {
         id: logo
         source: "assets/logo.png"
+        sourceSize.width: 700
         width: Math.min(parent.width, parent.height)
         fillMode: Image.PreserveAspectFit
         verticalAlignment: Image.AlignBottom
-
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.bottom: parent.verticalCenter
         anchors.bottomMargin: vpx(-45)
+    }
+
+    Image {
+        id: logopegasus
+        width: 100
+        height: 50
+        source: "assets/logopegasus.png"
+        anchors.bottomMargin: 5
+        sourceSize.width: 100
+        anchors.bottom: parent.bottom
+        fillMode: Image.PreserveAspectFit
+        verticalAlignment: Image.AlignBottom
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 
     Rectangle {
@@ -127,3 +140,9 @@ Rectangle {
         anchors.rightMargin: vpx(5)
     }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/
