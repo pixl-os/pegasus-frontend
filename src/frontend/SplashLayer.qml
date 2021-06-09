@@ -31,28 +31,40 @@ Rectangle {
     Image {
         id: logo
         source: "assets/logo.png"
-        sourceSize.width: 700
+        sourceSize.width: 800
         width: Math.min(parent.width, parent.height)
+        anchors.horizontalCenterOffset: 0
+        anchors.topMargin: 100
         fillMode: Image.PreserveAspectFit
         verticalAlignment: Image.AlignBottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.bottom: parent.verticalCenter
-        anchors.bottomMargin: vpx(-45)
     }
 
     Image {
-        id: logopegasus
+        id: logoPegasus
         width: 100
-        height: 50
+        height: 35
         source: "assets/logopegasus.png"
-        anchors.bottomMargin: 5
-        sourceSize.width: 100
+        anchors.bottomMargin: 10
         anchors.bottom: parent.bottom
         fillMode: Image.PreserveAspectFit
         verticalAlignment: Image.AlignBottom
         anchors.horizontalCenter: parent.horizontalCenter
     }
+//    Image {
+//        id: logoRecalbox
+//        width: 100
+//        height: 35
+//        source: "assets/recalbox-next.svg"
+//        anchors.bottomMargin: 10
+//        anchors.bottom: parent.bottom
+//        anchors.left: logoPegasus.right
+//        fillMode: Image.PreserveAspectFit
+//        verticalAlignment: Image.AlignBottom
+////        anchors.horizontalCenter: parent.horizontalCenter
+//    }
 
     Rectangle {
         id: progressRoot
@@ -143,6 +155,6 @@ Rectangle {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}
+    D{i:0;autoSize:true;height:1024;width:1280}
 }
 ##^##*/
