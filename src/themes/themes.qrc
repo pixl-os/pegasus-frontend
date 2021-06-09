@@ -115,96 +115,47 @@
         <file>gameOS/assets/images/keyboard/y.png</file>
         <file>gameOS/assets/images/keyboard/z.png</file>
         <file>gameOS/assets/images/logospng/3do.png</file>
-        <file>gameOS/assets/images/logospng/3ds.png</file>
-        <file>gameOS/assets/images/logospng/amiga.png</file>
         <file>gameOS/assets/images/logospng/amstradcpc.png</file>
         <file>gameOS/assets/images/logospng/apple2.png</file>
-        <file>gameOS/assets/images/logospng/arcade.png</file>
         <file>gameOS/assets/images/logospng/atari2600.png</file>
         <file>gameOS/assets/images/logospng/atari5200.png</file>
         <file>gameOS/assets/images/logospng/atari7800.png</file>
         <file>gameOS/assets/images/logospng/atari800.png</file>
-        <file>gameOS/assets/images/logospng/atarijaguarcd.png</file>
         <file>gameOS/assets/images/logospng/atarist.png</file>
         <file>gameOS/assets/images/logospng/atomiswave.png</file>
         <file>gameOS/assets/images/logospng/c64.png</file>
-        <file>gameOS/assets/images/logospng/cave-alt.png</file>
-        <file>gameOS/assets/images/logospng/cave.png</file>
-        <file>gameOS/assets/images/logospng/coco.png</file>
         <file>gameOS/assets/images/logospng/colecovision.png</file>
-        <file>gameOS/assets/images/logospng/cps1-alt.png</file>
-        <file>gameOS/assets/images/logospng/cps1.png</file>
-        <file>gameOS/assets/images/logospng/cps2-alt.png</file>
-        <file>gameOS/assets/images/logospng/cps2.png</file>
-        <file>gameOS/assets/images/logospng/cps3-alt.png</file>
-        <file>gameOS/assets/images/logospng/cps3.png</file>
         <file>gameOS/assets/images/logospng/daphne.png</file>
-        <file>gameOS/assets/images/logospng/dragon32.png</file>
         <file>gameOS/assets/images/logospng/dreamcast.png</file>
-        <file>gameOS/assets/images/logospng/epic.png</file>
-        <file>gameOS/assets/images/logospng/fba.png</file>
         <file>gameOS/assets/images/logospng/fds.png</file>
-        <file>gameOS/assets/images/logospng/futurepinball.png</file>
         <file>gameOS/assets/images/logospng/gamegear.png</file>
         <file>gameOS/assets/images/logospng/gb.png</file>
         <file>gameOS/assets/images/logospng/gba.png</file>
         <file>gameOS/assets/images/logospng/gbc.png</file>
-        <file>gameOS/assets/images/logospng/gc.png</file>
-        <file>gameOS/assets/images/logospng/genesis.png</file>
-        <file>gameOS/assets/images/logospng/gog.png</file>
         <file>gameOS/assets/images/logospng/intellivision.png</file>
-        <file>gameOS/assets/images/logospng/kodi.png</file>
-        <file>gameOS/assets/images/logospng/love.png</file>
-        <file>gameOS/assets/images/logospng/macintosh.png</file>
         <file>gameOS/assets/images/logospng/mame.png</file>
         <file>gameOS/assets/images/logospng/mastersystem.png</file>
         <file>gameOS/assets/images/logospng/megadrive.png</file>
-        <file>gameOS/assets/images/logospng/model2.png</file>
         <file>gameOS/assets/images/logospng/model3.png</file>
-        <file>gameOS/assets/images/logospng/msx.png</file>
         <file>gameOS/assets/images/logospng/n64.png</file>
         <file>gameOS/assets/images/logospng/nds.png</file>
-        <file>gameOS/assets/images/logospng/nec turbografx-cd.png</file>
         <file>gameOS/assets/images/logospng/neogeo.png</file>
         <file>gameOS/assets/images/logospng/neogeocd.png</file>
         <file>gameOS/assets/images/logospng/nes.png</file>
         <file>gameOS/assets/images/logospng/ngp.png</file>
         <file>gameOS/assets/images/logospng/ngpc.png</file>
-        <file>gameOS/assets/images/logospng/odyssey2.png</file>
-        <file>gameOS/assets/images/logospng/pc.png</file>
         <file>gameOS/assets/images/logospng/pcengine.png</file>
-        <file>gameOS/assets/images/logospng/pegasus.png</file>
-        <file>gameOS/assets/images/logospng/ports.png</file>
-        <file>gameOS/assets/images/logospng/ps2.png</file>
-        <file>gameOS/assets/images/logospng/ps3.png</file>
         <file>gameOS/assets/images/logospng/psp.png</file>
         <file>gameOS/assets/images/logospng/psx.png</file>
-        <file>gameOS/assets/images/logospng/residualvm.png</file>
-        <file>gameOS/assets/images/logospng/retropie.png</file>
         <file>gameOS/assets/images/logospng/saturn.png</file>
-        <file>gameOS/assets/images/logospng/scummvm-alt.png</file>
         <file>gameOS/assets/images/logospng/scummvm.png</file>
         <file>gameOS/assets/images/logospng/sega32x.png</file>
         <file>gameOS/assets/images/logospng/segacd.png</file>
         <file>gameOS/assets/images/logospng/snes.png</file>
-        <file>gameOS/assets/images/logospng/steam.png</file>
-        <file>gameOS/assets/images/logospng/switch-alt.png</file>
-        <file>gameOS/assets/images/logospng/switch.png</file>
-        <file>gameOS/assets/images/logospng/tg16.png</file>
-        <file>gameOS/assets/images/logospng/turbografx16.png</file>
-        <file>gameOS/assets/images/logospng/turbografxcd.png</file>
         <file>gameOS/assets/images/logospng/vectrex.png</file>
-        <file>gameOS/assets/images/logospng/videopac.png</file>
         <file>gameOS/assets/images/logospng/virtualboy.png</file>
-        <file>gameOS/assets/images/logospng/vita.png</file>
         <file>gameOS/assets/images/logospng/wii.png</file>
-        <file>gameOS/assets/images/logospng/wiiu.png</file>
-        <file>gameOS/assets/images/logospng/wiiware.png</file>
-        <file>gameOS/assets/images/logospng/windows.png</file>
         <file>gameOS/assets/images/logospng/x68000.png</file>
-        <file>gameOS/assets/images/logospng/xbox.png</file>
-        <file>gameOS/assets/images/logospng/xbox360.png</file>
-        <file>gameOS/assets/images/logospng/zmachine.png</file>
         <file>gameOS/assets/images/logospng/zxspectrum.png</file>
         <file>gameOS/assets/images/background.jpg</file>
         <file>gameOS/assets/images/borderimage.gif</file>
@@ -278,5 +229,432 @@
         <file>gameOS/assets/images/logospng/wswan.png</file>
         <file>gameOS/assets/images/logospng/wswanc.png</file>
         <file>gameOS/CHANGELOG.md</file>
+        <file>gameOS/assets/images/logospng/3do_black.png</file>
+        <file>gameOS/assets/images/logospng/3do_carbon.png</file>
+        <file>gameOS/assets/images/logospng/3do_color.png</file>
+        <file>gameOS/assets/images/logospng/3do_steel.png</file>
+        <file>gameOS/assets/images/logospng/64dd.png</file>
+        <file>gameOS/assets/images/logospng/64dd_black.png</file>
+        <file>gameOS/assets/images/logospng/64dd_carbon.png</file>
+        <file>gameOS/assets/images/logospng/64dd_color.png</file>
+        <file>gameOS/assets/images/logospng/64dd_steel.png</file>
+        <file>gameOS/assets/images/logospng/amiga1200.png</file>
+        <file>gameOS/assets/images/logospng/amiga1200_black.png</file>
+        <file>gameOS/assets/images/logospng/amiga1200_carbon.png</file>
+        <file>gameOS/assets/images/logospng/amiga1200_color.png</file>
+        <file>gameOS/assets/images/logospng/amiga1200_steel.png</file>
+        <file>gameOS/assets/images/logospng/amiga600.png</file>
+        <file>gameOS/assets/images/logospng/amiga600_black.png</file>
+        <file>gameOS/assets/images/logospng/amiga600_carbon.png</file>
+        <file>gameOS/assets/images/logospng/amiga600_color.png</file>
+        <file>gameOS/assets/images/logospng/amiga600_steel.png</file>
+        <file>gameOS/assets/images/logospng/amigacd32.png</file>
+        <file>gameOS/assets/images/logospng/amigacd32_black.png</file>
+        <file>gameOS/assets/images/logospng/amigacd32_carbon.png</file>
+        <file>gameOS/assets/images/logospng/amigacd32_color.png</file>
+        <file>gameOS/assets/images/logospng/amigacd32_steel.png</file>
+        <file>gameOS/assets/images/logospng/amigacdtv.png</file>
+        <file>gameOS/assets/images/logospng/amigacdtv_black.png</file>
+        <file>gameOS/assets/images/logospng/amigacdtv_carbon.png</file>
+        <file>gameOS/assets/images/logospng/amigacdtv_color.png</file>
+        <file>gameOS/assets/images/logospng/amigacdtv_steel.png</file>
+        <file>gameOS/assets/images/logospng/amstradcpc_black.png</file>
+        <file>gameOS/assets/images/logospng/amstradcpc_carbon.png</file>
+        <file>gameOS/assets/images/logospng/amstradcpc_color.png</file>
+        <file>gameOS/assets/images/logospng/amstradcpc_steel.png</file>
+        <file>gameOS/assets/images/logospng/apple2_black.png</file>
+        <file>gameOS/assets/images/logospng/apple2_carbon.png</file>
+        <file>gameOS/assets/images/logospng/apple2_color.png</file>
+        <file>gameOS/assets/images/logospng/apple2_steel.png</file>
+        <file>gameOS/assets/images/logospng/apple2gs.png</file>
+        <file>gameOS/assets/images/logospng/apple2gs_black.png</file>
+        <file>gameOS/assets/images/logospng/apple2gs_carbon.png</file>
+        <file>gameOS/assets/images/logospng/apple2gs_color.png</file>
+        <file>gameOS/assets/images/logospng/apple2gs_steel.png</file>
+        <file>gameOS/assets/images/logospng/atari2600_black.png</file>
+        <file>gameOS/assets/images/logospng/atari2600_carbon.png</file>
+        <file>gameOS/assets/images/logospng/atari2600_color.png</file>
+        <file>gameOS/assets/images/logospng/atari2600_steel.png</file>
+        <file>gameOS/assets/images/logospng/atari5200_black.png</file>
+        <file>gameOS/assets/images/logospng/atari5200_carbon.png</file>
+        <file>gameOS/assets/images/logospng/atari5200_color.png</file>
+        <file>gameOS/assets/images/logospng/atari5200_steel.png</file>
+        <file>gameOS/assets/images/logospng/atari7800_black.png</file>
+        <file>gameOS/assets/images/logospng/atari7800_carbon.png</file>
+        <file>gameOS/assets/images/logospng/atari7800_color.png</file>
+        <file>gameOS/assets/images/logospng/atari7800_steel.png</file>
+        <file>gameOS/assets/images/logospng/atari800_black.png</file>
+        <file>gameOS/assets/images/logospng/atari800_carbon.png</file>
+        <file>gameOS/assets/images/logospng/atari800_color.png</file>
+        <file>gameOS/assets/images/logospng/atari800_steel.png</file>
+        <file>gameOS/assets/images/logospng/atarist_black.png</file>
+        <file>gameOS/assets/images/logospng/atarist_carbon.png</file>
+        <file>gameOS/assets/images/logospng/atarist_color.png</file>
+        <file>gameOS/assets/images/logospng/atarist_steel.png</file>
+        <file>gameOS/assets/images/logospng/atomiswave_black.png</file>
+        <file>gameOS/assets/images/logospng/atomiswave_carbon.png</file>
+        <file>gameOS/assets/images/logospng/atomiswave_color.png</file>
+        <file>gameOS/assets/images/logospng/atomiswave_steel.png</file>
+        <file>gameOS/assets/images/logospng/bk.png</file>
+        <file>gameOS/assets/images/logospng/bk_black.png</file>
+        <file>gameOS/assets/images/logospng/bk_carbon.png</file>
+        <file>gameOS/assets/images/logospng/bk_color.png</file>
+        <file>gameOS/assets/images/logospng/c64_black.png</file>
+        <file>gameOS/assets/images/logospng/c64_carbon.png</file>
+        <file>gameOS/assets/images/logospng/c64_color.png</file>
+        <file>gameOS/assets/images/logospng/c64_steel.png</file>
+        <file>gameOS/assets/images/logospng/channelf.png</file>
+        <file>gameOS/assets/images/logospng/channelf_black.png</file>
+        <file>gameOS/assets/images/logospng/channelf_carbon.png</file>
+        <file>gameOS/assets/images/logospng/channelf_color.png</file>
+        <file>gameOS/assets/images/logospng/channelf_steel.png</file>
+        <file>gameOS/assets/images/logospng/colecovision_black.png</file>
+        <file>gameOS/assets/images/logospng/colecovision_carbon.png</file>
+        <file>gameOS/assets/images/logospng/colecovision_color.png</file>
+        <file>gameOS/assets/images/logospng/colecovision_steel.png</file>
+        <file>gameOS/assets/images/logospng/daphne_black.png</file>
+        <file>gameOS/assets/images/logospng/daphne_carbon.png</file>
+        <file>gameOS/assets/images/logospng/daphne_color.png</file>
+        <file>gameOS/assets/images/logospng/daphne_steel.png</file>
+        <file>gameOS/assets/images/logospng/doom.png</file>
+        <file>gameOS/assets/images/logospng/doom_black.png</file>
+        <file>gameOS/assets/images/logospng/doom_color.png</file>
+        <file>gameOS/assets/images/logospng/dos.png</file>
+        <file>gameOS/assets/images/logospng/dos_black.png</file>
+        <file>gameOS/assets/images/logospng/dos_carbon.png</file>
+        <file>gameOS/assets/images/logospng/dos_color.png</file>
+        <file>gameOS/assets/images/logospng/dos_steel.png</file>
+        <file>gameOS/assets/images/logospng/dreamcast_black.png</file>
+        <file>gameOS/assets/images/logospng/dreamcast_carbon.png</file>
+        <file>gameOS/assets/images/logospng/dreamcast_color.png</file>
+        <file>gameOS/assets/images/logospng/dreamcast_steel.png</file>
+        <file>gameOS/assets/images/logospng/easyrpg.png</file>
+        <file>gameOS/assets/images/logospng/easyrpg_black.png</file>
+        <file>gameOS/assets/images/logospng/easyrpg_carbon.png</file>
+        <file>gameOS/assets/images/logospng/easyrpg_color.png</file>
+        <file>gameOS/assets/images/logospng/easyrpg_steel.png</file>
+        <file>gameOS/assets/images/logospng/fbneo_black.png</file>
+        <file>gameOS/assets/images/logospng/fbneo_color.png</file>
+        <file>gameOS/assets/images/logospng/fds_black.png</file>
+        <file>gameOS/assets/images/logospng/fds_carbon.png</file>
+        <file>gameOS/assets/images/logospng/fds_color.png</file>
+        <file>gameOS/assets/images/logospng/fds_steel.png</file>
+        <file>gameOS/assets/images/logospng/gamecube.png</file>
+        <file>gameOS/assets/images/logospng/gamecube_black.png</file>
+        <file>gameOS/assets/images/logospng/gamecube_carbon.png</file>
+        <file>gameOS/assets/images/logospng/gamecube_color.png</file>
+        <file>gameOS/assets/images/logospng/gamecube_steel.png</file>
+        <file>gameOS/assets/images/logospng/gamegear_black.png</file>
+        <file>gameOS/assets/images/logospng/gamegear_carbon.png</file>
+        <file>gameOS/assets/images/logospng/gamegear_color.png</file>
+        <file>gameOS/assets/images/logospng/gamegear_steel.png</file>
+        <file>gameOS/assets/images/logospng/gb_black.png</file>
+        <file>gameOS/assets/images/logospng/gb_carbon.png</file>
+        <file>gameOS/assets/images/logospng/gb_color.png</file>
+        <file>gameOS/assets/images/logospng/gb_steel.png</file>
+        <file>gameOS/assets/images/logospng/gba_black.png</file>
+        <file>gameOS/assets/images/logospng/gba_carbon.png</file>
+        <file>gameOS/assets/images/logospng/gba_color.png</file>
+        <file>gameOS/assets/images/logospng/gba_steel.png</file>
+        <file>gameOS/assets/images/logospng/gbc_black.png</file>
+        <file>gameOS/assets/images/logospng/gbc_carbon.png</file>
+        <file>gameOS/assets/images/logospng/gbc_color.png</file>
+        <file>gameOS/assets/images/logospng/gbc_steel.png</file>
+        <file>gameOS/assets/images/logospng/gw_black.png</file>
+        <file>gameOS/assets/images/logospng/gw_carbon.png</file>
+        <file>gameOS/assets/images/logospng/gw_color.png</file>
+        <file>gameOS/assets/images/logospng/gw_steel.png</file>
+        <file>gameOS/assets/images/logospng/gx4000.png</file>
+        <file>gameOS/assets/images/logospng/gx4000_black.png</file>
+        <file>gameOS/assets/images/logospng/gx4000_carbon.png</file>
+        <file>gameOS/assets/images/logospng/gx4000_color.png</file>
+        <file>gameOS/assets/images/logospng/gx4000_steel.png</file>
+        <file>gameOS/assets/images/logospng/intellivision_black.png</file>
+        <file>gameOS/assets/images/logospng/intellivision_carbon.png</file>
+        <file>gameOS/assets/images/logospng/intellivision_color.png</file>
+        <file>gameOS/assets/images/logospng/intellivision_steel.png</file>
+        <file>gameOS/assets/images/logospng/jaguar_black.png</file>
+        <file>gameOS/assets/images/logospng/jaguar_carbon.png</file>
+        <file>gameOS/assets/images/logospng/jaguar_color.png</file>
+        <file>gameOS/assets/images/logospng/jaguar_steel.png</file>
+        <file>gameOS/assets/images/logospng/lutro.png</file>
+        <file>gameOS/assets/images/logospng/lutro_black.png</file>
+        <file>gameOS/assets/images/logospng/lutro_carbon.png</file>
+        <file>gameOS/assets/images/logospng/lutro_color.png</file>
+        <file>gameOS/assets/images/logospng/lutro_steel.png</file>
+        <file>gameOS/assets/images/logospng/lynx_black.png</file>
+        <file>gameOS/assets/images/logospng/lynx_carbon.png</file>
+        <file>gameOS/assets/images/logospng/lynx_color.png</file>
+        <file>gameOS/assets/images/logospng/lynx_steel.png</file>
+        <file>gameOS/assets/images/logospng/mame_black.png</file>
+        <file>gameOS/assets/images/logospng/mame_carbon.png</file>
+        <file>gameOS/assets/images/logospng/mame_color.png</file>
+        <file>gameOS/assets/images/logospng/mame_steel.png</file>
+        <file>gameOS/assets/images/logospng/mastersystem_black.png</file>
+        <file>gameOS/assets/images/logospng/mastersystem_carbon.png</file>
+        <file>gameOS/assets/images/logospng/mastersystem_color.png</file>
+        <file>gameOS/assets/images/logospng/mastersystem_steel.png</file>
+        <file>gameOS/assets/images/logospng/megadrive_black.png</file>
+        <file>gameOS/assets/images/logospng/megadrive_carbon.png</file>
+        <file>gameOS/assets/images/logospng/megadrive_color.png</file>
+        <file>gameOS/assets/images/logospng/megadrive_steel.png</file>
+        <file>gameOS/assets/images/logospng/model3_black.png</file>
+        <file>gameOS/assets/images/logospng/model3_carbon.png</file>
+        <file>gameOS/assets/images/logospng/model3_color.png</file>
+        <file>gameOS/assets/images/logospng/model3_steel.png</file>
+        <file>gameOS/assets/images/logospng/moonlight.png</file>
+        <file>gameOS/assets/images/logospng/moonlight_black.png</file>
+        <file>gameOS/assets/images/logospng/moonlight_color.png</file>
+        <file>gameOS/assets/images/logospng/msx1.png</file>
+        <file>gameOS/assets/images/logospng/msx1_black.png</file>
+        <file>gameOS/assets/images/logospng/msx1_carbon.png</file>
+        <file>gameOS/assets/images/logospng/msx1_color.png</file>
+        <file>gameOS/assets/images/logospng/msx1_steel.png</file>
+        <file>gameOS/assets/images/logospng/msx2.png</file>
+        <file>gameOS/assets/images/logospng/msx2_black.png</file>
+        <file>gameOS/assets/images/logospng/msx2_carbon.png</file>
+        <file>gameOS/assets/images/logospng/msx2_color.png</file>
+        <file>gameOS/assets/images/logospng/msx2_steel.png</file>
+        <file>gameOS/assets/images/logospng/msxturbor.png</file>
+        <file>gameOS/assets/images/logospng/msxturbor_black.png</file>
+        <file>gameOS/assets/images/logospng/msxturbor_carbon.png</file>
+        <file>gameOS/assets/images/logospng/msxturbor_color.png</file>
+        <file>gameOS/assets/images/logospng/msxturbor_steel.png</file>
+        <file>gameOS/assets/images/logospng/multivision.png</file>
+        <file>gameOS/assets/images/logospng/multivision_black.png</file>
+        <file>gameOS/assets/images/logospng/multivision_color.png</file>
+        <file>gameOS/assets/images/logospng/n64_black.png</file>
+        <file>gameOS/assets/images/logospng/n64_carbon.png</file>
+        <file>gameOS/assets/images/logospng/n64_color.png</file>
+        <file>gameOS/assets/images/logospng/n64_steel.png</file>
+        <file>gameOS/assets/images/logospng/naomi.png</file>
+        <file>gameOS/assets/images/logospng/naomi_black.png</file>
+        <file>gameOS/assets/images/logospng/naomi_carbon.png</file>
+        <file>gameOS/assets/images/logospng/naomi_steel.png</file>
+        <file>gameOS/assets/images/logospng/naomigd.png</file>
+        <file>gameOS/assets/images/logospng/naomigd_black.png</file>
+        <file>gameOS/assets/images/logospng/naomigd_carbon.png</file>
+        <file>gameOS/assets/images/logospng/naomigd_color.png</file>
+        <file>gameOS/assets/images/logospng/naomigd_steel.png</file>
+        <file>gameOS/assets/images/logospng/nds_black.png</file>
+        <file>gameOS/assets/images/logospng/nds_carbon.png</file>
+        <file>gameOS/assets/images/logospng/nds_color.png</file>
+        <file>gameOS/assets/images/logospng/nds_steel.png</file>
+        <file>gameOS/assets/images/logospng/neogeo_black.png</file>
+        <file>gameOS/assets/images/logospng/neogeo_carbon.png</file>
+        <file>gameOS/assets/images/logospng/neogeo_color.png</file>
+        <file>gameOS/assets/images/logospng/neogeo_steel.png</file>
+        <file>gameOS/assets/images/logospng/neogeocd_black.png</file>
+        <file>gameOS/assets/images/logospng/neogeocd_carbon.png</file>
+        <file>gameOS/assets/images/logospng/neogeocd_color.png</file>
+        <file>gameOS/assets/images/logospng/neogeocd_steel.png</file>
+        <file>gameOS/assets/images/logospng/nes_black.png</file>
+        <file>gameOS/assets/images/logospng/nes_carbon.png</file>
+        <file>gameOS/assets/images/logospng/nes_color.png</file>
+        <file>gameOS/assets/images/logospng/nes_steel.png</file>
+        <file>gameOS/assets/images/logospng/ngp_black.png</file>
+        <file>gameOS/assets/images/logospng/ngp_carbon.png</file>
+        <file>gameOS/assets/images/logospng/ngp_color.png</file>
+        <file>gameOS/assets/images/logospng/ngp_steel.png</file>
+        <file>gameOS/assets/images/logospng/ngpc_black.png</file>
+        <file>gameOS/assets/images/logospng/ngpc_carbon.png</file>
+        <file>gameOS/assets/images/logospng/ngpc_color.png</file>
+        <file>gameOS/assets/images/logospng/ngpc_steel.png</file>
+        <file>gameOS/assets/images/logospng/o2em.png</file>
+        <file>gameOS/assets/images/logospng/o2em_black.png</file>
+        <file>gameOS/assets/images/logospng/o2em_carbon.png</file>
+        <file>gameOS/assets/images/logospng/o2em_color.png</file>
+        <file>gameOS/assets/images/logospng/o2em_steel.png</file>
+        <file>gameOS/assets/images/logospng/openbor.png</file>
+        <file>gameOS/assets/images/logospng/openbor_black.png</file>
+        <file>gameOS/assets/images/logospng/openbor_carbon.png</file>
+        <file>gameOS/assets/images/logospng/openbor_color.png</file>
+        <file>gameOS/assets/images/logospng/openbor_steel.png</file>
+        <file>gameOS/assets/images/logospng/oricatmos.png</file>
+        <file>gameOS/assets/images/logospng/oricatmos_black.png</file>
+        <file>gameOS/assets/images/logospng/oricatmos_carbon.png</file>
+        <file>gameOS/assets/images/logospng/oricatmos_color.png</file>
+        <file>gameOS/assets/images/logospng/oricatmos_steel.png</file>
+        <file>gameOS/assets/images/logospng/palm.png</file>
+        <file>gameOS/assets/images/logospng/palm_black.png</file>
+        <file>gameOS/assets/images/logospng/palm_carbon.png</file>
+        <file>gameOS/assets/images/logospng/palm_color.png</file>
+        <file>gameOS/assets/images/logospng/palm_steel.png</file>
+        <file>gameOS/assets/images/logospng/pc88.png</file>
+        <file>gameOS/assets/images/logospng/pc88_black.png</file>
+        <file>gameOS/assets/images/logospng/pc88_carbon.png</file>
+        <file>gameOS/assets/images/logospng/pc88_color.png</file>
+        <file>gameOS/assets/images/logospng/pc88_steel.png</file>
+        <file>gameOS/assets/images/logospng/pc98.png</file>
+        <file>gameOS/assets/images/logospng/pc98_black.png</file>
+        <file>gameOS/assets/images/logospng/pc98_carbon.png</file>
+        <file>gameOS/assets/images/logospng/pc98_color.png</file>
+        <file>gameOS/assets/images/logospng/pc98_steel.png</file>
+        <file>gameOS/assets/images/logospng/pcengine_black.png</file>
+        <file>gameOS/assets/images/logospng/pcengine_carbon.png</file>
+        <file>gameOS/assets/images/logospng/pcengine_color.png</file>
+        <file>gameOS/assets/images/logospng/pcengine_steel.png</file>
+        <file>gameOS/assets/images/logospng/pcenginecd.png</file>
+        <file>gameOS/assets/images/logospng/pcenginecd_black.png</file>
+        <file>gameOS/assets/images/logospng/pcenginecd_carbon.png</file>
+        <file>gameOS/assets/images/logospng/pcenginecd_color.png</file>
+        <file>gameOS/assets/images/logospng/pcenginecd_steel.png</file>
+        <file>gameOS/assets/images/logospng/pcfx_black.png</file>
+        <file>gameOS/assets/images/logospng/pcfx_carbon.png</file>
+        <file>gameOS/assets/images/logospng/pcfx_color.png</file>
+        <file>gameOS/assets/images/logospng/pcfx_steel.png</file>
+        <file>gameOS/assets/images/logospng/pcv2.png</file>
+        <file>gameOS/assets/images/logospng/pcv2_black.png</file>
+        <file>gameOS/assets/images/logospng/pcv2_carbon.png</file>
+        <file>gameOS/assets/images/logospng/pcv2_color.png</file>
+        <file>gameOS/assets/images/logospng/pcv2_steel.png</file>
+        <file>gameOS/assets/images/logospng/pico8.png</file>
+        <file>gameOS/assets/images/logospng/pico8_black.png</file>
+        <file>gameOS/assets/images/logospng/pico8_carbon.png</file>
+        <file>gameOS/assets/images/logospng/pico8_color.png</file>
+        <file>gameOS/assets/images/logospng/pico8_steel.png</file>
+        <file>gameOS/assets/images/logospng/pokemini.png</file>
+        <file>gameOS/assets/images/logospng/pokemini_black.png</file>
+        <file>gameOS/assets/images/logospng/pokemini_carbon.png</file>
+        <file>gameOS/assets/images/logospng/pokemini_color.png</file>
+        <file>gameOS/assets/images/logospng/pokemini_steel.png</file>
+        <file>gameOS/assets/images/logospng/psp_black.png</file>
+        <file>gameOS/assets/images/logospng/psp_carbon.png</file>
+        <file>gameOS/assets/images/logospng/psp_color.png</file>
+        <file>gameOS/assets/images/logospng/psp_steel.png</file>
+        <file>gameOS/assets/images/logospng/psx_black.png</file>
+        <file>gameOS/assets/images/logospng/psx_carbon.png</file>
+        <file>gameOS/assets/images/logospng/psx_color.png</file>
+        <file>gameOS/assets/images/logospng/psx_steel.png</file>
+        <file>gameOS/assets/images/logospng/quake.png</file>
+        <file>gameOS/assets/images/logospng/quake_black.png</file>
+        <file>gameOS/assets/images/logospng/quake_color.png</file>
+        <file>gameOS/assets/images/logospng/samcoupe.png</file>
+        <file>gameOS/assets/images/logospng/samcoupe_black.png</file>
+        <file>gameOS/assets/images/logospng/samcoupe_carbon.png</file>
+        <file>gameOS/assets/images/logospng/samcoupe_color.png</file>
+        <file>gameOS/assets/images/logospng/samcoupe_steel.png</file>
+        <file>gameOS/assets/images/logospng/satellaview.png</file>
+        <file>gameOS/assets/images/logospng/satellaview_black.png</file>
+        <file>gameOS/assets/images/logospng/satellaview_carbon.png</file>
+        <file>gameOS/assets/images/logospng/satellaview_color.png</file>
+        <file>gameOS/assets/images/logospng/satellaview_steel.png</file>
+        <file>gameOS/assets/images/logospng/saturn_black.png</file>
+        <file>gameOS/assets/images/logospng/saturn_carbon.png</file>
+        <file>gameOS/assets/images/logospng/saturn_color.png</file>
+        <file>gameOS/assets/images/logospng/saturn_steel.png</file>
+        <file>gameOS/assets/images/logospng/scummvm_black.png</file>
+        <file>gameOS/assets/images/logospng/scummvm_carbon.png</file>
+        <file>gameOS/assets/images/logospng/scummvm_color.png</file>
+        <file>gameOS/assets/images/logospng/scummvm_steel.png</file>
+        <file>gameOS/assets/images/logospng/scv.png</file>
+        <file>gameOS/assets/images/logospng/scv_black.png</file>
+        <file>gameOS/assets/images/logospng/scv_carbon.png</file>
+        <file>gameOS/assets/images/logospng/scv_color.png</file>
+        <file>gameOS/assets/images/logospng/scv_steel.png</file>
+        <file>gameOS/assets/images/logospng/sega32x_black.png</file>
+        <file>gameOS/assets/images/logospng/sega32x_carbon.png</file>
+        <file>gameOS/assets/images/logospng/sega32x_color.png</file>
+        <file>gameOS/assets/images/logospng/sega32x_steel.png</file>
+        <file>gameOS/assets/images/logospng/segacd_black.png</file>
+        <file>gameOS/assets/images/logospng/segacd_carbon.png</file>
+        <file>gameOS/assets/images/logospng/segacd_color.png</file>
+        <file>gameOS/assets/images/logospng/segacd_steel.png</file>
+        <file>gameOS/assets/images/logospng/sg1000_black.png</file>
+        <file>gameOS/assets/images/logospng/sg1000_carbon.png</file>
+        <file>gameOS/assets/images/logospng/sg1000_color.png</file>
+        <file>gameOS/assets/images/logospng/sg1000_steel.png</file>
+        <file>gameOS/assets/images/logospng/snes_black.png</file>
+        <file>gameOS/assets/images/logospng/snes_carbon.png</file>
+        <file>gameOS/assets/images/logospng/snes_color.png</file>
+        <file>gameOS/assets/images/logospng/snes_steel.png</file>
+        <file>gameOS/assets/images/logospng/solarus.png</file>
+        <file>gameOS/assets/images/logospng/solarus_black.png</file>
+        <file>gameOS/assets/images/logospng/solarus_carbon.png</file>
+        <file>gameOS/assets/images/logospng/solarus_color.png</file>
+        <file>gameOS/assets/images/logospng/solarus_steel.png</file>
+        <file>gameOS/assets/images/logospng/spectravideo.png</file>
+        <file>gameOS/assets/images/logospng/spectravideo_black.png</file>
+        <file>gameOS/assets/images/logospng/spectravideo_carbon.png</file>
+        <file>gameOS/assets/images/logospng/spectravideo_color.png</file>
+        <file>gameOS/assets/images/logospng/spectravideo_steel.png</file>
+        <file>gameOS/assets/images/logospng/sufami.png</file>
+        <file>gameOS/assets/images/logospng/sufami_black.png</file>
+        <file>gameOS/assets/images/logospng/sufami_carbon.png</file>
+        <file>gameOS/assets/images/logospng/sufami_color.png</file>
+        <file>gameOS/assets/images/logospng/sufami_steel.png</file>
+        <file>gameOS/assets/images/logospng/supergrafx.png</file>
+        <file>gameOS/assets/images/logospng/supergrafx_black.png</file>
+        <file>gameOS/assets/images/logospng/supergrafx_carbon.png</file>
+        <file>gameOS/assets/images/logospng/supergrafx_color.png</file>
+        <file>gameOS/assets/images/logospng/supergrafx_steel.png</file>
+        <file>gameOS/assets/images/logospng/supervision.png</file>
+        <file>gameOS/assets/images/logospng/supervision_black.png</file>
+        <file>gameOS/assets/images/logospng/supervision_carbon.png</file>
+        <file>gameOS/assets/images/logospng/supervision_color.png</file>
+        <file>gameOS/assets/images/logospng/supervision_steel.png</file>
+        <file>gameOS/assets/images/logospng/thomson.png</file>
+        <file>gameOS/assets/images/logospng/thomson_black.png</file>
+        <file>gameOS/assets/images/logospng/thomson_carbon.png</file>
+        <file>gameOS/assets/images/logospng/thomson_color.png</file>
+        <file>gameOS/assets/images/logospng/thomson_steel.png</file>
+        <file>gameOS/assets/images/logospng/tic80.png</file>
+        <file>gameOS/assets/images/logospng/tic80_black.png</file>
+        <file>gameOS/assets/images/logospng/tic80_carbon.png</file>
+        <file>gameOS/assets/images/logospng/tic80_color.png</file>
+        <file>gameOS/assets/images/logospng/tic80_steel.png</file>
+        <file>gameOS/assets/images/logospng/uzebox.png</file>
+        <file>gameOS/assets/images/logospng/uzebox_black.png</file>
+        <file>gameOS/assets/images/logospng/uzebox_carbon.png</file>
+        <file>gameOS/assets/images/logospng/uzebox_color.png</file>
+        <file>gameOS/assets/images/logospng/uzebox_steel.png</file>
+        <file>gameOS/assets/images/logospng/vectrex_black.png</file>
+        <file>gameOS/assets/images/logospng/vectrex_carbon.png</file>
+        <file>gameOS/assets/images/logospng/vectrex_color.png</file>
+        <file>gameOS/assets/images/logospng/vectrex_steel.png</file>
+        <file>gameOS/assets/images/logospng/vic20.png</file>
+        <file>gameOS/assets/images/logospng/vic20_black.png</file>
+        <file>gameOS/assets/images/logospng/vic20_carbon.png</file>
+        <file>gameOS/assets/images/logospng/vic20_color.png</file>
+        <file>gameOS/assets/images/logospng/vic20_steel.png</file>
+        <file>gameOS/assets/images/logospng/videopacplus.png</file>
+        <file>gameOS/assets/images/logospng/videopacplus_black.png</file>
+        <file>gameOS/assets/images/logospng/videopacplus_carbon.png</file>
+        <file>gameOS/assets/images/logospng/videopacplus_color.png</file>
+        <file>gameOS/assets/images/logospng/videopacplus_steel.png</file>
+        <file>gameOS/assets/images/logospng/virtualboy_black.png</file>
+        <file>gameOS/assets/images/logospng/virtualboy_carbon.png</file>
+        <file>gameOS/assets/images/logospng/virtualboy_color.png</file>
+        <file>gameOS/assets/images/logospng/virtualboy_steel.png</file>
+        <file>gameOS/assets/images/logospng/wii_black.png</file>
+        <file>gameOS/assets/images/logospng/wii_carbon.png</file>
+        <file>gameOS/assets/images/logospng/wii_color.png</file>
+        <file>gameOS/assets/images/logospng/wii_steel.png</file>
+        <file>gameOS/assets/images/logospng/wswan_black.png</file>
+        <file>gameOS/assets/images/logospng/wswan_carbon.png</file>
+        <file>gameOS/assets/images/logospng/wswan_color.png</file>
+        <file>gameOS/assets/images/logospng/wswan_steel.png</file>
+        <file>gameOS/assets/images/logospng/wswanc_black.png</file>
+        <file>gameOS/assets/images/logospng/wswanc_carbon.png</file>
+        <file>gameOS/assets/images/logospng/wswanc_color.png</file>
+        <file>gameOS/assets/images/logospng/wswanc_steel.png</file>
+        <file>gameOS/assets/images/logospng/x1.png</file>
+        <file>gameOS/assets/images/logospng/x1_black.png</file>
+        <file>gameOS/assets/images/logospng/x1_carbon.png</file>
+        <file>gameOS/assets/images/logospng/x1_color.png</file>
+        <file>gameOS/assets/images/logospng/x1_steel.png</file>
+        <file>gameOS/assets/images/logospng/x68000_black.png</file>
+        <file>gameOS/assets/images/logospng/x68000_carbon.png</file>
+        <file>gameOS/assets/images/logospng/x68000_color.png</file>
+        <file>gameOS/assets/images/logospng/x68000_steel.png</file>
+        <file>gameOS/assets/images/logospng/zx81.png</file>
+        <file>gameOS/assets/images/logospng/zx81_black.png</file>
+        <file>gameOS/assets/images/logospng/zx81_carbon.png</file>
+        <file>gameOS/assets/images/logospng/zx81_color.png</file>
+        <file>gameOS/assets/images/logospng/zx81_steel.png</file>
+        <file>gameOS/assets/images/logospng/zxspectrum_black.png</file>
+        <file>gameOS/assets/images/logospng/zxspectrum_carbon.png</file>
+        <file>gameOS/assets/images/logospng/zxspectrum_color.png</file>
+        <file>gameOS/assets/images/logospng/zxspectrum_steel.png</file>
     </qresource>
 </RCC>
