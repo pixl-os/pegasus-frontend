@@ -74,7 +74,7 @@ Rectangle {
         width: logo.width * 0.94
         height: vpx(30)
         radius: vpx(10)
-        color: "#181818"
+        color: "#000000"
 
         anchors.top: logo.bottom
         anchors.topMargin: height * 1.0
@@ -136,21 +136,21 @@ Rectangle {
         }
     }
 
-    Text {
-        id: gameCounter
-        visible: showDataProgressText
+//    Text {
+//        id: gameCounter
+//        visible: showDataProgressText
 
-        text: api.internal.meta.loadingStage
-        color: "#999"
-        font.pixelSize: vpx(16)
-        font.family: global.fonts.sans
-        font.italic: true
+//        text: api.internal.meta.loadingStage
+//        color: "#999"
+//        font.pixelSize: vpx(16)
+//        font.family: global.fonts.sans
+//        font.italic: true
 
-        anchors.top: progressRoot.bottom
-        anchors.topMargin: vpx(8)
-        anchors.right: progressRoot.right
-        anchors.rightMargin: vpx(5)
-    }
+//        anchors.top: progressRoot.bottom
+//        anchors.topMargin: vpx(8)
+//        anchors.right: progressRoot.right
+//        anchors.rightMargin: vpx(5)
+//    }
 }
 
 /*##^##
