@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2021-06-10
+- GameOs:
+	- bump all qt5 module on lastest version
+	- add logo sets systems on : white, black, color, steel, carbon
+	
+- add missing logo in theme.qrc
+
 ## [recalbox-integration] - 2021-06-04
 - add missing description
 - add menu selection for ps3 driver

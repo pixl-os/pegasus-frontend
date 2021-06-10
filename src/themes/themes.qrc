@@ -656,5 +656,15 @@
         <file>gameOS/assets/images/logospng/zxspectrum_carbon.png</file>
         <file>gameOS/assets/images/logospng/zxspectrum_color.png</file>
         <file>gameOS/assets/images/logospng/zxspectrum_steel.png</file>
+        <file>gameOS/assets/images/logospng/3ds.png</file>
+        <file>gameOS/assets/images/logospng/3ds_black.png</file>
+        <file>gameOS/assets/images/logospng/3ds_carbon.png</file>
+        <file>gameOS/assets/images/logospng/3ds_color.png</file>
+        <file>gameOS/assets/images/logospng/3ds_steel.png</file>
+        <file>gameOS/assets/images/logospng/ps2.png</file>
+        <file>gameOS/assets/images/logospng/ps2_black.png</file>
+        <file>gameOS/assets/images/logospng/ps2_carbon.png</file>
+        <file>gameOS/assets/images/logospng/ps2_color.png</file>
+        <file>gameOS/assets/images/logospng/ps2_steel.png</file>
     </qresource>
 </RCC>
