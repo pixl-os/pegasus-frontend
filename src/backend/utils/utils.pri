@@ -61,7 +61,22 @@ HEADERS += \
     $$PWD/storage/Queue.h \
     $$PWD/storage/rHashMap.h \
     $$PWD/storage/Stack.h \
-    $$PWD/storage/Set.h
+    $$PWD/storage/Set.h \
+	$$PWD/rcheevos/include/rc_api_request.h \
+	$$PWD/rcheevos/include/rc_api_runtime.h \
+	$$PWD/rcheevos/include/rc_api_user.h \
+	$$PWD/rcheevos/include/rc_consoles.h \
+	$$PWD/rcheevos/include/rc_error.h \
+	$$PWD/rcheevos/include/rc_hash.h \
+	$$PWD/rcheevos/include/rc_runtime.h \
+	$$PWD/rcheevos/include/rc_runtime_types.h \
+	$$PWD/rcheevos/include/rc_url.h \
+	$$PWD/rcheevos/include/rcheevos.h \
+	$$PWD/rcheevos/src/rapi/rc_api_common.h \
+	$$PWD/rcheevos/src/rapi/rc_api_runtime.h \
+	$$PWD/rcheevos/src/rcheevos/rc_compat.h \
+	$$PWD/rcheevos/src/rcheevos/rc_internal.h \
+	$$PWD/rcheevos/src/rhash/md5.h
     
 SOURCES += \
     $$PWD/CommandTokenizer.cpp \
@@ -100,7 +115,27 @@ SOURCES += \
     $$PWD/os/system/Mutex.cpp \
     $$PWD/os/system/ProcessTree.cpp \
     $$PWD/os/system/Signal.cpp \
-    $$PWD/os/system/Thread.cpp
+    $$PWD/os/system/Thread.cpp \
+	$$PWD/rcheevos/src/rapi/rc_api_common.c \
+	$$PWD/rcheevos/src/rapi/rc_api_runtime.c \
+	$$PWD/rcheevos/src/rcheevos/alloc.c \
+	$$PWD/rcheevos/src/rcheevos/compat.c \
+	$$PWD/rcheevos/src/rcheevos/condition.c \
+	$$PWD/rcheevos/src/rcheevos/condset.c \
+	$$PWD/rcheevos/src/rcheevos/consoleinfo.c \
+	$$PWD/rcheevos/src/rcheevos/format.c \
+	$$PWD/rcheevos/src/rcheevos/lboard.c \
+	$$PWD/rcheevos/src/rcheevos/memref.c \
+	$$PWD/rcheevos/src/rcheevos/operand.c \
+	$$PWD/rcheevos/src/rcheevos/richpresence.c \
+	$$PWD/rcheevos/src/rcheevos/runtime.c \
+	$$PWD/rcheevos/src/rcheevos/runtime_progress.c \
+	$$PWD/rcheevos/src/rcheevos/trigger.c \
+	$$PWD/rcheevos/src/rcheevos/value.c \
+	$$PWD/rcheevos/src/rhash/cdreader.c \
+	$$PWD/rcheevos/src/rhash/hash.c \
+	$$PWD/rcheevos/src/rhash/md5.c \
+	$$PWD/rcheevos/src/rurl/url.c
     
 !isEmpty(USE_SDL_GAMEPAD) {
     HEADERS += $$PWD/GamepadManagerSDL2.h
