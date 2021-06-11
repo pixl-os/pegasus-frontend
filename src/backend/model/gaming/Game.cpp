@@ -111,20 +111,20 @@ void Game::launch()
 void Game::updateRetroAchievements()
 {
 	Log::debug(LOGMSG("Game::updateRetroAchievements()"));
-	//check if recalbox.conf to know if activated
-	//TO DO
-	//Create context and activate network and check availability
-	providers::SearchContext sctx;
-    sctx.enable_network();
-    if (!sctx.has_network())
-	{
-		Log::debug(LOGMSG("updateRetroAchievements : No network available !"));
-        return;
-	}
-	//get JSON
+	
+	//Initialize Metahelper for each update and for each games for the moment
+	//TO DO: optimise to instanciate that outside games if possible ?!
 	QString log_tag = "Retroachievements";
 	const providers::retroAchievements::Metadata metahelper(log_tag);
-	metahelper.fill_from_network(*this, sctx);
+	
+	//get all from network for the moment to have last information / one function called for the moment
+	//TO DO : internal cache will be used depending of data already available and if problem of performance
+	metahelper.fill_from_network(*this);
+		
+	//emit signal to alert front-end about end of update
+	//TO DO 
+	//only if updated with good data
+	
 }
 
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)

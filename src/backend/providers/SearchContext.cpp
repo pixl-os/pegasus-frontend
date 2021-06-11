@@ -382,19 +382,20 @@ SearchContext& SearchContext::schedule_download(
 
     QNetworkReply* const reply = m_netman->get(request);
 	Log::debug(LOGMSG("emit downloadScheduled();"));
-    emit downloadScheduled();
+    //emit downloadScheduled();
 
-	connect(reply, &QNetworkReply::finished, [=]() {
+	QObject::connect(reply, &QNetworkReply::finished, [=]() {
 		if(reply->error() == QNetworkReply::NoError)
 		{
 			QByteArray response = reply->readAll();
 			// do something with the data...
-			Log::debug(LOGMSG("response = %1").arg(QString::fromStdString(response.toStdString())));
+			Log::debug(LOGMSG("response searchcontext = %1").arg(QString::fromStdString(response.toStdString())));
 		}
 		else // handle error
 		{
 	      Log::debug(LOGMSG("ERROR"));
 		}
+		//emit downloadCompleted();
 	});
 
 

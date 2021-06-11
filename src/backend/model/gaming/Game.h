@@ -43,7 +43,6 @@ struct RetroAchievement {
 		QString BadgeName;
 		int Flags;
 		bool Unlocked;
-		int GameID;
 		bool HardcoreMode;
 };		
 	
@@ -85,7 +84,7 @@ struct GameData {
     } launch_params;
 	
 	QList <RetroAchievement> retro_achievements;
-	
+	int ra_game_id = 0;
 };
 
 
@@ -119,8 +118,11 @@ public:
     GETTER(int, playTime, playstats.play_time)
     GETTER(const QDateTime&, lastPlayed, playstats.last_played)
     GETTER(bool, isFavorite, is_favorite)
+	
 	GETTER(const QList<RetroAchievement> &, retroAchievements, retro_achievements)
-    GETTER(const QString&, launchCmd, launch_params.launch_cmd)
+	GETTER(int, RaGameID, ra_game_id)
+    
+	GETTER(const QString&, launchCmd, launch_params.launch_cmd)
     GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
     GETTER(const QString&, launchCmdBasedir, launch_params.relative_basedir)
     GETTER(const QString&, systemShortName, launch_params.system_shortname)
@@ -148,6 +150,8 @@ public:
     SETTER(QString, SystemShortname, launch_params.system_shortname)
     SETTER(QString, EmulatorName, launch_params.emulator_name)
     SETTER(QString, EmulatorCore, launch_params.emulator_core)
+
+	SETTER(int, RaGameID, ra_game_id)
 
     Game& setFavorite(bool val);
 #undef SETTER
@@ -185,6 +189,8 @@ public:
     Q_PROPERTY(int playTime READ playTime NOTIFY playStatsChanged)
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
+
+	Q_PROPERTY(int RaGameID READ RaGameID CONSTANT)
 
     Q_PROPERTY(QVariantMap extra READ extraMap CONSTANT)
     const QVariantMap& extraMap() const { return m_extra; }

@@ -9,7 +9,6 @@
 #include <QString>
 
 namespace model { class Game; }
-namespace providers { class SearchContext; }
 
 namespace providers {
 namespace retroAchievements {
@@ -17,9 +16,8 @@ namespace retroAchievements {
 class Metadata {
 public:
     explicit Metadata(QString);
-	bool fill_from_cache(model::Game&) const;
-    void fill_from_network(model::Game&, SearchContext&) const;
 
+    void fill_from_network(model::Game&) const;
     const QString& log_tag() const { return m_log_tag; }
 
 private:
