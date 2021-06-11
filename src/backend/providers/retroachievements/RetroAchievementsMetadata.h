@@ -17,8 +17,7 @@ namespace retroAchievements {
 class Metadata {
 public:
     explicit Metadata(QString);
-
-    bool fill_from_cache(const QString&, model::Game&) const;
+	bool fill_from_cache(model::Game&) const;
     void fill_from_network(model::Game&, SearchContext&) const;
 
     const QString& log_tag() const { return m_log_tag; }
@@ -26,7 +25,6 @@ public:
 private:
     const QString m_log_tag;
     const QString m_json_cache_dir;
-
 };
 } // namespace retroAchievements
 } // namespace providers

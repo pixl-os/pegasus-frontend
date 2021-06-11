@@ -381,15 +381,34 @@ SearchContext& SearchContext::schedule_download(
 #endif
 
     QNetworkReply* const reply = m_netman->get(request);
+	Log::debug(LOGMSG("emit downloadScheduled();"));
     emit downloadScheduled();
 
-    QObject::connect(reply, &QNetworkReply::finished,
-        this, [this, reply, on_finish_callback]{
-            on_finish_callback(reply);
-            m_pending_downloads--;
-            emit downloadCompleted();
-        });
+	connect(reply, &QNetworkReply::finished, [=]() {
+		if(reply->error() == QNetworkReply::NoError)
+		{
+			QByteArray response = reply->readAll();
+			// do something with the data...
+			Log::debug(LOGMSG("response = %1").arg(QString::fromStdString(response.toStdString())));
+		}
+		else // handle error
+		{
+	      Log::debug(LOGMSG("ERROR"));
+		}
+	});
 
+
+
+    // QObject::connect(reply, &QNetworkReply::finished,
+        // this, [this, reply, on_finish_callback]{
+ 			// Log::debug(LOGMSG("on_finish_callback(reply);"));
+			// on_finish_callback(reply);
+            // m_pending_downloads--;
+			// Log::debug(LOGMSG("emit downloadCompleted();"));
+            // emit downloadCompleted();
+        // });
+		
+	Log::debug(LOGMSG("return *this;"));
     return *this;
 }
 } // namespace providers

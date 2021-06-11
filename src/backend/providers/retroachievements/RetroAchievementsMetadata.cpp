@@ -23,7 +23,55 @@
 
 
 namespace {
-bool apply_json(model::Game& game, const QJsonDocument& json)
+QString apply_login_json(model::Game& game, const QJsonDocument& json)
+//Example of JSON content
+// {"Success":true,"User":"username","Token":"lePOt1iA5jr56cZj","Score":25,"Messages":0}
+//from : http://retroachievements.org/dorequest.php?r=login&u=username&p=password
+{
+    using QL1 = QLatin1String;
+
+    if (json.isNull())
+	{
+		Log::debug("json.isNull()");
+        return "";
+	}
+    const auto json_root = json.object();
+    if (json_root.isEmpty())
+	{
+		Log::debug("json_root.isEmpty()"); 
+		return "";
+	}
+    // const auto app_entry = json_root.begin().value().toObject();
+    // if (app_entry.isEmpty())
+        // return false;
+
+    const bool login_success = json_root[QL1("Success")].toBool();
+    if (!login_success)
+	{
+		Log::debug("!login_success"); 
+		return "";
+	}
+	const QString user_data = json_root[QL1("User")].toString();
+    if (user_data.isEmpty())
+	{
+		Log::debug("user_data.isEmpty()"); 
+		return "";
+	}
+	else Log::debug("Login retroachievements", LOGMSG("User: %1").arg(user_data));
+	
+	QString token_data = json_root[QL1("Token")].toString();
+    if (token_data.isEmpty())
+        return "";
+	else 
+	{
+		Log::debug("Login retroachievements", LOGMSG("Token: %1").arg(token_data));
+	}
+	
+    return token_data;
+}	
+	
+	
+/* bool apply_json(model::Game& game, const QJsonDocument& json)
 {
     using QL1 = QLatin1String;
 
@@ -139,7 +187,7 @@ bool apply_json(model::Game& game, const QJsonDocument& json)
     }
 
     return true;
-}
+} */
 } // namespace
 
 
@@ -157,15 +205,28 @@ bool Metadata::fill_from_cache(model::Game& game) const
 {
 	model::Game* const game_ptr = &game;
     const auto json = providers::read_json_from_cache(m_log_tag, m_json_cache_dir, game_ptr->title());
-    const bool json_success = apply_json(game, json);
-    if (!json_success)
+    QString m_token = apply_login_json(*game_ptr, json);
+	bool json_success;
+	if (m_token == "")
+	{
+		//const bool json_success = apply_login_json(game, json);
+		//if (!json_success)
+		json_success = false;
         providers::delete_cached_json(m_log_tag, m_json_cache_dir, game_ptr->title());
-
+	}
+	else 
+	{
+		json_success = true;
+	}
+	
     return json_success;
 }
 
 void Metadata::fill_from_network(model::Game& game, SearchContext& sctx) const
 {
+	QString log_tag = m_log_tag;
+    Log::debug(log_tag, LOGMSG("Metadata::fill_from_network(model::Game& game, SearchContext& sctx)"));
+
 	
 	//GET information from recalbox.conf
 	//TO DO
@@ -182,37 +243,75 @@ void Metadata::fill_from_network(model::Game& game, SearchContext& sctx) const
 	
     //const QUrl embed_url(embed_url_str, QUrl::StrictMode);
     
+	
 	Q_ASSERT(url.isValid());
     
 	//Q_ASSERT(embed_url.isValid());
     
-	if (Q_UNLIKELY(!url.isValid()) // || !embed_url.isValid()))
-        return;
+	if (Q_UNLIKELY(!url.isValid())) // || !embed_url.isValid()))
+	{
+		Log::debug(log_tag, LOGMSG("Q_UNLIKELY(!url.isValid())"));
+		return;
+	}
 
     model::Game* const game_ptr = &game;
-    QString log_tag = m_log_tag;
     QString json_cache_dir = m_json_cache_dir;
-    sctx.schedule_download(url, [game_ptr->title(), game_ptr, log_tag, json_cache_dir](QNetworkReply* const reply){
-        if (reply->error()) {
-            Log::warning(log_tag, LOGMSG("Downloading metadata for `%1` failed: %2")
-                .arg(game_ptr->title(), reply->errorString()));
-            return;
-        }
+	QString title = game_ptr->title();
+	Log::debug(log_tag, LOGMSG("0 - sctx.schedule_download(url, [log_tag, json_cache_dir, game_ptr, title](QNetworkReply* const reply)"));
+    
+	//TEST
+	QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
+	// connect(manager, &QNetworkAccessManager::finished,
+        // this, &MyClass::replyFinished);
 
-        const QByteArray raw_data = reply->readAll();
-        const QJsonDocument json = QJsonDocument::fromJson(raw_data);
-        if (json.isNull()) {
-            Log::warning(log_tag, LOGMSG(
-                   "Failed to parse the response of the server for game '%1', "
-                   "either it's no longer available from the Steam Store or the Steam API has changed"
-               ).arg(game_ptr->title()));
-            return;
-        }
+	// manager->get(QNetworkRequest(QUrl(url)));
 
-        const bool success = apply_json(*game_ptr, json);
-        if (success)
-            providers::cache_json(log_tag, json_cache_dir, game_ptr->title(), json.toJson(QJsonDocument::Compact));
-    });
+	QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+	#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+		request.setTransferTimeout(10000);
+	#endif
+
+    QNetworkReply* const reply = manager->get(request);
+	Log::debug(LOGMSG("emit downloadScheduled();"));
+    //emit downloadScheduled();
+
+	QObject::connect(reply, &QNetworkReply::finished, [=]() {
+		if(reply->error() == QNetworkReply::NoError)
+		{
+			QByteArray response = reply->readAll();
+			// do something with the data...
+			Log::debug(LOGMSG("response = %1").arg(QString::fromStdString(response.toStdString())));
+		}
+		else // handle error
+		{
+	      Log::debug(LOGMSG("ERROR"));
+		}
+	});	
+		
+	// sctx.schedule_download(url, [title, game_ptr, log_tag, json_cache_dir](QNetworkReply* const reply){
+        // if (reply->error()) {
+            // Log::warning(log_tag, LOGMSG("Downloading metadata for `%1` failed: %2")
+                // .arg(title, reply->errorString()));
+            // return;
+        // }
+		// Log::debug(log_tag, LOGMSG("1 - sctx.schedule_download(url, [log_tag, json_cache_dir, game_ptr, title](QNetworkReply* const reply)"));
+        // const QByteArray raw_data = reply->readAll();
+        // const QJsonDocument json = QJsonDocument::fromJson(raw_data);
+        // if (json.isNull()) {
+            // Log::warning(log_tag, LOGMSG(
+                   // "Failed to parse the response of the server for game '%1', "
+                   // "either it's no longer available from the Steam Store or the Steam API has changed"
+               // ).arg(title));
+            // return;
+        // }
+
+		// QString m_token = apply_login_json(*game_ptr, json);
+        // if (m_token != "")
+		// {
+            // providers::cache_json(log_tag, json_cache_dir, title, json.toJson(QJsonDocument::Compact));
+		// }
+    // });
 }
 
 } // namespace retroAchievements

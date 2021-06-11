@@ -122,7 +122,8 @@ void Game::updateRetroAchievements()
         return;
 	}
 	//get JSON
-	const providers::retroAchievements::Metadata metahelper("Retroachievements");
+	QString log_tag = "Retroachievements";
+	const providers::retroAchievements::Metadata metahelper(log_tag);
 	metahelper.fill_from_network(*this, sctx);
 }
 
