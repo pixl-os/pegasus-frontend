@@ -1,6 +1,8 @@
 //
 // Created by bkg2k on 10/12/2019.
 //
+// From recalbox ES and Integrated by BozoTheGeek in Pegasus Front-end
+//
 #pragma once
 
 #include <zip.h>

@@ -64,4 +64,5 @@ DEFINES *= $${COMMON_DEFINES}
 
 include($${TOP_SRCDIR}/thirdparty/thirdparty.pri)
 include($${TOP_SRCDIR}/thirdparty/link_to_pulse.pri)
+include($${TOP_SRCDIR}/thirdparty/link_to_zip.pri)
 
