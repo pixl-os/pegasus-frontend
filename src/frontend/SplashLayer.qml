@@ -44,10 +44,10 @@ Rectangle {
 
     Image {
         id: logoPegasus
-        width: 100
-        height: 35
+        width: 150
+        height: 50
         source: "assets/logopegasus.png"
-        anchors.bottomMargin: 10
+        anchors.bottomMargin: 20
         anchors.bottom: parent.bottom
         fillMode: Image.PreserveAspectFit
         verticalAlignment: Image.AlignBottom
@@ -63,7 +63,7 @@ Rectangle {
 //        anchors.left: logoPegasus.right
 //        fillMode: Image.PreserveAspectFit
 //        verticalAlignment: Image.AlignBottom
-////        anchors.horizontalCenter: parent.horizontalCenter
+//        anchors.horizontalCenter: parent.horizontalCenter
 //    }
 
     Rectangle {
@@ -136,25 +136,19 @@ Rectangle {
         }
     }
 
-//    Text {
-//        id: gameCounter
-//        visible: showDataProgressText
+    Text {
+        id: gameCounter
+        visible: showDataProgressText
 
-//        text: api.internal.meta.loadingStage
-//        color: "#999"
-//        font.pixelSize: vpx(16)
-//        font.family: global.fonts.sans
-//        font.italic: true
+        text: api.internal.meta.loadingStage
+        color: "#999"
+        font.pixelSize: vpx(16)
+        font.family: global.fonts.sans
+        font.italic: true
 
-//        anchors.top: progressRoot.bottom
-//        anchors.topMargin: vpx(8)
-//        anchors.right: progressRoot.right
-//        anchors.rightMargin: vpx(5)
-//    }
+        anchors.top: progressRoot.bottom
+        anchors.topMargin: vpx(8)
+        anchors.right: progressRoot.right
+        anchors.rightMargin: vpx(5)
+    }
 }
-
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:1024;width:1280}
-}
-##^##*/
