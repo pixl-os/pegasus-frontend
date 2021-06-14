@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file (focus on ch
 - GameOs:
 	- bump all qt5 module on lastest version
 	- add logo sets systems on : white, black, color, steel, carbon
+	- Disable color mask on systems logo 
 	
 - add missing logo in theme.qrc
 
