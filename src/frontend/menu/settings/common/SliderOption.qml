@@ -3,7 +3,7 @@
 // Created by BozoTheGeek 19/04/2021
 //
 
-import QtQuick 2.15
+import QtQuick 2.12
 import QtQuick.Controls 2.15
 
 

@@ -18,7 +18,7 @@
 import "common"
 //import "keyeditor"
 import "qrc:/qmlutils" as PegasusUtils
-import QtQuick 2.15
+import QtQuick 2.12
 import QtQuick.Window 2.12
 
 FocusScope {
