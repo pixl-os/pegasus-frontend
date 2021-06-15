@@ -131,13 +131,9 @@ FocusScope {
                         placeholderText: qsTr("Pseudo") + api.tr
                         text: api.internal.recalbox.getStringParameter("global.retroachievements.username")
                         echoMode: TextInput.Normal
-//                        enterKeyAction: EnterKeyAction.Next
                         inputMethodHints: Qt.ImhNoPredictiveText
-                        onAccepted: api.internal.recalbox.setStringParameter("global.retroachievements.username", retroachievementUsername.text)
+                        onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.username", retroachievementUsername.text)
                     }
-//                    onActivate: {
-//                        focus = true;
-//                    }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optRetroachievementActivate
                     KeyNavigation.down: optRetroachievementPassword
@@ -157,11 +153,8 @@ FocusScope {
                         echoMode: TextInput.PasswordEchoOnEdit
 //                        enterKeyAction: EnterKeyAction.Next
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
-                        onAccepted: api.internal.recalbox.setStringParameter("global.retroachievements.password", retroachievementPassword.text)
+                        onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.password", retroachievementPassword.text)
                     }
-//                    onActivate: {
-//                        focus = true;
-//                    }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optRetroachievementUsername
                     KeyNavigation.down: optHardcoreRetroachievementActivate
@@ -255,14 +248,10 @@ FocusScope {
                         placeholderText: qsTr("Nickname") + api.tr
                         text: api.internal.recalbox.getStringParameter("global.netplay.nickname")
                         echoMode: TextInput.Normal
-//                        enterKeyAction: EnterKeyAction.Next
                         inputMethodHints: Qt.ImhNoPredictiveText
-                        onAccepted: api.internal.recalbox.setStringParameter("global.netplay.nickname", netplayNickname.text)
+                        onEditingFinished: api.internal.recalbox.setStringParameter("global.netplay.nickname", netplayNickname.text)
                     }
-//                    onActivate: {
-//                        focus = true;
-//                        root.openMenuBoxSettings();
-//                    }
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up:optNetplayActivate
                     KeyNavigation.down: optNetplayPswdClientActivate
