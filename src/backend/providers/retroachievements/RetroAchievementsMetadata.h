@@ -17,7 +17,7 @@ class Metadata {
 public:
     explicit Metadata(QString);
 
-    void fill_from_network(model::Game&) const;
+    void fill_from_network_or_cache(model::Game&, bool) const;
     const QString& log_tag() const { return m_log_tag; }
 
 private:

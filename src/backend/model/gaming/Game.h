@@ -152,7 +152,8 @@ public:
     SETTER(QString, EmulatorCore, launch_params.emulator_core)
 
 	SETTER(int, RaGameID, ra_game_id)
-
+	SETTER(QList<RetroAchievement>, RetroAchievements, retro_achievements)
+	
     Game& setFavorite(bool val);
 #undef SETTER
 
@@ -201,6 +202,7 @@ public:
     Q_INVOKABLE QString GetRaTitleAt (const int index) {return m_data.retro_achievements.at(index).Title;};
 	Q_INVOKABLE QString GetRaBadgeAt (const int index) {return m_data.retro_achievements.at(index).BadgeName;};
 	Q_INVOKABLE bool isRaUnlockedAt (const int index) {return m_data.retro_achievements.at(index).Unlocked;};
+	Q_INVOKABLE bool isRaHardcoreAt (const int index) {return m_data.retro_achievements.at(index).HardcoreMode;};
 	
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
@@ -233,8 +235,11 @@ public:
     explicit Game(QObject* parent = nullptr);
     explicit Game(QString name, QObject* parent = nullptr);
 	int getRetroAchievementsCount() const { return m_data.retro_achievements.count(); };
-    Q_INVOKABLE void launch();
+	void unlockRetroAchievement(const int index) { m_data.retro_achievements[index].Unlocked = true; };
+	void activateHardcoreRetroAchievement(const int index) { m_data.retro_achievements[index].HardcoreMode = true; };
+	Q_INVOKABLE void launch();
 	Q_INVOKABLE void updateRetroAchievements();
+	Q_INVOKABLE void initRetroAchievements();
 
     void finalize();
 };

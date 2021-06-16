@@ -33,6 +33,7 @@
 #include <RecalboxConf.h>
 
 namespace {
+//***********************UTILS FUNCTIONS***********************************//
 QString PathMakeEscaped(QString param)
 {
   std::string escaped = param.toUtf8().constData();
@@ -98,7 +99,9 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 	}	
 	return json;
 }
+//***********************END OF UTILS FUNCTIONS***********************************//
 
+//***********************JSON PARSING FUNCTIONS***********************************//
 QString apply_login_json(QString log_tag, const QJsonDocument& json)
 //Example of JSON content
 // {"Success":true,"User":"username","Token":"lePOt1iA5jr56cZj","Score":25,"Messages":0}
@@ -176,8 +179,141 @@ int apply_gameid_json(QString log_tag, const QJsonDocument& json)
 	const int gameid_data = json_root[QL1("GameID")].toInt();
 	Log::debug(log_tag, LOGMSG("GameID: %1").arg(gameid_data));
 	return gameid_data;
-}	
+}
 
+bool apply_game_json(model::Game& game, QString log_tag, const QJsonDocument& json)
+//from : "http://retroachievements.org/dorequest.php?r=patch&u=%1&t=%2&g=%3"
+{
+    using QL1 = QLatin1String;
+
+    if (json.isNull())
+	{
+		Log::debug(log_tag, LOGMSG("json.isNull()"));
+        return false;
+	}
+    const auto json_root = json.object();
+    if (json_root.isEmpty())
+	{
+		Log::debug(log_tag, LOGMSG("json_root.isEmpty()")); 
+		return false;
+	}
+    const bool patch_success = json_root[QL1("Success")].toBool();
+    if (!patch_success)
+	{
+		Log::debug(log_tag, LOGMSG("Error: %1").arg(json_root[QL1("Error")].toString())); 
+		return false;
+	}
+	const auto PatchData = json_root[QL1("PatchData")].toObject();
+	if (PatchData.isEmpty()) 
+	{
+		Log::debug(log_tag, LOGMSG("No Patch Data found"));
+		return false;
+	}
+	const auto Achievements = PatchData[QL1("Achievements")].toArray();
+	if (Achievements.isEmpty()) 
+	{
+		Log::debug(log_tag, LOGMSG("No Achievements found"));
+		return false;
+	}
+	//clear QList to avoid dooblons
+	//game.retroAchievements().clear();
+
+	//struct model::RetroAchievement RA;
+    QList<model::RetroAchievement> AllRetroAchievements;
+    
+/*     for (int n = 0; n < sysentry.emulators.count(); n++)
+    {
+        Emulator.name = sysentry.emulators[n].name;
+        Emulator.core = sysentry.emulators[n].core;
+        Emulator.priority = sysentry.emulators[n].priority;
+        AllEmulators.append(Emulator);
+        found_cores++;
+    }
+    collection.setCommonEmulators(AllEmulators); */
+	
+    for (const auto& array_entry : Achievements) {
+        const auto Achievement = array_entry.toObject();
+		const auto ID = Achievement[QL1("ID")].toInt();
+		const auto Title = Achievement[QL1("Title")].toString();
+		Log::debug(log_tag, LOGMSG("Title=%1").arg(Title)); 
+		const auto Description = Achievement[QL1("Description")].toString();
+		const auto Points = Achievement[QL1("Points")].toInt();
+		const auto Author = Achievement[QL1("Author")].toString();
+		const auto BadgeName = Achievement[QL1("BadgeName")].toString();
+		Log::debug(log_tag, LOGMSG("BadgeName=%1").arg(BadgeName)); 
+		const auto Flags = Achievement[QL1("Flags")].toInt();
+		//Add game retro achievement one by one
+		AllRetroAchievements.append({ID
+									   ,Title
+									   ,Description
+									   ,Points
+									   ,Author
+									   ,BadgeName
+									   ,Flags
+									   ,false
+									   ,false});
+    }
+	//Set all game retro achievements in game.
+	game.setRetroAchievements(AllRetroAchievements);
+    return true;	
+}
+
+bool apply_achievements_status_json(model::Game& game,int Hardcore, QString log_tag, const QJsonDocument& json)
+//from: http://retroachievements.org/dorequest.php?r=unlocks&u=bozothegeek&t=sdfgsdf564564&g=1669&h=0
+//{"Success":true,"UserUnlocks":[22989,22991,22992,22994,22995],"GameID":1669,"HardcoreMode":false}
+{
+    using QL1 = QLatin1String;
+
+    if (json.isNull())
+	{
+		Log::debug(log_tag, LOGMSG("json.isNull()"));
+        return false;
+	}
+    const auto json_root = json.object();
+    if (json_root.isEmpty())
+	{
+		Log::debug(log_tag, LOGMSG("json_root.isEmpty()")); 
+		return false;
+	}
+    const bool patch_success = json_root[QL1("Success")].toBool();
+    if (!patch_success)
+	{
+		Log::debug(log_tag, LOGMSG("Error: %1").arg(json_root[QL1("Error")].toString())); 
+		return false;
+	}
+	const auto UserUnlocks = json_root[QL1("UserUnlocks")].toArray();
+	if (UserUnlocks.isEmpty()) 
+	{
+		Log::debug(log_tag, LOGMSG("No UserUnlocks found"));
+		return false;
+	}
+	
+	QMap<QString, bool> map;
+    for (const auto& array_entry : UserUnlocks) {
+        const auto UserUnlock = array_entry.toInt();
+		Log::debug(log_tag, LOGMSG("Badge '%1' is unlocked").arg(QString::number(UserUnlock)));
+		map.insert(QString::number(UserUnlock),true);
+
+    }
+	//Set retro achievements unlocked in game.
+	for (int i=0;i<game.getRetroAchievementsCount();i++) {
+		Log::debug(log_tag, LOGMSG("The Badge verified is '%1'").arg(game.retroAchievements()[i].BadgeName));
+		if (map.contains(game.retroAchievements()[i].BadgeName))
+		{
+			game.unlockRetroAchievement(i);
+			if (Hardcore == 1)
+			{
+				game.activateHardcoreRetroAchievement(i);
+			}
+		}
+		Log::debug(log_tag, LOGMSG("Badge %1 - unlocked : %2 - hardcore mode: %3").arg(game.retroAchievements()[i].BadgeName,game.retroAchievements()[i].Unlocked ? "true" : "false",game.retroAchievements()[i].HardcoreMode ? "true" : "false"));
+	}
+	
+    return true;	
+}	
+//***********************END OF JSON PARSING FUNCTIONS***********************************//
+
+//***********************GET FUNCTIONS***********************************//
 QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager &manager)
 //from : http://retroachievements.org/dorequest.php?r=login&u=username&p=password
 {
@@ -211,23 +347,6 @@ QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager
 	return token;
 }	
 
-QString calculate_hash_from_file(QString rom_file, QString log_tag)
-// can calculate hash using maner of RetroAchievements to manage the following system and format of rom supported by RetroAchievements.
-{
-	QElapsedTimer calculate_hash_timer;
-    calculate_hash_timer.start();
-	char hash_iterator[33] = "";
-	int result_iterator;
-	struct rc_hash_iterator iterator;
-	const char* path = rom_file.toLocal8Bit().data();	
-	rc_hash_initialize_iterator(&iterator, path, NULL, 0);
-	result_iterator = rc_hash_iterate(hash_iterator, &iterator);
-	rc_hash_destroy_iterator(&iterator);
-	Log::info(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));    
-	Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
-	return QString::fromLocal8Bit(hash_iterator);
-}	
-
 int get_gameid_from_hash(QString Hash, QString log_tag, QNetworkAccessManager &manager)
 //from : http://retroachievements.org/dorequest.php?r=gameid&m=44dca16afbee7fd947e86c30c1183846
 {
@@ -248,124 +367,85 @@ int get_gameid_from_hash(QString Hash, QString log_tag, QNetworkAccessManager &m
 	Log::info(log_tag, LOGMSG("Stats - Timing: Get GameID processing: %1ms").arg(get_gameid_timer.elapsed()));    
 	return gameid;
 }	
-	
-/* bool apply_json(model::Game& game, const QJsonDocument& json)
+
+bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, QString log_tag, QString json_cache_dir, QNetworkAccessManager &manager)
+//from : http://retroachievements.org/dorequest.php?r=patch&u=bozothegeek&t=sd4f6s4dgf6sdf4gdf4g&g=1669
 {
-    using QL1 = QLatin1String;
+	QElapsedTimer get_game_details_timer;
+    get_game_details_timer.start();
+	bool result = false;
+	
+	if (gameid != 0)
+	{
+		//Try to get game details from json in cache
+		QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, "RaGameID=" + QString::number(gameid));
+		result = apply_game_json(game, log_tag + " - cache", json);
+		if (result == false)
+		{
+			//Delete JSON inb cache by security - use Username and Password to have a unique key and if password is changed finally.
+			providers::delete_cached_json(log_tag + " - cache", json_cache_dir, "RaGameID=" + QString::number(gameid));
+			//to get Username
+			QString Username = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.username"));
+			//Url to get Game details
+			const QString url_str = QStringLiteral("http://retroachievements.org/dorequest.php?r=patch&u=%1&t=%2&g=%3").arg(Username,token,QString::number(gameid));
+			QJsonDocument json = get_json_from_url(url_str, log_tag, manager);
+			result = apply_game_json(game, log_tag, json);
+			if (result == true)
+			{
+				//saved in cache
+				providers::cache_json(log_tag, json_cache_dir, "RaGameID=" + QString::number(gameid), json.toJson(QJsonDocument::Compact));
+			}
+		}
+	}
+	Log::info(log_tag, LOGMSG("Stats - Timing: Get Game Details processing: %1ms").arg(get_game_details_timer.elapsed()));    
+	return result;
+}
+
+bool get_achievements_status_from_gameid(int gameid, QString token, model::Game& game, QString log_tag, QNetworkAccessManager &manager)
+//from : http://retroachievements.org/dorequest.php?r=unlocks&u=bozothegeek&t=sqdsqf5465fsd4sd65f4s6&g=1669&h=0
+{
+	QElapsedTimer get_achievements_status_timer;
+    get_achievements_status_timer.start();
+	bool result = false;
+	
+	if (gameid != 0)
+	{
+		//no cache usage in this cache, we want to have last status from RA site
+		//to get Username
+		QString Username = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.username"));
+		//to get Hardcore value
+		int Hardcore = RecalboxConf::Instance().AsInt("global.retroachievements.hardcore");
+		//To get status
+		const QString url_str = QStringLiteral("http://retroachievements.org/dorequest.php?r=unlocks&u=%1&t=%2&g=%3&h=%4").arg(Username,token,QString::number(gameid),QString::number(Hardcore));
+		QJsonDocument json = get_json_from_url(url_str, log_tag, manager);
+		result = apply_achievements_status_json(game,Hardcore, log_tag, json);
+	}
+	
+	Log::info(log_tag, LOGMSG("Stats - Timing: Get achievements status processing: %1ms").arg(get_achievements_status_timer.elapsed()));    
+	return gameid;
+}
+
+	
+//***********************END OF GET FUNCTIONS***********************************//
 
 
-    if (json.isNull())
-        return false;
+QString calculate_hash_from_file(QString rom_file, QString log_tag)
+// can calculate hash using maner of RetroAchievements to manage the following system and format of rom supported by RetroAchievements.
+{
+	QElapsedTimer calculate_hash_timer;
+    calculate_hash_timer.start();
+	char hash_iterator[33] = "";
+	int result_iterator;
+	struct rc_hash_iterator iterator;
+	const char* path = rom_file.toLocal8Bit().data();	
+	rc_hash_initialize_iterator(&iterator, path, NULL, 0);
+	result_iterator = rc_hash_iterate(hash_iterator, &iterator);
+	rc_hash_destroy_iterator(&iterator);
+	Log::info(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));    
+	Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
+	return QString::fromLocal8Bit(hash_iterator);
+}	
 
-    const auto json_root = json.object();
-    if (json_root.isEmpty())
-        return false;
-
-    const auto app_entry = json_root.begin().value().toObject();
-    if (app_entry.isEmpty())
-        return false;
-
-    const bool app_success = app_entry[QL1("success")].toBool();
-    if (!app_success)
-        return false;
-
-    const auto app_data = app_entry[QL1("data")].toObject();
-    if (app_data.isEmpty())
-        return false;
-
-    // now the actual field reading
-
-    model::Assets& assets = game.assetsMut(); // FIXME: update signals
-
-    game.setTitle(app_data[QL1("name")].toString())
-        .setSummary(app_data[QL1("short_description")].toString())
-        .setDescription(app_data[QL1("about_the_game")].toString());
-
-    const auto reldate_obj = app_data[QL1("release_date")].toObject();
-    if (!reldate_obj.isEmpty()) {
-        const QString date_str = reldate_obj[QL1("date")].toString();
-
-        // FIXME: the date format will likely fail for non-English locales (see Qt docs)
-        const QDateTime datetime(QDateTime::fromString(date_str, QL1("d MMM, yyyy")));
-        if (datetime.isValid())
-            game.setReleaseDate(datetime.date());
-    }
-
-    const QString header_image = app_data[QL1("header_image")].toString();
-    assets
-        .add_uri(AssetType::LOGO, header_image)
-        .add_uri(AssetType::UI_STEAMGRID, header_image)
-        .add_uri(AssetType::BOX_FRONT, header_image);
-
-    const QJsonArray developer_arr = app_data[QL1("developers")].toArray();
-    for (const auto& arr_entry : developer_arr)
-        game.developerList().append(arr_entry.toString());
-
-    const QJsonArray publisher_arr = app_data[QL1("publishers")].toArray();
-    for (const auto& arr_entry : publisher_arr)
-        game.publisherList().append(arr_entry.toString());
-
-    const auto metacritic_obj = app_data[QL1("metacritic")].toObject();
-    if (!metacritic_obj.isEmpty()) {
-        const double score = metacritic_obj[QL1("score")].toDouble(-1);
-        if (0.0 <= score && score <= 100.0)
-            game.setRating(static_cast<float>(score / 100.0));
-    }
-
-    const auto genre_arr = app_data[QL1("genres")].toArray();
-    for (const auto& arr_entry : genre_arr) {
-        const auto genre_obj = arr_entry.toObject();
-        if (genre_obj.isEmpty())
-            break; // assume the rest will fail too
-
-        const QString genre = genre_obj[QL1("description")].toString();
-        if (!genre.isEmpty())
-            game.genreList().append(genre);
-    }
-
-    const auto category_arr = app_data[QL1("categories")].toArray();
-    for (const auto& arr_entry : category_arr) {
-        const auto cat_obj = arr_entry.toObject();
-        if (cat_obj.isEmpty())
-            break; // assume the rest will fail too
-
-        const QString category = cat_obj[QL1("description")].toString();
-        if (!category.isEmpty())
-            game.tagList().append(category);
-    }
-
-    const QString background_image = app_data[QL1("background")].toString();
-    if (!background_image.isEmpty())
-        assets.add_uri(AssetType::BACKGROUND, background_image);
-
-    const auto screenshots_arr = app_data[QL1("screenshots")].toArray();
-    for (const auto& arr_entry : screenshots_arr) {
-        const auto screenshot_obj = arr_entry.toObject();
-        if (screenshot_obj.isEmpty())
-            break; // assume the rest will fail too
-
-        const QString thumb_path = screenshot_obj[QL1("path_thumbnail")].toString();
-        if (!thumb_path.isEmpty())
-            assets.add_uri(AssetType::SCREENSHOT, thumb_path);
-    }
-
-    const auto movies_arr = app_data[QL1("movies")].toArray();
-    for (const auto& arr_entry : movies_arr) {
-        const auto movie_obj = arr_entry.toObject();
-        if (movie_obj.isEmpty())
-            break;
-
-        const auto webm_obj = movie_obj[QL1("webm")].toObject();
-        if (webm_obj.isEmpty())
-            break;
-
-        const QString p480_path = webm_obj[QL1("480")].toString();
-        if (!p480_path.isEmpty())
-            assets.add_uri(AssetType::VIDEO, p480_path);
-    }
-
-    return true;
-} */
 } // namespace
 
 
@@ -378,10 +458,10 @@ Metadata::Metadata(QString log_tag)
 {
 }
 
-void Metadata::fill_from_network(model::Game& game) const
+void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) const
 {
 	QString token;
-
+	bool result = false;
 	//Set Game info
 	model::Game* const game_ptr = &game;
     QString title = game_ptr->title();
@@ -503,19 +583,24 @@ void Metadata::fill_from_network(model::Game& game) const
 			//QString hash = "fa382374eb4a93a719064ca6c5a4e78c";
 			//Log::debug(m_log_tag, LOGMSG("Duck Hunt (World) - NES - hash value from RA : '%1'").arg(hash));
 			
-			game_ptr->setRaGameID(get_gameid_from_hash(hash,m_log_tag, *manager));
+			game_ptr->setRaGameID(get_gameid_from_hash(hash, m_log_tag, *manager));
 			Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
 			
-
+			//get details about Game from GameID
+			result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
+			//set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one	
+			result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);	
 		}
 		else
 		{
 			Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId already known : %1").arg(game_ptr->RaGameID()));
+			//set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
+			if (ForceUpdate) result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);
 		}
-		
+
 		//for test purpose / we reset gameid to be able to retest just after ;-)
-		game_ptr->setRaGameID(0);
-		
+		//game_ptr->setRaGameID(0);
+
 	}
 	else return;
 	

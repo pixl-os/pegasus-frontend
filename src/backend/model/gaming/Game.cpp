@@ -108,23 +108,37 @@ void Game::launch()
         emit launchFileSelectorRequested();
 }
 
+
+void Game::initRetroAchievements()
+{
+	Log::debug(LOGMSG("Game::updateRetroAchievements()"));
+	
+	//Initialize Metahelper for each update and for each games for the moment
+	QString log_tag = "Retroachievements";
+	const providers::retroAchievements::Metadata metahelper(log_tag);
+	
+	//get all from network for the moment to have last information / one function called for the moment
+	metahelper.fill_from_network_or_cache(*this, false);
+		
+	//emit signal to alert front-end about end of update
+	//TO DO 
+	//only if updated with good data
+}
+
 void Game::updateRetroAchievements()
 {
 	Log::debug(LOGMSG("Game::updateRetroAchievements()"));
 	
 	//Initialize Metahelper for each update and for each games for the moment
-	//TO DO: optimise to instanciate that outside games if possible ?!
 	QString log_tag = "Retroachievements";
 	const providers::retroAchievements::Metadata metahelper(log_tag);
 	
 	//get all from network for the moment to have last information / one function called for the moment
-	//TO DO : internal cache will be used depending of data already available and if problem of performance
-	metahelper.fill_from_network(*this);
+	metahelper.fill_from_network_or_cache(*this, true);
 		
 	//emit signal to alert front-end about end of update
 	//TO DO 
 	//only if updated with good data
-	
 }
 
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)
