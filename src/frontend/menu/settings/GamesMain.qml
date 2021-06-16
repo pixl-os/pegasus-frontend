@@ -275,7 +275,7 @@ FocusScope {
                         id: pointeroptAdvancedEmulator
 
                         anchors.right: parent.right
-                        anchors.rightMargin: horizontalPadding
+//                        anchors.rightMargin: horizontalPadding
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: themeColor.textValue
@@ -290,7 +290,7 @@ FocusScope {
                         root.openAdvancedEmulatorSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optBiosChecking
+//                    KeyNavigation.up: optBiosChecking
                 }
                 Item {
                     width: parent.width

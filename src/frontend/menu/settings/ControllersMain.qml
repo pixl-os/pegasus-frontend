@@ -127,7 +127,7 @@ FocusScope {
                         id: pointeroptGamepadConfig
 
                         anchors.right: parent.right
-                        anchors.rightMargin: horizontalPadding
+//                        anchors.rightMargin: horizontalPadding
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: themeColor.textValue
@@ -155,7 +155,7 @@ FocusScope {
                         id: pointeroptAdvancedControllers
 
                         anchors.right: parent.right
-                        anchors.rightMargin: horizontalPadding
+//                        anchors.rightMargin: horizontalPadding
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: themeColor.textValue

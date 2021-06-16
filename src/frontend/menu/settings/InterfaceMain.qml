@@ -150,7 +150,7 @@ FocusScope {
                         id: pointeroptMenuControlsConfig
 
                         anchors.right: parent.right
-                        anchors.rightMargin: horizontalPadding
+//                        anchors.rightMargin: horizontalPadding
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: themeColor.textValue
@@ -165,7 +165,7 @@ FocusScope {
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optScreenHelp
+//                    KeyNavigation.up: optScreenHelp
 //                    KeyNavigation.down: optPopupSettings
                     KeyNavigation.down: optTheme
 
@@ -195,7 +195,7 @@ FocusScope {
                         themeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optPopupSettings
+                    KeyNavigation.up: optMenuControlsConfig
                     KeyNavigation.down: optGamelistsOnly
                 }
                 ToggleOption {

@@ -35,7 +35,7 @@ FocusScope {
         }
     }
     Keys.onLeftPressed: slider.value > min ? slider.value = slider.value - 1 : min
-    Keys.onRightPressed: slider.value < max ? slider.value = slider.value + 1 : max       
+    Keys.onRightPressed: slider.value < max ? slider.value = slider.value + 1 : max
 
     Rectangle {
         id: underline
