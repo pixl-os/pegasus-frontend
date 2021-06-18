@@ -230,10 +230,10 @@ FocusScope {
                                 console.log("core=", core);
                                 console.log("is default=",system.isDefaultEmulatorAt(index));
                                 
-                                if ((emulator == system.GetNameAt(index)) && (core == system.GetCoreAt(index))){
+                                if ((emulator === system.GetNameAt(index)) && (core === system.GetCoreAt(index))){
                                     return true;
                                 }
-                                else if (system.isDefaultEmulatorAt(index) && ((core == "") || (emulator == ""))){
+                                else if (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === ""))){
                                     return true;
                                 }
                                 else return false;
