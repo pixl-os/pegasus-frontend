@@ -320,12 +320,27 @@ QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager
 	QElapsedTimer get_token_timer;
     get_token_timer.start();
 	
+/* 	## Enable retroarchievements (0,1)
+	## Set your www.retroachievements.org username/password
+	## Escape your special chars (# ; $) with a backslash : $ => \$
+	global.retroachievements=1
+	global.retroachievements.hardcore=0
+	global.retroachievements.username=login
+	global.retroachievements.password=motdepasse */
+	
+	
+	
 	//GET information from recalbox.conf
 	QString Username = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.username"));
 	QString Password = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.password"));
-	
+		
 	//Try to get token from json in cache
 	QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, Username + Password);
+	
+	//replace backslash as proposed in recalbox.conf, this backslash is only necessary for retroarch (but seems not to work in retroarch ?!)
+	Username.remove("\\", Qt::CaseInsensitive); 
+	Password.remove("\\", Qt::CaseInsensitive);
+	
 	QString token = apply_login_json(log_tag + " - cache", json);
 	if (token == "")
 	{
