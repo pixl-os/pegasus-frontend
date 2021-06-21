@@ -111,7 +111,7 @@ void Game::launch()
 
 void Game::initRetroAchievements()
 {
-	Log::debug(LOGMSG("Game::updateRetroAchievements()"));
+	Log::debug(LOGMSG("Game::initRetroAchievements()"));
 	
 	//Initialize Metahelper for each update and for each games for the moment
 	QString log_tag = "Retroachievements";

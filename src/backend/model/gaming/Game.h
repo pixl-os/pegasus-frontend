@@ -200,6 +200,9 @@ public:
     //need specific property and invokable function due to QList<struct> is not supported by QML layer
     Q_PROPERTY(int retroAchievementsCount READ getRetroAchievementsCount CONSTANT)
     Q_INVOKABLE QString GetRaTitleAt (const int index) {return m_data.retro_achievements.at(index).Title;};
+	Q_INVOKABLE QString GetRaDescriptionAt (const int index) {return m_data.retro_achievements.at(index).Description;};
+	Q_INVOKABLE QString GetRaPointsAt (const int index) {return QString::number(m_data.retro_achievements.at(index).Points);};
+	Q_INVOKABLE QString GetRaAuthorAt (const int index) {return m_data.retro_achievements.at(index).Author;};
 	Q_INVOKABLE QString GetRaBadgeAt (const int index) {return m_data.retro_achievements.at(index).BadgeName;};
 	Q_INVOKABLE bool isRaUnlockedAt (const int index) {return m_data.retro_achievements.at(index).Unlocked;};
 	Q_INVOKABLE bool isRaHardcoreAt (const int index) {return m_data.retro_achievements.at(index).HardcoreMode;};
