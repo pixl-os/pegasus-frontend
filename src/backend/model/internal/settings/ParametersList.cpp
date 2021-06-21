@@ -11,14 +11,15 @@ QStringList ListOfInternalValue;
 
 //! Storage devices
 StorageDevices mStorageDevices;
+/*
+list of global and system values (example using snes system)
+global or  snes.ratio=4/3 -> RATIO
+global or  snes.shaders=/recalbox/share_init/shaders/scanline.glslp -> SHADERS -> TO DO
 
-//list of global and system values (example using snes system)
-//global or  snes.ratio=4/3 -> RATIO
-//global or  snes.shaders=/recalbox/share_init/shaders/scanline.glslp -> SHADERS -> TO DO
-
-//parameters for system to get from collection emulators and cores
-//snes.core=snes9x_next
-//neogeo.emulator=fba2x
+parameters for system to get from collection emulators and cores
+snes.core=snes9x_next
+neogeo.emulator=fba2x
+*/
 
 QStringList GetParametersList(QString Parameter)
 {
@@ -28,32 +29,46 @@ QStringList GetParametersList(QString Parameter)
     ListOfInternalValue.clear();
     
     if (Parameter.endsWith(".ratio", Qt::CaseInsensitive) == true) // compatible for 'global.ratio' and '{system].ratio' (example: 'snes.ratio')
-    {   
-        //## Set ratio for all emulators (auto,4/3,16/9,16/10,custom) - default value: auto / index 0
-        //global.ratio=auto
+    {
+        /*## Set ratio for all emulators (auto,4/3,16/9,16/10,custom) - default value: auto / index 0
+        global.ratio=auto */
         ListOfValue << "none" << "auto" << "4/3" << "16/9" << "16/10" << "16/15" << "21/9" << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12" << "19/14" << "30/17" << "32/9" << "squarepixel" << "config" << "custom" << "coreprovided";
     }
+    else if (Parameter == "system.language")
+    {
+        /* pegasus language format :
+        ar ,bs, de, en-GB, en, es, fr, hu, ko, nl, pt-BR, ru, zh, zh-TW */
+        ListOfValue << "ar" << "bs" << "de" << "en-GB" << "en" << "en" << "es" << "fr" << "hu" << "ko" << "nl" << "pt-BR" << "ru" << "zh" << "zh-TW";
+        /*recalbox language format :
+        ## Set the language of the system (fr_FR,en_US,en_GB,de_DE,pt_BR,es_ES,it_IT,eu_ES,tr_TR,zh_CN)
+        system.language=en_US*/
+        ListOfInternalValue << "en_US" << "en_US" << "de_DE" << "en_GB" << "en_US" << "en_US" << "es_ES" << "fr_FR" << "en_US" << "en_US" << "en_US" << "pt_BR" << "en_US" << "zh_CN" << "en_US";
+    }
     else if (Parameter == "system.kblayout")
-    {   
-        //## set the keyboard layout (fr,en,de,us,es)
-        //system.kblayout=us
+    {
+        /*## set the keyboard layout (fr,en,de,us,es)
+        system.kblayout=us*/
         ListOfValue << "fr" << "en" << "de" << "us" << "es";
     }
     else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
     {
-        //## Shader set
-        //## Automatically select shaders for all systems
-        //## (none, retro, scanlines)
-        //global.shaderset=none
+        /*
+        ## Shader set
+        ## Automatically select shaders for all systems
+        ## (none, retro, scanlines)
+        global.shaderset=none
+        */
         ListOfValue << "none" << "retro" << "scanline";
     }
     else if (Parameter == "controllers.ps3.driver")
     {
-        // ## Choose a driver between bluez, official and shanwan
-        // ## bluez -> bluez 5 + kernel drivers, support official and shanwan sisaxis
-        // ## official -> sixad drivers, support official and gasia sisaxis
-        // ## shanwan -> shanwan drivers, support official and shanwan sisaxis
-        // controllers.ps3.driver=bluez
+        /*
+         ## Choose a driver between bluez, official and shanwan
+         ## bluez -> bluez 5 + kernel drivers, support official and shanwan sisaxis
+         ## official -> sixad drivers, support official and gasia sisaxis
+         ## shanwan -> shanwan drivers, support official and shanwan sisaxis
+         controllers.ps3.driver=bluez
+        */
         ListOfValue << "bluez" << "official" << "shanwan";
     }
     else if ((Parameter == "netplay.password.client") || (Parameter == "netplay.password.viewer"))
@@ -63,15 +78,17 @@ QStringList GetParametersList(QString Parameter)
     }
     else if (Parameter == "audio.mode")
     {
-        //## 2 values for the moment are really manage for pegasus
-        //audio.mode = musicandvideosound -> to activate sound for all using the Display value : "video and game"
-        //or
-        //audio.mode = none -> to deactivate sound
+        /*
+        ## 2 values for the moment are really manage for pegasus
+        audio.mode = musicandvideosound -> to activate sound for all using the Display value : "video and game"
+        or
+        audio.mode = none -> to deactivate sound
         
-        //##RFU / activated only for menu / bug ignored to activate the sounds 
-        //MusicsOnly,
-        //VideosSoundOnly,
-        //MusicsXorVideosSound,
+        ##RFU / activated only for menu / bug ignored to activate the sounds
+        MusicsOnly,
+        VideosSoundOnly,
+        MusicsXorVideosSound,
+        */
         
         //pegasus sound layer parameters is not as ES.
         ListOfValue << "All sounds on \uf123" <<  "sounds off \uf3a2" << "Not supported: Videos Sound only" << "Not supported: Musics Only" << "Not supported: Musics or Videos Sound";// using ionIcons Font
@@ -80,43 +97,47 @@ QStringList GetParametersList(QString Parameter)
     }
     else if (Parameter == "audio.device")
     {
-        //example in conf: 
-        //audio.device=alsa_card.pci-0000_00_1f.3:hdmi-output-0
-        //audio.volume=90
-        //audio.bgmusic=1
-        //audio.mode=musicandvideosound
+        /*
+        example in conf:
+        audio.device=alsa_card.pci-0000_00_1f.3:hdmi-output-0
+        audio.volume=90
+        audio.bgmusic=1
+        audio.mode=musicandvideosound
+        */
 
         IAudioController::DeviceList playbackList = AudioController::Instance().GetPlaybackList();
         
         for(const auto& playback : playbackList)
-           {
-               Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
-               ListOfValue.append(QString::fromStdString(playback.DisplayableName)); // using Awesome Web Font
-               
-               Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
-               ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
-           }
+        {
+            Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+            ListOfValue.append(QString::fromStdString(playback.DisplayableName)); // using Awesome Web Font
+
+            Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+            ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
+        }
         if(ListOfValue.isEmpty())
-           {
-               ListOfValue.append("no device detected");
-               ListOfInternalValue.append(""); //to empty parameter
-           }            
+        {
+            ListOfValue.append("no device detected");
+            ListOfInternalValue.append(""); //to empty parameter
+        }
     }
     else if (Parameter == "boot.sharedevice")
     {
-        //# The `sharedevice` variable indicates where to find the SHARE folder/partition.
-        //# It can have the following values:
-        //#   INTERNAL      => the partition immediately following the partition mounted as /boot, on the same disk (e.g. `/dev/mmcblk0p2`)
-        //#                    (this is the default)
-        //#   RAM           => a temporary in-memory file system (tmpfs)
-        //#                    (use at your own risks, specially on boards with low memory!)
-        //#   ANYEXTERNAL   => any storage device other than the one the system booted on
-        //#                    (use this when you have several USB keys/drives, but plug only one at a time)
-        //#   DEV [FSUUID]  => the storage device with the [FSUUID] unique identifier
-        //#                    (use this if you plug multiple storage devices together but want a specific one to hold SHARE)
-        //#   NETWORK       => a network-mounted filesystem
-        //#                    (see complementary `sharenetwork_*` directives below)
-        //;sharedevice=INTERNAL
+        /*
+        # The `sharedevice` variable indicates where to find the SHARE folder/partition.
+        # It can have the following values:
+        #   INTERNAL      => the partition immediately following the partition mounted as /boot, on the same disk (e.g. `/dev/mmcblk0p2`)
+        #                    (this is the default)
+        #   RAM           => a temporary in-memory file system (tmpfs)
+        #                    (use at your own risks, specially on boards with low memory!)
+        #   ANYEXTERNAL   => any storage device other than the one the system booted on
+        #                    (use this when you have several USB keys/drives, but plug only one at a time)
+        #   DEV [FSUUID]  => the storage device with the [FSUUID] unique identifier
+        #                    (use this if you plug multiple storage devices together but want a specific one to hold SHARE)
+        #   NETWORK       => a network-mounted filesystem
+        #                    (see complementary `sharenetwork_*` directives below)
+        ;sharedevice=INTERNAL
+        */
 
         for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
         {
@@ -127,14 +148,14 @@ QStringList GetParametersList(QString Parameter)
         }
     }
     else if (Parameter.endsWith(".core", Qt::CaseInsensitive) == true) // compatible with all systems
-    {   
+    {
         QString system_short_name = Parameter.split('.').at(0);
-       
+
         //model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
         
     }
     else if (Parameter.endsWith(".emulator", Qt::CaseInsensitive) == true) // compatible with all systems
-    {   
+    {
         QString system_short_name = Parameter.split('.').at(0);
     }
     else
@@ -179,8 +200,8 @@ ParametersList::ParametersList(QObject* parent)
     : QAbstractListModel(parent)
     , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
     , m_role_names({
-        { Roles::Name, QByteArrayLiteral("name") },
-    })
+{ Roles::Name, QByteArrayLiteral("name") },
+})
 {
     //empty constructor to be generic
 }
@@ -188,8 +209,10 @@ ParametersList::ParametersList(QObject* parent)
 
 void ParametersList::select_preferred_parameter(const QString& Parameter)
 {
-    //Log::debug(LOGMSG("void ParametersList::select_preferred_parameter(const QString& Parameter) Parameter:`%1`").arg(Parameter));
-    //to get first row as default value
+    /*
+    Log::debug(LOGMSG("void ParametersList::select_preferred_parameter(const QString& Parameter) Parameter:`%1`").arg(Parameter));
+    to get first row as default value
+    */
     QString DefaultValue;
     if (ListOfInternalValue.size() == 0) DefaultValue = m_parameterslist.at(0).name;
     else DefaultValue = ListOfInternalValue.at(0);
@@ -199,12 +222,12 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
         //check in recalbox-boot.conf
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        select_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));  
+        select_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
     }
     else
     {
         //check in recalbox.conf
-        select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));  
+        select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));
     }
 }
 
@@ -215,8 +238,10 @@ bool ParametersList::select_parameter(const QString& name)
         return false;
 
     for (size_t idx = 0; idx < m_parameterslist.size(); idx++) {
-        //Log::debug(LOGMSG("idx:`%1`").arg(idx));
-        //Log::debug(LOGMSG("at(idx).name:`%1`").arg(m_parameterslist.at(idx).name));
+        /*
+        Log::debug(LOGMSG("idx:`%1`").arg(idx));
+        Log::debug(LOGMSG("at(idx).name:`%1`").arg(m_parameterslist.at(idx).name));
+        */
         if (ListOfInternalValue.size() == 0)
         {
             if (m_parameterslist.at(idx).name == name) {
@@ -232,7 +257,7 @@ bool ParametersList::select_parameter(const QString& name)
                 //Log::debug(LOGMSG("m_current_idx:`%1`").arg(m_current_idx));
                 return true;
             }
-        }        
+        }
     }
     //Log::debug(LOGMSG("ParametersList::select_parameter(const QString& name) / return false"));
     return false;
@@ -244,7 +269,7 @@ void ParametersList::save_selected_parameter()
     const auto& value = m_parameterslist.at(m_current_idx);
     //Log::debug(LOGMSG("ParametersList::save_selected_parameter() - parameter: `%1`").arg(value.name));
 
-    //check in recalbox-boot.conf    
+    //check in recalbox-boot.conf
     if(m_parameter.contains("boot.", Qt::CaseInsensitive))
     {
         QString ParameterBoot = m_parameter;
@@ -267,21 +292,21 @@ void ParametersList::save_selected_parameter()
     //Check m_parameter to manage specific case with specific management/action
     if(m_parameter == "audio.device")
     {
-        //change audio device as selected 
+        //change audio device as selected
         std::string originalAudioDevice = RecalboxConf::Instance().GetAudioOuput();
         std::string fixedAudioDevice = AudioController::Instance().SetDefaultPlayback(originalAudioDevice);
     }
     else if(m_parameter == "audio.mode")
     {
-       //change audio mode as selected
-       if(ListOfInternalValue.at(m_current_idx) == "none")
-       {
+        //change audio mode as selected
+        if(ListOfInternalValue.at(m_current_idx) == "none")
+        {
             AudioController::Instance().SetVolume(0);
-       }
-       else
-       {
+        }
+        else
+        {
             AudioController::Instance().SetVolume(RecalboxConf::Instance().GetAudioVolume());
-       }
+        }
     }
 }
 
@@ -300,10 +325,10 @@ QVariant ParametersList::data(const QModelIndex& index, int role) const
 
     const auto& parameter = m_parameterslist.at(static_cast<size_t>(index.row()));
     switch (role) {
-        case Roles::Name:
-            return parameter.name;
-        default:
-            return {};
+    case Roles::Name:
+        return parameter.name;
+    default:
+        return {};
     }
 }
 
@@ -329,20 +354,20 @@ void ParametersList::setCurrentIndex(int idx_int)
 
 
 QString ParametersList::currentName(const QString& Parameter) { 
-        
-        //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
-        
-        if (m_parameter != Parameter)
-        {
-            //to signal refresh of model's data
-            emit QAbstractItemModel::beginResetModel();
-            m_parameter = Parameter;
-            m_parameterslist = find_available_parameterslist(Parameter);
-            select_preferred_parameter(Parameter);
-            //to signal end of model's data
-            emit QAbstractItemModel::endResetModel();
-        }
-        return m_parameterslist.at(m_current_idx).name; 
+
+    //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+
+    if (m_parameter != Parameter)
+    {
+        //to signal refresh of model's data
+        emit QAbstractItemModel::beginResetModel();
+        m_parameter = Parameter;
+        m_parameterslist = find_available_parameterslist(Parameter);
+        select_preferred_parameter(Parameter);
+        //to signal end of model's data
+        emit QAbstractItemModel::endResetModel();
+    }
+    return m_parameterslist.at(m_current_idx).name;
 }
 
 } // namespace model

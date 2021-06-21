@@ -36,6 +36,10 @@ void Recalbox::setStringParameter(const QString& Parameter, const QString& Value
         else
         {
             RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), Value.toUtf8().constData());
+            if (Parameter == "keyboard.layout")
+            {
+                int exitcode = system(qPrintable(QStringLiteral("setxkbmap %1").arg(Value)));
+            }
         }    
     }
 

@@ -74,7 +74,11 @@ FocusScope {
         }
     }
     Item {
-        anchors.fill: parent
+        id: box
+        height: list.count >= 10 ? (10 * itemHeight) : (list.count * itemHeight)
+        width: vpx(700)
+        anchors.centerIn: parent
+
 
         Rectangle {
             id: borderBox
@@ -85,12 +89,9 @@ FocusScope {
             anchors.centerIn: parent
         }
         Rectangle {
-            id: box
-            height: list.count >= 10 ? (10 * itemHeight) : (list.count * itemHeight)
-            width: vpx(700)
             color: themeColor.main
             radius: vpx(8)
-            anchors.centerIn: borderBox
+            anchors.fill: box
 
             MouseArea {
                 id: mouseArea
