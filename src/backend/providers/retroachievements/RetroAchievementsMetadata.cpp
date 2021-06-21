@@ -291,14 +291,14 @@ bool apply_achievements_status_json(model::Game& game,int Hardcore, QString log_
 	QMap<QString, bool> map;
     for (const auto& array_entry : UserUnlocks) {
         const auto UserUnlock = array_entry.toInt();
-		Log::debug(log_tag, LOGMSG("Badge '%1' is unlocked").arg(QString::number(UserUnlock)));
+		Log::debug(log_tag, LOGMSG("ID '%1' is unlocked").arg(QString::number(UserUnlock)));
 		map.insert(QString::number(UserUnlock),true);
 
     }
 	//Set retro achievements unlocked in game.
 	for (int i=0;i<game.getRetroAchievementsCount();i++) {
-		Log::debug(log_tag, LOGMSG("The Badge verified is '%1'").arg(game.retroAchievements()[i].BadgeName));
-		if (map.contains(game.retroAchievements()[i].BadgeName))
+		Log::debug(log_tag, LOGMSG("The ID verified is '%1'").arg(game.retroAchievements()[i].ID));
+		if (map.contains(QString::number(game.retroAchievements()[i].ID)))
 		{
 			game.unlockRetroAchievement(i);
 			if (Hardcore == 1)
@@ -610,7 +610,14 @@ void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) c
 		{
 			Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId already known : %1").arg(game_ptr->RaGameID()));
 			//set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
-			if (ForceUpdate) result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);
+			if (ForceUpdate) {
+				//Delete JSON in cache for cleaning and force update vs init when we reuse cache.
+				providers::delete_cached_json(m_log_tag, m_json_cache_dir, "RaGameID=" + QString::number(game_ptr->RaGameID()));
+				//get details about Game from GameID
+				result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
+				//set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one	
+				result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);	
+			}	
 		}
 
 		//for test purpose / we reset gameid to be able to retest just after ;-)
