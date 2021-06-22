@@ -25,10 +25,10 @@ FocusScope {
     id: root
 
     signal close
-    //    signal openKeySettings
-    //    signal openGamepadSettings
-    //    signal openGameDirSettings
-    //    signal openProviderSettings
+    /*signal openKeySettings
+        signal openGamepadSettings
+        signal openGameDirSettings
+        signal openProviderSettings*/
 
     width: parent.width
     height: parent.height
@@ -154,19 +154,20 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-//                    Keys.onLeftPressed: {
-//                        //to update index of parameterlist QAbstractList
-//                        api.internal.recalbox.parameterslist.currentIndex = api.internal.recalbox.parameterslist.currentIndex + 1;
-//                        //to force update of display of selected value
-//                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-//                    }
-//                    Keys.onRightPressed: {
-//                        //to update index of parameterlist QAbstractList
-//                        api.internal.recalbox.parameterslist.currentIndex = api.internal.recalbox.parameterslist.currentIndex - 1;
-//                        //to force update of display of selected value
-//                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-//                    }
-
+                    /*
+                    Keys.onLeftPressed: {
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = api.internal.recalbox.parameterslist.currentIndex + 1;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+                    Keys.onRightPressed: {
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = api.internal.recalbox.parameterslist.currentIndex - 1;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+                    */
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optAudioMode
                     KeyNavigation.down: optOutputVolume
@@ -184,7 +185,7 @@ FocusScope {
                     max : 100
                     min : 0
                     slidervalue : api.internal.recalbox.getIntParameter(parameterName)
-                    //in text object
+                    // in text object
                     value: api.internal.recalbox.getIntParameter(parameterName) + "%"
 
                     onActivate: {
@@ -207,63 +208,65 @@ FocusScope {
                     //                    KeyNavigation.down: optVideoSettings
                     KeyNavigation.down: optStorageDevices
                 }
-                //                SectionTitle {
-                //                    text: qsTr("Video Configuration") + api.tr
-                //                    first: true
-                //                }
-                //                MultivalueOption {
-                //                    id: optVideoSettings
+                /*
+                SectionTitle {
+                    text: qsTr("Video Configuration") + api.tr
+                    first: true
+                }
+                MultivalueOption {
+                    id: optVideoSettings
 
-                //                    label: qsTr("Video Settings") + api.tr
-                //                    note: qsTr("set your display and resolution") + api.tr
-                //                    value: api.internal.settings.locales.currentName
+                    label: qsTr("Video Settings") + api.tr
+                    note: qsTr("set your display and resolution") + api.tr
+                    value: api.internal.settings.locales.currentName
 
-                //                    onActivate: {
-                //                        focus = true;
-                //                        localeBox.focus = true;
-                //                    }
-                //                    onFocusChanged: container.onFocus(this)
-                //                    KeyNavigation.up: optOutputVolume
-                //                    KeyNavigation.down: optNetworkSettings
-                //                }
-                //                SectionTitle {
-                //                    text: qsTr("Network") + api.tr
-                //                    first: true
-                //                }
-                //                MultivalueOption {
-                //                    id: optNetworkSettings
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optOutputVolume
+                    KeyNavigation.down: optNetworkSettings
+                }
+                SectionTitle {
+                    text: qsTr("Network") + api.tr
+                    first: true
+                }
+                MultivalueOption {
+                    id: optNetworkSettings
 
-                //                    label: qsTr("Network Settings") + api.tr
-                //                    note: qsTr("Settings network wifi or else") + api.tr
-                //                    value: api.internal.settings.locales.currentName
+                    label: qsTr("Network Settings") + api.tr
+                    note: qsTr("Settings network wifi or else") + api.tr
+                    value: api.internal.settings.locales.currentName
 
-                //                    onActivate: {
-                //                        focus = true;
-                //                        localeBox.focus = true;
-                //                    }
-                //                    onFocusChanged: container.onFocus(this)
-                //                    KeyNavigation.up: optVideoSettings
-                //                    KeyNavigation.down: optUpdateSettings
-                //                }
-                //                SectionTitle {
-                //                    text: qsTr("Update System") + api.tr
-                //                    first: true
-                //                }
-                //                MultivalueOption {
-                //                    id: optUpdateSettings
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optVideoSettings
+                    KeyNavigation.down: optUpdateSettings
+                }
+                SectionTitle {
+                    text: qsTr("Update System") + api.tr
+                    first: true
+                }
+                MultivalueOption {
+                    id: optUpdateSettings
 
-                //                    label: qsTr("Update Settings") + api.tr
-                //                    note: qsTr("Update configuration menu") + api.tr
-                //                    value: api.internal.settings.locales.currentName
+                    label: qsTr("Update Settings") + api.tr
+                    note: qsTr("Update configuration menu") + api.tr
+                    value: api.internal.settings.locales.currentName
 
-                //                    onActivate: {
-                //                        focus = true;
-                //                        localeBox.focus = true;
-                //                    }
-                //                    onFocusChanged: container.onFocus(this)
-                //                    KeyNavigation.up: optNetworkSettings
-                //                    KeyNavigation.down: optStorageDevices
-                //                }
+                    onActivate: {
+                        focus = true;
+                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optNetworkSettings
+                    KeyNavigation.down: optStorageDevices
+                }
+                */
                 SectionTitle {
                     text: qsTr("Storage Configuration") + api.tr
                     first: true
@@ -292,32 +295,39 @@ FocusScope {
                     //                    KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optLanguage
                 }
-                //                SimpleButton {
-                //                    id: optStorageCapacity
+                /*
+                SimpleButton {
+                    id: optStorageCapacity
 
-                //                    label: qsTr("Storage Capacity") + api.tr
-                //                    note: qsTr("Show Storage capacity") + api.tr
-                //                    onActivate: {
-                //                        focus = true;
-                //                        //                        localeBox.focus = true;
-                //                    }
-                //                    onFocusChanged: container.onFocus(this)
-                //                    KeyNavigation.up: optStorageDevices
-                //                    KeyNavigation.down: optLanguage
-                //                }
+                    label: qsTr("Storage Capacity") + api.tr
+                    note: qsTr("Show Storage capacity") + api.tr
+                    onActivate: {
+                        focus = true;
+                        //                        localeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optStorageDevices
+                    KeyNavigation.down: optLanguage
+                }
+                */
                 SectionTitle {
                     text: qsTr("System Language") + api.tr
                     first: true
                 }
                 MultivalueOption {
                     id: optLanguage
-
+                    property string parameterName : "system.language"
                     label: qsTr("Language") + api.tr
                     note: qsTr("Set your language interface") + api.tr
                     value: api.internal.settings.locales.currentName
 
+                    /* pegasus language format :
+                    ar ,bs, de, en-GB, en, es, fr, hu, ko, nl, pt-BR, ru, zh, zh-TW
+                    recalbox language format
+                    ## Set the language of the system (fr_FR,en_US,en_GB,de_DE,pt_BR,es_ES,it_IT,eu_ES,tr_TR,zh_CN)
+                    system.language=en_US */
                     onActivate: {
-                        focus = true;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
@@ -416,7 +426,11 @@ FocusScope {
         index: api.internal.settings.locales.currentIndex
 
         onClose: content.focus = true
-        onSelect: api.internal.settings.locales.currentIndex = index
+        onSelect: {
+            api.internal.settings.locales.currentIndex = index;
+            /* Set recalbox settings on same time */
+            api.internal.recalbox.parameterslist.currentIndex = index;
+        }
     }
     MultivalueBox {
         id: themeBox
