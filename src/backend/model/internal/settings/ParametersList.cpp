@@ -48,7 +48,7 @@ QStringList GetParametersList(QString Parameter)
     {
         /*## set the keyboard layout (fr,en,de,us,es)
         system.kblayout=us*/
-        ListOfValue << "fr" << "en" << "de" << "us" << "es";
+        ListOfValue << "fr" << "gb" << "de" << "us" << "es";
     }
     else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
     {
@@ -307,6 +307,12 @@ void ParametersList::save_selected_parameter()
         {
             AudioController::Instance().SetVolume(RecalboxConf::Instance().GetAudioVolume());
         }
+    }
+    else if (m_parameter == "system.kblayout")
+    {
+        /*Log::debug(LOGMSG("system.kblayout = %1").arg(value.name));
+        ## set the keyboard layout (fr,en,de,us,es) */
+        int exitcode = system(qPrintable(QStringLiteral("setxkbmap %1").arg(value.name)));
     }
 }
 
