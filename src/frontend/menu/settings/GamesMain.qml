@@ -205,7 +205,7 @@ FocusScope {
                     id: optGameRewind
 
                     label: qsTr("Game rewind") + api.tr
-                    note: qsTr("Set rewind for all emulators 'Only work with Retroarch' ") + api.tr
+                    note: qsTr("Set rewind for all emulators 'Only work with Retroarch'") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.rewind")
                     onCheckedChanged: {

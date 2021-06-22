@@ -202,7 +202,7 @@ FocusScope {
                     id: optGamelistsOnly
 
                     label: qsTr("Gamelist only") + api.tr
-                    note: qsTr("Once enabled, only files from gamelist will be take into account. (Best game file loading ;-)") + api.tr
+                    note: qsTr("Once enabled, only files from gamelist will be take into account. \n(Best game file loading ;-)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistonly")
                     onCheckedChanged: {

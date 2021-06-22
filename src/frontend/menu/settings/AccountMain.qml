@@ -121,7 +121,7 @@ FocusScope {
                 SimpleButton {
                     id: optRetroachievementUsername
                     label: qsTr("Connect retroachievement") + api.tr
-                    note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/ ") + api.tr
+                    note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
 
                     TextField {
                         id: retroachievementUsername
