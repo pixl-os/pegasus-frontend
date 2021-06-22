@@ -108,7 +108,7 @@ FocusScope {
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Pair Bluetooth Controllers") + api.tr
+                    label: qsTr("Pair bluetooth controllers") + api.tr
                     note: qsTr("connect your pads") + api.tr
                     onActivate: {
                         focus = true;
@@ -148,7 +148,7 @@ FocusScope {
                 SimpleButton {
                     id: optAdvancedControllers
 
-                    label: qsTr("Advanced Controllers Configuration") + api.tr
+                    label: qsTr("Advanced controllers configuration") + api.tr
                     note: qsTr("Choose your drivers or Special Controllers") + api.tr
 
                     Text {
@@ -174,13 +174,13 @@ FocusScope {
                     KeyNavigation.down: optInputP1
                 }
                 SectionTitle {
-                    text: qsTr("Controllers Input") + api.tr
+                    text: qsTr("Controllers inputs") + api.tr
                     first: true
                 }
                 SimpleButton {
                     id: optInputP1
 
-                    label: qsTr("Input players 1") + api.tr
+                    label: qsTr("Input player 1") + api.tr
                     onActivate: {
                         focus = true;
                         root.openInputP1();
@@ -192,7 +192,7 @@ FocusScope {
                 SimpleButton {
                     id: optInputP2
 
-                    label: qsTr("Input players 2") + api.tr
+                    label: qsTr("Input player 2") + api.tr
                     onActivate: {
                         focus = true;
                         root.openInputP2();
@@ -204,7 +204,7 @@ FocusScope {
                 SimpleButton {
                     id: optInputP3
 
-                    label: qsTr("Input players 3") + api.tr
+                    label: qsTr("Input player 3") + api.tr
                     onActivate: {
                         focus = true;
                         root.openInputP3();
@@ -216,7 +216,7 @@ FocusScope {
                 SimpleButton {
                     id: optInputP4
 
-                    label: qsTr("Input players 4") + api.tr
+                    label: qsTr("Input player 4") + api.tr
                     onActivate: {
                         focus = true;
                         root.openInputP4();

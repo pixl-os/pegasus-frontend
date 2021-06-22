@@ -48,7 +48,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Account > Netplay Information") + api.tr
+        text: qsTr("Accounts > Netplay information") + api.tr
         z: 2
     }
 }

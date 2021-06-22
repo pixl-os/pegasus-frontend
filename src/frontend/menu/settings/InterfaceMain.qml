@@ -144,7 +144,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Change menu controls") + api.tr
-                    note: qsTr("change control assignation only in menu") + api.tr
+                    note: qsTr("Change control assignation only in menu") + api.tr
 
                     Text {
                         id: pointeroptMenuControlsConfig
@@ -201,7 +201,7 @@ FocusScope {
                 ToggleOption {
                     id: optGamelistsOnly
 
-                    label: qsTr("Gamelist Only") + api.tr
+                    label: qsTr("Gamelist only") + api.tr
                     note: qsTr("Once enabled, only files from gamelist will be take into account. (Best game file loading ;-)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistonly")

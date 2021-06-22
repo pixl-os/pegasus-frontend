@@ -48,7 +48,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Games > Bios Checking") + api.tr
+        text: qsTr("Games > Bios checking") + api.tr
         z: 2
     }
 }

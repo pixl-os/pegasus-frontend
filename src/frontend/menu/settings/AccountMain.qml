@@ -108,7 +108,7 @@ FocusScope {
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Activate Retroachievement") + api.tr
+                    label: qsTr("Activate retroachievement") + api.tr
                     note: qsTr("Achievements to your favourites retro games.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements")
@@ -120,7 +120,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementUsername
-                    label: qsTr("Connect Retroachievement") + api.tr
+                    label: qsTr("Connect retroachievement") + api.tr
                     note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/ ") + api.tr
 
                     TextField {
@@ -141,7 +141,7 @@ FocusScope {
                 SimpleButton {
                     id: optRetroachievementPassword
 //                    label: qsTr("Connect Retroachievement") + api.tr
-                    note: qsTr("then login with your username and password \nPlease valdidate with enter") + api.tr
+                    note: qsTr("then login with your username and password") + api.tr
 
                     TextField {
                         id: retroachievementPassword
@@ -162,8 +162,8 @@ FocusScope {
                 ToggleOption {
                     id: optHardcoreRetroachievementActivate
 
-                    label: qsTr("Hardcore Retroachievement") + api.tr
-                    note: qsTr("Unlock Trophies without cheats and rewind. \nOnly work with Retroarch cores.") + api.tr
+                    label: qsTr("Hardcore retroachievement") + api.tr
+                    note: qsTr("Unlock trophies without cheats and rewind. \nOnly work with Retroarch cores.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.hardcore")
                     onCheckedChanged: {
@@ -193,7 +193,7 @@ FocusScope {
                 SimpleButton {
                     id: optNetplayInformation
 
-                    label: qsTr("Netplay Information") + api.tr
+                    label: qsTr("Netplay information") + api.tr
                     note: qsTr("Show netplay information roms etc ...") + api.tr
 
                     Text {
@@ -220,7 +220,7 @@ FocusScope {
                 ToggleOption {
                     id: optNetplayActivate
 
-                    label: qsTr("Activate Netplay") + api.tr
+                    label: qsTr("Activate netplay") + api.tr
                     note: qsTr("Play with your friends online") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.netplay")
@@ -236,8 +236,8 @@ FocusScope {
                 MultivalueOption {
                     id: optNetplayNickname
 
-                    label: qsTr("Netplay Nickname") + api.tr
-                    note: qsTr("Set your Netplay nickname, \nPlease valdidate with enter") + api.tr
+                    label: qsTr("Netplay nickname") + api.tr
+                    note: qsTr("Set your netplay nickname") + api.tr
 
                     //value: api.internal.settings.locales.currentName
                     TextField {
@@ -257,13 +257,13 @@ FocusScope {
                     KeyNavigation.down: optNetplayPswdClientActivate
                 }
                 SectionTitle {
-                    text: qsTr("Password Netplay") + api.tr
+                    text: qsTr("Password netplay") + api.tr
                     first: true
                 }
                 ToggleOption {
                     id: optNetplayPswdClientActivate
 
-                    label: qsTr("Activate password Netplay players") + api.tr
+                    label: qsTr("Activate password netplay players") + api.tr
                     note: qsTr("Set password for other players join your game") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforplayer")
@@ -281,8 +281,8 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "netplay.password.client"
 
-                    label: qsTr("Password Netplay players") + api.tr
-                    note: qsTr("Choose password for players session") + api.tr
+                    label: qsTr("Password netplay players") + api.tr
+                    note: qsTr("Choose password for join session") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
@@ -302,8 +302,8 @@ FocusScope {
                 ToggleOption {
                     id: optNetplayPswdViewerActivate
 
-                    label: qsTr("Activate password for Netplay viewer") + api.tr
-                    note: qsTr("Set password for viewer") + api.tr
+                    label: qsTr("Activate password for netplay spectator") + api.tr
+                    note: qsTr("Set password for netplay spectator") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforviewer")
                     onCheckedChanged: {
@@ -320,8 +320,8 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "netplay.password.viewer"
 
-                    label: qsTr("Password Netplay Spectator") + api.tr
-                    note: qsTr("Set password for netplay spectator") + api.tr
+                    label: qsTr("Password netplay spectator") + api.tr
+                    note: qsTr("Choose password for netplay spectator") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
