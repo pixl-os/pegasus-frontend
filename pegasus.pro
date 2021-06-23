@@ -21,7 +21,7 @@ qtHaveModule(testlib):!android {
 }
 
 # Translations
-TRANSLATIONS = lang/pegasus_en.ts lang/pegasus_fr.ts
+TRANSLATIONS = lang/pegasus_fr.ts ## lang/pegasus_en.ts
 
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
 include($${TOP_SRCDIR}/src/print_config.pri)
