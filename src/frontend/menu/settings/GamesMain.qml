@@ -99,7 +99,7 @@ FocusScope {
                 }
 
                 SectionTitle {
-                    text: qsTr("Game Screen") + api.tr
+                    text: qsTr("Game screen") + api.tr
                     first: true
                 }
                 MultivalueOption {
@@ -110,7 +110,7 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "global.ratio"
 
-                    label: qsTr("Game Ratio") + api.tr
+                    label: qsTr("Game ratio") + api.tr
                     note: qsTr("Set ratio for all emulators (auto,4/3,16/9,16/10,etc...)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
@@ -131,7 +131,7 @@ FocusScope {
                 ToggleOption {
                     id: optPixelPerfect
 
-                    label: qsTr("Pixel Perfect") + api.tr
+                    label: qsTr("Pixel perfect") + api.tr
                     note: qsTr("Once enabled, your screen will be cropped, and you will have a pixel perfect image") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.integerscale")
@@ -146,7 +146,7 @@ FocusScope {
                 ToggleOption {
                     id: optSmoothGame
 
-                    label: qsTr("Smooth Games") + api.tr
+                    label: qsTr("Smooth games") + api.tr
                     note: qsTr("Set smooth for all emulators") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.smooth")
@@ -185,7 +185,7 @@ FocusScope {
                 ToggleOption {
                     id: optShowFramerate
 
-                    label: qsTr("Show Framerate") + api.tr
+                    label: qsTr("Show framerate") + api.tr
                     note: qsTr("Show FPS in game") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.showfps")
@@ -198,14 +198,14 @@ FocusScope {
                     KeyNavigation.down: optGameRewind
                 }
                 SectionTitle {
-                    text: qsTr("Gameplay Option") + api.tr
+                    text: qsTr("Gameplay options") + api.tr
                     first: true
                 }
                 ToggleOption {
                     id: optGameRewind
 
-                    label: qsTr("Game Rewind") + api.tr
-                    note: qsTr("Set rewind for all emulators 'Only work with Retroarch' ") + api.tr
+                    label: qsTr("Game rewind") + api.tr
+                    note: qsTr("Set rewind for all emulators 'Only work with Retroarch'") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.rewind")
                     onCheckedChanged: {
@@ -219,7 +219,7 @@ FocusScope {
                 ToggleOption {
                     id: optAutoSave
 
-                    label: qsTr("Auto Save/load") + api.tr
+                    label: qsTr("Auto save/load") + api.tr
                     note: qsTr("Set autosave/load savestate for all emulators") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.autosave")
@@ -234,7 +234,7 @@ FocusScope {
 
                 }
                 SectionTitle {
-                    text: qsTr("Other Option") + api.tr
+                    text: qsTr("Other options") + api.tr
                     first: true
                 }
 //                SimpleButton {
@@ -268,7 +268,7 @@ FocusScope {
                 SimpleButton {
                     id: optAdvancedEmulator
 
-                    label: qsTr("Advandced Emulator Settings") + api.tr
+                    label: qsTr("Advandced emulators settings") + api.tr
                     note: qsTr("choose emulator, ratio and more by system") + api.tr
 
                     Text {

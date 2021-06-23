@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Games > Advanced Emulator") + api.tr
+        text: qsTr("Games > Advanced emulators settings") + api.tr
         z: 2
     }
     Flickable {

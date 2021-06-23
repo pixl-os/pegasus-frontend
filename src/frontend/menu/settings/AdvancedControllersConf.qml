@@ -48,7 +48,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Controllers > Advanced Controllers Configuration") + api.tr
+        text: qsTr("Controllers > Advanced controllers configuration") + api.tr
         z: 2
     }
     Flickable {
@@ -95,7 +95,7 @@ FocusScope {
                 }
 
                 SectionTitle {
-                    text: qsTr("Sony Controllers") + api.tr
+                    text: qsTr("Sony controllers") + api.tr
                     first: true
                 }
                 ToggleOption {
@@ -104,8 +104,8 @@ FocusScope {
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Enable controllers") + api.tr
-                    note: qsTr("Enable Sony Playstation 3,4,5 controllers support") + api.tr
+                    label: qsTr("Enable Sony Playstation bluetooth controllers") + api.tr
+                    note: qsTr("Sony Playstation 3,4,5 controllers supported") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.ps3.enabled")
                     onCheckedChanged: {
@@ -120,7 +120,7 @@ FocusScope {
                     property string parameterName :"controllers.ps3.driver"
                     // ## Choose a driver between bluez, official and shanwan
                     // controllers.ps3.driver=bluez
-                    label: qsTr("Sony controllers drivers Bluetooth") + api.tr
+                    label: qsTr("Sony controllers drivers bluetooth") + api.tr
                     note: qsTr("Choose a driver between bluez, official and shanwan") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
@@ -136,7 +136,7 @@ FocusScope {
                     KeyNavigation.down: optDB9Controllers
                 }
                 SectionTitle {
-                    text: qsTr("Db9 Controllers") + api.tr
+                    text: qsTr("Db9 controllers") + api.tr
                     first: true
                 }
                 ToggleOption {
@@ -169,7 +169,7 @@ FocusScope {
                     KeyNavigation.down: optGameconControllers
                 }
                 SectionTitle {
-                    text: qsTr("Gamecon Controllers") + api.tr
+                    text: qsTr("Gamecon controllers") + api.tr
                     first: true
                 }
                 ToggleOption {
@@ -220,7 +220,7 @@ FocusScope {
                     KeyNavigation.down: optWiiSensorsBars
                 }
                 SectionTitle {
-                    text: qsTr("Dolphin Emulators Controllers") + api.tr
+                    text: qsTr("Dolphin emulators controllers") + api.tr
                     first: true
                 }
                 ToggleOption {
@@ -241,8 +241,8 @@ FocusScope {
                 ToggleOption {
                     id: optRealWiimotes
                     //wii.realwiimotes=0
-                    label: qsTr("Use authentics Wiimotes Controllers") + api.tr
-                    note: qsTr("set realwiimotes to 1 to use authentics Wiimotes pads in dolphin-emu") + api.tr
+                    label: qsTr("Use authentics Wiimotes controllers") + api.tr
+                    note: qsTr("Use authentics Wiimotes pads in wii emulator (dolphin-emu)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("wii.realwiimotes")
                     onCheckedChanged: {
@@ -256,7 +256,7 @@ FocusScope {
                     id: optGcControllers
                     //gamecube.realgamecubepads=0
                     label: qsTr("Use authentics Gamecube pads") + api.tr
-                    note: qsTr("Real gamecube pads work only in dolphin with (Wiiu adapter gamecube controllers)") + api.tr
+                    note: qsTr("Use authentics Gamecube pads in Gamecube emulator (dolphin-emu)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("gamecube.realgamecubepads")
                     onCheckedChanged: {
@@ -267,13 +267,13 @@ FocusScope {
                     KeyNavigation.down: optJoyconControllers
                 }
                 SectionTitle {
-                    text: qsTr("Joycon Controllers") + api.tr
+                    text: qsTr("Joycon controllers") + api.tr
                     first: true
                 }
                 ToggleOption {
                     id: optJoyconControllers
                     //controllers.joycond.enabled=1
-                    label: qsTr("Joycon Support") + api.tr
+                    label: qsTr("Joycon support") + api.tr
                     note: qsTr("Use authentics Joycon pads") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.joycond.enabled")

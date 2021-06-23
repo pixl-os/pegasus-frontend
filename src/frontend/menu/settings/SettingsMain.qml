@@ -101,7 +101,7 @@ FocusScope {
                 }
 
                 SectionTitle {
-                    text: qsTr("Sound Configuration") + api.tr
+                    text: qsTr("Sound configuration") + api.tr
                     first: true
                 }
                 MultivalueOption {
@@ -114,7 +114,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Mode") + api.tr
-                    note: qsTr("Choose Audio Mode") + api.tr
+                    note: qsTr("Choose audio mode") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     font: globalFonts.ion
 
@@ -139,7 +139,7 @@ FocusScope {
                     property string parameterName : "audio.device"
 
                     label: qsTr("Output") + api.tr
-                    note: qsTr("Choose Audio Output") + api.tr
+                    note: qsTr("Choose audio output") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     font: globalFonts.awesome
                     
@@ -180,7 +180,7 @@ FocusScope {
 
                     //property of SliderOption to set
                     label: qsTr("Volume") + api.tr
-                    note: qsTr("Set Audio Volume") + api.tr
+                    note: qsTr("Set audio volume") + api.tr
                     // in slider object
                     max : 100
                     min : 0
@@ -268,7 +268,7 @@ FocusScope {
                 }
                 */
                 SectionTitle {
-                    text: qsTr("Storage Configuration") + api.tr
+                    text: qsTr("Storage configuration") + api.tr
                     first: true
                 }
                 MultivalueOption {
@@ -311,7 +311,7 @@ FocusScope {
                 }
                 */
                 SectionTitle {
-                    text: qsTr("System Language") + api.tr
+                    text: qsTr("System language") + api.tr
                     first: true
                 }
                 MultivalueOption {
@@ -340,7 +340,7 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.kblayout"
 
-                    label: qsTr("Keyboard Layout") + api.tr
+                    label: qsTr("Keyboard layout") + api.tr
                     note: qsTr("Change keyboard layout language") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
 

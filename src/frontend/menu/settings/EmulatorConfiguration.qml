@@ -42,7 +42,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Games > Advanced Emulator > " + system.name ) + api.tr
+        text: qsTr("Games > Advanced emulators > " + system.name ) + api.tr
         z: 2
     }
     Flickable {
@@ -89,7 +89,7 @@ FocusScope {
                 }
 
                 SectionTitle {
-                    text: qsTr("Game Screen") + api.tr
+                    text: qsTr("Game screen") + api.tr
                     first: true
                 }
                 MultivalueOption {
@@ -100,7 +100,7 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : system.shortName + ".ratio"
 
-                    label: qsTr("Game Ratio") + api.tr
+                    label: qsTr("Game ratio") + api.tr
                     note: qsTr("Set ratio for this system (auto,4/3,16/9,16/10,etc...)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
@@ -122,7 +122,7 @@ FocusScope {
                 ToggleOption {
                     id: optSystemSmoothGame
 
-                    label: qsTr("Smooth Games") + api.tr
+                    label: qsTr("Smooth games") + api.tr
                     note: qsTr("Set smooth for this system") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(system.shortName + ".smooth")
@@ -159,14 +159,14 @@ FocusScope {
                     KeyNavigation.down: optSystemGameRewind
                 }
                 SectionTitle {
-                    text: qsTr("Gameplay Option") + api.tr
+                    text: qsTr("Gameplay options") + api.tr
                     first: true
                 }
                 ToggleOption {
                     id: optSystemGameRewind
 
-                    label: qsTr("Game Rewind") + api.tr
-                    note: qsTr("Set rewind for this system 'Only work with Retroarch' ") + api.tr
+                    label: qsTr("Game rewind") + api.tr
+                    note: qsTr("Set rewind for this system 'Only work with Retroarch'") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(system.shortName + ".rewind")
                     onCheckedChanged: {
@@ -180,7 +180,7 @@ FocusScope {
                 ToggleOption {
                     id: optSystemAutoSave
 
-                    label: qsTr("Auto Save/load") + api.tr
+                    label: qsTr("Auto save/load") + api.tr
                     note: qsTr("Set autosave/load savestate for this system") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(system.shortName + ".autosave")
