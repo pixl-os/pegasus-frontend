@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import QtQuick 2.12
 
 
 FocusScope {
@@ -59,167 +59,167 @@ FocusScope {
         height: dialogBox.height
     }
 
-//    Rectangle {
-//        anchors.centerIn: dialogBox
-//        width: dialogBox.width
-//        height: dialogBox.height
-//        radius: vpx(8)
-//        color: "#484"
-//    }
+    //    Rectangle {
+    //        anchors.centerIn: dialogBox
+    //        width: dialogBox.width
+    //        height: dialogBox.height
+    //        radius: vpx(8)
+    //        color: "#484"
+    //    }
 
     Column {
-            id: dialogBox
+        id: dialogBox
 
-            width: parent.height * 0.66
-            anchors.centerIn: parent
-//            scale: 0.5
+        width: parent.height * 0.66
+        anchors.centerIn: parent
+        //            scale: 0.5
 
-            Behavior on opacity { NumberAnimation { duration: 125 } }
+        Behavior on opacity { NumberAnimation { duration: 125 } }
 
-            // title bar
-            Rectangle {
-                id: titleBar
-                width: parent.width
-                height: root.titleTextSize * 2.25
-                color: "#222"
-                radius: vpx(8)
+        // title bar
+        Rectangle {
+            id: titleBar
+            width: parent.width
+            height: root.titleTextSize * 2.25
+            color: themeColor.main //"#222"
+//            radius: vpx(8)
 
-                Text {
-                    id: titleText
+            Text {
+                id: titleText
 
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        left: parent.left
-                        leftMargin: root.titleTextSize * 0.75
-                    }
-
-                    color: "#999"
-                    font {
-                        bold: true
-                        pixelSize: root.titleTextSize
-                        family: globalFonts.sans
-                    }
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    leftMargin: root.titleTextSize * 0.75
                 }
 
-                Text {
-                    id: symbolText
-
-                    anchors {
-                        verticalCenter: parent.verticalCenter
-                        right: parent.right
-                        rightMargin: root.titleTextSize * 0.75
-                    }
-
-                    color: "#6ff"
-                    font {
-                        bold: true
-                        pixelSize: root.titleTextSize
-                        family: globalFonts.sans
-                    }
+                color: themeColor.textLabel //"#999"
+                font {
+                    bold: true
+                    pixelSize: root.titleTextSize
+                    family: globalFonts.sans
                 }
             }
 
-            // text area
+            Text {
+                id: symbolText
+
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    right: parent.right
+                    rightMargin: root.titleTextSize * 0.75
+                }
+
+                color: themeColor.textLabel //"#6ff"
+                font {
+                    bold: true
+                    pixelSize: root.titleTextSize
+                    family: globalFonts.sans
+                }
+            }
+        }
+
+        // text area
+        Rectangle {
+            width: parent.width
+            height: messageText.height + 3 * root.textSize
+            color: themeColor.secondary //"#222"
+            //                radius: vpx(8)
+
+            Text {
+                id: messageText
+
+                anchors.centerIn: parent
+                width: parent.width - 2 * root.textSize
+
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+
+                color: themeColor.textLabel //"#999"
+                font {
+                    pixelSize: root.textSize
+                    family: globalFonts.sans
+                }
+            }
+        }
+
+        // button row
+        Row {
+            width: parent.width
+            height: root.textSize * 2
+
             Rectangle {
-                width: parent.width
-                height: messageText.height + 3 * root.textSize
-                color: "#222"
-                radius: vpx(8)
+                id: okButton
+
+                width: parent.width * 0.5
+                height: root.textSize * 2.25
+                color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
+//                radius: vpx(8)
+
+                Keys.onPressed: {
+                    if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                        event.accepted = true;
+                        root.accept();
+                    }
+                }
 
                 Text {
-                    id: messageText
-
                     anchors.centerIn: parent
-                    width: parent.width - 2 * root.textSize
 
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
-
-                    color: "#999"
+                    text: qsTr("Ok") + api.tr
+                    color: themeColor.textLabel //"#999"
                     font {
                         pixelSize: root.textSize
                         family: globalFonts.sans
                     }
                 }
+
+                MouseArea {
+                    id: okMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: root.accept()
+                }
             }
 
-            // button row
-            Row {
-                width: parent.width
-                height: root.textSize * 2
+            Rectangle {
+                id: cancelButton
 
-                Rectangle {
-                    id: okButton
+                focus: true
 
-                    width: parent.width * 0.5
-                    height: root.textSize * 2.25
-                    color: (focus || okMouseArea.containsMouse) ? "green" : "#222"
-                    radius: vpx(8)
+                width: parent.width * 0.5
+                height: root.textSize * 2.25
+                color: (focus || cancelMouseArea.containsMouse) ? "darkRed" : themeColor.main //"#222"
+//                radius: vpx(8)
 
-                    Keys.onPressed: {
-                        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                            event.accepted = true;
-                            root.accept();
-                        }
-                    }
-
-                    Text {
-                        anchors.centerIn: parent
-
-                        text: qsTr("Ok") + api.tr
-                        color: "#999"
-                        font {
-                            pixelSize: root.textSize
-                            family: globalFonts.sans
-                        }
-                    }
-
-                    MouseArea {
-                        id: okMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: root.accept()
+                KeyNavigation.left: okButton
+                Keys.onPressed: {
+                    if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                        event.accepted = true;
+                        root.cancel();
                     }
                 }
 
-                Rectangle {
-                    id: cancelButton
+                Text {
+                    anchors.centerIn: parent
 
-                    focus: true
-
-                    width: parent.width * 0.5
-                    height: root.textSize * 2.25
-                    color: (focus || cancelMouseArea.containsMouse) ? "#ccef1b08" : "#222"
-                    radius: vpx(8)
-
-                    KeyNavigation.left: okButton
-                    Keys.onPressed: {
-                        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                            event.accepted = true;
-                            root.cancel();
-                        }
+                    text: qsTr("Cancel") + api.tr
+                    color: themeColor.textLabel //"#999"
+                    font {
+                        pixelSize: root.textSize
+                        family: globalFonts.sans
                     }
+                }
 
-                    Text {
-                        anchors.centerIn: parent
-
-                        text: qsTr("Cancel") + api.tr
-                        color: "#999"
-                        font {
-                            pixelSize: root.textSize
-                            family: globalFonts.sans
-                        }
-                    }
-
-                    MouseArea {
-                        id: cancelMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: root.cancel()
-                    }
+                MouseArea {
+                    id: cancelMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: root.cancel()
                 }
             }
         }
+    }
 
     states: [
         State {

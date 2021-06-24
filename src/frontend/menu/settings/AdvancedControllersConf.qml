@@ -134,6 +134,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDB9Controllers
+                    visible: optPs3Controllers.checked
                 }
                 SectionTitle {
                     text: qsTr("Db9 controllers") + api.tr
@@ -167,6 +168,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGameconControllers
+                    visible: optDB9Controllers.checked
                 }
                 SectionTitle {
                     text: qsTr("Gamecon controllers") + api.tr
@@ -200,6 +202,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optArcadeStick
+                    visible: optGameconControllers.checked
                 }
                 SectionTitle {
                     text: qsTr("Arcade Stick") + api.tr
