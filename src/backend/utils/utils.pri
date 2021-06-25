@@ -76,8 +76,51 @@ HEADERS += \
 	$$PWD/rcheevos/src/rapi/rc_api_runtime.h \
 	$$PWD/rcheevos/src/rcheevos/rc_compat.h \
 	$$PWD/rcheevos/src/rcheevos/rc_internal.h \
-	$$PWD/rcheevos/src/rhash/md5.h
-    
+	$$PWD/rcheevos/src/rhash/md5.h \
+	$$PWD/libretro-common/include/compat/strl.h \
+	$$PWD/libretro-common/include/compat/posix_string.h \
+	$$PWD/libretro-common/include/compat/strcasestr.h \
+	$$PWD/libretro-common/include/compat/fopen_utf8.h \
+	$$PWD/libretro-common/include/compat/msvc.h \
+	$$PWD/libretro-common/include/encodings/utf.h \
+	$$PWD/libretro-common/include/encodings/crc32.h \
+	$$PWD/libretro-common/include/file/file_path.h \
+	$$PWD/libretro-common/include/format/cdfs.h \
+	$$PWD/libretro-common/include/streams/chd_stream.h \
+	$$PWD/libretro-common/include/streams/interface_stream.h \
+	$$PWD/libretro-common/include/streams/file_stream.h \
+	$$PWD/libretro-common/include/streams/trans_stream.h \
+	$$PWD/libretro-common/include/streams/rzip_stream.h	\
+	$$PWD/libretro-common/include/streams/memory_stream.h	\
+	$$PWD/libretro-common/include/string/stdstring.h \
+	$$PWD/libretro-common/include/libretro.h \
+	$$PWD/libretro-common/include/retro_common.h \
+	$$PWD/libretro-common/include/retro_common_api.h \
+	$$PWD/libretro-common/include/retro_inline.h \
+	$$PWD/libretro-common/include/retro_miscellaneous.h \
+	$$PWD/libretro-common/include/retro_endianness.h \
+	$$PWD/libretro-common/include/memmap.h \
+	$$PWD/libretro-common/include/memalign.h \
+	$$PWD/libretro-common/include/cheevos_util.h \
+	$$PWD/libretro-common/include/boolean.h \
+	$$PWD/libretro-common/include/retro_assert.h \
+	$$PWD/libretro-common/include/retro_math.h \
+	$$PWD/libretro-common/include/retro_timer.h \
+	$$PWD/libretro-common/include/retro_dirent.h \
+	$$PWD/libretro-common/include/retro_environment.h \
+	$$PWD/libretro-common/include/time/rtime.h \
+	$$PWD/libretro-common/include/rthreads/rthreads.h \
+	$$PWD/libretro-common/include/vfs/vfs.h \
+    $$PWD/libretro-common/include/vfs/vfs_implementation.h \
+	$$PWD/libretro-common/include/vfs/vfs_implementation_cdrom.h \
+	$$PWD/libretro-common/include/cdrom/cdrom.h \
+	$$PWD/libretro-common/include/libchdr/chd.h \
+	$$PWD/libretro-common/include/libchdr/coretypes.h \
+	$$PWD/libretro-common/include/lists/dir_list.h \
+	$$PWD/libretro-common/include/lists/file_list.h \
+	$$PWD/libretro-common/include/lists/string_list.h
+
+	
 SOURCES += \
     $$PWD/CommandTokenizer.cpp \
     $$PWD/DiskCachedNAM.cpp \
@@ -135,8 +178,37 @@ SOURCES += \
 	$$PWD/rcheevos/src/rhash/cdreader.c \
 	$$PWD/rcheevos/src/rhash/hash.c \
 	$$PWD/rcheevos/src/rhash/md5.c \
-	$$PWD/rcheevos/src/rurl/url.c
-    
+	$$PWD/rcheevos/src/rurl/url.c \
+	$$PWD/libretro-common/compat/compat_strl.c \
+	$$PWD/libretro-common/compat/compat_posix_string.c \
+	$$PWD/libretro-common/compat/compat_strcasestr.c \
+	$$PWD/libretro-common/compat/fopen_utf8.c \
+	$$PWD/libretro-common/encodings/encoding_utf.c \
+	$$PWD/libretro-common/encodings/encoding_crc32.c \
+	$$PWD/libretro-common/formats/cdfs/cdfs.c \
+	$$PWD/libretro-common/string/stdstring.c \
+	$$PWD/libretro-common/file/file_path.c \
+	$$PWD/libretro-common/file/retro_dirent.c \
+	$$PWD/libretro-common/time/rtime.c \
+	$$PWD/libretro-common/rthreads/rthreads.c \
+	$$PWD/libretro-common/streams/chd_stream.c \
+	$$PWD/libretro-common/streams/interface_stream.c \
+	$$PWD/libretro-common/streams/file_stream.c \
+	$$PWD/libretro-common/streams/memory_stream.c \
+	$$PWD/libretro-common/streams/trans_stream.c \
+	$$PWD/libretro-common/streams/rzip_stream.c \
+	$$PWD/libretro-common/vfs/vfs_implementation.c \
+	$$PWD/libretro-common/vfs/vfs_implementation_cdrom.c \
+	$$PWD/libretro-common/cdrom/cdrom.c \
+	$$PWD/libretro-common/lists/dir_list.c \
+	$$PWD/libretro-common/lists/file_list.c \
+	$$PWD/libretro-common/lists/string_list.c \
+	$$PWD/libretro-common/lists/vector_list.c \
+	$$PWD/libretro-common/memmap/memmap.c \
+	$$PWD/libretro-common/memmap/memalign.c
+	
+	
+
 !isEmpty(USE_SDL_GAMEPAD) {
     HEADERS += $$PWD/GamepadManagerSDL2.h
     HEADERS += $$PWD/sdl2/ISynchronousEvent.h
