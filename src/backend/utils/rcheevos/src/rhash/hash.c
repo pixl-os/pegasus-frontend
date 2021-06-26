@@ -577,6 +577,15 @@ static int rc_hash_arcade(char hash[33], const char* path)
   /* arcade hash is just the hash of the filename (no extension) - the cores are pretty stringent about having the right ROM data */
   const char* filename = rc_path_get_filename(path);
   const char* ext = rc_path_get_extension(filename);
+  //char message[128];
+  //snprintf(message, sizeof(message), "rc_hash_arcade - filename: %s", strdup(filename));
+  //verbose_message_callback(message);
+    
+  
+  //char message1[128];
+  //sprintf(message1, sizeof(message1), "rc_hash_arcade - ext: %s", strdup(ext));
+  //verbose_message_callback(message1);
+  
   size_t filename_length = ext - filename - 1;
 
   /* fbneo supports loading subsystems by using specific folder names.
@@ -1769,6 +1778,11 @@ void rc_hash_initialize_iterator(struct rc_hash_iterator* iterator, const char* 
   do
   {
     const char* ext = rc_path_get_extension(path);
+//    char message_path[256];
+//    snprintf(message_path, sizeof(message_path), "The file path is '%s' with extension: '%s'", strdup(path), strdup(ext));  
+//    verbose_message_callback(message_path);
+
+
     switch (tolower(*ext))
     {
       case '2':
@@ -2103,7 +2117,14 @@ void rc_hash_initialize_iterator(struct rc_hash_iterator* iterator, const char* 
   } while (1);
 
   if (need_path && !iterator->path)
+  {
+	//verbose_message_callback("iterator->path = strdup(path);");
     iterator->path = strdup(path);
+	  //iterator->path = rc_strdup(path);
+    // char message_path2[256];
+    // snprintf(message_path2, sizeof(message_path2), "iterator->path is equal to '%s' and path is equal to '%s'", strdup(iterator->path), strdup(path));
+    // verbose_message_callback(message_path2);
+  }
 
   /* if we didn't match the extension, default to something that does a whole file hash */
   if (!iterator->consoles[0])
@@ -2143,9 +2164,18 @@ int rc_hash_iterate(char hash[33], struct rc_hash_iterator* iterator)
     }
 
     if (iterator->buffer)
+	{
+	  // verbose_message_callback("rc_hash_generate_from_buffer");
       result = rc_hash_generate_from_buffer(hash, next_console, iterator->buffer, iterator->buffer_size);
+	}
     else
+	{
+	  // verbose_message_callback("rc_hash_generate_from_file");
+      // char message1[128];
+      // snprintf(message1, sizeof(message1), "iterator->path: '%s'", iterator->path);
+      // verbose_message_callback(message1);
       result = rc_hash_generate_from_file(hash, next_console, iterator->path);
+	}
 
   } while (!result);
 

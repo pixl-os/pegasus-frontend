@@ -16,6 +16,7 @@
 #include "utils/Zip.h"
 
 //for retroachievements management coming from libretro and rcheevos
+#include "utils/libretro-common/include/libretro.h"
 #include "utils/rcheevos/include/rc_hash.h"
 #include "utils/libretro-common/include/cheevos_util.h"
 #include "utils/libretro-common/include/formats/cdfs.h"
@@ -447,6 +448,37 @@ bool get_achievements_status_from_gameid(int gameid, QString token, model::Game&
 //***********************END OF GET FUNCTIONS***********************************//
 
 //***********************START OF HASH FUNCTIONS***********************************//
+/* hooks for rc_hash library */
+
+static void* rc_hash_handle_file_open(const char* path)
+{
+   //Log::debug("Cheevos", LOGMSG("Hooked path: %1").arg(QString::fromStdString(path))); 	
+   return intfstream_open_file(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
+}
+
+//static void rc_hash_handle_file_seek(void* file_handle, size_t offset, int origin)
+static void rc_hash_handle_file_seek(void* file_handle, int64_t offset, int origin)
+{
+   intfstream_seek((intfstream_t*)file_handle, offset, origin);
+}
+
+//static size_t rc_hash_handle_file_tell(void* file_handle) 
+static int64_t rc_hash_handle_file_tell(void* file_handle)
+{
+   return intfstream_tell((intfstream_t*)file_handle);
+}
+
+static size_t rc_hash_handle_file_read(void* file_handle, void* buffer, size_t requested_bytes)
+{
+   return intfstream_read((intfstream_t*)file_handle, buffer, requested_bytes);
+}
+
+static void rc_hash_handle_file_close(void* file_handle)
+{
+   intfstream_close((intfstream_t*)file_handle);
+   CHEEVOS_FREE(file_handle);
+}
+
 static void* rc_hash_handle_cd_open_track(const char* path, uint32_t track)
 {
    cdfs_track_t* cdfs_track;
@@ -488,11 +520,39 @@ static void rc_hash_handle_cd_close_track(void* track_handle)
    }
 }
 
-static void rc_hash_handle_log_message(const char* message)
+static void rc_hash_handle_error_log_message(const char* message)
+{
+   //CHEEVOS_LOG(RCHEEVOS_TAG "%s\n", message);
+   Log::error("Cheevos", LOGMSG("%1").arg(QString::fromStdString(message))); 
+}
+
+static void rc_hash_handle_debug_log_message(const char* message)
 {
    //CHEEVOS_LOG(RCHEEVOS_TAG "%s\n", message);
    Log::debug("Cheevos", LOGMSG("%1").arg(QString::fromStdString(message))); 
 }
+
+/* end hooks */
+
+// const char* MakeEscaped(QString param)
+// {
+  // std::string escaped = param.toUtf8().constData();
+
+  // static std::string invalidChars = " '\"\\!$^&*(){}[]?;<>";
+  // const char* invalids = invalidChars.c_str();
+  // for(int i = escaped.size(); --i >= 0; )
+  // {
+    // char c = escaped.c_str()[i];
+    // for(int j = invalidChars.size(); --j >= 0; )
+      // if (c == invalids[j])
+      // {
+        // escaped.insert(i, "\\");
+        // break;
+      // }
+  // }
+
+  // return escaped.c_str();
+// }
 
 QString calculate_hash_from_file(QString rom_file, QString log_tag)
 // can calculate hash using maner of RetroAchievements to manage the following system and format of rom supported by RetroAchievements.
@@ -502,26 +562,49 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
 	char hash_iterator[33] = "";
 	int result_iterator;
 	struct rc_hash_iterator iterator;
-	struct rc_hash_cdreader cdreader;
+	//struct rc_hash_filereader filereader;
+	//struct rc_hash_cdreader cdreader;
 	
 	//init error management
-	Log::debug(log_tag, LOGMSG("rc_hash_init_error_message_callback(rc_hash_handle_log_message);"));
-	rc_hash_init_error_message_callback(rc_hash_handle_log_message);
+	//Log::debug(log_tag, LOGMSG("rc_hash_init_error_message_callback(rc_hash_handle_log_message);"));
+	//rc_hash_init_error_message_callback(rc_hash_handle_error_log_message);
+	//rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
 
-	//init_cd_reader
-    cdreader.open_track = rc_hash_handle_cd_open_track;
-    cdreader.read_sector = rc_hash_handle_cd_read_sector;
-    cdreader.close_track = rc_hash_handle_cd_close_track;
-	Log::debug(log_tag, LOGMSG("rc_hash_init_custom_cdreader(&cdreader);"));
-    rc_hash_init_custom_cdreader(&cdreader);
+    /* provide hooks for reading files */
+    // filereader.open = rc_hash_handle_file_open;
+    // filereader.seek = rc_hash_handle_file_seek;
+    // filereader.tell = rc_hash_handle_file_tell;
+    // filereader.read = rc_hash_handle_file_read;
+    // filereader.close = rc_hash_handle_file_close;
+	// Log::debug(log_tag, LOGMSG("rc_hash_init_custom_filereader(&filereader);"));
+	// rc_hash_init_custom_filereader(&filereader);
+
+    // cdreader.open_track = rc_hash_handle_cd_open_track;
+    // cdreader.read_sector = rc_hash_handle_cd_read_sector;
+    // cdreader.close_track = rc_hash_handle_cd_close_track;
+	// Log::debug(log_tag, LOGMSG("rc_hash_init_custom_cdreader(&cdreader);"));
+    // rc_hash_init_custom_cdreader(&cdreader);
 
 	
-	const char* path = rom_file.toLocal8Bit().data();
-	Log::debug(log_tag, LOGMSG("rc_hash_initialize_iterator(&iterator, path, NULL, 0);"));
+	//const char* path = PathMakeEscaped(rom_file).toUtf8().constData(); //.toLocal8Bit().data();
+	
+	const char* path = rom_file.toLocal8Bit().data(); //.toUtf8().data();
+	
+	//.toLocal8Bit().data();
+	
+	//Log::debug(log_tag, LOGMSG("Path : '%1'").arg(QString::fromUtf8(strdup(path))));
+	
+	//Log::debug(log_tag, LOGMSG("rc_hash_initialize_iterator(&iterator, path, NULL, 0);"));
 	rc_hash_initialize_iterator(&iterator, path, NULL, 0);
-	Log::debug(log_tag, LOGMSG("rc_hash_iterate(hash_iterator, &iterator);"));
+	
+	//Log::debug(log_tag, LOGMSG("rc_hash_iterate(hash_iterator, &iterator);"));
 	result_iterator = rc_hash_iterate(hash_iterator, &iterator);
-	Log::debug(log_tag, LOGMSG("rc_hash_destroy_iterator(&iterator);"));
+/* 	while (rc_hash_iterate(hash_iterator, &iterator))
+	{	
+		if (QString::fromLocal8Bit(hash_iterator) != "")
+            break;
+	} */
+	//Log::debug(log_tag, LOGMSG("rc_hash_destroy_iterator(&iterator);"));
 	rc_hash_destroy_iterator(&iterator);
 	Log::info(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));    
 	Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
