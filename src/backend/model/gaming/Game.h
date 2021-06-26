@@ -85,6 +85,7 @@ struct GameData {
 	
 	QList <RetroAchievement> retro_achievements;
 	int ra_game_id = 0;
+	QString ra_hash = 0;
 };
 
 
@@ -121,6 +122,8 @@ public:
 	
 	GETTER(const QList<RetroAchievement> &, retroAchievements, retro_achievements)
 	GETTER(int, RaGameID, ra_game_id)
+	GETTER(const QString&, RaHash, ra_hash)
+	
     
 	GETTER(const QString&, launchCmd, launch_params.launch_cmd)
     GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
@@ -152,6 +155,7 @@ public:
     SETTER(QString, EmulatorCore, launch_params.emulator_core)
 
 	SETTER(int, RaGameID, ra_game_id)
+	SETTER(QString, RaHash, ra_hash)
 	SETTER(QList<RetroAchievement>, RetroAchievements, retro_achievements)
 	
     Game& setFavorite(bool val);
@@ -192,7 +196,8 @@ public:
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
 
 	Q_PROPERTY(int RaGameID READ RaGameID CONSTANT)
-
+	Q_PROPERTY(QString RaHash READ RaHash CONSTANT)
+	
     Q_PROPERTY(QVariantMap extra READ extraMap CONSTANT)
     const QVariantMap& extraMap() const { return m_extra; }
     QVariantMap& extraMapMut() { return m_extra; }
