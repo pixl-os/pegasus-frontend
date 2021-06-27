@@ -22,6 +22,7 @@
         <file>assets/gamepad/stick.svg</file>
         <file>assets/gamepad/x.svg</file>
         <file>assets/gamepad/y.svg</file>
+        <file>assets/pixLAnime.gif</file>
         <file>dialogs/GenericOkCancelDialog.qml</file>
         <file>dialogs/RebootDialog.qml</file>
         <file>dialogs/ShutdownDialog.qml</file>
