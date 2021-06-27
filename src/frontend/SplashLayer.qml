@@ -19,7 +19,7 @@ import QtQuick 2.12
 
 Rectangle {
     id: root
-    color: "#000000"
+    color: "#000"
     anchors.fill: parent
 
     property real progress: api.internal.meta.loadingProgress
@@ -27,12 +27,11 @@ Rectangle {
 
     Behavior on progress { NumberAnimation {} }
 
-
-    Image {
+    AnimatedImage {
         id: logo
-        source: "assets/logo.png"
-        sourceSize.width: 800
+        source: "assets/pixLAnime.gif"
         width: Math.min(parent.width, parent.height)
+        speed: 1.6
         anchors.horizontalCenterOffset: 0
         anchors.topMargin: 100
         fillMode: Image.PreserveAspectFit
@@ -53,18 +52,18 @@ Rectangle {
         verticalAlignment: Image.AlignBottom
         anchors.horizontalCenter: parent.horizontalCenter
     }
-//    Image {
-//        id: logoRecalbox
-//        width: 100
-//        height: 35
-//        source: "assets/recalbox-next.svg"
-//        anchors.bottomMargin: 10
-//        anchors.bottom: parent.bottom
-//        anchors.left: logoPegasus.right
-//        fillMode: Image.PreserveAspectFit
-//        verticalAlignment: Image.AlignBottom
-//        anchors.horizontalCenter: parent.horizontalCenter
-//    }
+    //    Image {
+    //        id: logoRecalbox
+    //        width: 100
+    //        height: 35
+    //        source: "assets/recalbox-next.svg"
+    //        anchors.bottomMargin: 10
+    //        anchors.bottom: parent.bottom
+    //        anchors.left: logoPegasus.right
+    //        fillMode: Image.PreserveAspectFit
+    //        verticalAlignment: Image.AlignBottom
+    //        anchors.horizontalCenter: parent.horizontalCenter
+    //    }
 
     Rectangle {
         id: progressRoot
