@@ -23,7 +23,8 @@ FocusScope {
     enabled: focus
 
     property var system;
-    
+    // check if is a libretro emulator for dynamic entry
+    property bool isLibretroCore;
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -42,7 +43,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Games > Advanced emulators > " + system.name ) + api.tr
+        text: qsTr("Advanced emulators settings > ") + api.tr + system.name
         z: 2
     }
     Flickable {
@@ -133,6 +134,8 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSystemGameRatio
                     KeyNavigation.down: optSystemShader
+                    // not visible if not libretro Core
+                    visible : isLibretroCore
                 }
                 MultivalueOption {
                     id: optSystemShader
@@ -157,10 +160,14 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSystemSmoothGame
                     KeyNavigation.down: optSystemGameRewind
+                    // not visible if not libretro Core
+                    visible : isLibretroCore
                 }
                 SectionTitle {
                     text: qsTr("Gameplay options") + api.tr
                     first: true
+                    // not visible if not libretro Core
+                    visible : isLibretroCore
                 }
                 ToggleOption {
                     id: optSystemGameRewind
@@ -176,6 +183,8 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSystemShader
                     KeyNavigation.down: optSystemAutoSave
+                    // not visible if not libretro Core
+                    visible : isLibretroCore
                 }
                 ToggleOption {
                     id: optSystemAutoSave
@@ -190,6 +199,8 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSystemGameRewind
+                    // not visible if not libretro Core
+                    visible : isLibretroCore
                 }
                 SectionTitle {
                     text: qsTr("Core options") + api.tr
@@ -231,9 +242,15 @@ FocusScope {
                                 console.log("is default=",system.isDefaultEmulatorAt(index));
                                 
                                 if ((emulator === system.GetNameAt(index)) && (core === system.GetCoreAt(index))){
+                                    // check is libretro for filter menu
+                                    if(emulator === "libretro") isLibretroCore = true
+                                    else isLibretroCore = false
                                     return true;
                                 }
                                 else if (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === ""))){
+                                    // check is libretro for filter menu
+                                    if(system.GetNameAt(index) === "libretro") isLibretroCore = true
+                                    else isLibretroCore = false
                                     return true;
                                 }
                                 else return false;

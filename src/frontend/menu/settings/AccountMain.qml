@@ -137,6 +137,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optRetroachievementActivate
                     KeyNavigation.down: optRetroachievementPassword
+                    visible: optRetroachievementActivate.checked
                 }
                 SimpleButton {
                     id: optRetroachievementPassword
@@ -158,6 +159,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optRetroachievementUsername
                     KeyNavigation.down: optHardcoreRetroachievementActivate
+                    visible: optRetroachievementActivate.checked
                 }
                 ToggleOption {
                     id: optHardcoreRetroachievementActivate
@@ -171,7 +173,9 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optRetroachievementPassword
-                    KeyNavigation.down: optNetplayInformation
+                    KeyNavigation.down: optNetplayActivate
+                    visible: optRetroachievementActivate.checked
+
                 }
 //                ToggleOption {
 //                    id: optScreenshootsAchievementActivate
@@ -185,10 +189,28 @@ FocusScope {
 //                    onFocusChanged: container.onFocus(this)
 //                    KeyNavigation.up: optHardcoreRetroachievementActivate
 //                    KeyNavigation.down: optNetplayInformation
+//                    visible: optRetroachievementActivate.checked && optHardcoreRetroachievementActivate.checked
+
 //                }
                 SectionTitle {
                     text: qsTr("Netplay") + api.tr
                     first: true
+                }
+                ToggleOption {
+                    id: optNetplayActivate
+
+                    label: qsTr("Activate netplay") + api.tr
+                    note: qsTr("Play with your friends online") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.netplay")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("global.netplay.active",checked);
+                        //pop menu if activate
+                        //root.openGameDirSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optHardcoreRetroachievementActivate
+                    KeyNavigation.down: optNetplayInformation
                 }
                 SimpleButton {
                     id: optNetplayInformation
@@ -214,24 +236,9 @@ FocusScope {
                         root.openNetplayInformation();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optHardcoreRetroachievementActivate
-                    KeyNavigation.down: optNetplayActivate
-                }
-                ToggleOption {
-                    id: optNetplayActivate
-
-                    label: qsTr("Activate netplay") + api.tr
-                    note: qsTr("Play with your friends online") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.netplay")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.netplay.active",checked);
-                        //pop menu if activate
-                        //root.openGameDirSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetplayInformation
+                    KeyNavigation.up: optNetplayActivate
                     KeyNavigation.down: optNetplayNickname
+                    visible: optNetplayActivate.checked
                 }
                 MultivalueOption {
                     id: optNetplayNickname
@@ -255,10 +262,12 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up:optNetplayActivate
                     KeyNavigation.down: optNetplayPswdClientActivate
+                    visible: optNetplayActivate.checked
                 }
                 SectionTitle {
                     text: qsTr("Password netplay") + api.tr
                     first: true
+                    visible: optNetplayActivate.checked
                 }
                 ToggleOption {
                     id: optNetplayPswdClientActivate
@@ -275,6 +284,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optNetplayNickname
                     KeyNavigation.down: optNetplayPswdClient
+                    visible: optNetplayActivate.checked
                 }
                 MultivalueOption {
                     id: optNetplayPswdClient
@@ -298,6 +308,8 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optNetplayPswdClientActivate
                     KeyNavigation.down: optNetplayPswdViewerActivate
+                    visible: optNetplayPswdClientActivate.checked && optNetplayActivate.checked
+
                 }
                 ToggleOption {
                     id: optNetplayPswdViewerActivate
@@ -314,6 +326,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optNetplayPswdClient
                     KeyNavigation.down: optNetplayPswdViewer
+                    visible: optNetplayActivate.checked
                 }
                 MultivalueOption {
                     id: optNetplayPswdViewer
@@ -335,6 +348,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    visible: optNetplayPswdViewerActivate.checked && optNetplayActivate.checked
                 }
                 Item {
                     width: parent.width

@@ -38,16 +38,16 @@ QStringList GetParametersList(QString Parameter)
     {
         /* pegasus language format :
         ar ,bs, de, en-GB, en, es, fr, hu, ko, nl, pt-BR, ru, zh, zh-TW */
-        ListOfValue << "ar" << "bs" << "de" << "en-GB" << "en" << "en" << "es" << "fr" << "hu" << "ko" << "nl" << "pt-BR" << "ru" << "zh" << "zh-TW";
+        ListOfValue << "ar" << "bs" << "de" << "en-GB" << "en" << "es" << "fr" << "hu" << "ko" << "nl" << "pt-BR" << "ru" << "zh" << "zh-TW";
         /*recalbox language format :
         ## Set the language of the system (fr_FR,en_US,en_GB,de_DE,pt_BR,es_ES,it_IT,eu_ES,tr_TR,zh_CN)
-        system.language=en_US*/
-        ListOfInternalValue << "en_US" << "en_US" << "de_DE" << "en_GB" << "en_US" << "en_US" << "es_ES" << "fr_FR" << "en_US" << "en_US" << "en_US" << "pt_BR" << "en_US" << "zh_CN" << "en_US";
+        system.language=en_US */
+        ListOfInternalValue << "en_US" << "en_US" << "de_DE" << "en_GB" << "en_US" << "es_ES" << "fr_FR" << "en_US" << "en_US" << "en_US" << "pt_BR" << "en_US" << "zh_CN" << "en_US";
     }
     else if (Parameter == "system.kblayout")
     {
-        /*## set the keyboard layout (fr,en,de,us,es)
-        system.kblayout=us*/
+        /* ## set the keyboard layout (fr,en,de,us,es)
+        system.kblayout=us */
         ListOfValue << "fr" << "gb" << "de" << "us" << "es";
     }
     else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
