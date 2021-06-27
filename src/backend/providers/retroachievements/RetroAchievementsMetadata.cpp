@@ -21,8 +21,6 @@
 #include "utils/libretro-common/include/cheevos_util.h"
 #include "utils/libretro-common/include/formats/cdfs.h"
 
-//#include "utils/MoveOnly.h"
-
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -32,7 +30,6 @@
 
 #include <QEventLoop>
 #include <QElapsedTimer>
-//#include <array>
 
 #include <RecalboxConf.h>
 
@@ -124,9 +121,6 @@ QString apply_login_json(QString log_tag, const QJsonDocument& json)
 		Log::debug(log_tag, LOGMSG("json_root.isEmpty()")); 
 		return "";
 	}
-    // const auto app_entry = json_root.begin().value().toObject();
-    // if (app_entry.isEmpty())
-        // return false;
 
     const bool login_success = json_root[QL1("Success")].toBool();
     if (!login_success)
@@ -219,21 +213,8 @@ bool apply_game_json(model::Game& game, QString log_tag, const QJsonDocument& js
 		Log::debug(log_tag, LOGMSG("No Achievements found"));
 		return false;
 	}
-	//clear QList to avoid dooblons
-	//game.retroAchievements().clear();
 
-	//struct model::RetroAchievement RA;
     QList<model::RetroAchievement> AllRetroAchievements;
-    
-/*     for (int n = 0; n < sysentry.emulators.count(); n++)
-    {
-        Emulator.name = sysentry.emulators[n].name;
-        Emulator.core = sysentry.emulators[n].core;
-        Emulator.priority = sysentry.emulators[n].priority;
-        AllEmulators.append(Emulator);
-        found_cores++;
-    }
-    collection.setCommonEmulators(AllEmulators); */
 	
     for (const auto& array_entry : Achievements) {
         const auto Achievement = array_entry.toObject();
@@ -246,16 +227,20 @@ bool apply_game_json(model::Game& game, QString log_tag, const QJsonDocument& js
 		const auto BadgeName = Achievement[QL1("BadgeName")].toString();
 		Log::debug(log_tag, LOGMSG("BadgeName=%1").arg(BadgeName)); 
 		const auto Flags = Achievement[QL1("Flags")].toInt();
-		//Add game retro achievement one by one
-		AllRetroAchievements.append({ID
-									   ,Title
-									   ,Description
-									   ,Points
-									   ,Author
-									   ,BadgeName
-									   ,Flags
-									   ,false
-									   ,false});
+		
+		if ((Title != "") || (BadgeName != ""))
+		{
+			//Add game retro achievement one by one
+			AllRetroAchievements.append({ID
+										   ,Title
+										   ,Description
+										   ,Points
+										   ,Author
+										   ,BadgeName
+										   ,Flags
+										   ,false
+										   ,false});
+		}
     }
 	//Set all game retro achievements in game.
 	game.setRetroAchievements(AllRetroAchievements);
@@ -452,17 +437,14 @@ bool get_achievements_status_from_gameid(int gameid, QString token, model::Game&
 
 static void* rc_hash_handle_file_open(const char* path)
 {
-   //Log::debug("Cheevos", LOGMSG("Hooked path: %1").arg(QString::fromStdString(path))); 	
    return intfstream_open_file(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 }
 
-//static void rc_hash_handle_file_seek(void* file_handle, size_t offset, int origin)
 static void rc_hash_handle_file_seek(void* file_handle, int64_t offset, int origin)
 {
    intfstream_seek((intfstream_t*)file_handle, offset, origin);
 }
 
-//static size_t rc_hash_handle_file_tell(void* file_handle) 
 static int64_t rc_hash_handle_file_tell(void* file_handle)
 {
    return intfstream_tell((intfstream_t*)file_handle);
@@ -522,37 +504,15 @@ static void rc_hash_handle_cd_close_track(void* track_handle)
 
 static void rc_hash_handle_error_log_message(const char* message)
 {
-   //CHEEVOS_LOG(RCHEEVOS_TAG "%s\n", message);
    Log::error("Cheevos", LOGMSG("%1").arg(QString::fromStdString(message))); 
 }
 
 static void rc_hash_handle_debug_log_message(const char* message)
 {
-   //CHEEVOS_LOG(RCHEEVOS_TAG "%s\n", message);
    Log::debug("Cheevos", LOGMSG("%1").arg(QString::fromStdString(message))); 
 }
 
 /* end hooks */
-
-// const char* MakeEscaped(QString param)
-// {
-  // std::string escaped = param.toUtf8().constData();
-
-  // static std::string invalidChars = " '\"\\!$^&*(){}[]?;<>";
-  // const char* invalids = invalidChars.c_str();
-  // for(int i = escaped.size(); --i >= 0; )
-  // {
-    // char c = escaped.c_str()[i];
-    // for(int j = invalidChars.size(); --j >= 0; )
-      // if (c == invalids[j])
-      // {
-        // escaped.insert(i, "\\");
-        // break;
-      // }
-  // }
-
-  // return escaped.c_str();
-// }
 
 QString calculate_hash_from_file(QString rom_file, QString log_tag)
 // can calculate hash using maner of RetroAchievements to manage the following system and format of rom supported by RetroAchievements.
@@ -562,49 +522,38 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
 	char hash_iterator[33] = "";
 	int result_iterator;
 	struct rc_hash_iterator iterator;
-	//struct rc_hash_filereader filereader;
-	//struct rc_hash_cdreader cdreader;
+	struct rc_hash_filereader filereader;
+	struct rc_hash_cdreader cdreader;
 	
-	//init error management
-	//Log::debug(log_tag, LOGMSG("rc_hash_init_error_message_callback(rc_hash_handle_log_message);"));
+	//init error management // only for manual debug because impact result of hash calculation in some cases :-(
 	//rc_hash_init_error_message_callback(rc_hash_handle_error_log_message);
 	//rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
 
     /* provide hooks for reading files */
-    // filereader.open = rc_hash_handle_file_open;
-    // filereader.seek = rc_hash_handle_file_seek;
-    // filereader.tell = rc_hash_handle_file_tell;
-    // filereader.read = rc_hash_handle_file_read;
-    // filereader.close = rc_hash_handle_file_close;
-	// Log::debug(log_tag, LOGMSG("rc_hash_init_custom_filereader(&filereader);"));
-	// rc_hash_init_custom_filereader(&filereader);
+    filereader.open = rc_hash_handle_file_open;
+    filereader.seek = rc_hash_handle_file_seek;
+    filereader.tell = rc_hash_handle_file_tell;
+    filereader.read = rc_hash_handle_file_read;
+    filereader.close = rc_hash_handle_file_close;
+	rc_hash_init_custom_filereader(&filereader);
 
-    // cdreader.open_track = rc_hash_handle_cd_open_track;
-    // cdreader.read_sector = rc_hash_handle_cd_read_sector;
-    // cdreader.close_track = rc_hash_handle_cd_close_track;
-	// Log::debug(log_tag, LOGMSG("rc_hash_init_custom_cdreader(&cdreader);"));
-    // rc_hash_init_custom_cdreader(&cdreader);
-
+    cdreader.open_track = rc_hash_handle_cd_open_track;
+    cdreader.read_sector = rc_hash_handle_cd_read_sector;
+    cdreader.close_track = rc_hash_handle_cd_close_track;
+	// deactivate to avoid hooking on this part (for rcheevis 10.1) not yet supported by retroarch (using rcheevos 9.0)
+	// Hooking TO DO for 'absolute_sector_to_track_sector' when retroarch will support that
+	cdreader.absolute_sector_to_track_sector = NULL;
+    rc_hash_init_custom_cdreader(&cdreader);
 	
-	//const char* path = PathMakeEscaped(rom_file).toUtf8().constData(); //.toLocal8Bit().data();
-	
-	const char* path = rom_file.toLocal8Bit().data(); //.toUtf8().data();
-	
-	//.toLocal8Bit().data();
-	
-	//Log::debug(log_tag, LOGMSG("Path : '%1'").arg(QString::fromUtf8(strdup(path))));
-	
-	//Log::debug(log_tag, LOGMSG("rc_hash_initialize_iterator(&iterator, path, NULL, 0);"));
+	const char* path = rom_file.toUtf8().data(); //toLocal8Bit().data(); //.toUtf8().data();
 	rc_hash_initialize_iterator(&iterator, path, NULL, 0);
-	
-	//Log::debug(log_tag, LOGMSG("rc_hash_iterate(hash_iterator, &iterator);"));
 	result_iterator = rc_hash_iterate(hash_iterator, &iterator);
-/* 	while (rc_hash_iterate(hash_iterator, &iterator))
+	//TO DO - to ahve more chance to find the good hash
+	/* 	while (rc_hash_iterate(hash_iterator, &iterator))
 	{	
 		if (QString::fromLocal8Bit(hash_iterator) != "")
             break;
 	} */
-	//Log::debug(log_tag, LOGMSG("rc_hash_destroy_iterator(&iterator);"));
 	rc_hash_destroy_iterator(&iterator);
 	Log::info(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));    
 	Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
@@ -646,12 +595,11 @@ void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) c
 	if (token != "")
 	{
 		//check if gameid exists and hash already calculated
-		if(game_ptr->RaGameID() == 0)
+		if((game_ptr->RaGameID() == 0) && (game_ptr->RaHash() == ""))
 		{
 			Log::debug(m_log_tag, LOGMSG("RetroAchievement RaGameId to find !"));
 			const model::GameFile* gamefile = game_ptr->filesConst().first(); /// take into account only the first file for the moment.
 			const QFileInfo& finfo = gamefile->fileinfo();		
-			//QString romfile = PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath()));
 			QString romfile = QDir::toNativeSeparators(finfo.absoluteFilePath());
 			QString targetfile;
 			//check if zip
@@ -689,7 +637,8 @@ void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) c
 			}
 			Log::debug(m_log_tag, LOGMSG("The target file to hash is '%1'").arg(targetfile));
 			QString hash = calculate_hash_from_file(targetfile, m_log_tag);
-			
+			//save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
+			game_ptr->setRaHash(hash);
 			//check if tmp file used
 			if(targetfile.toLower().startsWith("/tmp/"))
 			{
@@ -699,54 +648,6 @@ void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) c
 				QStringList args = QStringList {"\""+targetfile+"\""};
 				int exitcode = system(qPrintable(serialize_command(DeleteFileCommand, args)));
 			}
-			
-			//FOR TEST ONLY
-			//QString file_unzipped = "/recalbox/share/roms/nes/Duck Hunt (World).nes";
-			//Log::debug(m_log_tag, LOGMSG("Rom Filepath to hash: '%1'").arg(file_unzipped));
-			//const char* path = file_unzipped.toLocal8Bit().data();		
-
-
-/* 			//methods without console_id to provide (better)
-			char hash_iterator[33] = "";
-			int result_iterator;
-			struct rc_hash_iterator iterator;
-			
-			//if zip, if one file only, unzip file in buffer and calculate hash
-			QString file_zipped = finfo.absoluteFilePath();
-			Zip zip(Path(file_zipped.toLocal8Bit().data()));
-			Log::debug(m_log_tag, LOGMSG("This zip has %1 file(s).").arg(zip.Count()));
-			if(zip.Count() == 1)
-			{
-				Log::debug(m_log_tag, LOGMSG("The file in zip is named : %1").arg(zip.FileName(0));
-				Log::debug(m_log_tag, LOGMSG("The file in zip has as size of %1 octet(s).").arg(zip.UncompressedSize(0)));
-				const char* tmp_path = file_unzipped.toLocal8Bit().data();	
-				rc_hash_initialize_iterator(&iterator, tmp_path, NULL, 0);
-				result_iterator = rc_hash_iterate(hash_iterator, &iterator);
-				rc_hash_destroy_iterator(&iterator);
-				Log::debug(m_log_tag, LOGMSG("Hash of file (using iterator and file unzipped): '%1'").arg(QString::fromLocal8Bit(hash_iterator)));
-			}
-
-			//methogs with console_id to provide (for complex)
-			char hash_file[33] = "";
-			int console_id = RC_CONSOLE_NINTENDO;
-			const char* path2 = file_unzipped.toLocal8Bit().data();
-			int result_file = rc_hash_generate_from_file(hash_file, console_id, path2);
-			Log::debug(m_log_tag, LOGMSG("Hash of file (using console_id): '%1'").arg(QString::fromLocal8Bit(hash_file)));
-
-			//for test: methods with zip extension as for arcade games (neogeo, fbneo, mame, atomiswave, naomi, naomigd, etc...)	
-			char hash_iterator3[33] = "";
-			int result_iterator3;
-			struct rc_hash_iterator iterator3;
-			const char* path3 = file_zipped.toLocal8Bit().data();
-			rc_hash_initialize_iterator(&iterator3, path3, NULL, 0);
-			result_iterator3 = rc_hash_iterate(hash_iterator3, &iterator3);
-			rc_hash_destroy_iterator(&iterator3);
-			Log::debug(m_log_tag, LOGMSG("Hash of file (using iterator and zip format as for arcade games): '%1'").arg(QString::fromLocal8Bit(hash_iterator3)));
- */
-			
-			//TEST HASH of Nes - Duck Hunt
-			//QString hash = "fa382374eb4a93a719064ca6c5a4e78c";
-			//Log::debug(m_log_tag, LOGMSG("Duck Hunt (World) - NES - hash value from RA : '%1'").arg(hash));
 			
 			game_ptr->setRaGameID(get_gameid_from_hash(hash, m_log_tag, *manager));
 			Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
@@ -769,71 +670,8 @@ void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) c
 				result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);	
 			}	
 		}
-
-		//for test purpose / we reset gameid to be able to retest just after ;-)
-		//game_ptr->setRaGameID(0);
-
 	}
 	else return;
-	
-/* 	const QUrl url(url_str, QUrl::StrictMode);
-	Q_ASSERT(url.isValid());
-	if (Q_UNLIKELY(!url.isValid()))
-	{
-		Log::debug(log_tag, LOGMSG("Q_UNLIKELY(!url.isValid())"));
-		return;
-	}
-	
-	
-	
-	
-	//Set request
-	QNetworkRequest request(url);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-	#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-		request.setTransferTimeout(10000);
-	#endif
-
-	//Get request
-    QNetworkReply* const reply = manager->get(request); */
-
-	//Manage reply
-
-//FOR TEST PURPOSE ONLY
-/* 	QObject::connect(reply, &QNetworkReply::finished, [=]() {
-		if(reply->error() == QNetworkReply::NoError)
-		{
-			QByteArray response = reply->readAll();
-			// do something with the data...
-			Log::debug(LOGMSG("response = %1").arg(QString::fromStdString(response.toStdString())));
-		}
-		else // handle error
-		{
-	      Log::debug(LOGMSG("ERROR"));
-		}
-		
-	}); */	
-	
-	//sctx.schedule_download(url, [title, game_ptr, log_tag, json_cache_dir](QNetworkReply* const reply){
-	// QObject::connect(reply, &QNetworkReply::finished, [=]() {	
-        // if (reply->error()) {
-            // Log::warning(log_tag, LOGMSG("Downloading metadata for `%1` failed: %2")
-                // .arg(title, reply->errorString()));
-            // return;
-        // }
-		// Log::debug(log_tag, LOGMSG("1 - sctx.schedule_download(url, [log_tag, json_cache_dir, game_ptr, title](QNetworkReply* const reply)"));
-        // const QByteArray raw_data = reply->readAll();
-        // const QJsonDocument json = QJsonDocument::fromJson(raw_data);
-        // if (json.isNull()) {
-            // Log::warning(log_tag, LOGMSG(
-                   // "Failed to parse the response of the server for game '%1', "
-                   // "either it's no longer available from the Steam Store or the Steam API has changed"
-               // ).arg(title));
-            // return;
-        // }
-
-		
-    // });
 }
 
 } // namespace retroAchievements
