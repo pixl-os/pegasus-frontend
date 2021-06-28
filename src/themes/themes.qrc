@@ -179,6 +179,9 @@
         <file>gameOS/assets/images/searchicon.svg</file>
         <file>gameOS/assets/images/settingsicon.svg</file>
         <file>gameOS/assets/images/simpleOS-logo.png</file>
+		<file>gameOS/assets/images/icon_cup.svg</file>
+		<file>gameOS/assets/images/icon_down.png</file>
+		<file>gameOS/assets/images/icon_up.png</file>
         <file>gameOS/assets/sfx/accept.wav</file>
         <file>gameOS/assets/sfx/back.wav</file>
         <file>gameOS/assets/sfx/desktop.ini</file>
@@ -199,7 +202,8 @@
         <file>gameOS/Global/HorizontalCollection.qml</file>
         <file>gameOS/Global/ItemBorder.qml</file>
         <file>gameOS/Global/ItemHighlight.qml</file>
-        <file>gameOS/GridView/GridSpacer.qml</file>
+		<file>gameOS/Global/GameAchievements.qml</file>
+		<file>gameOS/GridView/GridSpacer.qml</file>
         <file>gameOS/GridView/GridViewMenu.qml</file>
         <file>gameOS/Lists/ListAllGames.qml</file>
         <file>gameOS/Lists/ListCollectionGames.qml</file>
