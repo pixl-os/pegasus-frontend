@@ -72,5 +72,20 @@ unix:!macx {
     }
 }
 
+# ZIP
+unix:!macx {
+    message("Linking to ZIP")
+    isEmpty(ZIP_LIBS):isEmpty(ZIP_INCLUDES) {
+        unix|win32-g++: message("  - using pkg-config to find it")
+        else: error("Please set ZIP_LIBS and ZIP_INCLUDES")
+    }
+    else {
+        message("  - Libraries:")
+        for(part, ZIP_LIBS): message("    - $${part}")
+        message("  - Include paths:")
+        for(path, ZIP_INCLUDES): message("    - $${path}")
+    }
+}
+
 # Print Git revision
 message("Git revision: '$${GIT_REVISION}'")

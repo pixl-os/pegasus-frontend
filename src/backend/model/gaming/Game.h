@@ -33,6 +33,19 @@ namespace model { class Collection; }
 
 
 namespace model {
+	
+struct RetroAchievement {
+		int ID;
+		QString Title;
+		QString Description;
+		int Points;
+		QString Author;
+		QString BadgeName;
+		int Flags;
+		bool Unlocked;
+		bool HardcoreMode;
+};		
+	
 struct GameData {
     explicit GameData();
     explicit GameData(QString);
@@ -69,6 +82,10 @@ struct GameData {
         QString emulator_name;
         QString emulator_core;
     } launch_params;
+	
+	QList <RetroAchievement> retro_achievements;
+	int ra_game_id = 0;
+	QString ra_hash = 0;
 };
 
 
@@ -102,8 +119,13 @@ public:
     GETTER(int, playTime, playstats.play_time)
     GETTER(const QDateTime&, lastPlayed, playstats.last_played)
     GETTER(bool, isFavorite, is_favorite)
-
-    GETTER(const QString&, launchCmd, launch_params.launch_cmd)
+	
+	GETTER(const QList<RetroAchievement> &, retroAchievements, retro_achievements)
+	GETTER(int, RaGameID, ra_game_id)
+	GETTER(const QString&, RaHash, ra_hash)
+	
+    
+	GETTER(const QString&, launchCmd, launch_params.launch_cmd)
     GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
     GETTER(const QString&, launchCmdBasedir, launch_params.relative_basedir)
     GETTER(const QString&, systemShortName, launch_params.system_shortname)
@@ -132,6 +154,10 @@ public:
     SETTER(QString, EmulatorName, launch_params.emulator_name)
     SETTER(QString, EmulatorCore, launch_params.emulator_core)
 
+	SETTER(int, RaGameID, ra_game_id)
+	SETTER(QString, RaHash, ra_hash)
+	SETTER(QList<RetroAchievement>, RetroAchievements, retro_achievements)
+	
     Game& setFavorite(bool val);
 #undef SETTER
 
@@ -169,11 +195,23 @@ public:
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
 
+	Q_PROPERTY(int RaGameID READ RaGameID CONSTANT)
+	Q_PROPERTY(QString RaHash READ RaHash CONSTANT)
+	
     Q_PROPERTY(QVariantMap extra READ extraMap CONSTANT)
     const QVariantMap& extraMap() const { return m_extra; }
     QVariantMap& extraMapMut() { return m_extra; }
 
-
+    //need specific property and invokable function due to QList<struct> is not supported by QML layer
+    Q_PROPERTY(int retroAchievementsCount READ getRetroAchievementsCount CONSTANT)
+    Q_INVOKABLE QString GetRaTitleAt (const int index) {return m_data.retro_achievements.at(index).Title;};
+	Q_INVOKABLE QString GetRaDescriptionAt (const int index) {return m_data.retro_achievements.at(index).Description;};
+	Q_INVOKABLE QString GetRaPointsAt (const int index) {return QString::number(m_data.retro_achievements.at(index).Points);};
+	Q_INVOKABLE QString GetRaAuthorAt (const int index) {return m_data.retro_achievements.at(index).Author;};
+	Q_INVOKABLE QString GetRaBadgeAt (const int index) {return m_data.retro_achievements.at(index).BadgeName;};
+	Q_INVOKABLE bool isRaUnlockedAt (const int index) {return m_data.retro_achievements.at(index).Unlocked;};
+	Q_INVOKABLE bool isRaHardcoreAt (const int index) {return m_data.retro_achievements.at(index).HardcoreMode;};
+	
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
@@ -204,8 +242,12 @@ private slots:
 public:
     explicit Game(QObject* parent = nullptr);
     explicit Game(QString name, QObject* parent = nullptr);
-
-    Q_INVOKABLE void launch();
+	int getRetroAchievementsCount() const { return m_data.retro_achievements.count(); };
+	void unlockRetroAchievement(const int index) { m_data.retro_achievements[index].Unlocked = true; };
+	void activateHardcoreRetroAchievement(const int index) { m_data.retro_achievements[index].HardcoreMode = true; };
+	Q_INVOKABLE void launch();
+	Q_INVOKABLE void updateRetroAchievements();
+	Q_INVOKABLE void initRetroAchievements();
 
     void finalize();
 };
