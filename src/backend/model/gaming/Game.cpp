@@ -26,6 +26,10 @@
 
 #include "Log.h"
 
+#include <QThread>
+#include <QMetaObject>
+
+
 namespace {
 QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
 } // namespace
@@ -108,36 +112,41 @@ void Game::launch()
         emit launchFileSelectorRequested();
 }
 
-
 void Game::initRetroAchievements()
 {
-	Log::debug(LOGMSG("Game::initRetroAchievements()"));
-	
+	Log::debug(LOGMSG("Game::initRetroAchievements_slot() put in Qt::QueuedConnection"));
+	QMetaObject::invokeMethod(this,"initRetroAchievements_slot", Qt::QueuedConnection);
+}
+
+void Game::initRetroAchievements_slot()
+{
+	Log::debug(LOGMSG("Game::initRetroAchievements_slot()"));
 	//Initialize Metahelper for each update and for each games for the moment
 	QString log_tag = "Retroachievements";
 	const providers::retroAchievements::Metadata metahelper(log_tag);
-	
 	//get all from network for the moment to have last information / one function called for the moment
 	metahelper.fill_from_network_or_cache(*this, false);
-		
 	//emit signal to alert front-end about end of update
-	//TO DO 
+	emit retroAchievementsInitialized();
 	//only if updated with good data
 }
 
 void Game::updateRetroAchievements()
 {
-	Log::debug(LOGMSG("Game::updateRetroAchievements()"));
-	
+	Log::debug(LOGMSG("Game::updateRetroAchievements_slot() put in Qt::QueuedConnection"));
+	QMetaObject::invokeMethod(this,"updateRetroAchievements_slot", Qt::QueuedConnection);
+}
+
+void Game::updateRetroAchievements_slot()
+{
+	Log::debug(LOGMSG("Game::updateRetroAchievements_slot()"));	
 	//Initialize Metahelper for each update and for each games for the moment
 	QString log_tag = "Retroachievements";
 	const providers::retroAchievements::Metadata metahelper(log_tag);
-	
 	//get all from network for the moment to have last information / one function called for the moment
-	metahelper.fill_from_network_or_cache(*this, true);
-		
+	metahelper.fill_from_network_or_cache(*this, true);	
 	//emit signal to alert front-end about end of update
-	//TO DO 
+	emit retroAchievementsChanged();
 	//only if updated with good data
 }
 

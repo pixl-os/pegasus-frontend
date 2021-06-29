@@ -241,10 +241,13 @@ signals:
     void launchFileSelectorRequested();
     void favoriteChanged();
     void playStatsChanged();
+	void retroAchievementsInitialized();
+	void retroAchievementsChanged();
 
 private slots:
     void onEntryPlayStatsChanged();
-
+	void updateRetroAchievements_slot();
+	void initRetroAchievements_slot();
 
 public:
     explicit Game(QObject* parent = nullptr);
