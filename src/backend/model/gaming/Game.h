@@ -204,13 +204,20 @@ public:
 
     //need specific property and invokable function due to QList<struct> is not supported by QML layer
     Q_PROPERTY(int retroAchievementsCount READ getRetroAchievementsCount CONSTANT)
-    Q_INVOKABLE QString GetRaTitleAt (const int index) {return m_data.retro_achievements.at(index).Title;};
-	Q_INVOKABLE QString GetRaDescriptionAt (const int index) {return m_data.retro_achievements.at(index).Description;};
-	Q_INVOKABLE QString GetRaPointsAt (const int index) {return QString::number(m_data.retro_achievements.at(index).Points);};
-	Q_INVOKABLE QString GetRaAuthorAt (const int index) {return m_data.retro_achievements.at(index).Author;};
-	Q_INVOKABLE QString GetRaBadgeAt (const int index) {return m_data.retro_achievements.at(index).BadgeName;};
-	Q_INVOKABLE bool isRaUnlockedAt (const int index) {return m_data.retro_achievements.at(index).Unlocked;};
-	Q_INVOKABLE bool isRaHardcoreAt (const int index) {return m_data.retro_achievements.at(index).HardcoreMode;};
+    Q_INVOKABLE QString GetRaTitleAt (const int index) {if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).Title;
+														else return "";};
+	Q_INVOKABLE QString GetRaDescriptionAt (const int index) {if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).Description;
+														else return "";};
+	Q_INVOKABLE QString GetRaPointsAt (const int index){if (m_data.retro_achievements.count() > index) return QString::number(m_data.retro_achievements.at(index).Points);
+														else return "";};
+	Q_INVOKABLE QString GetRaAuthorAt (const int index){if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).Author;
+														else return "";};
+	Q_INVOKABLE QString GetRaBadgeAt (const int index) {if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).BadgeName;
+														else return "";};
+	Q_INVOKABLE bool isRaUnlockedAt (const int index)  {if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).Unlocked;
+														else return false;};
+	Q_INVOKABLE bool isRaHardcoreAt (const int index)  {if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).HardcoreMode;
+														else return false;};
 	
     const Assets& assets() const { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
@@ -234,17 +241,20 @@ signals:
     void launchFileSelectorRequested();
     void favoriteChanged();
     void playStatsChanged();
+	void retroAchievementsInitialized();
+	void retroAchievementsChanged();
 
 private slots:
     void onEntryPlayStatsChanged();
-
+	void updateRetroAchievements_slot();
+	void initRetroAchievements_slot();
 
 public:
     explicit Game(QObject* parent = nullptr);
     explicit Game(QString name, QObject* parent = nullptr);
 	int getRetroAchievementsCount() const { return m_data.retro_achievements.count(); };
-	void unlockRetroAchievement(const int index) { m_data.retro_achievements[index].Unlocked = true; };
-	void activateHardcoreRetroAchievement(const int index) { m_data.retro_achievements[index].HardcoreMode = true; };
+	void unlockRetroAchievement(const int index) { if (m_data.retro_achievements.count() > index) m_data.retro_achievements[index].Unlocked = true; };
+	void activateHardcoreRetroAchievement(const int index) { if (m_data.retro_achievements.count() > index) m_data.retro_achievements[index].HardcoreMode = true; };
 	Q_INVOKABLE void launch();
 	Q_INVOKABLE void updateRetroAchievements();
 	Q_INVOKABLE void initRetroAchievements();
