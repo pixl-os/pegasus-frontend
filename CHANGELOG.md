@@ -1,6 +1,68 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [retroachievements-management] - 2021-06-29
+- robustness/controls index to avoid out of range
+- add signals/slots to communicate/free with QML
+- add try/catch during init/udpate to avoid crash
+- using last GameOS-Pixl Theme (game-retroachievements-fix)
+
+## [retroachievements-management] - 2021-06-28
+- add api entry in Game
+- add Meta data provider for retroachievements
+- manage meta data simpler for retroachievements
+- rcheevos v10.1.0 code integration
+- implementation/optimization/cache for RA Metadata
+- linking done for libzip
+- process to manage arcade zip vs file zipped
+- add init/update functions using network or cache
+- remove backslash if in login/password
+- add 3 additional get commands + fixes on logs
+- clean cache on update + fix for ID selection
+- add cdfs dependencies to calculate cd hash
+- add raHash in Game data as temporary storage
+- clean to remove logs of debug
+- clean debug logs + fix for cd + hashes saving
+- add new files in themes.qrc
+
+## [logopng-optimisation] - 2021-06-27
+- change splash logo to gif
+- bump submodule
+
+## [rework-menu] - 2021-06-27
+- rework parameter menu
+- fix double 'en' on language list
+
+## [10-text-correction-in-netplay-spectator-(pegasus)] - 2021-06-23
+- fix: replace viewer to netplay spectator
+- fix bad traduction
+- comment english language traduction and bump lang
+- remove uneeded english trad
+
+## [9-keyboard-qwerty-retroachievement-menu-and-netplay] - 2021-06-22
+- fix language and keybord layout
+- directly set layout keyboard
+- use setxkbmap for set keyboard layout > ParameterList.cpp 
+- fix layout en to gb for setxkbmap > ParametersList.cpp
+- fix indent et remove test > Recalbox.cpp
+
+## [recalbox-integration] - 2021-06-18
+- auto save text field entry
+- fix bad version for qtquick, qtquick layout and qt multimedia
+- fix width an height for multivaluebox
+- multi fix 
+
+## [splash-layer-pegasus] - 2021-06-14
+- integration splash screen startup pixL
+- fix missing add pegasus logo in qrc (add new file in frontend.qrc / resize pixL logo)
+- fix color bar
+- fix default white bar
+- re-enable loading information
+- more big pegasus logo ;)
+
+## [change-logo-style-in-system-view] - 2021-06-14
+- disable color mask on logo systems
+
 ## [recalbox-integration] - 2021-06-10
 - GameOs:
 	- bump all qt5 module on lastest version
