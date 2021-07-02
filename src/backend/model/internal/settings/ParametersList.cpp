@@ -76,7 +76,8 @@ QStringList GetParametersList(QString Parameter)
 
         QStringList files = shadersDir.entryList(QStringList() << "*.glslp", QDir::Files | QDir::Dirs);
         // add none in list for disabled option if needed
-        ListOfInternalValue.append(" ");
+        QString empty = "";
+        ListOfInternalValue.append(empty);
         ListOfValue.append("none");
 
         for ( int index = 0; index < files.count(); index++ ) {
