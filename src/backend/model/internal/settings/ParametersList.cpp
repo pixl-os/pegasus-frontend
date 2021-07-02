@@ -4,6 +4,8 @@
 #include "audio/AudioController.h"
 #include "storage/StorageDevices.h"
 
+#include <QDir>
+
 namespace {
 
 /******************************* section to initial variables used by GetParametersList in same name *************************************/
@@ -59,6 +61,31 @@ QStringList GetParametersList(QString Parameter)
         global.shaderset=none
         */
         ListOfValue << "none" << "retro" << "scanline";
+    }
+    else if (Parameter.endsWith(".shaders", Qt::CaseInsensitive) == true)
+    {
+        /*
+        ## Set gpslp shader for all emulators (prefer shadersets above). Absolute path (string)
+        global.shaders=/recalbox/share/shaders/myShaders.glslp
+        */
+        // Define shaders path
+        QDir shadersDir("/recalbox/share/shaders/");
+
+        // Sorting by name
+        shadersDir.setSorting(QDir::Name);
+
+        QStringList files = shadersDir.entryList(QStringList() << "*.glslp", QDir::Files | QDir::Dirs);
+        // add none in list for disabled option if needed
+        ListOfInternalValue.append(" ");
+        ListOfValue.append("none");
+
+        for ( int index = 0; index < files.count(); index++ ) {
+            QString file = files.at(index);
+            // set absolute path and extension for recalbox.conf
+            ListOfInternalValue.append("/recalbox/share/shaders/" + file);
+            // remove .glslp on menu
+            ListOfValue.append(file.replace(".glslp", ""));
+        }
     }
     else if (Parameter == "controllers.ps3.driver")
     {
