@@ -18,6 +18,7 @@
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
+import QtQuick.Controls 2.15
 
 
 Window {
@@ -249,10 +250,14 @@ Window {
             genericMessage.focus = true;
         }
         function onShowPopup(msg,time) {
-            // need QtQuick.Controls 2.15
-            //genericPopup.setSource("dialogs/GenericPopup.qml",{ "msg": msg, "delay": time });
-            //genericPopup.focus = true;
-            //TO DO
+			popup.message = msg;
+			popup.title = "for test purpose";
+			popup.open();
+			popup.visible = true;
+			//start timer to close popup automatically
+			popupDelay.interval = time * 1000;
+			popupDelay.restart();
+
         }
         function onEventLoadingStarted() {
             splashScreen.focus = true;
@@ -279,4 +284,101 @@ Window {
         onSkinLoadingChanged: hideMaybe()
         onDataLoadingChanged: hideMaybe()
     }
+
+    // Timer to show the popup
+    Timer {
+        id: popupDelay
+
+        interval: 5000
+        onTriggered: {
+            popup.close();
+        }
+    }
+
+ 	Popup {
+		id: popup
+		
+		property alias title: titleText.text
+		property alias message: messageText.text
+		
+		property int textSize: vpx(8)
+		property int titleTextSize: vpx(10)
+
+		width: 500
+		height: 150
+		background: Rectangle {
+            anchors.fill: popup
+            border.color: "transparent"
+            color: "transparent"
+		}
+		x: parent.width * 0.01
+		y: parent.height * 0.05
+
+		modal: false
+		focus: false
+		visible: false
+		closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+		Column {
+			id: dialogBox
+
+			width: parent.width
+			height: parent.height
+			
+			anchors.centerIn: parent
+			//scale: 1.0
+
+			//Behavior on scale { NumberAnimation { duration: 125 } }
+
+			// title bar
+ 			Rectangle {
+				id: titleBar
+				width: parent.width
+				height: popup.titleTextSize * 2.25
+				color: themeColor.main
+
+				Text {
+					id: titleText
+
+					anchors {
+						verticalCenter: parent.verticalCenter
+						left: parent.left
+						leftMargin: popup.titleTextSize * 0.75
+					}
+
+					color: themeColor.textTitle
+					font {
+						bold: true
+						pixelSize: popup.titleTextSize
+						family: globalFonts.sans
+					}
+				}
+			}
+
+
+			// text area
+			Rectangle {
+				width: parent.width
+				height: messageText.height + 3 * popup.textSize
+				color: themeColor.secondary
+				//radius: height / 2
+				
+				Text {
+					id: messageText
+
+					anchors.centerIn: parent
+					width: parent.width - 2 * popup.textSize
+
+					wrapMode: Text.WordWrap
+					horizontalAlignment: Text.AlignHCenter
+
+					color: themeColor.textTitle
+					font {
+						pixelSize: popup.textSize
+						family: globalFonts.sans
+					}
+				}
+			}
+		}
+	}
 }
