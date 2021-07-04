@@ -119,10 +119,12 @@ void ApiObject::onGameLaunchError(QString msg)
     emit eventLaunchError(msg);
 }
 
-void ApiObject::onShowPopup(QString message, int delay)
+void ApiObject::onShowPopup(QString title, QString message, int delay)
 {
-    Log::debug(LOGMSG("void ApiObject::onShowPopup(QString message, int delay)"));
-    emit showPopup(message, delay);
+	//TO DO
+	//Add here delay management depending of recalbox.conf
+    //Log::debug(LOGMSG("void ApiObject::onShowPopup(QString message, int delay)"));
+    emit showPopup(title, message, delay);
 }
 
 
