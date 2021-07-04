@@ -76,11 +76,12 @@ QStringList GetParametersList(QString Parameter)
 
         QStringList files = shadersDir.entryList(QStringList() << "*.glslp", QDir::Files | QDir::Dirs);
         // add none in list for disabled option if needed
+        ListOfValue << "none";
         QString empty = "";
-        ListOfInternalValue.append(empty);
-        ListOfValue.append("none");
+        files << empty;
 
-        for ( int index = 0; index < files.count(); index++ ) {
+        for ( int index = 0; index < files.count(); index++ )
+        {
             QString file = files.at(index);
             // set absolute path and extension for recalbox.conf
             ListOfInternalValue.append("/recalbox/share/shaders/" + file);
