@@ -138,6 +138,10 @@ void GamepadManager::bkOnDisconnected(int device_id)
             //finally, remove device independently in a second time
         }
         Log::info(m_log_tag, LOGMSG("Disconnected device %1 (%2)").arg(pretty_id(device_id), name));
+		
+		//showpopup for 3 seconds by default
+		emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name), 3);		
+		
         emit disconnected(std::move(name));
     }
     catch ( const std::exception & Exp ) 
