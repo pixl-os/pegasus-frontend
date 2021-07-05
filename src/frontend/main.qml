@@ -240,7 +240,8 @@ Window {
 
     Connections {
         target: api
-        function onEventSelectGameFile(game) {
+		
+		function onEventSelectGameFile(game) {
             multifileSelector.setSource("dialogs/MultifileSelector.qml", {"game": game})
             multifileSelector.focus = true;
         }
@@ -251,23 +252,15 @@ Window {
         }
         function onShowPopup(title,message,delay) {
 			//init parameters
-			//popup.message = message;
-			console.log("popup.height before: ",popup.height);			
-			var lenght = 40;
-			//test = "123456789 123456789 123456789 1234567890";
-			popup.message = "123456789 123456789 123456789 1234567890";//for test purpose
-    		//console.log("message.lenght: ",test.lenght);
-			//return vpx(60);
-			var height = 30 + (30 * (lenght/40));
-			popup.height = height;  //vpx(120)
-			console.log("popup.height after: ",popup.height);
-			//popup.title = title;
-			popup.title = "123456789 123456789 123456789 1234567890";//for test purpose
+			popup.title = title;
+			popup.message = message;
+			
 			//delay provided in second and interval is in ms
 			popupDelay.interval = delay * 1000;
-			//launch popen
+		
+			//Open popup and set it as showable to have animation
 			popup.open();
-			popup.visible = true;
+			popup.showing = true;
 			//start timer to close popup automatically
 			popupDelay.restart();
         }
@@ -303,7 +296,7 @@ Window {
 
         interval: 5000
         onTriggered: {
-            popup.close();
+			popup.showing = false;
         }
     }
 
@@ -312,22 +305,17 @@ Window {
 		
 		property alias title: titleText.text
 		property alias message: messageText.text
-		
-		property int textSize: vpx(12)
-		property int titleTextSize: vpx(12)
 
-		width:  vpx(310)
-		height: vpx(60)
-				/* {
-				 console.log("message.lenght: ",message.lenght);
-				   //return vpx(60);
-				 return vpx(30 + (30 * (message.lenght/40)));  //vpx(120)
-				 } */
+		property int titleTextSize: vpx(14)
+		property int textSize: vpx(12)
+
+
+		width:  vpx(200)
+		height: vpx(70)
 				
 		background: Rectangle {
             anchors.fill: popup
             border.color: themeColor.textTitle
-            //color: "transparent"
 			color: themeColor.secondary
 			opacity: 0.8
 			radius: height/4
@@ -335,11 +323,18 @@ Window {
 		}
 		//need to work in x/y, no anchor.top/bottom/left/right/etc... available
 		x: (parent.width/2) - (width/2)//parent.width * 0.01
-		y: parent.height - height - (parent.height * 0.03) //parent.height * 0.05
+		//do animation on y using showing boolean
+		property bool showing: false
+		property int position: showing ? (height + (parent.height * 0.03)) : 0
+		y: parent.height - position
+
+		Behavior on position {
+			NumberAnimation {duration: 500}
+		}   
 
 		modal: false
 		focus: false
-		visible: false
+		visible: true
 		closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
 		Column {
@@ -349,40 +344,12 @@ Window {
 			height: parent.height
 			
 			anchors.centerIn: parent
-			//opacity: 0.8
-			//Behavior on opacity { NumberAnimation { duration: 100 } }
-			
-			// title bar
-/*  			Rectangle {
-				id: titleBar
-				width: parent.width
-				height: popup.titleTextSize * 1.75 //2.25
-				color: themeColor.main
-				radius: height/4
-				Text {
-					id: titleText
-
-					anchors {
-						verticalCenter: parent.verticalCenter
-						left: parent.left
-						leftMargin: popup.titleTextSize * 0.5 //0.75
-					}
-
-					color: themeColor.textTitle
-					font {
-						bold: true
-						pixelSize: popup.titleTextSize
-						family: globalFonts.sans
-					}
-				}
-			} */
-
 
 			// text area
 			Rectangle {
 				width: parent.width
-				height: parent.height //(popup.titleTextSize * 1.75) + (messageText.height + 3 * popup.textSize)
-				color: "transparent" //themeColor.secondary
+				height: parent.height
+				color: "transparent"
 
 				Text {
 					id: titleText
@@ -390,16 +357,17 @@ Window {
 					wrapMode: Text.WordWrap
 					
 					anchors {
-						//verticalCenter: parent.verticalCenter
 						top: parent.top
 						left: parent.left
 						right:  parent.right;
-						leftMargin: popup.titleTextSize * 0.5 //0.75
+						leftMargin: popup.titleTextSize * 0.5
 						rightMargin: popup.titleTextSize * 0.5
 					}
 					width: parent.width - (2 * anchors.leftMargin)
-					height: popup.titleTextSize * 1.25 //2.25
+					height: popup.titleTextSize * 1.2
 					color: themeColor.textTitle
+					fontSizeMode: Text.Fit
+					minimumPixelSize: popup.titleTextSize - vpx(2)
 					font {
 						bold: true
 						pixelSize: popup.titleTextSize
@@ -413,19 +381,19 @@ Window {
 					wrapMode: Text.WordWrap
 
 					anchors {
-						//verticalCenter: parent.verticalCenter
 						top: titleText.bottom
 						bottom: parent.bottom
 						left: parent.left
 						right: parent.right
-						leftMargin: popup.titleTextSize * 0.5 //0.75
-						rightMargin: popup.titleTextSize * 0.5 //0.75
+						leftMargin: popup.titleTextSize * 0.5
+						rightMargin: popup.titleTextSize * 0.5
 					}
-					//width: parent.width - 2 * popup.textSize
 					width: parent.width - (2 * anchors.leftMargin)
 					horizontalAlignment: Text.AlignHCenter
 					verticalAlignment: Text.AlignVCenter
-					color: themeColor.textTitle
+					color: themeColor.textLabel
+					fontSizeMode: Text.Fit
+					minimumPixelSize: popup.textSize - vpx(4)
 					font {
 						pixelSize: popup.textSize
 						family: globalFonts.sans
