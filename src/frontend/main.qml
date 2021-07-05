@@ -249,15 +249,27 @@ Window {
                 { "title": qsTr("Error"), "message": msg });
             genericMessage.focus = true;
         }
-        function onShowPopup(msg,time) {
-			popup.message = msg;
-			popup.title = "for test purpose";
+        function onShowPopup(title,message,delay) {
+			//init parameters
+			//popup.message = message;
+			console.log("popup.height before: ",popup.height);			
+			var lenght = 40;
+			//test = "123456789 123456789 123456789 1234567890";
+			popup.message = "123456789 123456789 123456789 1234567890";//for test purpose
+    		//console.log("message.lenght: ",test.lenght);
+			//return vpx(60);
+			var height = 30 + (30 * (lenght/40));
+			popup.height = height;  //vpx(120)
+			console.log("popup.height after: ",popup.height);
+			//popup.title = title;
+			popup.title = "123456789 123456789 123456789 1234567890";//for test purpose
+			//delay provided in second and interval is in ms
+			popupDelay.interval = delay * 1000;
+			//launch popen
 			popup.open();
 			popup.visible = true;
 			//start timer to close popup automatically
-			popupDelay.interval = time * 1000;
 			popupDelay.restart();
-
         }
         function onEventLoadingStarted() {
             splashScreen.focus = true;
@@ -301,18 +313,29 @@ Window {
 		property alias title: titleText.text
 		property alias message: messageText.text
 		
-		property int textSize: vpx(8)
-		property int titleTextSize: vpx(10)
+		property int textSize: vpx(12)
+		property int titleTextSize: vpx(12)
 
-		width: 500
-		height: 150
+		width:  vpx(310)
+		height: vpx(60)
+				/* {
+				 console.log("message.lenght: ",message.lenght);
+				   //return vpx(60);
+				 return vpx(30 + (30 * (message.lenght/40)));  //vpx(120)
+				 } */
+				
 		background: Rectangle {
             anchors.fill: popup
-            border.color: "transparent"
-            color: "transparent"
+            border.color: themeColor.textTitle
+            //color: "transparent"
+			color: themeColor.secondary
+			opacity: 0.8
+			radius: height/4
+			Behavior on opacity { NumberAnimation { duration: 100 } }
 		}
-		x: parent.width * 0.01
-		y: parent.height * 0.05
+		//need to work in x/y, no anchor.top/bottom/left/right/etc... available
+		x: (parent.width/2) - (width/2)//parent.width * 0.01
+		y: parent.height - height - (parent.height * 0.03) //parent.height * 0.05
 
 		modal: false
 		focus: false
@@ -326,24 +349,23 @@ Window {
 			height: parent.height
 			
 			anchors.centerIn: parent
-			//scale: 1.0
-
-			//Behavior on scale { NumberAnimation { duration: 125 } }
-
+			//opacity: 0.8
+			//Behavior on opacity { NumberAnimation { duration: 100 } }
+			
 			// title bar
- 			Rectangle {
+/*  			Rectangle {
 				id: titleBar
 				width: parent.width
-				height: popup.titleTextSize * 2.25
+				height: popup.titleTextSize * 1.75 //2.25
 				color: themeColor.main
-
+				radius: height/4
 				Text {
 					id: titleText
 
 					anchors {
 						verticalCenter: parent.verticalCenter
 						left: parent.left
-						leftMargin: popup.titleTextSize * 0.75
+						leftMargin: popup.titleTextSize * 0.5 //0.75
 					}
 
 					color: themeColor.textTitle
@@ -353,25 +375,56 @@ Window {
 						family: globalFonts.sans
 					}
 				}
-			}
+			} */
 
 
 			// text area
 			Rectangle {
 				width: parent.width
-				height: messageText.height + 3 * popup.textSize
-				color: themeColor.secondary
-				//radius: height / 2
+				height: parent.height //(popup.titleTextSize * 1.75) + (messageText.height + 3 * popup.textSize)
+				color: "transparent" //themeColor.secondary
+
+				Text {
+					id: titleText
+					elide: Text.ElideRight
+					wrapMode: Text.WordWrap
+					
+					anchors {
+						//verticalCenter: parent.verticalCenter
+						top: parent.top
+						left: parent.left
+						right:  parent.right;
+						leftMargin: popup.titleTextSize * 0.5 //0.75
+						rightMargin: popup.titleTextSize * 0.5
+					}
+					width: parent.width - (2 * anchors.leftMargin)
+					height: popup.titleTextSize * 1.25 //2.25
+					color: themeColor.textTitle
+					font {
+						bold: true
+						pixelSize: popup.titleTextSize
+						family: globalFonts.sans
+					}
+				}
 				
 				Text {
 					id: messageText
-
-					anchors.centerIn: parent
-					width: parent.width - 2 * popup.textSize
-
+					elide: Text.ElideRight
 					wrapMode: Text.WordWrap
-					horizontalAlignment: Text.AlignHCenter
 
+					anchors {
+						//verticalCenter: parent.verticalCenter
+						top: titleText.bottom
+						bottom: parent.bottom
+						left: parent.left
+						right: parent.right
+						leftMargin: popup.titleTextSize * 0.5 //0.75
+						rightMargin: popup.titleTextSize * 0.5 //0.75
+					}
+					//width: parent.width - 2 * popup.textSize
+					width: parent.width - (2 * anchors.leftMargin)
+					horizontalAlignment: Text.AlignHCenter
+					verticalAlignment: Text.AlignVCenter
 					color: themeColor.textTitle
 					font {
 						pixelSize: popup.textSize
