@@ -78,7 +78,7 @@ QStringList GetParametersList(QString Parameter)
         // add none in list for disabled option if needed
         ListOfValue << "none";
         QString empty = "";
-        files << empty;
+        ListOfInternalValue << empty;
 
         for ( int index = 0; index < files.count(); index++ )
         {
@@ -194,6 +194,7 @@ QStringList GetParametersList(QString Parameter)
         Log::warning(LOGMSG("'%1' parameter is not a parameters list").arg(Parameter));
     }
     Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
+	Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
     return ListOfValue;
 }
 
@@ -246,6 +247,8 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
     if (ListOfInternalValue.size() == 0) DefaultValue = m_parameterslist.at(0).name;
     else DefaultValue = ListOfInternalValue.at(0);
     
+	//Log::debug(LOGMSG("DefaultValue:`%1`").arg(DefaultValue));
+	
     if(Parameter.contains("boot.", Qt::CaseInsensitive))
     {
         //check in recalbox-boot.conf
@@ -256,6 +259,7 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
     else
     {
         //check in recalbox.conf
+		//Log::debug(LOGMSG("select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));"));
         select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));
     }
 }
@@ -263,9 +267,7 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
 bool ParametersList::select_parameter(const QString& name)
 {
     //Log::debug(LOGMSG("ParametersList::select_parameter(const QString& name) name:`%1`").arg(name));
-    if (name.isEmpty())
-        return false;
-
+    
     for (size_t idx = 0; idx < m_parameterslist.size(); idx++) {
         /*
         Log::debug(LOGMSG("idx:`%1`").arg(idx));
@@ -288,7 +290,9 @@ bool ParametersList::select_parameter(const QString& name)
             }
         }
     }
-    //Log::debug(LOGMSG("ParametersList::select_parameter(const QString& name) / return false"));
+    //Log::debug(LOGMSG("ParametersList::select_parameter(const QString& name) / return false / index is set to 0"));
+	//set index to 0 to have any value
+	m_current_idx = 0;
     return false;
 }
 
