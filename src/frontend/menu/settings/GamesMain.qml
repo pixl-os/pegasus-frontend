@@ -156,12 +156,36 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optPixelPerfect
+                    KeyNavigation.down: optGlobalShaderSet
+                }
+                MultivalueOption {
+                    id: optGlobalShaderSet
+                    //property to manage parameter name
+                    property string parameterName : "global.shaderset"
+
+                    label: qsTr("Predefined shader") + api.tr
+                    note: qsTr("Set predefined Shader effect") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGlobalShaderSet;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optSmoothGame
                     KeyNavigation.down: optGlobalShader
                 }
                 MultivalueOption {
                     id: optGlobalShader
                     //property to manage parameter name
-                    property string parameterName : "global.shaderset"
+                    property string parameterName : "global.shaders"
 
                     label: qsTr("Shaders") + api.tr
                     note: qsTr("Set prefered Shader effect") + api.tr
@@ -179,7 +203,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optSmoothGame
+                    KeyNavigation.up: optGlobalShaderSet
                     KeyNavigation.down: optShowFramerate
                 }
                 ToggleOption {

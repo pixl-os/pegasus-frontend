@@ -133,23 +133,23 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSystemGameRatio
-                    KeyNavigation.down: optSystemShader
+                    KeyNavigation.down: optSystemShaderSet
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
                 MultivalueOption {
-                    id: optSystemShader
+                    id: optSystemShaderSet
                     //property to manage parameter name
                     property string parameterName : system.shortName + ".shaderset"
 
-                    label: qsTr("Shaders") + api.tr
-                    note: qsTr("Set prefered Shader effect for this system") + api.tr
+                    label: qsTr("Predefined shaders") + api.tr
+                    note: qsTr("Set predefined Shader effect for this system") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optSystemShader;
+                        parameterslistBox.callerid = optSystemShaderSet;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -159,6 +159,32 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSystemSmoothGame
+                    KeyNavigation.down: optGlobalShader
+                    // not visible if not libretro Core
+                    visible : isLibretroCore
+                }
+                MultivalueOption {
+                    id: optGlobalShader
+                    //property to manage parameter name
+                    property string parameterName : system.shortName + ".shaders"
+
+                    label: qsTr("Shaders") + api.tr
+                    note: qsTr("Set prefered Shader effect") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGlobalShader;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optSystemShaderSet
                     KeyNavigation.down: optSystemGameRewind
                     // not visible if not libretro Core
                     visible : isLibretroCore
@@ -181,7 +207,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optSystemShader
+                    KeyNavigation.up: optGlobalShader
                     KeyNavigation.down: optSystemAutoSave
                     // not visible if not libretro Core
                     visible : isLibretroCore

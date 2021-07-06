@@ -36,11 +36,13 @@ Item {
         color: themeColor.textTitle
         font.pixelSize: vpx(36)
         font.family: globalFonts.sans
+		elide: Text.ElideRight
 
         anchors.left: parent.horizontalCenter
         anchors.leftMargin: parent.width * -0.4
         anchors.bottom: parent.bottom
         anchors.bottomMargin: vpx(10)
+		anchors.right: parent.right
     }
 
     Rectangle {
