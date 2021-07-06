@@ -1,6 +1,32 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [add-shaders-option-in-menu] - 2021-07-06
+- add option to select prefered shaders
+- fix mistake in advanced settings
+- fix to manage better empty string as default/"none" value in parameters list
+- fix header/title in menu using elide from right if title too long
+- bump lang:
+	- fix traduction for shaders
+	- fix on mistake in advanced settings
+	- fix on emulatorconf: base and fr lang
+	- fix netplay trad
+	- fix mistake in fr translation
+	
+## [controllers-improvements] - 2021-07-06
+- first popup implementation:
+	- to have title, message and delay as popup's parameter
+	- tentative to manage dynamic height/number of line (cancelled for the moment)
+	- first version of popup using resize of text (cancelled for the moment)
+	- add icon support in ShowPopup
+- add popup for disconnect controller in gamepad manager
+- add icon for driving wheel in police
+- add icon support in qml and gamepad manager
+
+## [recalbox-integration] - 2021-06-30
+- bump GameOS : last version without pdfjs
+- bump GameOS: less warning and wait update from launchgame
+
 ## [retroachievements-management] - 2021-06-29
 - robustness/controls index to avoid out of range
 - add signals/slots to communicate/free with QML
