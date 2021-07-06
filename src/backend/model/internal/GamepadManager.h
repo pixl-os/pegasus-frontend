@@ -75,7 +75,7 @@ signals:
     void axisConfigured(int deviceId, model::GamepadManager::GMAxis axis);
     void configurationCanceled(int deviceId);
     
-    void showPopup(QString title, QString message, int delay);
+    void showPopup(QString title, QString message, QString icon, int delay);
 
 private slots:
     void bkOnConnected(int, QString);

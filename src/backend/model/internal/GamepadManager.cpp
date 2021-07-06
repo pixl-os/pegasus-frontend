@@ -46,6 +46,27 @@ find_by_deviceid(QQmlObjectListModel<model::Gamepad>& model, int device_id)
 inline QString pretty_id(int device_id) {
     return QLatin1String("0x") % QString::number(device_id, 16);
 }
+
+QString getIconByName(QString name)
+{
+	//check if xbox or ps4 pad for surprise ;-)
+	QString icon = "";
+	if(name.contains("xbox", Qt::CaseInsensitive))
+	{
+		icon = "\uf2f0";
+	}
+	else if (name.contains("ps4", Qt::CaseInsensitive))
+	{
+		icon = "\uf2ca";
+	}
+	//but also for wheel ;-)
+	else if ((name.contains("cockpit", Qt::CaseInsensitive)) || (name.contains("wheel", Qt::CaseInsensitive)))
+	{
+		icon = "\uf0c7";
+	}
+	return icon;
+}
+
 } // namespace
 
 
@@ -119,8 +140,8 @@ void GamepadManager::bkOnConnected(int device_id, QString name)
 
     Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_id), name));
     
-    //showpopup for 3 seconds by default
-    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name), 3);
+    //showpopup for 4 seconds by default
+    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
     
     emit connected(device_id);
     
@@ -138,9 +159,9 @@ void GamepadManager::bkOnDisconnected(int device_id)
             //finally, remove device independently in a second time
         }
         Log::info(m_log_tag, LOGMSG("Disconnected device %1 (%2)").arg(pretty_id(device_id), name));
-		
-		//showpopup for 3 seconds by default
-		emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name), 3);		
+
+		//showpopup for 4 seconds by default
+		emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);		
 		
         emit disconnected(std::move(name));
     }

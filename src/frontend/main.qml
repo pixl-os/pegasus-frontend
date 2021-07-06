@@ -250,10 +250,12 @@ Window {
                 { "title": qsTr("Error"), "message": msg });
             genericMessage.focus = true;
         }
-        function onShowPopup(title,message,delay) {
+        function onShowPopup(title,message,icon,delay) {
 			//init parameters
 			popup.title = title;
 			popup.message = message;
+			//icon is optional but should be set to empty string if not use
+			popup.icon = icon;
 			
 			//delay provided in second and interval is in ms
 			popupDelay.interval = delay * 1000;
@@ -305,10 +307,11 @@ Window {
 		
 		property alias title: titleText.text
 		property alias message: messageText.text
-
+		property alias icon: iconText.text
+		
 		property int titleTextSize: vpx(14)
 		property int textSize: vpx(12)
-
+		property int iconSize: vpx(60)
 
 		width:  vpx(200)
 		height: vpx(70)
@@ -345,10 +348,13 @@ Window {
 			
 			anchors.centerIn: parent
 
-			// text area
+			// text areas
 			Rectangle {
 				width: parent.width
 				height: parent.height
+				
+				anchors.centerIn: parent
+				
 				color: "transparent"
 
 				Text {
@@ -374,6 +380,27 @@ Window {
 						family: globalFonts.sans
 					}
 				}
+
+				Text {
+					id: iconText
+					
+					anchors {
+						top: titleText.bottom
+						bottom: parent.bottom
+						right:  parent.right;
+						rightMargin: popup.titleTextSize * 0.1
+					}
+					width: height
+					color: themeColor.textTitle
+					fontSizeMode: Text.Fit
+					minimumPixelSize: popup.iconSize - vpx(10)
+					horizontalAlignment: Text.AlignHCenter
+					verticalAlignment: Text.AlignVCenter					
+					font {
+						pixelSize: popup.iconSize
+						family: globalFonts.sans
+					}
+				}
 				
 				Text {
 					id: messageText
@@ -384,12 +411,11 @@ Window {
 						top: titleText.bottom
 						bottom: parent.bottom
 						left: parent.left
-						right: parent.right
+						right: (popup.icon !== "") ? iconText.left : parent.right
 						leftMargin: popup.titleTextSize * 0.5
 						rightMargin: popup.titleTextSize * 0.5
 					}
 					width: parent.width - (2 * anchors.leftMargin)
-					horizontalAlignment: Text.AlignHCenter
 					verticalAlignment: Text.AlignVCenter
 					color: themeColor.textLabel
 					fontSizeMode: Text.Fit
