@@ -177,8 +177,8 @@ Backend::Backend(const CliArgs& args, char** environment)
                      m_api, &ApiObject::onGameLaunchError);
 
     //api asked to show popup to frontend
-    // QObject::connect(&m_api->internal().gamepad(), &model::GamepadManager::showPopup,
-                     // m_api, &ApiObject::onShowPopup);
+    QObject::connect(&m_api->internal().gamepad(), &model::GamepadManager::showPopup,
+                     m_api, &ApiObject::onShowPopup);
 
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
                      m_frontend, &FrontendLayer::teardown);

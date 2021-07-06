@@ -18,6 +18,7 @@
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
+import QtQuick.Controls 2.15
 
 
 Window {
@@ -239,7 +240,8 @@ Window {
 
     Connections {
         target: api
-        function onEventSelectGameFile(game) {
+		
+		function onEventSelectGameFile(game) {
             multifileSelector.setSource("dialogs/MultifileSelector.qml", {"game": game})
             multifileSelector.focus = true;
         }
@@ -248,11 +250,21 @@ Window {
                 { "title": qsTr("Error"), "message": msg });
             genericMessage.focus = true;
         }
-        function onShowPopup(msg,time) {
-            // need QtQuick.Controls 2.15
-            //genericPopup.setSource("dialogs/GenericPopup.qml",{ "msg": msg, "delay": time });
-            //genericPopup.focus = true;
-            //TO DO
+        function onShowPopup(title,message,icon,delay) {
+			//init parameters
+			popup.title = title;
+			popup.message = message;
+			//icon is optional but should be set to empty string if not use
+			popup.icon = icon;
+			
+			//delay provided in second and interval is in ms
+			popupDelay.interval = delay * 1000;
+		
+			//Open popup and set it as showable to have animation
+			popup.open();
+			popup.showing = true;
+			//start timer to close popup automatically
+			popupDelay.restart();
         }
         function onEventLoadingStarted() {
             splashScreen.focus = true;
@@ -279,4 +291,141 @@ Window {
         onSkinLoadingChanged: hideMaybe()
         onDataLoadingChanged: hideMaybe()
     }
+
+    // Timer to show the popup
+    Timer {
+        id: popupDelay
+
+        interval: 5000
+        onTriggered: {
+			popup.showing = false;
+        }
+    }
+
+ 	Popup {
+		id: popup
+		
+		property alias title: titleText.text
+		property alias message: messageText.text
+		property alias icon: iconText.text
+		
+		property int titleTextSize: vpx(14)
+		property int textSize: vpx(12)
+		property int iconSize: vpx(60)
+
+		width:  vpx(200)
+		height: vpx(70)
+				
+		background: Rectangle {
+            anchors.fill: popup
+            border.color: themeColor.textTitle
+			color: themeColor.secondary
+			opacity: 0.8
+			radius: height/4
+			Behavior on opacity { NumberAnimation { duration: 100 } }
+		}
+		//need to work in x/y, no anchor.top/bottom/left/right/etc... available
+		x: (parent.width/2) - (width/2)//parent.width * 0.01
+		//do animation on y using showing boolean
+		property bool showing: false
+		property int position: showing ? (height + (parent.height * 0.03)) : 0
+		y: parent.height - position
+
+		Behavior on position {
+			NumberAnimation {duration: 500}
+		}   
+
+		modal: false
+		focus: false
+		visible: true
+		closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+		Column {
+			id: dialogBox
+
+			width: parent.width
+			height: parent.height
+			
+			anchors.centerIn: parent
+
+			// text areas
+			Rectangle {
+				width: parent.width
+				height: parent.height
+				
+				anchors.centerIn: parent
+				
+				color: "transparent"
+
+				Text {
+					id: titleText
+					elide: Text.ElideRight
+					wrapMode: Text.WordWrap
+					
+					anchors {
+						top: parent.top
+						left: parent.left
+						right:  parent.right;
+						leftMargin: popup.titleTextSize * 0.5
+						rightMargin: popup.titleTextSize * 0.5
+					}
+					width: parent.width - (2 * anchors.leftMargin)
+					height: popup.titleTextSize * 1.2
+					color: themeColor.textTitle
+					fontSizeMode: Text.Fit
+					minimumPixelSize: popup.titleTextSize - vpx(2)
+					font {
+						bold: true
+						pixelSize: popup.titleTextSize
+						family: globalFonts.sans
+					}
+				}
+
+				Text {
+					id: iconText
+					
+					anchors {
+						top: titleText.bottom
+						bottom: parent.bottom
+						right:  parent.right;
+						rightMargin: popup.titleTextSize * 0.1
+					}
+					width: height
+					color: themeColor.textTitle
+					fontSizeMode: Text.Fit
+					minimumPixelSize: popup.iconSize - vpx(10)
+					horizontalAlignment: Text.AlignHCenter
+					verticalAlignment: Text.AlignVCenter					
+					font {
+						pixelSize: popup.iconSize
+						family: globalFonts.sans
+					}
+				}
+				
+				Text {
+					id: messageText
+					elide: Text.ElideRight
+					wrapMode: Text.WordWrap
+
+					anchors {
+						top: titleText.bottom
+						bottom: parent.bottom
+						left: parent.left
+						right: (popup.icon !== "") ? iconText.left : parent.right
+						leftMargin: popup.titleTextSize * 0.5
+						rightMargin: popup.titleTextSize * 0.5
+					}
+					width: parent.width - (2 * anchors.leftMargin)
+					verticalAlignment: Text.AlignVCenter
+					color: themeColor.textLabel
+					fontSizeMode: Text.Fit
+					minimumPixelSize: popup.textSize - vpx(4)
+					font {
+						pixelSize: popup.textSize
+						family: globalFonts.sans
+					}
+				}
+			}
+		}
+	}
 }
