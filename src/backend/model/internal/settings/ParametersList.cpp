@@ -23,6 +23,21 @@ snes.core=snes9x_next
 neogeo.emulator=fba2x
 */
 
+QString GetCommandOutput(const std::string& command)
+{
+  std::string output;
+  char buffer[4096];
+  FILE* pipe = popen(command.data(), "r");
+  if (pipe != nullptr)
+  {
+    while (feof(pipe) == 0)
+      if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        output.append(buffer);
+    pclose(pipe);
+  }
+  return QString::fromStdString(output);
+}
+
 QStringList GetParametersList(QString Parameter)
 {
     QStringList ListOfValue;
@@ -198,7 +213,7 @@ QStringList GetParametersList(QString Parameter)
     return ListOfValue;
 }
 
-QStringList GetParametersList(QString Parameter, QString SysCommand, QStringList SysOptions)
+QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, QStringList SysOptions)
 {
     QStringList ListOfValue;
 
@@ -206,37 +221,36 @@ QStringList GetParametersList(QString Parameter, QString SysCommand, QStringList
     ListOfInternalValue.clear();
     
 	//replace from '%1' to '%i' parameters from SysCommand by SysOptions
-	if (SysOptions != NULL)
+    if (!SysOptions.empty())
 		{
 		for(int i = 0; i < SysOptions.count(); i++)
 			{
-				SysCommand.replace("%"+QString::number(i+1), SysOptions.at(i);)
+                SysCommand.replace("%"+QString::number(i+1), SysOptions.at(i));
 			}
 	}
 
 	//launch command using Qprocess to get output
-	QProcess process;	
-	process.start(SysCommand);
-	process.waitForFinished(-1); // will wait forever until finished
-	QString stdout = process.readAllStandardOutput();
-	QString stderr = process.readAllStandardError();	
+    QString stdout = GetCommandOutput(SysCommand.toUtf8().constData());
+    Log::debug(LOGMSG("process.readAllStandardOutput(): '%1'").arg(stdout));
 
 	//get list of value from stdout
 	if (stdout.isEmpty())
 	{
 		ListOfValue.clear();
 	}
-	//search end of line
+    //search delimitor using semi-column
 	else if (stdout.count(";") >= 1)
 	{
 		ListOfValue = stdout.split(";");
 	}
-	else
+    else // or search end of line
 	{
 		ListOfValue = stdout.split("\n");
 	}
+    //remove empty ones for cleaning
+    ListOfValue.removeAll(QString(""));
+
     Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
-	Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
     
 	return ListOfValue;
 }
@@ -244,11 +258,16 @@ QStringList GetParametersList(QString Parameter, QString SysCommand, QStringList
 std::vector<model::ParameterEntry> find_available_parameterslist(const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions)
 {
     //Log::debug(LOGMSG("Call of std::vector<model::ParameterEntry> find_available_parameterslist(const QString& Parameter)"));
-    
-	if ((SysCommand != "") && (SysCommand != NULL))
-		const QStringList ListOfValue = GetParametersListFromSystem(Parameter, SysCommand, SysOptions);	
-	else
-		const QStringList ListOfValue = GetParametersList(Parameter);
+    QStringList ListOfValue;
+
+    if ((SysCommand != "") && (SysCommand != NULL))
+    {
+        ListOfValue = GetParametersListFromSystem(Parameter, SysCommand, SysOptions);
+    }
+    else
+    {
+        ListOfValue = GetParametersList(Parameter);
+    }
 
     std::vector<model::ParameterEntry> parameterslist;
 
@@ -447,7 +466,8 @@ QString ParametersList::currentName(const QString& Parameter) {
         //to signal refresh of model's data
         emit QAbstractItemModel::beginResetModel();
         m_parameter = Parameter;
-        m_parameterslist = find_available_parameterslist(Parameter,"",NULL);
+        QStringList EmptyQStringList;
+        m_parameterslist = find_available_parameterslist(Parameter,"",EmptyQStringList);
         select_preferred_parameter(Parameter);
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
@@ -457,7 +477,7 @@ QString ParametersList::currentName(const QString& Parameter) {
 
 QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) { 
 
-    Log::debug(LOGMSG("QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) - parameter: `%1` - SysCommand: `%2` - SysOptions: TODO ").arg(Parameter,SysCommand));
+    //Log::debug(LOGMSG("QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) - parameter: `%1` - SysCommand: `%2` - SysOptions: TODO ").arg(Parameter,SysCommand));
 
     if (m_parameter != Parameter)
     {
