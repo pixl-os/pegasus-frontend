@@ -252,6 +252,13 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
     Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
     
+    //to avoid crash when there is no value return by command/script
+    if(ListOfValue.isEmpty())
+    {
+        ListOfValue.append("no value");
+        ListOfInternalValue.append(""); //to empty parameter
+    }
+
 	return ListOfValue;
 }
 
