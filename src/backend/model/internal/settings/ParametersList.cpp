@@ -198,11 +198,57 @@ QStringList GetParametersList(QString Parameter)
     return ListOfValue;
 }
 
-std::vector<model::ParameterEntry> find_available_parameterslist(const QString& Parameter)
+QStringList GetParametersList(QString Parameter, QString SysCommand, QStringList SysOptions)
+{
+    QStringList ListOfValue;
+
+    //clean global internal values if needed
+    ListOfInternalValue.clear();
+    
+	//replace from '%1' to '%i' parameters from SysCommand by SysOptions
+	if (SysOptions != NULL)
+		{
+		for(int i = 0; i < SysOptions.count(); i++)
+			{
+				SysCommand.replace("%"+QString::number(i+1), SysOptions.at(i);)
+			}
+	}
+
+	//launch command using Qprocess to get output
+	QProcess process;	
+	process.start(SysCommand);
+	process.waitForFinished(-1); // will wait forever until finished
+	QString stdout = process.readAllStandardOutput();
+	QString stderr = process.readAllStandardError();	
+
+	//get list of value from stdout
+	if (stdout.isEmpty())
+	{
+		ListOfValue.clear();
+	}
+	//search end of line
+	else if (stdout.count(";") >= 1)
+	{
+		ListOfValue = stdout.split(";");
+	}
+	else
+	{
+		ListOfValue = stdout.split("\n");
+	}
+    Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
+	Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
+    
+	return ListOfValue;
+}
+
+std::vector<model::ParameterEntry> find_available_parameterslist(const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions)
 {
     //Log::debug(LOGMSG("Call of std::vector<model::ParameterEntry> find_available_parameterslist(const QString& Parameter)"));
     
-    const QStringList ListOfValue = GetParametersList(Parameter);
+	if ((SysCommand != "") && (SysCommand != NULL))
+		const QStringList ListOfValue = GetParametersListFromSystem(Parameter, SysCommand, SysOptions);	
+	else
+		const QStringList ListOfValue = GetParametersList(Parameter);
 
     std::vector<model::ParameterEntry> parameterslist;
 
@@ -401,12 +447,31 @@ QString ParametersList::currentName(const QString& Parameter) {
         //to signal refresh of model's data
         emit QAbstractItemModel::beginResetModel();
         m_parameter = Parameter;
-        m_parameterslist = find_available_parameterslist(Parameter);
+        m_parameterslist = find_available_parameterslist(Parameter,"",NULL);
         select_preferred_parameter(Parameter);
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
     }
     return m_parameterslist.at(m_current_idx).name;
 }
+
+QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) { 
+
+    Log::debug(LOGMSG("QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) - parameter: `%1` - SysCommand: `%2` - SysOptions: TODO ").arg(Parameter,SysCommand));
+
+    if (m_parameter != Parameter)
+    {
+        //to signal refresh of model's data
+        emit QAbstractItemModel::beginResetModel();
+        m_parameter = Parameter;
+        m_parameterslist = find_available_parameterslist(Parameter, SysCommand, SysOptions);
+        select_preferred_parameter(Parameter);
+        //to signal end of model's data
+        emit QAbstractItemModel::endResetModel();
+    }
+    return m_parameterslist.at(m_current_idx).name;
+}
+
+
 
 } // namespace model
