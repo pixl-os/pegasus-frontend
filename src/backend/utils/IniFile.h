@@ -39,6 +39,12 @@ class IniFile
     bool Save();
 
     /*!
+     * @brief Reload the configuration file withoot backup parameter already updated in memory
+     * @return True if the operation is successful
+     */
+    bool Reload();
+
+    /*!
      * @brief Get string value from the given key
      * @param name Key
      * @return Value or empty string if the key does not exist

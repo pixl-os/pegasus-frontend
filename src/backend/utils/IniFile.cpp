@@ -72,6 +72,12 @@ bool IniFile::Load()
   return !mConfiguration.empty();
 }
 
+bool IniFile::Reload()
+{
+  // force Load of file
+  return Load();
+}
+
 bool IniFile::Save()
 {
   // No change?
