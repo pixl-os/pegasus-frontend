@@ -51,7 +51,7 @@ QString getIconByName(QString name)
 {
 	//check if xbox or ps4 pad for surprise ;-)
 	QString icon = "";
-	if(name.contains("xbox", Qt::CaseInsensitive))
+	if(name.contains("xbox", Qt::CaseInsensitive) || name.contains("x360", Qt::CaseInsensitive))
 	{
 		icon = "\uf2f0";
 	}
