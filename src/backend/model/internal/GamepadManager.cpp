@@ -86,11 +86,12 @@ GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
             this, &GamepadManager::bkOnConnected);
     connect(m_backend, &GamepadManagerBackend::disconnected,
             this, &GamepadManager::bkOnDisconnected);
+    connect(m_backend, &GamepadManagerBackend::newController,
+            this, &GamepadManager::bkOnNewController);			            
     connect(m_backend, &GamepadManagerBackend::nameChanged,
             this, &GamepadManager::bkOnNameChanged);
     connect(m_backend, &GamepadManagerBackend::removed,
             this, &GamepadManager::bkOnRemoved);
-            
 
     connect(m_backend, &GamepadManagerBackend::buttonConfigured,
             this, &GamepadManager::bkOnButtonCfg);
@@ -169,6 +170,13 @@ void GamepadManager::bkOnDisconnected(int device_id)
     { 
         Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
     } 
+}
+
+void GamepadManager::bkOnNewController(QString name)
+{
+    Log::debug(m_log_tag, LOGMSG("New Controller (%2)").arg(name));
+    
+    emit newController(name);
 }
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)

@@ -131,6 +131,10 @@ void ApiObject::onShowPopup(QString title, QString message, QString icon, int de
     emit showPopup(title, message, icon, delay);
 }
 
+void ApiObject::onNewController(QString message)
+{	
+    emit newController(message);
+}
 
 void ApiObject::onGameFinished()
 {

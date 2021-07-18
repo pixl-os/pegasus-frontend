@@ -42,6 +42,7 @@ public:
 signals:
     void connected(int, QString);
     void disconnected(int);
+	void newController(QString);
     void nameChanged(int, QString);
     void removed(int);
     

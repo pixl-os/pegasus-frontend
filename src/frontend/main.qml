@@ -266,6 +266,9 @@ Window {
 			//start timer to close popup automatically
 			popupDelay.restart();
         }
+		function onNewController(msg) {
+			console.log("new controller: ",msg);
+		}		
         function onEventLoadingStarted() {
             splashScreen.focus = true;
         }
