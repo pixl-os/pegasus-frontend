@@ -15,6 +15,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import "menu"
+import "menu/settings"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
@@ -107,6 +109,20 @@ Window {
         anchors.fill: parent
         enabled: focus
 
+        //signal openGamepadSettings
+        signal onClose
+
+        function openScreen(url) {
+			subscreen.source = url;
+			subscreen.focus = true;
+            content.state = "sub";
+		}
+		function openModal(url) {
+			modal.source = url;
+			modal.focus = true;
+			content.state = "modal";
+        } 
+
         Loader {
             id: theme
             anchors.fill: parent
@@ -197,6 +213,83 @@ Window {
                     mainMenu.focus = true;
             }
         }
+		Loader {
+			id: modal
+			asynchronous: true
+
+			anchors.fill: parent
+
+			enabled: focus
+			onLoaded: item.focus = focus
+			onFocusChanged: if (item) item.focus = focus
+		}
+		Connections {
+			target: modal.item
+			function onClose() {
+				content.focus = true;
+				content.state = "";
+                theme.focus = true;
+			}
+		}
+		Loader {
+			id: subscreen
+			asynchronous: true
+
+			width: parent.width
+			height: parent.height
+			anchors.left: content.right
+
+			enabled: focus
+			onLoaded: item.focus = focus
+			onFocusChanged: if (item) item.focus = focus
+		}
+		Connections {
+			target: subscreen.item
+			function onClose() {
+                console.log("subscreen.onClose()");
+                //subscreen.source = "";
+                content.focus = true;
+				content.state = "";
+                theme.focus = true;
+			}
+		}
+		states: [
+			State {
+				name: "sub"
+				AnchorChanges {
+					target: content
+					anchors.right: subscreen.left
+				}
+				AnchorChanges {
+					target: subscreen
+                    anchors.left: parent.left //undefined
+					anchors.right: parent.right
+				}
+			}
+		]
+		// fancy easing curves, a la material design
+		readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
+		readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]
+		readonly property var bezierStandard: [ 0.4,0, 0.2,1, 1,1 ]
+
+		transitions: [
+			Transition {
+				from: ""; to: "sub"
+				AnchorAnimation {
+					duration: 425
+                    easing { type: Easing.Bezier; bezierCurve: content.bezierStandard }
+				}
+			},
+			Transition {
+				from: "sub"; to: ""
+				AnchorAnimation {
+					duration: 400
+                    easing { type: Easing.Bezier; bezierCurve: content.bezierSharp }
+				}
+				onRunningChanged: if (!running) subscreen.source = ""
+			}
+		]
+		
     }
 
 
@@ -268,12 +361,12 @@ Window {
         }
 		function onNewController(msg) {
 			console.log("new controller: ",msg);
-		}		
+            content.openScreen("menu/settings/GamepadEditor.qml")
+        }
         function onEventLoadingStarted() {
             splashScreen.focus = true;
         }
     }
-
 
     SplashLayer {
         id: splashScreen
