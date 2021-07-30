@@ -358,6 +358,10 @@ Window {
 		function onNewController(msg) {
 			console.log("New controller detected: ",msg);
             content.openScreen("menu/settings/GamepadEditor.qml")
+			//add dialogBox
+            genericMessage.setSource("dialogs/GenericOkDialog.qml",
+                { "title": qsTr("New type of controller detected") + " : " + msg, "message": qsTr("Press any button to continue\n(please read instructions at the bottom of next view to understand possible actions)") });
+            genericMessage.focus = true;			
         }
         function onEventLoadingStarted() {
             splashScreen.focus = true;
