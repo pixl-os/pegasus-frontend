@@ -244,9 +244,10 @@ Window {
 		Connections {
 			target: subscreen.item
 			function onClose() {
-                content.focus = true;
+				content.focus = true;
 				content.state = "";
-                theme.focus = true;
+                theme.visible = true;
+				theme.focus = true;
 			}
 		}
 		states: [
@@ -281,7 +282,6 @@ Window {
 				}
 				onRunningChanged: if (!running) {
 									subscreen.source = "";
-									theme.visible = true;
 									}
 			}
 		]
@@ -356,7 +356,7 @@ Window {
 			popupDelay.restart();
         }
 		function onNewController(msg) {
-			console.log("new controller: ",msg);
+			console.log("New controller detected: ",msg);
             content.openScreen("menu/settings/GamepadEditor.qml")
         }
         function onEventLoadingStarted() {
