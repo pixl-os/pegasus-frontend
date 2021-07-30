@@ -146,7 +146,7 @@ FocusScope {
                 height: ListView.view.height
 
                 GamepadName {
-                    text: "#" + (index + 1) + ": " + modelData.name
+                    text: modelData ? ("#" + (index + 1) + ": " + modelData.name) : ""
                     highlighted: deviceSelect.focus
                 }
             }
