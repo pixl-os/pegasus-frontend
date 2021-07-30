@@ -437,8 +437,6 @@ Window {
 
 			width: parent.width
 			height: parent.height
-			
-			anchors.centerIn: parent
 
 			// text areas
 			Rectangle {
