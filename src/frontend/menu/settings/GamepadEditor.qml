@@ -683,7 +683,6 @@ FocusScope {
                 ctx.fill();
             }
         }
-        // TODO: replace this with an SVG icon
         Rectangle {
             id: backButtonIcon
             height: label.height
@@ -725,7 +724,91 @@ FocusScope {
                 right: parent.right; rightMargin: parent.width * 0.015
             }
         }
+		//add rectangle + text for 'valid' button
+        Rectangle {
+            id: validButtonIcon
+            height: label.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+
+            anchors {
+                right: labelA.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "A"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: labelA
+            text: qsTr("press to edit any input") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: backButtonIcon.left; rightMargin: parent.width * 0.015
+            }
+        }
+		//add rectangle + text for 'wizard' launch
+        Rectangle {
+            id: wizardButtonIcon
+            height: labelWizard.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+
+            anchors {
+                left: parent.left;
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "?"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: labelWizard
+            text: qsTr("press 3 times any button for 'step by step'") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                left: wizardButtonIcon.right; leftMargin: parent.width * 0.005
+            }
+        }
+  
     }
+	
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
