@@ -60,6 +60,18 @@ find_by_str_ref(HashMap<QLatin1String, QString>& map, const QStringRef& str)
     return it;
 }
 
+void set_by_str(HashMap<QLatin1String, QString>& map, const QString& str, const QString& value)
+{
+    HashMap<QLatin1String, QString>::iterator it;
+    for (it = map.begin(); it != map.end(); ++it)
+	{
+        if (it->first == str)
+		{	
+			it->second = value;
+            break;
+		}
+	}
+}
 
 providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStreamReader& xml)
 {
@@ -171,7 +183,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
     };
 }
 
-providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStreamReader& xml)
+providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStreamReader& xml, const QString& defaultsCommand)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -189,56 +201,57 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
     HashMap<QLatin1String, QString> xml_props {
         { QLatin1String("name"), QString() },
         { QLatin1String("fullname"), QString() },
+        { QLatin1String("platform"), QString() },
         { QLatin1String("path"), QString() },
         { QLatin1String("extension"), QString() },
         { QLatin1String("command"), QString() },
-        { QLatin1String("platform"), QString() },
-        { QLatin1String("theme"), QString() },
-        { QLatin1String("emulators"), QString() },
     };
+
     //emulators/emulator attributes
     QList< providers::es2::EmulatorsEntry> SystemEmulators;
     
+    //read the attributs from <system> and put it in HashMap
+    set_by_str(xml_props, "name",xml.attributes().value("name").toString());
+    set_by_str(xml_props, "fullname",xml.attributes().value("fullname").toString());
+    set_by_str(xml_props, "platform",xml.attributes().value("platforms").toString());
+
+    //just put default command here for future used
+    set_by_str(xml_props, "command",defaultsCommand);
+
     // read
     while (xml.readNextStartElement()) {
-        const auto it = find_by_str_ref(xml_props, xml.name());
-        if (it != xml_props.end()){
-            if (xml.name() == "emulators"){
+	        if (xml.name() == "descriptor"){
+				//const auto 
+                set_by_str(xml_props, "path",xml.attributes().value("path").toString());
+                set_by_str(xml_props, "extension",xml.attributes().value("extensions").toString());
+				xml.skipCurrentElement(); //because not read of element text
+			}
+            else if (xml.name() == "emulatorList"){
                 while (xml.readNextStartElement()){
                     if (xml.name() == "emulator"){
                         QString emulatorName = xml.attributes().value("name").toString();
                         //Log::debug(log_tag,LOGMSG("Emulateur name: %1").arg(emulatorName));
-                    
-                        while (xml.readNextStartElement()) {
-                            if (xml.name() == "cores"){
                                 while (xml.readNextStartElement()) {
                                     if (xml.name() == "core"){
                                         QString corePriority = xml.attributes().value("priority").toString();
-                                        QString coreName = xml.readElementText();
+                                        QString coreName = xml.attributes().value("name").toString();
                                         //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
                                         SystemEmulators.append({ emulatorName, coreName, corePriority.toInt()});
+										xml.skipCurrentElement(); //because not read of element text
                                     }
                                 }
-                            }
-                        }
                     }
                 }
             }
-            else{
-                QString elementRead = xml.readElementText();
-                //Log::debug(log_tag, LOGMSG("System entry : %1").arg(elementRead));
-                it->second = elementRead;
+			else{
+				xml.skipCurrentElement(); //because not read of element text
             }
         }
-        else{
-            xml.skipCurrentElement();
-        }
-    
-    }
     if (xml.error())
-        return {};
-
-
+	{
+        Log::debug(log_tag,LOGMSG("xml.error()"));
+		return {};
+	}
     // check if all required params are present
     for (const QLatin1String& key : required_keys) {
         if (xml_props[key].isEmpty()) {
@@ -251,7 +264,8 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
     // do some path formatting
     xml_props[QLatin1String("path")]
         .replace("\\", "/")
-        .replace("~", paths::homePath());
+        .replace("~", paths::homePath())
+		.replace("%ROOT%","/recalbox/share/roms");
 
 
     // construct the new platform
@@ -308,31 +322,37 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
         Log::error(log_tag, LOGMSG("Could not parse `%1`").arg(xml_path));
         return {};
     }
-	//Since ROMFS V2, find default as following: 
-	//<defaults command="python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%"/>
-	QString defaultsCommand = "";
-    if (xml.name() == QLatin1String("defaults")) {
-		//ROMFS V2 file identified
-        Log::info(log_tag, LOGMSG("ROMFS V2 xml format Identified"));
-		//Get default command
-		//TO DO to extract from XML
-		defaultsCommand = "python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%";
-    }
-    else if (xml.name() != QLatin1String("systemList")) {
+
+    if (xml.name() != QLatin1String("systemList")) {
         Log::error(log_tag, LOGMSG("`%1` does not have a `<systemList>` root node").arg(xml_path));
         return {};
     }
 
     // read all <system> nodes
     std::vector<SystemEntry> systems;
+	//Since ROMFS V2, find default as following: 
+	//<defaults command="python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%"/>
+	QString defaultsCommand = "";
     while (xml.readNextStartElement()) {
-        if (xml.name() != QLatin1String("system")) {
+		QStringRef name = xml.name();
+		if (name == QLatin1String("defaults")) {
+			//ROMFS V2 file identified
+			Log::info(log_tag, LOGMSG("ROMFS V2 xml format Identified"));
+			//Get default command
+			//TO DO to extract from XML
+			defaultsCommand = "python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%";
+            xml.skipCurrentElement();
+            continue;
+			
+		}
+		else if (name != QLatin1String("system")) {
+			Log::debug(log_tag, LOGMSG("Skip this one: %1").arg(name));
             xml.skipCurrentElement();
             continue;
         }
         providers::es2::SystemEntry sysentry;
-        if (defaultsCommand != "") sysentry = read_system_entry(log_tag, xml);
-        else sysentry = read_system_entry_v2(log_tag, xml);
+        if (defaultsCommand == "") sysentry = read_system_entry(log_tag, xml);
+        else sysentry = read_system_entry_v2(log_tag, xml, defaultsCommand);
         if (!sysentry.name.isEmpty())
             systems.emplace_back(std::move(sysentry));
     }
