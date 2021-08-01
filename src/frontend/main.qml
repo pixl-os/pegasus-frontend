@@ -107,19 +107,7 @@ Window {
         anchors.fill: parent
         enabled: focus
 
-        //signal openGamepadSettings
         signal onClose
-
-        function openScreen(url) {
-			subscreen.source = url;
-			subscreen.focus = true;
-            content.state = "sub";
-		}
-		function openModal(url) {
-			modal.source = url;
-			modal.focus = true;
-			content.state = "modal";
-        } 
 
         Loader {
             id: theme
@@ -211,24 +199,6 @@ Window {
                     mainMenu.focus = true;
             }
         }
-		Loader {
-			id: modal
-			asynchronous: true
-
-			anchors.fill: parent
-
-			enabled: focus
-			onLoaded: item.focus = focus
-			onFocusChanged: if (item) item.focus = focus
-		}
-		Connections {
-			target: modal.item
-			function onClose() {
-				content.focus = true;
-				content.state = "";
-                theme.focus = true;
-			}
-		}
 		Loader {
 			id: subscreen
 			asynchronous: true
@@ -357,7 +327,12 @@ Window {
         }
 		function onNewController(msg) {
 			console.log("New controller detected: ",msg);
-            content.openScreen("menu/settings/GamepadEditor.qml")
+			
+            //content.openScreenWith("menu/settings/GamepadEditor.qml")
+			subscreen.setSource("menu/settings/GamepadEditor.qml", {"isNewController": true, "newControllerIndex": 0});
+			subscreen.focus = true;
+            content.state = "sub";
+			
 			//add dialogBox
             genericMessage.setSource("dialogs/GenericContinueDialog.qml",
                 { "title": qsTr("New type of controller detected") + " : " + msg, "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });

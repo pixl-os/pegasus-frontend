@@ -40,7 +40,11 @@ FocusScope {
     readonly property bool hasGamepads: gamepad !== null
 
     property ConfigField recordingField: null
-    
+ 
+	//properties for new controller case
+    property int newControllerIndex
+    property bool isNewController: false
+
     function recordConfig(configField) {
         
         //console.log("function recordConfig(configField)");
