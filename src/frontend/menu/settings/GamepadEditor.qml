@@ -146,8 +146,21 @@ FocusScope {
                 height: ListView.view.height
 
                 GamepadName {
-                    text: modelData ? ("#" + (index + 1) + ": " + modelData.name) : ""
-                    highlighted: deviceSelect.focus
+                    text: {
+						// to add info to notice that one or several controllers  is/are available !
+                        if (modelData) {
+                            var previous = "";
+                            var next = "";
+							if (gamepadList.count > 1)
+							{								
+								if (index !== 0) previous = "< ";
+								if (index !== (gamepadList.count-1)) next = " >";
+							}
+							return (previous + "#" + (index + 1) + ": " + modelData.name + next);
+						}
+						else return ""; 						
+					}
+					highlighted: deviceSelect.focus
                 }
             }
         }
