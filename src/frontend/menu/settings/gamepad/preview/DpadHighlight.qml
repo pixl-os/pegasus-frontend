@@ -25,7 +25,7 @@ Rectangle {
     height: width
     anchors.margins: 4
 
-    color: pressed ? "#393": themeColor.underline
+    color: pressed ? "blue": themeColor.underline
     radius: width * 0.2
     visible: highlighted || pressed
 }

@@ -71,7 +71,7 @@ Item {
         height: width
         anchors.centerIn: parent
 
-        color: pressed ? "#393": themeColor.underline
+        color: pressed ? "blue": themeColor.underline
         radius: width * 0.5
 
         visible: pressed || padContainer.currentButton === (side + "3")

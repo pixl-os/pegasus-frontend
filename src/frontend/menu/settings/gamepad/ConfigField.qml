@@ -26,7 +26,6 @@ Rectangle {
     height: label.font.pixelSize * 1.5
     color: {
         if (recording) return "#c33";
-        if (pressed) return "#353";
         if (activeFocus) return themeColor.underline
         return themeColor.secondary;
     }
@@ -39,7 +38,7 @@ Rectangle {
 
     Text {
         id: label
-        color: themeColor.textLabel
+        color: pressed ? "blue" : themeColor.textLabel
         font {
             family: globalFonts.sans
             pixelSize: vpx(18)

@@ -38,7 +38,7 @@ Item {
 
     Rectangle {
         id: highlight
-        color: pressed ? "#393": themeColor.underline
+        color: pressed ? "blue": themeColor.underline
         width: height * 1.25
         height: parent.height * 0.4
         anchors {
