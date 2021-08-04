@@ -72,6 +72,10 @@ FocusScope {
     property real escapeStartTime: 0
     property real escapeProgress: 0
 
+    property real validDelay: 1000 //quicker than B/Save/Quit command ;-)
+    property real validStartTime: 0
+    property real validProgress: 0
+
     Timer {
         id: escapeTimer
         interval: 50
@@ -83,12 +87,30 @@ FocusScope {
             if (escapeProgress > 1.0)
                 root.triggerClose();
         }
+	}
+    Timer {
+        id: validTimer
+        interval: 50
+        repeat: true
+        onTriggered: {
+            var currentTime = new Date().getTime();
+            validProgress = (currentTime - validStartTime) / validDelay;
+
+            if (validProgress > 2.0)
+                root.stopValidTimer(); // stop timer at the end (but double of time to let detection by field event)
+        }
+
     }
     function stopEscapeTimer() {
         escapeTimer.stop();
         escapeStartTime = 0;
         escapeProgress = 0;
     }
+    function stopValidTimer() {
+        validTimer.stop();
+        validStartTime = 0;
+        validProgress = 0;
+    }	
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -742,6 +764,29 @@ FocusScope {
             }
         }
 		//add rectangle + text for 'valid' button
+        Canvas {
+            width: validButtonIcon.width + vpx(4)
+            height: width
+            anchors.centerIn: validButtonIcon
+
+            property real progress: validProgress
+            onProgressChanged: requestPaint()
+
+            onPaint: {
+                var ctx = getContext('2d');
+                ctx.clearRect(0, 0, width, height);
+
+                var center = width / 2;
+                var startAngle = -Math.PI / 2
+
+                ctx.beginPath();
+                ctx.fillStyle = "#eee";
+                ctx.moveTo(center, center);
+                ctx.arc(center, center, center,
+                        startAngle, startAngle + Math.PI * 2 * progress, false);
+                ctx.fill();
+            }
+        }
         Rectangle {
             id: validButtonIcon
             height: label.height
@@ -768,7 +813,7 @@ FocusScope {
         }
         Text {
             id: labelA
-            text: qsTr("press to edit any input") + api.tr
+            text: qsTr("hold down to edit any input") + api.tr
             verticalAlignment: Text.AlignTop
             color: "#777"
             font {
