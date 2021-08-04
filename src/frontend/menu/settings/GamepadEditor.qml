@@ -664,7 +664,7 @@ FocusScope {
         }
         Text {
             id: labelA
-            text: qsTr("hold down to edit any input") + api.tr
+            text: qsTr("hold down to edit") + api.tr
             verticalAlignment: Text.AlignTop
             color: "#777"
             font {
@@ -705,7 +705,7 @@ FocusScope {
         }
         Text {
             id: labelWizard
-            text: qsTr("press 3 times any button for 'step by step'") + api.tr
+            text: qsTr("press 3 times for 'step by step' conf") + api.tr
             verticalAlignment: Text.AlignTop
             color: "#777"
             font {
@@ -719,7 +719,47 @@ FocusScope {
                 left: wizardButtonIcon.right; leftMargin: parent.width * 0.005
             }
         }
-  
+		//add rectangle + text for 'directions' command
+        Rectangle {
+            id: directionsButtonIcon
+            height: labelDirections.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+
+            anchors {
+                left: labelWizard.right;
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "\uf1cb"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: labelDirections
+            text: qsTr("select controller") + "/" + qsTr("input") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                left: directionsButtonIcon.right; leftMargin: parent.width * 0.005
+            }
+        }  
     }
 	
     MouseArea {
