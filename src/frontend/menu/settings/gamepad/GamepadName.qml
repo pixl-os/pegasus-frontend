@@ -27,6 +27,6 @@ Text {
     }
     font {
         pixelSize: vpx(30)
-        family: globalFonts.sans
+        family: globalFonts.ion //globalFonts.sans
     }
 }

@@ -157,8 +157,8 @@ FocusScope {
                             var next = "";
 							if (gamepadList.count > 1)
 							{								
-								if (index !== 0) previous = "< ";
-								if (index !== (gamepadList.count-1)) next = " >";
+								if (index !== 0) previous = "\uf3cf  "; // < from ionicons
+								if (index !== (gamepadList.count-1)) next = "  \uf3d1"; // > from ionicons
 							}
 							return (previous + "#" + (index + 1) + ": " + modelData.name + next);
 						}
