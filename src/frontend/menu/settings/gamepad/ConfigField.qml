@@ -56,11 +56,11 @@ Rectangle {
 		event.accepted = true;
 		validStartTime = new Date().getTime();
 		validTimer.start();					
+		root.fieldUnderConfiguration = this;
 	}
 	Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) ) {
 		event.accepted = true;
 		if (validProgress > 1.0) {
-			recordConfig(this);
 			api.internal.gamepad.configureButton(gamepad.deviceId, input);
 		}	
 		root.stopValidTimer();

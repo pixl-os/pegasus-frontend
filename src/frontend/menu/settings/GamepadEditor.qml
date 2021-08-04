@@ -75,6 +75,7 @@ FocusScope {
     property real validDelay: 1000 //quicker than B/Save/Quit command ;-)
     property real validStartTime: 0
     property real validProgress: 0
+	property ConfigField fieldUnderConfiguration: null
 
     Timer {
         id: escapeTimer
@@ -95,6 +96,8 @@ FocusScope {
         onTriggered: {
             var currentTime = new Date().getTime();
             validProgress = (currentTime - validStartTime) / validDelay;
+			if (validProgress > 1.0)
+				recordConfig(fieldUnderConfiguration);
 		}
     }
     function stopEscapeTimer() {
