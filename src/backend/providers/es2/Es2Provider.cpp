@@ -35,8 +35,12 @@
 namespace {
 std::vector<QString> default_config_paths()
 {
+	QString shareInitPath = paths::homePath() % QStringLiteral("/.emulationstation/");
+	shareInitPath.replace("/share/","/share_init/");
+	
     return {
         paths::homePath() % QStringLiteral("/.emulationstation/"),
+		shareInitPath,
         QStringLiteral("/etc/emulationstation/"),
     };
 }
