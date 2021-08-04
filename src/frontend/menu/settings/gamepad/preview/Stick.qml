@@ -71,7 +71,11 @@ Item {
         height: width
         anchors.centerIn: parent
 
-        color: pressed ? "blue": themeColor.underline
+        color: {
+			if (pressed) return "blue";
+			else if (root.recordingField !== null) return "#c33";
+			else return themeColor.underline;
+		}
         radius: width * 0.5
 
         visible: pressed || padContainer.currentButton === (side + "3")

@@ -25,7 +25,12 @@ Rectangle {
     height: width
     anchors.margins: 4
 
-    color: pressed ? "blue": themeColor.underline
+	color: {
+		if (pressed) return "blue";
+		else if (root.recordingField !== null) return "#c33";
+		else return themeColor.underline;
+	}	
+	
     radius: width * 0.2
     visible: highlighted || pressed
 }
