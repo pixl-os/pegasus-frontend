@@ -388,7 +388,7 @@ Window {
 		height: vpx(70)
 				
 		background: Rectangle {
-            anchors.fill: popup
+            anchors.fill: parent
             border.color: themeColor.textTitle
 			color: themeColor.secondary
 			opacity: 0.8
