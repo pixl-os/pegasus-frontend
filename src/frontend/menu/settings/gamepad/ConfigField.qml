@@ -21,6 +21,7 @@ Rectangle {
     property alias text: label.text
     property bool pressed: false
     property bool recording: false
+	property var input;
 
     width: vpx(140)
     height: label.font.pixelSize * 1.5
@@ -51,4 +52,17 @@ Rectangle {
             margins: vpx(5)
         }
     }
+	Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+		event.accepted = true;
+		validStartTime = new Date().getTime();
+		validTimer.start();					
+	}
+	Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) ) {
+		event.accepted = true;
+		if (validProgress > 1.0) {
+			recordConfig(this);
+			api.internal.gamepad.configureButton(gamepad.deviceId, input);
+		}	
+		root.stopValidTimer();
+	}	
 }

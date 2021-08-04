@@ -95,11 +95,7 @@ FocusScope {
         onTriggered: {
             var currentTime = new Date().getTime();
             validProgress = (currentTime - validStartTime) / validDelay;
-
-            if (validProgress > 2.0)
-                root.stopValidTimer(); // stop timer at the end (but double of time to let detection by field event)
-        }
-
+		}
     }
     function stopEscapeTimer() {
         escapeTimer.stop();
@@ -228,14 +224,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "l1"
 
                 pressed: gamepad && gamepad.buttonL1
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L1);
-                }
+				input: GamepadManager.GMButton.L1
 
                 KeyNavigation.right: configSelect
                 KeyNavigation.down: configL2
@@ -247,14 +236,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "l2"
 
                 pressed: gamepad && gamepad.buttonL2
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L2);
-                }
+				input: GamepadManager.GMButton.L2
 
                 KeyNavigation.right: configR2
                 KeyNavigation.down: configDpadUp
@@ -274,14 +256,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "dpup"
 
                 pressed: gamepad && gamepad.buttonUp
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Up);
-                }
+				input: GamepadManager.GMButton.Up
 
                 KeyNavigation.right: configA
                 KeyNavigation.down: configDpadDown
@@ -293,14 +268,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "dpdown"
 
                 pressed: gamepad && gamepad.buttonDown
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Down);
-                }
+				input: GamepadManager.GMButton.Down
 
                 KeyNavigation.right: configB
                 KeyNavigation.down: configDpadLeft
@@ -312,14 +280,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "dpleft"
 
                 pressed: gamepad && gamepad.buttonLeft
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Left);
-                }
+				input: GamepadManager.GMButton.Left
 
                 KeyNavigation.right: configX
                 KeyNavigation.down: configDpadRight
@@ -331,14 +292,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "dpright"
 
                 pressed: gamepad && gamepad.buttonRight
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Right);
-                }
+				input: GamepadManager.GMButton.Right
 
                 KeyNavigation.right: configY
                 KeyNavigation.down: configLeftStickX
@@ -359,15 +313,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "lx"
 
                 pressed: gamepad && Math.abs(gamepad.axisLeftX) > 0.05
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.LeftX);
-                }
-
+				input: GamepadManager.GMAxis.LeftX
+ 
                 KeyNavigation.right: configRightStickX
                 KeyNavigation.down: configLeftStickY
             }
@@ -378,15 +325,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "ly"
 
                 pressed: gamepad && Math.abs(gamepad.axisLeftY) > 0.05
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.LeftY);
-                }
-
+ 				input: GamepadManager.GMAxis.LeftY
+ 
                 KeyNavigation.right: configRightStickY
                 KeyNavigation.down: configL3
             }
@@ -397,14 +337,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "l3"
 
                 pressed: gamepad && gamepad.buttonL3
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.L3);
-                }
+				input: GamepadManager.GMButton.L3
 
                 KeyNavigation.right: configR3
             }
@@ -425,14 +358,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "r1"
 
                 pressed: gamepad && gamepad.buttonR1
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R1);
-                }
+ 				input: GamepadManager.GMButton.R1
 
                 KeyNavigation.down: configR2
             }
@@ -443,14 +369,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "r2"
 
                 pressed: gamepad && gamepad.buttonR2
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R2);
-                }
+				input: GamepadManager.GMButton.R2
 
                 KeyNavigation.down: configA
             }
@@ -475,16 +394,7 @@ FocusScope {
                     }
                 }
                 pressed: gamepad && gamepad.buttonSouth
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    //console.log("GamepadEditor.qml : Keys.onPressed");
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    //console.log("GamepadEditor.qml : Keys.onReleased of a");
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.South);
-                }
+				input: GamepadManager.GMButton.South
 
                 KeyNavigation.down: configB
             }
@@ -495,14 +405,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "b"
 
                 pressed: gamepad && gamepad.buttonEast
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.East);
-                }
+				input: GamepadManager.GMButton.East
 
                 KeyNavigation.down: configX
             }
@@ -513,14 +416,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "x"
 
                 pressed: gamepad && gamepad.buttonWest
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.West);
-                }
+				input: GamepadManager.GMButton.West
 
                 KeyNavigation.down: configY
             }
@@ -531,14 +427,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "y"
 
                 pressed: gamepad && gamepad.buttonNorth
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.North);
-                }
+ 				input: GamepadManager.GMButton.North
 
                 KeyNavigation.down: configRightStickX
             }
@@ -559,15 +448,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "rx"
 
                 pressed: gamepad && Math.abs(gamepad.axisRightX) > 0.05
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.RightX);
-                }
-
+ 				input: GamepadManager.GMAxis.RightX
+				
                 KeyNavigation.down: configRightStickY
             }
             ConfigField {
@@ -577,14 +459,7 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "ry"
 
                 pressed: gamepad && Math.abs(gamepad.axisRightY) > 0.05
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureAxis(gamepad.deviceId, GamepadManager.GMAxis.RightY);
-                }
+ 				input: GamepadManager.GMAxis.RightY
 
                 KeyNavigation.down: configR3
             }
@@ -595,14 +470,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "r3"
 
                 pressed: gamepad && gamepad.buttonR3
-                Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                    event.accepted = true;
-                    recordConfig(this);
-                }
-                Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                    event.accepted = true;
-                    api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.R3);
-                }
+				input: GamepadManager.GMButton.R3
+				
             }
         }
         Column {
@@ -627,14 +496,7 @@ FocusScope {
                         if (activeFocus) padPreview.currentButton = "select"
 
                     pressed: gamepad && gamepad.buttonSelect
-                    Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        recordConfig(this);
-                    }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                        event.accepted = true;
-                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Select);
-                    }
+					input: GamepadManager.GMButton.Select
 
                     KeyNavigation.up: deviceSelect
                     KeyNavigation.down: configL1
@@ -647,14 +509,7 @@ FocusScope {
                         if (activeFocus) padPreview.currentButton = "guide"
 
                     pressed: gamepad && gamepad.buttonGuide
-                    Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        recordConfig(this);
-                    }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                        event.accepted = true;
-                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Guide);
-                    }
+					input: GamepadManager.GMButton.Guide
 
                     KeyNavigation.up: deviceSelect
                     KeyNavigation.right: configStart
@@ -666,14 +521,7 @@ FocusScope {
                         if (activeFocus) padPreview.currentButton = "start"
 
                     pressed: gamepad && gamepad.buttonStart
-                    Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-                        event.accepted = true;
-                        recordConfig(this);
-                    }
-                    Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) && (recordingField !== null)) {
-                        event.accepted = true;
-                        api.internal.gamepad.configureButton(gamepad.deviceId, GamepadManager.GMButton.Start);
-                    }
+					input: GamepadManager.GMButton.Start
 
                     KeyNavigation.up: deviceSelect
                     KeyNavigation.down: configR1
