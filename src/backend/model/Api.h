@@ -70,7 +70,7 @@ signals:
     void eventSelectGameFile(model::Game* game);
     void eventLaunchError(QString msg);
     void showPopup(QString title, QString message, QString icon, int delay);
-    void newController(QString message);
+    void newController(int device_idx, QString message);
 
 public slots:
     // game launch communication
@@ -78,7 +78,7 @@ public slots:
     void onGameLaunchOk();
     void onGameLaunchError(QString);
     void onShowPopup(QString, QString, QString, int);
-    void onNewController(QString);
+    void onNewController(int, QString);
 
 private slots:
     // internal communication

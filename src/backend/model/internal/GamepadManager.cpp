@@ -172,11 +172,11 @@ void GamepadManager::bkOnDisconnected(int device_id)
     } 
 }
 
-void GamepadManager::bkOnNewController(QString name)
+void GamepadManager::bkOnNewController(int device_idx, QString name)
 {
-    Log::debug(m_log_tag, LOGMSG("New Controller (%2)").arg(name));
+    Log::debug(m_log_tag, LOGMSG("New Controller #%1 (%2)").arg(QString::number(device_idx), name));
     
-    emit newController(name);
+    emit newController(device_idx, name);
 }
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)

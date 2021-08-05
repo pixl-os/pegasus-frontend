@@ -325,11 +325,9 @@ Window {
 			//start timer to close popup automatically
 			popupDelay.restart();
         }
-		function onNewController(msg) {
-			console.log("New controller detected: ",msg);
-			
-            //content.openScreenWith("menu/settings/GamepadEditor.qml")
-			subscreen.setSource("menu/settings/GamepadEditor.qml", {"isNewController": true, "newControllerIndex": 0});
+		function onNewController(idx, msg) {
+			console.log("New controller detected: #", idx," - ", msg);
+            subscreen.setSource("menu/settings/GamepadEditor.qml", {"newControllerIndex": idx, "isNewController": true});
 			subscreen.focus = true;
             content.state = "sub";
 			

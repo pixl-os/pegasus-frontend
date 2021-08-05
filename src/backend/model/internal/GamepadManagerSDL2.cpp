@@ -1055,7 +1055,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                     load_user_gamepaddb(dir);
             }
 			//to propose to configure or not the new controller
-			emit newController(name);
+			emit newController(device_idx, name);
         }
        
         //persistence saved in recalbox.conf

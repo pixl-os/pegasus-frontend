@@ -131,9 +131,9 @@ void ApiObject::onShowPopup(QString title, QString message, QString icon, int de
     emit showPopup(title, message, icon, delay);
 }
 
-void ApiObject::onNewController(QString message)
+void ApiObject::onNewController(int device_idx, QString message)
 {	
-    emit newController(message);
+    emit newController(device_idx, message);
 }
 
 void ApiObject::onGameFinished()

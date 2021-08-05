@@ -36,13 +36,13 @@ FocusScope {
         root.stopEscapeTimer();
         root.close();
     }
-    readonly property var gamepad: gamepadList.model.get(gamepadList.currentIndex)
+    readonly property var gamepad: isNewController ? gamepadList.model.get(newControllerIndex) : gamepadList.model.get(gamepadList.currentIndex)
     readonly property bool hasGamepads: gamepad !== null
 
     property ConfigField recordingField: null
  
 	//properties for new controller case
-    property int newControllerIndex
+    property int newControllerIndex : 0
     property bool isNewController: false
 
     function recordConfig(configField) {
@@ -147,7 +147,7 @@ FocusScope {
         anchors.top: parent.top
 
         focus: true
-        Keys.forwardTo: [gamepadList]
+        Keys.forwardTo: isNewController ? [] : [gamepadList]
         KeyNavigation.down: configL1
 
         GamepadName {
@@ -163,6 +163,7 @@ FocusScope {
             highlightRangeMode: ListView.StrictlyEnforceRange
             highlightMoveDuration: 300
             orientation: ListView.Horizontal
+			Component.onCompleted : currentIndex = (isNewController ? newControllerIndex : 0);
 
             model: api.internal.gamepad.devices
 
@@ -173,15 +174,17 @@ FocusScope {
                 GamepadName {
                     text: {
 						// to add info to notice that one or several controllers  is/are available !
+						console.log("Controller: #", newControllerIndex," - isNewController: ", isNewController);
                         if (modelData) {
                             var previous = "";
                             var next = "";
-							if (gamepadList.count > 1)
+							if ((gamepadList.count > 1) && !isNewController)
 							{								
 								if (index !== 0) previous = "\uf3cf  "; // < from ionicons
 								if (index !== (gamepadList.count-1)) next = "  \uf3d1"; // > from ionicons
 							}
-							return (previous + "#" + (index + 1) + ": " + modelData.name + next);
+							if (isNewController) return modelData.name;
+							else return (previous + "#" + (index + 1) + ": " + modelData.name + next);
 						}
 						else return ""; 						
 					}
