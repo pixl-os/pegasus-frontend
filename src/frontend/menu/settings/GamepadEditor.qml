@@ -560,7 +560,13 @@ FocusScope {
 
             property real progress: escapeProgress
             onProgressChanged: requestPaint()
-
+			visible: {
+				if(recordingField !== null){
+					if (recordingField.recording) return false; 
+				}
+				return true;
+			}
+			
             onPaint: {
                 var ctx = getContext('2d');
                 ctx.clearRect(0, 0, width, height);
@@ -583,6 +589,12 @@ FocusScope {
             radius: width * 0.5
             border { color: "#777"; width: vpx(1) }
             color: "transparent"
+			visible: {
+				if(recordingField !== null){
+					if (recordingField.recording) return false; 
+				}
+                return true;
+			}
 
             anchors {
                 right: label.left
@@ -604,6 +616,12 @@ FocusScope {
             id: label
             text: qsTr("hold down to quit") + api.tr
             verticalAlignment: Text.AlignTop
+			visible: {
+				if(recordingField !== null){
+                    if (recordingField.recording) return false;
+                }
+                return true;
+			}
 
             color: escapeStartTime ? "#eee" : "#777"
             font {
@@ -622,10 +640,16 @@ FocusScope {
             width: validButtonIcon.width + vpx(4)
             height: width
             anchors.centerIn: validButtonIcon
-
+			visible: {
+				if(recordingField !== null){
+					if (recordingField.recording) return false; 
+				}
+				return true;
+			}   
+			
             property real progress: validProgress
             onProgressChanged: requestPaint()
-
+			
             onPaint: {
                 var ctx = getContext('2d');
                 ctx.clearRect(0, 0, width, height);
@@ -648,7 +672,13 @@ FocusScope {
             radius: width * 0.5
             border { color: "#777"; width: vpx(1) }
             color: "transparent"
-
+			visible: {
+				if (deviceSelect.focus) return false;
+				if(recordingField !== null){
+					if (recordingField.recording) return false; 
+				}
+				return true;
+			}			
             anchors {
                 right: labelA.left
                 verticalCenter: parent.verticalCenter
@@ -670,7 +700,15 @@ FocusScope {
             text: qsTr("hold down to edit") + api.tr
             verticalAlignment: Text.AlignTop
             color: "#777"
-            font {
+			visible: {
+				if (deviceSelect.focus) return false;
+				if(recordingField !== null){
+					if (recordingField.recording) return false; 
+				}
+				return true;
+			}
+            
+			font {
                 family: global.fonts.sans
                 pixelSize: vpx(22)
                 capitalization: Font.SmallCaps
@@ -708,7 +746,10 @@ FocusScope {
         }
         Text {
             id: labelWizard
-            text: qsTr("press 3 times for 'step by step' conf") + api.tr
+            text: {
+				if(recordingField !== null)	if (recordingField.recording) return (qsTr("press button") + "/" + qsTr("move axis") + api.tr);		
+				return (qsTr("press 3 times for 'step by step' conf") + api.tr);
+			}
             verticalAlignment: Text.AlignTop
             color: "#777"
             font {
@@ -730,8 +771,13 @@ FocusScope {
             radius: width * 0.5
             border { color: "#777"; width: vpx(1) }
             color: "transparent"
-
-            anchors {
+			visible: {
+				if(recordingField !== null){
+					if (recordingField.recording) return false; 
+				}
+				return true;
+			}            
+			anchors {
                 left: labelWizard.right;
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: vpx(1)
@@ -742,16 +788,23 @@ FocusScope {
                 color: "#777"
                 font {
                     family: global.fonts.sans
-                    pixelSize: parent.height * 0.7
+                    pixelSize: parent.height * 0.
                 }
                 anchors.centerIn: parent
             }
         }
         Text {
             id: labelDirections
-            text: qsTr("select controller") + "/" + qsTr("input") + api.tr
+            text: qsTr("select input") + (isNewController ? "" : ("/" + qsTr("controller"))) + api.tr
             verticalAlignment: Text.AlignTop
             color: "#777"
+			visible: {
+				if(recordingField !== null){
+					if (recordingField.recording) return false; 
+				}
+				return true;
+			}            
+			
             font {
                 family: global.fonts.sans
                 pixelSize: vpx(22)
