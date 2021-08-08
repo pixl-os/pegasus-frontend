@@ -1,6 +1,41 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [controllers-improvements] - 2021-08-06
+- manage other xbox controller for icon display
+- new controller gamepad api event
+- fix warning for controller unplugged from GamepadEditor
+- cleaning loading subscreen & improve theme visibility
+- fix warning on popup anchor ignored and unused
+- improve theme visibility during animations
+- draft of dialogbox for new controller detected
+- to add information in Gamepad Editor qml file
+- dialog box to manage "continue" using any input
+- add '<' and '>' characters to indicate horizontal list
+- properties for new controller in gamepad editor
+- use blue for pressed inputs (background and field)
+- change Font to have '<' and '>' as one used in menu
+- hold down A to edit any input now
+- activate hold down to activate all inputs edition
+- correct a warning due to bad assignment
+- display red color immediately when hold down reach
+- manage red color of recording for all inputs
+- add help for directions and change some text
+- add index for new controller in gamepad editor
+- "dynamic help" displayed depending context
+
+## [systemlist-romfsv2-integration] - 2021-08-04
+- create base for new systems list (to keep ES with ROMFSV2)
+- first version compatible with systemlist.xml
+- systemlist to be search in share_init/.emulationstation also
+
+## [system-parameterlist] - 2021-07-17
+- first version using system command
+- fix for management empty command output to avoid crash
+- add public function to reload any ini file
+- add runCommand and reloadParameters from API
+- update log details for ParametersList
+
 ## [add-shaders-option-in-menu] - 2021-07-06
 - add option to select prefered shaders
 - fix mistake in advanced settings
