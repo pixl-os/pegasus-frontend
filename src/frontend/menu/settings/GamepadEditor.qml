@@ -231,6 +231,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonL1
 				input: GamepadManager.GMButton.L1
+				inputType: "button"
 
                 KeyNavigation.right: configSelect
                 KeyNavigation.down: configL2
@@ -243,6 +244,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonL2
 				input: GamepadManager.GMButton.L2
+				inputType: "button"
 
                 KeyNavigation.right: configR2
                 KeyNavigation.down: configDpadUp
@@ -263,6 +265,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonUp
 				input: GamepadManager.GMButton.Up
+				inputType: "button"
 
                 KeyNavigation.right: configA
                 KeyNavigation.down: configDpadDown
@@ -275,6 +278,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonDown
 				input: GamepadManager.GMButton.Down
+				inputType: "button"
 
                 KeyNavigation.right: configB
                 KeyNavigation.down: configDpadLeft
@@ -287,6 +291,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonLeft
 				input: GamepadManager.GMButton.Left
+				inputType: "button"
 
                 KeyNavigation.right: configX
                 KeyNavigation.down: configDpadRight
@@ -299,6 +304,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonRight
 				input: GamepadManager.GMButton.Right
+				inputType: "button"
 
                 KeyNavigation.right: configY
                 KeyNavigation.down: configLeftStickX
@@ -320,6 +326,7 @@ FocusScope {
 
                 pressed: gamepad && Math.abs(gamepad.axisLeftX) > 0.05
 				input: GamepadManager.GMAxis.LeftX
+				inputType: "axis"
  
                 KeyNavigation.right: configRightStickX
                 KeyNavigation.down: configLeftStickY
@@ -332,6 +339,7 @@ FocusScope {
 
                 pressed: gamepad && Math.abs(gamepad.axisLeftY) > 0.05
  				input: GamepadManager.GMAxis.LeftY
+				inputType: "axis"
  
                 KeyNavigation.right: configRightStickY
                 KeyNavigation.down: configL3
@@ -344,6 +352,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonL3
 				input: GamepadManager.GMButton.L3
+				inputType: "button"
 
                 KeyNavigation.right: configR3
             }
@@ -365,6 +374,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonR1
  				input: GamepadManager.GMButton.R1
+				inputType: "button"
 
                 KeyNavigation.down: configR2
             }
@@ -376,6 +386,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonR2
 				input: GamepadManager.GMButton.R2
+				inputType: "button"
 
                 KeyNavigation.down: configA
             }
@@ -401,6 +412,7 @@ FocusScope {
                 }
                 pressed: gamepad && gamepad.buttonSouth
 				input: GamepadManager.GMButton.South
+				inputType: "button"
 
                 KeyNavigation.down: configB
             }
@@ -412,6 +424,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonEast
 				input: GamepadManager.GMButton.East
+				inputType: "button"
 
                 KeyNavigation.down: configX
             }
@@ -423,6 +436,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonWest
 				input: GamepadManager.GMButton.West
+				inputType: "button"
 
                 KeyNavigation.down: configY
             }
@@ -434,6 +448,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonNorth
  				input: GamepadManager.GMButton.North
+				inputType: "button"
 
                 KeyNavigation.down: configRightStickX
             }
@@ -455,6 +470,7 @@ FocusScope {
 
                 pressed: gamepad && Math.abs(gamepad.axisRightX) > 0.05
  				input: GamepadManager.GMAxis.RightX
+				inputType: "axis"
 				
                 KeyNavigation.down: configRightStickY
             }
@@ -466,6 +482,7 @@ FocusScope {
 
                 pressed: gamepad && Math.abs(gamepad.axisRightY) > 0.05
  				input: GamepadManager.GMAxis.RightY
+				inputType: "axis"
 
                 KeyNavigation.down: configR3
             }
@@ -477,6 +494,7 @@ FocusScope {
 
                 pressed: gamepad && gamepad.buttonR3
 				input: GamepadManager.GMButton.R3
+				inputType: "button"
 				
             }
         }
@@ -503,6 +521,7 @@ FocusScope {
 
                     pressed: gamepad && gamepad.buttonSelect
 					input: GamepadManager.GMButton.Select
+					inputType: "button"
 
                     KeyNavigation.up: deviceSelect
                     KeyNavigation.down: configL1
@@ -516,6 +535,7 @@ FocusScope {
 
                     pressed: gamepad && gamepad.buttonGuide
 					input: GamepadManager.GMButton.Guide
+					inputType: "button"
 
                     KeyNavigation.up: deviceSelect
                     KeyNavigation.right: configStart
@@ -528,6 +548,7 @@ FocusScope {
 
                     pressed: gamepad && gamepad.buttonStart
 					input: GamepadManager.GMButton.Start
+					inputType: "button"
 
                     KeyNavigation.up: deviceSelect
                     KeyNavigation.down: configR1

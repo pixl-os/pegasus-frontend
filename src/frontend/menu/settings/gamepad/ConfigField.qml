@@ -22,6 +22,7 @@ Rectangle {
     property bool pressed: false
     property bool recording: false
 	property var input;
+	property string inputType: ""
 
     width: vpx(140)
     height: label.font.pixelSize * 1.5
@@ -61,7 +62,14 @@ Rectangle {
 	Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) ) {
 		event.accepted = true;
 		if (validProgress > 1.0) {
-			api.internal.gamepad.configureButton(gamepad.deviceId, input);
+			if(inputType === "button")
+			{
+				api.internal.gamepad.configureButton(gamepad.deviceId, input);
+			}
+			else if(inputType === "axis")
+			{
+				api.internal.gamepad.configureAxis(gamepad.deviceId, input);
+			}
 		}	
 		root.stopValidTimer();
 	}	
