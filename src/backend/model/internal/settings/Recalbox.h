@@ -32,6 +32,10 @@ public:
        
     Q_INVOKABLE void saveParameters();
     
+    Q_INVOKABLE void reloadParameters(); //to relaod parameters from recalbox.conf
+
+    Q_INVOKABLE QString runCommand(const QString& SysCommand, const QStringList& SysOptions);
+    
 private:
 
     //! Boot configuration file

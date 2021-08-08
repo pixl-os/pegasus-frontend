@@ -30,8 +30,25 @@ public:
     int currentIndex() const { return static_cast<int>(m_current_idx); }
     void setCurrentIndex(int);
     
+	//CurrentName is used to initiate the parameters list from list define by the developer and return the existing value from recalbox.conf if exist
     Q_INVOKABLE  QString currentName (const QString& Parameter);
+    //CurrentNameFromSystem is used to initiate the parameters list generated from a system/script command and return the existing value from recalbox.conf if exist
+    Q_INVOKABLE  QString currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions);
 
+//Variant examples from QML	
+/* Item {
+    property variant items: [1, 2, 3, "four", "five"]
+    property variant attributes: { 'color': 'red', 'width': 100 }
+
+    Component.onCompleted: {
+        for (var i = 0; i < items.length; i++)
+            console.log(items[i])
+
+        for (var prop in attributes)
+            console.log(prop, "=", attributes[prop])
+    }
+}
+ */
 signals:
     void parameterChanged();
 

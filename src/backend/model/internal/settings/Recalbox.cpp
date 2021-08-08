@@ -2,6 +2,25 @@
 #include "Recalbox.h"
 
 
+namespace {
+
+QString GetCommandOutput(const std::string& command)
+{
+	std::string output;
+	char buffer[4096];
+	FILE* pipe = popen(command.data(), "r");
+	if (pipe != nullptr)
+	{
+	while (feof(pipe) == 0)
+	  if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+		output.append(buffer);
+	pclose(pipe);
+	}
+	return QString::fromStdString(output);
+}
+
+}
+
 namespace model {
 
 Recalbox::Recalbox(QObject* parent)
@@ -108,6 +127,28 @@ void Recalbox::setIntParameter(const QString& Parameter, const int& Value)
 void Recalbox::saveParameters()
 {
     RecalboxConf::Instance().Save();
+}
+
+void Recalbox::reloadParameters() //to relaod parameters from recalbox.conf
+{
+    RecalboxConf::Instance().Reload();
+}	
+
+QString Recalbox::runCommand(const QString& SysCommand, const QStringList& SysOptions)
+{
+	QString CommandToUpdate = SysCommand;
+	//replace from '%1' to '%i' parameters from SysCommand by SysOptions
+    if (!SysOptions.empty())
+		{
+		for(int i = 0; i < SysOptions.count(); i++)
+			{
+                CommandToUpdate.replace("%"+QString::number(i+1), SysOptions.at(i));
+			}
+	}
+	//launch command using Qprocess to get output
+    QString stdout = GetCommandOutput(CommandToUpdate.toUtf8().constData());
+    Log::debug(LOGMSG("GetCommandOutput(CommandToUpdate.toUtf8().constData()): '%1'").arg(stdout));
+	return stdout;
 }
 
 } // namespace model
