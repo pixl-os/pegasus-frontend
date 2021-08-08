@@ -65,7 +65,7 @@ QStringList GetParametersList(QString Parameter)
     {
         /* ## set the keyboard layout (fr,en,de,us,es)
         system.kblayout=us */
-        ListOfValue << "fr" << "gb" << "de" << "us" << "es";
+        ListOfValue << "us" << "fr" << "gb" << "de" << "es";
     }
     else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
     {
