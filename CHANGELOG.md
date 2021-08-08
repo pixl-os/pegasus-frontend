@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2021-08-08
+- fix on axis issue in ConfigField using inputType now.
+- fix issue: 13-after-new-installation-keyboard-in-menu-fr-in-real-en
+- fix issue: 11-bug-system-logo-style-at-first-start-up
+
 ## [controllers-improvements] - 2021-08-06
 - manage other xbox controller for icon display
 - new controller gamepad api event
