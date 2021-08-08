@@ -76,10 +76,12 @@ signals:
     void configurationCanceled(int deviceId);
     
     void showPopup(QString title, QString message, QString icon, int delay);
+	void newController(int device_idx, QString message);
 
 private slots:
     void bkOnConnected(int, QString);
     void bkOnDisconnected(int);
+    void bkOnNewController(int, QString);
     void bkOnNameChanged(int, QString);
     void bkOnRemoved(int);
 

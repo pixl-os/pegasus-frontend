@@ -21,12 +21,12 @@ Rectangle {
     property alias text: label.text
     property bool pressed: false
     property bool recording: false
+	property var input;
 
     width: vpx(140)
     height: label.font.pixelSize * 1.5
     color: {
         if (recording) return "#c33";
-        if (pressed) return "#353";
         if (activeFocus) return themeColor.underline
         return themeColor.secondary;
     }
@@ -39,7 +39,7 @@ Rectangle {
 
     Text {
         id: label
-        color: themeColor.textLabel
+        color: pressed ? "blue" : themeColor.textLabel
         font {
             family: globalFonts.sans
             pixelSize: vpx(18)
@@ -52,4 +52,17 @@ Rectangle {
             margins: vpx(5)
         }
     }
+	Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+		event.accepted = true;
+		validStartTime = new Date().getTime();
+		validTimer.start();					
+		root.fieldUnderConfiguration = this;
+	}
+	Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) ) {
+		event.accepted = true;
+		if (validProgress > 1.0) {
+			api.internal.gamepad.configureButton(gamepad.deviceId, input);
+		}	
+		root.stopValidTimer();
+	}	
 }

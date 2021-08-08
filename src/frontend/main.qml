@@ -107,6 +107,8 @@ Window {
         anchors.fill: parent
         enabled: focus
 
+        signal onClose
+
         Loader {
             id: theme
             anchors.fill: parent
@@ -197,6 +199,63 @@ Window {
                     mainMenu.focus = true;
             }
         }
+		Loader {
+			id: subscreen
+			asynchronous: true
+
+			width: parent.width
+			height: parent.height
+			anchors.left: content.right
+
+			enabled: focus
+			onLoaded: item.focus = focus
+			onFocusChanged: if (item) item.focus = focus
+		}
+		Connections {
+			target: subscreen.item
+			function onClose() {
+				content.focus = true;
+				content.state = "";
+                theme.visible = true;
+				theme.focus = true;
+			}
+		}
+		states: [
+			State {
+				name: "sub"
+				AnchorChanges {
+					target: subscreen
+                    anchors.left: undefined
+					anchors.right: parent.right
+				}
+			}
+		]
+		// fancy easing curves, a la material design
+		readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
+		readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]
+		readonly property var bezierStandard: [ 0.4,0, 0.2,1, 1,1 ]
+
+		transitions: [
+			Transition {
+				from: ""; to: "sub"
+				AnchorAnimation {
+					duration: 425
+                    easing { type: Easing.Bezier; bezierCurve: content.bezierStandard }
+				}
+				onRunningChanged: if (!running) theme.visible = false;
+			},
+			Transition {
+				from: "sub"; to: ""
+				AnchorAnimation {
+					duration: 400
+                    easing { type: Easing.Bezier; bezierCurve: content.bezierSharp }
+				}
+				onRunningChanged: if (!running) {
+									subscreen.source = "";
+									}
+			}
+		]
+		
     }
 
 
@@ -266,11 +325,21 @@ Window {
 			//start timer to close popup automatically
 			popupDelay.restart();
         }
+		function onNewController(idx, msg) {
+			console.log("New controller detected: #", idx," - ", msg);
+            subscreen.setSource("menu/settings/GamepadEditor.qml", {"newControllerIndex": idx, "isNewController": true});
+			subscreen.focus = true;
+            content.state = "sub";
+			
+			//add dialogBox
+            genericMessage.setSource("dialogs/GenericContinueDialog.qml",
+                { "title": qsTr("New type of controller detected") + " : " + msg, "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
+            genericMessage.focus = true;			
+        }
         function onEventLoadingStarted() {
             splashScreen.focus = true;
         }
     }
-
 
     SplashLayer {
         id: splashScreen
@@ -317,7 +386,7 @@ Window {
 		height: vpx(70)
 				
 		background: Rectangle {
-            anchors.fill: popup
+            anchors.fill: parent
             border.color: themeColor.textTitle
 			color: themeColor.secondary
 			opacity: 0.8
@@ -345,8 +414,6 @@ Window {
 
 			width: parent.width
 			height: parent.height
-			
-			anchors.centerIn: parent
 
 			// text areas
 			Rectangle {

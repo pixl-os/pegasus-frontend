@@ -51,7 +51,7 @@ QString getIconByName(QString name)
 {
 	//check if xbox or ps4 pad for surprise ;-)
 	QString icon = "";
-	if(name.contains("xbox", Qt::CaseInsensitive))
+	if(name.contains("xbox", Qt::CaseInsensitive) || name.contains("x360", Qt::CaseInsensitive))
 	{
 		icon = "\uf2f0";
 	}
@@ -86,11 +86,12 @@ GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
             this, &GamepadManager::bkOnConnected);
     connect(m_backend, &GamepadManagerBackend::disconnected,
             this, &GamepadManager::bkOnDisconnected);
+    connect(m_backend, &GamepadManagerBackend::newController,
+            this, &GamepadManager::bkOnNewController);			            
     connect(m_backend, &GamepadManagerBackend::nameChanged,
             this, &GamepadManager::bkOnNameChanged);
     connect(m_backend, &GamepadManagerBackend::removed,
             this, &GamepadManager::bkOnRemoved);
-            
 
     connect(m_backend, &GamepadManagerBackend::buttonConfigured,
             this, &GamepadManager::bkOnButtonCfg);
@@ -169,6 +170,13 @@ void GamepadManager::bkOnDisconnected(int device_id)
     { 
         Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
     } 
+}
+
+void GamepadManager::bkOnNewController(int device_idx, QString name)
+{
+    Log::debug(m_log_tag, LOGMSG("New Controller #%1 (%2)").arg(QString::number(device_idx), name));
+    
+    emit newController(device_idx, name);
 }
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)

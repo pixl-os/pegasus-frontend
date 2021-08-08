@@ -38,7 +38,11 @@ Item {
 
     Rectangle {
         id: highlight
-        color: pressed ? "#393": themeColor.underline
+        color: {
+			if (pressed) return "blue";
+			else if (root.recordingField !== null) return "#c33";
+			else return themeColor.underline;
+		}
         width: parent.width * 0.5
         height: parent.height * 0.5
         anchors {

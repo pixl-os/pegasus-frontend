@@ -176,9 +176,13 @@ Backend::Backend(const CliArgs& args, char** environment)
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchError,
                      m_api, &ApiObject::onGameLaunchError);
 
-    //api asked to show popup to frontend
+    //event to show popup to frontend
     QObject::connect(&m_api->internal().gamepad(), &model::GamepadManager::showPopup,
                      m_api, &ApiObject::onShowPopup);
+
+    //event to configure new controller from frontend
+    QObject::connect(&m_api->internal().gamepad(), &model::GamepadManager::newController,
+                     m_api, &ApiObject::onNewController);
 
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
                      m_frontend, &FrontendLayer::teardown);

@@ -91,5 +91,6 @@
         <file>menu/settings/common/TextField.qml</file>
         <file>dialogs/GenericPopup.qml</file>
         <file>assets/logopegasus.png</file>
+        <file>dialogs/GenericContinueDialog.qml</file>
     </qresource>
 </RCC>
