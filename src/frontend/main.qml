@@ -420,8 +420,6 @@ Window {
 				width: parent.width
 				height: parent.height
 				
-				anchors.centerIn: parent
-				
 				color: "transparent"
 
 				Text {
