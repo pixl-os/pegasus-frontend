@@ -185,6 +185,23 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optSystemShaderSet
+                    KeyNavigation.down: optSystemOverlays
+                    // not visible if not libretro Core
+                    visible : isLibretroCore
+                }
+                ToggleOption {
+                    id: optSystemOverlays
+
+                    label: qsTr("Show overlays") + api.tr
+                    note: qsTr("Show overlay in game on this system") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter(system.shortName + ".recalboxoverlays",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optGlobalShader
                     KeyNavigation.down: optSystemGameRewind
                     // not visible if not libretro Core
                     visible : isLibretroCore
@@ -207,7 +224,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalShader
+                    KeyNavigation.up: optSystemOverlays
                     KeyNavigation.down: optSystemAutoSave
                     // not visible if not libretro Core
                     visible : isLibretroCore

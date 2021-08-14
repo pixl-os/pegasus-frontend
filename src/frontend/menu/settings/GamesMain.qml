@@ -204,6 +204,21 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optGlobalShaderSet
+                    KeyNavigation.down: optGlobalOverlays
+                }
+                ToggleOption {
+                    id: optGlobalOverlays
+
+                    label: qsTr("Show overlays") + api.tr
+                    note: qsTr("Show overlay in game on all systems") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.recalboxoverlays")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("global.recalboxoverlays",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optGlobalShader
                     KeyNavigation.down: optShowFramerate
                 }
                 ToggleOption {
@@ -218,7 +233,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.showfps",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalShader
+                    KeyNavigation.up: optGlobalOverlays
                     KeyNavigation.down: optGameRewind
                 }
                 SectionTitle {
@@ -237,7 +252,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optShowFramerate
+                    KeyNavigation.up: optGlobalOverlays
                     KeyNavigation.down: optAutoSave
                 }
                 ToggleOption {
