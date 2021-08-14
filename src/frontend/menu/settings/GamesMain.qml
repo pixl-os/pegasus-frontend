@@ -209,8 +209,8 @@ FocusScope {
                 ToggleOption {
                     id: optGlobalOverlays
 
-                    label: qsTr("Show overlays") + api.tr
-                    note: qsTr("Show overlay in game on all systems") + api.tr
+                    label: qsTr("Set overlays") + api.tr
+                    note: qsTr("Set overlays for all systems") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.recalboxoverlays")
                     onCheckedChanged: {
@@ -252,7 +252,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalOverlays
+                    KeyNavigation.up: optShowFramerate
                     KeyNavigation.down: optAutoSave
                 }
                 ToggleOption {

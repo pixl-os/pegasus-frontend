@@ -192,8 +192,8 @@ FocusScope {
                 ToggleOption {
                     id: optSystemOverlays
 
-                    label: qsTr("Show overlays") + api.tr
-                    note: qsTr("Show overlay in game on this system") + api.tr
+                    label: qsTr("Set overlay") + api.tr
+                    note: qsTr("Set overlay on this system") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays")
                     onCheckedChanged: {
