@@ -769,7 +769,9 @@ FocusScope {
             id: labelWizard
             text: {
 				if(recordingField !== null)	if (recordingField.recording) return (qsTr("press button") + "/" + qsTr("move axis") + api.tr);		
-				return (qsTr("press 3 times for 'step by step' conf") + api.tr);
+				//return (qsTr("press 3 times for 'step by step' conf") + api.tr);
+				//18-08-21: replaced by empty string for the moment to avoid display and traduction in french.
+				return (qsTr("") + api.tr);
 			}
             verticalAlignment: Text.AlignTop
             color: "#777"
