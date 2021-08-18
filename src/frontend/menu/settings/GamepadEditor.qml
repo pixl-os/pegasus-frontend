@@ -748,7 +748,8 @@ FocusScope {
             radius: width * 0.5
             border { color: "#777"; width: vpx(1) }
             color: "transparent"
-
+			visible: (recordingField !== null) //18-08-21: change to hide this icon for the moment in case of wizard/stepbystep
+			
             anchors {
                 left: parent.left;
                 verticalCenter: parent.verticalCenter
