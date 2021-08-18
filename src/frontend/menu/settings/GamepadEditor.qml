@@ -810,8 +810,8 @@ FocusScope {
                 text: "\uf1cb"
                 color: "#777"
                 font {
-                    family: global.fonts.sans
-                    pixelSize: parent.height * 0.
+                    family: global.fonts.ion
+                    pixelSize: parent.height
                 }
                 anchors.centerIn: parent
             }
