@@ -1,10 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - 2021-08-08
+## [recalbox-integration] - 2021-08-18
 - fix on axis issue in ConfigField using inputType now.
 - fix issue: 13-after-new-installation-keyboard-in-menu-fr-in-real-en
 - fix issue: 11-bug-system-logo-style-at-first-start-up
+- fix missing merge on gameos
+- fix warning for binding loop on Recommended gamelist in gameos
+- fix second warning on popup anchor ignored and unused
+- bump last version of gameos with showcaseview loading improvement
+- remove wizard/stepbystep help for the moment for gamepadeditor
+- fix font to use the good icon for directions
 
 ## [controllers-improvements] - 2021-08-06
 - manage other xbox controller for icon display
