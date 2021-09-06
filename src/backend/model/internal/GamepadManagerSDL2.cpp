@@ -1038,7 +1038,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
             //check if we already saved this configuration (same guid/same name)
             providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(name, guid_str);
-            Log::debug(m_log_tag, LOGMSG("inputConfigEntry.inputConfigAttributs.deviceName : '%1'").arg(inputConfigEntry.inputConfigAttributs.deviceName));
+            //Log::debug(m_log_tag, LOGMSG("inputConfigEntry.inputConfigAttributs.deviceName : '%1'").arg(inputConfigEntry.inputConfigAttributs.deviceName));
         
             //if nothing is in es_input with this name -> we update es_input with the SDL conf
             if (inputConfigEntry.inputConfigAttributs.deviceName == "")
@@ -1121,7 +1121,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             cancel_recording();
 
         emit disconnected(device_idx);
-        //Log::debug(LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
+        //Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
         
         const QString RemovedPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_idx));
         std::string initial_path = "";
@@ -1139,7 +1139,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             const QString Parameter = QString("pegasus.pad%1").arg(i);
             const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(i+1));
             Strings::SplitInThree(NextPadPegasus.toUtf8().constData(), ':', uuid, name, path, true);
-            //Log::debug(LOGMSG("pegasus.pad%1=%2:%3:%4").arg(QString::number(i+1),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
+            //Log::debug(m_log_tag, LOGMSG("pegasus.pad%1=%2:%3:%4").arg(QString::number(i+1),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
             
             if (path != "")
             {   
