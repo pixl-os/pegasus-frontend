@@ -179,9 +179,9 @@
         <file>gameOS/assets/images/searchicon.svg</file>
         <file>gameOS/assets/images/settingsicon.svg</file>
         <file>gameOS/assets/images/simpleOS-logo.png</file>
-		<file>gameOS/assets/images/icon_cup.svg</file>
-		<file>gameOS/assets/images/icon_down.png</file>
-		<file>gameOS/assets/images/icon_up.png</file>
+        <file>gameOS/assets/images/icon_cup.svg</file>
+        <file>gameOS/assets/images/icon_down.png</file>
+        <file>gameOS/assets/images/icon_up.png</file>
         <file>gameOS/assets/sfx/accept.wav</file>
         <file>gameOS/assets/sfx/back.wav</file>
         <file>gameOS/assets/sfx/desktop.ini</file>
@@ -202,14 +202,15 @@
         <file>gameOS/Global/HorizontalCollection.qml</file>
         <file>gameOS/Global/ItemBorder.qml</file>
         <file>gameOS/Global/ItemHighlight.qml</file>
-		<file>gameOS/Global/GameAchievements.qml</file>
-		<file>gameOS/GridView/GridSpacer.qml</file>
+        <file>gameOS/Global/GameAchievements.qml</file>
+        <file>gameOS/GridView/GridSpacer.qml</file>
         <file>gameOS/GridView/GridViewMenu.qml</file>
         <file>gameOS/Lists/ListAllGames.qml</file>
         <file>gameOS/Lists/ListCollectionGames.qml</file>
         <file>gameOS/Lists/ListFavorites.qml</file>
         <file>gameOS/Lists/ListGenre.qml</file>
         <file>gameOS/Lists/ListLastPlayed.qml</file>
+        <file>gameOS/Lists/ListMyCollection.qml</file>
         <file>gameOS/Lists/ListMostPlayed.qml</file>
         <file>gameOS/Lists/ListPublisher.qml</file>
         <file>gameOS/Lists/ListRecommended.qml</file>
@@ -670,5 +671,19 @@
         <file>gameOS/assets/images/logospng/ps2_carbon.png</file>
         <file>gameOS/assets/images/logospng/ps2_color.png</file>
         <file>gameOS/assets/images/logospng/ps2_steel.png</file>
+        <file>gameOS/assets/images/controller/0-arcade.png</file>
+        <file>gameOS/assets/images/controller/1-arcade.png</file>
+        <file>gameOS/assets/images/controller/2-arcade.png</file>
+        <file>gameOS/assets/images/controller/3-arcade.png</file>
+        <file>gameOS/assets/images/controller/4-arcade.png</file>
+        <file>gameOS/assets/images/controller/5-arcade.png</file>
+        <file>gameOS/assets/images/controller/6-arcade.png</file>
+        <file>gameOS/assets/images/controller/7-arcade.png</file>
+        <file>gameOS/assets/images/controller/8-arcade.png</file>
+        <file>gameOS/assets/images/controller/9-arcade.png</file>
+        <file>gameOS/assets/images/controller/10-arcade.png</file>
+        <file>gameOS/assets/images/controller/11-arcade.png</file>
+        <file>gameOS/Dialogs/GenericOkCancelDialog.qml</file>
+        <file>gameOS/Dialogs/Shade.qml</file>
     </qresource>
 </RCC>
