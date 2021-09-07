@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [controller-not-known-bug] - 2021-09-08
+- fix to correct issue with "unknown" controllers by SDL
+- update logs info used for dev (log lines in comment)
+
+## [recalbox-integration] - 2021-09-08
+- GameOS bump with collections/arcade button/gameinfo improvements
+
 ## [recalbox-integration] - 2021-08-18
 - fix on axis issue in ConfigField using inputType now.
 - fix issue: 13-after-new-installation-keyboard-in-menu-fr-in-real-en
