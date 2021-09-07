@@ -121,10 +121,10 @@ void try_register_default_mapping(int device_idx)
     const auto name = QLatin1String(SDL_JoystickNameForIndex(device_idx));
     constexpr auto default_mapping("," // emscripten default
         "a:b0,b:b1,x:b2,y:b3,"
-        "dpup:b12,dpdown:b13,dpleft:b14,dpright:b15,"
+        "dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,"
         "leftshoulder:b4,rightshoulder:b5,lefttrigger:b6,righttrigger:b7,"
-        "back:b8,start:b9,guide:b16,"
-        "leftstick:b10,rightstick:b11,"
+        "back:b8,start:b9,guide:b10,"
+        "leftstick:b11,rightstick:b12,"
         "leftx:a0,lefty:a1,rightx:a2,righty:a3");
     const QString new_mapping = guid_str % QLatin1Char(',') % name % default_mapping;
 
@@ -962,10 +962,11 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         //Log::debug(LOGMSG("m_idx_to_iid(device_idx).count(%1): %2").arg(QString::number(device_idx),QString::number(m_idx_to_iid.count(device_idx))));
 
         
-        //if unknown by SDL
+        //Check if the given joystick is supported by the game controller interface.
         if (!SDL_IsGameController(device_idx))
         {
-            Log::debug(LOGMSG("Not SDL_IsGameController(device_idx)"));
+            Log::debug(LOGMSG("Not SDL_IsGameController(%1)").arg(device_idx));
+			//generate a mapping by default (forced)
             try_register_default_mapping(device_idx);
         }
         
@@ -977,12 +978,21 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             return;
         }
 
-        //get mapping found by SDL
+        //get mapping found by SDL DB
         const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
         
         //if no mapping, strange ?!
-        if (!mapping)
-            Log::error(m_log_tag, LOGMSG("SDL2: layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
+        if (!mapping){
+            Log::error(m_log_tag, LOGMSG("SDL2: 'default' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
+			//tentative to generate mapping by default
+			try_register_default_mapping(device_idx);
+			//retry to 'force' mapping
+			const auto second_mapping = freeable_str(SDL_GameControllerMapping(pad));
+			//if no mapping, it's a major issue !!!
+			if (!second_mapping){
+				Log::error(m_log_tag, LOGMSG("SDL2: 'forced' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), second_mapping.get()));
+			}
+		}	
 
         //get the name found by sdl in assets/sdl2/gamecontrollerdb_209.txt or sdl_controllers.txt (user mappings)
         Log::debug(m_log_tag, LOGMSG("Device name found by SDL (not trimmed): '%1'").arg(QLatin1String(SDL_GameControllerName(pad))));
@@ -1028,15 +1038,16 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
             //check if we already saved this configuration (same guid/same name)
             providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(name, guid_str);
-            Log::debug(m_log_tag, LOGMSG("inputConfigEntry.inputConfigAttributs.deviceName : '%1'").arg(inputConfigEntry.inputConfigAttributs.deviceName));
+            //Log::debug(m_log_tag, LOGMSG("inputConfigEntry.inputConfigAttributs.deviceName : '%1'").arg(inputConfigEntry.inputConfigAttributs.deviceName));
         
             //if nothing is in es_input with this name -> we update es_input with the SDL conf
             if (inputConfigEntry.inputConfigAttributs.deviceName == "")
             {
                 Log::debug(m_log_tag, LOGMSG("no mapping found in es_input.cfg for this controller"));
                 //get default mapping from SDL2
-                std::string existing_mapping = generate_mapping(device_idx);
-                //write user SDL2 mapping in es_input.cfg
+                std::string existing_mapping = generate_mapping(device_idx).c_str();
+				Log::debug(LOGMSG("existing_mapping : %1").arg(QString::fromStdString(existing_mapping))); 
+				//write user SDL2 mapping in es_input.cfg
                 Log::debug(m_log_tag, LOGMSG("save default SDL2 mapping in es_input.cfg to be able to play right now !"));
                 update_es_input(device_idx, existing_mapping);
             }
@@ -1110,7 +1121,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             cancel_recording();
 
         emit disconnected(device_idx);
-        //Log::debug(LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
+        //Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
         
         const QString RemovedPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_idx));
         std::string initial_path = "";
@@ -1128,7 +1139,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             const QString Parameter = QString("pegasus.pad%1").arg(i);
             const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(i+1));
             Strings::SplitInThree(NextPadPegasus.toUtf8().constData(), ':', uuid, name, path, true);
-            //Log::debug(LOGMSG("pegasus.pad%1=%2:%3:%4").arg(QString::number(i+1),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
+            //Log::debug(m_log_tag, LOGMSG("pegasus.pad%1=%2:%3:%4").arg(QString::number(i+1),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
             
             if (path != "")
             {   
