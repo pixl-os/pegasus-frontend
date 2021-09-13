@@ -224,6 +224,7 @@
         <file>gameOS/theme.cfg</file>
         <file>gameOS/theme.qml</file>
         <file>gameOS/utils.js</file>
+        <file>gameOS/moment.js</file>
         <file>gameOS/assets/images/logospng/fbneo.png</file>
         <file>gameOS/assets/images/logospng/gw.png</file>
         <file>gameOS/assets/images/logospng/jaguar.png</file>
