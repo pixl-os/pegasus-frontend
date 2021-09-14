@@ -24,6 +24,7 @@ FocusScope {
     id: root
 
     signal close
+	signal openBluetoothSettings
     signal openGamepadSettings
     signal openGameDirSettings
     signal openAdvancedControllersConfiguration
@@ -108,11 +109,25 @@ FocusScope {
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Pair bluetooth controllers") + api.tr
+                    label: qsTr("Bluetooth devices") + api.tr
                     note: qsTr("connect your pads") + api.tr
+
+                    Text {
+                        id: pointeroptBluetoothConfig
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        color: themeColor.textValue
+                        font.pixelSize: vpx(30)
+                        font.family: globalFonts.ion
+
+                        text : "\uf3d1"
+                    }
+					
                     onActivate: {
                         focus = true;
-                        root.openKeySettings();
+                        root.openBluetoothSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamepadConfig
@@ -127,7 +142,6 @@ FocusScope {
                         id: pointeroptGamepadConfig
 
                         anchors.right: parent.right
-//                        anchors.rightMargin: horizontalPadding
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: themeColor.textValue
@@ -155,7 +169,6 @@ FocusScope {
                         id: pointeroptAdvancedControllers
 
                         anchors.right: parent.right
-//                        anchors.rightMargin: horizontalPadding
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: themeColor.textValue
