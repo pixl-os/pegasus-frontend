@@ -25,7 +25,7 @@ namespace model {
 
 const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 const QString Meta::m_git_date(QStringLiteral(GIT_DATE));
-const QString Meta::m_build_name(QStringLiteral("PEGASUS (for recal ;-)"));
+const QString Meta::m_build_name(QStringLiteral("PEGASUS (pixL version)"));
 const QString Meta::m_build_version(QStringLiteral("")); //RFU
 const QString Meta::m_build_date(QStringLiteral(__DATE__ " " __TIME__));
 
