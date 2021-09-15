@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [app-close-menu-renewal-for-qt-creator-debug] - 2021-09-15
+- change to "PEGASUS (pixL version)"
+- renewal close app feature for debug usage / condition of display inversed (not available by default)
+
 ## [controller-not-known-bug] - 2021-09-08
 - fix to correct issue with "unknown" controllers by SDL
 - update logs info used for dev (log lines in comment)
