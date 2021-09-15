@@ -24,7 +24,7 @@ FocusScope {
     id: root
 
     signal close
-	signal openBluetoothSettings
+    signal openBluetoothDevices
     signal openGamepadSettings
     signal openGameDirSettings
     signal openAdvancedControllersConfiguration
@@ -127,7 +127,7 @@ FocusScope {
 					
                     onActivate: {
                         focus = true;
-                        root.openBluetoothSettings();
+                        root.openBluetoothDevices();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamepadConfig

@@ -95,7 +95,7 @@ FocusScope {
                         focus: index == 0 ? true : false
 
                         onActivate: {
-                            console.log("root.openEmulatorConfiguration()");
+                            //console.log("root.openEmulatorConfiguration()");
                             focus = true;
                             root.openEmulatorConfiguration(modelData);
 

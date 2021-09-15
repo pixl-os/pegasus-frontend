@@ -48,7 +48,7 @@ FocusScope {
         anchors.right: parent.right
 
         onClose: root.close()
-		onOpenBluetoothSettings: root.openScreen("settings/BluetoothConfiguration.qml")
+        onOpenBluetoothDevices: root.openScreen("settings/BluetoothDevices.qml")
         onOpenAdvancedControllersConfiguration: root.openScreen("settings/AdvancedControllersConf.qml")
         onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
         onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
