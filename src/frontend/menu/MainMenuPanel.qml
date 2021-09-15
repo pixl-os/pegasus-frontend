@@ -39,7 +39,7 @@ FocusScope {
 
     signal requestShutdown
     signal requestReboot
-    //    signal requestQuit
+    signal requestQuit
 
     Keys.onPressed: {
         if (event.isAutoRepeat)
@@ -142,10 +142,10 @@ FocusScope {
             visible: callable
             readonly property bool callable: mbQuitShutdown.callable
                                              || mbQuitReboot.callable
-            //                || mbQuitExit.callable
+                                             || mbQuitExit.callable
 
             Component.onCompleted: {
-                const first_callable = [mbQuitShutdown, mbQuitReboot].find(e => e.callable);
+                const first_callable = [mbQuitShutdown, mbQuitReboot,mbQuitExit].find(e => e.callable);
                 if (first_callable) {
                     first_callable.focus = true;
                     scopeQuit.focus = true;
@@ -174,19 +174,19 @@ FocusScope {
                     enabled: callable
                     visible: callable
 
+                    KeyNavigation.down: mbQuitExit
+                },
+                SecondaryMenuItem {
+                    id: mbQuitExit
+                    text: qsTr("Exit Pegasus") + api.tr
+                    onActivated: requestQuit()
+
+                    readonly property bool callable: api.internal.meta.allowAppClose
+                    enabled: callable
+                    visible: callable
+
                     KeyNavigation.down: mbQuitShutdown
                 }
-                //                SecondaryMenuItem {
-                //                    id: mbQuitExit
-                //                    text: qsTr("Exit Pegasus") + api.tr
-                //                    onActivated: requestQuit()
-
-                //                    readonly property bool callable: api.internal.meta.allowAppClose
-                //                    enabled: callable
-                //                    visible: callable
-
-                //                    KeyNavigation.down: mbQuitShutdown
-                //                }
             ]
             KeyNavigation.down: mbAccountSettings
         }

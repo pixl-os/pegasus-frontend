@@ -182,10 +182,10 @@ Window {
                 powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;
             }
-//            function onRequestQuit() {
-//                theme.source = "";
-//                api.internal.system.quit();
-//            }
+           function onRequestQuit() {
+               theme.source = "";
+               api.internal.system.quit();
+           }
         }
         PegasusUtils.HorizontalSwipeArea {
             id: menuSwipe
