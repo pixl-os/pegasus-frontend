@@ -25,7 +25,7 @@ FocusScope {
     signal close()
     signal requestShutdown()
     signal requestReboot()
-    //    signal requestQuit()
+    signal requestQuit()
 
     function triggerClose() {
         root.state = "";
@@ -95,7 +95,7 @@ FocusScope {
         onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
-        // onRequestQuit: root.requestQuit()
+        onRequestQuit: root.requestQuit()
     }
 
     Loader {
