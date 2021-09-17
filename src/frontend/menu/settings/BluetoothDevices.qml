@@ -13,30 +13,8 @@ import QtBluetooth 5.12
 FocusScope {
     id: root
 
-        property BluetoothService currentService
+    property BluetoothService currentService
 
-        BluetoothDiscoveryModel {
-            id: btModel
-            running: true
-            discoveryMode: BluetoothDiscoveryModel.DeviceDiscovery
-            onDiscoveryModeChanged: console.log("Discovery mode: " + discoveryMode)
-            onServiceDiscovered: console.log("Found new service " + service.deviceAddress + " " + service.deviceName + " " + service.serviceName);
-            onDeviceDiscovered: console.log("New device: " + device)
-            onErrorChanged: {
-                    switch (btModel.error) {
-                    case BluetoothDiscoveryModel.PoweredOffError:
-                        console.log("Error: Bluetooth device not turned on"); break;
-                    case BluetoothDiscoveryModel.InputOutputError:
-                        console.log("Error: Bluetooth I/O Error"); break;
-                    case BluetoothDiscoveryModel.InvalidBluetoothAdapterError:
-                        console.log("Error: Invalid Bluetooth Adapter Error"); break;
-                    case BluetoothDiscoveryModel.NoError:
-                        break;
-                    default:
-                        console.log("Error: Unknown Error"); break;
-                    }
-            }
-       }
     signal close
 
     width: parent.width
@@ -239,10 +217,36 @@ FocusScope {
                 //for test purpose only
                 ListModel {
                     id: myDiscoveredDevicesModel
-                    ListElement { icon: ""; vendor: "Nintendo" ; name: "Switch Pro controller"; macaddress: "45:12:64:33:FF:EE" }
+                    //ListElement { icon: ""; vendor: "Nintendo" ; name: "Switch Pro controller"; macaddress: "45:12:64:33:FF:EE" }
                 }
-				
-                Repeater {
+
+                BluetoothDiscoveryModel {
+                    id: btModel
+                    running: true
+                    discoveryMode: BluetoothDiscoveryModel.FullServiceDiscovery //FullServiceDiscovery //MinimalServiceDiscovery //DeviceDiscovery
+                    onDiscoveryModeChanged: console.log("Discovery mode: " + discoveryMode)
+                    onServiceDiscovered: {
+                        myDiscoveredDevicesModel.append({ icon: "", vendor: "?", name: service.deviceName, macaddress: service.deviceAddress, service: service.serviceName });
+                        console.log("Found new service " + service.deviceAddress + " - Name: " + service.deviceName + " - Service: " + service.serviceName);
+                    }
+                    onDeviceDiscovered: console.log("New device: " + device)
+                    onErrorChanged: {
+                            switch (btModel.error) {
+                            case BluetoothDiscoveryModel.PoweredOffError:
+                                console.log("Error: Bluetooth device not turned on"); break;
+                            case BluetoothDiscoveryModel.InputOutputError:
+                                console.log("Error: Bluetooth I/O Error"); break;
+                            case BluetoothDiscoveryModel.InvalidBluetoothAdapterError:
+                                console.log("Error: Invalid Bluetooth Adapter Error"); break;
+                            case BluetoothDiscoveryModel.NoError:
+                                console.log("Error: Bluetooth device No Error"); break;
+                            default:
+                                console.log("Error: Unknown Error"); break;
+                            }
+                    }
+               }
+
+               Repeater {
                     id: myDiscoveredDevices
                     model: myDiscoveredDevicesModel //for test purpose
                     SimpleButton {
@@ -261,7 +265,7 @@ FocusScope {
                         }
 
                         label: {
-                            return (macaddress + " - " + vendor + " " + name)
+                            return (macaddress + " - " + vendor + " " + name + " " + service)
                         }
 
                         // set focus only on first item
