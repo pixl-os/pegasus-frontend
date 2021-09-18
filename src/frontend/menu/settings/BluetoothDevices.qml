@@ -13,6 +13,40 @@ import QtBluetooth 5.12
 FocusScope {
     id: root
 
+
+    //function to search device in a list
+    function searchDeviceInList(list, name, macaddress, service){
+        for(var i = 0;i < list.count; i++){
+            if (list.get(i).name === name &&
+                list.get(i).macaddress === macaddress &&
+                list.get(i).service === service){
+                return true;
+            }
+        }
+        return false;
+    }
+    //function to add new discovered device using 'known' devices as My Devices or Ignored ones
+    function updateDevicesLists(name, macaddress, service){
+        var found = false;
+        //check device already in "Devices ignored"
+        found = searchDeviceInList(myIgnoredDevicesModel, name, macaddress, service);
+        //check device already in "My Devices"
+        if(!found) found = searchDeviceInList(myDevicesModel, name, macaddress, service);
+        //check device already in "Discovered Devices"
+        if(!found) found = searchDeviceInList(myDiscoveredDevicesModel, name, macaddress, service);
+        if (!found){
+            //set icon from service name
+            //TO DO
+
+            //set vendor from API & mac address
+            //we can't set vendor immediately, it will be done by timer
+
+            //add to discovered list
+            myDiscoveredDevicesModel.append({icon: "", vendor: "", name: name, macaddress: macaddress, service: service });
+            console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
+        }
+    }
+
     //timer to relaunch bluetooth regularly
     property var counter: 0
     Timer {
