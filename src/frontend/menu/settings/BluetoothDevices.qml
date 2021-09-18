@@ -13,7 +13,54 @@ import QtBluetooth 5.12
 FocusScope {
     id: root
 
+    //timer to relaunch bluetooth regularly
+    property var counter: 0
+    Timer {
+        id: bluetoothTimer
+        interval: 5000 // Run the timer every 5 seconds
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        onTriggered: {
+                if ((interval/1000)*counter >= 90){ // restart every 90 seconds
+                    console.log("Restart bluetooth scan... after ", (interval/1000)*counter," seconds")
+                    btModel.running = false;
+                    btModel.running = true;
+                    counter = 0;
+                }
+                else counter = counter + 1;
+        }
+    }
+    //to scan bluetooth devices
     property BluetoothService currentService
+    BluetoothDiscoveryModel {
+        id: btModel
+        running: false
+        discoveryMode: BluetoothDiscoveryModel.FullServiceDiscovery //3 modes possible: FullServiceDiscovery or MinimalServiceDiscovery or DeviceDiscovery
+        onDiscoveryModeChanged: console.log("Discovery mode: " + discoveryMode)
+        onServiceDiscovered: {
+            updateDevicesLists(service.deviceName, service.deviceAddress, service.serviceName);
+        }
+        onDeviceDiscovered: {
+            updateDevicesLists("", device, "");
+        }
+        onErrorChanged: {
+                switch (btModel.error) {
+                case BluetoothDiscoveryModel.PoweredOffError:
+                    console.log("Error: Bluetooth device not turned on"); break;
+                case BluetoothDiscoveryModel.InputOutputError:
+                    console.log("Error: Bluetooth I/O Error"); break;
+                case BluetoothDiscoveryModel.InvalidBluetoothAdapterError:
+                    console.log("Error: Invalid Bluetooth Adapter Error"); break;
+                case BluetoothDiscoveryModel.NoError:
+                    console.log("Error: Bluetooth device No Error"); break;
+                default:
+                    console.log("Error: Unknown Error"); break;
+                }
+        }
+   }
+
+
 
     signal close
 
