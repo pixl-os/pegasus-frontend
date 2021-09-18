@@ -13,6 +13,14 @@ import QtBluetooth 5.12
 FocusScope {
     id: root
 
+    //function to get text content of html page
+    function httpGet(theUrl)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
 
     //function to search device in a list
     function searchDeviceInList(list, name, macaddress, service){
@@ -65,6 +73,40 @@ FocusScope {
                 else counter = counter + 1;
         }
     }
+    //timer to udpate the vendor value in Discovered Devices
+    Timer {
+        id: vendorTimer
+        interval: 2000 // every 2 seconds to avoid saturation of server
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        onTriggered: {
+            var list = myDiscoveredDevicesModel;
+            var vendor = "";
+            for(var i = 0;i < list.count; i++){
+                if ((list.get(i).vendor === "") && (vendor === "")){
+                    //search vendor from macadress
+                    vendor = httpGet("https://api.macvendors.com/" + list.get(i).macaddress);
+                    //console.log("return of https://api.macvendors.com for ",list.get(i).macaddress," : ", vendor);
+                    if(vendor.includes("Not Found")) list.get(i).vendor = "Unknown vendor";
+                    else if(vendor.includes("errors")) list.get(i).vendor = "";
+                    else list.get(i).vendor = vendor;
+                }
+                else if(list.get(i).vendor === "")
+                {
+                    //search if previous search is for the same device
+                    //console.log("Check vendor mac part: ",list.get(i).macaddress.substring(0,8));
+                    if(list.get(i).macaddress.substring(0,8) === list.get(i-1).macaddress.substring(0,8)){
+                        //console.log("Same vendor: ",list.get(i-1).vendor);
+                        list.get(i).vendor = list.get(i-1).vendor;
+                    }
+                    else break;
+                }
+            }
+        }
+    }
+
+
     //to scan bluetooth devices
     property BluetoothService currentService
     BluetoothDiscoveryModel {
@@ -301,32 +343,6 @@ FocusScope {
                     //ListElement { icon: ""; vendor: "Nintendo" ; name: "Switch Pro controller"; macaddress: "45:12:64:33:FF:EE" }
                 }
 
-                BluetoothDiscoveryModel {
-                    id: btModel
-                    running: true
-                    discoveryMode: BluetoothDiscoveryModel.FullServiceDiscovery //FullServiceDiscovery //MinimalServiceDiscovery //DeviceDiscovery
-                    onDiscoveryModeChanged: console.log("Discovery mode: " + discoveryMode)
-                    onServiceDiscovered: {
-                        myDiscoveredDevicesModel.append({ icon: "", vendor: "?", name: service.deviceName, macaddress: service.deviceAddress, service: service.serviceName });
-                        console.log("Found new service " + service.deviceAddress + " - Name: " + service.deviceName + " - Service: " + service.serviceName);
-                    }
-                    onDeviceDiscovered: console.log("New device: " + device)
-                    onErrorChanged: {
-                            switch (btModel.error) {
-                            case BluetoothDiscoveryModel.PoweredOffError:
-                                console.log("Error: Bluetooth device not turned on"); break;
-                            case BluetoothDiscoveryModel.InputOutputError:
-                                console.log("Error: Bluetooth I/O Error"); break;
-                            case BluetoothDiscoveryModel.InvalidBluetoothAdapterError:
-                                console.log("Error: Invalid Bluetooth Adapter Error"); break;
-                            case BluetoothDiscoveryModel.NoError:
-                                console.log("Error: Bluetooth device No Error"); break;
-                            default:
-                                console.log("Error: Unknown Error"); break;
-                            }
-                    }
-               }
-
                Repeater {
                     id: myDiscoveredDevices
                     model: myDiscoveredDevicesModel //for test purpose
@@ -368,7 +384,7 @@ FocusScope {
                             id: pairButton
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
-                            text: qsTr("Pair") + " ?"  + api.tr
+                            text: qsTr("Pair/Ignore ?") + api.tr
                             visible: parent.focus
                             anchors.left: parent.right
                             anchors.leftMargin: vpx(20)
@@ -399,26 +415,24 @@ FocusScope {
                 }
 
                 SectionTitle {
-                    text: qsTr("Devices blacklisted") + api.tr
+                    text: qsTr("Ignored Devices") + api.tr
                     first: false
                 }
-                //for test purpose only
+
                 ListModel {
-                    id: myDevicesBlacklistedModel
-                    ListElement { icon: ""; vendor: "Xiaomi corporation" ; name: "smartphone X678"; macaddress: "25:12:36:33:FF:EE" }
+                    id: myIgnoredDevicesModel
+                    //for test purpose only ListElement { icon: ""; vendor: "Xiaomi corporation" ; name: "smartphone X678"; macaddress: "25:12:36:33:FF:EE" }
                 }
 
                 Repeater {
                     id: myDevicesBlacklisted
-                    model: myDevicesBlacklistedModel //for test purpose
+                    model: myIgnoredDevicesModel
                     SimpleButton {
 
                         Text {
                             id: deviceBlacklistedIcon
 
                             anchors.right: parent.left
-                            //anchors.rightMargin: horizontalPadding
-                            //anchors.rightMargin: horizontalPadding
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*3
@@ -437,7 +451,7 @@ FocusScope {
 
                         onActivate: {
                             //console.log("root.openEmulatorConfiguration()");
-                            focus = false;
+                            focus = true;
 
                             //root.pairBluetoothDevice(modelData);
 
@@ -478,21 +492,6 @@ FocusScope {
                                 radius: 25
                             }
                         }
-
-//                        Text {
-//                            id: pointer
-
-//                            anchors.right: parent.left
-//                            //anchors.rightMargin: horizontalPadding
-//                            anchors.verticalCenter: parent.verticalCenter
-
-//                            color: themeColor.textValue
-//                            font.pixelSize: fontSize
-//                            font.family: globalFonts.ion
-
-//                            text : "\uf3d1"
-//                            visible: parent.focus
-//                        }
                     }
                 }
             }
