@@ -23,7 +23,9 @@ FocusScope {
 
     property alias title: titleText.text
     property alias message: messageText.text
-    //property alias symbol: symbolText.text
+    property alias symbol: symbolText.text
+    property alias secondchoice: buttonText.text
+
 
     property int textSize: vpx(20)
     property int titleTextSize: vpx(22)
@@ -176,6 +178,41 @@ FocusScope {
 
                 MouseArea {
                     id: okMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: root.accept()
+                }
+            }
+
+            Rectangle {
+                id: secondButton
+
+                width: parent.width * 0.5
+                height: root.textSize * 2.25
+                color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
+//                radius: vpx(8)
+
+                Keys.onPressed: {
+                    if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                        event.accepted = true;
+                        root.accept();
+                    }
+                }
+
+                Text {
+                    id: buttonText
+                    anchors.centerIn: parent
+
+                    text: qsTr("2nd choice") + api.tr
+                    color: themeColor.textLabel //"#999"
+                    font {
+                        pixelSize: root.textSize
+                        family: globalFonts.sans
+                    }
+                }
+
+                MouseArea {
+                    id: secondMouseArea
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: root.accept()

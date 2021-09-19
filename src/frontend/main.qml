@@ -268,7 +268,6 @@ Window {
         function onCancel() { content.focus = true; }
     }
 
-
     Loader {
         id: multifileSelector
         anchors.fill: parent
@@ -277,7 +276,6 @@ Window {
         target: multifileSelector.item
         function onCancel() { content.focus = true; }
     }
-
 
     Loader {
         id: genericMessage
@@ -295,6 +293,15 @@ Window {
     Connections {
         target: genericPopup.item
         function onClose() { content.focus = true; }
+    }
+
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+    }
+    Connections {
+        target: confirmDialog.item
+        function onCancel() { content.focus = true; }
     }
 
     Connections {

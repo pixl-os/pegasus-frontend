@@ -20,6 +20,18 @@ import QtBluetooth 5.12
 FocusScope {
     id: root
 
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+    }
+    Connections {
+        target: confirmDialog.item
+        function onCancel() { content.focus = true; }
+        function onClose() { content.focus = true; }
+    }
+
+
     //function to get text content of html page
     function httpGet(theUrl)
     {
@@ -352,10 +364,21 @@ FocusScope {
                         focus: index == 0 ? true : false
 
                         onActivate: {
-                            //console.log("root.openEmulatorConfiguration()");
-                            //focus = true;
+//                            //focus = true;
+//                            confirmDialog.setSource("../../dialogs/GenericOkCancelDialog.qml",
+//                                { "title": qsTr("My Devices"),
+//                                  "message": qsTr("Are you sure that you ant to forget this device ?") + "\n"
+//                                  + "(" +  myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service + ")"
+//								  //,"symbol": myDevicesModel.get(index).icon
+//                                });
+//                            confirmDialog.active = true;
+//                            confirmDialog.focus = true;
+                            //add dialogBox
+                            confirmDialog.setSource("../../dialogs/GenericOkDialog.qml",
+                                { "title": qsTr("New type of controller detected"),
+                                  "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
+                            confirmDialog.focus = true;
 
-                            //root.pairBluetoothDevice(modelData);
 
                         }
 
@@ -478,9 +501,6 @@ FocusScope {
                         onActivate: {
                             //console.log("root.openEmulatorConfiguration()");
                             //focus = true;
-
-                            //root.pairBluetoothDevice(modelData);
-
                         }
 
                         onFocusChanged: container.onFocus(this)

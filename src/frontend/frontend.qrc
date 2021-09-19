@@ -94,5 +94,6 @@
         <file>assets/logopegasus.png</file>
         <file>dialogs/GenericContinueDialog.qml</file>
         <file>assets/loading.png</file>
+        <file>dialogs/Generic3ChoicesDialog.qml</file>
     </qresource>
 </RCC>
