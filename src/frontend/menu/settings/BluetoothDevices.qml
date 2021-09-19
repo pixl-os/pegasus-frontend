@@ -34,7 +34,7 @@ FocusScope {
         return false;
     }
     //function to add new discovered device using 'known' devices as My Devices or Ignored ones
-    function updateDevicesLists(name, macaddress, service){
+    function updateDiscoveredDevicesLists(name, macaddress, service){
         var found = false;
         //check device already in "Devices ignored"
         found = searchDeviceInList(myIgnoredDevicesModel, name, macaddress, service);
@@ -115,10 +115,10 @@ FocusScope {
         discoveryMode: BluetoothDiscoveryModel.FullServiceDiscovery //3 modes possible: FullServiceDiscovery or MinimalServiceDiscovery or DeviceDiscovery
         onDiscoveryModeChanged: console.log("Discovery mode: " + discoveryMode)
         onServiceDiscovered: {
-            updateDevicesLists(service.deviceName, service.deviceAddress, service.serviceName);
+            updateDiscoveredDevicesLists(service.deviceName, service.deviceAddress, service.serviceName);
         }
         onDeviceDiscovered: {
-            updateDevicesLists("", device, "");
+            updateDiscoveredDevicesLists("", device, "");
         }
         onErrorChanged: {
                 switch (btModel.error) {
@@ -435,12 +435,12 @@ FocusScope {
                 }
 
                 Repeater {
-                    id: myDevicesBlacklisted
+                    id: myIgnoredDevices
                     model: myIgnoredDevicesModel
                     SimpleButton {
 
                         Text {
-                            id: deviceBlacklistedIcon
+                            id: deviceIgnoredIcon
 
                             anchors.right: parent.left
                             anchors.verticalCenter: parent.verticalCenter
