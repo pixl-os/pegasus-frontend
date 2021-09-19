@@ -3,6 +3,13 @@
 // Created by BozoTheGeek 13/09/2021
 //
 
+//Notes/Information!
+//API to get vendor is very simple: https://api.macvendors.com/FC-A1-3E-2A-1C-33
+//API to get vendor is very simple: https://api.macvendors.com/B8-27-EB-A4-59-08
+//API to get vendor is very simple: https://api.macvendors.com/FC:FB:FB:01:FA:21
+//Basic reply could be get as a simple html text as: "Samsung Electronics Co.,Ltd"
+//example of pairing on rpi: https://pimylifeup.com/xbox-controllers-raspberry-pi/
+
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
@@ -139,14 +146,30 @@ FocusScope {
     Component.onCompleted:{
         var i = 0;
         //TO DO: loop to populate MyDevices and IgnoredDevices
-        //read information from recalbox.conf
-        console.log("pegasus.btdevice" + i + ": ", api.internal.recalbox.getStringParameter("pegasus.btdevice" + i));
-        //Parse en split
-        //TO DO
-        //Update model
-        //TO DO
-    }
+        let result = "";
+        let i = 0;
 
+        //to populate MY DEVICE list from recalbox.conf
+        do {
+          result = api.internal.recalbox.getStringParameter("pegasus.btdevice" + i);
+          if (result !== ""){
+                const parameters = result.split("|");
+                myDevicesModel.append({icon: parameters[0], vendor: parameters[2], name: parameters[3], macaddress: parameters[1], service: parameters[4] });
+          }
+          i = i + 1;
+        } while (result !== "");
+        //reset counter
+        i = 0;
+        //to populate IGNORED DEVICE list from recalbox.conf
+        do {
+          result = api.internal.recalbox.getStringParameter("pegasus.btdevice" + i + "_ignored");
+          if (result !== ""){
+                const parameters = result.split("|");
+                myIgnoredDevicesModel.append({icon: parameters[0], vendor: parameters[2], name: parameters[3], macaddress: parameters[1], service: parameters[4] });
+          }
+          i = i + 1;
+        } while (result !== "");
+    }
 
     signal close
 
@@ -225,18 +248,15 @@ FocusScope {
                     text: qsTr("My Devices") + api.tr
                     first: true
                 }
-                //for test purpose only
+
                 ListModel {
                     id: myDevicesModel
-                    ListElement { icon: " \uf2f0 "; vendor: "Microsoft" ; name: "Xbox one series controler"; macaddress: "00:11:22:33:FF:EE" }
-                    ListElement { icon: " \uf2ca "; vendor: "Sony" ; name: "PS4 controller"; macaddress: "00:33:11:33:FF:EE" }
-                    ListElement { icon: " \uf1e2 "; vendor: "Boss" ; name: "Bluetooth headset"; macaddress: "00:12:22:55:FA:E1" }
+                    //for test purpose only
+                    //ListElement { icon: " \uf2f0 "; vendor: "Microsoft" ; name: "Xbox one series controler"; macaddress: "00:11:22:33:FF:EE" }
+                    //ListElement { icon: " \uf2ca "; vendor: "Sony" ; name: "PS4 controller"; macaddress: "00:33:11:33:FF:EE" }
+                    //ListElement { icon: " \uf1e2 "; vendor: "Boss" ; name: "Bluetooth headset"; macaddress: "00:12:22:55:FA:E1" }
                 }
-                //API to get vendor is very simple: https://api.macvendors.com/FC-A1-3E-2A-1C-33
-                //API to get vendor is very simple: https://api.macvendors.com/B8-27-EB-A4-59-08
-                //API to get vendor is very simple: https://api.macvendors.com/FC:FB:FB:01:FA:21
-                //Basic reply could be get as a simple html text as: "Samsung Electronics Co.,Ltd"
-                //example of pairing on rpi: https://pimylifeup.com/xbox-controllers-raspberry-pi/
+
                 Repeater {
                     id: myDevices
                     model: myDevicesModel //for test purpose
@@ -264,7 +284,7 @@ FocusScope {
 
                         onActivate: {
                             //console.log("root.openEmulatorConfiguration()");
-                            focus = true;
+                            //focus = true;
 
                             //root.pairBluetoothDevice(modelData);
 
@@ -388,7 +408,7 @@ FocusScope {
 
                         onActivate: {
                             //console.log("root.openEmulatorConfiguration()");
-                            focus = true;
+                            //focus = true;
 
                             //root.pairBluetoothDevice(modelData);
 
@@ -476,7 +496,7 @@ FocusScope {
 
                         onActivate: {
                             //console.log("root.openEmulatorConfiguration()");
-                            focus = true;
+                            //focus = true;
 
                             //root.pairBluetoothDevice(modelData);
 
