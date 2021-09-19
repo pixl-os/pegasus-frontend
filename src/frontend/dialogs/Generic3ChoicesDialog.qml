@@ -24,12 +24,15 @@ FocusScope {
     property alias title: titleText.text
     property alias message: messageText.text
     property alias symbol: symbolText.text
-    property alias secondchoice: buttonText.text
+    property alias firstchoice: okButtonText.text
+    property alias secondchoice: secondButtonText.text
+    property alias thirdchoice: cancelButtonText.text
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
 
     signal accept()
+    signal secondChoice()
     signal cancel()
 
     anchors.fill: parent
@@ -92,23 +95,6 @@ FocusScope {
                     family: globalFonts.sans
                 }
             }
-
-            Text {
-                id: symbolText
-
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    right: parent.right
-                    rightMargin: root.titleTextSize * 0.75
-                }
-
-                color: themeColor.textTitle
-                font {
-                    bold: true
-                    pixelSize: root.titleTextSize
-                    family: globalFonts.sans
-                }
-            }
         }
 
         // text area
@@ -132,6 +118,25 @@ FocusScope {
                     family: globalFonts.sans
                 }
             }
+
+            Text {
+                id: symbolText
+
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: parent.left
+                    leftMargin: root.titleTextSize * 0.75
+                    right: messageText.left
+                    rightMargin: root.titleTextSize * 0.75
+                }
+
+                color: themeColor.textTitle
+                font {
+                    bold: true
+                    pixelSize: parent.height //root.titleTextSize * 4
+                    family: globalFonts.sans
+                }
+            }
         }
 
         // button row
@@ -142,7 +147,7 @@ FocusScope {
             Rectangle {
                 id: okButton
 
-                width: parent.width * 0.5
+                width: (secondchoice !== "") ? parent.width * 0.33 : parent.width * 0.5
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
 //                radius: vpx(8)
@@ -155,6 +160,7 @@ FocusScope {
                 }
 
                 Text {
+                    id: okButtonText
                     anchors.centerIn: parent
 
                     text: qsTr("Ok") + api.tr
@@ -176,20 +182,20 @@ FocusScope {
             Rectangle {
                 id: secondButton
 
-                width: parent.width * 0.5
+                width: (secondchoice !== "") ? parent.width * 0.33 : parent.width * 0.5
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
 //                radius: vpx(8)
-
+                visible: (secondchoice !== "") ? true : false
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
-                        root.accept();
+                        root.secondChoice();
                     }
                 }
 
                 Text {
-                    id: buttonText
+                    id: secondButtonText
                     anchors.centerIn: parent
 
                     text: qsTr("2nd choice") + api.tr
@@ -204,7 +210,7 @@ FocusScope {
                     id: secondMouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: root.accept()
+                    onClicked: root.secondChoice()
                 }
             }
 
@@ -213,7 +219,7 @@ FocusScope {
 
                 focus: true
 
-                width: parent.width * 0.5
+                width: (secondchoice !== "") ? parent.width * 0.33 : parent.width * 0.5
                 height: root.textSize * 2.25
                 color: (focus || cancelMouseArea.containsMouse) ? "darkRed" : themeColor.main //"#222"
 //                radius: vpx(8)
@@ -227,6 +233,7 @@ FocusScope {
                 }
 
                 Text {
+                    id: cancelButtonText
                     anchors.centerIn: parent
 
                     text: qsTr("Cancel") + api.tr

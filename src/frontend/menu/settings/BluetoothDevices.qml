@@ -24,14 +24,15 @@ FocusScope {
     Loader {
         id: confirmDialog
         anchors.fill: parent
+        z:10
     }
+
     Connections {
         target: confirmDialog.item
         function onAccept() { content.focus = true; }
+        function onSecondChoice() { content.focus = true; }
         function onCancel() { content.focus = true; }
-        function onClose() { content.focus = true; }
     }
-
 
     //function to get text content of html page
     function httpGet(theUrl)
@@ -92,6 +93,7 @@ FocusScope {
                 else counter = counter + 1;
         }
     }
+
     //timer to udpate the vendor value in Discovered Devices
     Timer {
         id: vendorTimer
@@ -125,7 +127,6 @@ FocusScope {
         }
     }
 
-
     //to scan bluetooth devices
     property BluetoothService currentService
     BluetoothDiscoveryModel {
@@ -154,6 +155,7 @@ FocusScope {
                 }
         }
     }
+
     //list model to manage type of devices
     ListModel {
         id: myDeviceTypes
@@ -190,6 +192,7 @@ FocusScope {
         ListElement { icon: " \uf1b0 "; keywords: ""; types:"audio"} //as generic icon for audio
 
     }
+
     //little function to faciliate check of value in 2 name and service from a keyword
     function isKeywordFound(name,service,keyword)
     {
@@ -269,20 +272,24 @@ FocusScope {
             root.close();
         }
     }
+
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
     }
+
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: root.close()
     }
+
     ScreenHeader {
         id: header
         text: qsTr("Controllers > Bluetooth devices") + api.tr
         z: 2
     }
+
     Flickable {
         id: container
 
@@ -305,6 +312,7 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
+
         FocusScope {
             id: content
 
@@ -358,30 +366,25 @@ FocusScope {
                         }
 
                         label: {
-                            return (macaddress + " - " + vendor + " " + name)
+                            return (macaddress + " - " + vendor + " " + name + " " + service)
                         }
 
                         // set focus only on first item
                         focus: index == 0 ? true : false
 
                         onActivate: {
-//                            //focus = true;
-//                            confirmDialog.setSource("../../dialogs/GenericOkCancelDialog.qml",
-//                                { "title": qsTr("My Devices"),
-//                                  "message": qsTr("Are you sure that you ant to forget this device ?") + "\n"
-//                                  + "(" +  myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service + ")"
-//								  //,"symbol": myDevicesModel.get(index).icon
-//                                });
-//                            confirmDialog.active = true;
-//                            confirmDialog.focus = true;
-                            //add dialogBox
+                            //to force change of focus
                             confirmDialog.focus = false;
+
                             confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                { "title": qsTr("New type of controller detected") + api.tr,
-                                  "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" + api.tr});
+                                                    { "title": myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service,
+                                                      "message": qsTr("Are you ready to forget this device ?") + api.tr,
+                                                      "symbol": myDevicesModel.get(index).icon,
+                                                      "firstchoice": qsTr("Yes") + api.tr,
+                                                      "secondchoice": "",
+                                                      "thirdchoice": qsTr("No") + api.tr});
+                            //to force change of focus
                             confirmDialog.focus = true;
-
-
                         }
 
                         onFocusChanged: container.onFocus(this)
@@ -579,7 +582,7 @@ FocusScope {
                         }
 
                         label: {
-                            return (macaddress + " - " + vendor + " " + name)
+                            return (macaddress + " - " + vendor + " " + name + " " + service)
                         }
 
                         // set focus only on first item
