@@ -40,6 +40,7 @@ FocusScope {
         }
         return false;
     }
+
     //function to add new discovered device using 'known' devices as My Devices or Ignored ones
     function updateDiscoveredDevicesLists(name, macaddress, service){
         var found = false;
@@ -51,13 +52,11 @@ FocusScope {
         if(!found) found = searchDeviceInList(myDiscoveredDevicesModel, name, macaddress, service);
         if (!found){
             //set icon from service name
-            //TO DO
-
+            let icon = getIcon(name,service);
             //set vendor from API & mac address
             //we can't set vendor immediately, it will be done by timer
-
             //add to discovered list
-            myDiscoveredDevicesModel.append({icon: "", vendor: "", name: name, macaddress: macaddress, service: service });
+            myDiscoveredDevicesModel.append({icon: icon, vendor: "", name: name, macaddress: macaddress, service: service });
             console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
         }
     }
@@ -141,34 +140,104 @@ FocusScope {
                     console.log("Error: Unknown Error"); break;
                 }
         }
-   }
+    }
+    //list model to manage type of devices
+    ListModel {
+        id: myDeviceTypes
+        ListElement { type: "controller"; keywords: "controller,gamepad,stick"} //as XBOX for the moment, need icon for 360
+        ListElement { type: "audio"; keywords: "audio,av,headset,speaker"} //as XBOX for the moment, need icon for 360
+    }
 
-    Component.onCompleted:{
-        var i = 0;
-        //TO DO: loop to populate MyDevices and IgnoredDevices
+    //list model to manage icons of devices
+    ListModel {
+        id: myDeviceIcons
+
+        ListElement { icon: " \uf2f0 "; keywords: "x360,xbox360,xbox 360"; type:"controller"} //as XBOX for the moment, need icon for 360
+        ListElement { icon: " \uf2f0 "; keywords: "xbox one"; type:"controller"}
+        ListElement { icon: " \uf2f0 "; keywords: "xbox series"; type:"controller"} //as XBOX one for the moment, need icon for series
+        ListElement { icon: " \uf2f0 "; keywords: "xbox,microsoft"; type:"controller"} //as XBOX for the moment, need icon for 360
+
+        ListElement { icon: " \uf2ca "; keywords: "ps5,playstation 5,dualsense"; type:"controller"} //as PS4 for the moment, need icon for PS5
+        ListElement { icon: " \uf2ca "; keywords: "ps4,playstation 4,dualshock 4"; type:"controller"}
+        ListElement { icon: " \uf2c9 "; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"}
+        ListElement { icon: " \uf2c8 "; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"}
+        ListElement { icon: " \uf275 "; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"}
+
+        ListElement { icon: " \uf25e "; keywords: "snes,super nintendo"; type:"controller"}
+        ListElement { icon: " \uf25c "; keywords: "nes,nintendo entertainment system"; type:"controller"}
+        ListElement { icon: " \uf262 "; keywords: "gc,gamecube"; type:"controller"}
+        ListElement { icon: " \uf260 "; keywords: "n64,nintendo 64,nintendo64"; type:"controller"}
+        ListElement { icon: " \uf263 "; keywords: "wii"; type:"controller"}
+
+        ListElement { icon: " \uf26a "; keywords: "mastersystem,master system"; type:"controller"}
+        ListElement { icon: " \uf26b "; keywords: "megadrive,mega drive,sega"; type:"controller"}
+
+        ListElement { icon: " \uf1e2 "; keywords: "headset"; type:"audio"}
+        ListElement { icon: " \uf1e1 "; keywords: "speaker"; type:"audio"}
+        ListElement { icon: " \uf1b0 "; keywords: ""; types:"audio"} //as generic icon for audio
+
+    }
+    //little function to faciliate check of value in 2 name and service from a keyword
+    function isKeywordFound(name,service,keyword)
+    {
+        if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
+            return true;
+        }
+        else return false;
+    }
+
+    //function to dynamically set icon "character" from name and/or service
+    function getIcon(name,service)
+    {
+        let icon = "";
+        let type = "";
+        let i = 0;
+        //search the good type
+         do{
+             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
+             for(var j = 0; j < typeKeywords.length;j++)
+             {
+                 if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
+             }
+             i = i + 1;
+         }while (type === "" && i < myDeviceTypes.count)
+        //reset counter
+         i = 0;
+        //searchIcon using the good type
+        do{
+            const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
+            for(var k = 0; k < iconKeywords.length;k++)
+            {
+                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
+                    icon = myDeviceIcons.get(i).icon;
+                }
+            }
+            i = i + 1;
+        }while (icon === "" && i < myDeviceIcons.count)
+
+        return icon;
+    }
+
+    //function to read saved data from recalbox.conf. Could be used for My Devices and Ignored Devices
+    function readSavedDevicesList(list,parameter){
         let result = "";
         let i = 0;
 
-        //to populate MY DEVICE list from recalbox.conf
+        //to populate list from recalbox.conf
         do {
-          result = api.internal.recalbox.getStringParameter("pegasus.btdevice" + i);
+          result = api.internal.recalbox.getStringParameter(parameter + i);
           if (result !== ""){
                 const parameters = result.split("|");
-                myDevicesModel.append({icon: parameters[0], vendor: parameters[2], name: parameters[3], macaddress: parameters[1], service: parameters[4] });
+                let icon = getIcon(parameters[2],parameters[3])
+                list.append({icon: icon, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
           }
           i = i + 1;
         } while (result !== "");
-        //reset counter
-        i = 0;
-        //to populate IGNORED DEVICE list from recalbox.conf
-        do {
-          result = api.internal.recalbox.getStringParameter("pegasus.btdevice" + i + "_ignored");
-          if (result !== ""){
-                const parameters = result.split("|");
-                myIgnoredDevicesModel.append({icon: parameters[0], vendor: parameters[2], name: parameters[3], macaddress: parameters[1], service: parameters[4] });
-          }
-          i = i + 1;
-        } while (result !== "");
+    }
+
+    Component.onCompleted:{
+        readSavedDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device")
+        readSavedDevicesList(myDevicesModel,"pegasus.bt.my.device")
     }
 
     signal close
