@@ -271,8 +271,16 @@ FocusScope {
                         }
 
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index != 0) ?  myDevices.itemAt(index-1) : myDevices.itemAt(myDevices.count-1)
-                        KeyNavigation.down: (index < myDevices.count) ? myDevices.itemAt(index+1) : myDevices.itemAt(0)
+                        KeyNavigation.up:{
+                            if (index !== 0) return myDevices.itemAt(index-1);
+                            else return myDevices.itemAt(0);
+                        }
+                        KeyNavigation.down:{
+                                if (index < myDevices.count-1) return myDevices.itemAt(index+1);
+                                else if (myDiscoveredDevices.count !== 0) return myDiscoveredDevices.itemAt(0);
+                                else if (myIgnoredDevices.count !== 0) return myIgnoredDevices.itemAt(0);
+                                else return myDevices.itemAt(myDevices.count-1);
+                        }
 
                         Button {
                             id: forgetButton
@@ -387,9 +395,16 @@ FocusScope {
                         }
 
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index != 0) ?  myDiscoveredDevices.itemAt(index-1) : myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1)
-                        KeyNavigation.down: (index < myDiscoveredDevices.count) ? myDiscoveredDevices.itemAt(index+1) : myDiscoveredDevices.itemAt(0)
-
+                        KeyNavigation.up:{
+                            if (index !== 0) return myDiscoveredDevices.itemAt(index-1);
+                            else if (myDevices.count !== 0) return myDevices.itemAt(myDevices.count-1);
+                            else return myDiscoveredDevices.itemAt(0);
+                        }
+                        KeyNavigation.down:{
+                            if (index < myDiscoveredDevices.count-1) return myDiscoveredDevices.itemAt(index+1);
+                            else if (myIgnoredDevices.count !== 0) return myIgnoredDevices.itemAt(0);
+                            else return myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);
+                        }
                         Button {
                             id: pairButton
                             property int fontSize: vpx(22)
@@ -468,8 +483,16 @@ FocusScope {
                         }
 
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index != 0) ?  myDevicesBlacklisted.itemAt(index-1) : myDevicesBlacklisted.itemAt(myDevicesBlacklisted.count-1)
-                        KeyNavigation.down: (index < myDevicesBlacklisted.count) ? myDevicesBlacklisted.itemAt(index+1) : myDevicesBlacklisted.itemAt(0)
+                        KeyNavigation.up:{
+                            if (index !== 0) return myIgnoredDevices.itemAt(index-1);
+                            else if(myDiscoveredDevices.count !== 0) return myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);
+                            else if(myDevices.count !== 0) return myDevices.itemAt(myDevices.count-1);
+                            else return myIgnoredDevices.itemAt(0);
+                        }
+                        KeyNavigation.down:{
+                            if(index < myIgnoredDevices.count-1) return myIgnoredDevices.itemAt(index+1);
+                            else return myIgnoredDevices.itemAt(myIgnoredDevices.count-1)
+                        }
 
                         Button {
                             id: unblockButton
