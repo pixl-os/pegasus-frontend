@@ -26,9 +26,8 @@ FocusScope {
     property alias symbol: symbolText.text
     property alias secondchoice: buttonText.text
 
-
-    property int textSize: vpx(20)
-    property int titleTextSize: vpx(22)
+    property int textSize: vpx(18)
+    property int titleTextSize: vpx(20)
 
     signal accept()
     signal cancel()
@@ -36,6 +35,7 @@ FocusScope {
     anchors.fill: parent
     visible: shade.opacity > 0
 
+    focus: true
     onActiveFocusChanged: {
         state = activeFocus ? "open" : "";
         if (activeFocus)
@@ -60,31 +60,21 @@ FocusScope {
         width: dialogBox.width
         height: dialogBox.height
     }
-
-    //    Rectangle {
-    //        anchors.centerIn: dialogBox
-    //        width: dialogBox.width
-    //        height: dialogBox.height
-    //        radius: vpx(8)
-    //        color: "#484"
-    //    }
-
     Column {
         id: dialogBox
 
-        width: parent.height * 0.66
+        width: parent.height * 0.8
         anchors.centerIn: parent
-        //            scale: 0.5
+        scale: 0.5
 
-        Behavior on opacity { NumberAnimation { duration: 125 } }
+        Behavior on scale { NumberAnimation { duration: 125 } }
 
         // title bar
         Rectangle {
             id: titleBar
             width: parent.width
             height: root.titleTextSize * 2.25
-            color: themeColor.main //"#222"
-//            radius: vpx(8)
+            color: themeColor.main
 
             Text {
                 id: titleText
@@ -95,7 +85,7 @@ FocusScope {
                     leftMargin: root.titleTextSize * 0.75
                 }
 
-                color: themeColor.textLabel //"#999"
+                color: themeColor.textTitle
                 font {
                     bold: true
                     pixelSize: root.titleTextSize
@@ -112,7 +102,7 @@ FocusScope {
                     rightMargin: root.titleTextSize * 0.75
                 }
 
-                color: themeColor.textLabel //"#6ff"
+                color: themeColor.textTitle
                 font {
                     bold: true
                     pixelSize: root.titleTextSize
@@ -125,8 +115,7 @@ FocusScope {
         Rectangle {
             width: parent.width
             height: messageText.height + 3 * root.textSize
-            color: themeColor.secondary //"#222"
-            //                radius: vpx(8)
+            color: themeColor.secondary
 
             Text {
                 id: messageText
@@ -137,7 +126,7 @@ FocusScope {
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
 
-                color: themeColor.textLabel //"#999"
+                color: themeColor.textTitle
                 font {
                     pixelSize: root.textSize
                     family: globalFonts.sans
@@ -169,7 +158,7 @@ FocusScope {
                     anchors.centerIn: parent
 
                     text: qsTr("Ok") + api.tr
-                    color: themeColor.textLabel //"#999"
+                    color: themeColor.textTitle
                     font {
                         pixelSize: root.textSize
                         family: globalFonts.sans
@@ -204,7 +193,7 @@ FocusScope {
                     anchors.centerIn: parent
 
                     text: qsTr("2nd choice") + api.tr
-                    color: themeColor.textLabel //"#999"
+                    color: themeColor.textTitle
                     font {
                         pixelSize: root.textSize
                         family: globalFonts.sans
@@ -241,7 +230,7 @@ FocusScope {
                     anchors.centerIn: parent
 
                     text: qsTr("Cancel") + api.tr
-                    color: themeColor.textLabel //"#999"
+                    color: themeColor.textTitle
                     font {
                         pixelSize: root.textSize
                         family: globalFonts.sans

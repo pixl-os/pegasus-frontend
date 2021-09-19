@@ -27,6 +27,7 @@ FocusScope {
     }
     Connections {
         target: confirmDialog.item
+        function onAccept() { content.focus = true; }
         function onCancel() { content.focus = true; }
         function onClose() { content.focus = true; }
     }
@@ -374,9 +375,10 @@ FocusScope {
 //                            confirmDialog.active = true;
 //                            confirmDialog.focus = true;
                             //add dialogBox
-                            confirmDialog.setSource("../../dialogs/GenericOkDialog.qml",
-                                { "title": qsTr("New type of controller detected"),
-                                  "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
+                            confirmDialog.focus = false;
+                            confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                { "title": qsTr("New type of controller detected") + api.tr,
+                                  "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" + api.tr});
                             confirmDialog.focus = true;
 
 
