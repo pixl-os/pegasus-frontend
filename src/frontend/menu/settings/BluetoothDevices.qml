@@ -136,6 +136,16 @@ FocusScope {
         }
    }
 
+    Component.onCompleted:{
+        var i = 0;
+        //TO DO: loop to populate MyDevices and IgnoredDevices
+        //read information from recalbox.conf
+        console.log("pegasus.btdevice" + i + ": ", api.internal.recalbox.getStringParameter("pegasus.btdevice" + i));
+        //Parse en split
+        //TO DO
+        //Update model
+        //TO DO
+    }
 
 
     signal close
