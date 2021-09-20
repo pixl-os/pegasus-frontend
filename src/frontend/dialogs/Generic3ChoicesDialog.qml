@@ -100,7 +100,7 @@ FocusScope {
         // text area
         Rectangle {
             width: parent.width
-            height: messageText.height + 3 * root.textSize
+            height: messageText.height + 5 * root.textSize
             color: themeColor.secondary
 
             Text {
@@ -133,7 +133,7 @@ FocusScope {
                 color: themeColor.textTitle
                 font {
                     bold: true
-                    pixelSize: parent.height //root.titleTextSize * 4
+                    pixelSize: root.titleTextSize * 4
                     family: globalFonts.sans
                 }
             }
