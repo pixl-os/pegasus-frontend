@@ -10,6 +10,15 @@
 //Basic reply could be get as a simple html text as: "Samsung Electronics Co.,Ltd"
 //example of pairing on rpi: https://pimylifeup.com/xbox-controllers-raspberry-pi/
 
+//command line for bluetooth: 
+// # hcitool scan | grep -v '^S'
+// Scanning ...
+        // 3C:BD:3E:C1:13:F7       Bureau
+        // 00:9E:C8:D9:7C:6B       xiaomi wifi speaker
+        // 48:A5:E7:5D:41:87       SNES Controller
+// /recalbox/scripts/bluetooth/recalpair 48:A5:E7:5D:41:87 snes
+// /recalbox/scripts/bluetooth/test-discovery & ( PID=$! ; sleep 15 ; kill -15 $PID)
+
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
