@@ -20,6 +20,10 @@ import QtBluetooth 5.12
 FocusScope {
     id: root
 
+    //to be able to follow action done on Bluetooth Devices Lists
+    property var actionState : ""
+    property var actionListIndex : 0
+
     //loader to load confirm dialog
     Loader {
         id: confirmDialog
@@ -29,9 +33,65 @@ FocusScope {
 
     Connections {
         target: confirmDialog.item
-        function onAccept() { content.focus = true; }
-        function onSecondChoice() { content.focus = true; }
-        function onCancel() { content.focus = true; }
+        function onAccept() {
+            switch (actionState) {
+                    case "Forget":
+                        //Bluetooth unPair device
+                        //TO DO
+
+                        //for test purpose for the moment
+                        //remove from list
+                        myDevicesModel.remove(actionListIndex);
+                        //save in recalbox.conf
+                        saveDevicesList(myDevicesModel,"pegasus.bt.my.device");
+                    break;
+                    case "Pair":
+                        //launch pairing
+                        //TO DO
+
+                        //for test purpose for the moment
+                        //Add to My Devices list
+                        myDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
+                                     vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
+                                     name: myDiscoveredDevicesModel.get(actionListIndex).name,
+                                     macaddress: myDiscoveredDevicesModel.get(actionListIndex).macaddress,
+                                     service: myDiscoveredDevicesModel.get(actionListIndex).service});
+                        //Remove from Discovered devices list
+                        myDiscoveredDevicesModel.remove(actionListIndex);
+                        //save in recalbox.conf
+                        saveDevicesList(myDevicesModel,"pegasus.bt.my.device");
+                    break;
+                    case "Unblock":
+                        //remove from list
+                        myIgnoredDevicesModel.remove(actionListIndex);
+                        //save in recalbox.conf
+                        saveDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
+                    break;
+
+            }
+            content.focus = true;
+        }
+        function onSecondChoice() {
+            switch (actionState) {
+                    case "Pair": // as ignored in fact for second choice
+                        //Add to Ignored devices list
+                        myIgnoredDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
+                                     vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
+                                     name: myDiscoveredDevicesModel.get(actionListIndex).name,
+                                     macaddress: myDiscoveredDevicesModel.get(actionListIndex).macaddress,
+                                     service: myDiscoveredDevicesModel.get(actionListIndex).service});
+                        //Remove from Discovered devices list
+                        myDiscoveredDevicesModel.remove(actionListIndex);
+                        //save in recalbox.conf
+                        saveDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
+                    break;
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
+        }
     }
 
     //function to get text content of html page
@@ -235,6 +295,20 @@ FocusScope {
     }
 
     //function to read saved data from recalbox.conf. Could be used for My Devices and Ignored Devices
+    function saveDevicesList(list,parameter){
+        //to populate list from recalbox.conf
+        for(var i = 0; i < list.count; i++){
+          var savedData = "";
+          savedData = list.get(i).macaddress;
+          savedData = savedData + "|" + list.get(i).vendor;
+          savedData = savedData + "|" + list.get(i).name;
+          savedData = savedData + "|" + list.get(i).service;
+          api.internal.recalbox.setStringParameter(parameter + i, savedData);
+        }
+        //save an empty line at the end to confirm end of the list in reclbox.conf
+        api.internal.recalbox.setStringParameter(parameter + i,"");
+    }
+    //function to read saved data from recalbox.conf. Could be used for My Devices and Ignored Devices
     function readSavedDevicesList(list,parameter){
         let result = "";
         let i = 0;
@@ -252,8 +326,8 @@ FocusScope {
     }
 
     Component.onCompleted:{
-        readSavedDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device")
-        readSavedDevicesList(myDevicesModel,"pegasus.bt.my.device")
+        readSavedDevicesList(myDevicesModel,"pegasus.bt.my.device");
+        readSavedDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
     }
 
     signal close
@@ -375,7 +449,6 @@ FocusScope {
                         onActivate: {
                             //to force change of focus
                             confirmDialog.focus = false;
-
                             confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                     { "title": myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service,
                                                       "message": qsTr("Are you ready to forget this device ?") + api.tr,
@@ -383,6 +456,9 @@ FocusScope {
                                                       "firstchoice": qsTr("Yes") + api.tr,
                                                       "secondchoice": "",
                                                       "thirdchoice": qsTr("No") + api.tr});
+                            //Save action states for later
+                            actionState = "Forget";
+                            actionListIndex = index;
                             //to force change of focus
                             confirmDialog.focus = true;
                         }
@@ -504,8 +580,21 @@ FocusScope {
                         focus: index == 0 ? true : false
 
                         onActivate: {
-                            //console.log("root.openEmulatorConfiguration()");
-                            //focus = true;
+                            //to force change of focus
+                            confirmDialog.focus = false;
+                            confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                    { "title": myDiscoveredDevicesModel.get(index).vendor + " " + myDiscoveredDevicesModel.get(index).name + " " + myDiscoveredDevicesModel.get(index).service,
+                                                      "message": qsTr("Do you want to pair or ignored this device ?") + api.tr,
+                                                      "symbol": myDiscoveredDevicesModel.get(index).icon,
+                                                      "firstchoice": qsTr("Yes") + api.tr,
+                                                      "secondchoice": qsTr("Ignored") + api.tr,
+                                                      "thirdchoice": qsTr("Cancel") + api.tr});
+                            //Save action states for later
+                            actionState = "Pair";
+                            actionListIndex = index;
+                            //to force change of focus
+                            confirmDialog.focus = true;
+
                         }
 
                         onFocusChanged: container.onFocus(this)
@@ -589,11 +678,20 @@ FocusScope {
                         focus: index == 0 ? true : false
 
                         onActivate: {
-                            //console.log("root.openEmulatorConfiguration()");
-                            //focus = true;
-
-                            //root.pairBluetoothDevice(modelData);
-
+                            //to force change of focus
+                            confirmDialog.focus = false;
+                            confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                    { "title": myIgnoredDevicesModel.get(index).vendor + " " + myIgnoredDevicesModel.get(index).name + " " + myIgnoredDevicesModel.get(index).service,
+                                                      "message": qsTr("Are you ready to unblock this device ?") + api.tr,
+                                                      "symbol": myIgnoredDevicesModel.get(index).icon,
+                                                      "firstchoice": qsTr("Yes") + api.tr,
+                                                      "secondchoice": "",
+                                                      "thirdchoice": qsTr("No") + api.tr});
+                            //Save action states for later
+                            actionState = "Unblock";
+                            actionListIndex = index;
+                            //to force change of focus
+                            confirmDialog.focus = true;
                         }
 
                         onFocusChanged: container.onFocus(this)
