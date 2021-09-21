@@ -123,7 +123,17 @@ FocusScope {
                 duration: 400
                 easing { type: Easing.Bezier; bezierCurve: bezierSharp }
             }
-            onRunningChanged: if (!running) subscreen.source = ""
+            onRunningChanged: {
+                if (!running){
+                    subscreen.source = ""
+                    //to manage display of BluetoothDevices menu from Main (problem of binding not possible from api)
+                    //console.log("typeof(main.bluetoothDeviceVisibility) = ",typeof(main.bluetoothDeviceVisibility));
+                    if(typeof(main.bluetoothDeviceVisibility) !== 'undefined')
+                    {
+                       main.bluetoothDeviceVisibility = api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled");
+                    }
+                }
+            }
         }
     ]
 }

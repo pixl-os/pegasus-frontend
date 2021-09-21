@@ -23,6 +23,8 @@ import QtQuick.Window 2.12
 FocusScope {
     id: root
 
+    property alias bluetoothDeviceVisibility: optBluetoothDevices.visible
+
     signal close
     signal openBluetoothDevices
     signal openGamepadSettings
@@ -104,10 +106,10 @@ FocusScope {
                     first: true
                 }
                 SimpleButton {
-                    id: optPairControllers
+                    id: optBluetoothDevices
 
                     // set focus only on first item
-                    focus: true
+                    focus: visible
 
                     label: qsTr("Bluetooth devices") + api.tr
                     note: qsTr("connect your pads") + api.tr
@@ -131,10 +133,12 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamepadConfig
+                    visible: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled")
                 }
                 SimpleButton {
                     id: optGamepadConfig
-
+                    //take focus if Bluetooth Devices button is not visible
+                    focus: !optBluetoothDevices.focus
                     label: qsTr("Gamepad layout") + api.tr
                     note: qsTr("Show game layout configuration controller") + api.tr
 
@@ -156,7 +160,6 @@ FocusScope {
                         root.openGamepadSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optPairControllers
                     KeyNavigation.down: optAdvancedControllers
                 }
                 SimpleButton {
@@ -188,7 +191,7 @@ FocusScope {
                 }
                 SectionTitle {
                     text: qsTr("Controllers inputs") + api.tr
-                    first: true
+                    first: false
                 }
                 SimpleButton {
                     id: optInputP1

@@ -93,16 +93,55 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
+                SectionTitle {
+                    text: qsTr("Bluetooth controlers") + api.tr
+                    first: true
+                }
+                ToggleOption {
+                    id: optBluetoothControllers
+                    //controllers.bluetooth.enabled=1
+                    // set focus only on first item
+                    focus: true
 
+                    label: qsTr("Enable bluetooth") + api.tr
+                    note: qsTr("Enable support for bluetooth controllers") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled");
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("controllers.bluetooth.enabled",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optBluetoothERTM
+                }
+                ToggleOption {
+                    id: optBluetoothERTM
+                    //controllers.bluetooth.ertm=1
+                    // set focus only on first item
+                    focus: false
+
+                    label: qsTr("Enable ERTM") + api.tr
+                    note: qsTr("Enable additional enhanced retransmission mode") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.ertm")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("controllers.bluetooth.ertm",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optPs3Controllers
+                    visible: optBluetoothControllers.checked
+                }
                 SectionTitle {
                     text: qsTr("Sony controllers") + api.tr
                     first: true
+                    visible: optBluetoothControllers.checked
                 }
                 ToggleOption {
                     id: optPs3Controllers
                     //controllers.ps3.enabled=1
                     // set focus only on first item
-                    focus: true
+                    focus: false
 
                     label: qsTr("Enable Sony Playstation bluetooth controllers") + api.tr
                     note: qsTr("Sony Playstation 3,4,5 controllers supported") + api.tr
@@ -114,6 +153,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDriversPs3Controllers
+                    visible: optBluetoothControllers.checked
                 }
                 MultivalueOption {
                     id: optDriversPs3Controllers
@@ -134,7 +174,8 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDB9Controllers
-                    visible: optPs3Controllers.checked
+                    visible: optPs3Controllers.checked && optBluetoothControllers.checked
+
                 }
                 SectionTitle {
                     text: qsTr("Db9 controllers") + api.tr
