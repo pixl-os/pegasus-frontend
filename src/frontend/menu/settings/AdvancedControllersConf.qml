@@ -112,7 +112,34 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optBluetoothScanMethods
+                }
+                MultivalueOption {
+                    id: optBluetoothScanMethods
+                    //controllers.bluetooth.scan.methods
+                    // set focus only on first item
+                    focus: false
+                    property string parameterName :"controllers.bluetooth.scan.methods"
+                    label: qsTr("Scanning Methods") + api.tr
+                    note: qsTr("Select Legacy or any new ones") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optBluetoothScanMethods;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optBluetoothERTM
+                    visible: optBluetoothControllers.checked
+                }
+                SectionTitle {
+                    text: qsTr("Sony controllers") + api.tr
+                    first: true
+                    visible: optBluetoothControllers.checked
                 }
                 ToggleOption {
                     id: optBluetoothERTM
