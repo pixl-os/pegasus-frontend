@@ -24,7 +24,7 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
-import QtBluetooth 5.12
+import QtBluetooth 5.2
 
 FocusScope {
     id: root
@@ -144,13 +144,13 @@ FocusScope {
         }
     }
 
-    //timer to relaunch bluetooth regularly
+    //timer to relaunch bluetooth regularly for QT methods for the moment
     property var counter: 0
     Timer {
         id: bluetoothTimer
         interval: 5000 // Run the timer every 5 seconds
         repeat: true
-        running: true
+        running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
         triggeredOnStart: true
         onTriggered: {
                 if ((interval/1000)*counter >= 90){ // restart every 90 seconds
@@ -200,14 +200,15 @@ FocusScope {
     property BluetoothService currentService
     BluetoothDiscoveryModel {
         id: btModel
-        running: false
-        discoveryMode: BluetoothDiscoveryModel.FullServiceDiscovery //3 modes possible: FullServiceDiscovery or MinimalServiceDiscovery or DeviceDiscovery
+        running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+        discoveryMode: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? parseInt(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods")) : BluetoothDiscoveryModel.DeviceDiscovery //3 modes possible:  MinimalServiceDiscovery (0) or FullServiceDiscovery (1) or DeviceDiscovery (2)
         onDiscoveryModeChanged: console.log("Discovery mode: " + discoveryMode)
         onServiceDiscovered: {
             updateDiscoveredDevicesLists(service.deviceName, service.deviceAddress, service.serviceName);
         }
         onDeviceDiscovered: {
-            updateDiscoveredDevicesLists("", device, "");
+            //don't udpate now because is not with all information
+            //updateDiscoveredDevicesLists("", device, "");
         }
         onErrorChanged: {
                 switch (btModel.error) {
@@ -222,6 +223,21 @@ FocusScope {
                 default:
                     console.log("Error: Unknown Error"); break;
                 }
+        }
+    }
+
+    //Listview to hold the discovered device index/name/address
+    ListView{
+        id:hideview
+        model: btModel
+        visible: false
+        delegate:Item {
+            id:btdeviceName
+            readonly property var test: {
+                //warning about binding loop seems abused !!!
+                if(Number(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods")) === BluetoothDiscoveryModel.DeviceDiscovery) updateDiscoveredDevicesLists(deviceName, remoteAddress, "");
+                return "";
+            }
         }
     }
 
