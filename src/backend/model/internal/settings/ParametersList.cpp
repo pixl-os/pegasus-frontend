@@ -202,7 +202,16 @@ QStringList GetParametersList(QString Parameter)
     {
         QString system_short_name = Parameter.split('.').at(0);
     }
-    else
+	//for bluetooth feature
+	else if (Parameter == "controllers.bluetooth.scan.methods")
+    {
+		//QT QML Methods: 3 modes possible - MinimalServiceDiscovery (0) or FullServiceDiscovery (1)  or DeviceDiscovery (2)
+		//1 legacy ES methods
+		//new methods ?!
+        ListOfValue << "Legacy (lock user interface)" << "Minimal Service Discovery (slow)" << "Full Service Discovery (slower)" << "DeviceDiscovery (quicker)";
+        ListOfInternalValue << "" << "0" << "1" << "2";
+    }
+	else
     {
         ListOfValue << QString("error: Parameters list for '%1' not found").arg(Parameter);
         //not a parameter using list !
