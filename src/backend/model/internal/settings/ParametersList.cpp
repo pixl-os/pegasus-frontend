@@ -208,7 +208,7 @@ QStringList GetParametersList(QString Parameter)
 		//QT QML Methods: 3 modes possible - MinimalServiceDiscovery (0) or FullServiceDiscovery (1)  or DeviceDiscovery (2)
 		//1 legacy ES methods
 		//new methods ?!
-        ListOfValue << "Legacy (lock user interface)" << "Minimal Service Discovery (slow)" << "Full Service Discovery (slower)" << "DeviceDiscovery (quicker)";
+        ListOfValue << "Legacy (lock user interface)" << "Minimal Service Discovery (slow)" << "Full Service Discovery (slower)" << "Device Discovery (quicker)";
         ListOfInternalValue << "" << "0" << "1" << "2";
     }
 	else
