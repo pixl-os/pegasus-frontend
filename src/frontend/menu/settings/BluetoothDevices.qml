@@ -436,6 +436,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("My Devices") + api.tr
                     first: true
+                    visible: (myDevices.count !== 0) ? true : false
                 }
 
                 ListModel {
@@ -486,17 +487,29 @@ FocusScope {
                             actionListIndex = index;
                             //to force change of focus
                             confirmDialog.focus = true;
+                            focus = true;
                         }
 
                         onFocusChanged: container.onFocus(this)
+
+
+                        Keys.onPressed: {
+                            //verify if MyDevices is finally empty or not when we are just before to change list
+                            //TO DO
+                        }
+
                         KeyNavigation.up:{
                             if (index !== 0) return myDevices.itemAt(index-1);
                             else return myDevices.itemAt(0);
                         }
                         KeyNavigation.down:{
                                 if (index < myDevices.count-1) return myDevices.itemAt(index+1);
-                                else if (myDiscoveredDevices.count !== 0) return myDiscoveredDevices.itemAt(0);
-                                else if (myIgnoredDevices.count !== 0) return myIgnoredDevices.itemAt(0);
+                                else if (myDiscoveredDevices.count !== 0){
+                                    return myDiscoveredDevices.itemAt(0);
+                                }
+                                else if (myIgnoredDevices.count !== 0){
+                                    return myIgnoredDevices.itemAt(0);
+                                }
                                 else return myDevices.itemAt(myDevices.count-1);
                         }
 
@@ -619,18 +632,25 @@ FocusScope {
                             actionListIndex = index;
                             //to force change of focus
                             confirmDialog.focus = true;
+                            focus = true;
 
                         }
 
                         onFocusChanged: container.onFocus(this)
                         KeyNavigation.up:{
                             if (index !== 0) return myDiscoveredDevices.itemAt(index-1);
-                            else if (myDevices.count !== 0) return myDevices.itemAt(myDevices.count-1);
+                            else if (myDevices.count !== 0){
+                                myDevices.focus = true;
+                                return myDevices.itemAt(myDevices.count-1);
+                            }
                             else return myDiscoveredDevices.itemAt(0);
                         }
                         KeyNavigation.down:{
+                            console.log("myDiscoveredDevices index: ",index);
                             if (index < myDiscoveredDevices.count-1) return myDiscoveredDevices.itemAt(index+1);
-                            else if (myIgnoredDevices.count !== 0) return myIgnoredDevices.itemAt(0);
+                            else if (myIgnoredDevices.count !== 0){
+                                return myIgnoredDevices.itemAt(0);
+                            }
                             else return myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);
                         }
                         Button {
@@ -670,6 +690,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Ignored Devices") + api.tr
                     first: false
+                    visible: (myIgnoredDevices.count !== 0) ? true : false
                 }
 
                 ListModel {
@@ -717,13 +738,18 @@ FocusScope {
                             actionListIndex = index;
                             //to force change of focus
                             confirmDialog.focus = true;
+                            focus = true;
                         }
 
                         onFocusChanged: container.onFocus(this)
                         KeyNavigation.up:{
                             if (index !== 0) return myIgnoredDevices.itemAt(index-1);
-                            else if(myDiscoveredDevices.count !== 0) return myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);
-                            else if(myDevices.count !== 0) return myDevices.itemAt(myDevices.count-1);
+                            else if(myDiscoveredDevices.count !== 0) {
+                                return myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);
+                            }
+                            else if(myDevices.count !== 0){
+                                return myDevices.itemAt(myDevices.count-1);
+                            }
                             else return myIgnoredDevices.itemAt(0);
                         }
                         KeyNavigation.down:{
