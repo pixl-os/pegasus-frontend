@@ -151,7 +151,7 @@ FocusScope {
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
 //                radius: vpx(8)
-
+                KeyNavigation.right: (secondchoice !== "") ? secondButton : cancelButton
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
@@ -184,9 +184,12 @@ FocusScope {
 
                 width: (secondchoice !== "") ? parent.width * 0.33 : parent.width * 0.5
                 height: root.textSize * 2.25
-                color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
+                color: (focus || okMouseArea.containsMouse) ? "darkOrange" : themeColor.main //"#222"
 //                radius: vpx(8)
                 visible: (secondchoice !== "") ? true : false
+
+                KeyNavigation.right: cancelButton
+                KeyNavigation.left: okButton
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
@@ -219,12 +222,12 @@ FocusScope {
 
                 focus: true
 
-                width: (secondchoice !== "") ? parent.width * 0.33 : parent.width * 0.5
+                width: (secondchoice !== "") ? parent.width * 0.34 : parent.width * 0.5
                 height: root.textSize * 2.25
                 color: (focus || cancelMouseArea.containsMouse) ? "darkRed" : themeColor.main //"#222"
 //                radius: vpx(8)
 
-                KeyNavigation.left: okButton
+                KeyNavigation.left: (secondchoice !== "") ? secondButton : okButton
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
