@@ -29,6 +29,17 @@ import QtBluetooth 5.2
 FocusScope {
     id: root
 
+    //loader Wait popup including spinner
+    Loader {
+        id: waitPopup
+        anchors.fill: paren
+        z:10
+    }
+
+    Connections {
+        target: waitPopup.item
+    }
+
     //to be able to follow action done on Bluetooth Devices Lists
     property var actionState : ""
     property var actionListIndex : 0
