@@ -226,17 +226,16 @@ FocusScope {
         }
     }
 
-    //Listview to hold the discovered device index/name/address
+    //Listview to catch 'deviceName' for DeviceDiscovery method only: sorry, it's a tips ;-) to hold the discovered device index/name/address
     ListView{
         id:hideview
         model: btModel
         visible: false
         delegate:Item {
             id:btdeviceName
-            readonly property var test: {
-                //warning about binding loop seems abused !!!
+            Component.onCompleted:
+            {
                 if(Number(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods")) === BluetoothDiscoveryModel.DeviceDiscovery) updateDiscoveredDevicesLists(deviceName, remoteAddress, "");
-                return "";
             }
         }
     }
