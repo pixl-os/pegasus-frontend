@@ -19,6 +19,29 @@
 // /recalbox/scripts/bluetooth/recalpair 48:A5:E7:5D:41:87 snes
 // /recalbox/scripts/bluetooth/test-discovery & ( PID=$! ; sleep 15 ; kill -15 $PID)
 
+// #scan bluetooth
+// sh /recalbox/scripts/recalbox-config.sh hcitoolscan | awk '/▶/||/▷/' | awk '{for(i=2;i<=NF;i++) printf("%s%s",$i,(i==2) ? ";" : (i==NF) ? "\n" : " ");}'
+// 4C:16:A9:94:21:EB;4C-16-A9-94-21-EB
+// 3C:BD:3E:C1:13:F7;Bureau
+// 00:9E:C8:D9:7C:6B;xiaomi wifi speaker
+// 48:A5:E7:5D:AF:EB;SNES Controller
+// 48:A5:E7:5D:41:87;SNES Controller
+
+// #pair
+// sh recalbox-config.sh hiddpair 'SNES controller' 48:A5:E7:5D:AF:EB
+
+// #paired-devices
+// # bluetoothctl paired-devices | awk '{print $2}'
+// 48:A5:E7:5D:AF:EB
+// 48:A5:E7:5D:41:87
+// # bluetoothctl paired-devices
+// Device 48:A5:E7:5D:AF:EB SNES Controller
+// Device 48:A5:E7:5D:41:87 SNES Controller
+
+// #unpair
+// python /recalbox/scripts/bluetooth/test-device remove 48:A5:E7:5D:41:87
+// python /recalbox/scripts/bluetooth/test-device remove 48:A5:E7:5D:AF:EB
+
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
