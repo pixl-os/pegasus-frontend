@@ -53,6 +53,15 @@ FocusScope {
                         myDevicesModel.remove(actionListIndex);
                         //save in recalbox.conf
                         saveDevicesList(myDevicesModel,"pegasus.bt.my.device");
+                        //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
+                        if(myDevices.count !== 0){
+                            if(myDevices.itemAt(actionListIndex)) myDevices.itemAt(actionListIndex).focus = true;
+                            else if(myDevices.itemAt(actionListIndex-1)) myDevices.itemAt(actionListIndex-1).focus = true;
+                        }
+                        else{
+                            if(myDiscoveredDevices.count !== 0) myDiscoveredDevices.itemAt(0).focus = true;
+                            else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
+                        }
                     break;
                     case "Pair":
                         //launch pairing
@@ -69,12 +78,30 @@ FocusScope {
                         myDiscoveredDevicesModel.remove(actionListIndex);
                         //save in recalbox.conf
                         saveDevicesList(myDevicesModel,"pegasus.bt.my.device");
+                        //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
+                        if(myDiscoveredDevices.count !== 0){
+                            if(myDiscoveredDevices.itemAt(actionListIndex)) myDiscoveredDevices.itemAt(actionListIndex).focus = true;
+                            else if(myDiscoveredDevices.itemAt(actionListIndex-1)) myDiscoveredDevices.itemAt(actionListIndex-1).focus = true;
+                        }
+                        else{
+                            if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
+                            else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
+                        }
                     break;
                     case "Unblock":
                         //remove from list
                         myIgnoredDevicesModel.remove(actionListIndex);
                         //save in recalbox.conf
                         saveDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
+                        //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
+                        if(myIgnoredDevices.count !== 0){
+                            if(myIgnoredDevices.itemAt(actionListIndex)) myIgnoredDevices.itemAt(actionListIndex).focus = true;
+                            else if(myIgnoredDevices.itemAt(actionListIndex-1)) myIgnoredDevices.itemAt(actionListIndex-1).focus = true;
+                        }
+                        else{
+                            if(myDiscoveredDevices.count !== 0) myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1).focus = true;
+                            else if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
+                        }
                     break;
 
             }
@@ -93,6 +120,15 @@ FocusScope {
                         myDiscoveredDevicesModel.remove(actionListIndex);
                         //save in recalbox.conf
                         saveDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
+                        //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
+                        if(myDiscoveredDevices.count !== 0){
+                            if(myDiscoveredDevices.itemAt(actionListIndex)) myDiscoveredDevices.itemAt(actionListIndex).focus = true;
+                            else if(myDiscoveredDevices.itemAt(actionListIndex-1)) myDiscoveredDevices.itemAt(actionListIndex-1).focus = true;
+                        }
+                        else{
+                            if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
+                            else if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
+                        }
                     break;
             }
             content.focus = true;
@@ -118,6 +154,7 @@ FocusScope {
             if (list.get(i).name === name &&
                 list.get(i).macaddress === macaddress &&
                 list.get(i).service === service){
+                //console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found existing service " + macaddress + " - Name: " + name + " - Service: " + service);
                 return true;
             }
         }
@@ -140,7 +177,7 @@ FocusScope {
             //we can't set vendor immediately, it will be done by timer
             //add to discovered list
             myDiscoveredDevicesModel.append({icon: icon, vendor: "", name: name, macaddress: macaddress, service: service });
-            console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
+            //console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
         }
     }
 
@@ -148,15 +185,22 @@ FocusScope {
     property var counter: 0
     Timer {
         id: bluetoothTimer
-        interval: 5000 // Run the timer every 5 seconds
+        interval: 1000 // Run the timer every second
         repeat: true
         running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
         triggeredOnStart: true
         onTriggered: {
-                if ((interval/1000)*counter >= 90){ // restart every 90 seconds
-                    console.log("Restart bluetooth scan... after ", (interval/1000)*counter," seconds")
+
+                if ((interval/1000)*counter === 2){ // wait 2 seconds before to scan bluetooth for the first time
+                    //console.log("Start bluetooth scan... at ", (interval/1000)*counter," seconds")
                     btModel.running = false;
-                    btModel.running = true;
+                    btModel.running = (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+                }
+
+                if ((interval/1000)*counter >= 90){ // restart every 90 seconds
+                    //console.log("Restart bluetooth scan... after ", (interval/1000)*counter," seconds")
+                    btModel.running = false;
+                    btModel.running = (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
                     counter = 0;
                 }
                 else counter = counter + 1;
@@ -200,9 +244,11 @@ FocusScope {
     property BluetoothService currentService
     BluetoothDiscoveryModel {
         id: btModel
-        running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+        running: false
         discoveryMode: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? parseInt(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods")) : BluetoothDiscoveryModel.DeviceDiscovery //3 modes possible:  MinimalServiceDiscovery (0) or FullServiceDiscovery (1) or DeviceDiscovery (2)
-        onDiscoveryModeChanged: console.log("Discovery mode: " + discoveryMode)
+        onDiscoveryModeChanged: {
+            //console.log("Bluetooth Discovery mode: " + discoveryMode)
+        }
         onServiceDiscovered: {
             updateDiscoveredDevicesLists(service.deviceName, service.deviceAddress, service.serviceName);
         }
@@ -235,7 +281,9 @@ FocusScope {
             id:btdeviceName
             Component.onCompleted:
             {
-                if(Number(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods")) === BluetoothDiscoveryModel.DeviceDiscovery) updateDiscoveredDevicesLists(deviceName, remoteAddress, "");
+                //console.log("deviceName: ", deviceName);
+                if((Number(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods")) === BluetoothDiscoveryModel.DeviceDiscovery)
+                        && (deviceName !== "")) updateDiscoveredDevicesLists(deviceName, remoteAddress, "");
             }
         }
     }
@@ -476,7 +524,7 @@ FocusScope {
                             confirmDialog.focus = false;
                             confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                     { "title": myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service,
-                                                      "message": qsTr("Are you ready to forget this device ?") + api.tr,
+                                                      "message": qsTr("Are you sure to forget this device ?") + api.tr,
                                                       "symbol": myDevicesModel.get(index).icon,
                                                       "firstchoice": qsTr("Yes") + api.tr,
                                                       "secondchoice": "",
@@ -486,30 +534,29 @@ FocusScope {
                             actionListIndex = index;
                             //to force change of focus
                             confirmDialog.focus = true;
-                            focus = true;
+                            //focus = true;
                         }
 
                         onFocusChanged: container.onFocus(this)
 
 
                         Keys.onPressed: {
-                            //verify if MyDevices is finally empty or not when we are just before to change list
-                            //TO DO
-                        }
-
-                        KeyNavigation.up:{
-                            if (index !== 0) return myDevices.itemAt(index-1);
-                            else return myDevices.itemAt(0);
-                        }
-                        KeyNavigation.down:{
-                                if (index < myDevices.count-1) return myDevices.itemAt(index+1);
+                            //verify if finally other lists are empty or not when we are just before to change list
+                            //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
+                            if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
+                                if (index !== 0) KeyNavigation.up = myDevices.itemAt(index-1);
+                                else KeyNavigation.up = myDevices.itemAt(0);
+                            }
+                            if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
+                                if (index < myDevices.count-1) KeyNavigation.down = myDevices.itemAt(index+1);
                                 else if (myDiscoveredDevices.count !== 0){
-                                    return myDiscoveredDevices.itemAt(0);
+                                    KeyNavigation.down = myDiscoveredDevices.itemAt(0);
                                 }
                                 else if (myIgnoredDevices.count !== 0){
-                                    return myIgnoredDevices.itemAt(0);
+                                    KeyNavigation.down = myIgnoredDevices.itemAt(0);
                                 }
-                                else return myDevices.itemAt(myDevices.count-1);
+                                else KeyNavigation.down = myDevices.itemAt(myDevices.count-1);
+                            }
                         }
 
                         Button {
@@ -623,7 +670,7 @@ FocusScope {
                                                     { "title": myDiscoveredDevicesModel.get(index).vendor + " " + myDiscoveredDevicesModel.get(index).name + " " + myDiscoveredDevicesModel.get(index).service,
                                                       "message": qsTr("Do you want to pair or ignored this device ?") + api.tr,
                                                       "symbol": myDiscoveredDevicesModel.get(index).icon,
-                                                      "firstchoice": qsTr("Yes") + api.tr,
+                                                      "firstchoice": qsTr("Pair") + api.tr,
                                                       "secondchoice": qsTr("Ignored") + api.tr,
                                                       "thirdchoice": qsTr("Cancel") + api.tr});
                             //Save action states for later
@@ -631,27 +678,29 @@ FocusScope {
                             actionListIndex = index;
                             //to force change of focus
                             confirmDialog.focus = true;
-                            focus = true;
+                            //focus = true;
 
                         }
 
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up:{
-                            if (index !== 0) return myDiscoveredDevices.itemAt(index-1);
-                            else if (myDevices.count !== 0){
-                                myDevices.focus = true;
-                                return myDevices.itemAt(myDevices.count-1);
+                        Keys.onPressed: {
+                            //verify if finally other lists are empty or not when we are just before to change list
+                            //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
+                            if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
+                                if (index !== 0) KeyNavigation.up = myDiscoveredDevices.itemAt(index-1);
+                                else if (myDevices.count !== 0){
+                                    KeyNavigation.up = myDevices.itemAt(myDevices.count-1);
+                                }
+                                else KeyNavigation.up = myDiscoveredDevices.itemAt(0);
                             }
-                            else return myDiscoveredDevices.itemAt(0);
+                            if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
+                                if (index < myDiscoveredDevices.count-1) KeyNavigation.down = myDiscoveredDevices.itemAt(index+1);
+                                else if (myIgnoredDevices.count !== 0){
+                                    KeyNavigation.down = myIgnoredDevices.itemAt(0);
+                                }
+                                else KeyNavigation.down = myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);                            }
                         }
-                        KeyNavigation.down:{
-                            console.log("myDiscoveredDevices index: ",index);
-                            if (index < myDiscoveredDevices.count-1) return myDiscoveredDevices.itemAt(index+1);
-                            else if (myIgnoredDevices.count !== 0){
-                                return myIgnoredDevices.itemAt(0);
-                            }
-                            else return myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);
-                        }
+
                         Button {
                             id: pairButton
                             property int fontSize: vpx(22)
@@ -727,7 +776,7 @@ FocusScope {
                             confirmDialog.focus = false;
                             confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                     { "title": myIgnoredDevicesModel.get(index).vendor + " " + myIgnoredDevicesModel.get(index).name + " " + myIgnoredDevicesModel.get(index).service,
-                                                      "message": qsTr("Are you ready to unblock this device ?") + api.tr,
+                                                      "message": qsTr("Are you sure to unblock this device ?") + api.tr,
                                                       "symbol": myIgnoredDevicesModel.get(index).icon,
                                                       "firstchoice": qsTr("Yes") + api.tr,
                                                       "secondchoice": "",
@@ -737,23 +786,26 @@ FocusScope {
                             actionListIndex = index;
                             //to force change of focus
                             confirmDialog.focus = true;
-                            focus = true;
+                            //focus = true;
                         }
 
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up:{
-                            if (index !== 0) return myIgnoredDevices.itemAt(index-1);
-                            else if(myDiscoveredDevices.count !== 0) {
-                                return myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);
+                        Keys.onPressed: {
+                            //verify if finally other lists are empty or not when we are just before to change list
+                            //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
+                            if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
+                                if (index !== 0) KeyNavigation.up = myIgnoredDevices.itemAt(index-1);
+                                else if(myDiscoveredDevices.count !== 0) {
+                                    KeyNavigation.up = myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);
+                                }
+                                else if(myDevices.count !== 0){
+                                    KeyNavigation.up = myDevices.itemAt(myDevices.count-1);
+                                }
+                                else KeyNavigation.up = myIgnoredDevices.itemAt(0);
                             }
-                            else if(myDevices.count !== 0){
-                                return myDevices.itemAt(myDevices.count-1);
-                            }
-                            else return myIgnoredDevices.itemAt(0);
-                        }
-                        KeyNavigation.down:{
-                            if(index < myIgnoredDevices.count-1) return myIgnoredDevices.itemAt(index+1);
-                            else return myIgnoredDevices.itemAt(myIgnoredDevices.count-1)
+                            if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
+                                if(index < myIgnoredDevices.count-1) KeyNavigation.down = myIgnoredDevices.itemAt(index+1);
+                                else KeyNavigation.down = myIgnoredDevices.itemAt(myIgnoredDevices.count-1)                          }
                         }
 
                         Button {
