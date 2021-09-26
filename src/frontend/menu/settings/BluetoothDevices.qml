@@ -221,14 +221,21 @@ FocusScope {
         id: bluetoothTimer
         interval: 1000 // Run the timer every second
         repeat: true
-        running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+        running: true //(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
         triggeredOnStart: true
         onTriggered: {
 
                 if ((interval/1000)*counter === 2){ // wait 2 seconds before to scan bluetooth for the first time
                     //console.log("Start bluetooth scan... at ", (interval/1000)*counter," seconds")
                     btModel.running = false;
-                    btModel.running = (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+                    if(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== ""){
+                        btModel.running = true;
+                    }
+                    else{
+                        console.log("legacy method:",api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hcitoolscan"));
+                        //console.log("legacy method:",api.internal.system.run("ls -l /home"));
+
+                    }
                 }
 
                 if ((interval/1000)*counter >= 90){ // restart every 90 seconds
