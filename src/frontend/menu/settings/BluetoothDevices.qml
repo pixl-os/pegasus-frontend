@@ -55,7 +55,7 @@ FocusScope {
     //loader Wait popup including spinner
     Loader {
         id: waitPopup
-        anchors.fill: paren
+        anchors.fill: parent
         z:10
     }
 
