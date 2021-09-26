@@ -41,6 +41,7 @@
 // #unpair
 // python /recalbox/scripts/bluetooth/test-device remove 48:A5:E7:5D:41:87
 // python /recalbox/scripts/bluetooth/test-device remove 48:A5:E7:5D:AF:EB
+// or bluetoothctl remove 48:A5:E7:5D:41:87
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
