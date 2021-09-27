@@ -47,7 +47,7 @@ Favorites::Favorites(QObject* parent)
 {}
 
 Favorites::Favorites(QString db_path, QObject* parent)
-    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), PROVIDER_FLAG_INTERNAL, parent)
+    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), PROVIDER_FLAG_INTERNAL | PROVIDER_FLAG_HIDE_PROGRESS, parent)
     , m_db_path(std::move(db_path))
 {}
 
@@ -90,12 +90,18 @@ void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
     for (const model::Game* const game : game_list) {
         if (game->isFavorite()) {
             for (const model::GameFile* const file : game->filesConst()) {
-                const QString full_path = ::clean_abs_path(file->fileinfo());
-                const QString written_path = AppSettings::general.portable
-                    ? config_dir.relativeFilePath(full_path)
-                    : full_path;
+                QString written_path;
+                if (!file->fileinfo().exists()) {
+                    written_path = file->path();
+                } else {
+                    const QString full_path = ::clean_abs_path(file->fileinfo());
+                    written_path = AppSettings::general.portable
+                         ? config_dir.relativeFilePath(full_path)
+                         : full_path;
+                }
                 if (Q_LIKELY(!written_path.isEmpty()))
                     m_pending_task << written_path;
+
             }
         }
     }
