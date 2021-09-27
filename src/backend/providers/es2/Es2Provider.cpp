@@ -52,7 +52,7 @@ namespace providers {
 namespace es2 {
 
 Es2Provider::Es2Provider(QObject* parent)
-    : Provider(QLatin1String("es2"), QStringLiteral("EmulationStation"), parent)
+    : Provider(QLatin1String("es2"), QStringLiteral("Gamelist"), parent)
 {}
 
 Provider& Es2Provider::run(SearchContext& sctx)
@@ -88,7 +88,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
             const size_t found_cores = create_collection_for(sysentry, sctx);
             Log::info(display_name(), LOGMSG("System `%1` has %2 emulator/cores")
                 .arg(sysentry.name, QString::number(found_cores)));
-            
+            emit progressStage(sysentry.name);
             // Find games if not Gamelist Only activated
             if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
             {
@@ -107,6 +107,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
     assets_timer.start(); 
     const Metadata metahelper(display_name(), std::move(possible_config_dirs));
     for (const SystemEntry& sysentry : systems) {
+        emit progressStage(sysentry.name);
         metahelper.find_metadata_for(sysentry, sctx);
 
         progress += progress_step;

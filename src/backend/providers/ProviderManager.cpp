@@ -50,6 +50,8 @@ ProviderManager::ProviderManager(QObject* parent)
     for (const auto& provider : AppSettings::providers()) {
         connect(provider.get(), &providers::Provider::progressChanged,
                 this, &ProviderManager::onProviderProgressChanged);
+        connect(provider.get(), &providers::Provider::progressStage,
+                this, &ProviderManager::onProviderProgressStage);
     }
 }
 
@@ -79,7 +81,8 @@ void ProviderManager::run(
                 progress_sections--;
         }
         m_progress_finished = 0.f;
-        m_progress_step = 1.f / std::max<size_t>(progress_sections, 1);
+        m_progress_step = 1.f / (std::max<size_t>(progress_sections, 1) + 3 );//add 3 to manage online download step
+                                                                              // + gamelist processing + theme loading
         m_progress_stage = QString();
 
         for (size_t i = 0; i < providers.size(); i++) {
@@ -100,26 +103,22 @@ void ProviderManager::run(
             if (has_progress)
                 m_progress_finished += m_progress_step;
         }
-        m_progress_finished = 1.f;
-        m_progress_stage = QString();
-        emit progressChanged(m_progress_finished, m_progress_stage);
-
-
+        m_progress_finished += m_progress_step;
+        emit progressChanged(m_progress_finished, "Checking pending downloads...");
         if (sctx.has_pending_downloads()) {
             QElapsedTimer network_timer;
             network_timer.start();
 
             Log::info(LOGMSG("Waiting for online sources..."));
-
             QEventLoop loop;
             connect(&sctx, &providers::SearchContext::downloadCompleted,
                     &loop, [&loop, &sctx]{ if (!sctx.has_pending_downloads()) loop.quit(); });
             loop.exec();
 
-            Log::info(LOGMSG("Waiting for online sources took %1ms").arg(network_timer.elapsed()));
+            Log::info(LOGMSG("Download online sources took %1ms").arg(network_timer.elapsed()));
         }
-
-
+        m_progress_finished += m_progress_step;
+        emit progressChanged(m_progress_finished, "Game lists post-processing...");
         QElapsedTimer finalize_timer;
         finalize_timer.start();
 
@@ -132,6 +131,11 @@ void ProviderManager::run(
         std::swap(games, *m_target_game_list);
 
         Log::info(LOGMSG("Game list post-processing took %1ms").arg(finalize_timer.elapsed()));
+        m_progress_finished = 1.f;
+        emit progressChanged(m_progress_finished, "Loading theme now...");
+        //sleep 1s to see animation ;-)
+        QObject().thread()->sleep(1);
+
         emit finished();
     });
 }
@@ -142,9 +146,16 @@ void ProviderManager::onProviderProgressChanged(float percent)
         return;
 
     const float safe_percent = qBound(0.f, percent, 1.f);
-    emit progressChanged(m_progress_finished + m_progress_step * safe_percent, m_progress_stage);
+    if(m_provider_progress_stage.isEmpty()){
+        emit progressChanged(m_progress_finished + m_progress_step * safe_percent, m_progress_stage);
+    }
+    else emit progressChanged(m_progress_finished + m_progress_step * safe_percent, m_progress_stage + " : " + m_provider_progress_stage);
 }
 
+void ProviderManager::onProviderProgressStage(QString stage)
+{
+    m_provider_progress_stage = stage;
+}
 
 void ProviderManager::onGameFavoriteChanged(const QVector<model::Game*>& all_games) const
 {

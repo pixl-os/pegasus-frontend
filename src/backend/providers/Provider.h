@@ -66,6 +66,7 @@ public:
 
 signals:
     void progressChanged(float);
+    void progressStage(QString);
 
 private:
     const QLatin1String m_codename;
