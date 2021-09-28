@@ -120,7 +120,7 @@ FocusScope {
                     // set focus only on first item
                     focus: false
                     property string parameterName :"controllers.bluetooth.scan.methods"
-                    label: qsTr("Scanning Methods") + api.tr
+                    label: qsTr("Scanning Method") + api.tr
                     note: qsTr("Select Legacy or any new ones") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
@@ -133,12 +133,51 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optBluetoothERTM
+                    KeyNavigation.down: optBluetoothPairMethods
                     visible: optBluetoothControllers.checked
                 }
-                SectionTitle {
-                    text: qsTr("Sony controllers") + api.tr
-                    first: true
+                MultivalueOption {
+                    id: optBluetoothPairMethods
+                    //controllers.bluetooth.pair.methods
+                    // set focus only on first item
+                    focus: false
+                    property string parameterName :"controllers.bluetooth.pair.methods"
+                    label: qsTr("Pairing Device Method") + api.tr
+                    note: qsTr("Select legacy or simple one") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optBluetoothPairMethods;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optBluetoothUnpairMethods
+                    visible: optBluetoothControllers.checked
+                }
+                MultivalueOption {
+                    id: optBluetoothUnpairMethods
+                    //controllers.bluetooth.unpair.methods
+                    // set focus only on first item
+                    focus: false
+                    property string parameterName :"controllers.bluetooth.unpair.methods"
+                    label: qsTr("Forget Device Method") + api.tr
+                    note: qsTr("Select Legacy or simple one") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optBluetoothUnpairMethods;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optBluetoothERTM
                     visible: optBluetoothControllers.checked
                 }
                 ToggleOption {
