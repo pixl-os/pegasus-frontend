@@ -81,9 +81,29 @@ FocusScope {
             switch (actionState) {
                     case "Forget":
                         //Bluetooth unPair device
-                        //TO DO
-
-                        //for test purpose for the moment
+						//stop scanning during Forgeting ;-)
+						bluetoothTimer.running = false;
+						btModel.running = false;
+						var name = myDevicesModel.get(actionListIndex).name;
+						var macaddress = myDevicesModel.get(actionListIndex).macaddress;
+						var result = "";
+						//launch unpairing
+						if(api.internal.recalbox.getStringParameter("controllers.bluetooth.unpair.methods") === ""){
+							//legacy method
+							console.log("command:", "/recalbox/scripts/bluetooth/test-device remove " + macaddress);
+							result = api.internal.system.run("/recalbox/scripts/bluetooth/test-device remove " + macaddress);
+						}
+						else{
+							//simpler one
+							console.log("command:", "bluetoothctl remove "+ macaddress);
+							result = api.internal.system.run("bluetoothctl remove "+ macaddress);
+						}
+						console.log("result:",result);
+						//relaunch scanning
+						bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+						//ADD Check	of result
+						//TO DO
+						//for test purpose for the moment
                         //remove from list
                         myDevicesModel.remove(actionListIndex);
                         //save in recalbox.conf
@@ -99,9 +119,28 @@ FocusScope {
                         }
                     break;
                     case "Pair":
-                        //launch pairing
-                        //TO DO
-
+						//stop scanning during pairing
+						bluetoothTimer.running = false;
+						btModel.running = false;
+						var name = myDiscoveredDevicesModel.get(actionListIndex).name;
+						var macaddress = myDiscoveredDevicesModel.get(actionListIndex).macaddress;
+						var result = "";
+						//launch pairing
+						if(api.internal.recalbox.getStringParameter("controllers.bluetooth.pair.methods") === ""){
+							//legacy method
+							console.log("command:", "sh /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
+							result = api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
+						}
+						else{
+							//simpler one
+							console.log("command:", "/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
+							result = api.internal.system.run("/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
+						}
+						console.log("result:",result);
+						//relaunch scanning
+						bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+						//ADD Check	of result
+						//TO DO
                         //for test purpose for the moment
                         //Add to My Devices list
                         myDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
