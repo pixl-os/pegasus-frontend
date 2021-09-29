@@ -295,15 +295,6 @@ Window {
         function onClose() { content.focus = true; }
     }
 
-    Loader {
-        id: confirmDialog
-        anchors.fill: parent
-    }
-    Connections {
-        target: confirmDialog.item
-        function onCancel() { content.focus = true; }
-    }
-
     Connections {
         target: api
 		
