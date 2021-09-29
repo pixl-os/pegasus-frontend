@@ -138,7 +138,6 @@ FocusScope {
                 }
             }
         }
-
         // button row
         Row {
             width: parent.width
@@ -147,7 +146,7 @@ FocusScope {
             Rectangle {
                 id: okButton
 
-                width: (secondchoice !== "") ? parent.width * 0.33 : parent.width * 0.5
+                width: (secondchoice !== "") ? parent.width * 0.33 : ((thirdchoice !== "") ? parent.width * 0.5 : parent.width)
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
 //                radius: vpx(8)
@@ -155,10 +154,29 @@ FocusScope {
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr
+                        messageText.text = qsTr("Under progress...") + api.tr
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //let 50 ms to update interface
+                        acceptTimer.running = true;
+                    }
+                }
+                //to let DialogBox to update message after accept ;-)
+                Timer{
+                    id: acceptTimer
+                    interval: 50 // launch after 50 ms
+                    repeat: false
+                    running: false
+                    triggeredOnStart: false
+                    onTriggered: {
                         root.accept();
                     }
                 }
-
                 Text {
                     id: okButtonText
                     anchors.centerIn: parent
@@ -176,6 +194,39 @@ FocusScope {
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: root.accept()
+                }
+                //Spinner Loader to wait after accept (if needed and if UI blocked)
+                Loader {
+                    id: spinnerloader
+                    anchors {
+                        right:  parent.right;
+                        rightMargin: parent.width * 0.02 + vpx(30/2)
+                        verticalCenter: parent.verticalCenter
+                    }
+                    active: false
+                    sourceComponent: spinner
+                }
+
+                Component {
+                    id: spinner
+                    Rectangle{
+                        Image {
+                            id: imageSpinner
+                            source: "../assets/loading.png"
+                            width: vpx(30)
+                            height: vpx(30)
+                            asynchronous: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            sourceSize { width: vpx(50); height: vpx(50) }
+                            RotationAnimator on rotation {
+                                loops: Animator.Infinite;
+                                from: 0;
+                                to: 360;
+                                duration: 3000
+                            }
+                        }
+                    }
                 }
             }
 
@@ -222,7 +273,7 @@ FocusScope {
 
                 focus: true
 
-                width: (secondchoice !== "") ? parent.width * 0.34 : parent.width * 0.5
+                width: (secondchoice !== "") ? parent.width * 0.34 : ((thirdchoice !== "") ? parent.width * 0.5 : 0)
                 height: root.textSize * 2.25
                 color: (focus || cancelMouseArea.containsMouse) ? "darkRed" : themeColor.main //"#222"
 //                radius: vpx(8)
