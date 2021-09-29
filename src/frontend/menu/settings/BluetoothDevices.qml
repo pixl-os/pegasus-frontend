@@ -53,16 +53,35 @@ import QtBluetooth 5.2
 FocusScope {
     id: root
 
-    //loader Wait popup including spinner
-    Loader {
-        id: waitPopup
-        anchors.fill: parent
-        z:10
-    }
+//    //to load waitDialog
+//    Timer{
+//        id: waitDialogTimer
+//        interval: 200 // launch after 200 ms
+//        repeat: false
+//        running: false
+//        triggeredOnStart: false
+//        onTriggered: {
+//            //add wait dialogBox
+//            waitDialog.focus = false;
+//            waitDialog.setSource("../../dialogs/GenericWaitDialog.qml",
+//                    { "title": qsTr("Pairing..."), "message": qsTr("Please wait...") });
+//            waitDialog.focus = true;
+//        }
+//    }
 
-    Connections {
-        target: waitPopup.item
-    }
+//    //loader Wait Dialog including spinner
+//    Loader {
+//        id: waitDialog
+//        anchors.fill: parent
+//        z:20
+//    }
+
+//    Connections {
+//        target: waitDialog.item
+//        function onClose() {
+//            content.focus = true;
+//        }
+//    }
 
     //to be able to follow action done on Bluetooth Devices Lists
     property var actionState : ""
@@ -129,12 +148,16 @@ FocusScope {
 						if(api.internal.recalbox.getStringParameter("controllers.bluetooth.pair.methods") === ""){
 							//legacy method
 							console.log("command:", "sh /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
-							result = api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
+                            result = api.internal.system.runBoolResult("/recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
 						}
 						else{
-							//simpler one
+                            //do remove to avoid bad suprise
+                            console.log("command:", "bluetoothctl remove "+ macaddress);
+                            result = api.internal.system.run("bluetoothctl remove "+ macaddress);
+                            console.log("result:",result);
+                            //simpler one
 							console.log("command:", "/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
-							result = api.internal.system.run("/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
+                            result = api.internal.system.runBoolResult("/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
 						}
 						console.log("result:",result);
 						//relaunch scanning
@@ -677,7 +700,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Discovered devices") + api.tr
                     first: false
-                    //Spinner Loader for all views loading... (principally for main menu for the moment)
+                    //Spinner Loader for discovered devices section
                     Loader {
                         id: spinnerloader
                         anchors.left: parent.right
