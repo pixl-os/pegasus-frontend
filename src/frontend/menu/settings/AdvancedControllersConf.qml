@@ -195,9 +195,45 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.ertm",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optHideUnknownVendor
+                    visible: optBluetoothControllers.checked
+                }
+                ToggleOption {
+                    id: optHideUnknownVendor
+                    //controllers.bluetooth.hide.unknown.vendor=1
+                    // set focus only on first item
+                    focus: false
+
+                    label: qsTr("Hide Unknown Vendor") + api.tr
+                    note: qsTr("Hide device identified as Unknown Vendor") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("controllers.bluetooth.hide.unknown.vendor",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optHideNoName
+                    visible: optBluetoothControllers.checked
+                }
+                ToggleOption {
+                    id: optHideNoName
+                    //controllers.bluetooth.hide.no.name=1
+                    // set focus only on first item
+                    focus: false
+
+                    label: qsTr("Hide No Name") + api.tr
+                    note: qsTr("Hide device without name") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.no.name")
+                    onCheckedChanged: {
+                        focus = true;
+                        api.internal.recalbox.setBoolParameter("controllers.bluetooth.hide.no.name",checked);
+                    }                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPs3Controllers
                     visible: optBluetoothControllers.checked
                 }
+
                 SectionTitle {
                     text: qsTr("Sony controllers") + api.tr
                     first: true
