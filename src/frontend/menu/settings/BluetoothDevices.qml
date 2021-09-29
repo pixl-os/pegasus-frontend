@@ -763,7 +763,7 @@ FocusScope {
                         label: {
                             return (macaddress + " - " + vendor + " " + name + " " + service)
                         }
-
+                        visible: (api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor") && (vendor === "Unknown vendor")) ? false : true
                         // set focus only on first item
                         focus: index == 0 ? true : false
 
