@@ -284,11 +284,13 @@ FocusScope {
         if (!found){
             //set icon from service name
             let icon = getIcon(name,service);
-            //set vendor from API & mac address
-            //we can't set vendor immediately, it will be done by timer
-            //add to discovered list
-            myDiscoveredDevicesModel.append({icon: icon, vendor: "", name: name, macaddress: macaddress, service: service });
-            //console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
+            if(macaddress !== name.replace(/-/g, ':') || !api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.no.name")){
+                //add to discovered list
+                //set vendor later from API & mac address
+                //we can't set vendor immediately, it will be done by timer
+                myDiscoveredDevicesModel.append({icon: icon, vendor: "", name: name, macaddress: macaddress, service: service });
+                //console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
+            }
         }
     }
 
@@ -340,7 +342,24 @@ FocusScope {
                     //search vendor from macadress
                     vendor = httpGet("https://api.macvendors.com/" + list.get(i).macaddress);
                     //console.log("return of https://api.macvendors.com for ",list.get(i).macaddress," : ", vendor);
-                    if(vendor.includes("Not Found")) list.get(i).vendor = "Unknown vendor";
+                    if(vendor.includes("Not Found")) {
+                        if(!api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor")){
+                            list.get(i).vendor = "Unknown vendor";
+                        }
+                        else{
+                            //Remove from Discovered devices list
+                            myDiscoveredDevicesModel.remove(i);
+                            //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
+                            if(myDiscoveredDevices.count !== 0){
+                                if(myDiscoveredDevices.itemAt(i)) myDiscoveredDevices.itemAt(i).focus = true;
+                                else if(myDiscoveredDevices.itemAt(i-1)) myDiscoveredDevices.itemAt(i-1).focus = true;
+                            }
+                            else{
+                                if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
+                                else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
+                            }
+                        }
+                    }
                     else if(vendor.includes("errors")) list.get(i).vendor = "";
                     else list.get(i).vendor = vendor;
                 }
@@ -777,7 +796,6 @@ FocusScope {
                         label: {
                             return (macaddress + " - " + vendor + " " + name + " " + service)
                         }
-                        visible: (api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor") && (vendor === "Unknown vendor")) ? false : true
                         // set focus only on first item
                         focus: index == 0 ? true : false
 
