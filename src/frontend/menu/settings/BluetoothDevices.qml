@@ -29,6 +29,11 @@
 
 // #pair
 // sh recalbox-config.sh hiddpair 'SNES controller' 48:A5:E7:5D:AF:EB
+// bluetoothctl info AC:FD:93:C9:9D:44 | grep -i 'paired' | awk '{print $2}'
+
+// #icon (type of device)
+// bluetoothctl info AC:FD:93:C9:9D:44 | grep -i 'icon' | awk '{print $2}'
+// input-gaming
 
 // #paired-devices
 // # bluetoothctl paired-devices | awk '{print $2}'
@@ -42,6 +47,11 @@
 // python /recalbox/scripts/bluetooth/test-device remove 48:A5:E7:5D:41:87
 // python /recalbox/scripts/bluetooth/test-device remove 48:A5:E7:5D:AF:EB
 // or bluetoothctl remove 48:A5:E7:5D:41:87
+
+//#connected ?
+// Switch Online SNES Controller //bluetoothctl info 48:A5:E7:5D:41:87 | grep -i 'connected' | awk '{print $2}'
+// PS4 Controller //bluetoothctl info AC:FD:93:C9:9D:44 | grep -i 'connected' | awk '{print $2}'
+
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
