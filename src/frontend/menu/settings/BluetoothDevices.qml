@@ -30,7 +30,7 @@
 // #pair
 // sh recalbox-config.sh hiddpair 'SNES controller' 48:A5:E7:5D:AF:EB
 // bluetoothctl info AC:FD:93:C9:9D:44 | grep -i 'paired' | awk '{print $2}'
-
+// yes
 // #icon (type of device)
 // bluetoothctl info AC:FD:93:C9:9D:44 | grep -i 'icon' | awk '{print $2}'
 // input-gaming
@@ -51,6 +51,7 @@
 //#connected ?
 // Switch Online SNES Controller //bluetoothctl info 48:A5:E7:5D:41:87 | grep -i 'connected' | awk '{print $2}'
 // PS4 Controller //bluetoothctl info AC:FD:93:C9:9D:44 | grep -i 'connected' | awk '{print $2}'
+//yes
 
 
 import "common"
@@ -172,19 +173,22 @@ FocusScope {
 						console.log("result:",result);
 						//relaunch scanning
 						bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
-						//ADD Check	of result
-						//TO DO
-                        //for test purpose for the moment
-                        //Add to My Devices list
-                        myDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
-                                     vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
-                                     name: myDiscoveredDevicesModel.get(actionListIndex).name,
-                                     macaddress: myDiscoveredDevicesModel.get(actionListIndex).macaddress,
-                                     service: myDiscoveredDevicesModel.get(actionListIndex).service});
-                        //Remove from Discovered devices list
-                        myDiscoveredDevicesModel.remove(actionListIndex);
-                        //save in recalbox.conf
-                        saveDevicesList(myDevicesModel,"pegasus.bt.my.device");
+                        //Check	if really paired
+                        console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'paired' | awk '{print $2}'");
+                        result = api.internal.system.run("bluetoothctl info " + macaddress + " | grep -i 'paired' | awk '{print $2}'");
+                        console.log("result:",result);
+                        if(result.toLowerCase().includes("yes")){
+                            //Add to My Devices list
+                            myDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
+                                         vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
+                                         name: myDiscoveredDevicesModel.get(actionListIndex).name,
+                                         macaddress: myDiscoveredDevicesModel.get(actionListIndex).macaddress,
+                                         service: myDiscoveredDevicesModel.get(actionListIndex).service});
+                            //Remove from Discovered devices list
+                            myDiscoveredDevicesModel.remove(actionListIndex);
+                            //save in recalbox.conf
+                            saveDevicesList(myDevicesModel,"pegasus.bt.my.device");
+                        }
                         //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
                         if(myDiscoveredDevices.count !== 0){
                             if(myDiscoveredDevices.itemAt(actionListIndex)) myDiscoveredDevices.itemAt(actionListIndex).focus = true;
