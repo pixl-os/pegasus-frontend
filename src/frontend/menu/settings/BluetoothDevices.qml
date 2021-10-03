@@ -462,6 +462,27 @@ FocusScope {
 
     }
 
+    //to change icon size for audio ones especially and keep standard one for others.
+    function getIconRatio(icon)
+    {
+        var ratio;
+        switch(icon){
+        case " \uf1e2 ":
+            ratio = 2;
+            break;
+        case " \uf1e1 ":
+            ratio = 2;
+            break;
+        case " \uf1b0 ":
+            ratio = 2;
+            break;
+        default:
+            ratio = 3;
+            break;
+        }
+        return ratio;
+    }
+
     //little function to faciliate check of value in 2 name and service from a keyword
     function isKeywordFound(name,service,keyword)
     {
@@ -642,11 +663,11 @@ FocusScope {
                             anchors.right: parent.left
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
-                            font.pixelSize: (parent.fontSize)*3
+                            font.pixelSize: (parent.fontSize)*getIconRatio(icon)
                             font.family: globalFonts.awesome
                             height: parent.height
                             text : icon
-                            visible: parent.focus
+                            visible: true  //parent.focus
                         }
 
                         label: {
@@ -786,11 +807,11 @@ FocusScope {
                             anchors.right: parent.left
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
-                            font.pixelSize: (parent.fontSize)*3
+                            font.pixelSize: (parent.fontSize)*getIconRatio(icon)
                             font.family: globalFonts.awesome
                             height: parent.height
                             text : icon
-                            visible: parent.focus
+                            visible: true  //parent.focus
                         }
 
                         label: {
@@ -893,11 +914,11 @@ FocusScope {
                             anchors.right: parent.left
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
-                            font.pixelSize: (parent.fontSize)*3
+                            font.pixelSize: (parent.fontSize)*getIconRatio(icon)
                             font.family: globalFonts.awesome
                             height: parent.height
                             text : icon
-                            visible: parent.focus
+                            visible: true  //parent.focus
                         }
 
                         label: {
