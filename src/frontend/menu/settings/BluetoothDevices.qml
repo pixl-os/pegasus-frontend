@@ -326,6 +326,36 @@ FocusScope {
                 else counter = counter + 1;
         }
     }
+    //timer to udpate status of MyDevices
+    Timer {
+        id: connectedTimer
+        interval: 1000 // every seconds
+        repeat: true
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            var list = myDevicesModel;
+            var macaddress = "";
+            var result = "";
+            for(var i = 0;i < list.count; i++){
+                macaddress = list.get(i).macaddress;
+                //console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                result = api.internal.system.run("bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                //console.log("result:",result);
+                //check if device is connected
+                if(result.toLowerCase().includes("yes")){
+                    //update "connected" status
+                    myDevices.itemAt(i).connected = true;
+                }
+                else
+                {
+                    //update "connected" status
+                    myDevices.itemAt(i).connected = false;
+                }
+            }
+        }
+    }
+
 
     //timer to udpate the vendor value in Discovered Devices
     Timer {
@@ -656,7 +686,7 @@ FocusScope {
                     id: myDevices
                     model: myDevicesModel //for test purpose
                     SimpleButton {
-
+                        property var connected: false;
                         Text {
                             id: deviceIcon
 
@@ -668,6 +698,19 @@ FocusScope {
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
+                        }
+                        Text {
+                            id: deviceStatus
+
+                            anchors.right: deviceIcon.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.rightMargin: vpx(20)
+                            color: connected ? "green" : "gray" //themeColor.textLabel
+                            font.pixelSize: (parent.fontSize)*2
+                            font.family: globalFonts.ion
+                            height: parent.height
+                            text : "\uf1f9"
+                            visible: connected
                         }
 
                         label: {
