@@ -189,6 +189,7 @@ FocusScope {
                             //save in recalbox.conf
                             saveDevicesList(myDevicesModel,"pegasus.bt.my.device");
                         }
+                        else myDiscoveredDevices.itemAt(actionListIndex).isPairingIssue = true;
                         //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
                         if(myDiscoveredDevices.count !== 0){
                             if(myDiscoveredDevices.itemAt(actionListIndex)) myDiscoveredDevices.itemAt(actionListIndex).focus = true;
@@ -691,7 +692,7 @@ FocusScope {
                         Text {
                             id: deviceIcon
 
-                            anchors.right: connected ? deviceStatus.left : parent.left
+                            anchors.right: deviceStatus.left
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
@@ -712,8 +713,8 @@ FocusScope {
                             font.pixelSize: (parent.fontSize)*2
                             font.family: globalFonts.ion
                             height: parent.height
-                            text : "\uf1f9"
-                            visible: connected
+                            text : connected ? "\uf1f9" : "\uf22a"
+                            visible: true
                         }
 
                         label: {
@@ -846,11 +847,11 @@ FocusScope {
                     id: myDiscoveredDevices
                     model: myDiscoveredDevicesModel //for test purpose
                     SimpleButton {
-
+                        property var isPairingIssue: false
                         Text {
                             id: deviceDiscoveredIcon
 
-                            anchors.right: parent.left
+                            anchors.right: isPairingIssue ? deviceDiscoveredStatus.left : parent.left
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
@@ -858,6 +859,21 @@ FocusScope {
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
+                        }
+                        Text {
+                            id: deviceDiscoveredStatus
+
+                            anchors.right: parent.left
+                            anchors.rightMargin: vpx(10)
+                            anchors.top: parent.top
+                            anchors.topMargin: vpx(5)
+
+                            color: "red"
+                            font.pixelSize: (parent.fontSize)*2
+                            font.family: globalFonts.ion
+                            height: parent.height
+                            text : "\uf22a"
+                            visible: isPairingIssue
                         }
 
                         label: {
