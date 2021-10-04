@@ -53,6 +53,36 @@
 // PS4 Controller //bluetoothctl info AC:FD:93:C9:9D:44 | grep -i 'connected' | awk '{print $2}'
 //yes
 
+//#battery info 
+//# ls '/sys/class/power_supply/' | grep -i 'AC:FD:93:C9:9D:44'
+//sony_controller_battery_ac:fd:93:c9:9d:44
+//for PS4
+//cat '/sys/class/power_supply/sony_controller_battery_ac:fd:93:c9:9d:44/capacity'
+//60
+//for nintendo HID
+//cat '/sys/class/power_supply/nintendo_switch_controller_battery_0005:057E:2009.000D/capacity_level'
+//full
+//cat '/sys/class/power_supply/nintendo_switch_controller_battery_0005:057E:2007.000C/capacity_level'
+//
+//or to know the good file to check
+//ls '/sys/class/power_supply/sony_controller_battery_ac:fd:93:c9:9d:44/' | grep -i 'capacity'
+//capacity
+//ls '/sys/class/power_supply/nintendo_switch_controller_battery_0005:057E:2009.000D/' | grep -i 'capacity'
+//capacity_level
+//ls '/sys/class/power_supply/nintendo_switch_controller_battery_0005:057E:2007.000C/' | grep -i 'capacity'
+//capacity_level
+//to get modalias reference to find battery for nintendo HID
+// # bluetoothctl info 98:B6:EB:FD:33:AB |grep -i 'modalias'  | awk -v FS="(v|p)" '{print $2}'
+// 057E
+// # bluetoothctl info 98:B6:EB:FD:33:AB |grep -i 'modalias'  | awk -v FS="(p|d)" '{print $3}'
+// 2009
+//5 level known from linux hid-nintendo:
+//	[POWER_SUPPLY_CAPACITY_LEVEL_UNKNOWN]	= "Unknown",
+//	[POWER_SUPPLY_CAPACITY_LEVEL_CRITICAL]	= "Critical",
+//	[POWER_SUPPLY_CAPACITY_LEVEL_LOW]	= "Low",
+//	[POWER_SUPPLY_CAPACITY_LEVEL_NORMAL]	= "Normal",
+//	[POWER_SUPPLY_CAPACITY_LEVEL_HIGH]	= "High",
+//	[POWER_SUPPLY_CAPACITY_LEVEL_FULL]	= "Full",
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
