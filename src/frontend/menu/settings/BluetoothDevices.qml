@@ -554,19 +554,19 @@ FocusScope {
 		batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i " + macaddress);
 		if(batteryName === "")
 		{//second method: for nintendo ones for exemple using hdev
-	     var firstPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}'")
-		 var secondPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}'")
-		 batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'");
+             var firstPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}'")
+             var secondPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}'")
+             batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'");
 		}
 		if(batteryName !== "")
 		{
 			//search method to know battery capacity
-			var capacityName = api.internal.system.run("cat '/sys/class/power_supply/" + batteryName + "/'" + "| grep -i 'capacity'");
+            var capacityName = api.internal.system.run("ls '/sys/class/power_supply/" + batteryName + "/'" + "| grep -i 'capacity' | head -n 1");
 			if(capacityName !== ""){
 				result = api.internal.system.run("cat '/sys/class/power_supply/" + batteryName + "/" + capacityName);
 				console.log("Battery result:",result);
 				//check if it's text or Number
-				if(isNaN(result){
+                if(isNaN(result)){
 					switch(result.toLowerCase()){
 						case "critical":
 							return "\uf1b5"; //font awesome
@@ -597,12 +597,11 @@ FocusScope {
 					if (resultNumber <= 95) return "\uf1ba"; //font awesome as "high"
 					if (resultNumber >= 99) return "\uf1bc"; //font awesome as "full"
 					else return "\uf1be"; //font awesome as "unknown"
-					}					
 				}
 			}
 			else return ""; //no battery well detected
 		}
-		else  return ""; //no battery well detected
+        else return ""; //no battery well detected
     }
 
     //to change icon size for audio ones especially and keep standard one for others.
