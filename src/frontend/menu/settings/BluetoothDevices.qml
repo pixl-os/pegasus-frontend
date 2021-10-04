@@ -121,12 +121,14 @@ FocusScope {
 						if(api.internal.recalbox.getStringParameter("controllers.bluetooth.unpair.methods") === ""){
 							//legacy method
 							console.log("command:", "/recalbox/scripts/bluetooth/test-device remove " + macaddress);
-							result = api.internal.system.run("/recalbox/scripts/bluetooth/test-device remove " + macaddress);
+                            //add timeout of 5s if needed
+                            result = api.internal.system.run("timeout 5 /recalbox/scripts/bluetooth/test-device remove " + macaddress);
 						}
 						else{
 							//simpler one
 							console.log("command:", "bluetoothctl remove "+ macaddress);
-							result = api.internal.system.run("bluetoothctl remove "+ macaddress);
+                            //add timeout of 5s if needed
+                            result = api.internal.system.run("timeout 5 bluetoothctl remove "+ macaddress);
 						}
 						console.log("result:",result);
 						//relaunch scanning
@@ -149,33 +151,36 @@ FocusScope {
                         }
                     break;
                     case "Pair":
-						//stop scanning during pairing
+                        //stop scanning/checking during pairing
 						bluetoothTimer.running = false;
-						btModel.running = false;
-						var name = myDiscoveredDevicesModel.get(actionListIndex).name;
+                        connectedTimer.running = false
+                        btModel.running = false;
+                        var name = myDiscoveredDevicesModel.get(actionListIndex).name;
 						var macaddress = myDiscoveredDevicesModel.get(actionListIndex).macaddress;
 						var result = "";
 						//launch pairing
 						if(api.internal.recalbox.getStringParameter("controllers.bluetooth.pair.methods") === ""){
 							//legacy method
-							console.log("command:", "sh /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
-                            result = api.internal.system.runBoolResult("/recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
+                            console.log("command:", "/recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
+                            //timeout of 30s if needed
+                            result = api.internal.system.runBoolResult("timeout 30 /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
 						}
 						else{
                             //do remove to avoid bad suprise
                             console.log("command:", "bluetoothctl remove "+ macaddress);
-                            result = api.internal.system.run("bluetoothctl remove "+ macaddress);
+                            //timeout of 5s if needed
+                            result = api.internal.system.run("timeout 5 bluetoothctl remove "+ macaddress);
                             console.log("result:",result);
                             //simpler one
 							console.log("command:", "/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
-                            result = api.internal.system.runBoolResult("/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
+                            //timeout of 30s if needed
+                            result = api.internal.system.runBoolResult("timeout 30 /recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
 						}
 						console.log("result:",result);
-						//relaunch scanning
-						bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
                         //Check	if really paired
                         console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'paired' | awk '{print $2}'");
-                        result = api.internal.system.run("bluetoothctl info " + macaddress + " | grep -i 'paired' | awk '{print $2}'");
+                        //timeout of 2s if needed
+                        result = api.internal.system.run("timeout 2 bluetoothctl info " + macaddress + " | grep -i 'paired' | awk '{print $2}'");
                         console.log("result:",result);
                         if(result.toLowerCase().includes("yes")){
                             //Add to My Devices list
@@ -199,6 +204,9 @@ FocusScope {
                             if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
                             else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
                         }
+                        //relaunch scanning
+                        bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+                        connectedTimer.running = true
                     break;
                     case "Unblock":
                         //remove from list
@@ -312,9 +320,9 @@ FocusScope {
                         btModel.running = true;
                     }
                     else{
-                        console.log("legacy method:",api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hcitoolscan"));
-                        //console.log("legacy method:",api.internal.system.run("ls -l /home"));
-
+                        //TO DO
+                        //with release version of recalbox
+                        //console.log("legacy method:",api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hcitoolscan"));
                     }
                 }
 
@@ -330,7 +338,7 @@ FocusScope {
     //timer to udpate status of MyDevices
     Timer {
         id: connectedTimer
-        interval: 1000 // every seconds
+        interval: 1000 // every 2 seconds
         repeat: true
         running: true
         triggeredOnStart: false
@@ -341,8 +349,14 @@ FocusScope {
             for(var i = 0;i < list.count; i++){
                 macaddress = list.get(i).macaddress;
                 //console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
-                //result = "yes"; //for test purpose
-                result = api.internal.system.run("bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                if (hostname.toLowerCase().includes("recalbox")||hostname.toLowerCase().includes("pixl")){
+                    //timeout of 1s if needed (can't go under 1s else issue with timeout command on buildroot
+                    result = api.internal.system.run("timeout 1 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                }
+                else{
+                    //timeout of 50 ms to go quicker in QT creator debug
+                    result = api.internal.system.run("timeout 0.05 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                }
                 //console.log("result:",result);
                 //check if device is connected
                 if(result.toLowerCase().includes("yes")){
