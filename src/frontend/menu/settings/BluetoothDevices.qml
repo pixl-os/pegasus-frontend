@@ -94,36 +94,6 @@ import QtBluetooth 5.2
 FocusScope {
     id: root
 
-//    //to load waitDialog
-//    Timer{
-//        id: waitDialogTimer
-//        interval: 200 // launch after 200 ms
-//        repeat: false
-//        running: false
-//        triggeredOnStart: false
-//        onTriggered: {
-//            //add wait dialogBox
-//            waitDialog.focus = false;
-//            waitDialog.setSource("../../dialogs/GenericWaitDialog.qml",
-//                    { "title": qsTr("Pairing..."), "message": qsTr("Please wait...") });
-//            waitDialog.focus = true;
-//        }
-//    }
-
-//    //loader Wait Dialog including spinner
-//    Loader {
-//        id: waitDialog
-//        anchors.fill: parent
-//        z:20
-//    }
-
-//    Connections {
-//        target: waitDialog.item
-//        function onClose() {
-//            content.focus = true;
-//        }
-//    }
-
     //to be able to follow action done on Bluetooth Devices Lists
     property var actionState : ""
     property var actionListIndex : 0
@@ -290,8 +260,7 @@ FocusScope {
     }
 
     //function to get text content of html page
-    function httpGet(theUrl)
-    {
+    function httpGet(theUrl){
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
         xmlHttp.send( null );
@@ -365,7 +334,38 @@ FocusScope {
                 else counter = counter + 1;
         }
     }
-    //timer to udpate status of MyDevices
+
+    //timer to update status of battery in "My Devices"
+    Timer {
+        id: updateBatteryStatusTimer
+        interval: 60000 // every 60 seconds
+        repeat: true
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            var list = myDevicesModel;
+            var macaddress = "";
+            var result = "";
+			//check if list of bettery exists
+			//TO DO
+			//Get a list for later else stop here.
+            for(var i = 0;i < list.count; i++){
+				//if myDevices.itemAt(i).connected = true;
+                macaddress = list.get(i).macaddress;
+                //console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                if (hostname.toLowerCase().includes("recalbox")||hostname.toLowerCase().includes("pixl")){
+                    //timeout of 1s if needed (can't go under 1s else issue with timeout command on buildroot
+                    //result = api.internal.system.run("timeout 1 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                }
+                else{
+                    //timeout of 50 ms to go quicker in QT creator debug
+                    //result = api.internal.system.run("timeout 0.05 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                }
+            }
+        }
+    }
+
+    //timer to update status in  "My Devices"
     Timer {
         id: connectedTimer
         interval: 1000 // every 2 seconds
@@ -401,7 +401,6 @@ FocusScope {
             }
         }
     }
-
 
     //timer to udpate the vendor value in Discovered Devices
     Timer {
@@ -538,9 +537,76 @@ FocusScope {
 
     }
 
+    //little function to faciliate check of value in 2 name and service from a keyword
+    function isKeywordFound(name,service,keyword){
+        if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
+            return true;
+        }
+        else return false;
+    }
+
+    //function to dynamically set icon "character" from name and/or service
+    function getBatteryStatus(macaddress){
+		var result;
+		var batteryName;
+		//check if any battery exists for the existing macaddress
+		//first method
+		batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i " + macaddress);
+		if(batteryName === "")
+		{//second method: for nintendo ones for exemple using hdev
+	     var firstPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}'")
+		 var secondPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}'")
+		 batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'");
+		}
+		if(batteryName !== "")
+		{
+			//search method to know battery capacity
+			var capacityName = api.internal.system.run("cat '/sys/class/power_supply/" + batteryName + "/'" + "| grep -i 'capacity'");
+			if(capacityName !== ""){
+				result = api.internal.system.run("cat '/sys/class/power_supply/" + batteryName + "/" + capacityName);
+				console.log("Battery result:",result);
+				//check if it's text or Number
+				if(isNaN(result){
+					switch(result.toLowerCase()){
+						case "critical":
+							return "\uf1b5"; //font awesome
+						break;
+						case "low":
+							return "\uf1b1"; //font awesome
+						break;
+						case "normal":
+							return "\uf1b8"; //font awesome
+						break;
+						case "high":
+							return "\uf1ba"; //font awesome
+						break;
+						case "full":
+							return "\uf1bc"; //font awesome
+						break;
+						case "unknown":
+						default:
+							return "\uf1be"; //font awesome
+						break;
+					}
+				}
+				else{
+					var resultNumber = Number(result);
+					if (resultNumber === 0) return "\uf1b5"; //font awesome as "critical"
+					if (resultNumber <= 33) return "\uf1b1"; //font awesome as "low"
+					if (resultNumber <= 63) return "\uf1b8"; //font awesome as "normal"
+					if (resultNumber <= 95) return "\uf1ba"; //font awesome as "high"
+					if (resultNumber >= 99) return "\uf1bc"; //font awesome as "full"
+					else return "\uf1be"; //font awesome as "unknown"
+					}					
+				}
+			}
+			else return ""; //no battery well detected
+		}
+		else  return ""; //no battery well detected
+    }
+
     //to change icon size for audio ones especially and keep standard one for others.
-    function getIconRatio(icon)
-    {
+    function getIconRatio(icon){
         var ratio;
         switch(icon){
         case " \uf1e2 ":
@@ -559,18 +625,8 @@ FocusScope {
         return ratio;
     }
 
-    //little function to faciliate check of value in 2 name and service from a keyword
-    function isKeywordFound(name,service,keyword)
-    {
-        if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
-            return true;
-        }
-        else return false;
-    }
-
     //function to dynamically set icon "character" from name and/or service
-    function getIcon(name,service)
-    {
+    function getIcon(name,service){
         let icon = "";
         let type = "";
         let i = 0;
@@ -614,6 +670,7 @@ FocusScope {
         //save an empty line at the end to confirm end of the list in reclbox.conf
         api.internal.recalbox.setStringParameter(parameter + i,"");
     }
+
     //function to read saved data from recalbox.conf. Could be used for My Devices and Ignored Devices
     function readSavedDevicesList(list,parameter){
         let result = "";
@@ -733,6 +790,22 @@ FocusScope {
                     model: myDevicesModel //for test purpose
                     SimpleButton {
                         property var connected: false;
+                        Text {
+                            id: batteryStatus
+
+                            anchors.right: deviceIcon.left
+                            anchors.rightMargin: vpx(10)
+                            anchors.top: parent.top
+                            anchors.topMargin: vpx(5)
+
+                            color: themeColor.textLabel
+                            font.pixelSize: (parent.fontSize)*2
+                            font.family: globalFonts.awesome
+                            height: parent.height
+                            text : connected ? getBatteryStatus(macaddress) : ""
+                            visible: connected
+                        }
+
                         Text {
                             id: deviceIcon
 
