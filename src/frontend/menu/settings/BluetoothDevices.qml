@@ -486,7 +486,7 @@ FocusScope {
         ListElement { icon: " \uf26a "; keywords: "mastersystem,master system"; type:"controller"}
         ListElement { icon: " \uf26b "; keywords: "megadrive,mega drive,sega"; type:"controller"}
 
-        ListElement { icon: " \uf1e2 "; keywords: "headset"; type:"audio"}
+        ListElement { icon: " \uf1e2 "; keywords: "headset,plt focus"; type:"audio"}
         ListElement { icon: " \uf1e1 "; keywords: "speaker"; type:"audio"}
         ListElement { icon: " \uf1b0 "; keywords: ""; types:"audio"} //as generic icon for audio
 
