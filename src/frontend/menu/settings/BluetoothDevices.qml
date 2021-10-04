@@ -340,6 +340,7 @@ FocusScope {
             for(var i = 0;i < list.count; i++){
                 macaddress = list.get(i).macaddress;
                 //console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                //result = "yes"; //for test purpose
                 result = api.internal.system.run("bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
                 //console.log("result:",result);
                 //check if device is connected
@@ -690,7 +691,7 @@ FocusScope {
                         Text {
                             id: deviceIcon
 
-                            anchors.right: parent.left
+                            anchors.right: connected ? deviceStatus.left : parent.left
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
@@ -702,9 +703,11 @@ FocusScope {
                         Text {
                             id: deviceStatus
 
-                            anchors.right: deviceIcon.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.rightMargin: vpx(20)
+                            anchors.right: parent.left
+                            anchors.rightMargin: vpx(10)
+                            anchors.top: parent.top
+                            anchors.topMargin: vpx(5)
+
                             color: connected ? "green" : "gray" //themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*2
                             font.family: globalFonts.ion
