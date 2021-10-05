@@ -352,7 +352,7 @@ FocusScope {
     //timer to update status of battery in "My Devices"
     Timer {
         id: updateBatteryStatusTimer
-        interval: 60000 // every 60 seconds
+        interval: 180000 // every 3 minutes
         repeat: true
         running: true
         triggeredOnStart: false
@@ -360,20 +360,11 @@ FocusScope {
             var list = myDevicesModel;
             var macaddress = "";
             var result = "";
-			//check if list of bettery exists
-			//TO DO
-			//Get a list for later else stop here.
+            //Get a list for later else stop here.
             for(var i = 0;i < list.count; i++){
-				//if myDevices.itemAt(i).connected = true;
-                macaddress = list.get(i).macaddress;
-                //console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
-                if (hostname.toLowerCase().includes("recalbox")||hostname.toLowerCase().includes("pixl")){
-                    //timeout of 1s if needed (can't go under 1s else issue with timeout command on buildroot
-                    //result = api.internal.system.run("timeout 1 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
-                }
-                else{
-                    //timeout of 50 ms to go quicker in QT creator debug
-                    //result = api.internal.system.run("timeout 0.05 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                if(myDevices.itemAt(i).connected){ //update batteryStatus for connected devices
+                    macaddress = list.get(i).macaddress;
+                    myDevices.itemAt(i).batteryStatusText = getBatteryStatus(macaddress);
                 }
             }
         }
@@ -393,24 +384,26 @@ FocusScope {
             for(var i = 0;i < list.count; i++){
                 macaddress = list.get(i).macaddress;
                 //console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
-                if (hostname.toLowerCase().includes("recalbox")||hostname.toLowerCase().includes("pixl")){
+                if (!isDebugEnv()){
                     //timeout of 1s if needed (can't go under 1s else issue with timeout command on buildroot
                     result = api.internal.system.run("timeout 1 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
                 }
                 else{
                     //timeout of 50 ms to go quicker in QT creator debug
-                    result = api.internal.system.run("timeout 0.05 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                    //result = api.internal.system.run("timeout 0.05 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                    result = "Yes";
+
                 }
                 //console.log("result:",result);
                 //check if device is connected
                 if(result.toLowerCase().includes("yes")){
-                    //update "connected" status
-                    myDevices.itemAt(i).connected = true;
+                    //update "connected" status & check status to avoid to call binding for no change
+                    if (myDevices.itemAt(i).connected === false) myDevices.itemAt(i).connected = true;
                 }
                 else
                 {
-                    //update "connected" status
-                    myDevices.itemAt(i).connected = false;
+                    //update "connected" status & check status to avoid to call binding for no change
+                    if (myDevices.itemAt(i).connected === true) myDevices.itemAt(i).connected = false;
                 }
             }
         }
@@ -565,22 +558,31 @@ FocusScope {
 		var batteryName;
 		//check if any battery exists for the existing macaddress
 		//first method
-		batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i " + macaddress);
-		if(batteryName === "")
-		{//second method: for nintendo ones for exemple using hdev
-             var firstPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}'")
-             var secondPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}'")
-             batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'");
+        console.log("command : ","ls '/sys/class/power_supply/' | grep -i " + macaddress + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
+        batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i " + macaddress + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
+        if (isDebugEnv()) batteryName = "BAT0";
+        console.log("batteryName : ",batteryName,"For",macaddress)
+
+        if(batteryName === ""){
+            //second method: for nintendo ones for exemple using hdev
+            console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
+            var firstPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
+            console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}' | tr -d '\\n' | tr -d '\\r'");
+            var secondPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}' | tr -d '\\n' | tr -d '\\r'");
+            console.log("command : ","ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + " | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
+            batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + " | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
 		}
-		if(batteryName !== "")
-		{
+
+		if(batteryName !== ""){
 			//search method to know battery capacity
-            var capacityName = api.internal.system.run("ls '/sys/class/power_supply/" + batteryName + "/'" + "| grep -i 'capacity' | head -n 1");
+            console.log("command : ","ls /sys/class/power_supply/" + batteryName + "/" + " | grep -i 'capacity' | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
+            var capacityName = api.internal.system.run("ls /sys/class/power_supply/" + batteryName + "/" + " | grep -i 'capacity' | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'");
 			if(capacityName !== ""){
-				result = api.internal.system.run("cat '/sys/class/power_supply/" + batteryName + "/" + capacityName);
+                console.log("command : ","cat /sys/class/power_supply/" + batteryName + "/" + capacityName + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
+                result = api.internal.system.run("cat /sys/class/power_supply/" + batteryName + "/" + capacityName + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
 				console.log("Battery result:",result);
-				//check if it's text or Number
                 if(isNaN(result)){
+                    console.log("is Not a number");
 					switch(result.toLowerCase()){
 						case "critical":
 							return "\uf1b5"; //font awesome
@@ -604,6 +606,7 @@ FocusScope {
 					}
 				}
 				else{
+                    console.log("is a number");
 					var resultNumber = Number(result);
 					if (resultNumber === 0) return "\uf1b5"; //font awesome as "critical"
 					if (resultNumber <= 33) return "\uf1b1"; //font awesome as "low"
@@ -803,6 +806,7 @@ FocusScope {
                     model: myDevicesModel //for test purpose
                     SimpleButton {
                         property var connected: false;
+                        property var batteryStatusText: getBatteryStatus(macaddress);
                         Text {
                             id: batteryStatus
 
@@ -815,7 +819,7 @@ FocusScope {
                             font.pixelSize: (parent.fontSize)*2
                             font.family: globalFonts.awesome
                             height: parent.height
-                            text : connected ? getBatteryStatus(macaddress) : ""
+                            text : connected ? batteryStatusText : ""
                             visible: connected
                         }
 
