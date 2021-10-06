@@ -533,29 +533,31 @@ FocusScope {
     ListModel {
         id: myDeviceIcons
 
-        ListElement { icon: " \uf2f0 "; keywords: "x360,xbox360,xbox 360"; type:"controller"} //as XBOX for the moment, need icon for 360
-        ListElement { icon: " \uf2f0 "; keywords: "xbox one"; type:"controller"}
-        ListElement { icon: " \uf2f0 "; keywords: "xbox series"; type:"controller"} //as XBOX one for the moment, need icon for series
-        ListElement { icon: " \uf2f0 "; keywords: "xbox,microsoft"; type:"controller"} //as XBOX for the moment, need icon for 360
+        ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360"; type:"controller"} //as XBOX for the moment, need icon for 360
+        ListElement { icon: "\uf2f0"; keywords: "xbox one"; type:"controller"}
+        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"} //as XBOX one for the moment, need icon for series
+        ListElement { icon: "\uf2f0"; keywords: "xbox,microsoft"; type:"controller"} //as XBOX for the moment, need icon for 360
 
-        ListElement { icon: " \uf2ca "; keywords: "ps5,playstation 5,dualsense"; type:"controller"} //as PS4 for the moment, need icon for PS5
-        ListElement { icon: " \uf2ca "; keywords: "ps4,playstation 4,dualshock 4"; type:"controller"}
-        ListElement { icon: " \uf2c9 "; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"}
-        ListElement { icon: " \uf2c8 "; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"}
-        ListElement { icon: " \uf275 "; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"}
+        ListElement { icon: "\uf2ca"; keywords: "ps5,playstation 5,dualsense"; type:"controller"} //as PS4 for the moment, need icon for PS5
+        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; type:"controller"} // add wireless controller as usual PS name used by Sony
+        ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"}
+        ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"}
+        ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"}
 
-        ListElement { icon: " \uf25e "; keywords: "snes,super nintendo"; type:"controller"}
-        ListElement { icon: " \uf25c "; keywords: "nes,nintendo entertainment system"; type:"controller"}
-        ListElement { icon: " \uf262 "; keywords: "gc,gamecube"; type:"controller"}
-        ListElement { icon: " \uf260 "; keywords: "n64,nintendo 64,nintendo64"; type:"controller"}
-        ListElement { icon: " \uf263 "; keywords: "wii"; type:"controller"}
+        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"}
+        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller"}
+        ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"}
+        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64"; type:"controller"}
+        ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"}
 
-        ListElement { icon: " \uf26a "; keywords: "mastersystem,master system"; type:"controller"}
-        ListElement { icon: " \uf26b "; keywords: "megadrive,mega drive,sega"; type:"controller"}
-
-        ListElement { icon: " \uf1e2 "; keywords: "headset,plt focus"; type:"audio"}
-        ListElement { icon: " \uf1e1 "; keywords: "speaker"; type:"audio"}
-        ListElement { icon: " \uf1b0 "; keywords: ""; types:"audio"} //as generic icon for audio
+        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"}
+        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,sega"; type:"controller"}
+        //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
+        //04/10/21: add 'plt focus'
+        //06/10/21: add 'qcy50' and 'jbl go'
+        ListElement { icon: "\uf1e2"; keywords: "headset,plt focus,qcy50,jbl go"; type:"audio"}
+        ListElement { icon: "\uf1e1"; keywords: "speaker"; type:"audio"}
+        ListElement { icon: "\uf1b0"; keywords: ""; types:"audio"} //as generic icon for audio
 
     }
 
@@ -597,7 +599,7 @@ FocusScope {
                 result = api.internal.system.run("cat /sys/class/power_supply/" + batteryName + "/" + capacityName + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
 				console.log("Battery result:",result);
                 if(isNaN(result)){
-                    console.log("is Not a number");
+                    //console.log("is Not a number");
 					switch(result.toLowerCase()){
 						case "critical":
 							return "\uf1b5"; //font awesome
@@ -621,9 +623,9 @@ FocusScope {
 					}
 				}
 				else{
-                    console.log("is a number");
+                    //console.log("is a number");
 					var resultNumber = Number(result);
-					if (resultNumber === 0) return "\uf1b5"; //font awesome as "critical"
+                    if (resultNumber <= 5) return "\uf1b5"; //font awesome as "critical"
 					if (resultNumber <= 33) return "\uf1b1"; //font awesome as "low"
 					if (resultNumber <= 63) return "\uf1b8"; //font awesome as "normal"
 					if (resultNumber <= 95) return "\uf1ba"; //font awesome as "high"
@@ -640,13 +642,13 @@ FocusScope {
     function getIconRatio(icon){
         var ratio;
         switch(icon){
-        case " \uf1e2 ":
+        case "\uf1e2":
             ratio = 2;
             break;
-        case " \uf1e1 ":
+        case "\uf1e1":
             ratio = 2;
             break;
-        case " \uf1b0 ":
+        case "\uf1b0":
             ratio = 2;
             break;
         default:
