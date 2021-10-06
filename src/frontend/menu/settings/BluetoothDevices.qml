@@ -288,6 +288,12 @@ FocusScope {
         }
     }
 
+    //To keep only one line without CR or LF or hidden char
+    function uniqueCleanLineCommand()
+    {
+        return " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'";
+    }
+
     //function to get text content of html page
     function httpGet(theUrl){
         var xmlHttp = new XMLHttpRequest();
