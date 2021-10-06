@@ -153,7 +153,7 @@ FocusScope {
                     case "Pair":
                         //stop scanning/checking during pairing
 						bluetoothTimer.running = false;
-                        connectedTimer.running = false
+                        connectedTimer.running = false;
                         btModel.running = false;
                         var name = myDiscoveredDevicesModel.get(actionListIndex).name;
 						var macaddress = myDiscoveredDevicesModel.get(actionListIndex).macaddress;
@@ -229,7 +229,7 @@ FocusScope {
         }
         function onSecondChoice() {
             switch (actionState) {
-                    case "Pair": // as ignored in fact for second choice
+                    case "Pair": // as "Ignored" in fact for second choice
                         //Add to Ignored devices list
                         myIgnoredDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
                                      vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
@@ -373,7 +373,7 @@ FocusScope {
     //timer to update status of battery in "My Devices"
     Timer {
         id: updateBatteryStatusTimer
-        interval: 180000 // every 3 minutes
+        interval: 5000 // every 5 seconds to be able to detect that a controller is plug on usb / charging also
         repeat: true
         running: true
         triggeredOnStart: false
@@ -383,10 +383,8 @@ FocusScope {
             var result = "";
             //Get a list for later else stop here.
             for(var i = 0;i < list.count; i++){
-                if(myDevices.itemAt(i).connected){ //update batteryStatus for connected devices
                     macaddress = list.get(i).macaddress;
                     myDevices.itemAt(i).batteryStatusText = getBatteryStatus(macaddress);
-                }
             }
         }
     }
@@ -419,12 +417,16 @@ FocusScope {
                 //check if device is connected
                 if(result.toLowerCase().includes("yes")){
                     //update "connected" status & check status to avoid to call binding for no change
-                    if (myDevices.itemAt(i).connected === false) myDevices.itemAt(i).connected = true;
+                    if (myDevices.itemAt(i).connected === false) {
+                        myDevices.itemAt(i).connected = true;
+                    }
                 }
                 else
                 {
                     //update "connected" status & check status to avoid to call binding for no change
-                    if (myDevices.itemAt(i).connected === true) myDevices.itemAt(i).connected = false;
+                    if (myDevices.itemAt(i).connected === true) {
+                        myDevices.itemAt(i).connected = false;
+                    }
                 }
             }
         }
@@ -577,33 +579,44 @@ FocusScope {
 
     //function to dynamically set icon "character" from name and/or service
     function getBatteryStatus(macaddress){
-		var result;
-		var batteryName;
+        var result = "";
+        var batteryName = "";
 		//check if any battery exists for the existing macaddress
 		//first method
-        console.log("command : ","ls '/sys/class/power_supply/' | grep -i " + macaddress + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
-        batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i " + macaddress + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
+        //console.log("command : ","ls '/sys/class/power_supply/' | grep -i " + macaddress + uniqueCleanLineCommand());
+        batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i " + macaddress + uniqueCleanLineCommand());
+
+        //Only for test purpose in QT creator
         if (isDebugEnv()) batteryName = "BAT0";
-        console.log("batteryName : ",batteryName,"For",macaddress)
+
+        //console.log("batteryName : ",batteryName,"For",macaddress)
 
         if(batteryName === ""){
             //second method: for nintendo ones for exemple using hdev
-            console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
+            //console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
             var firstPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
-            console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}' | tr -d '\\n' | tr -d '\\r'");
+            //console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}' | tr -d '\\n' | tr -d '\\r'");
             var secondPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}' | tr -d '\\n' | tr -d '\\r'");
-            console.log("command : ","ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + " | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
-            batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + " | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
-		}
+            if(firstPart !== "" && secondPart !== ""){
+                //console.log("command : ","ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
+                batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
+            }
+        }
 
 		if(batteryName !== ""){
 			//search method to know battery capacity
-            console.log("command : ","ls /sys/class/power_supply/" + batteryName + "/" + " | grep -i 'capacity' | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
-            var capacityName = api.internal.system.run("ls /sys/class/power_supply/" + batteryName + "/" + " | grep -i 'capacity' | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'");
+            //console.log("command : ","ls /sys/class/power_supply/" + batteryName + "/" + " | grep -i 'capacity'" + uniqueCleanLineCommand());
+            var capacityName = api.internal.system.run("ls /sys/class/power_supply/" + batteryName + "/" + " | grep -i 'capacity'" + uniqueCleanLineCommand());
 			if(capacityName !== ""){
-                console.log("command : ","cat /sys/class/power_supply/" + batteryName + "/" + capacityName + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
-                result = api.internal.system.run("cat /sys/class/power_supply/" + batteryName + "/" + capacityName + " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
-				console.log("Battery result:",result);
+                //check if it's "Status" finally before to check "Capacity/Capacity_Level"
+                //console.log("command : ","cat /sys/class/power_supply/" + batteryName + "/status" + uniqueCleanLineCommand());
+                result = api.internal.system.run("cat /sys/class/power_supply/" + batteryName + "/status" + uniqueCleanLineCommand());
+                if(result.toLowerCase() === "charging"){
+                    return "\uf1b3";
+                }
+                //console.log("command : ","cat /sys/class/power_supply/" + batteryName + "/" + capacityName + uniqueCleanLineCommand());
+                result = api.internal.system.run("cat /sys/class/power_supply/" + batteryName + "/" + capacityName + uniqueCleanLineCommand());
+                //console.log("Battery result:",result);
                 if(isNaN(result)){
                     //console.log("is Not a number");
 					switch(result.toLowerCase()){
