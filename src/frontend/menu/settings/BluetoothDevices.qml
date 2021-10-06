@@ -822,26 +822,28 @@ FocusScope {
                     SimpleButton {
                         property var connected: false;
                         property var batteryStatusText: getBatteryStatus(macaddress);
+                        width: parent.width - vpx(100)
                         Text {
                             id: batteryStatus
 
                             anchors.right: deviceIcon.left
-                            anchors.rightMargin: vpx(10)
+                            anchors.rightMargin: vpx(5)
                             anchors.top: parent.top
-                            anchors.topMargin: vpx(5)
+                            anchors.topMargin: vpx(10)
 
                             color: themeColor.textLabel
-                            font.pixelSize: (parent.fontSize)*2
+                            font.pixelSize: (parent.fontSize)*1.5
                             font.family: globalFonts.awesome
                             height: parent.height
-                            text : connected ? batteryStatusText : ""
-                            visible: connected
+                            text : batteryStatusText
+                            visible: true
                         }
 
                         Text {
                             id: deviceIcon
 
                             anchors.right: deviceStatus.left
+                            anchors.rightMargin: vpx(5)
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
@@ -997,10 +999,12 @@ FocusScope {
                     model: myDiscoveredDevicesModel //for test purpose
                     SimpleButton {
                         property var isPairingIssue: false
+                        width: parent.width - vpx(100)
                         Text {
                             id: deviceDiscoveredIcon
 
                             anchors.right: isPairingIssue ? deviceDiscoveredStatus.left : parent.left
+                            anchors.rightMargin: vpx(10)
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
@@ -1013,7 +1017,7 @@ FocusScope {
                             id: deviceDiscoveredStatus
 
                             anchors.right: parent.left
-                            anchors.rightMargin: vpx(10)
+                            anchors.rightMargin: vpx(5)
                             anchors.top: parent.top
                             anchors.topMargin: vpx(5)
 
@@ -1118,11 +1122,12 @@ FocusScope {
                     id: myIgnoredDevices
                     model: myIgnoredDevicesModel
                     SimpleButton {
-
+                        width: parent.width - vpx(100)
                         Text {
                             id: deviceIgnoredIcon
 
                             anchors.right: parent.left
+                            anchors.rightMargin: vpx(10)
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
