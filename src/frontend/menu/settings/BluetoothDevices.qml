@@ -250,6 +250,21 @@ FocusScope {
                             else if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
                         }
                     break;
+                    case "Forget": // as "Disconnect" in fact for second choice
+                        //just a simple tentative to disconnect the device "sofwarely" ;-)
+                        //stop scanning during disconnect
+                        bluetoothTimer.running = false;
+                        btModel.running = false;
+                        var macaddress = myDevicesModel.get(actionListIndex).macaddress;
+                        var result = "";
+                        //console.log("command:", "bluetoothctl disconnect "+ macaddress);
+                        //add timeout of 10s if needed
+                        if(!isDebugEnv()) result = api.internal.system.run("timeout 10 bluetoothctl disconnect "+ macaddress);
+                        else result = api.internal.system.run("timeout 1 bluetoothctl disconnect "+ macaddress);
+                        //console.log("result:",result);
+                        //relaunch scanning
+                        bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+                    break;
             }
             content.focus = true;
         }
@@ -863,11 +878,11 @@ FocusScope {
                             confirmDialog.focus = false;
                             confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                     { "title": myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service,
-                                                      "message": qsTr("Are you sure to forget this device ?") + api.tr,
+                                                      "message": connected ? (qsTr("Do you want to forget or disconnect this device ?") + api.tr) : (qsTr("Are you sure to forget this device ?") + api.tr),
                                                       "symbol": myDevicesModel.get(index).icon,
-                                                      "firstchoice": qsTr("Yes") + api.tr,
-                                                      "secondchoice": "",
-                                                      "thirdchoice": qsTr("No") + api.tr});
+                                                      "firstchoice": connected ? qsTr("Forget") + api.tr : qsTr("Yes") + api.tr,
+                                                      "secondchoice": connected ? qsTr("Disconnect") + api.tr : "",
+                                                      "thirdchoice": connected ? qsTr("Cancel") + api.tr : qsTr("No") + api.tr});
                             //Save action states for later
                             actionState = "Forget";
                             actionListIndex = index;
@@ -902,7 +917,7 @@ FocusScope {
                             id: forgetButton
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
-                            text: qsTr("Forget") + " ?"  + api.tr
+                            text: connected ? (qsTr("Forget/Disconnect") + " ?"  + api.tr) : (qsTr("Forget") + " ?"  + api.tr)
                             visible: parent.focus
                             anchors.left: parent.right
                             anchors.leftMargin: vpx(20)
