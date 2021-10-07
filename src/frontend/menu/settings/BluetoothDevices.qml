@@ -128,7 +128,8 @@ FocusScope {
 							//simpler one
 							console.log("command:", "bluetoothctl remove "+ macaddress);
                             //add timeout of 5s if needed
-                            result = api.internal.system.run("timeout 5 bluetoothctl remove "+ macaddress);
+                            if(!isDebugEnv()) result = api.internal.system.run("timeout 5 bluetoothctl remove "+ macaddress);
+                            else result = api.internal.system.run("timeout 5 echo -e 'remove " + macaddress + "' | bluetoothctl");
 						}
 						console.log("result:",result);
 						//relaunch scanning
@@ -169,7 +170,8 @@ FocusScope {
                             //do remove to avoid bad suprise
                             console.log("command:", "bluetoothctl remove "+ macaddress);
                             //timeout of 5s if needed
-                            result = api.internal.system.run("timeout 5 bluetoothctl remove "+ macaddress);
+                            if(!isDebugEnv()) result = api.internal.system.run("timeout 5 bluetoothctl remove "+ macaddress);
+                            else result = api.internal.system.run("timeout 5 echo -e 'remove " + macaddress + "' | bluetoothctl");
                             console.log("result:",result);
                             //simpler one
 							console.log("command:", "/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
@@ -179,8 +181,10 @@ FocusScope {
 						console.log("result:",result);
                         //Check	if really paired
                         console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'paired' | awk '{print $2}'");
-                        //timeout of 2s if needed
-                        result = api.internal.system.run("timeout 2 bluetoothctl info " + macaddress + " | grep -i 'paired' | awk '{print $2}'");
+                        //timeout of 2s or 5s if needed
+                        if(!isDebugEnv()) result = api.internal.system.run("timeout 2 bluetoothctl info " + macaddress + " | grep -i 'paired' | awk '{print $2}'");
+                        else result = api.internal.system.run("timeout 5 echo -e 'info " + macaddress + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
+
                         console.log("result:",result);
                         if(result.toLowerCase().includes("yes")){
                             //Add to My Devices list
@@ -257,11 +261,11 @@ FocusScope {
                         btModel.running = false;
                         var macaddress = myDevicesModel.get(actionListIndex).macaddress;
                         var result = "";
-                        //console.log("command:", "bluetoothctl disconnect "+ macaddress);
+                        console.log("command:", "bluetoothctl disconnect "+ macaddress);
                         //add timeout of 10s if needed
                         if(!isDebugEnv()) result = api.internal.system.run("timeout 10 bluetoothctl disconnect "+ macaddress);
-                        else result = api.internal.system.run("timeout 1 bluetoothctl disconnect "+ macaddress);
-                        //console.log("result:",result);
+                        else result = api.internal.system.run("timeout 10 echo -e 'disconnect " + macaddress + "' | bluetoothctl");
+                        console.log("result:",result);
                         //relaunch scanning
                         bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
                     break;
@@ -408,10 +412,7 @@ FocusScope {
                     result = api.internal.system.run("timeout 1 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
                 }
                 else{
-                    //timeout of 50 ms to go quicker in QT creator debug
-                    //result = api.internal.system.run("timeout 0.05 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
-                    result = "Yes";
-
+                    result = api.internal.system.run("timeout 2 echo -e 'info " + macaddress + "' | bluetoothctl | grep -i 'connected' | awk '{print $2}'");
                 }
                 //console.log("result:",result);
                 //check if device is connected
@@ -587,11 +588,11 @@ FocusScope {
         batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i " + macaddress + uniqueCleanLineCommand());
 
         //Only for test purpose in QT creator
-        if (isDebugEnv()) batteryName = "BAT0";
+        //if (isDebugEnv()) batteryName = "BAT0";
 
         //console.log("batteryName : ",batteryName,"For",macaddress)
 
-        if(batteryName === ""){
+        if((batteryName === "") && !isDebugEnv()){
             //second method: for nintendo ones for exemple using hdev
             //console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
             var firstPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
@@ -601,6 +602,16 @@ FocusScope {
                 //console.log("command : ","ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
                 batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
             }
+        }
+        else if((batteryName === "") && isDebugEnv()){
+            //method for Ubuntu: for nintendo ones for exemple using hdev
+            var firstPart = api.internal.system.run("timeout 2 echo -e 'info " + macaddress + "' | bluetoothctl |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
+            var secondPart = api.internal.system.run("timeout 2 echo -e 'info " + macaddress + "' | bluetoothctl |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}' | tr -d '\\n' | tr -d '\\r'");
+            if(firstPart !== "" && secondPart !== ""){
+                //console.log("command : ","ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
+                batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
+            }
+
         }
 
 		if(batteryName !== ""){
