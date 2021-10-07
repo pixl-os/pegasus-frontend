@@ -30,6 +30,7 @@ FocusScope {
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
+    property var lastchoice: ""
 
     signal accept()
     signal secondChoice()
@@ -81,11 +82,13 @@ FocusScope {
 
             Text {
                 id: titleText
-
+                elide: Text.ElideRight
                 anchors {
                     verticalCenter: parent.verticalCenter
                     left: parent.left
                     leftMargin: root.titleTextSize * 0.75
+                    right: parent.right
+                    rightMargin: root.titleTextSize * 0.75
                 }
 
                 color: themeColor.textTitle
@@ -143,6 +146,21 @@ FocusScope {
             width: parent.width
             height: root.textSize * 2
 
+            //to let DialogBox to update message after accept ;-)
+            Timer{
+                id: acceptTimer
+                interval: 50 // launch after 50 ms
+                repeat: false
+                running: false
+                triggeredOnStart: false
+                onTriggered: {
+                    if(lastchoice === "firstchoice") root.accept();
+                    else if(lastchoice === "secondchoice") root.secondChoice();
+                    else root.cancel();
+                }
+            }
+
+
             Rectangle {
                 id: okButton
 
@@ -163,20 +181,11 @@ FocusScope {
                         secondButtonText.text = "";
                         cancelButtonText.text = "";
                         //let 50 ms to update interface
+                        lastchoice = "firstchoice";
                         acceptTimer.running = true;
                     }
                 }
-                //to let DialogBox to update message after accept ;-)
-                Timer{
-                    id: acceptTimer
-                    interval: 50 // launch after 50 ms
-                    repeat: false
-                    running: false
-                    triggeredOnStart: false
-                    onTriggered: {
-                        root.accept();
-                    }
-                }
+
                 Text {
                     id: okButtonText
                     anchors.centerIn: parent
@@ -193,7 +202,19 @@ FocusScope {
                     id: okMouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: root.accept()
+                    onClicked: {
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr;
+                        messageText.text = qsTr("Under progress...") + api.tr;
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //let 50 ms to update interface
+                        lastchoice = "firstchoice";
+                        acceptTimer.running = true;
+                   }
                 }
                 //Spinner Loader to wait after accept (if needed and if UI blocked)
                 Loader {
@@ -244,10 +265,19 @@ FocusScope {
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
-                        root.secondChoice();
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr;
+                        messageText.text = qsTr("Under progress...") + api.tr;
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //let 50 ms to update interface
+                        lastchoice = "secondchoice";
+                        acceptTimer.running = true;
                     }
                 }
-
                 Text {
                     id: secondButtonText
                     anchors.centerIn: parent
@@ -264,7 +294,19 @@ FocusScope {
                     id: secondMouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: root.secondChoice()
+                    onClicked: {
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr;
+                        messageText.text = qsTr("Under progress...") + api.tr;
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //let 50 ms to update interface
+                        lastchoice = "secondchoice";
+                        acceptTimer.running = true;
+                   }
                 }
             }
 
@@ -282,7 +324,17 @@ FocusScope {
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
-                        root.cancel();
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr;
+                        messageText.text = qsTr("Under progress...") + api.tr;
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //let 50 ms to update interface
+                        lastchoice = "thirdchoice";
+                        acceptTimer.running = true;
                     }
                 }
 
@@ -302,7 +354,20 @@ FocusScope {
                     id: cancelMouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: root.cancel()
+                    onClicked: {
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr;
+                        messageText.text = qsTr("Under progress...") + api.tr;
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //let 50 ms to update interface
+                        lastchoice = "thirdchoice";
+                        acceptTimer.running = true;
+                   }
+
                 }
             }
         }
