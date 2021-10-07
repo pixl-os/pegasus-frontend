@@ -298,12 +298,45 @@ FocusScope {
         return " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'";
     }
 
-    //function to get text content of html page
-    function httpGet(theUrl){
+    //function to update vendor in any list using index
+    function searchVendorAndUpdate(list, index){
+
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        var vendor = "";
+        xmlHttp.open( "GET", "https://api.macvendors.com/" + list.get(index).macaddress, true ); // true for asynchronous request
+
+        xmlHttp.timeout = 1900; // time in milliseconds
+
+        xmlHttp.onload = function () {
+            // Request finished.
+            vendor = xmlHttp.responseText;
+            console.log("return of https://api.macvendors.com for ",list.get(index).macaddress," : ", vendor);
+            if(vendor.includes("Not Found")) {
+                if(!api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor")){
+                    list.get(index).vendor = "Unknown vendor";
+                }
+                else{
+                    //Remove from Discovered devices list
+                    myDiscoveredDevicesModel.remove(index);
+                    //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
+                    if(myDiscoveredDevices.count !== 0){
+                        if(myDiscoveredDevices.itemAt(index)) myDiscoveredDevices.itemAt(index).focus = true;
+                        else if(myDiscoveredDevices.itemAt(index-1)) myDiscoveredDevices.itemAt(index-1).focus = true;
+                    }
+                    else{
+                        if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
+                        else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
+                    }
+                }
+            }
+            else if(vendor.includes("errors")) list.get(index).vendor = "";
+            else list.get(index).vendor = vendor;
+        };
+        xmlHttp.ontimeout = function (e) {
+          // XMLHttpRequest timed out
+          console.log("Timeout of https://api.macvendors.com for ",list.get(index).macaddress);
+        };
         xmlHttp.send( null );
-        return xmlHttp.responseText;
     }
 
     //function to search device in a list
@@ -442,32 +475,12 @@ FocusScope {
         triggeredOnStart: true
         onTriggered: {
             var list = myDiscoveredDevicesModel;
-            var vendor = "";
+            var oneAPICallDone = false; // to limit to one call every 2 seconds
             for(var i = 0;i < list.count; i++){
-                if ((list.get(i).vendor === "") && (vendor === "")){
-                    //search vendor from macadress
-                    vendor = httpGet("https://api.macvendors.com/" + list.get(i).macaddress);
-                    //console.log("return of https://api.macvendors.com for ",list.get(i).macaddress," : ", vendor);
-                    if(vendor.includes("Not Found")) {
-                        if(!api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor")){
-                            list.get(i).vendor = "Unknown vendor";
-                        }
-                        else{
-                            //Remove from Discovered devices list
-                            myDiscoveredDevicesModel.remove(i);
-                            //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
-                            if(myDiscoveredDevices.count !== 0){
-                                if(myDiscoveredDevices.itemAt(i)) myDiscoveredDevices.itemAt(i).focus = true;
-                                else if(myDiscoveredDevices.itemAt(i-1)) myDiscoveredDevices.itemAt(i-1).focus = true;
-                            }
-                            else{
-                                if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
-                                else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
-                            }
-                        }
-                    }
-                    else if(vendor.includes("errors")) list.get(i).vendor = "";
-                    else list.get(i).vendor = vendor;
+                if ((list.get(i).vendor === "") && !oneAPICallDone){
+                    //search and update vendor from macadress
+                    searchVendorAndUpdate(list, i)
+                    oneAPICallDone = true;
                 }
                 else if(list.get(i).vendor === "")
                 {
@@ -769,6 +782,10 @@ FocusScope {
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
+            //stop scanning/checking during pairing
+            bluetoothTimer.running = false;
+            connectedTimer.running = false;
+            btModel.running = false;
             root.close();
         }
     }
@@ -781,7 +798,13 @@ FocusScope {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
-        onClicked: root.close()
+        onClicked: {
+            //stop scanning/checking during pairing
+            bluetoothTimer.running = false;
+            connectedTimer.running = false;
+            btModel.running = false;
+            root.close();
+        }
     }
 
     ScreenHeader {
