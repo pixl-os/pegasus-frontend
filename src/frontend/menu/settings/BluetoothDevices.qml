@@ -571,6 +571,9 @@ FocusScope {
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"}
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64"; type:"controller"}
         ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"}
+        ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"}
+        ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"}
+        ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"}
 
         ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"}
         ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,sega"; type:"controller"}
