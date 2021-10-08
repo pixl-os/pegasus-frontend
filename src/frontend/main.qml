@@ -165,7 +165,7 @@ Window {
             id: mainMenu
             anchors.fill: parent
 
-            source: "MenuLayer.qml"
+            source: focus ? "MenuLayer.qml" : "" //reset source to force reload of menu and to avoid bad effects
             asynchronous: true
 
             onLoaded: item.focus = focus
