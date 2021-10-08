@@ -697,6 +697,12 @@ FocusScope {
         case "\uf1b0":
             ratio = 2;
             break;
+        case "\uf0c8":
+            ratio = 2.5
+            break;
+        case "\uf0c9":
+            ratio = 2.5
+            break;
         default:
             ratio = 3;
             break;
@@ -927,7 +933,7 @@ FocusScope {
                         }
 
                         label: {
-                            return (macaddress + " - " + vendor + " " + name + " " + service)
+                            return (macaddress + " / " + vendor + " / " + name + " " + service)
                         }
 
                         // set focus only on first item
@@ -1088,7 +1094,7 @@ FocusScope {
                         }
 
                         label: {
-                            return (macaddress + " - " + vendor + " " + name + " " + service)
+                            return (macaddress + " / " + vendor + " / " + name + " " + service)
                         }
                         // set focus only on first item
                         focus: index == 0 ? true : false
@@ -1196,7 +1202,7 @@ FocusScope {
                         }
 
                         label: {
-                            return (macaddress + " - " + vendor + " " + name + " " + service)
+                            return (macaddress + " / " + vendor + " / " + name + " " + service)
                         }
 
                         // set focus only on first item
