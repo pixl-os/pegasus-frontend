@@ -24,6 +24,7 @@ FocusScope {
     id: root
 
     property alias bluetoothDeviceVisibility: optBluetoothDevices.visible
+    property var controllersListItemIndexHasFocus: -1
 
     signal close
     signal openBluetoothDevices
@@ -187,58 +188,74 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optGamepadConfig
-                    KeyNavigation.down: optInputP1
+                    Keys.onPressed: {
+                        //verify if finally other lists are empty or not when we are just before to change list
+                        //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
+                        if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
+                            if (controllersList.count !== 0) KeyNavigation.down = controllersList.itemAt(0);
+                            else KeyNavigation.down = optAdvancedControllers;
+                        }
+                   }
+
                 }
                 SectionTitle {
                     text: qsTr("Controllers inputs") + api.tr
                     first: false
                 }
-                SimpleButton {
-                    id: optInputP1
-
-                    label: qsTr("Input player 1") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openInputP1();
+                Repeater{
+                    id:controllersList
+                    model: api.internal.gamepad.devices
+                    onItemRemoved:{
+                        //if previous focus was the removed one
+                        if(controllersListItemIndexHasFocus === index){
+                            //if focus is on the Removed one
+                            if(controllersList.count === 0){
+                                //if empty go up
+                                optAdvancedControllers.focus = true;
+                            }
+                            else if (index > controllersList.count-1){
+                                //if it was the last one
+                                controllersList.itemAt(controllersList.count-1).focus = true;
+                            }
+                            else {
+                                //if not the last one
+                                controllersList.itemAt(index).focus = true;
+                            }
+                        }
                     }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optAdvancedControllers
-                    KeyNavigation.down: optInputP2
-                }
-                SimpleButton {
-                    id: optInputP2
 
-                    label: qsTr("Input player 2") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openInputP2();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optInputP1
-                    KeyNavigation.down: optInputP3
-                }
-                SimpleButton {
-                    id: optInputP3
+                    SimpleButton {
+                        label: (modelData) ? "#" + (index + 1) + ": " + modelData.name : ""
+                        // set focus only on first item
+                        focus: index == 0 ? true : false
+                        onActivate: {
+                            focus = true;
+                        }
+                        onActiveFocusChanged:{
+                            if(focus) controllersListItemIndexHasFocus = index;
+                        }
+                        onFocusChanged:{
+                            container.onFocus(this);
+                        }
+                        Keys.onPressed: {
+                            //verify if finally other lists are empty or not when we are just before to change list
+                            //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
+                            if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
 
-                    label: qsTr("Input player 3") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openInputP3();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optInputP2
-                    KeyNavigation.down: optInputP4
-                }
-                SimpleButton {
-                    id: optInputP4
+                                if (index > 0) KeyNavigation.up = controllersList.itemAt(index-1);
+                                else {
 
-                    label: qsTr("Input player 4") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openInputP4();
+                                    KeyNavigation.up = optAdvancedControllers;
+                                    console.log("Keys.onPressed - controllersListItemIndexHasFocus = -1;");
+                                    controllersListItemIndexHasFocus = -1;
+                                }
+                            }
+                            if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
+                                if (index < controllersList.count-1) KeyNavigation.down = controllersList.itemAt(index+1);
+                                else KeyNavigation.down = controllersList.itemAt(controllersList.count-1);
+                            }
+                        }
                     }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optInputP3
                 }
                 Item {
                     width: parent.width

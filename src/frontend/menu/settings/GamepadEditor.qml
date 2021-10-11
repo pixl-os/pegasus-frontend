@@ -174,7 +174,7 @@ FocusScope {
                 GamepadName {
                     text: {
 						// to add info to notice that one or several controllers  is/are available !
-						console.log("Controller: #", newControllerIndex," - isNewController: ", isNewController);
+                        //console.log("Controller: #", newControllerIndex," - isNewController: ", isNewController);
                         if (modelData) {
                             var previous = "";
                             var next = "";
