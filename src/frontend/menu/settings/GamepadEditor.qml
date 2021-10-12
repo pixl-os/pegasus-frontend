@@ -151,7 +151,7 @@ FocusScope {
         KeyNavigation.down: configL1
 
         GamepadName {
-            visible: !hasGamepads
+            visible: !hasGamepads && !isNewController
             highlighted: deviceSelect.focus
             text: qsTr("No gamepads connected") + api.tr
         }
@@ -174,7 +174,7 @@ FocusScope {
                 GamepadName {
                     text: {
 						// to add info to notice that one or several controllers  is/are available !
-						console.log("Controller: #", newControllerIndex," - isNewController: ", isNewController);
+                        //console.log("Controller: #", newControllerIndex," - isNewController: ", isNewController);
                         if (modelData) {
                             var previous = "";
                             var next = "";
@@ -183,8 +183,8 @@ FocusScope {
 								if (index !== 0) previous = "\uf3cf  "; // < from ionicons
 								if (index !== (gamepadList.count-1)) next = "  \uf3d1"; // > from ionicons
 							}
-							if (isNewController) return modelData.name;
-							else return (previous + "#" + (index + 1) + ": " + modelData.name + next);
+                            if (isNewController) return api.internal.gamepad.devices.get(newControllerIndex).name;
+                            else return (previous + "#" + (index + 1) + ": " + modelData.name + next);
 						}
 						else return ""; 						
 					}

@@ -18,7 +18,7 @@
 #pragma once
 
 #include "types/AppCloseType.h"
-
+#include <utils/Strings.h>
 #include <QObject>
 
 
@@ -34,7 +34,9 @@ public:
     Q_INVOKABLE void quit();
     Q_INVOKABLE void reboot();
     Q_INVOKABLE void shutdown();
-
+	Q_INVOKABLE QString run(const QString& Command);
+    Q_INVOKABLE bool runBoolResult(const QString& Command);
+	
 signals:
     void appCloseRequested(AppCloseType);
 };

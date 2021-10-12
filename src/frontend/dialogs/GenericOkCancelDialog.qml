@@ -23,7 +23,7 @@ FocusScope {
 
     property alias title: titleText.text
     property alias message: messageText.text
-    property alias symbol: symbolText.text
+    //property alias symbol: symbolText.text
 
     property int textSize: vpx(20)
     property int titleTextSize: vpx(22)

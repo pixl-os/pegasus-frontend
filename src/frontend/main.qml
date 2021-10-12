@@ -32,6 +32,9 @@ Window {
     visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
 
+    //for debug reason on QT creator to know if we are or not on a real recalbox/pixl
+    property var hostname: api.internal.system.run("hostname");
+
 //    onClosing: {
 //        theme.source = "";
 //        api.internal.system.quit();
@@ -162,7 +165,7 @@ Window {
             id: mainMenu
             anchors.fill: parent
 
-            source: "MenuLayer.qml"
+            source: focus ? "MenuLayer.qml" : "" //reset source to force reload of menu and to avoid bad effects
             asynchronous: true
 
             onLoaded: item.focus = focus
@@ -268,7 +271,6 @@ Window {
         function onCancel() { content.focus = true; }
     }
 
-
     Loader {
         id: multifileSelector
         anchors.fill: parent
@@ -277,7 +279,6 @@ Window {
         target: multifileSelector.item
         function onCancel() { content.focus = true; }
     }
-
 
     Loader {
         id: genericMessage

@@ -55,6 +55,7 @@ FocusScope {
 
     Column {
         id: labelContainer
+
         anchors {
             left: parent.left; leftMargin: horizontalPadding
             right: parent.horizontalCenter
@@ -67,10 +68,11 @@ FocusScope {
 
         Text {
             id: label
-
             color: themeColor.textLabel
             font.pixelSize: fontSize
             font.family: globalFonts.sans
+            width: underline.width
+            wrapMode: Text.WordWrap
         }
 
         Text {
@@ -80,6 +82,8 @@ FocusScope {
             font.pixelSize: fontSize * 0.8
             font.family: globalFonts.sans
             font.italic: true
+            width: underline.width
+            wrapMode: Text.WordWrap
         }
     }
 //    Text {

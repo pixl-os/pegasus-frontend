@@ -48,7 +48,7 @@ FocusScope {
         anchors.right: parent.right
 
         onClose: root.close()
-//        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
+        onOpenBluetoothDevices: root.openScreen("settings/BluetoothDevices.qml")
         onOpenAdvancedControllersConfiguration: root.openScreen("settings/AdvancedControllersConf.qml")
         onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
         onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
@@ -123,7 +123,17 @@ FocusScope {
                 duration: 400
                 easing { type: Easing.Bezier; bezierCurve: bezierSharp }
             }
-            onRunningChanged: if (!running) subscreen.source = ""
+            onRunningChanged: {
+                if (!running){
+                    subscreen.source = ""
+                    //to manage display of BluetoothDevices menu from Main (problem of binding not possible from api)
+                    //console.log("typeof(main.bluetoothDeviceVisibility) = ",typeof(main.bluetoothDeviceVisibility));
+                    if(typeof(main.bluetoothDeviceVisibility) !== 'undefined')
+                    {
+                       main.bluetoothDeviceVisibility = api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled");
+                    }
+                }
+            }
         }
     ]
 }
