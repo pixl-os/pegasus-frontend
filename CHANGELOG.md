@@ -1,6 +1,48 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2021-10-12
+- bump last gameOs-pixL theme for :
+	- fix settings for 'play stats' conf
+	- add new feature to change automatically favorite displayed in header of showcaseview
+	- add play time, play count and last played in game info and also in settings
+	
+## [bluetooth-controllers-feature] - 2021-10-12
+- new menu to integrate Bluetooth devices (My Devices, Discovered Devices, Ignored Devices)
+- new parameters for bluetooth features
+- usage of QTbluetooth
+- restart regularly bluetooth to improve checking
+- manage several type of search device: legacy (still to test), device discovery, full service discovery, short service discovery
+- usage API to get vendor name from mac address
+- compare known devices and discovered devices to avoid doublons
+- manage selections of items between lists of devices
+- reading existing bluetooth device from recalbox.conf
+- management of icon dynamically from keywords/types
+- new dialog box to have '3 choices' dialog box
+- introduction of 2 new api.internal.system to run shell commands and scripts
+- manage/resize icons in dialogbox
+- added options for pairing methods.
+- add parameters to hide: no name and unknown vendor
+- add checking of pairing success
+- add icon for pairing, connected
+- add logo of controllers depending of name for several devices as controllers, audio speaker and headset
+- add info/logo for battery capacity (only for Nintendo Switch and Sony PS4 devices for the moment)
+- create a command to know if we are in debug or not for bluetooth testing based on hostname ;-)
+- add disconnect feature (cool for speakers ;-)
+- add function in qml to clean shell command using new api.internal.system.run
+- fix when no network to unblock UI
+- add icon in font for joycon (r/l) + switch pro controller
+- map new icons in listmodel for devices icons
+- fix gamepadeditor on new controller view displayed
+- display now list of all controllers connected in menu (for future use and change order)
+
+## [recalbox-integration] - 2021-09-27
+- bump updated sortfilterproxymodel
+
+## [loading-bar-improvements] - 2021-09-27
+- improved provider progress reporting
+- add more informatin and steps
+
 ## [app-close-menu-renewal-for-qt-creator-debug] - 2021-09-15
 - change to "PEGASUS (pixL version)"
 - renewal close app feature for debug usage / condition of display inversed (not available by default)
