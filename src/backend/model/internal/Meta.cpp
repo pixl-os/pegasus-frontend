@@ -62,7 +62,9 @@ void Meta::clearQMLCache()
 
 void Meta::onSearchProgressChanged(float value, QString stage)
 {
-    Q_ASSERT(value <= 1.f);
+    //Q_ASSERT(value <= 1.f);
+    //replace Q_ASSERT by IF to avoid crash in some cases.
+    if(value > 1.f) value = 1.f;
     m_loading_progress = value;
     m_loading_stage = std::move(stage);
     emit loadingProgressChanged();
