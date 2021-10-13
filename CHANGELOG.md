@@ -1,7 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - 2021-10-12
+## [recalbox-integration] - 2021-10-13
+- Fix loading bar progress (upper than 100% were possible)
 - bump last gameOs-pixL theme for :
 	- fix settings for 'play stats' conf
 	- add new feature to change automatically favorite displayed in header of showcaseview
