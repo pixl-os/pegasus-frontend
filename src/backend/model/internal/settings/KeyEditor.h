@@ -39,7 +39,7 @@ public:
     Q_INVOKABLE void resetKeys();
 
     static constexpr int eventCount() {
-        return static_cast<int>(::KeyEvent::MAIN_MENU) + 1;
+        return static_cast<int>(::KeyEvent::NETPLAY) + 1; //Warning: put here the last of the list of KeyEvent to have the good count !!! 
     }
 
 signals:
