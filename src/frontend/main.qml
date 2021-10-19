@@ -142,6 +142,21 @@ Window {
                     mainMenu.focus = true;
                 }
 
+                if (api.keys.isNetplay(event)) {
+                    event.accepted = true;
+                    //netplayMenu.focus = true;
+					console.log("api.keys.isNetplay(event)");
+					subscreen.setSource("menu/settings/NetplayInformation.qml", {"isCallDirectly": true});
+					subscreen.focus = true;
+					content.state = "sub";
+			
+					//add dialogBox if pseudo not well configured
+					genericMessage.setSource("dialogs/GenericContinueDialog.qml",
+						{ "title": qsTr("Warning"), "message": qsTr("Please configure your pseudo or you will be as 'anonymous'")});
+						genericMessage.focus = true;						
+				}
+
+
                 if (event.key === Qt.Key_F5) {
                     event.accepted = true;
 
