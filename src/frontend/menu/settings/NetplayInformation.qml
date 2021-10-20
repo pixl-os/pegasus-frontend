@@ -138,6 +138,22 @@ FocusScope {
 								  game: "Metal Slug X (U) [SLUS-01212]";
 								  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
 								  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
+                    ListElement { country: "br"; nickname: "Anonymous";
+                                  game: "Metal Slug X (U) [SLUS-01212]";
+                                  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
+                                  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
+                    ListElement { country: "br"; nickname: "Anonymous";
+                                  game: "Metal Slug X (U) [SLUS-01212]";
+                                  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
+                                  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
+                    ListElement { country: "br"; nickname: "Anonymous";
+                                  game: "Metal Slug X (U) [SLUS-01212]";
+                                  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
+                                  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
+                    ListElement { country: "br"; nickname: "Anonymous";
+                                  game: "Metal Slug X (U) [SLUS-01212]";
+                                  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
+                                  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
                 }
 
                 Repeater {
@@ -208,20 +224,20 @@ FocusScope {
                         Keys.onPressed: {
                             //verify if finally other lists are empty or not when we are just before to change list
                             //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
-/*                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
-                                if (index !== 0) KeyNavigation.up = myDiscoveredDevices.itemAt(index-1);
-                                else if (myDevices.count !== 0){
+                            if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
+                                if (index !== 0) KeyNavigation.up = availableNetplayRooms.itemAt(index-1);
+                                /*else if (myDevices.count !== 0){
                                     KeyNavigation.up = myDevices.itemAt(myDevices.count-1);
-                                }
-                                else KeyNavigation.up = myDiscoveredDevices.itemAt(0);
+                                }*/
+                                else KeyNavigation.up = availableNetplayRooms.itemAt(0);
                             }
                             if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
-                                if (index < myDiscoveredDevices.count-1) KeyNavigation.down = myDiscoveredDevices.itemAt(index+1);
-                                else if (myIgnoredDevices.count !== 0){
+                                if (index < availableNetplayRooms.count-1) KeyNavigation.down = availableNetplayRooms.itemAt(index+1);
+                                /*else if (myIgnoredDevices.count !== 0){
                                     KeyNavigation.down = myIgnoredDevices.itemAt(0);
-                                }
-                                else KeyNavigation.down = myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);       
-								}*/
+                                }*/
+                                else KeyNavigation.down = availableNetplayRooms.itemAt(availableNetplayRooms.count-1);
+                            }
                         }
 
                         Button {
