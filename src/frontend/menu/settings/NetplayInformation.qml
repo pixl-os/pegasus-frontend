@@ -143,8 +143,9 @@ FocusScope {
                 Repeater {
                     id: availableNetplayRooms
                     model: availableNetplayRoomsModel //for test purpose
-                    SimpleButton {
+                    DetailedButton {
                         width: parent.width - vpx(100)
+                        height: focus ? vpx(100) : vpx(50)
 						// to do add Image
 						// using URL like this for image https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/br.svg
 						
