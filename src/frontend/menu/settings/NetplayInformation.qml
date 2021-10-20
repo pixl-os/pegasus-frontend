@@ -112,6 +112,19 @@ FocusScope {
 					height: implicitHeight + vpx(30)
                 }
 
+
+                //for test purpose only
+                ListModel {
+                    id: myFriends
+                    //ListElement { nickname: "Anonymous"; }
+                }
+
+                SectionTitle {
+                    text: qsTr("My Friend's rooms") + api.tr
+                    first: true
+                    visible: myFriends.count > 0 ? true : false
+                }
+
 				SectionTitle {
 					text: qsTr("Retroarch lobby") + api.tr
 					first: true
