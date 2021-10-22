@@ -104,7 +104,7 @@ FocusScope {
 				id: contentColumn
 				spacing: vpx(5)
 
-				width: root.width * 0.7
+                width: root.width * 0.9
 				height: implicitHeight
 
                 Item {
@@ -116,7 +116,7 @@ FocusScope {
                 //for test purpose only
                 ListModel {
                     id: myFriends
-                    //ListElement { nickname: "Anonymous"; }
+                    ListElement { nickname: "Anonymous"; }
                 }
 
                 SectionTitle {
@@ -134,70 +134,62 @@ FocusScope {
                 //for test purpose only
                 ListModel {
                     id: availableNetplayRoomsModel
-                    ListElement { country: "br"; nickname: "Anonymous";
-								  game: "Metal Slug X (U) [SLUS-01212]";
-								  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
-								  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
-                    ListElement { country: "br"; nickname: "Anonymous";
-                                  game: "Metal Slug X (U) [SLUS-01212]";
-                                  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
-                                  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
-                    ListElement { country: "br"; nickname: "Anonymous";
-                                  game: "Metal Slug X (U) [SLUS-01212]";
-                                  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
-                                  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
-                    ListElement { country: "br"; nickname: "Anonymous";
-                                  game: "Metal Slug X (U) [SLUS-01212]";
-                                  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
-                                  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
-                    ListElement { country: "br"; nickname: "Anonymous";
-                                  game: "Metal Slug X (U) [SLUS-01212]";
-                                  core: "PCSX-ReARMed r22 36f3ea6" ; private_flag: "No";
-                                  retroarch_version: "1.8.8"; created: "19 Oct 21 12:05 UTC"}
+                    ListElement { country: "br"; username: "Anonymous";
+                                  game_name: "Metal Slug X (U) [SLUS-01212]";
+                                  game_crc: "D634567DF";
+                                  core_name: "PCSX-ReARMed";
+                                  core_version: "r22 36f3ea6";
+                                  retroarch_version: "1.8.8";
+                                  frontend: "win32 x64";
+                                  ip: "192.168.0.1";
+                                  port: 8080;
+                                  mitm_ip: "";
+                                  mitm_port: 0;
+                                  host_method : 0;
+                                  has_password: false;
+                                  has_spectate_password: true;
+                                  created: "19 Oct 21 12:05 UTC";
+                                  updated: "19 Oct 21 12:10 UTC";
+                                }
                 }
 
                 Repeater {
                     id: availableNetplayRooms
                     model: availableNetplayRoomsModel //for test purpose
                     DetailedButton {
+                        property var status_icon : "\uf1c0" // or "\uf1c1"/"?" or "\uf1c2"/"X"
+                        property var latency_icon : "\uf1c8" // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
+                        property var private_icon : has_password ? "\uf070" : " " // not visible
+                        property var visibility_icon : has_spectate_password ? "\uf070" : " " // not visible
+
                         width: parent.width - vpx(100)
-                        height: focus ? vpx(100) : vpx(50)
-						// to do add Image
-						// using URL like this for image https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.3/flags/1x1/br.svg
-						
-                        // Text {
-                            // id: Icon
-
-                            // anchors.right: isPairingIssue ? deviceDiscoveredStatus.left : parent.left
-                            // anchors.rightMargin: vpx(10)
-                            // anchors.verticalCenter: parent.verticalCenter
-                            // color: themeColor.textLabel
-                            // font.pixelSize: (parent.fontSize)*getIconRatio(icon)
-                            // font.family: globalFonts.awesome
-                            // height: parent.height
-                            // text : icon
-                            // visible: true  //parent.focus
-                        // }
-						
-                        // Text {
-                            // id: deviceDiscoveredStatus
-
-                            // anchors.right: parent.left
-                            // anchors.rightMargin: vpx(5)
-                            // anchors.top: parent.top
-                            // anchors.topMargin: vpx(5)
-
-                            // color: "red"
-                            // font.pixelSize: (parent.fontSize)*2
-                            // font.family: globalFonts.ion
-                            // height: parent.height
-                            // text : "\uf22a"
-                            // visible: isPairingIssue
-                        // }
 
                         label: {
-                            return (nickname + " / " + game + " / " + retroarch_version + " / " + private_flag + "/" + created);
+                            return (status_icon + " " + latency_icon + " " + visibility_icon + " " + game_name + " / " + core_name);
                         }
+                        note: {
+                            return ("username: " + username  + " / room creation: " + created);
+                        }
+                        screenshot: {
+                            return "file:/recalbox/share/roms/neogeo/media/screenshot/mslugx.png"
+                        }
+                        detailed_line1: {
+                            return "Country : " + country;
+                        }
+                        detailed_line2: {
+                            return "Retroarch version : " + retroarch_version;
+                        }
+                        detailed_line3: {
+                            return "Core: " + core_name;
+                        }
+                        detailed_line4: {
+                            return "Core version : " + core_version;
+                        }
+                        detailed_line5: {
+                            return "Frontend : " + frontend;
+                        }
+
+
                         // set focus only on first item
                         focus: index == 0 ? true : false
 
