@@ -163,32 +163,89 @@ FocusScope {
                         property var visibility_icon : has_spectate_password ? "\uf070" : " " // not visible
 
                         width: parent.width - vpx(100)
-
+                        //for preview
                         label: {
                             return (status_icon + " " + latency_icon + " " + visibility_icon + " " + game_name + " / " + core_name);
                         }
                         note: {
                             return ("username: " + username  + " / room creation: " + created);
                         }
-                        screenshot: {
+                        //add image of country
+                        icon: {
+                            return ("https://flagcdn.com/h60/" + country + ".png");
+                        }
+                        //system image
+                        icon2: {
+                            //return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
+                            return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
+                        }
+                        //screenshot
+                        picture: {
                             return "file:/recalbox/share/roms/neogeo/media/screenshot/mslugx.png"
                         }
+                        //line titles
                         detailed_line1: {
-                            return "Country : " + country;
+                            return "Country code : ";
                         }
                         detailed_line2: {
-                            return "Retroarch version : " + retroarch_version;
+                            return "Retroarch version : ";
                         }
                         detailed_line3: {
-                            return "Core: " + core_name;
+                            return "Core: ";
                         }
                         detailed_line4: {
-                            return "Core version : " + core_version;
+                            return "Core version : ";
                         }
                         detailed_line5: {
-                            return "Frontend : " + frontend;
+                            return "Architecture : ";
                         }
-
+                        detailed_line6: {
+                            return "Game CRC : ";
+                        }
+                        detailed_line7: {
+                            return "Password to play : ";
+                        }
+                        detailed_line8: {
+                            return "Password for viewer : ";
+                        }
+                        //line status with details and colors
+                        detailed_line9: {
+                            return country;
+                        }
+                        detailed_line10: {
+                            return "\uf1c0" + " " + retroarch_version;
+                        }
+                        detailed_line11: {
+                            return "\uf1c0" + " " + core_name
+                        }
+                        detailed_line11_color: {
+                            return "green"
+                        }
+                        detailed_line12: {
+                            return "\uf1c0" + " " + core_version
+                        }
+                        detailed_line12_color: {
+                            return "green"
+                        }
+                        detailed_line13: {
+                            return  frontend;
+                        }
+                        detailed_line14: {
+                            return "\uf1c0" + " " + game_crc;
+                        }
+                        detailed_line14_color: {
+                            return "green"
+                        }
+                        detailed_line15: {
+                            return (has_password ? "Yes":"No");
+                        }
+                        detailed_line16: {
+                            return (has_spectate_password ? "Yes":"No");
+                        }
+                        picture2: {
+                            return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
+                            //return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
+                        }
 
                         // set focus only on first item
                         focus: index == 0 ? true : false
