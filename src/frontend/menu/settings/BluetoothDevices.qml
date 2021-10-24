@@ -175,8 +175,8 @@ FocusScope {
                             console.log("result:",result);
                             //simpler one
 							console.log("command:", "/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
-                            //timeout of 30s if needed
-                            result = api.internal.system.runBoolResult("timeout 30 /recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
+                            //timeout of 60s if needed
+                            result = api.internal.system.runBoolResult("timeout 60 /recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
                             //add connect command to correct some issues with some devices too long to connected
                             console.log("command:", "bluetoothctl connect " + macaddress);
                             //timeout 15s if needed
