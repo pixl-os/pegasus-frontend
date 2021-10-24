@@ -22,6 +22,7 @@
 #include "model/gaming/Game.h"
 #include "model/internal/Internal.h"
 #include "model/device/DeviceInfo.h"
+#include "model/netplay/NetplayInfo.h"
 #include "model/keys/Keys.h"
 #include "model/memory/Memory.h"
 #include "providers/ProviderManager.h"
@@ -40,6 +41,7 @@ class ApiObject : public QObject {
 
     QML_CONST_PROPERTY(model::Internal, internal)
     QML_CONST_PROPERTY(model::DeviceInfo, device)
+	QML_CONST_PROPERTY(model::NetplayInfo, netplay)
     QML_CONST_PROPERTY(model::Keys, keys)
     QML_READONLY_PROPERTY(model::Memory, memory)
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
