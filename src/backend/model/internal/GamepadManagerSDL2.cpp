@@ -1074,11 +1074,11 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         #ifdef WITHOUT_LEGACY_SDL
         //for QT creator test without SDL 1 compatibility
         Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
-        const QString Value = QString("%1,%2,%3").arg(guid_str,name,"/dev/input/bidon");
+        const QString Value = QString("%1|%2|%3").arg(guid_str,name,"/dev/input/bidon");
         #else
         // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
         Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
-        const QString Value = QString("%1,%2,%3").arg(guid_str,name,SDL_JoystickDevicePathById(device_idx));
+        const QString Value = QString("%1|%2|%3").arg(guid_str,name,SDL_JoystickDevicePathById(device_idx));
         #endif   
         Log::debug(m_log_tag, LOGMSG("Saved as %1=%2").arg(Parameter,Value));
         RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), Value.toUtf8().constData());
@@ -1127,7 +1127,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
         std::string initial_path = "";
         std::string initial_uuid = "";
         std::string initial_name = "";
-        Strings::SplitInThree(RemovedPadPegasus.toUtf8().constData(), ',', initial_uuid, initial_name, initial_path, true);
+        Strings::SplitInThree(RemovedPadPegasus.toUtf8().constData(), '|', initial_uuid, initial_name, initial_path, true);
         
         //persistence saved in recalbox.conf (to remove this pad) and reorder others (after this pad)
         int MaxInputDevices = 10;
@@ -1138,7 +1138,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             std::string name = "";         
             const QString Parameter = QString("pegasus.pad%1").arg(i);
             const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(i+1));
-            Strings::SplitInThree(NextPadPegasus.toUtf8().constData(), ',', uuid, name, path, true);
+            Strings::SplitInThree(NextPadPegasus.toUtf8().constData(), '|', uuid, name, path, true);
             //Log::debug(m_log_tag, LOGMSG("pegasus.pad%1=%2:%3:%4").arg(QString::number(i+1),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
             
             if (path != "")
