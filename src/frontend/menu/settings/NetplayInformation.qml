@@ -37,6 +37,27 @@ FocusScope {
     
     visible: 0 < (x + width) && x < Window.window.width
 
+    //timer to refresh Netplay list
+    property var counter: 0
+    Timer {
+        id: bluetoothTimer
+        interval: 1000 // Run the timer every second
+        repeat: true
+        running: true //(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+        triggeredOnStart: true
+        onTriggered: {
+
+                if ((interval/1000)*counter === 2){ // wait 2 seconds before to refresh
+                    //console.log("Start bluetooth scan... at ", (interval/1000)*counter," seconds"
+					api.internal.netplay.rooms.updateRooms(); 
+					counter = 0;
+				}
+                else counter = counter + 1;
+        }
+    }
+
+
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -153,9 +174,11 @@ FocusScope {
                                 }
                 }
 
+				//Component.OnCompleted: { console.log("api.internal.netplay.rooms : ", api.internal.netplay.rooms); }
+
                 Repeater {
                     id: availableNetplayRooms
-                    model: availableNetplayRoomsModel //for test purpose
+                    model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
                     DetailedButton {
                         property var status_icon : "\uf1c0" // or "\uf1c1"/"?" or "\uf1c2"/"X"
                         property var latency_icon : "\uf1c8" // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"

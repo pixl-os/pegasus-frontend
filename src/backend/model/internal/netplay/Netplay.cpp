@@ -1,8 +1,8 @@
 // Pegasus Frontend
 //
-// Created by Bozo The Geek - 23/10/2021
+// Created by Bozo The Geek - 27/10/2021
 //
-#include "NetplayInfo.h"
+#include "Netplay.h"
 
 namespace {
 /* model::DeviceInfo::BatteryStatus sdl_state_to_qt(const SDL_PowerState sdl_state)
@@ -25,7 +25,7 @@ model::DeviceInfo::BatteryInfo query_battery()
 
 
 namespace model {
-NetplayInfo::NetplayInfo(QObject* parent)
+Netplay::Netplay(QObject* parent)
     : QObject(parent)
 {
 	//TO DO : add timer to refresh lobbies
