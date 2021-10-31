@@ -209,7 +209,7 @@ QVariant Rooms::data(const QModelIndex& index, int role) const
     }
     // save
     m_current_idx = idx;
-    Log::debug(LOGMSG("emit roomChanged();"));
+    Log::debug(LOGMSG("emit roomsChanged();"));
     emit roomsChanged();
 }
 
@@ -233,24 +233,14 @@ void Rooms::refresh_slot() {
         }
         //Create Network Access
         QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-
         //get lobby json from internet
         const QString url_str = QStringLiteral("http://lobby.libretro.com/list/");
         QJsonDocument json;
         json = get_json_from_url(url_str, log_tag, *manager);
+        //parse lobby data
+        bool result = false;
+        result = find_available_rooms(log_tag, json, m_Rooms);
 
-        //bool lobbyLoaded = true;
-        //if(lobbyLoaded){
-        //to signal refresh of model's data
-        //emit Rooms::beginResetModel();
-
-            //parse lobby data
-            bool result = false;
-            result = find_available_rooms(log_tag, json, m_Rooms);
-
-        //to signal end of model's data
-        //emit Rooms::endResetModel();
-        //}
     }
     catch ( const std::exception & Exp )
     {
@@ -316,14 +306,27 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json, std
             }
             else
             {
-                //Rooms::beginInsertRows(QModelIndex(), i-1, i-1);
                 roomsEntry.at(i-1).id = Id;
                 roomsEntry.at(i-1).username = Username;
                 roomsEntry.at(i-1).country = Country;
                 roomsEntry.at(i-1).game_name = Game_name;
+                roomsEntry.at(i-1).game_crc = Game_crc;
+                roomsEntry.at(i-1).core_name = Core_name;
+                roomsEntry.at(i-1).core_version = Core_version;
+                roomsEntry.at(i-1).subsystem_name = Subsystem_name;
+                roomsEntry.at(i-1).retroarch_version = Retroarch_version;
+                roomsEntry.at(i-1).frontend = Frontend;
+                roomsEntry.at(i-1).ip = Ip;
+                roomsEntry.at(i-1).port = Port;
+                roomsEntry.at(i-1).mitm_ip = Mitm_ip;
+                roomsEntry.at(i-1).mitm_port = Mitm_port;
+                roomsEntry.at(i-1).host_method = Host_method;
+                roomsEntry.at(i-1).has_password = Has_password;
+                roomsEntry.at(i-1).has_spectate_password = Has_spectate_password;
+                roomsEntry.at(i-1).created = Created;
+                roomsEntry.at(i-1).updated = Updated;
                 Log::debug(log_tag, LOGMSG("Game changed : %1").arg(Game_name));
                 emit Rooms::dataChanged(index(i-1), index(i-1));
-                //Rooms::endInsertRows();
             }
             i = i + 1;
     }

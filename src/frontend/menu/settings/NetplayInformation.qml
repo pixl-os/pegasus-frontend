@@ -40,7 +40,7 @@ FocusScope {
     //timer to refresh Netplay list
     property var counter: 0
     Timer {
-        id: bluetoothTimer
+        id: netplayTimer
         interval: 1000 // Run the timer every second
         repeat: true
         running: true //(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
@@ -48,11 +48,9 @@ FocusScope {
         onTriggered: {
 
                 if ((interval/1000)*counter === 5){ // wait 5 seconds before to refresh
-                    //console.log("Start bluetooth scan... at ", (interval/1000)*counter," seconds"
-                    console.log("currentIndex: ", availableNetplayRooms.selectedButtonIndex);
-					api.internal.netplay.rooms.refresh(); 
-					
-					counter = 0;
+                    console.log("netplayTimer - before refresh: availableNetplayRooms.selectedButtonIndex", availableNetplayRooms.selectedButtonIndex);
+                    api.internal.netplay.rooms.refresh();
+                    counter = 0;
 				}
                 else counter = counter + 1;
         }
@@ -139,7 +137,7 @@ FocusScope {
                 //for test purpose only
                 ListModel {
                     id: myFriends
-                    ListElement { nickname: "Anonymous"; }
+                    //ListElement { nickname: "Anonymous"; }
                 }
 
                 SectionTitle {
@@ -155,7 +153,7 @@ FocusScope {
 				}
 				
                 //for test purpose only
-                ListModel {
+                /*ListModel {
                     id: availableNetplayRoomsModel
                     ListElement { country: "br"; username: "Anonymous";
                                   game_name: "Metal Slug X (U) [SLUS-01212]";
@@ -174,9 +172,7 @@ FocusScope {
                                   created: "19 Oct 21 12:05 UTC";
                                   updated: "19 Oct 21 12:10 UTC";
                                 }
-                }
-
-				//Component.OnCompleted: { console.log("api.internal.netplay.rooms : ", api.internal.netplay.rooms); }
+                }*/
 
                 Repeater {
                     id: availableNetplayRooms
@@ -274,8 +270,23 @@ FocusScope {
                         }
 
                         // set focus only on first item
-                        focus: index === availableNetplayRooms.selectedButtonIndex ? true : false
+                        focus:{
+                            console.log("------Begin of Focus-------");
+                            console.log("api.internal.netplay.rooms.count : ", api.internal.netplay.rooms.rowCount() );
+                            console.log("availableNetplayRooms.selectedButtonIndex : ",availableNetplayRooms.selectedButtonIndex)
+                            console.log("Index : ",index)
 
+                            if( availableNetplayRooms.selectedButtonIndex < api.internal.netplay.rooms.rowCount()){
+                                console.log("(index === availableNetplayRooms.selectedButtonIndex) ? true : false : ",(index === availableNetplayRooms.selectedButtonIndex) ? true : false);
+                                return (index === availableNetplayRooms.selectedButtonIndex) ? true : false ;
+							}
+							else{
+                                availableNetplayRooms.selectedButtonIndex = api.internal.netplay.rooms.rowCount()-1;
+                                console.log("(index === api.internal.netplay.rooms.rowCount()-1) ? true : false : ",(index === api.internal.netplay.rooms.rowCount()-1) ? true : false);
+                                return (index === api.internal.netplay.rooms.rowCount()-1) ? true : false ;
+                            }
+                            console.log("------End of Focus-------");
+						}
                         onActivate: {
                             ////to force change of focus
                             // confirmDialog.focus = false;
@@ -296,7 +307,7 @@ FocusScope {
                         }
 
                         onFocusChanged:{
-							container.onFocus(this)
+							container.onFocus(this)                            
 						}
                         Keys.onPressed: {
                             //verify if finally other lists are empty or not when we are just before to change list
@@ -306,9 +317,6 @@ FocusScope {
                                     availableNetplayRooms.selectedButtonIndex = index-1;
 									KeyNavigation.up = availableNetplayRooms.itemAt(index-1);
 								}
-                                /*else if (myDevices.count !== 0){
-                                    KeyNavigation.up = myDevices.itemAt(myDevices.count-1);
-                                }*/
                                 else {
 									KeyNavigation.up = availableNetplayRooms.itemAt(0);
                                     availableNetplayRooms.selectedButtonIndex = 0;
@@ -319,9 +327,6 @@ FocusScope {
 									KeyNavigation.down = availableNetplayRooms.itemAt(index+1);
                                     availableNetplayRooms.selectedButtonIndex = index+1;
 								}
-                                /*else if (myIgnoredDevices.count !== 0){
-                                    KeyNavigation.down = myIgnoredDevices.itemAt(0);
-                                }*/
                                 else {
 									KeyNavigation.down = availableNetplayRooms.itemAt(availableNetplayRooms.count-1);
                                     availableNetplayRooms.selectedButtonIndex = availableNetplayRooms.count-1;
@@ -366,7 +371,7 @@ FocusScope {
 				SectionTitle {
 					text: qsTr("Dolphin") + api.tr
                     first: false
-					visible: true
+                    visible: false // hide for the moment
 				}
 			}
 		}
