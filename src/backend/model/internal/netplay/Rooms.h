@@ -39,7 +39,7 @@ struct RoomEntry {
 
 class Rooms : public QAbstractListModel {
     Q_OBJECT
-    Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY roomChanged)
+    Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY roomsChanged)
 	
 public:
     explicit Rooms(QObject* parent = nullptr);
