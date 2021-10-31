@@ -671,7 +671,9 @@ void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) c
 			}	
 		}
 	}
-	else return;
+    //kill manager to avoid memory leaks
+    delete manager;
+
 }
 
 } // namespace retroAchievements

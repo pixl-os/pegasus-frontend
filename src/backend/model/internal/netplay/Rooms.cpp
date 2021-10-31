@@ -240,6 +240,8 @@ void Rooms::refresh_slot() {
         //parse lobby data
         bool result = false;
         result = find_available_rooms(log_tag, json, m_Rooms);
+        //kill manager to avoid memory leaks
+        delete manager;
 
     }
     catch ( const std::exception & Exp )
