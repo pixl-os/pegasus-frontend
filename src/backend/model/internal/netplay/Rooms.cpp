@@ -5,24 +5,64 @@
 #include "Rooms.h"
 #include "Log.h"
 
+#include <RecalboxConf.h>
+
+//for network
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QSslSocket>
+
+//for json parsing
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QEventLoop>
+#include <QElapsedTimer>
+
 namespace {
-
-std::vector<model::RoomEntry> find_available_rooms()
+QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
 {
-    std::vector<model::RoomEntry> Roomslist;
+    QNetworkAccessManager* const manager_ptr = &manager;
+    const QUrl url(url_str, QUrl::StrictMode);
+    Q_ASSERT(url.isValid());
+    if (Q_UNLIKELY(!url.isValid()))
+    {
+        Log::debug(log_tag, LOGMSG("Q_UNLIKELY(!url.isValid())"));
+        return QJsonDocument();
+    }
 
-    Log::debug(LOGMSG("find_available_rooms()"));
-    //For test purpose
-	Roomslist.emplace_back(474269,"Anonymous","us","Aero Fighters ","9F8D3323","Snes9x","1.60 7235219","N/A","1.9.11",
-      "unix ARMv8","24.156.110.18",55436,"",0,0,true,false,"2021-10-27T15:44:24.253326Z","2021-10-27T15:44:34.344168Z");
-	Roomslist.emplace_back(474270,"Anonymous2","us","Aero Fighters ","9F8D3323","Snes9x","1.60 7235219","N/A","1.9.11",
-      "unix ARMv8","24.156.110.18",55436,"",0,0,true,false,"2021-10-27T15:44:24.253326Z","2021-10-27T15:44:34.344168Z");
-	Roomslist.emplace_back(474271,"Anonymous3","us","Aero Fighters ","9F8D3323","Snes9x","1.60 7235219","N/A","1.9.11",
-      "unix ARMv8","24.156.110.18",55436,"",0,0,true,false,"2021-10-27T15:44:24.253326Z","2021-10-27T15:44:34.344168Z");
-  
-    return Roomslist;
+    //Set request
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+        request.setTransferTimeout(10000);
+    #endif
+
+    //Get request
+    QNetworkReply* const reply = manager_ptr->get(request);
+
+    //do loop on connect to wait donwload in this case
+    QEventLoop loop;
+    QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    if (reply->error()) {
+        Log::warning(log_tag, LOGMSG("Downloading metadata failed: %1").arg(reply->errorString()));
+        return QJsonDocument();
+    }
+    const QByteArray raw_data = reply->readAll();
+    //Log::debug(log_tag, LOGMSG("Raw data: %1").arg(QString(raw_data)));
+
+    QJsonDocument json = QJsonDocument::fromJson(raw_data);
+    if (json.isNull()) {
+        Log::warning(log_tag, LOGMSG(
+               "Failed to parse the response of the server, "
+               "either it's no longer available from https://retroachievements.org/ or the API has changed"));
+        return QJsonDocument();
+    }
+    return json;
 }
-
 } // namespace
 
 namespace model {
@@ -56,6 +96,11 @@ RoomEntry::RoomEntry(int Id,
     , subsystem_name(std::move(Subsystem_name))
     , retroarch_version(std::move(Retroarch_version))
     , frontend(std::move(Frontend))
+    , ip(std::move(Ip))
+    , port(std::move(Port))
+    , mitm_ip(std::move(Mitm_ip))
+    , mitm_port(std::move(Mitm_port))
+    , host_method(std::move(Host_method))
     , has_password(std::move(Has_password))
     , has_spectate_password(std::move(Has_spectate_password))
     , created(std::move(Created))
@@ -63,10 +108,6 @@ RoomEntry::RoomEntry(int Id,
 
 
 {
-
-    Log::warning(LOGMSG("RoomEntry::RoomEntry"));
-
-
 }
 
 Rooms::Rooms(QObject* parent)
@@ -93,8 +134,6 @@ Rooms::Rooms(QObject* parent)
         { Roles::Updated, QByteArrayLiteral("updated") },
 })
 {
-   Log::warning(LOGMSG("Rooms::Rooms(QObject* parent)"));
-   //updateRooms();//empty constructor to be generic
 }
 
 int Rooms::rowCount(const QModelIndex& parent) const
@@ -171,30 +210,135 @@ QVariant Rooms::data(const QModelIndex& index, int role) const
     // save
     m_current_idx = idx;
     Log::debug(LOGMSG("emit roomChanged();"));
-    emit roomChanged();
+    emit roomsChanged();
+}
+
+void Rooms::refresh()
+{
+     //Log::debug(LOGMSG("Rooms::refresh_slot() put in Qt::QueuedConnection"));
+     QMetaObject::invokeMethod(this,"refresh_slot", Qt::QueuedConnection);
+}
+
+void Rooms::refresh_slot() {
+
+    //Log::debug(LOGMSG("void Rooms::refresh_slot()"));
+    QString log_tag = "Netplay";
+    try{
+        //check of netplay activated
+        //check in recalbox.conf to know if activated
+        if (!RecalboxConf::Instance().AsBool("global.netplay.active"))
+        {
+            Log::debug(log_tag, LOGMSG("not activated !"));
+            return;
+        }
+        //Create Network Access
+        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+
+        //get lobby json from internet
+        const QString url_str = QStringLiteral("http://lobby.libretro.com/list/");
+        QJsonDocument json;
+        json = get_json_from_url(url_str, log_tag, *manager);
+
+        //bool lobbyLoaded = true;
+        //if(lobbyLoaded){
+        //to signal refresh of model's data
+        //emit Rooms::beginResetModel();
+
+            //parse lobby data
+            bool result = false;
+            result = find_available_rooms(log_tag, json, m_Rooms);
+
+        //to signal end of model's data
+        //emit Rooms::endResetModel();
+        //}
+    }
+    catch ( const std::exception & Exp )
+    {
+        Log::error(log_tag, LOGMSG("Error: %1.\n").arg(Exp.what()));
+    }
+}
+
+bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json, std::vector<model::RoomEntry>& roomsEntry)
+{
+    std::vector<model::RoomEntry> Roomslist;
+
+    //Log::debug(LOGMSG("find_available_rooms() : %1").arg(QString(json.toJson(QJsonDocument::Compact))));
+
+    using QL1 = QLatin1String;
+
+    if (json.isNull())
+    {
+        Log::debug(log_tag, LOGMSG("json.isNull()"));
+        return false;
+    }
+    const auto json_root = json.array();
+    if (json_root.isEmpty())
+    {
+        Log::debug(log_tag, LOGMSG("json_root.isEmpty()"));
+        return false;
+    }
+    else Log::debug(log_tag, LOGMSG("nb fields/rooms found: %1").arg(json_root.count()));
+
+    //if(roomsEntry.size() != 0) emit Rooms::beginResetModel();
+
+    //roomsEntry.clear();
+    int i = 1;
+    for (const auto& array_entry : json_root) {
+            const auto fields = array_entry[QL1("fields")].toObject();
+            const auto Id = fields[QL1("id")].toInt();
+            const auto Username = fields[QL1("username")].toString();
+            const auto Country = fields[QL1("country")].toString();
+            const auto Game_name = fields[QL1("game_name")].toString();
+            const auto Game_crc = fields[QL1("game_crc")].toString();
+            const auto Core_name = fields[QL1("core_name")].toString();
+            const auto Core_version = fields[QL1("core_version")].toString();
+            const auto Subsystem_name = fields[QL1("subsystem_name")].toString();
+            const auto Retroarch_version = fields[QL1("retroarch_version")].toString();
+            const auto Frontend = fields[QL1("frontend")].toString();
+            const auto Ip = fields[QL1("ip")].toString();
+            const auto Port = fields[QL1("port")].toInt();
+            const auto Mitm_ip = fields[QL1("mitm_ip")].toString();
+            const auto Mitm_port = fields[QL1("mitm_port")].toInt();
+            const auto Host_method = fields[QL1("host_method")].toInt();
+            const auto Has_password = fields[QL1("has_password")].toBool();
+            const auto Has_spectate_password = fields[QL1("has_spectate_password")].toBool();
+            const auto Created = fields[QL1("created")].toString();
+            const auto Updated = fields[QL1("updated")].toString();
+
+            //Log::debug(log_tag, LOGMSG("Username=%1").arg(Username));
+
+            if(i > int(roomsEntry.size())){
+                Rooms::beginInsertRows(QModelIndex(), i-1, i-1);
+                roomsEntry.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,
+                  Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
+                Log::debug(log_tag, LOGMSG("Add game : %1").arg(Game_name));
+                Rooms::endInsertRows();
+            }
+            else
+            {
+                //Rooms::beginInsertRows(QModelIndex(), i-1, i-1);
+                roomsEntry.at(i-1).id = Id;
+                roomsEntry.at(i-1).username = Username;
+                roomsEntry.at(i-1).country = Country;
+                roomsEntry.at(i-1).game_name = Game_name;
+                Log::debug(log_tag, LOGMSG("Game changed : %1").arg(Game_name));
+                emit Rooms::dataChanged(index(i-1), index(i-1));
+                //Rooms::endInsertRows();
+            }
+            i = i + 1;
+    }
+    //check if we have to remove line
+    for(int j = 1; j <= (int(roomsEntry.size()) - (i-1)); j++){
+        Rooms::beginRemoveRows(QModelIndex(), roomsEntry.size()-1, roomsEntry.size()-1);
+        Log::debug(log_tag, LOGMSG("Remove game : %1").arg(roomsEntry.at(roomsEntry.size()-1).game_name));
+        roomsEntry.pop_back();
+        Rooms::endRemoveRows();
+    }
+    //emit QAbstractListModel::endResetModel();
+
+    return true;
 }
 
 
-void Rooms::updateRooms() { 
-
-    Log::debug(LOGMSG("void Rooms::updateRooms()"));
-
-	//check if network
-	
-	//get lobby json filebuf
-	
-	//check content is valid
-	
-	//update list from existing list if not empty
-	
-   //to signal refresh of model's data
-   emit QAbstractItemModel::beginResetModel();
-
-        m_Rooms = find_available_rooms();
-        
-   //to signal end of model's data
-   emit QAbstractItemModel::endResetModel();
-
-}
 
 } // namespace model

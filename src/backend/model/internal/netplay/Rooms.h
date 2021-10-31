@@ -11,7 +11,6 @@
 namespace model {
 struct RoomEntry {
       int id; // "id": 474269,
-	  //for later QString type; // set by Pegasus : "retroarch" or "dolphin" or ...
       QString username; //"username": "Anonymous",
       QString country; //"country": "us",
       QString game_name; //"game_name": "Aero Fighters ",
@@ -30,7 +29,8 @@ struct RoomEntry {
       bool has_spectate_password; //"has_spectate_password": false,
       QString created; //"created": "2021-10-27T15:44:24.253326Z",
       QString updated; //"updated": "2021-10-27T15:44:34.344168Z"
-	  
+      //for later// QString lobby_type; // set by Pegasus : "retroarch" or "dolphin" or ...
+
 	  RoomEntry(int, QString, QString, QString, QString, QString, QString, QString, QString, QString, QString,
 			   int, QString, int, int, bool, bool, QString, QString);
       MOVE_ONLY(RoomEntry)
@@ -72,9 +72,9 @@ public:
 
     int currentIndex() const { return static_cast<int>(m_current_idx); }
     void setCurrentIndex(int);
-    
+    bool find_available_rooms(QString log_tag, const QJsonDocument& json, std::vector<model::RoomEntry>& roomsEntry);
 	//CurrentName is used to initiate the Rooms list from list define by the developer and return the existing value from recalbox.conf if exist
-    Q_INVOKABLE void updateRooms();
+    Q_INVOKABLE void refresh();
     //CurrentNameFromSystem is used to initiate the Rooms list generated from a system/script command and return the existing value from recalbox.conf if exist
     //Q_INVOKABLE  QString currentNameFromSystem (const QString& Room, const QString& SysCommand, const QStringList& SysOptions);
 
@@ -92,15 +92,18 @@ public:
     }
 }
  */
+private slots:
+    void refresh_slot();
+
 signals:
-    void roomChanged();
+    void roomsChanged();
 
 private:
     const QHash<int, QByteArray> m_role_names;
 
     std::vector<RoomEntry> m_Rooms;
 
-    QString m_Room;
+    //QString m_Room;
     
     size_t m_current_idx;
 

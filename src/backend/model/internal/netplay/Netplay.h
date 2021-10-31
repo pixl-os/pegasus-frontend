@@ -19,10 +19,8 @@ class Netplay : public QObject {
 
 public:
     explicit Netplay(QObject* parent = nullptr);
-    //Q_PROPERTY(int RoomsCount READ getRoomsCount CONSTANT)
-    
+    //Q_PROPERTY(int RoomsCount READ getRoomsCount CONSTANT)    
     //Q_INVOKABLE void UpdateRooms();
-
 
 signals:
     //void batteryStatusChanged();

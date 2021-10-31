@@ -47,9 +47,11 @@ FocusScope {
         triggeredOnStart: true
         onTriggered: {
 
-                if ((interval/1000)*counter === 2){ // wait 2 seconds before to refresh
+                if ((interval/1000)*counter === 5){ // wait 5 seconds before to refresh
                     //console.log("Start bluetooth scan... at ", (interval/1000)*counter," seconds"
-					api.internal.netplay.rooms.updateRooms(); 
+                    console.log("currentIndex: ", availableNetplayRooms.selectedButtonIndex);
+					api.internal.netplay.rooms.refresh(); 
+					
 					counter = 0;
 				}
                 else counter = counter + 1;
@@ -147,7 +149,7 @@ FocusScope {
                 }
 
 				SectionTitle {
-					text: qsTr("Retroarch lobby") + api.tr
+                    text: qsTr("Retroarch lobby : ") + availableNetplayRooms.count + qsTr(" room(s)")  + api.tr
 					first: true
 					visible: true
 				}
@@ -179,6 +181,7 @@ FocusScope {
                 Repeater {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
+					property var selectedButtonIndex : 0
                     DetailedButton {
                         property var status_icon : "\uf1c0" // or "\uf1c1"/"?" or "\uf1c2"/"X"
                         property var latency_icon : "\uf1c8" // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
@@ -271,7 +274,7 @@ FocusScope {
                         }
 
                         // set focus only on first item
-                        focus: index == 0 ? true : false
+                        focus: index === availableNetplayRooms.selectedButtonIndex ? true : false
 
                         onActivate: {
                             ////to force change of focus
@@ -292,23 +295,37 @@ FocusScope {
 
                         }
 
-                        onFocusChanged: container.onFocus(this)
+                        onFocusChanged:{
+							container.onFocus(this)
+						}
                         Keys.onPressed: {
                             //verify if finally other lists are empty or not when we are just before to change list
                             //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
-                                if (index !== 0) KeyNavigation.up = availableNetplayRooms.itemAt(index-1);
+                                if (index !== 0) {
+                                    availableNetplayRooms.selectedButtonIndex = index-1;
+									KeyNavigation.up = availableNetplayRooms.itemAt(index-1);
+								}
                                 /*else if (myDevices.count !== 0){
                                     KeyNavigation.up = myDevices.itemAt(myDevices.count-1);
                                 }*/
-                                else KeyNavigation.up = availableNetplayRooms.itemAt(0);
+                                else {
+									KeyNavigation.up = availableNetplayRooms.itemAt(0);
+                                    availableNetplayRooms.selectedButtonIndex = 0;
+								}
                             }
                             if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
-                                if (index < availableNetplayRooms.count-1) KeyNavigation.down = availableNetplayRooms.itemAt(index+1);
+                                if (index < availableNetplayRooms.count-1) {
+									KeyNavigation.down = availableNetplayRooms.itemAt(index+1);
+                                    availableNetplayRooms.selectedButtonIndex = index+1;
+								}
                                 /*else if (myIgnoredDevices.count !== 0){
                                     KeyNavigation.down = myIgnoredDevices.itemAt(0);
                                 }*/
-                                else KeyNavigation.down = availableNetplayRooms.itemAt(availableNetplayRooms.count-1);
+                                else {
+									KeyNavigation.down = availableNetplayRooms.itemAt(availableNetplayRooms.count-1);
+                                    availableNetplayRooms.selectedButtonIndex = availableNetplayRooms.count-1;
+								}
                             }
                         }
 
