@@ -69,6 +69,7 @@ FocusScope {
 
     readonly property int fontSize: vpx(22)
     readonly property int horizontalPadding: vpx(30)
+    readonly property int detailPartHeight: vpx(125)
 
     signal activate()
 
@@ -212,14 +213,14 @@ FocusScope {
         }
         Row{
             spacing: fontSize //* 0.25
-            height: root.focus ? vpx(200) : 0
+            height: root.focus ? detailPartHeight : 0
             width: underline.width
             visible: root.focus
             Column{
                 Image {
                     id: picture
                     asynchronous: true
-                    height: root.focus ? vpx(200) : 0
+                    height: root.focus ? detailPartHeight : 0
                     width: height * (4/3) // for 4/3 video sized
                     source: ""
                     fillMode: Image.PreserveAspectFit
@@ -352,7 +353,7 @@ FocusScope {
                     Image {
                     id: picture2
                     asynchronous: true
-                    height: root.focus ? vpx(200) : 0
+                    height: root.focus ? detailPartHeight : 0
                     width: height * (4/3) // for 4/3 video sized
                     source: ""
                     fillMode: Image.PreserveAspectFit

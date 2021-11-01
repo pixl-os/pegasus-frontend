@@ -206,9 +206,9 @@ FocusScope {
                             return "file:/recalbox/share/roms/neogeo/media/screenshot/mslugx.png"
                         }
                         //line titles
-                        detailed_line1: {
+                        /*detailed_line1: {
                             return "Country code : ";
-                        }
+                        }*/
                         detailed_line2: {
                             return "Retroarch version : ";
                         }
@@ -224,16 +224,16 @@ FocusScope {
                         detailed_line6: {
                             return "Game CRC : ";
                         }
-                        detailed_line7: {
+                        /*detailed_line7: {
                             return "Password to play : ";
                         }
                         detailed_line8: {
                             return "Password for viewer : ";
-                        }
+                        }*/
                         //line status with details and colors
-                        detailed_line9: {
+                        /*detailed_line9: {
                             return country;
-                        }
+                        }*/
                         detailed_line10: {
                             return "\uf1c0" + " " + retroarch_version;
                         }
@@ -258,12 +258,12 @@ FocusScope {
                         detailed_line14_color: {
                             return "green"
                         }
-                        detailed_line15: {
+                        /*detailed_line15: {
                             return (has_password ? "Yes":"No");
                         }
                         detailed_line16: {
                             return (has_spectate_password ? "Yes":"No");
-                        }
+                        }*/
                         picture2: {
                             return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
                             //return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
