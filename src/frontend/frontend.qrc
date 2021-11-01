@@ -97,5 +97,6 @@
         <file>dialogs/Generic3ChoicesDialog.qml</file>
         <file>menu/settings/VideoSettings.qml</file>
         <file>menu/settings/common/DetailedButton.qml</file>
+        <file>assets/libretro-retroarch-simple-logo.png</file>
     </qresource>
 </RCC>

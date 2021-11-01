@@ -38,7 +38,7 @@ FocusScope {
     visible: 0 < (x + width) && x < Window.window.width
 
     //timer to refresh Netplay list
-    property var counter: 0
+    property var counter: 4
     Timer {
         id: netplayTimer
         interval: 1000 // Run the timer every second
@@ -146,12 +146,22 @@ FocusScope {
                     visible: myFriends.count > 0 ? true : false
                 }
 
-				SectionTitle {
-                    text: qsTr("Retroarch lobby : ") + availableNetplayRooms.count + qsTr(" room(s)")  + api.tr
+
+                Row{
+                    Image {
+                        id: logoRetroarch
+                        height: vpx(50)
+                        source: "../../assets/libretro-retroarch-simple-logo.png"
+                        anchors.verticalCenter: retroarch_title.verticalCenter
+                        fillMode: Image.PreserveAspectFit
+                    }
+                    SectionTitle {
+                    id: retroarch_title
+                    text: "  " + qsTr("Retroarch lobby : ") + availableNetplayRooms.count + qsTr(" room(s)")  + api.tr
 					first: true
 					visible: true
-				}
-				
+                    }
+                }
                 //for test purpose only
                 /*ListModel {
                     id: availableNetplayRoomsModel
@@ -179,28 +189,28 @@ FocusScope {
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
 					property var selectedButtonIndex : 0
                     DetailedButton {
-                        property var status_icon : "\uf1c0" // or "\uf1c1"/"?" or "\uf1c2"/"X"
-                        property var latency_icon : "\uf1c8" // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
-                        property var private_icon : has_password ? "\uf070" : " " // not visible
-                        property var visibility_icon : has_spectate_password ? "\uf070" : " " // not visible
+                        property var status_icon : "\uf1c0 " // or "\uf1c1"/"?" or "\uf1c2"/"X"
+                        property var latency_icon : "\uf1c8 " // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
+                        property var private_icon : has_password ? "\uf071 " : ""
+                        property var visibility_icon : has_spectate_password ? "\uf070 " : " "
 
                         width: parent.width - vpx(100)
                         //for preview
                         label: {
-                            return (status_icon + " " + latency_icon + " " + visibility_icon + " " + game_name + " / " + core_name);
+                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + game_name);
                         }
                         note: {
-                            return ("username: " + username  + " / room creation: " + created);
+                            return (" " + qsTr("Creation date") + ": " + created);
                         }
                         //add image of country
                         icon: {
                             return ("https://flagcdn.com/h60/" + country + ".png");
                         }
                         //system image
-                        icon2: {
+                        /*icon2: {
                             //return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
                             return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
-                        }
+                        }*/
                         //screenshot
                         picture: {
                             return "file:/recalbox/share/roms/neogeo/media/screenshot/mslugx.png"

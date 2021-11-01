@@ -171,6 +171,16 @@ FocusScope {
                 Row{
                     height: sublabel.height
                     //width: underline.width * 0.8
+                    Image {
+                        id: icon
+                        asynchronous: true
+                        height: sublabel.height // parent.height //label.height + labelContainer.spacing + sublabel.height//parent.height
+                        width: sublabel.height * (4/3) // for 4/3 flag
+                        source: ""
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                        //visible: root.focus
+                    }
                     Text {
                         id: sublabel
 
@@ -180,16 +190,6 @@ FocusScope {
                         font.italic: true
                         //width: parent.width
                         wrapMode: Text.WordWrap
-                    }
-                    Image {
-                        id: icon
-                        asynchronous: true
-                        height: parent.height //label.height + labelContainer.spacing + sublabel.height//parent.height
-                        //width: height * (4/3) // for 4/3 flag
-                        source: ""
-                        fillMode: Image.PreserveAspectFit
-                        smooth: true
-                        //visible: root.focus
                     }
                 }
 
