@@ -16,6 +16,7 @@
 
 
 import "common"
+import "../../search"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -188,12 +189,19 @@ FocusScope {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
 					property var selectedButtonIndex : 0
+
                     DetailedButton {
+                        SearchGame {id: mygames; filter:"mario"} //     crc:game_crc.toLowerCase()}
+                        property var nbgame :{
+                            console.log("game_crc : ", game_crc.toLowerCase());
+                            console.log("mygames.games.count : ", mygames.games.count);
+                            console.log("mygames.gamesFound : ", mygames.gamesFound(0).Title);
+                            return mygames.games.count;
+                        }
                         property var status_icon : "\uf1c0 " // or "\uf1c1"/"?" or "\uf1c2"/"X"
                         property var latency_icon : "\uf1c8 " // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
                         property var private_icon : has_password ? "\uf071 " : ""
                         property var visibility_icon : has_spectate_password ? "\uf070 " : " "
-
                         width: parent.width - vpx(100)
                         //for preview
                         label: {
@@ -278,7 +286,6 @@ FocusScope {
                             return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
                             //return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
                         }
-
                         // set focus only on first item
                         focus:{
                             console.log("------Begin of Focus-------");
@@ -296,7 +303,8 @@ FocusScope {
                                 return (index === api.internal.netplay.rooms.rowCount()-1) ? true : false ;
                             }
                             console.log("------End of Focus-------");
-						}
+
+                        }
                         onActivate: {
                             ////to force change of focus
                             // confirmDialog.focus = false;
