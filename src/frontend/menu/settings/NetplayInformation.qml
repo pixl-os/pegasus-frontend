@@ -188,16 +188,31 @@ FocusScope {
                 Repeater {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
-					property var selectedButtonIndex : 0
-
+					property var selectedButtonIndex : 0                    
                     DetailedButton {
-                        SearchGame {id: mygames; filter:"mario"} //     crc:game_crc.toLowerCase()}
-                        property var nbgame :{
-                            console.log("game_crc : ", game_crc.toLowerCase());
-                            console.log("mygames.games.count : ", mygames.games.count);
-                            console.log("mygames.gamesFound : ", mygames.gamesFound(0).Title);
-                            return mygames.games.count;
+                        SearchGame {id: search; crc: game_crc}
+                        property var game :{
+                            //cette CRC to search
+                            //mygames.crc = game_crc;
+                            if (search.max === 1) { //CRC match
+                                console.log("search.crc : '",search.crc,"'");
+                                console.log("search.max : ", search.max); //OK
+                                console.log("search.result.games.get(0).title : ", search.result.games.get(0).title); //OK
+                                console.log("search.result.games.get(0).hash : '", search.result.games.get(0).hash,"'"); //OK
+                                picture2 = search.result.games.get(0).assets.screenshot;
+                                picture = search.result.games.get(0).assets.logo;
+                                icon2 = picture;
+                                return search.gameFound(0);
+                            }
+                            else
+                            {
+                                picture = "";
+                                picture2 = "";
+                                icon2 = "";
+                                return null;
+                            }
                         }
+
                         property var status_icon : "\uf1c0 " // or "\uf1c1"/"?" or "\uf1c2"/"X"
                         property var latency_icon : "\uf1c8 " // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
                         property var private_icon : has_password ? "\uf071 " : ""
@@ -205,7 +220,7 @@ FocusScope {
                         width: parent.width - vpx(100)
                         //for preview
                         label: {
-                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + game_name);
+                            //return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + game_name);
                         }
                         note: {
                             return (" " + qsTr("Creation date") + ": " + created);
@@ -220,9 +235,13 @@ FocusScope {
                             return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
                         }*/
                         //screenshot
-                        picture: {
-                            return "file:/recalbox/share/roms/neogeo/media/screenshot/mslugx.png"
-                        }
+//                        picture: {
+//                            console.log("search.max : ",search.max);
+//                            console.log("search.result.games.get(0).assets.screenshot:",search.result.games.get(0).assets.screenshot);
+//                            if (search.max === 1) return search.result.games.get(0).assets.screenshot
+//                            else return "";
+//                            //return "file:/recalbox/share/roms/neogeo/media/screenshot/mslugx.png"
+//                        }
                         //line titles
                         /*detailed_line1: {
                             return "Country code : ";
@@ -271,10 +290,10 @@ FocusScope {
                             return  frontend;
                         }
                         detailed_line14: {
-                            return "\uf1c0" + " " + game_crc;
+                            return ((search.max === 1) ? "\uf1c0" : "\uf1c2" ) + " " + game_crc;
                         }
                         detailed_line14_color: {
-                            return "green"
+                            return ((search.max === 1) ? "green" : "red" )
                         }
                         /*detailed_line15: {
                             return (has_password ? "Yes":"No");
@@ -282,10 +301,18 @@ FocusScope {
                         detailed_line16: {
                             return (has_spectate_password ? "Yes":"No");
                         }*/
-                        picture2: {
-                            return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
-                            //return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
-                        }
+//                        picture2: {
+//                            console.log("search.max : ", search.max);
+//                            if (search.max === 1)
+//                            {
+//                                console.log("search.result.games.get(0).assets.logo : ", search.result.games.get(0).assets.logo);
+//                                return search.result.games.get(0).assets.logo
+//                            }
+//                            else return "";
+
+//                            //return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
+//                            //return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
+//                        }
                         // set focus only on first item
                         focus:{
                             console.log("------Begin of Focus-------");
