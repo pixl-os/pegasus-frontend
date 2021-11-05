@@ -33,13 +33,13 @@ Item {
 	//	"fr" french and france and fr ones ;-)
 	
 	//filter using lists for nb players
-	property var nb_players: ""
+    property var nb_players: "1+"
 	property var nb_playersToFilter: (nb_players === "1+") ? false : true
 	property var minimumNb_players : nb_players.replace("+","")
 	property var maximumNb_players: nb_players.includes("+") ? 5 : minimumNb_players
 	
 	//filter using lists for rating
-	property var rating: "1.0"
+    property var rating: "All"
 	property var ratingToFilter: (rating === "All") ? false : true
 	property var minimumRating : (rating !== "All") ? parseFloat(rating.replace("+","")) : 1.0
 	
@@ -84,28 +84,27 @@ Item {
     SortFilterProxyModel {
         id: foundGames
         sourceModel: api.allGames
-
-	
         filters: [
-			ValueFilter { roleName: "favorite"; value: favoriteToFind ; enabled: favoriteToFind},
-			RegExpFilter { roleName: "title"; pattern: filter; caseSensitivity: Qt.CaseInsensitive;enabled: titleToFilter} ,
-			RegExpFilter { roleName: "title"; pattern: region; caseSensitivity: Qt.CaseInsensitive; enabled: regionToFilter},
-			RegExpFilter { roleName: "genre"; pattern: genre ; caseSensitivity: Qt.CaseInsensitive; enabled: genreToFilter},
-			RangeFilter { roleName: "players"; minimumValue: minimumNb_players ; maximumValue: maximumNb_players; enabled: nb_playersToFilter},
-			RegExpFilter { roleName: "publisher"; pattern: publisher ; caseSensitivity: Qt.CaseInsensitive; enabled: publisherToFilter},
-			RegExpFilter { roleName: "developer"; pattern: developer ; caseSensitivity: Qt.CaseInsensitive; enabled: developerToFilter},
-			RegExpFilter { roleName: "path"; pattern: filename ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter},
-			RegExpFilter { roleName: "releaseYear"; pattern: release ; caseSensitivity: Qt.CaseInsensitive; enabled: releaseToFilter},
-			RegExpFilter { roleName: "title"; pattern: exclusion ; caseSensitivity: Qt.CaseInsensitive; inverted: true; enabled: toExclude},
-            //ValueFilter { roleName: "crc"; value: crc ; enabled: crcToFind},
-            ExpressionFilter { expression: parseFloat(model.rating) >= minimumRating; enabled: ratingToFilter}]
+          ValueFilter { roleName: "hash"; value: crc ; enabled: crcToFind},
+            ValueFilter { roleName: "favorite"; value: favoriteToFind ; enabled: favoriteToFind},
+            RegExpFilter { roleName: "title"; pattern: filter; caseSensitivity: Qt.CaseInsensitive;enabled: titleToFilter},
+            RegExpFilter { roleName: "title"; pattern: region; caseSensitivity: Qt.CaseInsensitive; enabled: regionToFilter},
+            RegExpFilter { roleName: "genre"; pattern: genre ; caseSensitivity: Qt.CaseInsensitive; enabled: genreToFilter},
+            RangeFilter { roleName: "players"; minimumValue: minimumNb_players ; maximumValue: maximumNb_players; enabled: nb_playersToFilter},
+            RegExpFilter { roleName: "publisher"; pattern: publisher ; caseSensitivity: Qt.CaseInsensitive; enabled: publisherToFilter},
+            RegExpFilter { roleName: "developer"; pattern: developer ; caseSensitivity: Qt.CaseInsensitive; enabled: developerToFilter},
+            RegExpFilter { roleName: "path"; pattern: filename ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter},
+            RegExpFilter { roleName: "releaseYear"; pattern: release ; caseSensitivity: Qt.CaseInsensitive; enabled: releaseToFilter},
+            RegExpFilter { roleName: "title"; pattern: exclusion ; caseSensitivity: Qt.CaseInsensitive; inverted: true; enabled: toExclude},
+            ExpressionFilter { expression: parseFloat(model.rating) >= minimumRating; enabled: ratingToFilter}
+        ]
 		//sorters are slow that why it is deactivated for the moment
         //sorters: RoleSorter { roleName: "rating"; sortOrder: Qt.DescendingOrder; }
     }
 
-    property var search: {
+    property var result: {
         return {
-            games:      foundGames
+            games: foundGames
         }
     }
 }
