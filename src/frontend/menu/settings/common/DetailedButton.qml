@@ -75,9 +75,8 @@ FocusScope {
 
 
     width: parent.width
-//    height: fontSize * 2.5
-    height: labelContainer.height + vpx(10) //fontSize * 1.25 //focus ? labelContainer.height + vpx(50)) : labelContainer.height // + fontSize * 1.25)
-
+    height: labelContainer.height + vpx(10)
+	
     Keys.onPressed: {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -134,79 +133,77 @@ FocusScope {
 
     Column {
         id: labelContainer
-
+        //width: parent.width
         anchors {
             left: parent.left; leftMargin: horizontalPadding
             top: parent.top
-            //bottom: parent.bottom
-            //right: parent.horizontalCenter
-            //verticalCenter: parent.verticalCenter
         }
-
         spacing: fontSize * 0.25
-
-        //just to ahve a space at the top
+        //just to have a space at the top
         Row{
             Text{
                 height: vpx(2)
                 text: " "
             }
         }
-
         Row{
             spacing: vpx(5)
+            width: parent.width
             Column{
                 Row{
-                    height: label.height // + (sublabel.text ? spacing + sublabel.height : 0)
-                    //width: underline.width * 0.8
+                    height: label.height
+                    width: parent.width
                     spacing: vpx(5)
                     Text {
+                        anchors {
+                            top:    parent.top;
+                            left:   parent.left;
+                            right:  labelContainer.right
+                        }
                         id: label
+                        width: parent.width
                         color: themeColor.textLabel
                         font.pixelSize: fontSize
                         font.family: globalFonts.awesome
-                        wrapMode: Text.WordWrap
+                        elide: Text.ElideRight
+                        //wrapMode: Text.WrapAnywhere
+                        text: "sdqskdfjlqksdfjkqsjdf lkjqsdklfjqsmkld fjkqmlsdjfkl qsjdflkmjqsd lmkfjqslmkdf jlmksqldjfk lqsdjflmkq sjdflkmqj sdfmklqj sdfkl mj"
+
                     }
                 }
                 Row{
                     height: sublabel.height
-                    //width: underline.width * 0.8
                     Image {
                         id: icon
                         asynchronous: true
-                        height: sublabel.height // parent.height //label.height + labelContainer.spacing + sublabel.height//parent.height
-                        width: sublabel.height * (4/3) // for 4/3 flag
-                        source: ""
+                        height: sublabel.height 
+						source: ""
                         fillMode: Image.PreserveAspectFit
                         smooth: true
-                        //visible: root.focus
                     }
                     Text {
                         id: sublabel
-
                         color: themeColor.textSublabel
                         font.pixelSize: fontSize * 0.8
                         font.family: globalFonts.awesome
                         font.italic: true
-                        //width: parent.width
                         wrapMode: Text.WordWrap
                     }
                 }
 
             }
             Column{
+                //width: parent.width * (1/4)
                 Row{
-                    //layoutDirection: Qt.RightToLeft
                     spacing: vpx(5)
                     Image {
                         id: icon2
                         asynchronous: true
-                        height: label.height + labelContainer.spacing + sublabel.height //parent.height
-                        //width: height * (4/3) // for 4/3 flag
+                        height: label.height + labelContainer.spacing + sublabel.height
                         source: ""
                         fillMode: Image.PreserveAspectFit
                         smooth: true
-                        //visible: root.focus
+                        visible: !root.focus
                     }
                 }
             }
@@ -216,18 +213,6 @@ FocusScope {
             height: root.focus ? detailPartHeight : 0
             width: underline.width
             visible: root.focus
-            Column{
-                Image {
-                    id: picture
-                    asynchronous: true
-                    height: root.focus ? detailPartHeight : 0
-                    width: height * (4/3) // for 4/3 video sized
-                    source: ""
-                    fillMode: Image.PreserveAspectFit
-                    smooth: true
-                    //visible: root.focus
-                }
-            }
             Column{
                 spacing: vpx(4)
                 Text{
@@ -348,23 +333,53 @@ FocusScope {
                 }
             }
             Column{
-                Row{
-                    layoutDirection: Qt.RightToLeft
-                    Image {
-                    id: picture2
+                Image {
+                    id: picture
                     asynchronous: true
                     height: root.focus ? detailPartHeight : 0
-                    width: height * (4/3) // for 4/3 video sized
+                    //width: height * (4/3) // for 4/3 video sized
                     source: ""
                     fillMode: Image.PreserveAspectFit
                     smooth: true
                     //visible: root.focus
-                    }
                 }
             }
-
         }
     }
+	Column {
+        id: screenshotContainer
+        //width: parent.width * (1/4)
+        anchors {
+            right: parent.right; rightMargin: horizontalPadding
+			leftMargin: horizontalPadding
+            top: parent.top
+            //bottom: parent.bottom
+            //right: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+        }
+        spacing: fontSize * 0.25
+        //just to have a space at the top
+        Row{
+            Text{
+                height: vpx(2)
+                text: " "
+            }
+        }		
+		Row{
+			layoutDirection: Qt.RightToLeft
+			Image {
+				id: picture2
+				asynchronous: true
+                height: root.focus ? parent.height : 0 //detailPartHeight : 0
+                //width: parent.width
+                width: height * (4/3) // for 4/3 video sized
+				source: ""
+				fillMode: Image.PreserveAspectFit
+				smooth: true
+				//visible: root.focus
+			}
+		}		
+	}
 //    Text {
 //        id: label
 
