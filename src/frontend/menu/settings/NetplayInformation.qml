@@ -190,23 +190,34 @@ FocusScope {
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
 					property var selectedButtonIndex : 0                    
                     DetailedButton {
-                        SearchGame {id: search; crc: game_crc}
+                        SearchGame {id: searchByCRC; crc: game_crc}
+                        SearchGame {id: searchByFile; filename: game_name}
                         property var game :{
                             //cette CRC to search
                             //mygames.crc = game_crc;
-                            if (search.max === 1) { //CRC match
-                                console.log("search.crc : '",search.crc,"'");
-                                console.log("search.max : ", search.max); //OK
-                                console.log("search.result.games.get(0).title : ", search.result.games.get(0).title); //OK
-                                console.log("search.result.games.get(0).hash : '", search.result.games.get(0).hash,"'"); //OK
-                                picture2 = search.result.games.get(0).assets.screenshot;
-                                picture = search.result.games.get(0).assets.logo;
-                                icon2 = picture;
-                                return search.gameFound(0);
+                            if (searchByCRC.max === 1) { //CRC match
+                                console.log("search.crc : '",searchByCRC.crc,"'");
+                                console.log("search.max : ", searchByCRC.max); //OK
+                                console.log("search.result.games.get(0).title : ", searchByCRC.result.games.get(0).title); //OK
+                                console.log("search.result.games.get(0).hash : '", searchByCRC.result.games.get(0).hash,"'"); //OK
+                                picture2 = searchByCRC.result.games.get(0).assets.screenshot;
+                                //picture = searchByCRC.result.games.get(0).assets.logo;
+                                icon2 = searchByCRC.result.games.get(0).assets.logo;
+                                return searchByCRC.gameFound(0);
+                            }
+                            else if (searchByFile.max === 1) { //CRC match
+                                console.log("search.crc : '",searchByFile.crc,"'");
+                                console.log("search.max : ", searchByFile.max); //OK
+                                console.log("search.result.games.get(0).title : ", searchByFile.result.games.get(0).title); //OK
+                                console.log("search.result.games.get(0).hash : '", searchByFile.result.games.get(0).hash,"'"); //OK
+                                picture2 = searchByFile.result.games.get(0).assets.screenshot;
+                                //picture = searchByFile.result.games.get(0).assets.logo;
+                                icon2 = searchByFile.result.games.get(0).assets.logo;
+                                return searchByFile.gameFound(0);
                             }
                             else
                             {
-                                picture = "";
+                                //picture = "";
                                 picture2 = "";
                                 icon2 = "";
                                 return null;
@@ -220,7 +231,7 @@ FocusScope {
                         width: parent.width - vpx(100)
                         //for preview
                         label: {
-                            //return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + game_name);
+                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRC.max === 1) ? searchByCRC.result.games.get(0).title : game_name));
                         }
                         note: {
                             return (" " + qsTr("Creation date") + ": " + created);
@@ -261,10 +272,10 @@ FocusScope {
                         detailed_line6: {
                             return "Game CRC : ";
                         }
-                        /*detailed_line7: {
-                            return "Password to play : ";
+                        detailed_line7: {
+                            return "Game file : ";
                         }
-                        detailed_line8: {
+                        /*detailed_line8: {
                             return "Password for viewer : ";
                         }*/
                         //line status with details and colors
@@ -290,15 +301,19 @@ FocusScope {
                             return  frontend;
                         }
                         detailed_line14: {
-                            return ((search.max === 1) ? "\uf1c0" : "\uf1c2" ) + " " + game_crc;
+                            return ((searchByCRC === 1) ? "\uf1c0" : "\uf1c2" ) + " " + game_crc;
                         }
                         detailed_line14_color: {
-                            return ((search.max === 1) ? "green" : "red" )
+                            return ((searchByCRC.max === 1) ? "green" : "red" )
                         }
-                        /*detailed_line15: {
-                            return (has_password ? "Yes":"No");
+                        detailed_line15: {
+                            return ((searchByFile.max === 1) ? "\uf1c0" : "\uf1c2" ) + " " + game_name;
                         }
-                        detailed_line16: {
+                        detailed_line15_color: {
+                            return ((searchByFile.max === 1) ? "green" : "red" )
+                        }
+
+                        /*detailed_line16: {
                             return (has_spectate_password ? "Yes":"No");
                         }*/
 //                        picture2: {

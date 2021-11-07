@@ -29,7 +29,7 @@ FocusScope {
 
     //second line a full detailed
     //first column
-    property alias picture: picture.source
+    //property alias picture: picture.source
     //second column (titles)
     property alias detailed_line1: line1.text
     property alias detailed_line2: line2.text
@@ -68,8 +68,8 @@ FocusScope {
 
 
     readonly property int fontSize: vpx(22)
-    readonly property int horizontalPadding: vpx(30)
-    readonly property int detailPartHeight: vpx(125)
+    readonly property int horizontalPadding: vpx(20)
+    readonly property int detailPartHeight: vpx(150)
 
     signal activate()
 
@@ -119,7 +119,6 @@ FocusScope {
         visible: parent.focus //|| mouseArea.containsMouse
     }
 
-
     Rectangle {
         id: underline
 
@@ -132,8 +131,8 @@ FocusScope {
     }
 
     Column {
-        id: labelContainer
-        //width: parent.width
+    id: labelContainer
+        width: parent.width *(3/4)
         anchors {
             left: parent.left; leftMargin: horizontalPadding
             top: parent.top
@@ -141,37 +140,36 @@ FocusScope {
         spacing: fontSize * 0.25
         //just to have a space at the top
         Row{
+        id: paddingRow
             Text{
                 height: vpx(2)
                 text: " "
             }
         }
         Row{
+        id: previewRow
             spacing: vpx(5)
             width: parent.width
             Column{
+            id:labelsColumn
                 Row{
+                id: labelRow
                     height: label.height
                     width: parent.width
                     spacing: vpx(5)
                     Text {
-                        anchors {
-                            top:    parent.top;
-                            left:   parent.left;
-                            right:  labelContainer.right
-                        }
                         id: label
-                        width: parent.width
+                        width: labelContainer.width
                         color: themeColor.textLabel
                         font.pixelSize: fontSize
                         font.family: globalFonts.awesome
                         elide: Text.ElideRight
                         //wrapMode: Text.WrapAnywhere
-                        text: "sdqskdfjlqksdfjkqsjdf lkjqsdklfjqsmkld fjkqmlsdjfkl qsjdflkmjqsd lmkfjqslmkdf jlmksqldjfk lqsdjflmkq sjdflkmqj sdfmklqj sdfkl mj"
-
+                        //text: "sdqskdfjlqksdfjkqsjdf lkjqsdklfjqsmkld fjkqmlsdjfkl qsjdflkmjqsd lmkfjqslmkdf jlmksqldjfk lqsdjflmkq sjdflkmqj sdfmklqj sdfkl mj"
                     }
                 }
                 Row{
+                    id: sublabelRow
                     height: sublabel.height
                     Image {
                         id: icon
@@ -192,12 +190,13 @@ FocusScope {
                 }
 
             }
-            Column{
-                //width: parent.width * (1/4)
-                Row{
-                    spacing: vpx(5)
-                    Image {
+            /*Column{
+                id: littleLogoColumn
+                anchors.left: labelsColumn.right
+                width: parent.width * (1/4)
+                Image {
                         id: icon2
+                        //anchors.left: labelsColumn.right
                         asynchronous: true
                         height: label.height + labelContainer.spacing + sublabel.height
                         source: ""
@@ -205,10 +204,10 @@ FocusScope {
                         smooth: true
                         visible: !root.focus
                     }
-                }
-            }
+            }*/
         }
         Row{
+        id: detailedRow
             spacing: fontSize //* 0.25
             height: root.focus ? detailPartHeight : 0
             width: underline.width
@@ -332,55 +331,91 @@ FocusScope {
                     font.bold: true
                 }
             }
-            Column{
+//            Column{
+//                Image {
+//                    id: picture
+//                    asynchronous: true
+//                    height: root.focus ? detailPartHeight : 0
+//                    //width: height * (4/3) // for 4/3 video sized
+//                    source: ""
+//                    fillMode: Image.PreserveAspectFit
+//                    smooth: true
+//                    //visible: root.focus
+//                }
+//            }
+/*            Column {
                 Image {
-                    id: picture
+                    id: picture2
                     asynchronous: true
-                    height: root.focus ? detailPartHeight : 0
+                    height: root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
+                    //width: parent.width
                     //width: height * (4/3) // for 4/3 video sized
                     source: ""
                     fillMode: Image.PreserveAspectFit
                     smooth: true
                     //visible: root.focus
                 }
-            }
+            }*/
+
         }
     }
-	Column {
-        id: screenshotContainer
-        //width: parent.width * (1/4)
-        anchors {
-            right: parent.right; rightMargin: horizontalPadding
-			leftMargin: horizontalPadding
-            top: parent.top
-            //bottom: parent.bottom
-            //right: parent.horizontalCenter
-            verticalCenter: parent.verticalCenter
-        }
+    Column {
+        id: logoContainer
+        anchors.right: parent.right;
+        anchors.rightMargin: horizontalPadding;
+        anchors.top: parent.top
+        height: !root.focus ? parent.height : 0
+        width: parent.width * (1/4)
         spacing: fontSize * 0.25
-        //just to have a space at the top
         Row{
             Text{
                 height: vpx(2)
                 text: " "
             }
-        }		
-		Row{
-			layoutDirection: Qt.RightToLeft
-			Image {
-				id: picture2
-				asynchronous: true
-                height: root.focus ? parent.height : 0 //detailPartHeight : 0
+        }
+        Row{
+            Image {
+                id: icon2
+                asynchronous: true
+                height: !root.focus ? (label.height + labelContainer.spacing + sublabel.height) : 0
                 //width: parent.width
-                width: height * (4/3) // for 4/3 video sized
-				source: ""
-				fillMode: Image.PreserveAspectFit
-				smooth: true
-				//visible: root.focus
-			}
-		}		
-	}
-//    Text {
+                //width: height * (4/3) // for 4/3 video sized
+                //source: picture2.source
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                visible: !root.focus
+            }
+        }
+    }
+    Column {
+        id: screenshotContainer
+        anchors.right: parent.right;
+        anchors.rightMargin: horizontalPadding;
+        anchors.top: parent.top
+        height: root.focus ? parent.height : 0
+        width: parent.width * (1/4)
+        spacing: fontSize * 0.25
+        Row{
+            Text{
+                height: vpx(2)
+                text: " "
+            }
+        }
+        Row{
+            Image {
+                id: picture2
+                asynchronous: true
+                height: root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
+                //width: parent.width
+                //width: height * (4/3) // for 4/3 video sized
+                //source: picture2.source
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                visible: root.focus
+            }
+        }
+    }
+    //    Text {
 //        id: label
 
 //        anchors.left: parent.left
