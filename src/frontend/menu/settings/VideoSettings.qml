@@ -121,8 +121,6 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.externalscreen.forceresolution"
                     property variant optionsList : [optDisplayOutput.value]
-                    // set focus only on first item
-                    focus: true
 
                     label: qsTr("Display Resolution") + api.tr
                     note: qsTr("Choose resolution for this output") + api.tr
@@ -141,6 +139,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayOutput
                     KeyNavigation.down: optDisplayFrequency
                 }
                 MultivalueOption {
@@ -149,8 +148,6 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.externalscreen.forcefrequency"
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
-                    // set focus only on first item
-                    focus: true
 
                     label: qsTr("Display Frequency") + api.tr
                     note: qsTr("Choose frequency for this output") + api.tr
@@ -169,6 +166,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayResolution
                     KeyNavigation.down: optDisplayMarqueeOutput
                 }
                 SectionTitle {
@@ -199,6 +197,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayFrequency
                     KeyNavigation.down: optDisplayMarqueeResolution
                 }
                 MultivalueOption {
@@ -207,8 +206,6 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.marqueescreen.forceresolution"
                     property variant optionsList : [optDisplayMarqueeOutput.value]
-                    // set focus only on first item
-                    focus: true
 
                     label: qsTr("Display Resolution") + api.tr
                     note: qsTr("Choose resolution for this output") + api.tr
@@ -227,6 +224,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayMarqueeOutput
                     KeyNavigation.down: optDisplayMarqueeFrequency
                 }
                 MultivalueOption {
@@ -235,8 +233,6 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.marqueescreen.forcefrequency"
                     property variant optionsList : [optDisplayMarqueeOutput.value, optDisplayMarqueeResolution.value]
-                    // set focus only on first item
-                    focus: true
 
                     label: qsTr("Display Frequency") + api.tr
                     note: qsTr("Choose frequency for this output") + api.tr
@@ -255,11 +251,14 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    //                    KeyNavigation.down: optAudioMode
+                    // KeyNavigation.down: optAudioMode
+                    KeyNavigation.up: optDisplayMarqueeResolution
                     KeyNavigation.down: optValidateChange
                 }
                 SimpleButton {
                     id: optValidateChange
+                    property string parameterName : ""
+                    property variant optionsList : []
 
                     label: qsTr("validate settings") + api.tr
 //                    note: qsTr("choose emulator, ratio and more by system") + api.tr
@@ -267,8 +266,7 @@ FocusScope {
                     Text {
                         id: pointeroptAdvancedEmulator
 
-                        anchors.right: parent.right
-//                        anchors.rightMargin: horizontalPadding
+//                        anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: themeColor.textValue
@@ -279,13 +277,10 @@ FocusScope {
                     }
 
                     onActivate: {
-                        function exec(command) {
-                            return qprocess.launch("sh -c \"" + externalscreen.sh + " < /dev/null \"")
-                        }
-
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"externalscreen.sh",optionsList)
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.up: optBiosChecking
+                    KeyNavigation.up: optDisplayMarqueeFrequency
                 }
             }
         }
