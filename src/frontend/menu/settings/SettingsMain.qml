@@ -233,6 +233,7 @@ FocusScope {
                     }
 
                     onActivate: {
+                        api.internal.system.run("/usr/bin/xrandr > /tmp/xrandr.tmp");
                         focus = true;
                         root.openVideoSettings();
                     }

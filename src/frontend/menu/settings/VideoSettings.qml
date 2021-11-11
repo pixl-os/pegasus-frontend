@@ -25,9 +25,6 @@ FocusScope {
             api.internal.recalbox.saveParameters();
         }
     }
-    Component.onCompleted:{
-        api.internal.system.run("/usr/bin/xrandr > /tmp/xrandr.tmp");
-    }
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
@@ -280,7 +277,7 @@ FocusScope {
                     }
                     onActivate: {
                         api.internal.recalbox.saveParameters();
-                        api.internal.system.runBoolResult("externalscreen.sh");
+                        api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayMarqueeFrequency
