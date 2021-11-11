@@ -25,6 +25,7 @@ FocusScope {
     id: root
 
     signal close
+    signal openVideoSettings
     /*signal openKeySettings
         signal openGamepadSettings
         signal openGameDirSettings
@@ -205,29 +206,42 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     
                     KeyNavigation.up: optOutputAudio
-                    //                    KeyNavigation.down: optVideoSettings
-                    KeyNavigation.down: optStorageDevices
+                    KeyNavigation.down: optVideoSettings
+//                    KeyNavigation.down: optStorageDevices
                 }
-                /*
                 SectionTitle {
                     text: qsTr("Video Configuration") + api.tr
                     first: true
                 }
-                MultivalueOption {
+                SimpleButton {
                     id: optVideoSettings
 
-                    label: qsTr("Video Settings") + api.tr
-                    note: qsTr("set your display and resolution") + api.tr
-                    value: api.internal.settings.locales.currentName
+                    label: qsTr("Video configuration") + api.tr
+                    note: qsTr("choose output") + api.tr
+
+                    Text {
+                        id: pointeroptVideoSettings
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        color: themeColor.textValue
+                        font.pixelSize: vpx(30)
+                        font.family: globalFonts.ion
+
+                        text : "\uf3d1"
+                    }
 
                     onActivate: {
                         focus = true;
-                        localeBox.focus = true;
+                        root.openVideoSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    //                    KeyNavigation.up: optBiosChecking
                     KeyNavigation.up: optOutputVolume
-                    KeyNavigation.down: optNetworkSettings
+                    KeyNavigation.down: optStorageDevices
                 }
+                /*
                 SectionTitle {
                     text: qsTr("Network") + api.tr
                     first: true
@@ -291,7 +305,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optOutputVolume
+                    KeyNavigation.up: optVideoSettings
                     //                    KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optLanguage
                 }
