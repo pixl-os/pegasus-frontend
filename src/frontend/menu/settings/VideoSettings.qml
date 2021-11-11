@@ -25,6 +25,9 @@ FocusScope {
             api.internal.recalbox.saveParameters();
         }
     }
+    Component.onCompleted:{
+        api.internal.system.run("/usr/bin/xrandr > /tmp/xrandr.tmp");
+    }
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
         onSwipeRight: root.close()
@@ -97,7 +100,7 @@ FocusScope {
 
                     label: qsTr("Display Output") + api.tr
                     note: qsTr("Choose Display output") + api.tr
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk '$2 ~ \"connected\"{print $1}'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 ~ \"connected\"{print $1}'",optionsList)
                     font: globalFonts.ion
 
                     onActivate: {
@@ -105,7 +108,7 @@ FocusScope {
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplayOutput;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk '$2 == \"connected\"{print $1}'",optionsList);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 == \"connected\"{print $1}'",optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -123,7 +126,7 @@ FocusScope {
 
                     label: qsTr("Display Resolution") + api.tr
                     note: qsTr("Choose resolution for this output") + api.tr
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList)
                     font: globalFonts.ion
 
                     onActivate: {
@@ -131,7 +134,7 @@ FocusScope {
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplayResolution;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -150,7 +153,7 @@ FocusScope {
 
                     label: qsTr("Display Frequency") + api.tr
                     note: qsTr("Choose frequency for this output") + api.tr
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
                     font: globalFonts.ion
 
                     onActivate: {
@@ -158,7 +161,7 @@ FocusScope {
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplayFrequency;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -277,7 +280,7 @@ FocusScope {
                     }
                     onActivate: {
                         api.internal.recalbox.saveParameters();
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"externalscreen.sh",optionsList)
+                        api.internal.system.runBoolResult("externalscreen.sh");
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayMarqueeFrequency
