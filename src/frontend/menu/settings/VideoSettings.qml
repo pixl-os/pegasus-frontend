@@ -36,9 +36,10 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Settings") + api.tr
+        text: qsTr("Settings > Video Configuration") + api.tr
         z: 2
     }
+
     Flickable {
         id: container
 
@@ -166,121 +167,116 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayResolution
-                    //                    KeyNavigation.down: optDisplayMarqueeOutput
-                    KeyNavigation.down: optValidateChange
+                    KeyNavigation.down: optDisplayMarqueeOutput
+                    //                    KeyNavigation.down: optValidateChange
                 }
                 SectionTitle {
                     text: qsTr("Video Marquee Settings") + api.tr
                     first: true
                 }
-                //                MultivalueOption {
-                //                    id: optDisplayMarqueeOutput
+                MultivalueOption {
+                    id: optDisplayMarqueeOutput
 
-                //                    //property to manage parameter name
-                //                    property string parameterName : "system.marqueescreen.prefered"
-                //                    property variant optionsList : []
-
-                //                    label: qsTr("Display Output") + api.tr
-                //                    note: qsTr("Choose Display output") + api.tr
-                //                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk '$2 ~ \"connected\"{print $1}'",optionsList)
-                //                    font: globalFonts.ion
-
-                //                    onActivate: {
-                //                        //for callback by parameterslistBox
-                //                        parameterslistBox.parameterName = parameterName;
-                //                        parameterslistBox.callerid = optDisplayMarqueeOutput;
-                //                        //to force update of list of parameters
-                //                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk '$2 == \"connected\"{print $1}'",optionsList);
-                //                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                //                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                //                        //to transfer focus to parameterslistBox
-                //                        parameterslistBox.focus = true;
-                //                    }
-                //                    onFocusChanged: container.onFocus(this)
-                //                    KeyNavigation.up: optDisplayFrequency
-                //                    KeyNavigation.down: optDisplayMarqueeResolution
-                //                }
-                //                MultivalueOption {
-                //                    id: optDisplayMarqueeResolution
-
-                //                    //property to manage parameter name
-                //                    property string parameterName : "system.marqueescreen.forceresolution"
-                //                    property variant optionsList : [optDisplayMarqueeOutput.value]
-
-                //                    label: qsTr("Display Resolution") + api.tr
-                //                    note: qsTr("Choose resolution for this output") + api.tr
-                //                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList)
-                //                    font: globalFonts.ion
-
-                //                    onActivate: {
-                //                        //for callback by parameterslistBox
-                //                        parameterslistBox.parameterName = parameterName;
-                //                        parameterslistBox.callerid = optDisplayMarqueeResolution;
-                //                        //to force update of list of parameters
-                //                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList);
-                //                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                //                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                //                        //to transfer focus to parameterslistBox
-                //                        parameterslistBox.focus = true;
-                //                    }
-                //                    onFocusChanged: container.onFocus(this)
-                //                    KeyNavigation.up: optDisplayMarqueeOutput
-                //                    KeyNavigation.down: optDisplayMarqueeFrequency
-                //                }
-                //                MultivalueOption {
-                //                    id: optDisplayMarqueeFrequency
-
-                //                    //property to manage parameter name
-                //                    property string parameterName : "system.marqueescreen.forcefrequency"
-                //                    property variant optionsList : [optDisplayMarqueeOutput.value, optDisplayMarqueeResolution.value]
-
-                //                    label: qsTr("Display Frequency") + api.tr
-                //                    note: qsTr("Choose frequency for this output") + api.tr
-                //                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
-                //                    font: globalFonts.ion
-
-                //                    onActivate: {
-                //                        //for callback by parameterslistBox
-                //                        parameterslistBox.parameterName = parameterName;
-                //                        parameterslistBox.callerid = optDisplayMarqueeFrequency;
-                //                        //to force update of list of parameters
-                //                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"xrandr | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
-                //                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                //                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                //                        //to transfer focus to parameterslistBox
-                //                        parameterslistBox.focus = true;
-                //                    }
-                //                    onFocusChanged: container.onFocus(this)
-                //                    // KeyNavigation.down: optAudioMode
-                //                    KeyNavigation.up: optDisplayMarqueeResolution
-                //                    KeyNavigation.down: optValidateChange
-                //                }
-                SimpleButton {
-                    id: optValidateChange
-                    property string parameterName : ""
+                    //property to manage parameter name
+                    property string parameterName : "system.marqueescreen.prefered"
                     property variant optionsList : []
 
-                    label: qsTr("validate settings") + api.tr
-                    //                    note: qsTr("choose emulator, ratio and more by system") + api.tr
+                    label: qsTr("Display Output") + api.tr
+                    note: qsTr("Choose Display output") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 ~ \"connected\"{print $1}'",optionsList)
+                    font: globalFonts.ion
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optDisplayMarqueeOutput;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 == \"connected\"{print $1}'",optionsList);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayFrequency
+                    KeyNavigation.down: optDisplayMarqueeResolution
+                }
+                MultivalueOption {
+                    id: optDisplayMarqueeResolution
+
+                    //property to manage parameter name
+                    property string parameterName : "system.marqueescreen.forceresolution"
+                    property variant optionsList : [optDisplayMarqueeOutput.value]
+
+                    label: qsTr("Display Resolution") + api.tr
+                    note: qsTr("Choose resolution for this output") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList)
+                    font: globalFonts.ion
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optDisplayMarqueeResolution;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayMarqueeOutput
+                    KeyNavigation.down: optDisplayMarqueeFrequency
+                }
+                MultivalueOption {
+                    id: optDisplayMarqueeFrequency
+
+                    //property to manage parameter name
+                    property string parameterName : "system.marqueescreen.forcefrequency"
+                    property variant optionsList : [optDisplayMarqueeOutput.value, optDisplayMarqueeResolution.value]
+
+                    label: qsTr("Display Frequency") + api.tr
+                    note: qsTr("Choose frequency for this output") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+                    font: globalFonts.ion
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optDisplayMarqueeFrequency;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayMarqueeResolution
+                    KeyNavigation.down: optValidateChange
+                }
+                SimpleButton {
+                    id: optValidateChange
+                    label: qsTr("Validate settings") + api.tr
+                    note: qsTr("Change screen layout settings") + api.tr
 
                     Text {
                         id: pointeroptAdvancedEmulator
-
-                        //                        anchors.right: parent.right
+                        anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
 
                         color: themeColor.textValue
                         font.pixelSize: vpx(30)
                         font.family: globalFonts.ion
-
-                        text : "\uf3d1"
+                        text : "\uf2bc"
                     }
                     onActivate: {
                         api.internal.recalbox.saveParameters();
-                        api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
+                        api.internal.system.runBoolResult("time /usr/bin/externalscreen.sh");
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayMarqueeFrequency
+                    //                    KeyNavigation.up: optDisplayFrequency
                 }
             }
         }
@@ -331,3 +327,4 @@ FocusScope {
         onSelect: api.internal.settings.themes.currentIndex = index
     }
 }
+
