@@ -64,11 +64,22 @@ Item {
 	//example of system:
 	//	"nes|snes"
 	
-	property var filename: ""
-	property var filenameToFilter: (filename === "") ? false : true
+    property var filename: ""
+    property var filenameToFilter: {
+        filename = filename.replace(/\(/g, '.*');//to replace ( by .*
+        filename = filename.replace(/\)/g, ".*"); //to remove ) by .*
+        filename = filename.replace(/\[/g, '.*');//to replace [ by .*
+        filename = filename.replace(/\]/g, ".*"); //to remove ] by .*
+
+        console.log("SearchGame.filename : '",filename,"'");
+		if (filename === "") 
+			return false; 
+		else 
+			return true;
+	}
 	
 	property var release: ""
-	property var releaseToFilter: (release === "") ? false : true
+    property var releaseToFilter: (release === "") ? false : true
 	
 	property var exclusion: ""
 	//example of exclusion:
@@ -85,7 +96,8 @@ Item {
         id: foundGames
         sourceModel: api.allGames
         filters: [
-          ValueFilter { roleName: "hash"; value: crc ; enabled: crcToFind},
+            ValueFilter { roleName: "hash"; value: crc ; enabled: crcToFind},
+            RegExpFilter { roleName: "path"; pattern: filename ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter},
             ValueFilter { roleName: "favorite"; value: favoriteToFind ; enabled: favoriteToFind},
             RegExpFilter { roleName: "title"; pattern: filter; caseSensitivity: Qt.CaseInsensitive;enabled: titleToFilter},
             RegExpFilter { roleName: "title"; pattern: region; caseSensitivity: Qt.CaseInsensitive; enabled: regionToFilter},
@@ -93,7 +105,6 @@ Item {
             RangeFilter { roleName: "players"; minimumValue: minimumNb_players ; maximumValue: maximumNb_players; enabled: nb_playersToFilter},
             RegExpFilter { roleName: "publisher"; pattern: publisher ; caseSensitivity: Qt.CaseInsensitive; enabled: publisherToFilter},
             RegExpFilter { roleName: "developer"; pattern: developer ; caseSensitivity: Qt.CaseInsensitive; enabled: developerToFilter},
-            RegExpFilter { roleName: "path"; pattern: filename ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter},
             RegExpFilter { roleName: "releaseYear"; pattern: release ; caseSensitivity: Qt.CaseInsensitive; enabled: releaseToFilter},
             RegExpFilter { roleName: "title"; pattern: exclusion ; caseSensitivity: Qt.CaseInsensitive; inverted: true; enabled: toExclude},
             ExpressionFilter { expression: parseFloat(model.rating) >= minimumRating; enabled: ratingToFilter}
