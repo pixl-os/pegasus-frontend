@@ -189,39 +189,40 @@ FocusScope {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
 					property var selectedButtonIndex : 0                    
-                    DetailedButton {
+                    delegate : DetailedButton {
                         SearchGame {id: searchByCRC; crc: game_crc}
                         SearchGame {id: searchByFile; filename: game_name}
                         property var game :{
-                            //cette CRC to search
-                            //mygames.crc = game_crc;
+                            console.log("game_name : '",game_name,"'");
+
+                            console.log("searchByCRC.crc : '",searchByCRC.crc,"'");
+                            console.log("searchByCRC.max : ", searchByCRC.max); //OK
+                            console.log("searchByCRC.result.games.get(0).title : ", searchByCRC.result.games.get(0).title); //OK
+                            console.log("searchByCRC.result.games.get(0).hash : '", searchByCRC.result.games.get(0).hash,"'"); //OK
+                            console.log("searchByCRC.result.games.get(0).path : '", searchByCRC.result.games.get(0).path,"'"); //OK
+
+                            console.log("searchByFile.filename : '",searchByFile.filename,"'");
+                            console.log("searchByFile.max : ", searchByFile.max); //OK
+                            console.log("searchByFile.result.games.get(0).title : ", searchByFile.result.games.get(0).title); //OK
+                            console.log("searchByFile.result.games.get(0).hash : '", searchByFile.result.games.get(0).hash,"'"); //OK
+                            console.log("searchByFile.result.games.get(0).path : '", searchByFile.result.games.get(0).path,"'"); //OK
+
                             if (searchByCRC.max === 1) { //CRC match
-                                console.log("search.crc : '",searchByCRC.crc,"'");
-                                console.log("search.max : ", searchByCRC.max); //OK
-                                console.log("search.result.games.get(0).title : ", searchByCRC.result.games.get(0).title); //OK
-                                console.log("search.result.games.get(0).hash : '", searchByCRC.result.games.get(0).hash,"'"); //OK
                                 picture2 = searchByCRC.result.games.get(0).assets.screenshot;
                                 //picture = searchByCRC.result.games.get(0).assets.logo;
                                 icon2 = searchByCRC.result.games.get(0).assets.logo;
                                 return searchByCRC.gameFound(0);
                             }
-                            else if (searchByFile.max === 1) { //CRC match
-                                console.log("search.crc : '",searchByFile.crc,"'");
-                                console.log("search.max : ", searchByFile.max); //OK
-                                console.log("search.result.games.get(0).title : ", searchByFile.result.games.get(0).title); //OK
-                                console.log("search.result.games.get(0).hash : '", searchByFile.result.games.get(0).hash,"'"); //OK
+                            else if (searchByFile.max >= 1) { //file name match
                                 picture2 = searchByFile.result.games.get(0).assets.screenshot;
                                 //picture = searchByFile.result.games.get(0).assets.logo;
                                 icon2 = searchByFile.result.games.get(0).assets.logo;
                                 return searchByFile.gameFound(0);
                             }
-                            else
-                            {
-                                //picture = "";
-                                picture2 = "";
-                                icon2 = "";
-                                return null;
-                            }
+
+                            picture2 = "";
+                            icon2 = "";
+                            return null;
                         }
 
                         property var status_icon : "\uf1c0 " // or "\uf1c1"/"?" or "\uf1c2"/"X"
@@ -307,10 +308,10 @@ FocusScope {
                             return ((searchByCRC.max === 1) ? "green" : "red" )
                         }
                         detailed_line15: {
-                            return ((searchByFile.max === 1) ? "\uf1c0" : "\uf1c2" ) + " " + game_name;
+                            return ((searchByFile.max >= 1) ? "\uf1c0" : "\uf1c2" ) + " " + game_name;
                         }
                         detailed_line15_color: {
-                            return ((searchByFile.max === 1) ? "green" : "red" )
+                            return ((searchByFile.max >= 1) ? "green" : "red" )
                         }
 
                         /*detailed_line16: {
