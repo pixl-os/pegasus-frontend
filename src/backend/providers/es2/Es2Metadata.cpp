@@ -138,7 +138,8 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
         { QStringLiteral("marquee"), MetaType::MARQUEE },
         { QStringLiteral("favorite"), MetaType::FAVORITE },
         { QStringLiteral("hash"), MetaType::HASH },
-        { QStringLiteral("genreid"), MetaType::GENREID },
+		{ QStringLiteral("path"), MetaType::PATH },
+		{ QStringLiteral("genreid"), MetaType::GENREID },
     }
     , m_date_format(QStringLiteral("yyyyMMdd'T'HHmmss"))
     , m_players_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
@@ -412,11 +413,11 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
     game.setTitle(xml_props[MetaType::NAME])
         .setDescription(xml_props[MetaType::DESC])
         .setHash(xml_props[MetaType::HASH])
-        .setGenreId(xml_props[MetaType::GENREID]);
+		.setPath(xml_props[MetaType::PATH])
+		.setGenreId(xml_props[MetaType::GENREID]);
     game.developerList().append(xml_props[MetaType::DEVELOPER]);
     game.publisherList().append(xml_props[MetaType::PUBLISHER]);
-    game.genreList().append(xml_props[MetaType::GENRE]);
-    
+    game.genreList().append(xml_props[MetaType::GENRE]);    
 
     // then the numbers
     const int play_count = xml_props[MetaType::PLAYCOUNT].toInt();
