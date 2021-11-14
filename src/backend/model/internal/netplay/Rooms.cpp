@@ -297,49 +297,44 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json, std
             const auto Created = fields[QL1("created")].toString();
             const auto Updated = fields[QL1("updated")].toString();
 
-            //Log::debug(log_tag, LOGMSG("Username=%1").arg(Username));
-
-            if(i > int(roomsEntry.size())){
+            if(i <= int(roomsEntry.size())){
+                if((roomsEntry.at(i-1).created == Created) && (roomsEntry.at(i-1).game_name == Game_name)){ //check if same game at same place or not
+                   //just updated date in this case to change
+                    roomsEntry.at(i-1).updated = Updated;
+                    //Log::debug(log_tag, LOGMSG("Game changed : %1").arg(Game_name));
+                    emit Rooms::dataChanged(index(i-1), index(i-1));
+                }
+                else
+                {   //delete it
+                    Rooms::beginRemoveRows(QModelIndex(), i-1, i-1);
+                    //Log::debug(log_tag, LOGMSG("Index: %2 - Remove game : %1").arg(roomsEntry.at(i-1).game_name,i-1));
+                    roomsEntry.pop_back();
+                    Rooms::endRemoveRows();
+                    //and insert new one
+                    Rooms::beginInsertRows(QModelIndex(), i-1, i-1);
+                    roomsEntry.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,
+                      Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
+                    //Log::debug(log_tag, LOGMSG("Add game : %1").arg(Game_name));
+                    Rooms::endInsertRows();
+                }
+            }
+            else{
+                //and to add new one
                 Rooms::beginInsertRows(QModelIndex(), i-1, i-1);
                 roomsEntry.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,
                   Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
-                Log::debug(log_tag, LOGMSG("Add game : %1").arg(Game_name));
+                //Log::debug(log_tag, LOGMSG("Add game : %1").arg(Game_name));
                 Rooms::endInsertRows();
-            }
-            else
-            {
-                roomsEntry.at(i-1).id = Id;
-                roomsEntry.at(i-1).username = Username;
-                roomsEntry.at(i-1).country = Country;
-                roomsEntry.at(i-1).game_name = Game_name;
-                roomsEntry.at(i-1).game_crc = Game_crc;
-                roomsEntry.at(i-1).core_name = Core_name;
-                roomsEntry.at(i-1).core_version = Core_version;
-                roomsEntry.at(i-1).subsystem_name = Subsystem_name;
-                roomsEntry.at(i-1).retroarch_version = Retroarch_version;
-                roomsEntry.at(i-1).frontend = Frontend;
-                roomsEntry.at(i-1).ip = Ip;
-                roomsEntry.at(i-1).port = Port;
-                roomsEntry.at(i-1).mitm_ip = Mitm_ip;
-                roomsEntry.at(i-1).mitm_port = Mitm_port;
-                roomsEntry.at(i-1).host_method = Host_method;
-                roomsEntry.at(i-1).has_password = Has_password;
-                roomsEntry.at(i-1).has_spectate_password = Has_spectate_password;
-                roomsEntry.at(i-1).created = Created;
-                roomsEntry.at(i-1).updated = Updated;
-                Log::debug(log_tag, LOGMSG("Game changed : %1").arg(Game_name));
-                emit Rooms::dataChanged(index(i-1), index(i-1));
             }
             i = i + 1;
     }
     //check if we have to remove line
     for(int j = 1; j <= (int(roomsEntry.size()) - (i-1)); j++){
         Rooms::beginRemoveRows(QModelIndex(), roomsEntry.size()-1, roomsEntry.size()-1);
-        Log::debug(log_tag, LOGMSG("Remove game : %1").arg(roomsEntry.at(roomsEntry.size()-1).game_name));
+        //Log::debug(log_tag, LOGMSG("Remove game : %1").arg(roomsEntry.at(roomsEntry.size()-1).game_name));
         roomsEntry.pop_back();
         Rooms::endRemoveRows();
     }
-    //emit QAbstractListModel::endResetModel();
 
     return true;
 }
