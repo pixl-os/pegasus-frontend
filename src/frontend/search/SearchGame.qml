@@ -66,18 +66,22 @@ Item {
 	
     property var filename: ""
     property var filenameToFilter: {
-        filename = filename.replace(/\(/g, '.*');//to replace ( by .*
-        filename = filename.replace(/\)/g, ".*"); //to remove ) by .*
-        filename = filename.replace(/\[/g, '.*');//to replace [ by .*
-        filename = filename.replace(/\]/g, ".*"); //to remove ] by .*
-
-        console.log("SearchGame.filename : '",filename,"'");
+        //console.log("SearchGame.filename : '",filename,"'");
 		if (filename === "") 
 			return false; 
 		else 
 			return true;
 	}
-	
+
+    Component.onCompleted:{
+        //change filename to any regex (to repplace ()[] characters)
+        var filenameRegEx = filename.replace(/\(/g, '.*');//to replace ( by .*
+        filenameRegEx = filenameRegEx.replace(/\)/g, ".*"); //to remove ) by .*
+        filenameRegEx = filenameRegEx.replace(/\[/g, '.*');//to replace [ by .*
+        filenameRegEx = filenameRegEx.replace(/\]/g, ".*"); //to remove ] by .*
+        filename = filenameRegEx;
+    }
+
 	property var release: ""
     property var releaseToFilter: (release === "") ? false : true
 	
