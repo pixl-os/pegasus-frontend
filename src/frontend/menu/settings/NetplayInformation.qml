@@ -49,7 +49,7 @@ FocusScope {
         onTriggered: {
 
                 if ((interval/1000)*counter === 5){ // wait 5 seconds before to refresh
-                    console.log("netplayTimer - before refresh: availableNetplayRooms.selectedButtonIndex", availableNetplayRooms.selectedButtonIndex);
+                    //console.log("netplayTimer - before refresh: availableNetplayRooms.selectedButtonIndex", availableNetplayRooms.selectedButtonIndex);
                     api.internal.netplay.rooms.refresh();
                     counter = 0;
 				}
@@ -189,24 +189,27 @@ FocusScope {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
 					property var selectedButtonIndex : 0                    
-                    delegate : DetailedButton {
+                    onItemRemoved:{
+                    }
+                    onItemAdded:{
+                    }
+                    DetailedButton {
                         SearchGame {id: searchByCRC; crc: game_crc}
                         SearchGame {id: searchByFile; filename: game_name}
+                        picture2: ""
+                        icon2: ""
                         property var game :{
-                            console.log("game_name : '",game_name,"'");
-
+                            /*console.log("game_name : '",game_name,"'");
                             console.log("searchByCRC.crc : '",searchByCRC.crc,"'");
                             console.log("searchByCRC.max : ", searchByCRC.max); //OK
                             console.log("searchByCRC.result.games.get(0).title : ", searchByCRC.result.games.get(0).title); //OK
                             console.log("searchByCRC.result.games.get(0).hash : '", searchByCRC.result.games.get(0).hash,"'"); //OK
                             console.log("searchByCRC.result.games.get(0).path : '", searchByCRC.result.games.get(0).path,"'"); //OK
-
                             console.log("searchByFile.filename : '",searchByFile.filename,"'");
                             console.log("searchByFile.max : ", searchByFile.max); //OK
                             console.log("searchByFile.result.games.get(0).title : ", searchByFile.result.games.get(0).title); //OK
                             console.log("searchByFile.result.games.get(0).hash : '", searchByFile.result.games.get(0).hash,"'"); //OK
-                            console.log("searchByFile.result.games.get(0).path : '", searchByFile.result.games.get(0).path,"'"); //OK
-
+                            console.log("searchByFile.result.games.get(0).path : '", searchByFile.result.games.get(0).path,"'"); //OK */
                             if (searchByCRC.max === 1) { //CRC match
                                 picture2 = searchByCRC.result.games.get(0).assets.screenshot;
                                 //picture = searchByCRC.result.games.get(0).assets.logo;
@@ -331,21 +334,21 @@ FocusScope {
 //                        }
                         // set focus only on first item
                         focus:{
-                            console.log("------Begin of Focus-------");
-                            console.log("api.internal.netplay.rooms.count : ", api.internal.netplay.rooms.rowCount() );
-                            console.log("availableNetplayRooms.selectedButtonIndex : ",availableNetplayRooms.selectedButtonIndex)
-                            console.log("Index : ",index)
+                            //console.log("------Begin of Focus-------");
+                            //console.log("api.internal.netplay.rooms.count : ", api.internal.netplay.rooms.rowCount() );
+                            //console.log("availableNetplayRooms.selectedButtonIndex : ",availableNetplayRooms.selectedButtonIndex)
+                            //console.log("Index : ",index)
 
                             if( availableNetplayRooms.selectedButtonIndex < api.internal.netplay.rooms.rowCount()){
-                                console.log("(index === availableNetplayRooms.selectedButtonIndex) ? true : false : ",(index === availableNetplayRooms.selectedButtonIndex) ? true : false);
+                                //console.log("(index === availableNetplayRooms.selectedButtonIndex) ? true : false : ",(index === availableNetplayRooms.selectedButtonIndex) ? true : false);
                                 return (index === availableNetplayRooms.selectedButtonIndex) ? true : false ;
 							}
 							else{
                                 availableNetplayRooms.selectedButtonIndex = api.internal.netplay.rooms.rowCount()-1;
-                                console.log("(index === api.internal.netplay.rooms.rowCount()-1) ? true : false : ",(index === api.internal.netplay.rooms.rowCount()-1) ? true : false);
+                                //console.log("(index === api.internal.netplay.rooms.rowCount()-1) ? true : false : ",(index === api.internal.netplay.rooms.rowCount()-1) ? true : false);
                                 return (index === api.internal.netplay.rooms.rowCount()-1) ? true : false ;
                             }
-                            console.log("------End of Focus-------");
+                            //console.log("------End of Focus-------");
 
                         }
                         onActivate: {
