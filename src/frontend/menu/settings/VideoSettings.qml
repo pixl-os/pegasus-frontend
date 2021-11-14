@@ -11,7 +11,6 @@ FocusScope {
     signal close
     signal openVideoSettings
 
-
     width: parent.width
     height: parent.height
     visible: 0 < (x + width) && x < Window.window.width
@@ -167,12 +166,27 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayResolution
-                    KeyNavigation.down: optDisplayMarqueeOutput
-                    //                    KeyNavigation.down: optValidateChange
+                    KeyNavigation.down: optMarqueeScreenActivate
                 }
+
+                // second screen marque or else
                 SectionTitle {
                     text: qsTr("Video Marquee Settings") + api.tr
                     first: true
+                }
+                ToggleOption {
+                    id: optMarqueeScreenActivate
+
+                    label: qsTr("Video Marquee") + api.tr
+                    note: qsTr("Activate a second screen for marquee or else.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("system.marqueescreen.prefered.enabled")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("system.marqueescreen.prefered.enabled",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayFrequency
+                    KeyNavigation.down: optDisplayMarqueeOutput
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeOutput
@@ -198,8 +212,10 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optDisplayFrequency
+                    KeyNavigation.up: optMarqueeScreenActivate
                     KeyNavigation.down: optDisplayMarqueeResolution
+                    // only show if video marquee option as enabled
+                    visible: optMarqueeScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeResolution
@@ -227,6 +243,8 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayMarqueeOutput
                     KeyNavigation.down: optDisplayMarqueeFrequency
+                    // only show if video marquee option as enabled
+                    visible: optMarqueeScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeFrequency
@@ -254,29 +272,40 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayMarqueeResolution
                     KeyNavigation.down: optValidateChange
+                    // only show if video marquee option as enabled
+                    visible: optMarqueeScreenActivate.checked
                 }
+                // second screen marque or else
+
                 SimpleButton {
                     id: optValidateChange
-                    label: qsTr("Validate settings") + api.tr
-                    note: qsTr("Change screen layout settings") + api.tr
-
-                    Text {
-                        id: pointeroptAdvancedEmulator
-                        anchors.right: parent.right
+                    Rectangle {
+                        id: containerValidate
+                        width: parent.width
+                        height: parent.height
                         anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-                        text : "\uf2bc"
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Apply") + api.tr
+                        }
                     }
                     onActivate: {
                         api.internal.recalbox.saveParameters();
-                        api.internal.system.runBoolResult("time /usr/bin/externalscreen.sh");
+                        api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayMarqueeFrequency
-                    //                    KeyNavigation.up: optDisplayFrequency
+                }
+                Item {
+                    width: parent.width
+                    height: implicitHeight + vpx(30)
                 }
             }
         }
