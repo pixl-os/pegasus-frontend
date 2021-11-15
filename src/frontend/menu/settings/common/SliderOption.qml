@@ -80,12 +80,39 @@ FocusScope {
     
     Slider {
         id: slider
-        width: vpx(400)
+        width: vpx(350)
         rotation: -180
         orientation: Qt.Horizontal
         anchors.right: parent.right
         anchors.rightMargin: horizontalPadding
         anchors.verticalCenter: parent.verticalCenter
+        background: Rectangle {
+                 x: slider.leftPadding
+                 y: slider.topPadding + slider.availableHeight / 2 - height / 2
+                 implicitWidth: vpx(50)
+                 implicitHeight: vpx(5)
+                 width: slider.availableWidth
+                 height: implicitHeight
+                 radius: 2
+                 color: themeColor.underline
+
+                 Rectangle {
+                     width: slider.visualPosition * parent.width
+                     height: parent.height
+                     color: themeColor.secondary
+                     radius: 2
+                 }
+             }
+
+             handle: Rectangle {
+                 x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
+                 y: slider.topPadding + slider.availableHeight / 2 - height / 2
+                 implicitWidth: vpx(26)
+                 implicitHeight: vpx(26)
+                 radius: vpx(13)
+                 color: themeColor.textLabel // handle color
+                 border.color: "#bdbebf"
+             }
     }
 
     Text {
