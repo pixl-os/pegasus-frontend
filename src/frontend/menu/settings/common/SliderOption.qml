@@ -86,6 +86,7 @@ FocusScope {
         anchors.right: parent.right
         anchors.rightMargin: horizontalPadding
         anchors.verticalCenter: parent.verticalCenter
+        // left bar
         background: Rectangle {
                  x: slider.leftPadding
                  y: slider.topPadding + slider.availableHeight / 2 - height / 2
@@ -93,17 +94,17 @@ FocusScope {
                  implicitHeight: vpx(5)
                  width: slider.availableWidth
                  height: implicitHeight
-                 radius: 2
+                 radius: vpx(7)
                  color: themeColor.underline
-
+                 // right bar
                  Rectangle {
                      width: slider.visualPosition * parent.width
                      height: parent.height
                      color: themeColor.secondary
-                     radius: 2
+                     radius: vpx(7)
                  }
              }
-
+             // slider handle
              handle: Rectangle {
                  x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
                  y: slider.topPadding + slider.availableHeight / 2 - height / 2
@@ -111,7 +112,7 @@ FocusScope {
                  implicitHeight: vpx(26)
                  radius: vpx(13)
                  color: themeColor.textLabel // handle color
-                 border.color: "#bdbebf"
+                 border.color: themeColor.main
              }
     }
 
