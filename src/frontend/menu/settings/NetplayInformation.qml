@@ -1,19 +1,7 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Created by BozoTheGeek 16/11/2021
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 
 import "common"
 import "../../search"
@@ -44,7 +32,7 @@ FocusScope {
         id: netplayTimer
         interval: 1000 // Run the timer every second
         repeat: true
-        running: true //(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+        running: true
         triggeredOnStart: true
         onTriggered: {
 
@@ -56,8 +44,6 @@ FocusScope {
                 else counter = counter + 1;
         }
     }
-
-
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -184,14 +170,6 @@ FocusScope {
                                   updated: "19 Oct 21 12:10 UTC";
                                 }
                 }*/
-                Connections {
-                        target: api.internal.netplay.rooms
-                        onDataChanged:{
-                            //console.log("onDataChanged");
-                            //RFU
-                        }
-                }
-
                 Repeater {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
@@ -203,38 +181,25 @@ FocusScope {
                     //RFU
                     }
                     DetailedButton {
-                        SearchGame {id: searchByCRC; crc: ""} //game_crc}
-                        SearchGame {id: searchByFile; filename: ""}//game_name}
-                        property var game :{
-                            /*console.log("game_name : '",game_name,"'");
-                            console.log("searchByCRC.crc : '",searchByCRC.crc,"'");
-                            console.log("searchByCRC.max : ", searchByCRC.max); //OK
-                            console.log("searchByCRC.result.games.get(0).title : ", searchByCRC.result.games.get(0).title); //OK
-                            console.log("searchByCRC.result.games.get(0).hash : '", searchByCRC.result.games.get(0).hash,"'"); //OK
-                            console.log("searchByCRC.result.games.get(0).path : '", searchByCRC.result.games.get(0).path,"'"); //OK
-                            console.log("searchByFile.filename : '",searchByFile.filename,"'");
-                            console.log("searchByFile.max : ", searchByFile.max); //OK
-                            console.log("searchByFile.result.games.get(0).title : ", searchByFile.result.games.get(0).title); //OK
-                            console.log("searchByFile.result.games.get(0).hash : '", searchByFile.result.games.get(0).hash,"'"); //OK
-                            console.log("searchByFile.result.games.get(0).path : '", searchByFile.result.games.get(0).path,"'"); //OK */
-                            if (searchByCRC.max === 1) { //CRC match
-                                picture2 = searchByCRC.result.games.get(0).assets.screenshot;
-                                //picture = searchByCRC.result.games.get(0).assets.logo;
-                                icon2 = searchByCRC.result.games.get(0).assets.logo;
-                                return searchByCRC.gameFound(0);
+                        SearchGame {
+                            id: searchByCRCorFile;
+                            onMaxChanged:{
+                                if (max === 1 && crc !== "") { //CRC search and match
+                                    picture = result.games.get(0).assets.screenshot;
+                                    icon2 = result.games.get(0).assets.logo;
+                                }
+                                else if (searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") { //file name match
+                                    picture = searchByCRCorFile.result.games.get(0).assets.screenshot;
+                                    icon2 = searchByCRCorFile.result.games.get(0).assets.logo;
+                                }
+                                else if (searchByCRCorFile.max !== 1 && searchByCRCorFile.crc !== ""){
+                                    //Search by file name now if CRC not found
+                                    //Launch timer for that
+                                    searchByCRCorFile.crc = "";
+                                    searchByCRCorFile.filename = game_name;
+                                }
                             }
-                            else if (searchByFile.max >= 1) { //file name match
-                                picture2 = searchByFile.result.games.get(0).assets.screenshot;
-                                //picture = searchByFile.result.games.get(0).assets.logo;
-                                icon2 = searchByFile.result.games.get(0).assets.logo;
-                                return searchByFile.gameFound(0);
-                            }
-
-                            picture2 = "";
-                            icon2 = "";
-                            return null;
                         }
-
                         property var status_icon : "\uf1c0 " // or "\uf1c1"/"?" or "\uf1c2"/"X"
                         property var latency_icon : "\uf1c8 " // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
                         property var private_icon : has_password ? "\uf071 " : ""
@@ -242,38 +207,22 @@ FocusScope {
                         width: parent.width - vpx(100)
                         //for preview
                         label: {
-                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRC.max === 1) ? searchByCRC.result.games.get(0).title : game_name));
-                        }
-                        onLabelChanged:
-                        {
-                            searchByCRC.crc = game_crc;
-                            searchByFile.filename = game_name;
+                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRCorFile.max === 1 && searchByCRCorFile.crc !== "") ? searchByCRCorFile.result.games.get(0).title : ((searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") ? searchByCRCorFile.result.games.get(0).title : game_name)));
                         }
                         note: {
                             return (" " + qsTr("Creation date") + ": " + created);
                         }
-
+                        //check note only because created date will change only if room is change
+                        onNoteChanged:
+                        {
+                            //search by crc first
+                            searchByCRCorFile.filename = "";
+                            searchByCRCorFile.crc = game_crc;
+                        }
                         //add image of country
                         icon: {
                             return ("https://flagcdn.com/h60/" + country + ".png");
                         }
-                        //system image
-                        /*icon2: {
-                            //return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
-                            return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
-                        }*/
-                        //screenshot
-//                        picture: {
-//                            console.log("search.max : ",search.max);
-//                            console.log("search.result.games.get(0).assets.screenshot:",search.result.games.get(0).assets.screenshot);
-//                            if (search.max === 1) return search.result.games.get(0).assets.screenshot
-//                            else return "";
-//                            //return "file:/recalbox/share/roms/neogeo/media/screenshot/mslugx.png"
-//                        }
-                        //line titles
-                        /*detailed_line1: {
-                            return "Country code : ";
-                        }*/
                         detailed_line2: {
                             return "Retroarch version : ";
                         }
@@ -292,13 +241,6 @@ FocusScope {
                         detailed_line7: {
                             return "Game file : ";
                         }
-                        /*detailed_line8: {
-                            return "Password for viewer : ";
-                        }*/
-                        //line status with details and colors
-                        /*detailed_line9: {
-                            return country;
-                        }*/
                         detailed_line10: {
                             return "\uf1c0" + " " + retroarch_version;
                         }
@@ -318,33 +260,18 @@ FocusScope {
                             return  frontend;
                         }
                         detailed_line14: {
-                            return ((searchByCRC === 1) ? "\uf1c0" : "\uf1c2" ) + " " + game_crc;
+                            return ((searchByCRCorFile === 1 && searchByCRCorFile.crc !== "") ? "\uf1c0" : "\uf1c2" ) + " " + game_crc;
                         }
                         detailed_line14_color: {
-                            return ((searchByCRC.max === 1) ? "green" : "red" )
+                            return ((searchByCRCorFile.max === 1 && searchByCRCorFile.crc !== "") ? "green" : "red" )
                         }
                         detailed_line15: {
-                            return ((searchByFile.max >= 1) ? "\uf1c0" : "\uf1c2" ) + " " + game_name;
+                            return ((searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") ? "\uf1c0" : "\uf1c2" ) + " " + game_name;
                         }
                         detailed_line15_color: {
-                            return ((searchByFile.max >= 1) ? "green" : "red" )
+                            return ((searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") ? "green" : "red" )
                         }
 
-                        /*detailed_line16: {
-                            return (has_spectate_password ? "Yes":"No");
-                        }*/
-//                        picture2: {
-//                            console.log("search.max : ", search.max);
-//                            if (search.max === 1)
-//                            {
-//                                console.log("search.result.games.get(0).assets.logo : ", search.result.games.get(0).assets.logo);
-//                                return search.result.games.get(0).assets.logo
-//                            }
-//                            else return "";
-
-//                            //return "file:/recalbox/share/roms/neogeo/media/wheel/mslugx.png"
-//                            //return "qrc:/themes/gameOS/assets/images/logospng/" + "psx" + "_color.png"
-//                        }
                         // set focus only on first item
                         focus:{
                             //console.log("------Begin of Focus-------");

@@ -28,9 +28,7 @@ FocusScope {
     property alias icon2: icon2.source
 
     //second line a full detailed
-    //first column
-    //property alias picture: picture.source
-    //second column (titles)
+    //first column (titles)
     property alias detailed_line1: line1.text
     property alias detailed_line2: line2.text
     property alias detailed_line3: line3.text
@@ -39,7 +37,7 @@ FocusScope {
     property alias detailed_line6: line6.text
     property alias detailed_line7: line7.text
     property alias detailed_line8: line8.text
-    //third column (status and details)
+    //second column (status and details)
     property alias detailed_line9: line9.text
     property alias detailed_line9_color: line9.color
 
@@ -64,7 +62,7 @@ FocusScope {
     property alias detailed_line16: line16.text
     property alias detailed_line16_color: line16.color
     //last column (to put additional images)
-    property alias picture2: picture2.source
+    property alias picture: picture.source
 
 
     readonly property int fontSize: vpx(22)
@@ -403,7 +401,7 @@ FocusScope {
         }
         Row{
             Image {
-                id: picture2
+                id: picture
                 asynchronous: true
                 height: root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
                 //width: parent.width
