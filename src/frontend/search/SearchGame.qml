@@ -65,13 +65,7 @@ Item {
 	//	"nes|snes"
 	
     property var filename: ""
-    property var filenameToFilter: {
-        //console.log("SearchGame.filename : '",filename,"'");
-		if (filename === "") 
-			return false; 
-		else 
-			return true;
-	}
+    property var filenameToFilter:  (filename === "") ? false : true
 
     Component.onCompleted:{
         //change filename to any regex (to repplace ()[] characters)
@@ -91,8 +85,8 @@ Item {
 	property var toExclude: (exclusion === "") ? false : true
 
     //filter on CRC
-    property var crc: "No"
-    property var crcToFind: (crc === "No") ? false : true
+    property var crc: ""
+    property var crcToFind: (crc === "") ? false : true
 
 
     //FILTERING
