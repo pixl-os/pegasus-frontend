@@ -184,20 +184,27 @@ FocusScope {
                                   updated: "19 Oct 21 12:10 UTC";
                                 }
                 }*/
+                Connections {
+                        target: api.internal.netplay.rooms
+                        onDataChanged:{
+                            //console.log("onDataChanged");
+                            //RFU
+                        }
+                }
 
                 Repeater {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
-					property var selectedButtonIndex : 0                    
+                    property var selectedButtonIndex : 0
                     onItemRemoved:{
+                    //RFU
                     }
                     onItemAdded:{
+                    //RFU
                     }
                     DetailedButton {
-                        SearchGame {id: searchByCRC; crc: game_crc}
-                        SearchGame {id: searchByFile; filename: game_name}
-                        picture2: ""
-                        icon2: ""
+                        SearchGame {id: searchByCRC; crc: ""} //game_crc}
+                        SearchGame {id: searchByFile; filename: ""}//game_name}
                         property var game :{
                             /*console.log("game_name : '",game_name,"'");
                             console.log("searchByCRC.crc : '",searchByCRC.crc,"'");
@@ -237,9 +244,15 @@ FocusScope {
                         label: {
                             return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRC.max === 1) ? searchByCRC.result.games.get(0).title : game_name));
                         }
+                        onLabelChanged:
+                        {
+                            searchByCRC.crc = game_crc;
+                            searchByFile.filename = game_name;
+                        }
                         note: {
                             return (" " + qsTr("Creation date") + ": " + created);
                         }
+
                         //add image of country
                         icon: {
                             return ("https://flagcdn.com/h60/" + country + ".png");
