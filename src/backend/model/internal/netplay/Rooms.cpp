@@ -328,8 +328,10 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json, std
             }
             i = i + 1;
     }
+    //
+    int currentSize = int(roomsEntry.size());
     //check if we have to remove line
-    for(int j = 1; j <= (int(roomsEntry.size()) - (i-1)); j++){
+    for(int j = 0; j < (currentSize - (i-1)); j++){
         Rooms::beginRemoveRows(QModelIndex(), roomsEntry.size()-1, roomsEntry.size()-1);
         //Log::debug(log_tag, LOGMSG("Remove game : %1").arg(roomsEntry.at(roomsEntry.size()-1).game_name));
         roomsEntry.pop_back();
