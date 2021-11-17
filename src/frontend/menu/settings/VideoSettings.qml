@@ -90,7 +90,7 @@ FocusScope {
                     id: optDisplayOutput
 
                     //property to manage parameter name
-                    property string parameterName : "system.externalscreen.prefered"
+                    property string parameterName : "system.game.screen"
                     property variant optionsList : []
                     // set focus only on first item
                     focus: true
@@ -118,7 +118,7 @@ FocusScope {
                     id: optDisplayResolution
 
                     //property to manage parameter name
-                    property string parameterName : "system.externalscreen.forceresolution"
+                    property string parameterName : "system.game.screen.resolution"
                     property variant optionsList : [optDisplayOutput.value]
 
                     label: qsTr("Display Resolution") + api.tr
@@ -145,7 +145,7 @@ FocusScope {
                     id: optDisplayFrequency
 
                     //property to manage parameter name
-                    property string parameterName : "system.externalscreen.forcefrequency"
+                    property string parameterName : "system.game.screen.frequency"
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
 
                     label: qsTr("Display Frequency") + api.tr
@@ -180,9 +180,9 @@ FocusScope {
                     label: qsTr("Video Marquee") + api.tr
                     note: qsTr("Activate a second screen for marquee or else.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("system.marqueescreen.prefered.enabled")
+                    checked: api.internal.recalbox.getBoolParameter("system.marquee.screen.enabled")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("system.marqueescreen.prefered.enabled",checked);
+                        api.internal.recalbox.setBoolParameter("system.marquee.screen.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayFrequency
@@ -192,7 +192,7 @@ FocusScope {
                     id: optDisplayMarqueeOutput
 
                     //property to manage parameter name
-                    property string parameterName : "system.marqueescreen.prefered"
+                    property string parameterName : "system.marquee.screen"
                     property variant optionsList : []
 
                     label: qsTr("Display Output") + api.tr
@@ -221,7 +221,7 @@ FocusScope {
                     id: optDisplayMarqueeResolution
 
                     //property to manage parameter name
-                    property string parameterName : "system.marqueescreen.forceresolution"
+                    property string parameterName : "system.marquee.screen.resolution"
                     property variant optionsList : [optDisplayMarqueeOutput.value]
 
                     label: qsTr("Display Resolution") + api.tr
@@ -250,7 +250,7 @@ FocusScope {
                     id: optDisplayMarqueeFrequency
 
                     //property to manage parameter name
-                    property string parameterName : "system.marqueescreen.forcefrequency"
+                    property string parameterName : "system.marquee.screen.frequency"
                     property variant optionsList : [optDisplayMarqueeOutput.value, optDisplayMarqueeResolution.value]
 
                     label: qsTr("Display Frequency") + api.tr
@@ -298,7 +298,7 @@ FocusScope {
                     }
                     onActivate: {
                         api.internal.recalbox.saveParameters();
-                        api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
+                        api.internal.system.runBoolResult("~/Bureau/externalscreenBis.sh");
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayMarqueeFrequency
