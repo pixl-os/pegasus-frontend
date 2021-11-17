@@ -229,11 +229,11 @@ void ScriptManager::BuildStateGame(std::string& output, const model::Game* game)
         output.append("IsFolder=").append(eol) //empty for the moment
         .append("ThumbnailPath=").append(eol) //empty for the moment
         .append("VideoPath=").append(eol) //empty for the moment
-        .append("Developer=").append(game->developerListConst().at(0).toUtf8().constData()).append(eol)
-        .append("Publisher=").append(game->publisherListConst().at(0).toUtf8().constData()).append(eol)
+        .append("Developer=").append((game->developerListConst().count() != 0) ? game->developerListConst().at(0).toUtf8().constData() : "").append(eol)
+        .append("Publisher=").append((game->publisherListConst().count() != 0) ? game->publisherListConst().at(0).toUtf8().constData() : "").append(eol)
         .append("Players=").append(std::to_string(game->playerCount())).append(eol)
         .append("Region=").append(eol) //empty for the moment
-        .append("Genre=").append(game->genreListConst().at(0).toUtf8().constData()).append(eol)
+        .append("Genre=").append((game->genreListConst().count() !=0) ? game->genreListConst().at(0).toUtf8().constData() : "").append(eol)
         .append("GenreId=").append(game->genreid().toUtf8().constData()).append(eol)
         .append("Favorite=").append((game->isFavorite() ? "1" : "0")).append(eol)
         .append("Hidden=").append(eol) //empty for the moment
