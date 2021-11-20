@@ -151,9 +151,10 @@ Window {
 					content.state = "sub";
 			
 					//add dialogBox if pseudo not well configured
-					genericMessage.setSource("dialogs/GenericContinueDialog.qml",
+                    //TO DO
+                    /*genericMessage.setSource("dialogs/GenericContinueDialog.qml",
 						{ "title": qsTr("Warning"), "message": qsTr("Please configure your pseudo or you will be as 'anonymous'")});
-						genericMessage.focus = true;						
+                        genericMessage.focus = true;*/
 				}
 
 
