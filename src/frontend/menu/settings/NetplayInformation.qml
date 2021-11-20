@@ -218,8 +218,14 @@ FocusScope {
                         onNoteChanged:
                         {
                             //search by crc first
-                            searchByCRCorFile.filename = "";
-                            searchByCRCorFile.crc = game_crc;
+                            if (game_crc !== "00000000"){
+                                searchByCRCorFile.filename = "";
+                                searchByCRCorFile.crc = game_crc;
+                            }
+                            else{
+                                searchByCRCorFile.filename = game_name;
+                                searchByCRCorFile.crc = "";
+                            }
                         }
                         //add image of country
                         icon: {
