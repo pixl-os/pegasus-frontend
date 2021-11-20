@@ -6,7 +6,6 @@
 
 #include "utils/MoveOnly.h"
 #include <QAbstractListModel>
-//#include "QtQmlTricks/QQmlObjectListModel.h"
 
 namespace model {
 struct RoomEntry {
@@ -73,27 +72,13 @@ public:
     int currentIndex() const { return static_cast<int>(m_current_idx); }
     void setCurrentIndex(int);
     bool find_available_rooms(QString log_tag, const QJsonDocument& json, std::vector<model::RoomEntry>& roomsEntry);
-	//CurrentName is used to initiate the Rooms list from list define by the developer and return the existing value from recalbox.conf if exist
     Q_INVOKABLE void refresh();
-    //CurrentNameFromSystem is used to initiate the Rooms list generated from a system/script command and return the existing value from recalbox.conf if exist
-    //Q_INVOKABLE  QString currentNameFromSystem (const QString& Room, const QString& SysCommand, const QStringList& SysOptions);
+    Q_INVOKABLE void reset();
 
-//Variant examples from QML	
-/* Item {
-    property variant items: [1, 2, 3, "four", "five"]
-    property variant attributes: { 'color': 'red', 'width': 100 }
-
-    Component.onCompleted: {
-        for (var i = 0; i < items.length; i++)
-            console.log(items[i])
-
-        for (var prop in attributes)
-            console.log(prop, "=", attributes[prop])
-    }
-}
- */
 private slots:
+    void reset_slot();
     void refresh_slot();
+
 
 signals:
     void roomsChanged();
@@ -106,10 +91,6 @@ private:
     //QString m_Room;
     
     size_t m_current_idx;
-
-/*    void select_preferred_Room(const QString&);
-    bool select_Room(const QString&);
-    void save_selected_Room();*/
 
 };
 } // namespace model

@@ -48,6 +48,8 @@ FocusScope {
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
+            //clean rooms model
+            api.internal.netplay.rooms.reset();
             root.close();
         }
     }

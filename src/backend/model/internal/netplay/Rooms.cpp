@@ -213,6 +213,24 @@ QVariant Rooms::data(const QModelIndex& index, int role) const
     emit roomsChanged();
 }
 
+void Rooms::reset()
+{
+      //Log::debug(LOGMSG("Rooms::reset_slot() put in Qt::QueuedConnection"));
+      QMetaObject::invokeMethod(this,"reset_slot", Qt::QueuedConnection);
+}
+
+void Rooms::reset_slot()
+{
+    int currentSize = int(m_Rooms.size());
+    //check if we have to remove line
+    for(int j = 0; j < currentSize; j++){
+        Rooms::beginRemoveRows(QModelIndex(), m_Rooms.size()-1, m_Rooms.size()-1);
+        Log::debug(LOGMSG("Delete game : %1 - created: %2").arg(m_Rooms.at(m_Rooms.size()-1).game_name,m_Rooms.at(m_Rooms.size()-1).created));
+        m_Rooms.pop_back();
+        Rooms::endRemoveRows();
+    }
+}
+
 void Rooms::refresh()
 {
      //Log::debug(LOGMSG("Rooms::refresh_slot() put in Qt::QueuedConnection"));
