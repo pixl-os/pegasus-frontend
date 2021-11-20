@@ -132,7 +132,10 @@ FocusScope {
     id: labelContainer
         width: parent.width *(3/4)
         anchors {
-            left: parent.left; leftMargin: horizontalPadding
+            left: parent.left;
+            leftMargin: horizontalPadding;
+            right: logoContainer.left
+            rightMargin: horizontalPadding
             top: parent.top
         }
         spacing: fontSize * 0.25
@@ -162,8 +165,6 @@ FocusScope {
                         font.pixelSize: fontSize
                         font.family: globalFonts.awesome
                         elide: Text.ElideRight
-                        //wrapMode: Text.WrapAnywhere
-                        //text: "sdqskdfjlqksdfjkqsjdf lkjqsdklfjqsmkld fjkqmlsdjfkl qsjdflkmjqsd lmkfjqslmkdf jlmksqldjfk lqsdjflmkq sjdflkmqj sdfmklqj sdfkl mj"
                     }
                 }
                 Row{
@@ -188,21 +189,6 @@ FocusScope {
                 }
 
             }
-            /*Column{
-                id: littleLogoColumn
-                anchors.left: labelsColumn.right
-                width: parent.width * (1/4)
-                Image {
-                        id: icon2
-                        //anchors.left: labelsColumn.right
-                        asynchronous: true
-                        height: label.height + labelContainer.spacing + sublabel.height
-                        source: ""
-                        fillMode: Image.PreserveAspectFit
-                        smooth: true
-                        visible: !root.focus
-                    }
-            }*/
         }
         Row{
         id: detailedRow
@@ -277,84 +263,58 @@ FocusScope {
                     color: themeColor.textSublabel
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     id: line10
                     color: themeColor.textSublabel
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     id: line11
                     color: themeColor.textSublabel
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     id: line12
                     color: themeColor.textSublabel
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     id: line13
                     color: themeColor.textSublabel
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     id: line14
                     color: themeColor.textSublabel
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     id: line15
                     color: themeColor.textSublabel
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
-                    font.bold: true
+                    font.bold: false
                 }
                 Text{
                     id: line16
                     color: themeColor.textSublabel
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
-                    font.bold: true
+                    font.bold: false
                 }
             }
-//            Column{
-//                Image {
-//                    id: picture
-//                    asynchronous: true
-//                    height: root.focus ? detailPartHeight : 0
-//                    //width: height * (4/3) // for 4/3 video sized
-//                    source: ""
-//                    fillMode: Image.PreserveAspectFit
-//                    smooth: true
-//                    //visible: root.focus
-//                }
-//            }
-/*            Column {
-                Image {
-                    id: picture2
-                    asynchronous: true
-                    height: root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
-                    //width: parent.width
-                    //width: height * (4/3) // for 4/3 video sized
-                    source: ""
-                    fillMode: Image.PreserveAspectFit
-                    smooth: true
-                    //visible: root.focus
-                }
-            }*/
-
         }
     }
     Column {
