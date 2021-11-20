@@ -25,17 +25,17 @@ neogeo.emulator=fba2x
 
 QString GetCommandOutput(const std::string& command)
 {
-  std::string output;
-  char buffer[4096];
-  FILE* pipe = popen(command.data(), "r");
-  if (pipe != nullptr)
-  {
-    while (feof(pipe) == 0)
-      if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
-        output.append(buffer);
-    pclose(pipe);
-  }
-  return QString::fromStdString(output);
+    std::string output;
+    char buffer[4096];
+    FILE* pipe = popen(command.data(), "r");
+    if (pipe != nullptr)
+    {
+        while (feof(pipe) == 0)
+            if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+                output.append(buffer);
+        pclose(pipe);
+    }
+    return QString::fromStdString(output);
 }
 
 QStringList GetParametersList(QString Parameter)
@@ -66,6 +66,23 @@ QStringList GetParametersList(QString Parameter)
         /* ## set the keyboard layout (fr,en,de,us,es)
         system.kblayout=us */
         ListOfValue << "us" << "fr" << "gb" << "de" << "es";
+    }
+    else if  (Parameter.endsWith(".screen.rotation", Qt::CaseInsensitive) == true)
+    {
+        /* for rotation xrandr output :
+          --rotate normal,inverted,left,right */
+        ListOfValue << "normal" << "inverted" << "left" << "right";
+    }
+    else if (Parameter == "system.marquee.screen.position")
+    {
+        /* parameter List for xrandr option :
+        for postion xrandr output :
+          --left-of <output>
+          --right-of <output>
+          --above <output>
+          --below <output>
+    Only set for Marquee screen */
+        ListOfValue << "above" << "below" << "left" << "right";
     }
     else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
     {
@@ -202,35 +219,35 @@ QStringList GetParametersList(QString Parameter)
     {
         QString system_short_name = Parameter.split('.').at(0);
     }
-	//for bluetooth feature
-	else if (Parameter == "controllers.bluetooth.scan.methods")
+    //for bluetooth feature
+    else if (Parameter == "controllers.bluetooth.scan.methods")
     {
-		//QT QML Methods: 3 modes possible - MinimalServiceDiscovery (0) or FullServiceDiscovery (1)  or DeviceDiscovery (2)
-		//1 legacy ES methods
-		//new methods ?!
+        //QT QML Methods: 3 modes possible - MinimalServiceDiscovery (0) or FullServiceDiscovery (1)  or DeviceDiscovery (2)
+        //1 legacy ES methods
+        //new methods ?!
         ListOfValue << "Legacy (script)" << "Minimal Service Discovery (slow)" << "Full Service Discovery (slower)" << "Device Discovery (quicker)";
         ListOfInternalValue << "" << "0" << "1" << "2";
     }
-	else if (Parameter == "controllers.bluetooth.pair.methods")
+    else if (Parameter == "controllers.bluetooth.pair.methods")
     {
-		//legacy ES methods + command line
+        //legacy ES methods + command line
         ListOfValue << "Legacy (full script)" << "Simple one (partial script)";
         ListOfInternalValue << "" << "0";
     }
-	else if (Parameter == "controllers.bluetooth.unpair.methods")
+    else if (Parameter == "controllers.bluetooth.unpair.methods")
     {
-		//legacy ES methods + command line
+        //legacy ES methods + command line
         ListOfValue << "Legacy (script)" << "Simple one (one commande line)";
         ListOfInternalValue << "" << "0";
     }
-	else
+    else
     {
         ListOfValue << QString("error: Parameters list for '%1' not found").arg(Parameter);
         //not a parameter using list !
         Log::warning(LOGMSG("'%1' parameter is not a parameters list").arg(Parameter));
     }
     Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
-	Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
+    Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
     return ListOfValue;
 }
 
@@ -241,33 +258,33 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
     //clean global internal values if needed
     ListOfInternalValue.clear();
     
-	//replace from '%1' to '%i' parameters from SysCommand by SysOptions
+    //replace from '%1' to '%i' parameters from SysCommand by SysOptions
     if (!SysOptions.empty())
-		{
-		for(int i = 0; i < SysOptions.count(); i++)
-			{
-                SysCommand.replace("%"+QString::number(i+1), SysOptions.at(i));
-			}
-	}
+    {
+        for(int i = 0; i < SysOptions.count(); i++)
+        {
+            SysCommand.replace("%"+QString::number(i+1), SysOptions.at(i));
+        }
+    }
 
-	//launch command using Qprocess to get output
+    //launch command using Qprocess to get output
     QString stdout = GetCommandOutput(SysCommand.toUtf8().constData());
     Log::debug(LOGMSG("GetCommandOutput(SysCommand.toUtf8().constData()): '%1'").arg(stdout));
 
-	//get list of value from stdout
-	if (stdout.isEmpty())
-	{
-		ListOfValue.clear();
-	}
+    //get list of value from stdout
+    if (stdout.isEmpty())
+    {
+        ListOfValue.clear();
+    }
     //search delimitor using semi-column
-	else if (stdout.count(";") >= 1)
-	{
-		ListOfValue = stdout.split(";");
-	}
+    else if (stdout.count(";") >= 1)
+    {
+        ListOfValue = stdout.split(";");
+    }
     else // or search end of line
-	{
-		ListOfValue = stdout.split("\n");
-	}
+    {
+        ListOfValue = stdout.split("\n");
+    }
     //remove empty ones for cleaning
     ListOfValue.removeAll(QString(""));
 
@@ -280,7 +297,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
         ListOfInternalValue.append(""); //to empty parameter
     }
 
-	return ListOfValue;
+    return ListOfValue;
 }
 
 std::vector<model::ParameterEntry> find_available_parameterslist(const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions)
@@ -340,8 +357,8 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
     if (ListOfInternalValue.size() == 0) DefaultValue = m_parameterslist.at(0).name;
     else DefaultValue = ListOfInternalValue.at(0);
     
-	//Log::debug(LOGMSG("DefaultValue:`%1`").arg(DefaultValue));
-	
+    //Log::debug(LOGMSG("DefaultValue:`%1`").arg(DefaultValue));
+
     if(Parameter.contains("boot.", Qt::CaseInsensitive))
     {
         //check in recalbox-boot.conf
@@ -352,7 +369,7 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
     else
     {
         //check in recalbox.conf
-		//Log::debug(LOGMSG("select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));"));
+        //Log::debug(LOGMSG("select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));"));
         select_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));
     }
 }
@@ -384,8 +401,8 @@ bool ParametersList::select_parameter(const QString& name)
         }
     }
     //Log::debug(LOGMSG("ParametersList::select_parameter(const QString& name) / return false / index is set to 0"));
-	//set index to 0 to have any value
-	m_current_idx = 0;
+    //set index to 0 to have any value
+    m_current_idx = 0;
     return false;
 }
 

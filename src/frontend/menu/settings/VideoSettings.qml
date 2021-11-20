@@ -38,7 +38,6 @@ FocusScope {
         text: qsTr("Settings > Video Configuration") + api.tr
         z: 2
     }
-
     Flickable {
         id: container
 
@@ -95,8 +94,8 @@ FocusScope {
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Display Output") + api.tr
-                    note: qsTr("Choose Display output") + api.tr
+                    label: qsTr("Game screen output") + api.tr
+                    note: qsTr("Choose your output for game screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 ~ \"connected\"{print $1}'",optionsList)
                     font: globalFonts.ion
 
@@ -121,8 +120,8 @@ FocusScope {
                     property string parameterName : "system.game.screen.resolution"
                     property variant optionsList : [optDisplayOutput.value]
 
-                    label: qsTr("Display Resolution") + api.tr
-                    note: qsTr("Choose resolution for this output") + api.tr
+                    label: qsTr("Game screen resolution") + api.tr
+                    note: qsTr("Choose resolution for your game screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList)
                     font: globalFonts.ion
 
@@ -148,8 +147,8 @@ FocusScope {
                     property string parameterName : "system.game.screen.frequency"
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
 
-                    label: qsTr("Display Frequency") + api.tr
-                    note: qsTr("Choose frequency for this output") + api.tr
+                    label: qsTr("Game screen Frequency") + api.tr
+                    note: qsTr("Choose frequency for your game screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
                     font: globalFonts.ion
 
@@ -166,9 +165,34 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayResolution
+                    KeyNavigation.down: optDisplayRotation
+                }
+                MultivalueOption {
+                    id: optDisplayRotation
+
+                    //property to manage parameter name
+                    property string parameterName : "system.game.screen.rotation"
+
+                    label: qsTr("Games screen rotation") + api.tr
+                    note: qsTr("Choose orientation for your game screen.") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    font: globalFonts.ion
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optDisplayRotation;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayFrequency
                     KeyNavigation.down: optMarqueeScreenActivate
                 }
-
                 // second screen marque or else
                 SectionTitle {
                     text: qsTr("Video Marquee Settings") + api.tr
@@ -177,7 +201,7 @@ FocusScope {
                 ToggleOption {
                     id: optMarqueeScreenActivate
 
-                    label: qsTr("Video Marquee") + api.tr
+                    label: qsTr("Marquee screen activate") + api.tr
                     note: qsTr("Activate a second screen for marquee or else.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("system.marquee.screen.enabled")
@@ -185,7 +209,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("system.marquee.screen.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optDisplayFrequency
+                    KeyNavigation.up: optDisplayRotation
                     KeyNavigation.down: optDisplayMarqueeOutput
                 }
                 MultivalueOption {
@@ -195,8 +219,8 @@ FocusScope {
                     property string parameterName : "system.marquee.screen"
                     property variant optionsList : []
 
-                    label: qsTr("Display Output") + api.tr
-                    note: qsTr("Choose Display output") + api.tr
+                    label: qsTr("Marquee screen output") + api.tr
+                    note: qsTr("Choose your output for marquee screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 ~ \"connected\"{print $1}'",optionsList)
                     font: globalFonts.ion
 
@@ -224,8 +248,8 @@ FocusScope {
                     property string parameterName : "system.marquee.screen.resolution"
                     property variant optionsList : [optDisplayMarqueeOutput.value]
 
-                    label: qsTr("Display Resolution") + api.tr
-                    note: qsTr("Choose resolution for this output") + api.tr
+                    label: qsTr("Marquee screen resolution") + api.tr
+                    note: qsTr("Choose resolution for marquee screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList)
                     font: globalFonts.ion
 
@@ -253,8 +277,8 @@ FocusScope {
                     property string parameterName : "system.marquee.screen.frequency"
                     property variant optionsList : [optDisplayMarqueeOutput.value, optDisplayMarqueeResolution.value]
 
-                    label: qsTr("Display Frequency") + api.tr
-                    note: qsTr("Choose frequency for this output") + api.tr
+                    label: qsTr("Marquee screen frequency") + api.tr
+                    note: qsTr("Choose frequency for Marquee screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
                     font: globalFonts.ion
 
@@ -271,6 +295,62 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayMarqueeResolution
+                    KeyNavigation.down: optDisplayMarqueeRotation
+                    // only show if video marquee option as enabled
+                    visible: optMarqueeScreenActivate.checked
+                }
+                MultivalueOption {
+                    id: optDisplayMarqueeRotation
+
+                    //property to manage parameter name
+                    property string parameterName : "system.marquee.screen.rotation"
+
+                    label: qsTr("Marquee screen rotation") + api.tr
+                    note: qsTr("Choose orientation for your marquee screen.") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    font: globalFonts.ion
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optDisplayMarqueeRotation;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayMarqueeFrequency
+                    KeyNavigation.down: optDisplayMarqueePosition
+                    // only show if video marquee option as enabled
+                    visible: optMarqueeScreenActivate.checked
+                }
+                MultivalueOption {
+                    id: optDisplayMarqueePosition
+
+                    //property to manage parameter name
+                    property string parameterName : "system.marquee.screen.position"
+
+                    label: qsTr("Marquee screen position") + api.tr
+                    note: qsTr("Choose position for your marquee screen.") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    font: globalFonts.ion
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optDisplayMarqueePosition;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName)
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optDisplayMarqueeRotation
                     KeyNavigation.down: optValidateChange
                     // only show if video marquee option as enabled
                     visible: optMarqueeScreenActivate.checked
@@ -298,10 +378,10 @@ FocusScope {
                     }
                     onActivate: {
                         api.internal.recalbox.saveParameters();
-                        api.internal.system.runBoolResult("~/Bureau/externalscreenBis.sh");
+                        api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optDisplayMarqueeFrequency
+                    KeyNavigation.up: optDisplayMarqueeRotation
                 }
                 Item {
                     width: parent.width
