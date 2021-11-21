@@ -99,17 +99,17 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
 
-                SectionTitle {
-                    text: qsTr("Retroachievement") + api.tr
-                    first: true
-                }
+
                 ToggleOption {
                     id: optRetroachievementActivate
                     // set focus only on first item
                     focus: true
-
-                    label: qsTr("Activate retroachievement") + api.tr
-                    note: qsTr("Achievements to your favourites retro games.") + api.tr
+                    SectionTitle {
+                        text: qsTr("Retroachievement") + api.tr
+                        first: true
+                    }
+                    // label: qsTr("Activate retroachievement") + api.tr
+                    // note: qsTr("Achievements to your favourites retro games.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements")
                     onCheckedChanged: {
@@ -207,15 +207,14 @@ FocusScope {
                     visible: optRetroachievementActivate.checked
 
                 }
-                SectionTitle {
-                    text: qsTr("Netplay") + api.tr
-                    first: true
-                }
                 ToggleOption {
                     id: optNetplayActivate
-
-                    label: qsTr("Activate netplay") + api.tr
-                    note: qsTr("Play with your friends online") + api.tr
+                    SectionTitle {
+                        text: qsTr("Netplay") + api.tr
+                        first: true
+                    }
+                    // label: qsTr("Activate netplay") + api.tr
+                    // note: qsTr("Play with your friends online") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.netplay")
                     onCheckedChanged: {

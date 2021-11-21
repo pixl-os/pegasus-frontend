@@ -62,17 +62,14 @@ FocusScope {
         }
         FocusScope {
             id: content
-
             focus: true
             enabled: focus
-
             width: contentColumn.width
             height: contentColumn.height
 
             Column {
                 id: contentColumn
                 spacing: vpx(5)
-
                 width: root.width * 0.7
                 height: implicitHeight
 
@@ -82,20 +79,19 @@ FocusScope {
                 }
 
                 SectionTitle {
-                    text: qsTr("Video Game Settings") + api.tr
+                    text: qsTr("Primary screen settings") + api.tr
                     first: true
                 }
                 MultivalueOption {
                     id: optDisplayOutput
-
                     //property to manage parameter name
                     property string parameterName : "system.game.screen"
                     property variant optionsList : []
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Game screen output") + api.tr
-                    note: qsTr("Choose your output for game screen.") + api.tr
+                    label: qsTr("Output") + api.tr
+                    note: qsTr("Choose your output for primary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 ~ \"connected\"{print $1}'",optionsList)
                     font: globalFonts.ion
 
@@ -115,13 +111,12 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayResolution
-
                     //property to manage parameter name
                     property string parameterName : "system.game.screen.resolution"
                     property variant optionsList : [optDisplayOutput.value]
 
-                    label: qsTr("Game screen resolution") + api.tr
-                    note: qsTr("Choose resolution for your game screen.") + api.tr
+                    label: qsTr("Resolution") + api.tr
+                    note: qsTr("Choose resolution for your primary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList)
                     font: globalFonts.ion
 
@@ -142,13 +137,12 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayFrequency
-
                     //property to manage parameter name
                     property string parameterName : "system.game.screen.frequency"
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
 
-                    label: qsTr("Game screen Frequency") + api.tr
-                    note: qsTr("Choose frequency for your game screen.") + api.tr
+                    label: qsTr("Frequency") + api.tr
+                    note: qsTr("Choose frequency for your primary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
                     font: globalFonts.ion
 
@@ -169,12 +163,11 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayRotation
-
                     //property to manage parameter name
                     property string parameterName : "system.game.screen.rotation"
 
-                    label: qsTr("Games screen rotation") + api.tr
-                    note: qsTr("Choose orientation for your game screen.") + api.tr
+                    label: qsTr("Rotate") + api.tr
+                    note: qsTr("Choose orientation for your primary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     font: globalFonts.ion
 
@@ -194,16 +187,14 @@ FocusScope {
                     KeyNavigation.down: optMarqueeScreenActivate
                 }
                 // second screen marque or else
-                SectionTitle {
-                    text: qsTr("Video Marquee Settings") + api.tr
-                    first: true
-                }
                 ToggleOption {
                     id: optMarqueeScreenActivate
-
-                    label: qsTr("Marquee screen activate") + api.tr
-                    note: qsTr("Activate a second screen for marquee or else.") + api.tr
-
+                    SectionTitle {
+                        text: qsTr("Secondary screen settings") + api.tr
+                        first: true
+                    }
+                    // label: qsTr("Activate secondary screen") + api.tr
+                    // note: qsTr("Secondary screen for marquee or else.") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("system.marquee.screen.enabled")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("system.marquee.screen.enabled",checked);
@@ -214,13 +205,12 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeOutput
-
                     //property to manage parameter name
                     property string parameterName : "system.marquee.screen"
                     property variant optionsList : []
 
-                    label: qsTr("Marquee screen output") + api.tr
-                    note: qsTr("Choose your output for marquee screen.") + api.tr
+                    label: qsTr("Output") + api.tr
+                    note: qsTr("Choose your output for secondary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 ~ \"connected\"{print $1}'",optionsList)
                     font: globalFonts.ion
 
@@ -243,13 +233,12 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeResolution
-
                     //property to manage parameter name
                     property string parameterName : "system.marquee.screen.resolution"
                     property variant optionsList : [optDisplayMarqueeOutput.value]
 
-                    label: qsTr("Marquee screen resolution") + api.tr
-                    note: qsTr("Choose resolution for marquee screen.") + api.tr
+                    label: qsTr("Resolution") + api.tr
+                    note: qsTr("Choose resolution for secondary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1)print $1}'",optionsList)
                     font: globalFonts.ion
 
@@ -272,13 +261,12 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeFrequency
-
                     //property to manage parameter name
                     property string parameterName : "system.marquee.screen.frequency"
                     property variant optionsList : [optDisplayMarqueeOutput.value, optDisplayMarqueeResolution.value]
 
-                    label: qsTr("Marquee screen frequency") + api.tr
-                    note: qsTr("Choose frequency for Marquee screen.") + api.tr
+                    label: qsTr("Frequency") + api.tr
+                    note: qsTr("Choose frequency for secondary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
                     font: globalFonts.ion
 
@@ -301,12 +289,11 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeRotation
-
                     //property to manage parameter name
                     property string parameterName : "system.marquee.screen.rotation"
 
-                    label: qsTr("Marquee screen rotation") + api.tr
-                    note: qsTr("Choose orientation for your marquee screen.") + api.tr
+                    label: qsTr("Rotation") + api.tr
+                    note: qsTr("Choose orientation for your secondary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     font: globalFonts.ion
 
@@ -329,12 +316,11 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayMarqueePosition
-
                     //property to manage parameter name
                     property string parameterName : "system.marquee.screen.position"
 
-                    label: qsTr("Marquee screen position") + api.tr
-                    note: qsTr("Choose position for your marquee screen.") + api.tr
+                    label: qsTr("Position") + api.tr
+                    note: qsTr("Choose position for your Secondary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     font: globalFonts.ion
 
@@ -356,7 +342,6 @@ FocusScope {
                     visible: optMarqueeScreenActivate.checked
                 }
                 // second screen marque or else
-
                 SimpleButton {
                     id: optValidateChange
                     Rectangle {
@@ -381,7 +366,7 @@ FocusScope {
                         api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optDisplayMarqueeRotation
+                    KeyNavigation.up: optDisplayMarqueePosition
                 }
                 Item {
                     width: parent.width
