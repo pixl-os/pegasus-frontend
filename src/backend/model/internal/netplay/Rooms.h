@@ -76,6 +76,8 @@ public:
     bool find_available_rooms(QString log_tag, const QJsonDocument& json);
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void reset();
+    Q_INVOKABLE int nbEmptyRooms();
+
 
 private slots:
     void reset_slot();

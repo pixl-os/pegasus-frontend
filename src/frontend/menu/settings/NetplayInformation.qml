@@ -146,7 +146,7 @@ FocusScope {
                     }
                     SectionTitle {
                     id: retroarch_title
-                    text: "  " + qsTr("Retroarch lobby : ") + availableNetplayRooms.count + qsTr(" room(s)")  + api.tr
+                    text: "  " + qsTr("Retroarch lobby : ") + (availableNetplayRooms.count - availableNetplayRooms.hidden) + qsTr(" room(s)")  + api.tr
 					first: true
 					visible: true
                     }
@@ -176,27 +176,36 @@ FocusScope {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms  // availableNetplayRoomsModel //for test purpose
                     property var selectedButtonIndex : 0
+                    property var hidden : 0
                     onItemRemoved:{
                         //RFU
-                        console.log("onItemRemoved: ", index)
+                        //console.log("onItemRemoved: ", index)
                     }
                     onItemAdded:{
                         //RFU
-                        console.log("onItemAdded: ", index)
+                        //console.log("onItemAdded: ", index)
                     }
                     delegate: DetailedButton {
                         SearchGame {
                             id: searchByCRCorFile;
                             onMaxChanged:{
-                                if (max === 1 && crc !== "") { //CRC search and match
+                                console.log("onMaxChanged: game_crc",game_crc);
+                                console.log("onMaxChanged: game_name",game_name);
+                                console.log("onMaxChanged: crc",searchByCRCorFile.crc);
+                                console.log("onMaxChanged: filename",searchByCRCorFile.filename);
+                                if((game_crc === "") && (game_name === "")) {
+                                    searchByCRCorFile.crc = "";
+                                    searchByCRCorFile.filename = "";
+                                }
+                                else if (max === 1 && crc !== "") { //CRC search and match
                                     picture = result.games.get(0).assets.screenshot;
                                     icon2 = result.games.get(0).assets.logo;
                                 }
-                                else if (searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") { //file name match
+                                else if (max >= 1 && filename !== "") { //file name match
                                     picture = searchByCRCorFile.result.games.get(0).assets.screenshot;
                                     icon2 = searchByCRCorFile.result.games.get(0).assets.logo;
                                 }
-                                else if (searchByCRCorFile.max !== 1 && searchByCRCorFile.crc !== ""){
+                                else if (max !== 1 && crc !== ""){
                                     //Search by file name now if CRC not found
                                     //Launch timer for that
                                     searchByCRCorFile.crc = "";
@@ -209,6 +218,11 @@ FocusScope {
                         property var private_icon : has_password ? "\uf071 " : ""
                         property var visibility_icon : has_spectate_password ? "\uf070 " : " "
                         width: parent.width - vpx(100)
+                        visible :{
+                            availableNetplayRooms.hidden = api.internal.netplay.rooms.nbEmptyRooms()
+                            if ((game_crc === "") && (game_name === "")) return false;
+                            else return true;
+                        }
                         //for preview
                         label: {
                             return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRCorFile.max === 1 && searchByCRCorFile.crc !== "") ? searchByCRCorFile.result.games.get(0).title : ((searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") ? searchByCRCorFile.result.games.get(0).title : game_name)));
@@ -220,15 +234,18 @@ FocusScope {
                         onNoteChanged:
                         {
                             //game change or add
-                            console.log("At: ",index,"- Add/Change: ",game_name);
-                            //search by crc first
-                            if (game_crc !== "00000000"){
-                                searchByCRCorFile.filename = "";
-                                searchByCRCorFile.crc = game_crc;
-                            }
-                            else{
-                                searchByCRCorFile.filename = game_name;
-                                searchByCRCorFile.crc = "";
+                            //console.log("At: ",index,"- Add/Change: ",game_name);
+                            //check if both are not empty as deleted one
+                            if(game_crc !== "" && game_name !== ""){
+                                //search by crc first
+                                if (game_crc !== "00000000"){
+                                    searchByCRCorFile.filename = "";
+                                    searchByCRCorFile.crc = game_crc;
+                                }
+                                else{
+                                    searchByCRCorFile.filename = game_name;
+                                    searchByCRCorFile.crc = "";
+                                }
                             }
                         }
                         //add image of country

@@ -264,6 +264,17 @@ void Rooms::reset_slot()
 
 }
 
+int Rooms::nbEmptyRooms()
+{
+    //To count empty rooms
+    int j = 0;
+    for(int k = 0; k < m_Count; k++){
+        if((m_Rooms.at(k).game_crc == "") && (m_Rooms.at(k).game_name == "")) j = j + 1;
+    }
+    return j;
+
+}
+
 void Rooms::refresh()
 {
      //Log::debug(LOGMSG("Rooms::refresh_slot() put in Qt::QueuedConnection"));
@@ -334,90 +345,110 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
     }
 
     for (const auto& array_entry : json_root) {
-            const auto fields = array_entry[QL1("fields")].toObject();
-            const auto Id = fields[QL1("id")].toInt();
-            const auto Username = fields[QL1("username")].toString();
-            const auto Country = fields[QL1("country")].toString();
-            const auto Game_name = fields[QL1("game_name")].toString();
-            const auto Game_crc = fields[QL1("game_crc")].toString();
-            const auto Core_name = fields[QL1("core_name")].toString();
-            const auto Core_version = fields[QL1("core_version")].toString();
-            const auto Subsystem_name = fields[QL1("subsystem_name")].toString();
-            const auto Retroarch_version = fields[QL1("retroarch_version")].toString();
-            const auto Frontend = fields[QL1("frontend")].toString();
-            const auto Ip = fields[QL1("ip")].toString();
-            const auto Port = fields[QL1("port")].toInt();
-            const auto Mitm_ip = fields[QL1("mitm_ip")].toString();
-            const auto Mitm_port = fields[QL1("mitm_port")].toInt();
-            const auto Host_method = fields[QL1("host_method")].toInt();
-            const auto Has_password = fields[QL1("has_password")].toBool();
-            const auto Has_spectate_password = fields[QL1("has_spectate_password")].toBool();
-            const auto Created = fields[QL1("created")].toString();
-            const auto Updated = fields[QL1("updated")].toString();
+        const auto fields = array_entry[QL1("fields")].toObject();
+        const auto Id = fields[QL1("id")].toInt();
+        const auto Username = fields[QL1("username")].toString();
+        const auto Country = fields[QL1("country")].toString();
+        const auto Game_name = fields[QL1("game_name")].toString();
+        const auto Game_crc = fields[QL1("game_crc")].toString();
+        const auto Core_name = fields[QL1("core_name")].toString();
+        const auto Core_version = fields[QL1("core_version")].toString();
+        const auto Subsystem_name = fields[QL1("subsystem_name")].toString();
+        const auto Retroarch_version = fields[QL1("retroarch_version")].toString();
+        const auto Frontend = fields[QL1("frontend")].toString();
+        const auto Ip = fields[QL1("ip")].toString();
+        const auto Port = fields[QL1("port")].toInt();
+        const auto Mitm_ip = fields[QL1("mitm_ip")].toString();
+        const auto Mitm_port = fields[QL1("mitm_port")].toInt();
+        const auto Host_method = fields[QL1("host_method")].toInt();
+        const auto Has_password = fields[QL1("has_password")].toBool();
+        const auto Has_spectate_password = fields[QL1("has_spectate_password")].toBool();
+        const auto Created = fields[QL1("created")].toString();
+        const auto Updated = fields[QL1("updated")].toString();
 
 
-            //1 - search if already exists to win time and avoid to recreate / move for nothing
-            //check just if game not already exist in the list
-            bool already_exist = false;
-            //do the for only if a list not empty already exists as displayed
+        //1 - search if already exists to win time and avoid to recreate / move for nothing
+        //check just if game not already exist in the list
+        bool already_exist = false;
+        //do the for only if a list not empty already exists as displayed
+        for(int k = 0; k < m_Count; k++){
+            if((m_Rooms.at(k).created == Created) && (m_Rooms.at(k).game_name == Game_name)){ //check if same game at same place or not
+                //just updated date in model to update but don't force change for listview
+                m_Rooms[k].updated = Updated;
+                m_Rooms[k].game_name = Game_name;
+                //emit Rooms::dataChanged(index(k,0), index(k,18));
+                //set it as true due to update
+                isRoomUpdated[k] = true;
+                Log::debug(log_tag, LOGMSG("Index: %2 - Game updated (from existing row) : %1").arg(Game_name,QString::number(k)));
+                //stop 'for'
+                already_exist = true;
+                break; //to udpate only one record
+            }
+        }
+
+        //2 - if not found / we need to add it
+        if(!already_exist){
+            bool empty_exist = false;
+            //do the for to check if a empty one exist
             for(int k = 0; k < m_Count; k++){
-                if((m_Rooms.at(k).created == Created) && (m_Rooms.at(k).game_name == Game_name)){ //check if same game at same place or not
-                    //just updated date in model to update but don't force change for listview
-                    m_Rooms[k].updated = Updated;
+                if((m_Rooms.at(k).game_crc == "") && (m_Rooms.at(k).game_name == "")){ //check if game crc/name is empty
+                    //update all in model
+                    m_Rooms[k].id = Id;
+                    m_Rooms[k].username = Username;
+                    m_Rooms[k].country = Country;
                     m_Rooms[k].game_name = Game_name;
-                    emit Rooms::dataChanged(index(k,0), index(k,18));
+                    m_Rooms[k].game_crc = Game_crc;
+                    m_Rooms[k].core_name = Core_name;
+                    m_Rooms[k].core_version = Core_version;
+                    m_Rooms[k].subsystem_name = Subsystem_name;
+                    m_Rooms[k].retroarch_version = Retroarch_version;
+                    m_Rooms[k].frontend = Frontend;
+                    m_Rooms[k].ip = Ip;
+                    m_Rooms[k].port = Port;
+                    m_Rooms[k].mitm_ip = Mitm_ip;
+                    m_Rooms[k].mitm_port = Mitm_port;
+                    m_Rooms[k].host_method = Host_method;
+                    m_Rooms[k].has_password = Has_password;
+                    m_Rooms[k].has_spectate_password = Has_spectate_password;
+                    m_Rooms[k].created = Created;
+                    m_Rooms[k].updated = Updated;
+                    emit dataChanged(index(k,0), index(k,0));
                     //set it as true due to update
                     isRoomUpdated[k] = true;
-                    Log::debug(log_tag, LOGMSG("Index: %2 - Game updated (from existing row) : %1").arg(Game_name,QString::number(k)));
+                    Log::debug(log_tag, LOGMSG("Index: %2 - Game added (from existing empty row) : %1").arg(Game_name,QString::number(k)));
                     //stop 'for'
-                    already_exist = true;
+                    empty_exist = true;
                     break; //to udpate only one record
                 }
             }
-
-            //2 - if not found / we need to add it
-            if(!already_exist){
-                //and to add new one
-                //Log::debug(log_tag, LOGMSG("3"));
-                Rooms::beginInsertRows(QModelIndex(), m_Count, m_Count);
-
-                //QVector<model::RoomEntry> room = {Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated};
-
-                m_Rooms.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
-
-                //Log::debug(log_tag, LOGMSG("4"));
+            //or to add new one if empty not found
+            if(!empty_exist){
                 Log::debug(log_tag, LOGMSG("Index: %2 - Add game (in new row) : %1").arg(Game_name,QString::number(m_Count)));
+                Rooms::beginInsertRows(QModelIndex(), m_Count, m_Count);
+                m_Rooms.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
                 Rooms::endInsertRows();
                 //for update
-                emit Rooms::dataChanged(index(m_Count,0), index(m_Count,18));
+                //emit dataChanged(index(m_Count,0), index(m_Count,0));
                 //update m_count
                 setRowCount(m_Count+1);
                 //flag this row as udpated
                 isRoomUpdated.append(true);
             }
+        }
     }
 
-    //3 - remove unflaged records to be removed
+    //3 - empty unflaged records to be removed (we avoid to delete for bad behavior and other issue)
     int currentCount = m_Count;
-    //check if we have to remove line from the bottom
+    //check if we have to empty line from the bottom
     for(int j = currentCount-1; j >= 0; j--){
         if(isRoomUpdated.at(j) == false){
             Log::debug(log_tag, LOGMSG("Index: %2 - Remove game : %1").arg(m_Rooms.at(j).game_name,QString::number(j)));
-            //Rooms::beginRemoveRows(QModelIndex(),j,j);
-            //roomsEntry.pop_back();
-            //m_Rooms.pop_back();
-
-            //Rooms::removeRows(j,1,QModelIndex());
             m_Rooms[j].game_crc = "";
             m_Rooms[j].game_name = "";
             //for update
-            emit Rooms::dataChanged(index(j,0), index(j,18));
-
-            //Rooms::endRemoveRows();
-            //to force update of data
-            //emit Rooms::dataChanged(index(m_Count,0), index(m_Count,18));
+            emit dataChanged(index(j,0), index(j,0));
             //update m_count
-            setRowCount(m_Count-1);
+            //setRowCount(m_Count-1);
         }
     }
     //initialize new row count
@@ -426,7 +457,6 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
     Log::info(log_tag, LOGMSG("rowCount(): %1.").arg(rowCount()));
     return true;
 }
-
 
 
 } // namespace model
