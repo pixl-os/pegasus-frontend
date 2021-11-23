@@ -136,13 +136,40 @@ Rooms::Rooms(QObject* parent)
 {
 }
 
+void Rooms::setRowCount(int numRows)
+{
+    m_Count = numRows;
+}
+
 int Rooms::rowCount(const QModelIndex& parent) const
 {
     if (parent.isValid())
         return 0;
 
+    //Log::warning(LOGMSG("m_Rooms.size(): %1 - m_Count: %2").arg(static_cast<int>(m_Rooms.size()),m_Count));
     return static_cast<int>(m_Rooms.size());
+    //return m_Count;
+
 }
+
+//bool Rooms::removeRows(int row, int count, const QModelIndex &index)
+//{
+//    if (row < 0 || row + count > m_Rooms.size())
+//        return false;
+
+//    const QAbstractItemModel *item = index.model();
+
+//    QAbstractItemModel::beginRemoveRows(index, row, row);
+//        //for (int i = row; i < count; ++i)
+//        //    delete item->children().at(row);
+//        m_Rooms[row].game_crc = "";
+//        m_Rooms[row].game_name = "";
+//    //emit Rooms::dataChanged(index(k,0), index(k,18));
+
+//    QAbstractItemModel::endRemoveRows();
+
+//    return true;
+//}
 
 QVariant Rooms::data(const QModelIndex& index, int role) const
 {
@@ -221,14 +248,20 @@ void Rooms::reset()
 
 void Rooms::reset_slot()
 {
-    int currentSize = rowCount();
-    //check if we have to remove line
-    for(int j = 0; j < currentSize; j++){
-        Rooms::beginRemoveRows(QModelIndex(), rowCount()-1, rowCount()-1);
-        Log::debug(LOGMSG("Delete game : %1 - created: %2").arg(m_Rooms.at(rowCount()-1).game_name,m_Rooms.at(rowCount()-1).created));
-        m_Rooms.pop_back();
-        Rooms::endRemoveRows();
-    }
+    //Rooms::beginResetModel();
+    //Rooms::beginRemoveRows(QModelIndex(),0,rowCount()-1);
+    //Rooms::removeRows(0,rowCount(),QModelIndex());
+    //Rooms::endRemoveRows();
+    //Rooms::reset();
+    //setRowCount(0);
+    //Rooms::endResetModel();
+
+    Rooms::beginResetModel();
+    m_Rooms.clear();
+    //reset count also
+    setRowCount(0);
+    Rooms::endResetModel();
+
 }
 
 void Rooms::refresh()
@@ -241,6 +274,8 @@ void Rooms::refresh_slot() {
 
     //Log::debug(LOGMSG("void Rooms::refresh_slot()"));
     QString log_tag = "Netplay";
+    QJsonDocument json;
+    bool result = false;
     try{
         //check of netplay activated
         //check in recalbox.conf to know if activated
@@ -253,11 +288,10 @@ void Rooms::refresh_slot() {
         QNetworkAccessManager *manager = new QNetworkAccessManager(this);
         //get lobby json from internet
         const QString url_str = QStringLiteral("http://lobby.libretro.com/list/");
-        QJsonDocument json;
+
         json = get_json_from_url(url_str, log_tag, *manager);
         //parse lobby data
-        bool result = false;
-        result = find_available_rooms(log_tag, json, m_Rooms);
+        result = find_available_rooms(log_tag, json);
         //kill manager to avoid memory leaks
         delete manager;
 
@@ -268,10 +302,9 @@ void Rooms::refresh_slot() {
     }
 }
 
-bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json, std::vector<model::RoomEntry>& roomsEntry)
+bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
 {
-    std::vector<model::RoomEntry> Roomslist;
-
+    //std::vector<model::RoomEntry> Roomslist;
     //Log::debug(LOGMSG("find_available_rooms() : %1").arg(QString(json.toJson(QJsonDocument::Compact))));
 
     using QL1 = QLatin1String;
@@ -292,7 +325,14 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json, std
     //if(roomsEntry.size() != 0) emit Rooms::beginResetModel();
 
     //roomsEntry.clear();
-    int i = 1;
+    int i = 0;
+    QList<bool> isRoomUpdated;
+    //init list to false
+    for(int r = 0; r < m_Count; r++)
+    {
+        isRoomUpdated.append(false);
+    }
+
     for (const auto& array_entry : json_root) {
             const auto fields = array_entry[QL1("fields")].toObject();
             const auto Id = fields[QL1("id")].toInt();
@@ -315,69 +355,75 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json, std
             const auto Created = fields[QL1("created")].toString();
             const auto Updated = fields[QL1("updated")].toString();
 
-            if(i <= rowCount()){
-                if((roomsEntry.at(i-1).created == Created) && (roomsEntry.at(i-1).game_name == Game_name)){ //check if same game at same place or not
-                   //just updated date in this case to change
-                    roomsEntry.at(i-1).updated = Updated;
-                    roomsEntry.at(i-1).username = Username;
-                    Log::debug(log_tag, LOGMSG("Index: %2 - Game changed : %1").arg(Game_name,QString::number(i-1)));
-                    emit Rooms::dataChanged(index(i-1), index(i-1));
-                }
-                else
-                {   //delete it
-                    Rooms::beginRemoveRows(QModelIndex(), i-1, i-1);
-                    Log::debug(log_tag, LOGMSG("Index: %2 - Remove game : %1").arg(roomsEntry.at(i-1).game_name,QString::number(i-1)));
-                    //roomsEntry.pop_back();
-                    Rooms::removeRows(i-1,1,QModelIndex());
-                    Rooms::endRemoveRows();
-                    //and insert new one
-                    Rooms::beginInsertRows(QModelIndex(), i-1, i-1);
-                    roomsEntry.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,
-                      Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
-                    Log::debug(log_tag, LOGMSG("Index: %2 - Add game : %1").arg(Game_name,QString::number(i-1)));
-                    Rooms::endInsertRows();
+
+            //1 - search if already exists to win time and avoid to recreate / move for nothing
+            //check just if game not already exist in the list
+            bool already_exist = false;
+            //do the for only if a list not empty already exists as displayed
+            for(int k = 0; k < m_Count; k++){
+                if((m_Rooms.at(k).created == Created) && (m_Rooms.at(k).game_name == Game_name)){ //check if same game at same place or not
+                    //just updated date in model to update but don't force change for listview
+                    m_Rooms[k].updated = Updated;
+                    m_Rooms[k].game_name = Game_name;
+                    emit Rooms::dataChanged(index(k,0), index(k,18));
+                    //set it as true due to update
+                    isRoomUpdated[k] = true;
+                    Log::debug(log_tag, LOGMSG("Index: %2 - Game updated (from existing row) : %1").arg(Game_name,QString::number(k)));
+                    //stop 'for'
+                    already_exist = true;
+                    break; //to udpate only one record
                 }
             }
-            else{
-                //check just if game not already exist in the list
-                bool already_exist = false;
-                for(int k = 0; k < rowCount(); k++){
-                    if((roomsEntry.at(k).created == Created) && (roomsEntry.at(k).game_name == Game_name)){ //check if same game at same place or not
-                        //just update in this case
-                        roomsEntry.at(k).updated = Updated;
-                        roomsEntry.at(k).username = Username;
-                        Log::debug(log_tag, LOGMSG("Index: %2 - Game changed : %1").arg(Game_name,QString::number(k)));
-                        emit Rooms::dataChanged(index(k), index(k));
-                        //stop 'for'
-                        already_exist = true;
-                        break;
-                    }
-                }
 
-                if(!already_exist){
-                    //and to add new one
-                    Rooms::beginInsertRows(QModelIndex(), i-1, i-1);
-                    roomsEntry.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,
-                      Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
-                    Log::debug(log_tag, LOGMSG("Index: %2 - Add game : %1").arg(Game_name,QString::number(i-1)));
-                    Rooms::endInsertRows();
-                }
+            //2 - if not found / we need to add it
+            if(!already_exist){
+                //and to add new one
+                //Log::debug(log_tag, LOGMSG("3"));
+                Rooms::beginInsertRows(QModelIndex(), m_Count, m_Count);
+
+                //QVector<model::RoomEntry> room = {Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated};
+
+                m_Rooms.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
+
+                //Log::debug(log_tag, LOGMSG("4"));
+                Log::debug(log_tag, LOGMSG("Index: %2 - Add game (in new row) : %1").arg(Game_name,QString::number(m_Count)));
+                Rooms::endInsertRows();
+                //for update
+                emit Rooms::dataChanged(index(m_Count,0), index(m_Count,18));
+                //update m_count
+                setRowCount(m_Count+1);
+                //flag this row as udpated
+                isRoomUpdated.append(true);
             }
-            i = i + 1;
     }
-    //
-    int currentSize = rowCount();
-    //check if we have to remove line
-    //Rooms::beginRemoveRows(QModelIndex(), (currentSize - (i-1)),currentSize-1);
-    for(int j = 0; j < (currentSize - (i-1)); j++){
-        Log::debug(log_tag, LOGMSG("Index: %2 - Remove game : %1").arg(roomsEntry.at(rowCount()-1).game_name,QString::number(rowCount()-1)));
-        Rooms::beginRemoveRows(QModelIndex(),rowCount()-1,rowCount()-1);
-        //roomsEntry.pop_back();
-        Rooms::removeRows(rowCount()-1,1,QModelIndex());
-        Rooms::endRemoveRows();
-    }
-    //Rooms::endRemoveRows();
 
+    //3 - remove unflaged records to be removed
+    int currentCount = m_Count;
+    //check if we have to remove line from the bottom
+    for(int j = currentCount-1; j >= 0; j--){
+        if(isRoomUpdated.at(j) == false){
+            Log::debug(log_tag, LOGMSG("Index: %2 - Remove game : %1").arg(m_Rooms.at(j).game_name,QString::number(j)));
+            //Rooms::beginRemoveRows(QModelIndex(),j,j);
+            //roomsEntry.pop_back();
+            //m_Rooms.pop_back();
+
+            //Rooms::removeRows(j,1,QModelIndex());
+            m_Rooms[j].game_crc = "";
+            m_Rooms[j].game_name = "";
+            //for update
+            emit Rooms::dataChanged(index(j,0), index(j,18));
+
+            //Rooms::endRemoveRows();
+            //to force update of data
+            //emit Rooms::dataChanged(index(m_Count,0), index(m_Count,18));
+            //update m_count
+            setRowCount(m_Count-1);
+        }
+    }
+    //initialize new row count
+    Log::info(log_tag, LOGMSG("json_root.count(): %1.").arg(json_root.count()));
+    Log::info(log_tag, LOGMSG("m_Count: %1.").arg(m_Count));
+    Log::info(log_tag, LOGMSG("rowCount(): %1.").arg(rowCount()));
     return true;
 }
 

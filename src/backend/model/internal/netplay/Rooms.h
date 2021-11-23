@@ -65,13 +65,15 @@ public:
         Updated,
 	};
 
+    void setRowCount(int numRows);
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    //bool removeRows(int row, int count, const QModelIndex &index) override;
     QHash<int, QByteArray> roleNames() const override { return m_role_names; }
 
     int currentIndex() const { return static_cast<int>(m_current_idx); }
     void setCurrentIndex(int);
-    bool find_available_rooms(QString log_tag, const QJsonDocument& json, std::vector<model::RoomEntry>& roomsEntry);
+    bool find_available_rooms(QString log_tag, const QJsonDocument& json);
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void reset();
 
@@ -87,8 +89,10 @@ private:
     const QHash<int, QByteArray> m_role_names;
 
     std::vector<RoomEntry> m_Rooms;
+    //QList<model::RoomEntry> m_Rooms;
+    //QQmlObjectListModel<model::RoomEntry> m_Rooms;
 
-    //QString m_Room;
+    int m_Count = 0;
     
     size_t m_current_idx;
 

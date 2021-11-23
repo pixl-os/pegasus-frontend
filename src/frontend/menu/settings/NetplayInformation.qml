@@ -174,15 +174,17 @@ FocusScope {
                 }*/
                 Repeater {
                     id: availableNetplayRooms
-                    model: api.internal.netplay.rooms     // availableNetplayRoomsModel //for test purpose
+                    model: api.internal.netplay.rooms  // availableNetplayRoomsModel //for test purpose
                     property var selectedButtonIndex : 0
                     onItemRemoved:{
-                    //RFU
+                        //RFU
+                        console.log("onItemRemoved: ", index)
                     }
                     onItemAdded:{
-                    //RFU
+                        //RFU
+                        console.log("onItemAdded: ", index)
                     }
-                    DetailedButton {
+                    delegate: DetailedButton {
                         SearchGame {
                             id: searchByCRCorFile;
                             onMaxChanged:{
@@ -217,6 +219,8 @@ FocusScope {
                         //check note only because created date will change only if room is change
                         onNoteChanged:
                         {
+                            //game change or add
+                            console.log("At: ",index,"- Add/Change: ",game_name);
                             //search by crc first
                             if (game_crc !== "00000000"){
                                 searchByCRCorFile.filename = "";
