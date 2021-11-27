@@ -146,30 +146,8 @@ int Rooms::rowCount(const QModelIndex& parent) const
     if (parent.isValid())
         return 0;
 
-    //Log::warning(LOGMSG("m_Rooms.size(): %1 - m_Count: %2").arg(static_cast<int>(m_Rooms.size()),m_Count));
     return static_cast<int>(m_Rooms.size());
-    //return m_Count;
-
 }
-
-//bool Rooms::removeRows(int row, int count, const QModelIndex &index)
-//{
-//    if (row < 0 || row + count > m_Rooms.size())
-//        return false;
-
-//    const QAbstractItemModel *item = index.model();
-
-//    QAbstractItemModel::beginRemoveRows(index, row, row);
-//        //for (int i = row; i < count; ++i)
-//        //    delete item->children().at(row);
-//        m_Rooms[row].game_crc = "";
-//        m_Rooms[row].game_name = "";
-//    //emit Rooms::dataChanged(index(k,0), index(k,18));
-
-//    QAbstractItemModel::endRemoveRows();
-
-//    return true;
-//}
 
 QVariant Rooms::data(const QModelIndex& index, int role) const
 {
@@ -236,7 +214,7 @@ QVariant Rooms::data(const QModelIndex& index, int role) const
     }
     // save
     m_current_idx = idx;
-    Log::debug(LOGMSG("emit roomsChanged();"));
+    //Log::debug(LOGMSG("emit roomsChanged();"));
     emit roomsChanged();
 }
 
@@ -248,14 +226,6 @@ void Rooms::reset()
 
 void Rooms::reset_slot()
 {
-    //Rooms::beginResetModel();
-    //Rooms::beginRemoveRows(QModelIndex(),0,rowCount()-1);
-    //Rooms::removeRows(0,rowCount(),QModelIndex());
-    //Rooms::endRemoveRows();
-    //Rooms::reset();
-    //setRowCount(0);
-    //Rooms::endResetModel();
-
     Rooms::beginResetModel();
     m_Rooms.clear();
     //reset count also
@@ -315,7 +285,6 @@ void Rooms::refresh_slot() {
 
 bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
 {
-    //std::vector<model::RoomEntry> Roomslist;
     //Log::debug(LOGMSG("find_available_rooms() : %1").arg(QString(json.toJson(QJsonDocument::Compact))));
 
     using QL1 = QLatin1String;
@@ -333,9 +302,6 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
     }
     else Log::debug(log_tag, LOGMSG("nb fields/rooms found: %1").arg(json_root.count()));
 
-    //if(roomsEntry.size() != 0) emit Rooms::beginResetModel();
-
-    //roomsEntry.clear();
     int i = 0;
     QList<bool> isRoomUpdated;
     //init list to false
@@ -376,10 +342,9 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
                 //just updated date in model to update but don't force change for listview
                 m_Rooms[k].updated = Updated;
                 m_Rooms[k].game_name = Game_name;
-                //emit Rooms::dataChanged(index(k,0), index(k,18));
                 //set it as true due to update
                 isRoomUpdated[k] = true;
-                Log::debug(log_tag, LOGMSG("Index: %2 - Game updated (from existing row) : %1").arg(Game_name,QString::number(k)));
+                //Log::debug(log_tag, LOGMSG("Index: %2 - Game updated (from existing row) : %1").arg(Game_name,QString::number(k)));
                 //stop 'for'
                 already_exist = true;
                 break; //to udpate only one record
@@ -415,7 +380,7 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
                     emit dataChanged(index(k,0), index(k,0));
                     //set it as true due to update
                     isRoomUpdated[k] = true;
-                    Log::debug(log_tag, LOGMSG("Index: %2 - Game added (from existing empty row) : %1").arg(Game_name,QString::number(k)));
+                    //Log::debug(log_tag, LOGMSG("Index: %2 - Game added (from existing empty row) : %1").arg(Game_name,QString::number(k)));
                     //stop 'for'
                     empty_exist = true;
                     break; //to udpate only one record
@@ -423,12 +388,10 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
             }
             //or to add new one if empty not found
             if(!empty_exist){
-                Log::debug(log_tag, LOGMSG("Index: %2 - Add game (in new row) : %1").arg(Game_name,QString::number(m_Count)));
+                //Log::debug(log_tag, LOGMSG("Index: %2 - Add game (in new row) : %1").arg(Game_name,QString::number(m_Count)));
                 Rooms::beginInsertRows(QModelIndex(), m_Count, m_Count);
                 m_Rooms.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
                 Rooms::endInsertRows();
-                //for update
-                //emit dataChanged(index(m_Count,0), index(m_Count,0));
                 //update m_count
                 setRowCount(m_Count+1);
                 //flag this row as udpated
@@ -442,19 +405,16 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
     //check if we have to empty line from the bottom
     for(int j = currentCount-1; j >= 0; j--){
         if(isRoomUpdated.at(j) == false){
-            Log::debug(log_tag, LOGMSG("Index: %2 - Remove game : %1").arg(m_Rooms.at(j).game_name,QString::number(j)));
+            //Log::debug(log_tag, LOGMSG("Index: %2 - Remove game : %1").arg(m_Rooms.at(j).game_name,QString::number(j)));
             m_Rooms[j].game_crc = "";
             m_Rooms[j].game_name = "";
             //for update
             emit dataChanged(index(j,0), index(j,0));
-            //update m_count
-            //setRowCount(m_Count-1);
         }
     }
-    //initialize new row count
-    Log::info(log_tag, LOGMSG("json_root.count(): %1.").arg(json_root.count()));
-    Log::info(log_tag, LOGMSG("m_Count: %1.").arg(m_Count));
-    Log::info(log_tag, LOGMSG("rowCount(): %1.").arg(rowCount()));
+    //Log::info(log_tag, LOGMSG("json_root.count(): %1.").arg(json_root.count()));
+    //Log::info(log_tag, LOGMSG("m_Count: %1.").arg(m_Count));
+    //Log::info(log_tag, LOGMSG("rowCount(): %1.").arg(rowCount()));
     return true;
 }
 
