@@ -65,15 +65,15 @@ Item {
 	//	"nes|snes"
 	
     property var filename: ""
-    property var filenameToFilter:  (filename === "") ? false : true
+    property var filenameRegEx: ""
+    property var filenameToFilter:  ((filenameRegEx === "") || (filename === "")) ? false : true
 
     Component.onCompleted:{
         //change filename to any regex (to repplace ()[] characters)
-        var filenameRegEx = filename.replace(/\(/g, '.*');//to replace ( by .*
+        filenameRegEx = filename.replace(/\(/g, '.*');//to replace ( by .*
         filenameRegEx = filenameRegEx.replace(/\)/g, ".*"); //to remove ) by .*
         filenameRegEx = filenameRegEx.replace(/\[/g, '.*');//to replace [ by .*
         filenameRegEx = filenameRegEx.replace(/\]/g, ".*"); //to remove ] by .*
-        filename = filenameRegEx;
     }
 
 	property var release: ""
@@ -95,7 +95,7 @@ Item {
         sourceModel: api.allGames
         filters: [
             ValueFilter { roleName: "hash"; value: crc ; enabled: crcToFind},
-            RegExpFilter { roleName: "path"; pattern: filename ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter},
+            RegExpFilter { roleName: "path"; pattern: filenameRegEx ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter},
             ValueFilter { roleName: "favorite"; value: favoriteToFind ; enabled: favoriteToFind},
             RegExpFilter { roleName: "title"; pattern: filter; caseSensitivity: Qt.CaseInsensitive;enabled: titleToFilter},
             RegExpFilter { roleName: "title"; pattern: region; caseSensitivity: Qt.CaseInsensitive; enabled: regionToFilter},
