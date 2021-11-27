@@ -70,7 +70,7 @@ FocusScope {
                 }
             }
         }
-        console.log("availableNetplayRooms.selectedButtonIndex: ", availableNetplayRooms.selectedButtonIndex);
+        //console.log("availableNetplayRooms.selectedButtonIndex: ", availableNetplayRooms.selectedButtonIndex);
     }
 
     Keys.onPressed: {
@@ -216,48 +216,29 @@ FocusScope {
                     delegate: DetailedButton {
                         SearchGame {
                             id: searchByCRCorFile;
-                            property var resultIndex: -1
                             onMaxChanged:{
-                                console.log("onMaxChanged - max :",max);
-                                console.log("onMaxChanged - game_crc :",game_crc);
-                                console.log("onMaxChanged - game_name :",game_name);
-                                console.log("onMaxChanged - crc :",searchByCRCorFile.crc);
-                                console.log("onMaxChanged - filename :",searchByCRCorFile.filename);
+                                //console.log("onMaxChanged - max :",searchByCRCorFile.max);
+                                //console.log("onMaxChanged - game_crc :",game_crc);
+                                //console.log("onMaxChanged - game_name :",game_name);
+                                //console.log("onMaxChanged - crc :",searchByCRCorFile.crc);
+                                //console.log("onMaxChanged - crcToFind :",searchByCRCorFile.crcToFind);
+                                //console.log("onMaxChanged - filename :",searchByCRCorFile.filename);
+                                //console.log("onMaxChanged - filenameRegEx :",searchByCRCorFile.filenameRegEx);
+                                //console.log("onMaxChanged - filenameToFilter :",searchByCRCorFile.filenameToFilter);
                                 if((game_crc === "") && (game_name === "")) {
                                     searchByCRCorFile.crc = "";
                                     searchByCRCorFile.filename = "";
                                     picture = "";
                                     icon2 = "";
-                                    resultIndex = -1;
                                 }
-                                else if (max === 1 && crc !== "") { //CRC search and match
+                                else if (searchByCRCorFile.max === 1 && searchByCRCorFile.crc !== "") { //CRC search and match
 
                                     picture = result.games.get(0).assets.screenshot;
                                     icon2 = result.games.get(0).assets.logo;
-                                    resultIndex = 0;
                                 }
-                                else if (max >= 1 && filename !== "") { //file name match
-                                    //search best one
-                                    resultIndex = -1;
-                                    for(var i = 0;i<=searchByCRCorFile.result.games.count;i++)
-                                    {
-                                        if(searchByCRCorFile.result.games.get(i).path.includes(game_name) === true){
-                                            resultIndex = i;
-                                            break;
-                                        }
-                                    }
-                                    if(resultIndex != -1){
-                                        picture = searchByCRCorFile.result.games.get(resultIndex).assets.screenshot;
-                                        icon2 = searchByCRCorFile.result.games.get(resultIndex).assets.logo;
-                                    }
-                                    else
-                                    {
-                                        searchByCRCorFile.filename = "";
-                                        picture = "";
-                                        picture = "";
-                                        icon2 = "";
-                                    }
-
+                                else if (searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") { //file name match
+                                    picture = searchByCRCorFile.result.games.get(0).assets.screenshot;
+                                    icon2 = searchByCRCorFile.result.games.get(0).assets.logo;
                                 }
                                 else if (max !== 1 && crc !== ""){
                                     picture = "";
@@ -270,7 +251,6 @@ FocusScope {
                                 else{
                                     picture = "";
                                     icon2 = "";
-                                    resultIndex = -1;
                                 }
                             }
                         }
@@ -309,6 +289,11 @@ FocusScope {
                                     searchByCRCorFile.filename = game_name;
                                     searchByCRCorFile.crc = "";
                                 }
+                            }
+                            else
+                            {
+                                searchByCRCorFile.filename = "";
+                                searchByCRCorFile.crc = "";
                             }
                         }
                         //add image of country
