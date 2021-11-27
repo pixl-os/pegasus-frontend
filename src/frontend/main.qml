@@ -145,7 +145,7 @@ Window {
                 if (api.keys.isNetplay(event)) {
                     event.accepted = true;
                     //netplayMenu.focus = true;
-					console.log("api.keys.isNetplay(event)");
+                    //console.log("api.keys.isNetplay(event)");
 					subscreen.setSource("menu/settings/NetplayInformation.qml", {"isCallDirectly": true});
 					subscreen.focus = true;
 					content.state = "sub";

@@ -10,7 +10,7 @@ Item {
     id: root
 
     readonly property var games: foundGames
-    property int max: foundGames.count;
+    readonly property int max: foundGames.count;
     function gameFound(index) {
         return foundGames.sourceModel.get(foundGames.mapToSource(index));
 	}	

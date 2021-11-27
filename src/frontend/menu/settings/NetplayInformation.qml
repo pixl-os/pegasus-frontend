@@ -22,7 +22,7 @@ FocusScope {
 
     anchors.fill: parent
 	
-    enabled: focus
+    //enabled: focus
     
     visible: 0 < (x + width) && x < Window.window.width
 
@@ -43,6 +43,34 @@ FocusScope {
 				}
                 else counter = counter + 1;
         }
+    }
+    //function to update index where focus should be
+    function updateFocusIndex()
+    {
+        //if existing selected index is visible
+        if(availableNetplayRooms.itemAt(availableNetplayRooms.selectedButtonIndex).visible !== true){
+            //need to select an other index
+            //first after if exist...
+            for(var i = availableNetplayRooms.selectedButtonIndex; i < availableNetplayRooms.count; i++)
+            {
+                if(availableNetplayRooms.itemAt(i).visible === true) {
+                    availableNetplayRooms.selectedButtonIndex = i;
+                    break;
+                }
+            }
+            //if no visible found after...
+            if(availableNetplayRooms.itemAt(availableNetplayRooms.selectedButtonIndex).visible !== true){
+                //need check before if exist...
+                for(var j = availableNetplayRooms.selectedButtonIndex; j >= 0; j--)
+                {
+                    if(availableNetplayRooms.itemAt(j).visible === true) {
+                        availableNetplayRooms.selectedButtonIndex = j;
+                        break;
+                    }
+                }
+            }
+        }
+        console.log("availableNetplayRooms.selectedButtonIndex: ", availableNetplayRooms.selectedButtonIndex);
     }
 
     Keys.onPressed: {
@@ -188,36 +216,71 @@ FocusScope {
                     delegate: DetailedButton {
                         SearchGame {
                             id: searchByCRCorFile;
+                            property var resultIndex: -1
                             onMaxChanged:{
-                                console.log("onMaxChanged: game_crc",game_crc);
-                                console.log("onMaxChanged: game_name",game_name);
-                                console.log("onMaxChanged: crc",searchByCRCorFile.crc);
-                                console.log("onMaxChanged: filename",searchByCRCorFile.filename);
+                                console.log("onMaxChanged - max :",max);
+                                console.log("onMaxChanged - game_crc :",game_crc);
+                                console.log("onMaxChanged - game_name :",game_name);
+                                console.log("onMaxChanged - crc :",searchByCRCorFile.crc);
+                                console.log("onMaxChanged - filename :",searchByCRCorFile.filename);
                                 if((game_crc === "") && (game_name === "")) {
                                     searchByCRCorFile.crc = "";
                                     searchByCRCorFile.filename = "";
+                                    picture = "";
+                                    icon2 = "";
+                                    resultIndex = -1;
                                 }
                                 else if (max === 1 && crc !== "") { //CRC search and match
+
                                     picture = result.games.get(0).assets.screenshot;
                                     icon2 = result.games.get(0).assets.logo;
+                                    resultIndex = 0;
                                 }
                                 else if (max >= 1 && filename !== "") { //file name match
-                                    picture = searchByCRCorFile.result.games.get(0).assets.screenshot;
-                                    icon2 = searchByCRCorFile.result.games.get(0).assets.logo;
+                                    //search best one
+                                    resultIndex = -1;
+                                    for(var i = 0;i<=searchByCRCorFile.result.games.count;i++)
+                                    {
+                                        if(searchByCRCorFile.result.games.get(i).path.includes(game_name) === true){
+                                            resultIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    if(resultIndex != -1){
+                                        picture = searchByCRCorFile.result.games.get(resultIndex).assets.screenshot;
+                                        icon2 = searchByCRCorFile.result.games.get(resultIndex).assets.logo;
+                                    }
+                                    else
+                                    {
+                                        searchByCRCorFile.filename = "";
+                                        picture = "";
+                                        picture = "";
+                                        icon2 = "";
+                                    }
+
                                 }
                                 else if (max !== 1 && crc !== ""){
+                                    picture = "";
+                                    icon2 = "";
                                     //Search by file name now if CRC not found
                                     //Launch timer for that
                                     searchByCRCorFile.crc = "";
                                     searchByCRCorFile.filename = game_name;
                                 }
+                                else{
+                                    picture = "";
+                                    icon2 = "";
+                                    resultIndex = -1;
+                                }
                             }
                         }
+
                         property var status_icon : "\uf1c0 " // or "\uf1c1"/"?" or "\uf1c2"/"X"
                         property var latency_icon : "\uf1c8 " // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
                         property var private_icon : has_password ? "\uf071 " : ""
                         property var visibility_icon : has_spectate_password ? "\uf070 " : " "
                         width: parent.width - vpx(100)
+                        enabled: visible
                         visible :{
                             availableNetplayRooms.hidden = api.internal.netplay.rooms.nbEmptyRooms()
                             if ((game_crc === "") && (game_name === "")) return false;
@@ -301,6 +364,8 @@ FocusScope {
                             return ((searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") ? "green" : "red" )
                         }
 
+
+
                         // set focus only on first item
                         focus:{
                             //console.log("------Begin of Focus-------");
@@ -308,17 +373,19 @@ FocusScope {
                             //console.log("availableNetplayRooms.selectedButtonIndex : ",availableNetplayRooms.selectedButtonIndex)
                             //console.log("Index : ",index)
 
-                            if( availableNetplayRooms.selectedButtonIndex < api.internal.netplay.rooms.rowCount()){
-                                //console.log("(index === availableNetplayRooms.selectedButtonIndex) ? true : false : ",(index === availableNetplayRooms.selectedButtonIndex) ? true : false);
-                                return (index === availableNetplayRooms.selectedButtonIndex) ? true : false ;
-							}
-							else{
-                                availableNetplayRooms.selectedButtonIndex = api.internal.netplay.rooms.rowCount()-1;
-                                //console.log("(index === api.internal.netplay.rooms.rowCount()-1) ? true : false : ",(index === api.internal.netplay.rooms.rowCount()-1) ? true : false);
-                                return (index === api.internal.netplay.rooms.rowCount()-1) ? true : false ;
-                            }
-                            //console.log("------End of Focus-------");
+                            if (index === availableNetplayRooms.selectedButtonIndex){
+                                if(visible){
+                                    return true;
+                                }
+                                updateFocusIndex();
+                                /*
+                                else if((availableNetplayRooms.selectedButtonIndex + 1) < api.internal.netplay.rooms.rowCount()){
+                                    availableNetplayRooms.selectedButtonIndex = availableNetplayRooms.selectedButtonIndex + 1;
 
+                                }
+                                else availableNetplayRooms.selectedButtonIndex = api.internal.netplay.rooms.rowCount()-1;*/
+                            }
+                            return false;
                         }
                         onActivate: {
                             ////to force change of focus
