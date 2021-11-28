@@ -216,6 +216,8 @@ FocusScope {
                     delegate: DetailedButton {
                         SearchGame {
                             id: searchByCRCorFile;
+                            property var crcMatched : false
+                            property var fileMatched : false
                             onMaxChanged:{
                                 //console.log("onMaxChanged - max :",searchByCRCorFile.max);
                                 //console.log("onMaxChanged - game_crc :",game_crc);
@@ -227,30 +229,36 @@ FocusScope {
                                 //console.log("onMaxChanged - filenameToFilter :",searchByCRCorFile.filenameToFilter);
                                 if((game_crc === "") && (game_name === "")) {
                                     searchByCRCorFile.crc = "";
+                                    searchByCRCorFile.filenameRegEx = "";
                                     searchByCRCorFile.filename = "";
                                     picture = "";
                                     icon2 = "";
+                                    searchByCRCorFile.crcMatched = false;
+                                    searchByCRCorFile.fileMatched = false;
                                 }
-                                else if (searchByCRCorFile.max === 1 && searchByCRCorFile.crc !== "") { //CRC search and match
+                                else if (searchByCRCorFile.max === 1 && searchByCRCorFile.crc === result.games.get(0).hash) { //CRC search and match
 
                                     picture = result.games.get(0).assets.screenshot;
                                     icon2 = result.games.get(0).assets.logo;
+                                    searchByCRCorFile.crcMatched = true;
+
                                 }
-                                else if (searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") { //file name match
+                                else if (searchByCRCorFile.max >= 1 && (result.games.get(0).path.includes(searchByCRCorFile.filename) === true)) { //file name match
                                     picture = searchByCRCorFile.result.games.get(0).assets.screenshot;
                                     icon2 = searchByCRCorFile.result.games.get(0).assets.logo;
+                                    searchByCRCorFile.fileMatched = true;
                                 }
-                                else if (max !== 1 && crc !== ""){
+                                else if (searchByCRCorFile.max !== 1 && searchByCRCorFile.crc !== ""){
                                     picture = "";
                                     icon2 = "";
-                                    //Search by file name now if CRC not found
-                                    //Launch timer for that
-                                    searchByCRCorFile.crc = "";
-                                    searchByCRCorFile.filename = game_name;
+                                    searchByCRCorFile.crcMatched = false;
+                                    searchByCRCorFile.fileMatched = false;
                                 }
                                 else{
                                     picture = "";
                                     icon2 = "";
+                                    searchByCRCorFile.crcMatched = false;
+                                    searchByCRCorFile.fileMatched = false;
                                 }
                             }
                         }
@@ -268,7 +276,7 @@ FocusScope {
                         }
                         //for preview
                         label: {
-                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRCorFile.max === 1 && searchByCRCorFile.crc !== "") ? searchByCRCorFile.result.games.get(0).title : ((searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") ? searchByCRCorFile.result.games.get(0).title : game_name)));
+                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRCorFile.crcMatched === true) ? searchByCRCorFile.result.games.get(0).title : ((searchByCRCorFile.fileMatched === true) ? searchByCRCorFile.result.games.get(0).title : game_name)));
                         }
                         note: {
                             return (" " + qsTr("Creation date") + ": " + created);
@@ -278,17 +286,15 @@ FocusScope {
                         {
                             //game change or add
                             //console.log("At: ",index,"- Add/Change: ",game_name);
+
                             //check if both are not empty as deleted one
                             if(game_crc !== "" && game_name !== ""){
-                                //search by crc first
-                                if (game_crc !== "00000000"){
-                                    searchByCRCorFile.filename = "";
+                                if (game_crc !== "00000000")
                                     searchByCRCorFile.crc = game_crc;
-                                }
-                                else{
-                                    searchByCRCorFile.filename = game_name;
+                                else
                                     searchByCRCorFile.crc = "";
-                                }
+                                //but also by filename at the same time (in //)
+                                searchByCRCorFile.filename = game_name;
                             }
                             else
                             {
@@ -337,20 +343,17 @@ FocusScope {
                             return  frontend;
                         }
                         detailed_line14: {
-                            return ((searchByCRCorFile === 1 && searchByCRCorFile.crc !== "") ? "\uf1c0" : "\uf1c2" ) + " " + game_crc;
+                            return ((searchByCRCorFile.crcMatched === true) ? "\uf1c0" : "\uf1c2" ) + " " + game_crc;
                         }
                         detailed_line14_color: {
-                            return ((searchByCRCorFile.max === 1 && searchByCRCorFile.crc !== "") ? "green" : "red" )
+                            return ((searchByCRCorFile.crcMatched === true) ? "green" : "red" )
                         }
                         detailed_line15: {
-                            return ((searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") ? "\uf1c0" : "\uf1c2" ) + " " + game_name;
+                            return ((searchByCRCorFile.fileMatched === true) ? "\uf1c0" : "\uf1c2" ) + " " + game_name;
                         }
                         detailed_line15_color: {
-                            return ((searchByCRCorFile.max >= 1 && searchByCRCorFile.filename !== "") ? "green" : "red" )
+                            return ((searchByCRCorFile.fileMatched === true) ? "green" : "red" )
                         }
-
-
-
                         // set focus only on first item
                         focus:{
                             //console.log("------Begin of Focus-------");
@@ -362,13 +365,7 @@ FocusScope {
                                 if(visible){
                                     return true;
                                 }
-                                updateFocusIndex();
-                                /*
-                                else if((availableNetplayRooms.selectedButtonIndex + 1) < api.internal.netplay.rooms.rowCount()){
-                                    availableNetplayRooms.selectedButtonIndex = availableNetplayRooms.selectedButtonIndex + 1;
-
-                                }
-                                else availableNetplayRooms.selectedButtonIndex = api.internal.netplay.rooms.rowCount()-1;*/
+                                else updateFocusIndex();
                             }
                             return false;
                         }

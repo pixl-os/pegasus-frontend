@@ -66,14 +66,14 @@ Item {
 	
     property var filename: ""
     property var filenameRegEx: ""
-    property var filenameToFilter:  ((filenameRegEx === "") || (filename === "")) ? false : true
+    property var filenameToFilter:  ((filenameRegEx !== "") && (filename !== "")) ? true : false
 
     Component.onCompleted:{
         //change filename to any regex (to repplace ()[] characters)
-        filenameRegEx = filename.replace(/\(/g, '.*');//to replace ( by .*
-        filenameRegEx = filenameRegEx.replace(/\)/g, ".*"); //to remove ) by .*
-        filenameRegEx = filenameRegEx.replace(/\[/g, '.*');//to replace [ by .*
-        filenameRegEx = filenameRegEx.replace(/\]/g, ".*"); //to remove ] by .*
+        var filenameRegExTemp = filename.replace(/\(/g, '.*');//to replace ( by .*
+        filenameRegExTemp = filenameRegExTemp.replace(/\)/g, ".*"); //to remove ) by .*
+        filenameRegExTemp = filenameRegExTemp.replace(/\[/g, '.*');//to replace [ by .*
+        filenameRegEx = filenameRegExTemp.replace(/\]/g, ".*"); //to remove ] by .*
     }
 
 	property var release: ""
@@ -93,20 +93,20 @@ Item {
     SortFilterProxyModel {
         id: foundGames
         sourceModel: api.allGames
-        filters: [
-            ValueFilter { roleName: "hash"; value: crc ; enabled: crcToFind},
-            RegExpFilter { roleName: "path"; pattern: filenameRegEx ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter},
-            ValueFilter { roleName: "favorite"; value: favoriteToFind ; enabled: favoriteToFind},
-            RegExpFilter { roleName: "title"; pattern: filter; caseSensitivity: Qt.CaseInsensitive;enabled: titleToFilter},
-            RegExpFilter { roleName: "title"; pattern: region; caseSensitivity: Qt.CaseInsensitive; enabled: regionToFilter},
-            RegExpFilter { roleName: "genre"; pattern: genre ; caseSensitivity: Qt.CaseInsensitive; enabled: genreToFilter},
-            RangeFilter { roleName: "players"; minimumValue: minimumNb_players ; maximumValue: maximumNb_players; enabled: nb_playersToFilter},
-            RegExpFilter { roleName: "publisher"; pattern: publisher ; caseSensitivity: Qt.CaseInsensitive; enabled: publisherToFilter},
-            RegExpFilter { roleName: "developer"; pattern: developer ; caseSensitivity: Qt.CaseInsensitive; enabled: developerToFilter},
-            RegExpFilter { roleName: "releaseYear"; pattern: release ; caseSensitivity: Qt.CaseInsensitive; enabled: releaseToFilter},
-            RegExpFilter { roleName: "title"; pattern: exclusion ; caseSensitivity: Qt.CaseInsensitive; inverted: true; enabled: toExclude},
+        filters: AnyOf{
+            ValueFilter { roleName: "hash"; value: crc ; enabled: crcToFind}
+            RegExpFilter { roleName: "path"; pattern: filenameRegEx ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter}
+            ValueFilter { roleName: "favorite"; value: favoriteToFind ; enabled: favoriteToFind}
+            RegExpFilter { roleName: "title"; pattern: filter; caseSensitivity: Qt.CaseInsensitive;enabled: titleToFilter}
+            RegExpFilter { roleName: "title"; pattern: region; caseSensitivity: Qt.CaseInsensitive; enabled: regionToFilter}
+            RegExpFilter { roleName: "genre"; pattern: genre ; caseSensitivity: Qt.CaseInsensitive; enabled: genreToFilter}
+            RangeFilter { roleName: "players"; minimumValue: minimumNb_players ; maximumValue: maximumNb_players; enabled: nb_playersToFilter}
+            RegExpFilter { roleName: "publisher"; pattern: publisher ; caseSensitivity: Qt.CaseInsensitive; enabled: publisherToFilter}
+            RegExpFilter { roleName: "developer"; pattern: developer ; caseSensitivity: Qt.CaseInsensitive; enabled: developerToFilter}
+            RegExpFilter { roleName: "releaseYear"; pattern: release ; caseSensitivity: Qt.CaseInsensitive; enabled: releaseToFilter}
+            RegExpFilter { roleName: "title"; pattern: exclusion ; caseSensitivity: Qt.CaseInsensitive; inverted: true; enabled: toExclude}
             ExpressionFilter { expression: parseFloat(model.rating) >= minimumRating; enabled: ratingToFilter}
-        ]
+        }
 		//sorters are slow that why it is deactivated for the moment
         //sorters: RoleSorter { roleName: "rating"; sortOrder: Qt.DescendingOrder; }
     }
