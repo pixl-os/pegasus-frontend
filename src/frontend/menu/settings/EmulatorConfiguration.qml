@@ -256,13 +256,14 @@ FocusScope {
                     id: emulatorButtons
                     model: system.emulatorsCount
                     SimpleButton {
-                        label: qsTr(system.GetNameAt(index) + " " + system.GetCoreAt(index)) + api.tr
+                        label: system.getNameAt(index) + " " + system.getCoreAt(index);
+                        note: system.getCoreLongNameAt(index) + " - " + system.getCoreVersionAt(index);
 
                         onActivate: {
                             focus = true;
                             radioButton.checked = true;
-                            api.internal.recalbox.setStringParameter(system.shortName + ".emulator",system.GetNameAt(index));
-                            api.internal.recalbox.setStringParameter(system.shortName + ".core",system.GetCoreAt(index));
+                            api.internal.recalbox.setStringParameter(system.shortName + ".emulator",system.getNameAt(index));
+                            api.internal.recalbox.setStringParameter(system.shortName + ".core",system.getCoreAt(index));
                         }
                         
                         onFocusChanged: container.onFocus(this)
@@ -284,7 +285,7 @@ FocusScope {
                                 console.log("core=", core);
                                 console.log("is default=",system.isDefaultEmulatorAt(index));
                                 
-                                if ((emulator === system.GetNameAt(index)) && (core === system.GetCoreAt(index))){
+                                if ((emulator === system.getNameAt(index)) && (core === system.getCoreAt(index))){
                                     // check is libretro for filter menu
                                     if(emulator === "libretro") isLibretroCore = true
                                     else isLibretroCore = false
@@ -292,7 +293,7 @@ FocusScope {
                                 }
                                 else if (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === ""))){
                                     // check is libretro for filter menu
-                                    if(system.GetNameAt(index) === "libretro") isLibretroCore = true
+                                    if(system.getNameAt(index) === "libretro") isLibretroCore = true
                                     else isLibretroCore = false
                                     return true;
                                 }
