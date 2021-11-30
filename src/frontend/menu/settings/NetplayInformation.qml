@@ -45,6 +45,58 @@ FocusScope {
                 counter = counter + 1;
         }
     }
+
+    //to be able to follow action done on Bluetooth Devices Lists
+    property var actionState : ""
+    property var actionListIndex : 0
+
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: confirmDialog.item
+        function onAccept() { //first choice
+            switch (actionState) {
+                    case "Play":
+                        //stop scanning during playing ;-)
+                        netplayTimer.running = false;
+                        //get game to use
+
+                        //get core to use
+
+                        //var name = myDevicesModel.get(actionListIndex).name;
+                        //var macaddress = myDevicesModel.get(actionListIndex).macaddress;
+                        //var result = "";
+
+                        //launch game in netplay mode
+                        /*if(api.internal.recalbox.getStringParameter("controllers.bluetooth.unpair.methods") === ""){
+                            //legacy method
+                            console.log("command:", "/recalbox/scripts/bluetooth/test-device remove " + macaddress);
+                            //add timeout of 5s if needed
+                            result = api.internal.system.run("timeout 5 /recalbox/scripts/bluetooth/test-device remove " + macaddress);
+                        }*/
+                    break;
+            }
+            content.focus = true;
+        }
+
+        function onSecondChoice() {
+            switch (actionState) {
+                    case "View":
+                    break;
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
+        }
+    }
+
     //function to update index where focus should be
     function updateFocusIndex()
     {
@@ -219,6 +271,8 @@ FocusScope {
                             id: searchByCRCorFile;
                             property var crcMatched : false
                             property var fileMatched : false
+                            property var coreLongNameFound: ""
+                            property var coreVersionFound: ""
                             property var resultIndex: -1
                             onMaxChanged:{
                                 //console.log("onMaxChanged - enabled :",searchByCRCorFile.enabled);
@@ -286,8 +340,31 @@ FocusScope {
                             }
                         }
 
-                        property var status_icon : "\uf1c0 " // or "\uf1c1"/"?" or "\uf1c2"/"X"
+                        property var status_icon : {
+                            //concatenate value to search quickly
+                            //About core
+                            var core_status = detailed_line11 + detailed_line12
+                            //About game
+                            var game_status = detailed_line14 + detailed_line15
+                            //search if green one exist
+                            if(game_status.includes("\uf1c0")){
+                                if(!core_status.includes("\uf1c1") && !core_status.includes("\uf1c2")){
+                                    return "\uf1c0 "; // as OK because Core and Game are present at minimum
+                                }
+                                else
+                                {
+                                    return "\uf1c1 "; // May be, game ok but core not green ?!
+                                }
+                            }
+                            else
+                            {
+                                return "\uf1c2 "; // As NOK because no game in all cases
+                            }
+                            //"\uf1c0" // or "\uf1c1"/"?" or "\uf1c2"/"X"
+                        }
                         property var latency_icon : "\uf1c8 " // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
+                                                    //good     -    medium   -    bad    - very bad   -  unknown
+
                         property var private_icon : has_password ? "\uf071 " : ""
                         property var visibility_icon : has_spectate_password ? "\uf070 " : " "
                         width: parent.width - vpx(100)
@@ -327,12 +404,16 @@ FocusScope {
                                     //for the full list of emulator
                                     for(var j = 0;j < api.collections.get(i).emulatorsCount;j++)
                                     {
-                                        if(api.collections.get(i).getCoreAt(j).toLowerCase() === core_name.toLowerCase()){
-                                            //console.log("onNoteChanged - Short name selected:",api.collections.get(i).shortName);
-                                            //console.log("onNoteChanged - Core to find:",core_name.toLowerCase());
+                                        //console.log("onNoteChanged - Short name selected:",api.collections.get(i).shortName);
+                                        //console.log("onNoteChanged - Core to find:",core_name.toLowerCase());
+                                        //console.log("onNoteChanged - Core Long Name to compare:",api.collections.get(i).getCoreLongNameAt(j).toLowerCase());
+                                        if(api.collections.get(i).getCoreLongNameAt(j).toLowerCase() === core_name.toLowerCase()){
                                             //console.log("onNoteChanged - Core found :",api.collections.get(i).getCoreAt(j));
-                                            if(searchByCRCorFile.system === "")
+                                            if(searchByCRCorFile.system === ""){
                                                 searchByCRCorFile.system = api.collections.get(i).shortName;
+                                                searchByCRCorFile.coreLongNameFound = api.collections.get(i).getCoreLongNameAt(j);
+                                                searchByCRCorFile.coreVersionFound = api.collections.get(i).getCoreVersionAt(j);
+                                            }
                                             else searchByCRCorFile.system = searchByCRCorFile.system + "|" + api.collections.get(i).shortName;
                                         }
                                     }
@@ -364,19 +445,19 @@ FocusScope {
                             return "Game file : ";
                         }
                         detailed_line10: {
-                            return "\uf1c0" + " " + retroarch_version;
+                            return retroarch_version;
                         }
                         detailed_line11: {
-                            return "\uf1c0" + " " + core_name
+                            return (core_name === searchByCRCorFile.coreLongNameFound) ? ("\uf1c0" + " " + core_name) : ("\uf1c2" + " " + core_name);
                         }
                         detailed_line11_color: {
-                            return "green"
+                            return (core_name === searchByCRCorFile.coreLongNameFound) ? "green" : "red"
                         }
                         detailed_line12: {
-                            return "\uf1c0" + " " + core_version
+                            return (core_version === searchByCRCorFile.coreVersionFound) ? ("\uf1c0" + " " + core_version) : ("\uf1c1" + " " + core_version) + (searchByCRCorFile.coreVersionFound !== "" ? (" vs " + searchByCRCorFile.coreVersionFound) : "")
                         }
                         detailed_line12_color: {
-                            return "green"
+                            return (core_version === searchByCRCorFile.coreVersionFound) ? "green" : "blue"
                         }
                         detailed_line13: {
                             return  frontend;
@@ -409,21 +490,21 @@ FocusScope {
                             return false;
                         }
                         onActivate: {
-                            ////to force change of focus
-                            // confirmDialog.focus = false;
-                            // confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                    // { "title": myDiscoveredDevicesModel.get(index).vendor + " " + myDiscoveredDevicesModel.get(index).name + " " + myDiscoveredDevicesModel.get(index).service,
-                                                      // "message": qsTr("Do you want to pair or ignored this device ?") + api.tr,
-                                                      // "symbol": myDiscoveredDevicesModel.get(index).icon,
-                                                      // "firstchoice": qsTr("Pair") + api.tr,
-                                                      // "secondchoice": qsTr("Ignored") + api.tr,
-                                                      // "thirdchoice": qsTr("Cancel") + api.tr});
-                            ////Save action states for later
-                            // actionState = "Pair";
-                            // actionListIndex = index;
-                            ////to force change of focus
-                            // confirmDialog.focus = true;
-                            ////focus = true;
+                            //to force change of focus
+                            confirmDialog.focus = false;
+                            confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                     { "title": qsTr("PLAY or VIEW ?") + api.tr,
+                                                       "message": qsTr("Do you want to play or view this game ?") + api.tr,
+                                                       "symbol": "",
+                                                       "firstchoice": qsTr("Play") + api.tr,
+                                                       "secondchoice": qsTr("View") + api.tr,
+                                                       "thirdchoice": qsTr("Cancel") + api.tr});
+                            //Save action states for later
+                            actionState = "Play";
+                            actionListIndex = index;
+                            //to force change of focus
+                            confirmDialog.focus = true;
+                            //focus = true;
 
                         }
 
@@ -456,17 +537,17 @@ FocusScope {
                         }
 
                         Button {
-                            id: pairButton
+                            id: playButton
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
                             text: qsTr("Play/View ?") + api.tr
-                            visible: parent.focus
+                            visible: parent.focus && !status_icon.includes("\uf1c2")
                             anchors.left: parent.right
                             anchors.leftMargin: vpx(20)
                             anchors.verticalCenter: parent.verticalCenter
                             
 							contentItem: Text {
-                                text: pairButton.text
+                                text: playButton.text
                                 font.pixelSize: fontSize
                                 font.family: globalFonts.sans
                                 opacity: 1.0
