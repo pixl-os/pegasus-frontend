@@ -27,21 +27,22 @@ FocusScope {
     visible: 0 < (x + width) && x < Window.window.width
 
     //timer to refresh Netplay list
-    property var counter: 4
+    property var counter: 0
     Timer {
         id: netplayTimer
-        interval: 1000 // Run the timer every second
+        interval: 200 // Run the timer 200 ms
         repeat: true
         running: true
         triggeredOnStart: true
         onTriggered: {
-
-                if ((interval/1000)*counter === 5){ // wait 5 seconds before to refresh
+                if (counter === 1){ // to start after 200ms (to let page loading)
                     //console.log("netplayTimer - before refresh: availableNetplayRooms.selectedButtonIndex", availableNetplayRooms.selectedButtonIndex);
                     api.internal.netplay.rooms.refresh();
-                    counter = 0;
 				}
-                else counter = counter + 1;
+                else if((interval*counter/1000) >= 5){ //wait 5 seconds before to refresh
+                    counter = 0;
+                }
+                counter = counter + 1;
         }
     }
     //function to update index where focus should be
@@ -326,10 +327,10 @@ FocusScope {
                                     //for the full list of emulator
                                     for(var j = 0;j < api.collections.get(i).emulatorsCount;j++)
                                     {
-                                        if(api.collections.get(i).GetCoreAt(j).toLowerCase() === core_name.toLowerCase()){
+                                        if(api.collections.get(i).getCoreAt(j).toLowerCase() === core_name.toLowerCase()){
                                             //console.log("onNoteChanged - Short name selected:",api.collections.get(i).shortName);
                                             //console.log("onNoteChanged - Core to find:",core_name.toLowerCase());
-                                            //console.log("onNoteChanged - Core found :",api.collections.get(i).GetCoreAt(j));
+                                            //console.log("onNoteChanged - Core found :",api.collections.get(i).getCoreAt(j));
                                             if(searchByCRCorFile.system === "")
                                                 searchByCRCorFile.system = api.collections.get(i).shortName;
                                             else searchByCRCorFile.system = searchByCRCorFile.system + "|" + api.collections.get(i).shortName;
