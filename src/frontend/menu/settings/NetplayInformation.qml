@@ -218,7 +218,9 @@ FocusScope {
                             id: searchByCRCorFile;
                             property var crcMatched : false
                             property var fileMatched : false
+                            property var resultIndex: -1
                             onMaxChanged:{
+                                //console.log("onMaxChanged - enabled :",searchByCRCorFile.enabled);
                                 //console.log("onMaxChanged - max :",searchByCRCorFile.max);
                                 //console.log("onMaxChanged - game_crc :",game_crc);
                                 //console.log("onMaxChanged - game_name :",game_name);
@@ -227,26 +229,46 @@ FocusScope {
                                 //console.log("onMaxChanged - filename :",searchByCRCorFile.filename);
                                 //console.log("onMaxChanged - filenameRegEx :",searchByCRCorFile.filenameRegEx);
                                 //console.log("onMaxChanged - filenameToFilter :",searchByCRCorFile.filenameToFilter);
+                                //console.log("onMaxChanged - system :",searchByCRCorFile.system);
+                                //console.log("onMaxChanged - sytemToFind :",searchByCRCorFile.systemToFilter);
+
                                 if((game_crc === "") && (game_name === "")) {
-                                    searchByCRCorFile.crc = "";
-                                    searchByCRCorFile.filenameRegEx = "";
-                                    searchByCRCorFile.filename = "";
                                     picture = "";
                                     icon2 = "";
                                     searchByCRCorFile.crcMatched = false;
                                     searchByCRCorFile.fileMatched = false;
                                 }
                                 else if (searchByCRCorFile.max === 1 && searchByCRCorFile.crc === result.games.get(0).hash) { //CRC search and match
-
+                                    searchByCRCorFile.resultIndex = 0;
                                     picture = result.games.get(0).assets.screenshot;
                                     icon2 = result.games.get(0).assets.logo;
                                     searchByCRCorFile.crcMatched = true;
 
                                 }
-                                else if (searchByCRCorFile.max >= 1 && (result.games.get(0).path.includes(searchByCRCorFile.filename) === true)) { //file name match
-                                    picture = searchByCRCorFile.result.games.get(0).assets.screenshot;
-                                    icon2 = searchByCRCorFile.result.games.get(0).assets.logo;
-                                    searchByCRCorFile.fileMatched = true;
+                                //parse only 20 results to avoid saturation of system if not found
+                                else if (searchByCRCorFile.max>=1 && searchByCRCorFile.max <20 && searchByCRCorFile.filename !== "") { //file name match
+                                    //console.log("file name at index 0:",result.games.get(0).files.get(0).name);
+                                    searchByCRCorFile.resultIndex = -1;
+                                    for(var i = 0;(i < searchByCRCorFile.result.games.count) && (i < 20);i++)
+                                    {
+                                        //console.log("file name found:",result.games.get(i).files.get(0).name);
+                                        if(searchByCRCorFile.result.games.get(i).files.get(0).name === searchByCRCorFile.filename){
+                                            searchByCRCorFile.resultIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    if(searchByCRCorFile.resultIndex != -1){
+                                        picture = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.screenshot;
+                                        icon2 = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.logo;
+                                        searchByCRCorFile.fileMatched = true;
+                                    }
+                                    else
+                                    {
+                                        picture = "";
+                                        picture = "";
+                                        icon2 = "";
+                                        searchByCRCorFile.fileMatched = false;
+                                    }
                                 }
                                 else if (searchByCRCorFile.max !== 1 && searchByCRCorFile.crc !== ""){
                                     picture = "";
@@ -276,7 +298,7 @@ FocusScope {
                         }
                         //for preview
                         label: {
-                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRCorFile.crcMatched === true) ? searchByCRCorFile.result.games.get(0).title : ((searchByCRCorFile.fileMatched === true) ? searchByCRCorFile.result.games.get(0).title : game_name)));
+                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRCorFile.crcMatched === true) ? searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).title : ((searchByCRCorFile.fileMatched === true) ? searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).title : game_name)));
                         }
                         note: {
                             return (" " + qsTr("Creation date") + ": " + created);
@@ -284,22 +306,38 @@ FocusScope {
                         //check note only because created date will change only if room is change
                         onNoteChanged:
                         {
-                            //game change or add
-                            //console.log("At: ",index,"- Add/Change: ",game_name);
-
                             //check if both are not empty as deleted one
                             if(game_crc !== "" && game_name !== ""){
+                                //deactivate during setup of search
+                                searchByCRCorFile.activated = false;
                                 if (game_crc !== "00000000")
                                     searchByCRCorFile.crc = game_crc;
                                 else
                                     searchByCRCorFile.crc = "";
                                 //but also by filename at the same time (in //)
                                 searchByCRCorFile.filename = game_name;
-                            }
-                            else
-                            {
-                                searchByCRCorFile.filename = "";
-                                searchByCRCorFile.crc = "";
+                                searchByCRCorFile.system = "";
+                                //search the system associated also and if the core exist at the same time
+                                for(var i = 0;i < api.collections.count  ;i++)
+                                {
+                                    //check shortname
+                                    //console.log("Short name:",api.collections.get(i).shortName);
+                                    //console.log("Emulator count:",api.collections.get(i).emulatorsCount);
+                                    //for the full list of emulator
+                                    for(var j = 0;j < api.collections.get(i).emulatorsCount;j++)
+                                    {
+                                        if(api.collections.get(i).GetCoreAt(j).toLowerCase() === core_name.toLowerCase()){
+                                            //console.log("onNoteChanged - Short name selected:",api.collections.get(i).shortName);
+                                            //console.log("onNoteChanged - Core to find:",core_name.toLowerCase());
+                                            //console.log("onNoteChanged - Core found :",api.collections.get(i).GetCoreAt(j));
+                                            if(searchByCRCorFile.system === "")
+                                                searchByCRCorFile.system = api.collections.get(i).shortName;
+                                            else searchByCRCorFile.system = searchByCRCorFile.system + "|" + api.collections.get(i).shortName;
+                                        }
+                                    }
+                                }
+                                //activate search at the end
+                                searchByCRCorFile.activated = true;
                             }
                         }
                         //add image of country
