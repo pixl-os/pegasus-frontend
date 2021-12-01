@@ -28,10 +28,11 @@ struct RoomEntry {
       bool has_spectate_password; //"has_spectate_password": false,
       QString created; //"created": "2021-10-27T15:44:24.253326Z",
       QString updated; //"updated": "2021-10-27T15:44:34.344168Z"
+	  int latency; // in ms
       //for later// QString lobby_type; // set by Pegasus : "retroarch" or "dolphin" or ...
 
 	  RoomEntry(int, QString, QString, QString, QString, QString, QString, QString, QString, QString, QString,
-			   int, QString, int, int, bool, bool, QString, QString);
+               int, QString, int, int, bool, bool, QString, QString, int);
       MOVE_ONLY(RoomEntry)
 };
 
@@ -63,6 +64,7 @@ public:
         Has_spectate_password,
         Created,
         Updated,
+		Latency,
 	};
 
     void setRowCount(int numRows);
@@ -75,6 +77,7 @@ public:
     void setCurrentIndex(int);
     bool find_available_rooms(QString log_tag, const QJsonDocument& json);
     Q_INVOKABLE void refresh();
+    Q_INVOKABLE void refresh_latency();
     Q_INVOKABLE void reset();
     Q_INVOKABLE int nbEmptyRooms();
 
@@ -82,7 +85,7 @@ public:
 private slots:
     void reset_slot();
     void refresh_slot();
-
+    void refresh_latency_slot();
 
 signals:
     void roomsChanged();

@@ -5,6 +5,9 @@
 #include "Rooms.h"
 #include "Log.h"
 
+#include <utils/liboping/src/oping.h>
+#include <netdb.h>
+
 #include <RecalboxConf.h>
 
 //for network
@@ -21,6 +24,7 @@
 #include <QElapsedTimer>
 
 namespace {
+
 QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
 {
     QNetworkAccessManager* const manager_ptr = &manager;
@@ -85,7 +89,8 @@ RoomEntry::RoomEntry(int Id,
       bool Has_password,
       bool Has_spectate_password,
       QString Created,
-      QString Updated)
+      QString Updated,
+	  int Latency)
     : id(std::move(Id))
 	, username(std::move(Username))
 	, country(std::move(Country))
@@ -105,7 +110,7 @@ RoomEntry::RoomEntry(int Id,
     , has_spectate_password(std::move(Has_spectate_password))
     , created(std::move(Created))
     , updated(std::move(Updated))
-
+    , latency(std::move(Latency))
 
 {
 }
@@ -132,6 +137,7 @@ Rooms::Rooms(QObject* parent)
         { Roles::Has_spectate_password, QByteArrayLiteral("has_spectate_password") },
         { Roles::Created, QByteArrayLiteral("created") },
         { Roles::Updated, QByteArrayLiteral("updated") },
+		{ Roles::Latency, QByteArrayLiteral("latency") },
 })
 {
 }
@@ -194,6 +200,8 @@ QVariant Rooms::data(const QModelIndex& index, int role) const
         return room.created;
     case Roles::Updated:
         return room.updated;
+    case Roles::Latency:
+        return room.latency;
 	default:
         return {};
     }
@@ -244,6 +252,61 @@ int Rooms::nbEmptyRooms()
     return j;
 
 }
+
+void Rooms::refresh_latency()
+{
+     //Log::debug(LOGMSG("Rooms::refresh_latency_slot() put in Qt::QueuedConnection"));
+     QMetaObject::invokeMethod(this,"refresh_latency_slot", Qt::QueuedConnection);
+}
+
+void Rooms::refresh_latency_slot() {
+    //check latency
+    // Build ping object
+    pingobj_t* pinger = ping_construct();
+    // Add all ip
+    for (auto& game : m_Rooms)
+    {
+      //LOG(LogDebug) << "[Ping] tentative for IP: " << game.ip.toStdString();
+      if (ping_host_add(pinger, game.ip.toStdString().data()) != 0)
+      { LOG(LogError) << "[Ping] Error pinging Host: " << game.ip.toStdString(); }
+      game.latency = -1;
+    }
+    // Set timeout to 500ms
+    double timeout = 0.500; // 500 ms
+    if (ping_setopt(pinger, PING_OPT_TIMEOUT, &timeout) != 0)
+    { LOG(LogError) << "[Ping] Error setting ping timeout to: " << (int)(timeout * 1000.0); }
+    // Ping!
+    int r = ping_send(pinger);
+    { LOG(LogDebug) << "[Ping] Number of ping response: " << r; }
+    if (r < 0) LOG(LogError) << "[Ping] Ping error: " << ping_get_error(pinger);
+    // Iterate results
+    if (r > 0)
+      for (pingobj_iter_t *iter = ping_iterator_get(pinger); iter != nullptr; iter = ping_iterator_next(iter))
+      {
+        // Get ip
+        char host[NI_MAXHOST];
+        size_t hostlen = sizeof(host);
+        ping_iterator_get_info(iter, PING_INFO_HOSTNAME, host, &hostlen);
+        { LOG(LogDebug) << "[Ping] Host: " << std::string(host); }
+        // Get latency
+        double latency = -1;
+        size_t latencylen = sizeof(latency);
+        ping_iterator_get_info(iter, PING_INFO_LATENCY, &latency, &latencylen);
+        { LOG(LogDebug) << "[Ping] Ms: " << (latency < 0 ? 1000 : (int)latency); }
+        // Lookup and store
+        int k = 0;
+        for (auto& game : m_Rooms){
+          if (game.ip == QString::fromStdString(std::string(host))){
+            game.latency = latency < 0 ? 1000 : (int)latency;
+            emit dataChanged(index(k,0), index(k,0));
+          }
+          k = k + 1;
+        }
+      }
+    // Destroy pinger
+    ping_destroy(pinger);
+}
+
 
 void Rooms::refresh()
 {
@@ -331,8 +394,8 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
         const auto Has_spectate_password = fields[QL1("has_spectate_password")].toBool();
         const auto Created = fields[QL1("created")].toString();
         const auto Updated = fields[QL1("updated")].toString();
-
-
+        const auto Latency = 1000; //default value / unknown
+		
         //1 - search if already exists to win time and avoid to recreate / move for nothing
         //check just if game not already exist in the list
         bool already_exist = false;
@@ -354,7 +417,7 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
         //2 - if not found / we need to add it
         if(!already_exist){
             bool empty_exist = false;
-            //do the for to check if a empty one exist
+			//do the for to check if a empty one exist
             for(int k = 0; k < m_Count; k++){
                 if((m_Rooms.at(k).game_crc == "") && (m_Rooms.at(k).game_name == "")){ //check if game crc/name is empty
                     //update all in model
@@ -377,7 +440,8 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
                     m_Rooms[k].has_spectate_password = Has_spectate_password;
                     m_Rooms[k].created = Created;
                     m_Rooms[k].updated = Updated;
-                    emit dataChanged(index(k,0), index(k,0));
+                    m_Rooms[k].latency = Latency;
+					emit dataChanged(index(k,0), index(k,0));
                     //set it as true due to update
                     isRoomUpdated[k] = true;
                     //Log::debug(log_tag, LOGMSG("Index: %2 - Game added (from existing empty row) : %1").arg(Game_name,QString::number(k)));
@@ -390,7 +454,7 @@ bool Rooms::find_available_rooms(QString log_tag, const QJsonDocument& json)
             if(!empty_exist){
                 //Log::debug(log_tag, LOGMSG("Index: %2 - Add game (in new row) : %1").arg(Game_name,QString::number(m_Count)));
                 Rooms::beginInsertRows(QModelIndex(), m_Count, m_Count);
-                m_Rooms.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated);
+                m_Rooms.emplace_back(Id,Username,Country,Game_name,Game_crc,Core_name,Core_version,Subsystem_name,Retroarch_version,Frontend,Ip,Port,Mitm_ip,Mitm_port,Host_method,Has_password,Has_spectate_password,Created,Updated,Latency);
                 Rooms::endInsertRows();
                 //update m_count
                 setRowCount(m_Count+1);

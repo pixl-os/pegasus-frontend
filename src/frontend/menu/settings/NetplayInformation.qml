@@ -39,7 +39,10 @@ FocusScope {
                     //console.log("netplayTimer - before refresh: availableNetplayRooms.selectedButtonIndex", availableNetplayRooms.selectedButtonIndex);
                     api.internal.netplay.rooms.refresh();
 				}
-                else if((interval*counter/1000) >= 5){ //wait 5 seconds before to refresh
+                else if ((interval*counter/1000) === 3){ //wait 3 seconds before to refresh latency
+                    api.internal.netplay.rooms.refresh_latency();
+                }
+                else if((interval*counter/1000) >= 5){ //wait 5 seconds before to refresh list
                     counter = 0;
                 }
                 counter = counter + 1;
@@ -362,8 +365,16 @@ FocusScope {
                             }
                             //"\uf1c0" // or "\uf1c1"/"?" or "\uf1c2"/"X"
                         }
-                        property var latency_icon : "\uf1c8 " // or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
-                                                    //good     -    medium   -    bad    - very bad   -  unknown
+                        property var latency_icon :{
+                            if (latency >= 1000) return "\uf1c9 ";
+                            else if(latency < 50) return "\uf1c8 ";
+                            else if(latency < 100) return "\uf1c7 ";
+                            else if(latency < 150) return "\uf1c6 ";
+                            else return "\uf1c5 ";
+                        }
+                        //"\uf1c8 " or "\uf1c7" or "\uf1c6" or "\uf1c5" or "\uf1c9"/"?"
+                        //good     -    medium   -    bad    - very bad   -  unknown
+                        // <50           <100        <150       >150             > 1000
 
                         property var private_icon : has_password ? "\uf071 " : ""
                         property var visibility_icon : has_spectate_password ? "\uf070 " : " "
@@ -457,7 +468,15 @@ FocusScope {
                             return (core_version === searchByCRCorFile.coreVersionFound) ? ("\uf1c0" + " " + core_version) : ("\uf1c1" + " " + core_version) + (searchByCRCorFile.coreVersionFound !== "" ? (" vs " + searchByCRCorFile.coreVersionFound) : "")
                         }
                         detailed_line12_color: {
-                            return (core_version === searchByCRCorFile.coreVersionFound) ? "green" : "blue"
+                            var coreMatched = false;
+                            //search common value
+                            const core_details = core_version.split(' ');
+                            const core_details_found = searchByCRCorFile.coreVersionFound.split(' ');
+                            if(core_details_found[0] === core_details[0]) coreMatched = true;
+                            const core_details2 = core_version.split('-');
+                            const core_details_found2 = searchByCRCorFile.coreVersionFound.split('-');
+                            if(core_details_found2[0] === core_details2[0]) coreMatched = true;
+                            return (coreMatched) ? "green" : "orange"
                         }
                         detailed_line13: {
                             return  frontend;
