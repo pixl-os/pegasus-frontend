@@ -177,14 +177,6 @@ FocusScope {
         boundsBehavior: Flickable.StopAtBounds
         boundsMovement: Flickable.StopAtBounds
 
-        readonly property int yBreakpoint: height * 0.7
-        readonly property int maxContentY: contentHeight - height
-
-        function onFocus(item) {
-            if (item.focus)
-                contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
-        }
-
 		FocusScope {
 			id: content
 
@@ -528,8 +520,8 @@ FocusScope {
                         }
 
                         onFocusChanged:{
-							container.onFocus(this)                            
 						}
+
                         Keys.onPressed: {
                             //verify if finally other lists are empty or not when we are just before to change list
                             //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
@@ -553,6 +545,7 @@ FocusScope {
                                     availableNetplayRooms.selectedButtonIndex = availableNetplayRooms.count-1;
 								}
                             }
+                            container.contentY = Math.min(Math.max(0, y - (height * 0.7)), container.contentHeight - height);
                         }
 
                         Button {
