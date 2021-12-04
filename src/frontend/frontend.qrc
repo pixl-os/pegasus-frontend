@@ -99,5 +99,6 @@
         <file>menu/settings/common/DetailedButton.qml</file>
         <file>assets/libretro-retroarch-simple-logo.png</file>
         <file>search/SearchGame.qml</file>
+        <file>dialogs/NetplayDialog.qml</file>
     </qresource>
 </RCC>

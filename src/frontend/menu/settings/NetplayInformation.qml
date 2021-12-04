@@ -5,6 +5,7 @@
 
 import "common"
 import "../../search"
+import "../../dialogs"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -14,6 +15,11 @@ FocusScope {
     id: root
 	
 	property bool isCallDirectly : false
+
+    //use as status and icon at the same time
+    readonly property string isOK :  "\uf1c0"
+    readonly property string isMAYBE :"\uf1c1"
+    readonly property string isNOK :"\uf1c2"
 	
     signal close
 
@@ -58,7 +64,32 @@ FocusScope {
         id: confirmDialog
         anchors.fill: parent
         z:10
+        sourceComponent: myDialog
+        active: false
+        asynchronous: true
     }
+
+    Component {
+        id: myDialog
+        NetplayDialog {
+            title: qsTr("PLAY or VIEW ?") + api.tr
+            message: qsTr("Do you want to play or view this game ?") + api.tr
+            symbol: ""
+            firstchoice: qsTr("Play") + api.tr
+            secondchoice: qsTr("View") + api.tr
+            thirdchoice: qsTr("Cancel") + api.tr
+
+        }
+    }
+
+/*    confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                             { "title": qsTr("PLAY or VIEW ?") + api.tr,
+                               "message": qsTr("Do you want to play or view this game ?") + api.tr,
+                               "symbol": "",
+                               "firstchoice": qsTr("Play") + api.tr,
+                               "secondchoice": qsTr("View") + api.tr,
+                               "thirdchoice": qsTr("Cancel") + api.tr});*/
+
 
     Connections {
         target: confirmDialog.item
@@ -84,6 +115,7 @@ FocusScope {
                         }*/
                     break;
             }
+            confirmDialog.active = false;
             content.focus = true;
         }
 
@@ -92,10 +124,12 @@ FocusScope {
                     case "View":
                     break;
             }
+            confirmDialog.active = false;
             content.focus = true;
         }
         function onCancel() {
             //do nothing
+            confirmDialog.active = false;
             content.focus = true;
         }
     }
@@ -342,8 +376,8 @@ FocusScope {
                             //About game
                             var game_status = detailed_line14 + detailed_line15
                             //search if green one exist
-                            if(game_status.includes("\uf1c0")){
-                                if(!core_status.includes("\uf1c1") && !core_status.includes("\uf1c2")){
+                            if(game_status.includes(isOK)){
+                                if(!core_status.includes(isOK) && !core_status.includes(isNOK)){
                                     return "\uf1c0 "; // as OK because Core and Game are present at minimum
                                 }
                                 else
@@ -451,13 +485,13 @@ FocusScope {
                             return retroarch_version;
                         }
                         detailed_line11: {
-                            return (core_name === searchByCRCorFile.coreLongNameFound) ? ("\uf1c0" + " " + core_name) : ("\uf1c2" + " " + core_name);
+                            return (core_name === searchByCRCorFile.coreLongNameFound) ? (isOK + " " + core_name) : (isNOK + " " + core_name);
                         }
                         detailed_line11_color: {
                             return (core_name === searchByCRCorFile.coreLongNameFound) ? "green" : "red"
                         }
                         detailed_line12: {
-                            return (core_version === searchByCRCorFile.coreVersionFound) ? ("\uf1c0" + " " + core_version) : ("\uf1c1" + " " + core_version) + (searchByCRCorFile.coreVersionFound !== "" ? (" vs " + searchByCRCorFile.coreVersionFound) : "")
+                            return (core_version === searchByCRCorFile.coreVersionFound) ? (isOK + " " + core_version) : (isMAYBE + " " + core_version) + (searchByCRCorFile.coreVersionFound !== "" ? (" vs " + searchByCRCorFile.coreVersionFound) : "")
                         }
                         detailed_line12_color: {
                             var coreMatched = false;
@@ -474,13 +508,13 @@ FocusScope {
                             return  frontend;
                         }
                         detailed_line14: {
-                            return ((searchByCRCorFile.crcMatched === true) ? "\uf1c0" : "\uf1c2" ) + " " + game_crc;
+                            return ((searchByCRCorFile.crcMatched === true) ? isOK : isNOK ) + " " + game_crc;
                         }
                         detailed_line14_color: {
                             return ((searchByCRCorFile.crcMatched === true) ? "green" : "red" )
                         }
                         detailed_line15: {
-                            return ((searchByCRCorFile.fileMatched === true) ? "\uf1c0" : "\uf1c2" ) + " " + game_name;
+                            return ((searchByCRCorFile.fileMatched === true) ? isOK : isNOK ) + " " + game_name;
                         }
                         detailed_line15_color: {
                             return ((searchByCRCorFile.fileMatched === true) ? "green" : "red" )
@@ -501,21 +535,25 @@ FocusScope {
                             return false;
                         }
                         onActivate: {
-                            //to force change of focus
-                            confirmDialog.focus = false;
-                            confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                     { "title": qsTr("PLAY or VIEW ?") + api.tr,
-                                                       "message": qsTr("Do you want to play or view this game ?") + api.tr,
-                                                       "symbol": "",
-                                                       "firstchoice": qsTr("Play") + api.tr,
-                                                       "secondchoice": qsTr("View") + api.tr,
-                                                       "thirdchoice": qsTr("Cancel") + api.tr});
-                            //Save action states for later
-                            actionState = "Play";
-                            actionListIndex = index;
-                            //to force change of focus
-                            confirmDialog.focus = true;
-                            //focus = true;
+                            if(!status_icon.includes(isNOK)){
+                                //to force change of focus
+                                confirmDialog.focus = false;
+                                confirmDialog.active = true;
+
+//                                confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+//                                                         { "title": qsTr("PLAY or VIEW ?") + api.tr,
+//                                                           "message": qsTr("Do you want to play or view this game ?") + api.tr,
+//                                                           "symbol": "",
+//                                                           "firstchoice": qsTr("Play") + api.tr,
+//                                                           "secondchoice": qsTr("View") + api.tr,
+//                                                           "thirdchoice": qsTr("Cancel") + api.tr});
+                                //Save action states for later
+                                actionState = "Play";
+                                actionListIndex = index;
+                                //to force change of focus
+                                confirmDialog.focus = true;
+                                //focus = true;
+                            }
 
                         }
 
