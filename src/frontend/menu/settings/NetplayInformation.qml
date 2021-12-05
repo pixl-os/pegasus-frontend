@@ -67,29 +67,29 @@ FocusScope {
         sourceComponent: myDialog
         active: false
         asynchronous: true
+        //to set value via loader
+        property var game_logo: ""
+        property var game_name : ""
+        property var player_name: ""
+        property var system_logo: ""
     }
 
     Component {
         id: myDialog
         NetplayDialog {
-            title: qsTr("PLAY or VIEW ?") + api.tr
-            message: qsTr("Do you want to play or view this game ?") + api.tr
-            symbol: ""
+            title: qsTr("Play or View this game ?") + api.tr
+            message: confirmDialog.game_name
+            symbol: confirmDialog.system_logo
             firstchoice: qsTr("Play") + api.tr
             secondchoice: qsTr("View") + api.tr
             thirdchoice: qsTr("Cancel") + api.tr
 
+            //Specific to Netplay
+            game_logo: confirmDialog.game_logo
+            player_name: confirmDialog.player_name
+
         }
     }
-
-/*    confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                             { "title": qsTr("PLAY or VIEW ?") + api.tr,
-                               "message": qsTr("Do you want to play or view this game ?") + api.tr,
-                               "symbol": "",
-                               "firstchoice": qsTr("Play") + api.tr,
-                               "secondchoice": qsTr("View") + api.tr,
-                               "thirdchoice": qsTr("Cancel") + api.tr});*/
-
 
     Connections {
         target: confirmDialog.item
@@ -97,7 +97,6 @@ FocusScope {
             switch (actionState) {
                     case "Play":
                         //stop scanning during playing ;-)
-                        netplayTimer.running = false;
                         //get game to use
 
                         //get core to use
@@ -131,6 +130,7 @@ FocusScope {
             //do nothing
             confirmDialog.active = false;
             content.focus = true;
+            netplayTimer.running = true;
         }
     }
 
@@ -536,25 +536,23 @@ FocusScope {
                         }
                         onActivate: {
                             if(!status_icon.includes(isNOK)){
+                                //set data linked to this room that we want to display
+                                //to display logo of this room
+                                confirmDialog.game_logo = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.logo;
+                                //to display game name of this room
+                                confirmDialog.game_name = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).title;
+                                //to display player name of this room
+                                confirmDialog.player_name = username
                                 //to force change of focus
+                                netplayTimer.running = false;
                                 confirmDialog.focus = false;
                                 confirmDialog.active = true;
-
-//                                confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-//                                                         { "title": qsTr("PLAY or VIEW ?") + api.tr,
-//                                                           "message": qsTr("Do you want to play or view this game ?") + api.tr,
-//                                                           "symbol": "",
-//                                                           "firstchoice": qsTr("Play") + api.tr,
-//                                                           "secondchoice": qsTr("View") + api.tr,
-//                                                           "thirdchoice": qsTr("Cancel") + api.tr});
                                 //Save action states for later
                                 actionState = "Play";
                                 actionListIndex = index;
                                 //to force change of focus
                                 confirmDialog.focus = true;
-                                //focus = true;
                             }
-
                         }
 
                         onFocusChanged:{

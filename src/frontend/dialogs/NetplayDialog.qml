@@ -28,6 +28,8 @@ FocusScope {
     property alias firstchoice: okButtonText.text
     property alias secondchoice: secondButtonText.text
     property alias thirdchoice: cancelButtonText.text
+    property alias game_logo: picture.source
+    property var player_name: ""
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
@@ -42,12 +44,14 @@ FocusScope {
 
     focus: true
     onActiveFocusChanged: {
+        //console.log("onActiveFocusChanged : ", activeFocus);
         state = activeFocus ? "open" : "";
         if (activeFocus)
             cancelButton.focus = true;
     }
 
     Keys.onPressed: {
+        //console.log("Global Keys.onPressed");
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.cancel();
@@ -104,9 +108,8 @@ FocusScope {
         // text area
         Rectangle {
             width: parent.width
-            height: messageText.height + 5 * root.textSize
+            height: messageText.height + 1 * root.textSize
             color: themeColor.secondary
-
             Text {
                 id: messageText
 
@@ -143,8 +146,52 @@ FocusScope {
             }
         }
 
+        Rectangle {
+            width: parent.width
+            height: vpx(100)
+            color: themeColor.secondary
+            visible: (game_logo !== "") ? true : false
+            Image {
+                id: picture
+
+                asynchronous: true
+
+                height: parent.height
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                visible: true
+            }
+        }
+
+        ToggleOption {
+            id: optNetplayFriend
+            Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        color: themeColor.secondary
+                        z:-1
+                      }
+            label: player_name + qsTr(" is your friend ?") + api.tr
+            note: qsTr("Set it to keep or not in your list of friends !") + api.tr
+
+            checked: api.internal.recalbox.getBoolParameter("netplay.friend." + player_name)
+            onCheckedChanged: {
+                api.internal.recalbox.setBoolParameter("netplay.friend." + player_name,checked);
+            }
+            KeyNavigation.down: optNetplayPswdClient
+        }
+
         MultivalueOption {
             id: optNetplayPswdClient
+            Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        color: themeColor.secondary
+                        z:-1
+                      }
             //property to manage parameter name
             property string parameterName : "netplay.password.client"
 
@@ -162,15 +209,20 @@ FocusScope {
                 //to transfer focus to parameterslistBox
                 parameterslistBox.focus = true;
             }
-            onFocusChanged: container.onFocus(this)
-            KeyNavigation.up: optNetplayPswdClientActivate
-            KeyNavigation.down: optNetplayPswdViewerActivate
-            visible: true //optNetplayPswdClientActivate.checked && optNetplayActivate.checked
+            KeyNavigation.up: optNetplayFriend
+            KeyNavigation.down: optNetplayPswdViewer
+            visible: true
 
         }
 
         MultivalueOption {
             id: optNetplayPswdViewer
+            Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        color: themeColor.secondary
+                        z:-1
+                      }
             //property to manage parameter name
             property string parameterName : "netplay.password.viewer"
 
@@ -188,8 +240,9 @@ FocusScope {
                 //to transfer focus to parameterslistBox
                 parameterslistBox.focus = true;
             }
-            onFocusChanged: container.onFocus(this)
-            visible: true //optNetplayPswdViewerActivate.checked && optNetplayActivate.checked
+            KeyNavigation.up: optNetplayPswdClient
+            KeyNavigation.down: okButton
+            visible: true
         }
 
         // button row
@@ -218,9 +271,10 @@ FocusScope {
                 width: (secondchoice !== "") ? parent.width * 0.33 : ((thirdchoice !== "") ? parent.width * 0.5 : parent.width)
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
-//                radius: vpx(8)
+                KeyNavigation.up: optNetplayPswdViewer
                 KeyNavigation.right: (secondchoice !== "") ? secondButton : cancelButton
                 Keys.onPressed: {
+                    //console.log("okButton Keys.onPressed");
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
                         //change text to ask to wait if needed
@@ -308,12 +362,12 @@ FocusScope {
                 width: (secondchoice !== "") ? parent.width * 0.33 : parent.width * 0.5
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "darkOrange" : themeColor.main //"#222"
-//                radius: vpx(8)
                 visible: (secondchoice !== "") ? true : false
-
+                KeyNavigation.up: optNetplayPswdViewer
                 KeyNavigation.right: cancelButton
                 KeyNavigation.left: okButton
                 Keys.onPressed: {
+                    //console.log("secondButton Keys.onPressed");
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
                         //change text to ask to wait if needed
@@ -369,10 +423,10 @@ FocusScope {
                 width: (secondchoice !== "") ? parent.width * 0.34 : ((thirdchoice !== "") ? parent.width * 0.5 : 0)
                 height: root.textSize * 2.25
                 color: (focus || cancelMouseArea.containsMouse) ? "darkRed" : themeColor.main //"#222"
-//                radius: vpx(8)
-
+                KeyNavigation.up: optNetplayPswdViewer
                 KeyNavigation.left: (secondchoice !== "") ? secondButton : okButton
                 Keys.onPressed: {
+                    //console.log("cancelButton Keys.onPressed");
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
                         //change text to ask to wait if needed
@@ -444,7 +498,8 @@ FocusScope {
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
 
-        onClose: content.focus = true
+        onClose: callerid.focus = true
+
         onSelect: {
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;

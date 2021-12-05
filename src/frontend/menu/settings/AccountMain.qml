@@ -354,6 +354,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optNetplayPswdViewerActivate
                     visible: optNetplayPswdViewerActivate.checked && optNetplayActivate.checked
                 }
                 Item {
