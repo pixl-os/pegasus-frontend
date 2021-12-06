@@ -55,9 +55,35 @@ FocusScope {
         }
     }
 
+    //timer to check number of friends
+    Timer {
+        id: friendsTimer
+        interval: 1000 // Run the timer 200 ms
+        repeat: true
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            if(friendsOnly){
+                friendsCount = 0;
+                for(var i = 0;i < availableNetplayRooms.count;i++)
+                {
+                    if(availableNetplayRooms.itemAt(i).visible) friendsCount = friendsCount + 1
+                }
+            }
+        }
+    }
     //to be able to follow action done on Bluetooth Devices Lists
     property var actionState : ""
     property var actionListIndex : 0
+    property bool friendsOnly: false
+    property bool launchableOnly: false
+    property var friendsCount: 0
+
+    onFriendsOnlyChanged:{
+        //reset count when changed
+        availableNetplayRooms.friendsCount = 0;
+    }
+
 
     //loader to load confirm dialog
     Loader {
@@ -170,6 +196,12 @@ FocusScope {
             api.internal.netplay.rooms.reset();
             root.close();
         }
+        else if(api.keys.isFilters(event) && !event.isAutoRepeat) {
+            friendsOnly = !friendsOnly;
+        }
+        else if (api.keys.isDetails(event) && !event.isAutoRepeat) {
+            launchableOnly = !launchableOnly;
+        }
     }
 
     PegasusUtils.HorizontalSwipeArea {
@@ -188,21 +220,23 @@ FocusScope {
         text: isCallDirectly ? qsTr("Netplay information") + api.tr : qsTr("Accounts > Netplay information") + api.tr
         z: 2
     }
+
     Rectangle {
         width: parent.width
         color: themeColor.main
         anchors {
             top: header.bottom
-            bottom: parent.bottom
+            bottom: footer.top
         }
     }
+
     Flickable {
         id: container
 
         width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: header.bottom
-        anchors.bottom: parent.bottom
+        anchors.bottom: footer.top
 
         contentWidth: content.width
         contentHeight: content.height
@@ -232,20 +266,6 @@ FocusScope {
 					height: implicitHeight + vpx(30)
                 }
 
-
-                //for test purpose only
-                ListModel {
-                    id: myFriends
-                    //ListElement { nickname: "Anonymous"; }
-                }
-
-                SectionTitle {
-                    text: qsTr("My Friend's rooms") + api.tr
-                    first: true
-                    visible: myFriends.count > 0 ? true : false
-                }
-
-
                 Row{
                     Image {
                         id: logoRetroarch
@@ -256,8 +276,13 @@ FocusScope {
                     }
                     SectionTitle {
                     id: retroarch_title
-                    text: "  " + qsTr("Retroarch lobby : ") + (availableNetplayRooms.count - availableNetplayRooms.hidden) + qsTr(" room(s)")  + api.tr
-					first: true
+                    text: {
+                        if(friendsOnly)
+                            return ("  " + qsTr("Retroarch lobby : ") + (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
+                        else
+                            return ("  " + qsTr("Retroarch lobby : ") + (availableNetplayRooms.count - availableNetplayRooms.hidden) + qsTr(" room(s)") + api.tr);
+                    }
+                    first: true
 					visible: true
                     }
                 }
@@ -409,7 +434,32 @@ FocusScope {
                         visible :{
                             availableNetplayRooms.hidden = api.internal.netplay.rooms.nbEmptyRooms()
                             if ((game_crc === "") && (game_name === "")) return false;
-                            else return true;
+                            else if (friendsOnly){
+                               if(api.internal.recalbox.getBoolParameter("netplay.friend." + username)){
+                                   if(launchableOnly){
+                                       if(!status_icon.includes(isNOK)){
+                                           return true;
+                                       }
+                                       else{
+                                          return false;
+                                       }
+                                   }
+                                   else return true;
+                               }
+                               else return false;
+                            }
+                            else
+                            {
+                                if(launchableOnly){
+                                    if(!status_icon.includes(isNOK)){
+                                        return true;
+                                    }
+                                    else{
+                                       return false;
+                                    }
+                                }
+                                else return true;
+                            }
                         }
                         //for preview
                         label: {
@@ -589,7 +639,14 @@ FocusScope {
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
                             text: qsTr("Play/View ?") + api.tr
-                            visible: parent.focus && !status_icon.includes("\uf1c2")
+                            visible: {
+                                if(parent.focus && !status_icon.includes("\uf1c2")){
+                                    return true;
+                                }
+                                else{
+                                    return false;
+                                }
+                            }
                             anchors.left: parent.right
                             anchors.leftMargin: vpx(20)
                             anchors.verticalCenter: parent.verticalCenter
@@ -626,4 +683,223 @@ FocusScope {
 			}
 		}
 	}
+
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Exit") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
+        }
+
+        //for the help to select to view friend only or not
+        Rectangle {
+            id: filterButtonIcon
+            height: labelY.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelY.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "Y"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelY
+            text: friendsOnly ? (qsTr("All rooms") + api.tr) : (qsTr("Friends only") + api.tr)
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: backButtonIcon.left; rightMargin: parent.width * 0.015
+            }
+        }
+
+        //for the help to show game launchable ony or not
+        Rectangle {
+            id: detailButtonIcon
+            height: labelX.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+            anchors {
+                right: labelX.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "X"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelX
+            text: launchableOnly ? (qsTr("All games") + api.tr) : (qsTr("Launchable games only") + api.tr)
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            visible: {
+                return true;
+            }
+
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: filterButtonIcon.left; rightMargin: parent.width * 0.015
+            }
+        }
+
+
+
+        //for the help to launch game (only visible if launchable)
+        Rectangle {
+            id: validButtonIcon
+            height: labelA.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: true
+            anchors {
+                right: labelA.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "A"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelA
+            text: qsTr("play/view game") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            visible: true
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: detailButtonIcon.left; rightMargin: parent.width * 0.015
+            }
+        }
+    }
 }
