@@ -28,8 +28,11 @@ FocusScope {
     property alias firstchoice: okButtonText.text
     property alias secondchoice: secondButtonText.text
     property alias thirdchoice: cancelButtonText.text
+
     property alias game_logo: picture.source
     property var player_name: ""
+    property bool has_password: false
+    property bool has_spectate_password: false
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
@@ -211,7 +214,7 @@ FocusScope {
             }
             KeyNavigation.up: optNetplayFriend
             KeyNavigation.down: optNetplayPswdViewer
-            visible: true
+            visible: has_password
 
         }
 
@@ -242,7 +245,7 @@ FocusScope {
             }
             KeyNavigation.up: optNetplayPswdClient
             KeyNavigation.down: okButton
-            visible: true
+            visible: has_spectate_password
         }
 
         // button row

@@ -95,9 +95,11 @@ FocusScope {
         asynchronous: true
         //to set value via loader
         property var game_logo: ""
-        property var game_name : ""
+        property var game_name: ""
         property var player_name: ""
         property var system_logo: ""
+        property bool has_password: false
+        property bool has_spectate_password: false
     }
 
     Component {
@@ -113,7 +115,8 @@ FocusScope {
             //Specific to Netplay
             game_logo: confirmDialog.game_logo
             player_name: confirmDialog.player_name
-
+            has_password: confirmDialog.has_password
+            has_spectate_password: confirmDialog.has_spectate_password
         }
     }
 
@@ -593,6 +596,8 @@ FocusScope {
                                 confirmDialog.game_name = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).title;
                                 //to display player name of this room
                                 confirmDialog.player_name = username
+                                confirmDialog.has_password = has_password;
+                                confirmDialog.has_spectate_password = has_spectate_password;
                                 //to force change of focus
                                 netplayTimer.running = false;
                                 confirmDialog.focus = false;
@@ -855,8 +860,6 @@ FocusScope {
                 right: filterButtonIcon.left; rightMargin: parent.width * 0.015
             }
         }
-
-
 
         //for the help to launch game (only visible if launchable)
         Rectangle {
