@@ -260,9 +260,9 @@ public:
 	void unlockRetroAchievement(const int index) { if (m_data.retro_achievements.count() > index) m_data.retro_achievements[index].Unlocked = true; };
 	void activateHardcoreRetroAchievement(const int index) { if (m_data.retro_achievements.count() > index) m_data.retro_achievements[index].HardcoreMode = true; };
 	Q_INVOKABLE void launch();
-	Q_INVOKABLE void updateRetroAchievements();
+	Q_INVOKABLE void launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash);
+	Q_INVOKABLE void updateRetroAchievements(); 
 	Q_INVOKABLE void initRetroAchievements();
-
     void finalize();
 };
 

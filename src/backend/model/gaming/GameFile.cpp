@@ -59,6 +59,11 @@ void GameFile::launch()
     emit launchRequested();
 }
 
+void GameFile::launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash)
+{
+    emit launchRequested(); //TO DO with parameters ?!
+}
+
 void GameFile::update_playstats(int playcount, qint64 playtime, QDateTime last_played)
 {
     m_data.playstats.last_played = std::max(m_data.playstats.last_played, std::move(last_played));

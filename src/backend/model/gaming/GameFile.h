@@ -78,6 +78,7 @@ public:
     model::Game* parentGame() const;
 
     Q_INVOKABLE void launch();
+	Q_INVOKABLE void launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash);
 
     void update_playstats(int playcount, qint64 playtime, QDateTime last_played);
 

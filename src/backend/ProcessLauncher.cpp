@@ -98,6 +98,29 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         .replace(QLatin1String("{emulator.ratio}"),QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio")))
         .replace(QLatin1String("{emulator.netplay}"),"");
 
+//info about netplay parameters
+
+// AS CLIENT:
+//
+//    -netplay client -netplay_port XXXX -netplay_ip xxx.xxx.xxx.xxx
+//
+// Optional:
+//
+//	  -netplay_playerpassword "xxxxyyyy"
+//    -netplay_viewerpassword "zzzzaaaa"
+//    -netplay_vieweronly
+//	  -hash AAAAAAAA //(if CRC exist ?!)
+//
+// AS SERVER:
+//
+//    -netplay host -netplay_port XXXX 
+//
+// Optional:
+//
+//    -netplay_playerpassword "xxxxyyyy"
+//    -netplay_viewerpassword "zzzzaaaa"
+//    -hash AAAAAAAA
+
     if(param == "{emulator.name}")
     {   
         QString emulator = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".emulator").toUtf8().constData()));
@@ -106,7 +129,6 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
             param.replace(QLatin1String("{emulator.name}"),emulator);
         }
         else  param.replace(QLatin1String("{emulator.name}"),game.emulatorName());
-        
     }            
     
     if(param == "{emulator.core}")

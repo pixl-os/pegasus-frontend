@@ -112,6 +112,16 @@ void Game::launch()
         emit launchFileSelectorRequested();
 }
 
+void Game::launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash)
+{
+    Q_ASSERT(m_files->count() > 0);
+
+    if (m_files->count() == 1)
+        m_files->first()->launchNetplay(mode,port,ip,playerpassword,viewerpassword,vieweronly,hash);
+    else
+        emit launchFileSelectorRequested();
+}
+
 void Game::initRetroAchievements()
 {
 	Log::debug(LOGMSG("Game::initRetroAchievements_slot() put in Qt::QueuedConnection"));
