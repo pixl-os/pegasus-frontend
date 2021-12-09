@@ -47,6 +47,7 @@ FocusScope {
         anchors.right: parent.right
 
         onClose: root.close()
+        onOpenVideoSettings: root.openScreen("settings/VideoSettings.qml")
         //        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
         //        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
         //        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")

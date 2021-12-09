@@ -44,7 +44,7 @@ Item {
         height: parent.height * 0.5
         radius: height * 0.5
 
-        color: "#dd0c0c"
+        color: "#dd0c0c" //red unselected
         opacity: 0.3
 
         anchors.centerIn: parent
@@ -64,15 +64,15 @@ Item {
         height: parent.height
         radius: height * 0.5
 
-        color: "#bbbbbb"
+        color: themeColor.textLabel
 
         anchors.left: parent.left
     }
 
     states: State {
         name: "checked"; when: checked
-        PropertyChanges { target: thumb; color: "#bbbbbb" }
-        PropertyChanges { target: track; color: "#15e20b" }
+        PropertyChanges { target: thumb; color: themeColor.textLabel }
+        PropertyChanges { target: track; color: "#15e20b" } // green selected
         PropertyChanges { target: track; opacity: 0.3 }
         AnchorChanges {
             target: thumb

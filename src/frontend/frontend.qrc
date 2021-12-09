@@ -95,5 +95,6 @@
         <file>dialogs/GenericContinueDialog.qml</file>
         <file>assets/loading.png</file>
         <file>dialogs/Generic3ChoicesDialog.qml</file>
+        <file>menu/settings/VideoSettings.qml</file>
     </qresource>
 </RCC>

@@ -99,17 +99,17 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
 
-                SectionTitle {
-                    text: qsTr("Retroachievement") + api.tr
-                    first: true
-                }
+
                 ToggleOption {
                     id: optRetroachievementActivate
                     // set focus only on first item
                     focus: true
-
-                    label: qsTr("Activate retroachievement") + api.tr
-                    note: qsTr("Achievements to your favourites retro games.") + api.tr
+                    SectionTitle {
+                        text: qsTr("Retroachievement") + api.tr
+                        first: true
+                    }
+                    // label: qsTr("Activate retroachievement") + api.tr
+                    // note: qsTr("Achievements to your favourites retro games.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements")
                     onCheckedChanged: {
@@ -141,7 +141,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementPassword
-//                    label: qsTr("Connect Retroachievement") + api.tr
+                    // label: qsTr("Connect Retroachievement") + api.tr
                     note: qsTr("then login with your username and password") + api.tr
 
                     TextField {
@@ -152,7 +152,7 @@ FocusScope {
                         text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
                         horizontalAlignment: TextInput.AlignRight
                         echoMode: TextInput.PasswordEchoOnEdit
-//                        enterKeyAction: EnterKeyAction.Next
+                        // enterKeyAction: EnterKeyAction.Next
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
                         onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.password", retroachievementPassword.text)
                     }
@@ -173,43 +173,55 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optRetroachievementPassword
+                    KeyNavigation.down: optScreenshootsAchievementActivate
+                    visible: optRetroachievementActivate.checked
+
+                }
+                ToggleOption {
+                    id: optScreenshootsAchievementActivate
+                    label: qsTr("Auto screenshot") + api.tr
+                    note: qsTr("Take an screenshot when an achievement is triggere.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievement.screenshot")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("global.retroachievement.screenshot",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optHardcoreRetroachievementActivate
+                    KeyNavigation.down: optUnlockSoundsAchievementActivate
+                    visible: optRetroachievementActivate.checked
+
+                }
+                ToggleOption {
+                    id: optUnlockSoundsAchievementActivate
+                    label: qsTr("Activate Unlock Sounds") + api.tr
+                    note: qsTr("Play Sounds if you unlock a trophies.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievement.unlock.sound")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("global.retroachievement.unlock.sound",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optScreenshootsAchievementActivate
                     KeyNavigation.down: optNetplayActivate
                     visible: optRetroachievementActivate.checked
 
                 }
-//                ToggleOption {
-//                    id: optScreenshootsAchievementActivate
-//                    label: qsTr("Auto screenshot") + api.tr
-//                    note: qsTr("Take an screenshot when an achievement is triggere.") + api.tr
-
-//                    checked: api.internal.recalbox.getBoolParameter("")
-//                    onCheckedChanged: {
-//                        api.internal.recalbox.setBoolParameter("",checked);
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.up: optHardcoreRetroachievementActivate
-//                    KeyNavigation.down: optNetplayInformation
-//                    visible: optRetroachievementActivate.checked && optHardcoreRetroachievementActivate.checked
-
-//                }
-                SectionTitle {
-                    text: qsTr("Netplay") + api.tr
-                    first: true
-                }
                 ToggleOption {
                     id: optNetplayActivate
-
-                    label: qsTr("Activate netplay") + api.tr
-                    note: qsTr("Play with your friends online") + api.tr
+                    SectionTitle {
+                        text: qsTr("Netplay") + api.tr
+                        first: true
+                    }
+                    // label: qsTr("Activate netplay") + api.tr
+                    // note: qsTr("Play with your friends online") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.netplay")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.netplay.active",checked);
-                        //pop menu if activate
-                        //root.openGameDirSettings();
+                        api.internal.recalbox.setBoolParameter("global.netplay",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optHardcoreRetroachievementActivate
+                    KeyNavigation.up: optUnlockSoundsAchievementActivate
                     KeyNavigation.down: optNetplayInformation
                 }
                 SimpleButton {
@@ -245,8 +257,6 @@ FocusScope {
 
                     label: qsTr("Netplay nickname") + api.tr
                     note: qsTr("Set your netplay nickname") + api.tr
-
-                    //value: api.internal.settings.locales.currentName
                     TextField {
                         id: netplayNickname
                         anchors.right: parent.right
@@ -278,8 +288,6 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforplayer")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
-                        //pop menu if activate
-                        //root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optNetplayNickname
@@ -320,8 +328,6 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforviewer")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
-                        //pop menu if activate
-                        //root.openGameDirSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optNetplayPswdClient

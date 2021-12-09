@@ -11,8 +11,8 @@ Controls.TextField {
     selectionColor: Qt.rgba(0.0, 0.0, 0.0, 0.15)
     selectedTextColor: color
     selectByMouse: false
-    font.pixelSize: Qt.application.font.pixelSize * 2
-
+    font.pixelSize: vpx(22) // Qt.application.font.pixelSize * 2
+    font.family: globalFonts.sans
     focusReason: Qt.ActiveWindowFocusReason
 
     // change keyboard style
