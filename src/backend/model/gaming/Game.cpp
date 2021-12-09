@@ -112,14 +112,10 @@ void Game::launch()
         emit launchFileSelectorRequested();
 }
 
-void Game::launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash)
+void Game::setNetplayData(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash, const QString& emulator, const QString& core)
 {
     Q_ASSERT(m_files->count() > 0);
-
-    if (m_files->count() == 1)
-        m_files->first()->launchNetplay(mode,port,ip,playerpassword,viewerpassword,vieweronly,hash);
-    else
-        emit launchFileSelectorRequested();
+    m_files->first()->setNetplayData(mode,port,ip,playerpassword,viewerpassword,vieweronly,hash,emulator,core);
 }
 
 void Game::initRetroAchievements()

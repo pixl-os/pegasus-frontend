@@ -59,9 +59,17 @@ void GameFile::launch()
     emit launchRequested();
 }
 
-void GameFile::launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash)
+void GameFile::setNetplayData(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash, const QString& emulator, const QString& core)
 {
-    emit launchRequested(); //TO DO with parameters ?!
+    m_data.netplay.mode = mode;
+    m_data.netplay.emulator = emulator;
+    m_data.netplay.core = core;
+    m_data.netplay.port = port;
+    m_data.netplay.ip = ip;
+    m_data.netplay.playerpassword = playerpassword;
+    m_data.netplay.viewerpassword = viewerpassword;
+    m_data.netplay.vieweronly = vieweronly;
+    m_data.netplay.hash = hash;
 }
 
 void GameFile::update_playstats(int playcount, qint64 playtime, QDateTime last_played)
