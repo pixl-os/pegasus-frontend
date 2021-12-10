@@ -85,7 +85,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayOutput
                     //property to manage parameter name
-                    property string parameterName : "system.game.screen"
+                    property string parameterName : "system.primary.screen"
                     property variant optionsList : []
                     // set focus only on first item
                     focus: true
@@ -112,7 +112,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayResolution
                     //property to manage parameter name
-                    property string parameterName : "system.game.screen.resolution"
+                    property string parameterName : "system.primary.screen.resolution"
                     property variant optionsList : [optDisplayOutput.value]
 
                     label: qsTr("Resolution") + api.tr
@@ -138,7 +138,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayFrequency
                     //property to manage parameter name
-                    property string parameterName : "system.game.screen.frequency"
+                    property string parameterName : "system.primary.screen.frequency"
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
 
                     label: qsTr("Frequency") + api.tr
@@ -164,7 +164,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayRotation
                     //property to manage parameter name
-                    property string parameterName : "system.game.screen.rotation"
+                    property string parameterName : "system.primary.screen.rotation"
 
                     label: qsTr("Rotate") + api.tr
                     note: qsTr("Choose orientation for your primary screen.") + api.tr
@@ -195,9 +195,9 @@ FocusScope {
                     }
                     // label: qsTr("Activate secondary screen") + api.tr
                     // note: qsTr("Secondary screen for marquee or else.") + api.tr
-                    checked: api.internal.recalbox.getBoolParameter("system.marquee.screen.enabled")
+                    checked: api.internal.recalbox.getBoolParameter("system.secondary.screen.enabled")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("system.marquee.screen.enabled",checked);
+                        api.internal.recalbox.setBoolParameter("system.secondary.screen.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayRotation
@@ -206,7 +206,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayMarqueeOutput
                     //property to manage parameter name
-                    property string parameterName : "system.marquee.screen"
+                    property string parameterName : "system.secondary.screen"
                     property variant optionsList : []
 
                     label: qsTr("Output") + api.tr
@@ -234,7 +234,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayMarqueeResolution
                     //property to manage parameter name
-                    property string parameterName : "system.marquee.screen.resolution"
+                    property string parameterName : "system.secondary.screen.resolution"
                     property variant optionsList : [optDisplayMarqueeOutput.value]
 
                     label: qsTr("Resolution") + api.tr
@@ -262,7 +262,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayMarqueeFrequency
                     //property to manage parameter name
-                    property string parameterName : "system.marquee.screen.frequency"
+                    property string parameterName : "system.secondary.screen.frequency"
                     property variant optionsList : [optDisplayMarqueeOutput.value, optDisplayMarqueeResolution.value]
 
                     label: qsTr("Frequency") + api.tr
@@ -290,7 +290,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayMarqueeRotation
                     //property to manage parameter name
-                    property string parameterName : "system.marquee.screen.rotation"
+                    property string parameterName : "system.secondary.screen.rotation"
 
                     label: qsTr("Rotation") + api.tr
                     note: qsTr("Choose orientation for your secondary screen.") + api.tr
@@ -317,7 +317,7 @@ FocusScope {
                 MultivalueOption {
                     id: optDisplayMarqueePosition
                     //property to manage parameter name
-                    property string parameterName : "system.marquee.screen.position"
+                    property string parameterName : "system.secondary.screen.position"
 
                     label: qsTr("Position") + api.tr
                     note: qsTr("Choose position for your Secondary screen.") + api.tr
