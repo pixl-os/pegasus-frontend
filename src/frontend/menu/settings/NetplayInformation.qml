@@ -20,7 +20,7 @@ FocusScope {
     readonly property string isOK :  "\uf1c0"
     readonly property string isMAYBE :"\uf1c1"
     readonly property string isNOK :"\uf1c2"
-	
+
     signal close
 
     width: parent.width
@@ -78,6 +78,9 @@ FocusScope {
     property bool friendsOnly: false
     property bool launchableOnly: false
     property var friendsCount: 0
+    property var gameSelected
+    property var roomSelected
+    property var searchSelected
 
     onFriendsOnlyChanged:{
         //reset count when changed
@@ -126,21 +129,21 @@ FocusScope {
             switch (actionState) {
                     case "Play":
                         //stop scanning during playing ;-)
-                        //get game to use
-
-                        //get core to use
-
-                        //var name = myDevicesModel.get(actionListIndex).name;
-                        //var macaddress = myDevicesModel.get(actionListIndex).macaddress;
-                        //var result = "";
-
+                        netplayTimer.running = false;
+                        friendsTimer.running = false;
+                        //set parameter for netplay
+                        gameSelected.modelData.setNetplayData(
+                                    1, roomSelected.port, roomSelected.ip,
+                                    roomSelected.has_password ? "":"", //TODO
+                                    roomSelected.has_spectate_password ? "":"", //TODO
+                                    roomSelected.vieweronly,
+                                    roomSelected.hash,
+                                    "libretro",
+                                    searchSelected.coreFound);
                         //launch game in netplay mode
-                        /*if(api.internal.recalbox.getStringParameter("controllers.bluetooth.unpair.methods") === ""){
-                            //legacy method
-                            console.log("command:", "/recalbox/scripts/bluetooth/test-device remove " + macaddress);
-                            //add timeout of 5s if needed
-                            result = api.internal.system.run("timeout 5 /recalbox/scripts/bluetooth/test-device remove " + macaddress);
-                        }*/
+                        gameSelected.modelData.launch();
+                        //clean rooms model
+                        api.internal.netplay.rooms.reset();
                     break;
             }
             confirmDialog.active = false;
@@ -150,12 +153,15 @@ FocusScope {
         function onSecondChoice() {
             switch (actionState) {
                     case "View":
+
                     break;
             }
             confirmDialog.active = false;
             content.focus = true;
         }
         function onCancel() {
+            //reset game gameSelected
+            gameSelected = null;
             //do nothing
             confirmDialog.active = false;
             content.focus = true;
@@ -328,6 +334,7 @@ FocusScope {
                             id: searchByCRCorFile;
                             property var crcMatched : false
                             property var fileMatched : false
+                            property var coreFound: ""
                             property var coreLongNameFound: ""
                             property var coreVersionFound: ""
                             property var resultIndex: -1
@@ -355,7 +362,6 @@ FocusScope {
                                     picture = result.games.get(0).assets.screenshot;
                                     icon2 = result.games.get(0).assets.logo;
                                     searchByCRCorFile.crcMatched = true;
-
                                 }
                                 //parse only 20 results to avoid saturation of system if not found
                                 else if (searchByCRCorFile.max>=1 && searchByCRCorFile.max <20 && searchByCRCorFile.filename !== "") { //file name match
@@ -501,6 +507,7 @@ FocusScope {
                                             //console.log("onNoteChanged - Core found :",api.collections.get(i).getCoreAt(j));
                                             if(searchByCRCorFile.system === ""){
                                                 searchByCRCorFile.system = api.collections.get(i).shortName;
+                                                searchByCRCorFile.coreFound = api.collections.get(i).getCoreAt(j);
                                                 searchByCRCorFile.coreLongNameFound = api.collections.get(i).getCoreLongNameAt(j);
                                                 searchByCRCorFile.coreVersionFound = api.collections.get(i).getCoreVersionAt(j);
                                             }
@@ -589,6 +596,7 @@ FocusScope {
                         }
                         onActivate: {
                             if(!status_icon.includes(isNOK)){
+
                                 //set data linked to this room that we want to display
                                 //to display logo of this room
                                 confirmDialog.game_logo = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.logo;
@@ -598,6 +606,14 @@ FocusScope {
                                 confirmDialog.player_name = username
                                 confirmDialog.has_password = has_password;
                                 confirmDialog.has_spectate_password = has_spectate_password;
+
+                                //set room
+                                root.roomSelected = model;
+                                //set search data
+                                root.searchSelected = searchByCRCorFile;
+                                //set game
+                                root.gameSelected = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex);
+
                                 //to force change of focus
                                 netplayTimer.running = false;
                                 confirmDialog.focus = false;
