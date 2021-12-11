@@ -127,16 +127,16 @@ FocusScope {
         target: confirmDialog.item
         function onAccept() { //first choice
             switch (actionState) {
-                    case "Play":
+                    case "PlayOrView": //-> TO PLAY
                         //stop scanning during playing ;-)
                         netplayTimer.running = false;
                         friendsTimer.running = false;
-                        //set parameter for netplay
+                        //set parameter for netplay (mode = 1 -> client)
                         gameSelected.modelData.setNetplayData(
                                     1, roomSelected.port, roomSelected.ip,
-                                    roomSelected.has_password ? "":"", //TODO
-                                    roomSelected.has_spectate_password ? "":"", //TODO
-                                    roomSelected.vieweronly,
+                                    roomSelected.has_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
+                                    "", //let viewer password empty in this case
+                                    false,
                                     roomSelected.hash,
                                     "libretro",
                                     searchSelected.coreFound);
@@ -152,16 +152,33 @@ FocusScope {
 
         function onSecondChoice() {
             switch (actionState) {
-                    case "View":
-
+                    case "PlayOrView": // -> TO VIEW
+                        //stop scanning during playing ;-)
+                        netplayTimer.running = false;
+                        friendsTimer.running = false;
+                        //set parameter for netplay (mode = 1 -> client)
+                        gameSelected.modelData.setNetplayData(
+                                    1, roomSelected.port, roomSelected.ip,
+                                    "", //let player password empty in this case
+                                    roomSelected.has_spectate_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.viewer"):"",
+                                    true,
+                                    roomSelected.hash,
+                                    "libretro",
+                                    searchSelected.coreFound);
+                        //launch game in netplay mode
+                        gameSelected.modelData.launch();
+                        //clean rooms model
+                        api.internal.netplay.rooms.reset();
                     break;
             }
             confirmDialog.active = false;
             content.focus = true;
         }
         function onCancel() {
-            //reset game gameSelected
+            //reset game/room/search Selected
             gameSelected = null;
+            roomSelected = null;
+            searchSelected = null;
             //do nothing
             confirmDialog.active = false;
             content.focus = true;
@@ -619,7 +636,7 @@ FocusScope {
                                 confirmDialog.focus = false;
                                 confirmDialog.active = true;
                                 //Save action states for later
-                                actionState = "Play";
+                                actionState = "PlayOrView";
                                 actionListIndex = index;
                                 //to force change of focus
                                 confirmDialog.focus = true;
