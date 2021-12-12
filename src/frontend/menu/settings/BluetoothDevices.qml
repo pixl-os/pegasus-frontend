@@ -397,19 +397,42 @@ FocusScope {
                         btModel.running = true;
                     }
                     else{
-                        //TO DO
-                        //with release version of recalbox
-                        //console.log("legacy method:",api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hcitoolscan"));
+                        //to test with release version of recalbox - need to check if UI is blocked or not
+                        console.log("legacy method:",api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hcitoolscan"));
+                        //api.internal.system.runAsync("timeout 30 sh /recalbox/scripts/recalbox-config.sh hcitoolscan");
+                        api.internal.system.runAsyncBoolResult("timeout 30 sh /recalbox/scripts/recalbox-config.sh hcitoolscan");
+                        //need to read later "cat /tmp/btlist" using timer in this case
                     }
                 }
 
-                if ((interval/1000)*counter >= 90){ // restart every 90 seconds
+                if ((interval/1000)*counter >= 90){ // restart every 90 seconds*
                     //console.log("Restart bluetooth scan... after ", (interval/1000)*counter," seconds")
                     btModel.running = false;
                     btModel.running = (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
                     counter = 0;
                 }
                 else counter = counter + 1;
+        }
+    }
+
+    Timer {
+        id: readBtList
+        interval: 5000 // Run the timer every 5 seconds
+        repeat: true
+        running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") === "") ? true : false
+        triggeredOnStart: false
+        onTriggered: {
+            //read file every 5 seconds
+            var result = api.internal.system.run("cat /tmp/btlist");
+            console.log("raw result:",result);
+            const results = result.split('\n');
+            for(var i=0;i<results.length-1;i++)
+            {
+                console.log("results[",i,"]:",results[i]);
+                var remoteAddress = results[i].split(" ")[0] + " "; //to take address
+                var deviceName = results[i].replace(remoteAddress,""); //to keep only name
+                updateDiscoveredDevicesLists(deviceName, remoteAddress, "");
+            }
         }
     }
 
@@ -780,6 +803,9 @@ FocusScope {
     }
 
     Component.onCompleted:{
+        //delete tmp file
+        var result = api.internal.system.run("rm /tmp/btlist");
+        //read devices already known
         readSavedDevicesList(myDevicesModel,"pegasus.bt.my.device");
         readSavedDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
     }
