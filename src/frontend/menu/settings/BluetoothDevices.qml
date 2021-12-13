@@ -164,7 +164,7 @@ FocusScope {
 							//legacy method
                             console.log("command:", "/recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
                             //timeout of 30s if needed
-                            result = api.internal.system.runBoolResult("timeout 30 /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
+                            result = api.internal.system.runBoolResult("timeout 30 /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress, false);
 						}
 						else{
                             //do remove to avoid bad suprise
