@@ -84,15 +84,16 @@ QString System::getRunAsyncResult()
     return m_Result;
 }
 
-
-bool System::runBoolResult(const QString& Command)
+bool System::runBoolResult(const QString& Command, bool escaped)
 {
   std::string escapedCommand(Command.toUtf8().constData());
-  Strings::ReplaceAllIn(escapedCommand, "(", "\\(");
-  Strings::ReplaceAllIn(escapedCommand, ")", "\\)");
-  Strings::ReplaceAllIn(escapedCommand, "*", "\\*");
-  Strings::ReplaceAllIn(escapedCommand, "'", "\\'");
-  Strings::ReplaceAllIn(escapedCommand, "\"", "\\\"");
+  if(escaped){
+      Strings::ReplaceAllIn(escapedCommand, "(", "\\(");
+      Strings::ReplaceAllIn(escapedCommand, ")", "\\)");
+      Strings::ReplaceAllIn(escapedCommand, "*", "\\*");
+      Strings::ReplaceAllIn(escapedCommand, "'", "\\'");
+      Strings::ReplaceAllIn(escapedCommand, "\"", "\\\"");
+  }
   int exitcode = system(escapedCommand.c_str());
   return exitcode == 0;
 }
