@@ -133,7 +133,7 @@ FocusScope {
 						}
 						console.log("result:",result);
 						//relaunch scanning
-						bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+                        bluetoothTimer.running = true; // no need to restart btModel because timer will manage
 						//ADD Check	of result
 						//TO DO
 						//for test purpose for the moment
@@ -176,7 +176,7 @@ FocusScope {
                             //simpler one
 							console.log("command:", "/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
                             //timeout of 60s if needed
-                            result = api.internal.system.runBoolResult("timeout 60 /recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
+                            result = api.internal.system.runBoolResult("timeout 60 /recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'", false);
                             //add connect command to correct some issues with some devices too long to connected
                             console.log("command:", "bluetoothctl connect " + macaddress);
                             //timeout 15s if needed
@@ -215,7 +215,7 @@ FocusScope {
                             else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
                         }
                         //relaunch scanning
-                        bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+                        bluetoothTimer.running = true; // no need to restart btModel because timer will manage
                         connectedTimer.running = true
                     break;
                     case "Unblock":
@@ -273,7 +273,7 @@ FocusScope {
                         else result = api.internal.system.run("timeout 10 echo -e 'disconnect " + macaddress + "' | bluetoothctl");
                         console.log("result:",result);
                         //relaunch scanning
-                        bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+                        bluetoothTimer.running = true; // no need to restart btModel because timer will manage
                     break;
             }
             content.focus = true;
@@ -398,17 +398,18 @@ FocusScope {
                     }
                     else{
                         //to test with release version of recalbox - need to check if UI is blocked or not
-                        console.log("legacy method:",api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hcitoolscan"));
-                        //api.internal.system.runAsync("timeout 30 sh /recalbox/scripts/recalbox-config.sh hcitoolscan");
-                        api.internal.system.runAsyncBoolResult("timeout 30 sh /recalbox/scripts/recalbox-config.sh hcitoolscan");
+                        console.log("legacy method: api.internal.system.run('sh /recalbox/scripts/recalbox-config.sh hcitoolscan')");
+                        api.internal.system.runAsync("timeout 30 sh /recalbox/scripts/recalbox-config.sh hcitoolscan");
+                        //var result = api.internal.system.runAsync("sleep 10");
                         //need to read later "cat /tmp/btlist" using timer in this case
                     }
                 }
-
-                if ((interval/1000)*counter >= 90){ // restart every 90 seconds*
-                    //console.log("Restart bluetooth scan... after ", (interval/1000)*counter," seconds")
-                    btModel.running = false;
-                    btModel.running = (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+                // restart every 30 seconds if BluetoothDiscoveryModel.DeviceDiscovery is used
+                if (((interval/1000)*counter >= 30) && (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") === BluetoothDiscoveryModel.DeviceDiscovery)){
+                    counter = 0;
+                }
+                // restart every 90 seconds for other methods
+                else if ((interval/1000)*counter >= 90){
                     counter = 0;
                 }
                 else counter = counter + 1;
