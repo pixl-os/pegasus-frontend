@@ -347,14 +347,13 @@ FocusScope {
 
     //function to search device in a list
     function searchDeviceInList(list, name, macaddress, service){
-        console.log("searchDeviceInList | to find Mac Address: '" + macaddress + "' - Name: '" + name + "' - Service: '" + service + "'");
+        //console.log("searchDeviceInList | to find Mac Address: '" + macaddress + "' - Name: '" + name + "' - Service: '" + service + "'");
 		for(var i = 0;i < list.count; i++){
-			console.log("searchDeviceInList | found Mac Address: '" + list.get(i).macaddress + "' - Name: '" + list.get(i).name + "' - Service: '" + list.get(i).service + "'");
+            //console.log("searchDeviceInList | found Mac Address: '" + list.get(i).macaddress + "' - Name: '" + list.get(i).name + "' - Service: '" + list.get(i).service + "'");
 		    if (list.get(i).name === name &&
                 list.get(i).macaddress === macaddress &&
                 list.get(i).service === service){
-				console.log("searchDeviceInList | Match Mac Address: '" + list.get(i).macaddress + "' - Name: '" + list.get(i).name + "' - Service: '" + list.get(i).service + "'");
-		    	//console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found existing service " + macaddress + " - Name: " + name + " - Service: " + service);
+                //console.log("searchDeviceInList | Match Mac Address: '" + list.get(i).macaddress + "' - Name: '" + list.get(i).name + "' - Service: '" + list.get(i).service + "'");
                 return true;
             }
         }
@@ -433,8 +432,8 @@ FocusScope {
             for(var i=0;i<results.length-1;i++)
             {
                 console.log("results[",i,"]:",results[i]);
-                var remoteAddress = results[i].split(" ")[0] + " "; //to take address
-                var deviceName = results[i].replace(remoteAddress,""); //to keep only name
+                var remoteAddress = results[i].split(" ")[0]; //to take address
+                var deviceName = results[i].replace(remoteAddress + " ",""); //to get everything execpt address + " "
                 updateDiscoveredDevicesLists(deviceName, remoteAddress, "");
             }
         }
