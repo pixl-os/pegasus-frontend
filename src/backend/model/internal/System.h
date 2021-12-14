@@ -36,17 +36,14 @@ public:
     Q_INVOKABLE void shutdown();
 
     Q_INVOKABLE QString run(const QString& Command);
+
     Q_INVOKABLE void runAsync(const QString& Command);
     Q_INVOKABLE QString getRunAsyncResult();
 
     Q_INVOKABLE bool runBoolResult(const QString& Command, bool escaped = true);
 
-    Q_INVOKABLE void runAsyncBoolResult(const QString& Command);
-    Q_INVOKABLE bool getRunAsyncBoolResult();
-
 private slots:
     void runAsync_slot();
-    void runAsyncBoolResult_slot();
 
 signals:
     void appCloseRequested(AppCloseType);
