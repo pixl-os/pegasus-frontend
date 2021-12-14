@@ -133,7 +133,7 @@ FocusScope {
 						}
 						console.log("result:",result);
 						//relaunch scanning
-						bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+                        bluetoothTimer.running = true; // no need to restart btModel because timer will manage
 						//ADD Check	of result
 						//TO DO
 						//for test purpose for the moment
@@ -164,7 +164,7 @@ FocusScope {
 							//legacy method
                             console.log("command:", "/recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
                             //timeout of 30s if needed
-                            result = api.internal.system.runBoolResult("timeout 30 /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress);
+                            result = api.internal.system.runBoolResult("timeout 30 /recalbox/scripts/recalbox-config.sh hiddpair '" + name + "' " + macaddress, false);
 						}
 						else{
                             //do remove to avoid bad suprise
@@ -176,7 +176,7 @@ FocusScope {
                             //simpler one
 							console.log("command:", "/recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
                             //timeout of 60s if needed
-                            result = api.internal.system.runBoolResult("timeout 60 /recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'");
+                            result = api.internal.system.runBoolResult("timeout 60 /recalbox/scripts/bluetooth/recalpair "+ macaddress + " '" + name + "'", false);
                             //add connect command to correct some issues with some devices too long to connected
                             console.log("command:", "bluetoothctl connect " + macaddress);
                             //timeout 15s if needed
@@ -215,7 +215,7 @@ FocusScope {
                             else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
                         }
                         //relaunch scanning
-                        bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+                        bluetoothTimer.running = true; // no need to restart btModel because timer will manage
                         connectedTimer.running = true
                     break;
                     case "Unblock":
@@ -273,7 +273,7 @@ FocusScope {
                         else result = api.internal.system.run("timeout 10 echo -e 'disconnect " + macaddress + "' | bluetoothctl");
                         console.log("result:",result);
                         //relaunch scanning
-                        bluetoothTimer.running = true; // no need to restart btModel ecause timer will manage
+                        bluetoothTimer.running = true; // no need to restart btModel because timer will manage
                     break;
             }
             content.focus = true;
@@ -347,11 +347,13 @@ FocusScope {
 
     //function to search device in a list
     function searchDeviceInList(list, name, macaddress, service){
-        for(var i = 0;i < list.count; i++){
-            if (list.get(i).name === name &&
+        //console.log("searchDeviceInList | to find Mac Address: '" + macaddress + "' - Name: '" + name + "' - Service: '" + service + "'");
+		for(var i = 0;i < list.count; i++){
+            //console.log("searchDeviceInList | found Mac Address: '" + list.get(i).macaddress + "' - Name: '" + list.get(i).name + "' - Service: '" + list.get(i).service + "'");
+		    if (list.get(i).name === name &&
                 list.get(i).macaddress === macaddress &&
                 list.get(i).service === service){
-                //console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found existing service " + macaddress + " - Name: " + name + " - Service: " + service);
+                //console.log("searchDeviceInList | Match Mac Address: '" + list.get(i).macaddress + "' - Name: '" + list.get(i).name + "' - Service: '" + list.get(i).service + "'");
                 return true;
             }
         }
@@ -397,19 +399,43 @@ FocusScope {
                         btModel.running = true;
                     }
                     else{
-                        //TO DO
-                        //with release version of recalbox
-                        //console.log("legacy method:",api.internal.system.run("sh /recalbox/scripts/recalbox-config.sh hcitoolscan"));
+                        //to test with release version of recalbox - need to check if UI is blocked or not
+                        console.log("legacy method: api.internal.system.run('sh /recalbox/scripts/recalbox-config.sh hcitoolscan')");
+                        api.internal.system.runAsync("timeout 30 sh /recalbox/scripts/recalbox-config.sh hcitoolscan");
+                        //var result = api.internal.system.runAsync("sleep 10");
+                        //need to read later "cat /tmp/btlist" using timer in this case
                     }
                 }
-
-                if ((interval/1000)*counter >= 90){ // restart every 90 seconds
-                    //console.log("Restart bluetooth scan... after ", (interval/1000)*counter," seconds")
-                    btModel.running = false;
-                    btModel.running = (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+                // restart every 30 seconds if BluetoothDiscoveryModel.DeviceDiscovery is used
+                if (((interval/1000)*counter >= 30) && (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") === BluetoothDiscoveryModel.DeviceDiscovery)){
+                    counter = 0;
+                }
+                // restart every 90 seconds for other methods
+                else if ((interval/1000)*counter >= 90){
                     counter = 0;
                 }
                 else counter = counter + 1;
+        }
+    }
+
+    Timer {
+        id: readBtList
+        interval: 5000 // Run the timer every 5 seconds
+        repeat: true
+        running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") === "") ? true : false
+        triggeredOnStart: false
+        onTriggered: {
+            //read file every 5 seconds
+            var result = api.internal.system.run("cat /tmp/btlist");
+            console.log("raw result:",result);
+            const results = result.split('\n');
+            for(var i=0;i<results.length-1;i++)
+            {
+                console.log("results[",i,"]:",results[i]);
+                var remoteAddress = results[i].split(" ")[0]; //to take address
+                var deviceName = results[i].replace(remoteAddress + " ",""); //to get everything execpt address + " "
+                updateDiscoveredDevicesLists(deviceName, remoteAddress, "");
+            }
         }
     }
 
@@ -780,6 +806,9 @@ FocusScope {
     }
 
     Component.onCompleted:{
+        //delete tmp file
+        var result = api.internal.system.run("rm /tmp/btlist");
+        //read devices already known
         readSavedDevicesList(myDevicesModel,"pegasus.bt.my.device");
         readSavedDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
     }

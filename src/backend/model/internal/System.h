@@ -34,11 +34,24 @@ public:
     Q_INVOKABLE void quit();
     Q_INVOKABLE void reboot();
     Q_INVOKABLE void shutdown();
-	Q_INVOKABLE QString run(const QString& Command);
-    Q_INVOKABLE bool runBoolResult(const QString& Command);
-	
+
+    Q_INVOKABLE QString run(const QString& Command);
+
+    Q_INVOKABLE void runAsync(const QString& Command);
+    Q_INVOKABLE QString getRunAsyncResult();
+
+    Q_INVOKABLE bool runBoolResult(const QString& Command, bool escaped = true);
+
+private slots:
+    void runAsync_slot();
+
 signals:
     void appCloseRequested(AppCloseType);
+
+private:
+    QString  m_Command;
+    QString m_Result;
+    bool m_bResult;
 };
 
 } // namespace model
