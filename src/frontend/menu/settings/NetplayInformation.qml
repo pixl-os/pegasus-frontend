@@ -132,8 +132,9 @@ FocusScope {
                         netplayTimer.running = false;
                         friendsTimer.running = false;
                         if(isRoomAvailable(roomSelected.ip,roomSelected.port)){
+                            //launch game in netplay mode
                             //set parameter for netplay (mode = 1 -> client)
-                            gameSelected.modelData.setNetplayData(
+                            gameSelected.modelData.launchNetplay(
                                         1, roomSelected.port, roomSelected.ip,
                                         roomSelected.has_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
                                         "", //let viewer password empty in this case
@@ -141,8 +142,6 @@ FocusScope {
                                         roomSelected.hash,
                                         "libretro",
                                         searchSelected.coreFound);
-                            //launch game in netplay mode
-                            gameSelected.modelData.launch();
                             //clean rooms model
                             api.internal.netplay.rooms.reset();
                         }
@@ -164,8 +163,9 @@ FocusScope {
                         netplayTimer.running = false;
                         friendsTimer.running = false;
                         if(isRoomAvailable(roomSelected.ip,roomSelected.port)){
+                            //launch game in netplay mode
                             //set parameter for netplay (mode = 1 -> client)
-                            gameSelected.modelData.setNetplayData(
+                            gameSelected.modelData.launchNetplay(
                                         1, roomSelected.port, roomSelected.ip,
                                         "", //let player password empty in this case
                                         roomSelected.has_spectate_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.viewer"):"",
@@ -173,8 +173,6 @@ FocusScope {
                                         roomSelected.hash,
                                         "libretro",
                                         searchSelected.coreFound);
-                            //launch game in netplay mode
-                            gameSelected.modelData.launch();
                             //clean rooms model
                             api.internal.netplay.rooms.reset();
                         }
@@ -203,10 +201,10 @@ FocusScope {
     //function to check room availability before to launch retroarch
     function isRoomAvailable(ip,port){
         //do telnet to verify connectivity quickly and avoid to wait too long time if not accessible finally
-        //console.log("command:","timeout 5 telnet " + ip + " " + port);
+        console.log("command:","timeout 5 telnet " + ip + " " + port);
         //check during 5 seconds
         var result = api.internal.system.run("timeout 5 telnet " + ip + " " + port);
-        //console.log("result:",result)
+        console.log("result:",result)
         if(result.toLowerCase().includes("connected")) return true;
         else{
             //display dialog box to alert that room is not accessible finally
