@@ -453,7 +453,10 @@ FocusScope {
                             var game_status = detailed_line14 + detailed_line15
                             //search if green one exist
                             if(game_status.includes(isOK)){
-                                if(!core_status.includes(isOK) && !core_status.includes(isNOK)){
+                                if(core_status.includes(isNOK)){
+                                    return "\uf1c2 "; // As NOK because no game in all cases
+                                }
+                                else if(!core_status.includes(isMAYBE)){
                                     return "\uf1c0 "; // as OK because Core and Game are present at minimum
                                 }
                                 else
