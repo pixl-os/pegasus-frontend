@@ -23,6 +23,7 @@ FocusScope {
 
     //first line as preview
     property alias label: label.text
+    property alias label_color: label.color
     property alias note: sublabel.text
     property alias icon: icon.source
     property alias icon2: icon2.source
