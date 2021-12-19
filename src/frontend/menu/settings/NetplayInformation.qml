@@ -398,54 +398,49 @@ FocusScope {
                                 //console.log("onMaxChanged - system :",searchByCRCorFile.system);
                                 //console.log("onMaxChanged - sytemToFind :",searchByCRCorFile.systemToFilter);
 
+                                //init before
+                                picture = "";
+                                icon2 = "";
+                                searchByCRCorFile.crcMatched = false;
+                                searchByCRCorFile.fileMatched = false;
+
                                 if((game_crc === "") && (game_name === "")) {
-                                    picture = "";
-                                    icon2 = "";
-                                    searchByCRCorFile.crcMatched = false;
-                                    searchByCRCorFile.fileMatched = false;
+                                    //do nothing
                                 }
-                                else if (searchByCRCorFile.max === 1 && searchByCRCorFile.crc === result.games.get(0).hash) { //CRC search and match
-                                    searchByCRCorFile.resultIndex = 0;
-                                    picture = result.games.get(0).assets.screenshot;
-                                    icon2 = result.games.get(0).assets.logo;
-                                    searchByCRCorFile.crcMatched = true;
-                                }
-                                //parse only 20 results to avoid saturation of system if not found
-                                else if (searchByCRCorFile.max>=1 && searchByCRCorFile.max <20 && searchByCRCorFile.filename !== "") { //file name match
-                                    //console.log("file name at index 0:",result.games.get(0).files.get(0).name);
+                                //parse only 20 results max to avoid saturation of system if not found
+                                else if (searchByCRCorFile.max >= 1 && searchByCRCorFile.max <= 20) { //CRC search and match
+                                    //init index
                                     searchByCRCorFile.resultIndex = -1;
+                                    //check if found by CRC first
                                     for(var i = 0;(i < searchByCRCorFile.result.games.count) && (i < 20);i++)
                                     {
                                         //console.log("file name found:",result.games.get(i).files.get(0).name);
-                                        if(searchByCRCorFile.result.games.get(i).files.get(0).name === searchByCRCorFile.filename){
+                                        if(searchByCRCorFile.result.games.get(i).hash === searchByCRCorFile.crc){
                                             searchByCRCorFile.resultIndex = i;
+                                            searchByCRCorFile.crcMatched = true;
+                                            //check name of this file
+                                            if(searchByCRCorFile.result.games.get(i).files.get(0).name === searchByCRCorFile.filename){
+                                                searchByCRCorFile.fileMatched = true;
+                                            }
                                             break;
+                                        }
+                                    }
+                                    //check if found by Filename also if CRC not found
+                                    if(searchByCRCorFile.crcMatched !== true){
+                                        for(var i = 0;(i < searchByCRCorFile.result.games.count) && (i < 20);i++)
+                                        {
+                                            //console.log("file name found:",result.games.get(i).files.get(0).name);
+                                            if(searchByCRCorFile.result.games.get(i).files.get(0).name === searchByCRCorFile.filename){
+                                                searchByCRCorFile.resultIndex = i;
+                                                searchByCRCorFile.fileMatched = true;
+                                                break;
+                                            }
                                         }
                                     }
                                     if(searchByCRCorFile.resultIndex != -1){
                                         picture = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.screenshot;
                                         icon2 = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.logo;
-                                        searchByCRCorFile.fileMatched = true;
                                     }
-                                    else
-                                    {
-                                        picture = "";
-                                        picture = "";
-                                        icon2 = "";
-                                        searchByCRCorFile.fileMatched = false;
-                                    }
-                                }
-                                else if (searchByCRCorFile.max !== 1 && searchByCRCorFile.crc !== ""){
-                                    picture = "";
-                                    icon2 = "";
-                                    searchByCRCorFile.crcMatched = false;
-                                    searchByCRCorFile.fileMatched = false;
-                                }
-                                else{
-                                    picture = "";
-                                    icon2 = "";
-                                    searchByCRCorFile.crcMatched = false;
-                                    searchByCRCorFile.fileMatched = false;
                                 }
                             }
                         }
