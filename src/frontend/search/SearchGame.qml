@@ -86,7 +86,7 @@ Item {
 
     //filter on CRC
     property var crc: ""
-    property var crcToFind: (crc === "") ? false : true
+    property var crcToFind: (crc === "" || crc === "00000000") ? false : true
 
     //FILTERING
     SortFilterProxyModel {
