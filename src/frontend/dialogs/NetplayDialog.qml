@@ -236,7 +236,7 @@ FocusScope {
             }
             KeyNavigation.up: is_to_create_room ? optNetplayPswdClientActivate : optNetplayFriend
             KeyNavigation.down: is_to_create_room ? optNetplayPswdViewerActivate : optNetplayPswdViewer
-            visible: has_password || optNetplayPswdClientActivate.checked
+            visible: has_password || (is_to_create_room && optNetplayPswdClientActivate.checked)
 
         }
         ToggleOption {
@@ -285,7 +285,7 @@ FocusScope {
             }
             KeyNavigation.up: is_to_create_room ? optNetplayPswdViewerActivate : optNetplayPswdClient
             KeyNavigation.down: okButton
-            visible: has_spectate_password || optNetplayPswdViewerActivate.checked
+            visible: has_spectate_password || (is_to_create_room && optNetplayPswdViewerActivate.checked)
         }
 
         // button row
