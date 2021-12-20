@@ -22,6 +22,8 @@ FocusScope {
     id: root
 
     //first line as preview
+    property alias status: status.text
+    property alias status_color: status.color
     property alias label: label.text
     property alias label_color: label.color
     property alias note: sublabel.text
@@ -160,8 +162,16 @@ FocusScope {
                     width: parent.width
                     spacing: vpx(5)
                     Text {
+                        id: status
+                        width: label.height
+                        color: themeColor.textLabel
+                        font.pixelSize: fontSize
+                        font.family: globalFonts.awesome
+                        elide: Text.ElideRight
+                    }
+                    Text {
                         id: label
-                        width: labelContainer.width
+                        width: labelContainer.width - status.width - picture.width
                         color: themeColor.textLabel
                         font.pixelSize: fontSize
                         font.family: globalFonts.awesome

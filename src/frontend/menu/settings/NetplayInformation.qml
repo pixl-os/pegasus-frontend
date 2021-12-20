@@ -516,12 +516,18 @@ FocusScope {
                             }
                         }
                         //for preview
-                        label: {
-                            return (status_icon + latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRCorFile.crcMatched === true) ? searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).title : ((searchByCRCorFile.fileMatched === true) ? searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).title : game_name)));
+                        status:{
+                            return status_icon
                         }
-                        label_color: {
+                        status_color:{
                             return status_icon.includes(isOK) ? "green" : (status_icon.includes(isNOK) ? "red" : "blue");
                         }
+                        label: {
+                            return (latency_icon + private_icon + visibility_icon + username + " / " + ((searchByCRCorFile.crcMatched === true) ? searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).title : ((searchByCRCorFile.fileMatched === true) ? searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).title : game_name)));
+                        }
+                        /*label_color: {
+                            return status_icon.includes(isOK) ? "green" : (status_icon.includes(isNOK) ? "red" : "blue");
+                        }*/
                         note: {
                             return (" " + qsTr("Creation date") + ": " + created);
                         }
