@@ -28,6 +28,7 @@ struct EmulatorsEntry {
     QString name;
     QString core;
     int priority;
+	int netplay;
     QString corelongname; //optional - only for retroarch for the moment
     QString coreversion; //optional - only for retroarch for the moment
 };

@@ -33,10 +33,11 @@ struct EmulatorsEntry {
     QString name;
     QString core;
     int priority;
+	int netplay;
     QString corelongname; //optional - only for retroarch for the moment
     QString coreversion; //optional - only for retroarch for the moment	
 };
-  
+
 struct CollectionData {
     explicit CollectionData(QString name);
 
@@ -103,7 +104,8 @@ public:
     Q_INVOKABLE QString getNameAt (const int index) {return m_data.common_emulators.at(index).name;};
     Q_INVOKABLE QString getCoreAt (const int index) {return m_data.common_emulators.at(index).core;};
     Q_INVOKABLE QString getPriorityAt (const int index) {return QString::number(m_data.common_emulators.at(index).priority);};
-    Q_INVOKABLE QString getCoreLongNameAt (const int index) {return m_data.common_emulators.at(index).corelongname;};
+	Q_INVOKABLE bool hasNetplayAt (const int index) {if(m_data.common_emulators.at(index).netplay != 0) return true; else return false;};
+	Q_INVOKABLE QString getCoreLongNameAt (const int index) {return m_data.common_emulators.at(index).corelongname;};
     Q_INVOKABLE QString getCoreVersionAt (const int index) {return m_data.common_emulators.at(index).coreversion;};
     
     Q_INVOKABLE bool isDefaultEmulatorAt (const int index) {
