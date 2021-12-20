@@ -33,6 +33,7 @@ FocusScope {
     property var player_name: ""
     property bool has_password: false
     property bool has_spectate_password: false
+    property bool is_to_create_room: false
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
@@ -185,6 +186,27 @@ FocusScope {
                 api.internal.recalbox.setBoolParameter("netplay.friend." + player_name,checked);
             }
             KeyNavigation.down: optNetplayPswdClient
+            visible: player_name !== "" ? true : false
+        }
+
+        ToggleOption {
+            id: optNetplayPswdClientActivate
+            Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        color: themeColor.secondary
+                        z:-1
+                      }
+            label: qsTr("Activate password for netplay player") + api.tr
+            note: qsTr("Set password for other players join your game") + api.tr
+
+            checked: api.internal.recalbox.getBoolParameter("netplay.password.useforplayer")
+            onCheckedChanged: {
+                api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
+            }
+            KeyNavigation.up: optNetplayFriend
+            KeyNavigation.down: optNetplayPswdClient
+            visible: is_to_create_room
         }
 
         MultivalueOption {
@@ -198,7 +220,7 @@ FocusScope {
             //property to manage parameter name
             property string parameterName : "netplay.password.client"
 
-            label: qsTr("Password netplay players") + api.tr
+            label: qsTr("Netplay player password") + api.tr
             note: qsTr("Choose password for join session") + api.tr
             value: api.internal.recalbox.parameterslist.currentName(parameterName)
             onActivate: {
@@ -212,12 +234,30 @@ FocusScope {
                 //to transfer focus to parameterslistBox
                 parameterslistBox.focus = true;
             }
-            KeyNavigation.up: optNetplayFriend
-            KeyNavigation.down: optNetplayPswdViewer
-            visible: has_password
+            KeyNavigation.up: is_to_create_room ? optNetplayPswdClientActivate : optNetplayFriend
+            KeyNavigation.down: is_to_create_room ? optNetplayPswdViewerActivate : optNetplayPswdViewer
+            visible: has_password || optNetplayPswdClientActivate.checked
 
         }
+        ToggleOption {
+            id: optNetplayPswdViewerActivate
+            Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        color: themeColor.secondary
+                        z:-1
+                      }
+            label: qsTr("Activate password for netplay spectator") + api.tr
+            note: qsTr("Set password for netplay spectator") + api.tr
 
+            checked: api.internal.recalbox.getBoolParameter("netplay.password.useforviewer")
+            onCheckedChanged: {
+                api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
+            }
+            KeyNavigation.up: optNetplayPswdClient
+            KeyNavigation.down: optNetplayPswdViewer
+            visible: is_to_create_room
+        }
         MultivalueOption {
             id: optNetplayPswdViewer
             Rectangle {
@@ -229,7 +269,7 @@ FocusScope {
             //property to manage parameter name
             property string parameterName : "netplay.password.viewer"
 
-            label: qsTr("Password netplay spectator") + api.tr
+            label: qsTr("Netplay spectator password") + api.tr
             note: qsTr("Choose password for netplay spectator") + api.tr
             value: api.internal.recalbox.parameterslist.currentName(parameterName)
             onActivate: {
@@ -243,9 +283,9 @@ FocusScope {
                 //to transfer focus to parameterslistBox
                 parameterslistBox.focus = true;
             }
-            KeyNavigation.up: optNetplayPswdClient
+            KeyNavigation.up: is_to_create_room ? optNetplayPswdViewerActivate : optNetplayPswdClient
             KeyNavigation.down: okButton
-            visible: has_spectate_password
+            visible: has_spectate_password || optNetplayPswdViewerActivate.checked
         }
 
         // button row

@@ -19,7 +19,7 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
-
+import "dialogs"
 
 Window {
     id: appWindow
@@ -510,4 +510,63 @@ Window {
 			}
 		}
 	}
+
+    //Loader/Component/Connection to manage netplay room dialog
+    Loader {
+        id: netplayRoomDialog
+        anchors.fill: parent
+        z:10
+        sourceComponent: netplayRoomComponent
+        active: false
+        asynchronous: true
+        //to set value via loader
+        property var game_logo: ""
+        property var game_name: ""
+        property var player_name: ""
+        property var system_logo: ""
+        property bool has_password: false
+        property bool has_spectate_password: false
+    }
+
+    Component {
+        id: netplayRoomComponent
+        NetplayDialog {
+            title: qsTr("Create Netplay room ?") + api.tr
+            message: netplayRoomDialog.game_name
+            symbol: netplayRoomDialog.system_logo
+            firstchoice: qsTr("Play") + api.tr
+            secondchoice: ""
+            thirdchoice: qsTr("Cancel") + api.tr
+
+            //Specific to Netplay
+            game_logo: netplayRoomDialog.game_logo
+            //player_name: netplayRoomDialog.player_name
+            //has_password: netplayRoomDialog.has_password
+            //has_spectate_password: netplayRoomDialog.has_spectate_password
+            is_to_create_room: true
+        }
+    }
+
+    Connections {
+        target: netplayRoomDialog.item
+        function onAccept() {
+            /*gameSelected.modelData.launchNetplay(
+                        2, "", "",
+                        "",//roomSelected.has_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
+                        "",//"", //let viewer password empty in this case
+                        false,
+                        "",//roomSelected.hash,
+                        "libretro",
+                        "");//searchSelected.coreFound);*/
+
+            netplayRoomDialog.active = false;
+            content.focus = true;
+        }
+
+        function onCancel() {
+            //do nothing
+            netplayRoomDialog.active = false;
+            content.focus = true;
+        }
+    }
 }
