@@ -250,6 +250,8 @@ FocusScope {
             event.accepted = true;
             //clean rooms model
             api.internal.netplay.rooms.reset();
+            //stop spinner
+            spinnerloader.active = false;
             root.close();
         }
         else if(api.keys.isFilters(event) && !event.isAutoRepeat) {
@@ -332,14 +334,44 @@ FocusScope {
                     }
                     SectionTitle {
                     id: retroarch_title
-                    text: {
-                        if(friendsOnly)
-                            return ("  " + qsTr("Retroarch lobby : ") + (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
-                        else
-                            return ("  " + qsTr("Retroarch lobby : ") + (availableNetplayRooms.count - availableNetplayRooms.hidden) + qsTr(" room(s)") + api.tr);
-                    }
-                    first: true
-					visible: true
+                        text: {
+                            if(friendsOnly)
+                                return ("  " + qsTr("Retroarch lobby : ") + (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
+                            else
+                                return ("  " + qsTr("Retroarch lobby : ") + (availableNetplayRooms.count - availableNetplayRooms.hidden) + qsTr(" room(s)") + api.tr);
+                        }
+                        first: true
+                        visible: true
+                        //Spinner Loader for initial search
+                        Loader {
+                            id: spinnerloader
+                            anchors.left: parent.right
+                            anchors.leftMargin: vpx(30)
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: vpx(30)
+                            active: true
+                            sourceComponent: spinner
+                        }
+
+                        Component {
+                            id: spinner
+                            Rectangle{
+                                Image {
+                                    id: imageSpinner
+                                    source: "../../assets/loading.png"
+                                    width: vpx(30)
+                                    height: vpx(30)
+                                    asynchronous: true
+                                    sourceSize { width: vpx(50); height: vpx(50) }
+                                    RotationAnimator on rotation {
+                                        loops: Animator.Infinite;
+                                        from: 0;
+                                        to: 360;
+                                        duration: 3000
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 //for test purpose only
