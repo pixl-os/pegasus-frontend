@@ -569,4 +569,50 @@ Window {
             content.focus = true;
         }
     }
+
+    //functions provided for themes
+    //to check if game is ready and well configured to run a netplay
+    function isReadyForNetplay(game)
+    {
+        //get collection shortname from game
+        var shortName = game.collections.get(0).shortName;
+        //get emulator & core selected or by default
+        var emulator = api.internal.recalbox.getStringParameter(shortName + ".emulator");
+        //console.log("emulator: ",emulator);
+        var core = api.internal.recalbox.getStringParameter(shortName + ".core");
+        //console.log("core: ",core);
+        if((emulator === "") || (core === "")){ //in case of emulator/core not well saved in recalbox.conf
+           for(var i = 0; i < game.collections.get(0).emulatorsCount ; i++){
+               //get default one
+               if(game.collections.get(0).isDefaultEmulatorAt(i)){
+                   //And return if has netplay or not
+                   if(emulator.toLowerCase() === "libretro"){
+                       //console.log("default emulator: ",game.collections.get(0).getNameAt(i));
+                       //console.log("default core: ",game.collections.get(0).getCoreAt(i));
+                       return game.collections.get(0).hasNetplayAt(i);
+                   }
+                   else return false; // only libretro supported today
+               }
+           }
+           //return false if not found..strange ?!
+           return false;
+        }
+        //if libretro emulator and only
+        else if(emulator.toLowerCase() === "libretro"){
+            for(var j = 0; j < game.collections.get(0).emulatorsCount ; j++){
+                //console.log("emulator to check: ",game.collections.get(0).getNameAt(j));
+                //console.log("core to check: ",game.collections.get(0).getCoreAt(j));
+                //get if one is matching
+                if(game.collections.get(0).getCoreAt(j) === core){
+                    //And return if has netplay or not
+                    //console.log("found emulator: ",game.collections.get(0).getNameAt(j));
+                    //console.log("found core: ",game.collections.get(0).getCoreAt(j));
+                    return game.collections.get(0).hasNetplayAt(j);
+                }
+            }
+            //return false if not found..strange ?!
+            return false;
+        }
+        else return false; //not libretro core
+    }
 }
