@@ -585,10 +585,11 @@ Window {
            for(var i = 0; i < game.collections.get(0).emulatorsCount ; i++){
                //get default one
                if(game.collections.get(0).isDefaultEmulatorAt(i)){
-                   //And return if has netplay or not
-                   if(emulator.toLowerCase() === "libretro"){
-                       //console.log("default emulator: ",game.collections.get(0).getNameAt(i));
-                       //console.log("default core: ",game.collections.get(0).getCoreAt(i));
+                   //console.log("default emulator: ",game.collections.get(0).getNameAt(i));
+                   //console.log("default core: ",game.collections.get(0).getCoreAt(i));
+                   //console.log("default core has netplay ? ",game.collections.get(0).hasNetplayAt(i));
+                   if(game.collections.get(0).getNameAt(i).toLowerCase().includes("libretro")){
+                       //And return if has netplay or not
                        return game.collections.get(0).hasNetplayAt(i);
                    }
                    else return false; // only libretro supported today
@@ -598,15 +599,15 @@ Window {
            return false;
         }
         //if libretro emulator and only
-        else if(emulator.toLowerCase() === "libretro"){
+        else if(emulator.toLowerCase().includes("libretro")){
             for(var j = 0; j < game.collections.get(0).emulatorsCount ; j++){
                 //console.log("emulator to check: ",game.collections.get(0).getNameAt(j));
                 //console.log("core to check: ",game.collections.get(0).getCoreAt(j));
                 //get if one is matching
                 if(game.collections.get(0).getCoreAt(j) === core){
-                    //And return if has netplay or not
                     //console.log("found emulator: ",game.collections.get(0).getNameAt(j));
                     //console.log("found core: ",game.collections.get(0).getCoreAt(j));
+                    //And return if has netplay or not
                     return game.collections.get(0).hasNetplayAt(j);
                 }
             }
