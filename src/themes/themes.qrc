@@ -686,5 +686,6 @@
         <file>gameOS/assets/images/controller/11-arcade.png</file>
         <file>gameOS/Dialogs/GenericOkCancelDialog.qml</file>
         <file>gameOS/Dialogs/Shade.qml</file>
+        <file>gameOS/assets/images/multiplayer.svg</file>
     </qresource>
 </RCC>
