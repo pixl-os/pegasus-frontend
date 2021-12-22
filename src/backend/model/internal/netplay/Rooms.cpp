@@ -323,7 +323,7 @@ void Rooms::refresh_slot() {
     try{
         //check of netplay activated
         //check in recalbox.conf to know if activated
-        if (!RecalboxConf::Instance().AsBool("global.netplay.active"))
+        if (!RecalboxConf::Instance().AsBool("global.netplay"))
         {
             Log::debug(log_tag, LOGMSG("not activated !"));
             return;
@@ -331,7 +331,7 @@ void Rooms::refresh_slot() {
         //Create Network Access
         QNetworkAccessManager *manager = new QNetworkAccessManager(this);
         //get lobby json from internet
-        const QString url_str = QStringLiteral("http://lobby.libretro.com/list/");
+        const QString url_str = QString::fromStdString(RecalboxConf::Instance().AsString("global.netplay.lobby"));
 
         json = get_json_from_url(url_str, log_tag, *manager);
         //parse lobby data
