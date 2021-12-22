@@ -520,12 +520,9 @@ Window {
         active: false
         asynchronous: true
         //to set value via loader
-        property var game_logo: ""
-        property var game_name: ""
-        property var player_name: ""
-        property var system_logo: ""
-        property bool has_password: false
-        property bool has_spectate_password: false
+        property var game
+        property var game_logo: game.assets.logo
+        property var game_name: game.title
     }
 
     Component {
@@ -533,16 +530,13 @@ Window {
         NetplayDialog {
             title: qsTr("Create Netplay room ?") + api.tr
             message: netplayRoomDialog.game_name
-            symbol: netplayRoomDialog.system_logo
+            symbol: ""
             firstchoice: qsTr("Play") + api.tr
             secondchoice: ""
             thirdchoice: qsTr("Cancel") + api.tr
 
             //Specific to Netplay
             game_logo: netplayRoomDialog.game_logo
-            //player_name: netplayRoomDialog.player_name
-            //has_password: netplayRoomDialog.has_password
-            //has_spectate_password: netplayRoomDialog.has_spectate_password
             is_to_create_room: true
         }
     }
@@ -550,14 +544,14 @@ Window {
     Connections {
         target: netplayRoomDialog.item
         function onAccept() {
-            /*gameSelected.modelData.launchNetplay(
+            netplayRoomDialog.game.launchNetplay(
                         2, "", "",
-                        "",//roomSelected.has_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
-                        "",//"", //let viewer password empty in this case
+                        api.internal.recalbox.getBoolParameter("netplay.password.useforplayer") ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
+                        api.internal.recalbox.getBoolParameter("netplay.password.useforviewer") ? api.internal.recalbox.parameterslist.currentName("netplay.password.viewer"):"",
                         false,
-                        "",//roomSelected.hash,
-                        "libretro",
-                        "");//searchSelected.coreFound);*/
+                        "",
+                        "",
+                        "");
 
             netplayRoomDialog.active = false;
             content.focus = true;
@@ -574,46 +568,52 @@ Window {
     //to check if game is ready and well configured to run a netplay
     function isReadyForNetplay(game)
     {
-        //get collection shortname from game
-        var shortName = game.collections.get(0).shortName;
-        //get emulator & core selected or by default
-        var emulator = api.internal.recalbox.getStringParameter(shortName + ".emulator");
-        //console.log("emulator: ",emulator);
-        var core = api.internal.recalbox.getStringParameter(shortName + ".core");
-        //console.log("core: ",core);
-        if((emulator === "") || (core === "")){ //in case of emulator/core not well saved in recalbox.conf
-           for(var i = 0; i < game.collections.get(0).emulatorsCount ; i++){
-               //get default one
-               if(game.collections.get(0).isDefaultEmulatorAt(i)){
-                   //console.log("default emulator: ",game.collections.get(0).getNameAt(i));
-                   //console.log("default core: ",game.collections.get(0).getCoreAt(i));
-                   //console.log("default core has netplay ? ",game.collections.get(0).hasNetplayAt(i));
-                   if(game.collections.get(0).getNameAt(i).toLowerCase().includes("libretro")){
-                       //And return if has netplay or not
-                       return game.collections.get(0).hasNetplayAt(i);
+        if(api.internal.recalbox.getBoolParameter("global.netplay")){
+            //get collection shortname from game
+            var shortName = game.collections.get(0).shortName;
+            if(api.internal.recalbox.getStringParameter("global.netplay.systems").toLowerCase().includes(shortName.toLowerCase())){
+                //get emulator & core selected or by default
+                var emulator = api.internal.recalbox.getStringParameter(shortName + ".emulator");
+                //console.log("emulator: ",emulator);
+                var core = api.internal.recalbox.getStringParameter(shortName + ".core");
+                //console.log("core: ",core);
+                if((emulator === "") || (core === "")){ //in case of emulator/core not well saved in recalbox.conf
+                   for(var i = 0; i < game.collections.get(0).emulatorsCount ; i++){
+                       //get default one
+                       if(game.collections.get(0).isDefaultEmulatorAt(i)){
+                           //console.log("default emulator: ",game.collections.get(0).getNameAt(i));
+                           //console.log("default core: ",game.collections.get(0).getCoreAt(i));
+                           //console.log("default core has netplay ? ",game.collections.get(0).hasNetplayAt(i));
+                           if(game.collections.get(0).getNameAt(i).toLowerCase().includes("libretro")){
+                               //And return if has netplay or not
+                               return game.collections.get(0).hasNetplayAt(i);
+                           }
+                           else return false; // only libretro supported today
+                       }
                    }
-                   else return false; // only libretro supported today
-               }
-           }
-           //return false if not found..strange ?!
-           return false;
-        }
-        //if libretro emulator and only
-        else if(emulator.toLowerCase().includes("libretro")){
-            for(var j = 0; j < game.collections.get(0).emulatorsCount ; j++){
-                //console.log("emulator to check: ",game.collections.get(0).getNameAt(j));
-                //console.log("core to check: ",game.collections.get(0).getCoreAt(j));
-                //get if one is matching
-                if(game.collections.get(0).getCoreAt(j) === core){
-                    //console.log("found emulator: ",game.collections.get(0).getNameAt(j));
-                    //console.log("found core: ",game.collections.get(0).getCoreAt(j));
-                    //And return if has netplay or not
-                    return game.collections.get(0).hasNetplayAt(j);
+                   //return false if not found..strange ?!
+                   return false;
                 }
+                //if libretro emulator and only
+                else if(emulator.toLowerCase().includes("libretro")){
+                    for(var j = 0; j < game.collections.get(0).emulatorsCount ; j++){
+                        //console.log("emulator to check: ",game.collections.get(0).getNameAt(j));
+                        //console.log("core to check: ",game.collections.get(0).getCoreAt(j));
+                        //get if one is matching
+                        if(game.collections.get(0).getCoreAt(j) === core){
+                            //console.log("found emulator: ",game.collections.get(0).getNameAt(j));
+                            //console.log("found core: ",game.collections.get(0).getCoreAt(j));
+                            //And return if has netplay or not
+                            return game.collections.get(0).hasNetplayAt(j);
+                        }
+                    }
+                    //return false if not found..strange ?!
+                    return false;
+                }
+                else return false; //not libretro core
             }
-            //return false if not found..strange ?!
-            return false;
+            else return false; //not netplay system
         }
-        else return false; //not libretro core
+        else return false; //no netplay activated from menu
     }
 }

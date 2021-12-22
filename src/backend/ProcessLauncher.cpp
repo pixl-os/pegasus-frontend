@@ -119,12 +119,11 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         else if(gamefile.netplayMode() == 2){
             //AS SERVER:
             //-netplay host -netplay_port XXXX
-            QString netplayLine("-netplay client -netplay_port ");
-            netplayLine.append(gamefile.netplayPort());
+            QString netplayLine("-netplay host -netplay_port ");
+            netplayLine.append(QString::fromStdString(RecalboxConf::Instance().AsString("global.netplay.port")));
             // Optional:
             //	  -netplay_playerpassword "xxxxyyyy"
             //    -netplay_viewerpassword "zzzzaaaa"
-            //    -netplay_vieweronly
             //	  -hash AAAAAAAA //(if CRC exist ?!)
             if (gamefile.netplayPlayerPassword() != "") netplayLine.append(" -netplay_playerpassword ").append('"').append(gamefile.netplayPlayerPassword()).append('"');
             if (gamefile.netplayViewerPassword() != "") netplayLine.append(" -netplay_viewerpassword ").append('"').append(gamefile.netplayViewerPassword()).append('"');
