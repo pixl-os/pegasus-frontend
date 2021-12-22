@@ -217,7 +217,11 @@ FocusScope {
         //check during 5 seconds
         var result = api.internal.system.run("timeout 5 telnet " + ip + " " + port);
         console.log("result:",result)
-        if(result.toLowerCase().includes("connected")) return true;
+        if(result.toLowerCase().includes("connected")){
+            //wait 3 seconds to avoid disturbing connection due to telnet
+            api.internal.system.run("sleep 3");
+            return true;
+        }
         else{
             //display dialog box to alert that room is not accessible finally
             genericMessage.setSource("../../dialogs/GenericOkDialog.qml",
@@ -613,7 +617,10 @@ FocusScope {
                                                 searchByCRCorFile.coreLongNameFound = api.collections.get(i).getCoreLongNameAt(j);
                                                 searchByCRCorFile.coreVersionFound = api.collections.get(i).getCoreVersionAt(j);
                                             }
-                                            else searchByCRCorFile.system = searchByCRCorFile.system + "|" + api.collections.get(i).shortName;
+                                            else {
+                                                searchByCRCorFile.system = searchByCRCorFile.system + "|" + api.collections.get(i).shortName;
+                                                console.log("game_name :", game_name," - system found :", searchByCRCorFile.system);
+                                            }
                                         }
                                     }
                                 }
