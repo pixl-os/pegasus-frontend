@@ -58,7 +58,7 @@ FocusScope {
     //timer to check number of friends
     Timer {
         id: friendsTimer
-        interval: 1000 // Run the timer 200 ms
+        interval: 250 // Run the timer 1/4 of second
         repeat: true
         running: true
         triggeredOnStart: false
@@ -81,6 +81,18 @@ FocusScope {
     property var gameSelected
     property var roomSelected
     property var searchSelected
+
+    //timer to manage focus and avoid to lost focus when list is refresh
+    Timer {
+        id: focusTimer
+        interval: 250 // Run the timer 250 ms
+        repeat: true
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            updateFocusIndex();
+        }
+    }
 
     onFriendsOnlyChanged:{
         //reset count when changed
@@ -220,29 +232,31 @@ FocusScope {
     function updateFocusIndex()
     {
         //if existing selected index is visible
-        if(availableNetplayRooms.itemAt(availableNetplayRooms.selectedButtonIndex).visible !== true){
-            //need to select an other index
-            //first after if exist...
-            for(var i = availableNetplayRooms.selectedButtonIndex; i < availableNetplayRooms.count; i++)
-            {
-                if(availableNetplayRooms.itemAt(i).visible === true) {
-                    availableNetplayRooms.selectedButtonIndex = i;
-                    break;
-                }
-            }
-            //if no visible found after...
+        if(availableNetplayRooms.itemAt(availableNetplayRooms.selectedButtonIndex) !== null){
             if(availableNetplayRooms.itemAt(availableNetplayRooms.selectedButtonIndex).visible !== true){
-                //need check before if exist...
-                for(var j = availableNetplayRooms.selectedButtonIndex; j >= 0; j--)
+                //need to select an other index
+                //first after if exist...
+                for(var i = availableNetplayRooms.selectedButtonIndex; i < availableNetplayRooms.count; i++)
                 {
-                    if(availableNetplayRooms.itemAt(j).visible === true) {
-                        availableNetplayRooms.selectedButtonIndex = j;
+                    if(availableNetplayRooms.itemAt(i).visible === true) {
+                        availableNetplayRooms.selectedButtonIndex = i;
                         break;
                     }
                 }
+                //if no visible found after...
+                if(availableNetplayRooms.itemAt(availableNetplayRooms.selectedButtonIndex).visible !== true){
+                    //need check before if exist...
+                    for(var j = availableNetplayRooms.selectedButtonIndex; j >= 0; j--)
+                    {
+                        if(availableNetplayRooms.itemAt(j).visible === true) {
+                            availableNetplayRooms.selectedButtonIndex = j;
+                            break;
+                        }
+                    }
+                }
             }
+            //console.log("availableNetplayRooms.selectedButtonIndex: ", availableNetplayRooms.selectedButtonIndex);
         }
-        //console.log("availableNetplayRooms.selectedButtonIndex: ", availableNetplayRooms.selectedButtonIndex);
     }
 
     Keys.onPressed: {
@@ -256,9 +270,11 @@ FocusScope {
         }
         else if(api.keys.isFilters(event) && !event.isAutoRepeat) {
             friendsOnly = !friendsOnly;
+            updateFocusIndex();
         }
         else if (api.keys.isDetails(event) && !event.isAutoRepeat) {
             launchableOnly = !launchableOnly;
+            updateFocusIndex();
         }
     }
 
@@ -516,7 +532,6 @@ FocusScope {
                         property var private_icon : has_password ? "\uf071 " : ""
                         property var visibility_icon : has_spectate_password ? "\uf070 " : " "
                         width: parent.width - vpx(100)
-                        enabled: visible
                         visible :{
                             availableNetplayRooms.hidden = api.internal.netplay.rooms.nbEmptyRooms()
                             if ((game_crc === "") && (game_name === "")) return false;
@@ -547,6 +562,7 @@ FocusScope {
                                 else return true;
                             }
                         }
+                        enabled: visible
                         //for preview
                         status:{
                             return status_icon
@@ -676,7 +692,6 @@ FocusScope {
                                 if(visible){
                                     return true;
                                 }
-                                else updateFocusIndex();
                             }
                             return false;
                         }
@@ -718,6 +733,8 @@ FocusScope {
                         Keys.onPressed: {
                             //verify if finally other lists are empty or not when we are just before to change list
                             //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
+                            //console.log("index before: ",index)
+                            //console.log("availableNetplayRooms.selectedButtonIndex before: ",availableNetplayRooms.selectedButtonIndex);
                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
                                 if (index !== 0) {
                                     availableNetplayRooms.selectedButtonIndex = index-1;
@@ -739,6 +756,11 @@ FocusScope {
 								}
                             }
                             container.contentY = Math.min(Math.max(0, y - (height * 0.7)), container.contentHeight - height);
+                            //console.log("index during: ",index)
+                            //console.log("availableNetplayRooms.selectedButtonIndex during: ",availableNetplayRooms.selectedButtonIndex);
+                            updateFocusIndex();
+                            //console.log("index after: ",index)
+                            //console.log("availableNetplayRooms.selectedButtonIndex after: ",availableNetplayRooms.selectedButtonIndex);
                         }
 
                         Button {
