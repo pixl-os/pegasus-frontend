@@ -84,7 +84,7 @@ FocusScope {
 
     onFriendsOnlyChanged:{
         //reset count when changed
-        availableNetplayRooms.friendsCount = 0;
+        friendsCount = 0;
     }
 
 
