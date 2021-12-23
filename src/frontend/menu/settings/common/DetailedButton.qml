@@ -171,7 +171,7 @@ FocusScope {
                     }
                     Text {
                         id: label
-                        width: labelContainer.width - status.width - picture.width
+                        width: labelContainer.width - status.width
                         color: themeColor.textLabel
                         font.pixelSize: fontSize
                         font.family: globalFonts.awesome
