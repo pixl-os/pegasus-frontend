@@ -13,7 +13,9 @@ import QtQuick.Window 2.12
 
 FocusScope {
     id: root
-	
+
+    readonly property int iNB_RESULTS_MAX : 50
+
 	property bool isCallDirectly : false
 
     //use as status and icon at the same time
@@ -459,12 +461,12 @@ FocusScope {
                                 if((game_crc === "") && (game_name === "")) {
                                     //do nothing
                                 }
-                                //parse only 20 results max to avoid saturation of system if not found
-                                else if (searchByCRCorFile.max >= 1 && searchByCRCorFile.max <= 20) { //CRC search and match
+                                //parse only nb_results_max to avoid saturation of system if not found
+                                else if (searchByCRCorFile.max >= 1 && searchByCRCorFile.max <= iNB_RESULTS_MAX) { //CRC search and match
                                     //init index
                                     searchByCRCorFile.resultIndex = -1;
                                     //check if found by CRC first
-                                    for(var i = 0;(i < searchByCRCorFile.result.games.count) && (i < 20);i++)
+                                    for(var i = 0;(i < searchByCRCorFile.result.games.count) && (i < iNB_RESULTS_MAX);i++)
                                     {
                                         //console.log("file name found:",result.games.get(i).files.get(0).name);
                                         if(searchByCRCorFile.result.games.get(i).hash === searchByCRCorFile.crc){
@@ -479,11 +481,11 @@ FocusScope {
                                     }
                                     //check if found by Filename also if CRC not found
                                     if(searchByCRCorFile.crcMatched !== true){
-                                        for(var i = 0;(i < searchByCRCorFile.result.games.count) && (i < 20);i++)
+                                        for(var j = 0;(j < searchByCRCorFile.result.games.count) && (j < iNB_RESULTS_MAX);j++)
                                         {
                                             //console.log("file name found:",result.games.get(i).files.get(0).name);
-                                            if(searchByCRCorFile.result.games.get(i).files.get(0).name === searchByCRCorFile.filename){
-                                                searchByCRCorFile.resultIndex = i;
+                                            if(searchByCRCorFile.result.games.get(j).files.get(0).name === searchByCRCorFile.filename){
+                                                searchByCRCorFile.resultIndex = j;
                                                 searchByCRCorFile.fileMatched = true;
                                                 break;
                                             }
