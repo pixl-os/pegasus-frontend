@@ -142,7 +142,7 @@ Window {
                     mainMenu.focus = true;
                 }
 
-                if (api.keys.isNetplay(event)) {
+                if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay")){
                     event.accepted = true;
                     //netplayMenu.focus = true;
                     //console.log("api.keys.isNetplay(event)");
