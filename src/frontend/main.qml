@@ -35,24 +35,15 @@ Window {
     //for debug reason on QT creator to know if we are or not on a real recalbox/pixl
     property var hostname: api.internal.system.run("hostname");
 
-//    onClosing: {
-//        theme.source = "";
-//        api.internal.system.quit();
-//    }
+
+    //    onClosing: {
+    //        theme.source = "";
+    //        api.internal.system.quit();
+    //    }
 
     // Color palette set with 'themeColor.main' or else
     property var themeColor: {
         return {
-//            main:               "#333",
-//            secondary:          "#222",
-//            screenHeader:       "#222",
-//            screenUnderline:    "#555",
-//            underline:          "green",
-//            textTitle:          "#eee",
-//            textLabel:          "#eee",
-//            textSublabel:       "#999",
-//            textSectionTitle:   "green",
-//            textValue:          "#c0c0c0",
             main:               "#404040",
             secondary:          "#606060",
             screenHeader:       "#606060",
@@ -131,11 +122,11 @@ Window {
             }
             onApiThemePathChanged: source = Qt.binding(getThemeFile)
 
-//            Keys.onPressed: {
-//                if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
-//                    event.accepted = true;
-//                    mainMenu.focus = true;
-//                }
+            //            Keys.onPressed: {
+            //                if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
+            //                    event.accepted = true;
+            //                    mainMenu.focus = true;
+            //                }
             Keys.onPressed: {
                 if (api.keys.isMenu(event)) {
                     event.accepted = true;
@@ -195,10 +186,10 @@ Window {
                 powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;
             }
-           function onRequestQuit() {
-               theme.source = "";
-               api.internal.system.quit();
-           }
+            function onRequestQuit() {
+                theme.source = "";
+                api.internal.system.quit();
+            }
         }
         PegasusUtils.HorizontalSwipeArea {
             id: menuSwipe
@@ -212,63 +203,63 @@ Window {
                     mainMenu.focus = true;
             }
         }
-		Loader {
-			id: subscreen
-			asynchronous: true
+        Loader {
+            id: subscreen
+            asynchronous: true
 
-			width: parent.width
-			height: parent.height
-			anchors.left: content.right
+            width: parent.width
+            height: parent.height
+            anchors.left: content.right
 
-			enabled: focus
-			onLoaded: item.focus = focus
-			onFocusChanged: if (item) item.focus = focus
-		}
-		Connections {
-			target: subscreen.item
-			function onClose() {
-				content.focus = true;
-				content.state = "";
+            enabled: focus
+            onLoaded: item.focus = focus
+            onFocusChanged: if (item) item.focus = focus
+        }
+        Connections {
+            target: subscreen.item
+            function onClose() {
+                content.focus = true;
+                content.state = "";
                 theme.visible = true;
-				theme.focus = true;
-			}
-		}
-		states: [
-			State {
-				name: "sub"
-				AnchorChanges {
-					target: subscreen
+                theme.focus = true;
+            }
+        }
+        states: [
+            State {
+                name: "sub"
+                AnchorChanges {
+                    target: subscreen
                     anchors.left: undefined
-					anchors.right: parent.right
-				}
-			}
-		]
-		// fancy easing curves, a la material design
-		readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
-		readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]
-		readonly property var bezierStandard: [ 0.4,0, 0.2,1, 1,1 ]
+                    anchors.right: parent.right
+                }
+            }
+        ]
+        // fancy easing curves, a la material design
+        readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
+        readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]
+        readonly property var bezierStandard: [ 0.4,0, 0.2,1, 1,1 ]
 
-		transitions: [
-			Transition {
-				from: ""; to: "sub"
-				AnchorAnimation {
-					duration: 425
+        transitions: [
+            Transition {
+                from: ""; to: "sub"
+                AnchorAnimation {
+                    duration: 425
                     easing { type: Easing.Bezier; bezierCurve: content.bezierStandard }
-				}
-				onRunningChanged: if (!running) theme.visible = false;
-			},
-			Transition {
-				from: "sub"; to: ""
-				AnchorAnimation {
-					duration: 400
+                }
+                onRunningChanged: if (!running) theme.visible = false;
+            },
+            Transition {
+                from: "sub"; to: ""
+                AnchorAnimation {
+                    duration: 400
                     easing { type: Easing.Bezier; bezierCurve: content.bezierSharp }
-				}
-				onRunningChanged: if (!running) {
-									subscreen.source = "";
-									}
-			}
-		]
-		
+                }
+                onRunningChanged: if (!running) {
+                                      subscreen.source = "";
+                                  }
+            }
+        ]
+
     }
 
 
@@ -308,44 +299,120 @@ Window {
         function onClose() { content.focus = true; }
     }
 
+    Loader {
+        id: cdRomPopupLoader
+        anchors.fill: parent
+        sourceComponent: cdRomPopup
+    }
+
+    Connections {
+        target: cdRomPopupLoader.item
+        function onAccept() {
+            // deleteLastCollection();
+            content.focus = true;
+        }
+        function onCancel() {
+            // return back
+            content.focus = true;
+        }
+    }
+
+    Component {
+        id: cdRomPopup
+        GenericOkCancelDialog
+        {
+            focus: true
+            title: qsTr("Disk drive")
+            message: gameCdRom + qsTr("A game is in the disk drive, launch it ?")
+            Image {
+                id: pngCdrom
+                source: "qrc:/frontend/assets/project-cd/retroarch-cd.png"
+                fillMode: Image.PreserveAspectFit
+                width: vpx(200)
+                height: vpx(200)
+                anchors {
+                    top: parent.top
+                    topMargin: vpx(50)
+                    left: parent.left
+                    right:  parent.right;
+                }
+                asynchronous: true
+                sourceSize { width: vpx(300); height: vpx(300) }
+                NumberAnimation on rotation {
+                    from: 0
+                    to: 360
+                    running: cdRomPopupLoader.visible === true
+                    loops: Animation.Infinite
+                    easing {
+                        type: Easing.OutElastic
+                        amplitude: 0.5
+                        period: 20
+                    }
+                    duration: 2000
+                }
+            }
+        }
+    }
+
+    property string gameCdRom: ""
+
+    // Timer to show the popup cdrom
+    Timer {
+        id: popupCdromDelay
+
+        interval: 10000
+        repeat: true
+        running: true
+        onTriggered: {
+            gameCdRom = api.internal.system.run("cat /tmp/cd.conf");
+            console.log(gameCdRom);
+            if(gameCdRom.includes("system")) {
+                // cdRomPopupLoader.active = false;
+                // cdRomPopupLoader.active = true;
+                cdRomPopupLoader.focus = true;
+            }
+        }
+    }
+
+
     Connections {
         target: api
-		
-		function onEventSelectGameFile(game) {
+
+        function onEventSelectGameFile(game) {
             multifileSelector.setSource("dialogs/MultifileSelector.qml", {"game": game})
             multifileSelector.focus = true;
         }
         function onEventLaunchError(msg) {
             genericMessage.setSource("dialogs/GenericOkDialog.qml",
-                { "title": qsTr("Error"), "message": msg });
+                                     { "title": qsTr("Error"), "message": msg });
             genericMessage.focus = true;
         }
         function onShowPopup(title,message,icon,delay) {
-			//init parameters
-			popup.title = title;
-			popup.message = message;
-			//icon is optional but should be set to empty string if not use
-			popup.icon = icon;
-			
-			//delay provided in second and interval is in ms
-			popupDelay.interval = delay * 1000;
-		
-			//Open popup and set it as showable to have animation
-			popup.open();
-			popup.showing = true;
-			//start timer to close popup automatically
-			popupDelay.restart();
+            //init parameters
+            popup.title = title;
+            popup.message = message;
+            //icon is optional but should be set to empty string if not use
+            popup.icon = icon;
+
+            //delay provided in second and interval is in ms
+            popupDelay.interval = delay * 1000;
+
+            //Open popup and set it as showable to have animation
+            popup.open();
+            popup.showing = true;
+            //start timer to close popup automatically
+            popupDelay.restart();
         }
-		function onNewController(idx, msg) {
-			console.log("New controller detected: #", idx," - ", msg);
+        function onNewController(idx, msg) {
+            console.log("New controller detected: #", idx," - ", msg);
             subscreen.setSource("menu/settings/GamepadEditor.qml", {"newControllerIndex": idx, "isNewController": true});
-			subscreen.focus = true;
+            subscreen.focus = true;
             content.state = "sub";
-			
-			//add dialogBox
+
+            //add dialogBox
             genericMessage.setSource("dialogs/GenericContinueDialog.qml",
-                { "title": qsTr("New type of controller detected") + " : " + msg, "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
-            genericMessage.focus = true;			
+                                     { "title": qsTr("New type of controller detected") + " : " + msg, "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
+            genericMessage.focus = true;
         }
         function onEventLoadingStarted() {
             splashScreen.focus = true;
@@ -378,110 +445,64 @@ Window {
 
         interval: 5000
         onTriggered: {
-			popup.showing = false;
+            popup.showing = false;
         }
     }
+    Popup {
+        id: popup
 
- 	Popup {
-		id: popup
-		
-		property alias title: titleText.text
-		property alias message: messageText.text
-		property alias icon: iconText.text
-		
-		property int titleTextSize: vpx(14)
-		property int textSize: vpx(12)
-		property int iconSize: vpx(60)
+        property alias title: titleText.text
+        property alias message: messageText.text
+        property alias icon: iconText.text
 
-		width:  vpx(200)
-		height: vpx(70)
-				
-		background: Rectangle {
+        property int titleTextSize: vpx(14)
+        property int textSize: vpx(12)
+        property int iconSize: vpx(60)
+
+        width:  vpx(200)
+        height: vpx(70)
+
+        background: Rectangle {
             anchors.fill: parent
             border.color: themeColor.textTitle
-			color: themeColor.secondary
-			opacity: 0.8
-			radius: height/4
-			Behavior on opacity { NumberAnimation { duration: 100 } }
-		}
-		//need to work in x/y, no anchor.top/bottom/left/right/etc... available
-		x: (parent.width/2) - (width/2)//parent.width * 0.01
-		//do animation on y using showing boolean
-		property bool showing: false
-		property int position: showing ? (height + (parent.height * 0.03)) : 0
-		y: parent.height - position
+            color: themeColor.secondary
+            opacity: 0.8
+            radius: height/4
+            Behavior on opacity { NumberAnimation { duration: 100 } }
+        }
+        //need to work in x/y, no anchor.top/bottom/left/right/etc... available
+        x: (parent.width/2) - (width/2)//parent.width * 0.01
+        //do animation on y using showing boolean
+        property bool showing: false
+        property int position: showing ? (height + (parent.height * 0.03)) : 0
+        y: parent.height - position
 
-		Behavior on position {
-			NumberAnimation {duration: 500}
-		}   
+        Behavior on position {
+            NumberAnimation {duration: 500}
+        }
 
-		modal: false
-		focus: false
-		visible: true
-		closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+        modal: false
+        focus: false
+        visible: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
-		Column {
-			id: dialogBox
+        Column {
+            id: dialogBox
 
-			width: parent.width
-			height: parent.height
+            width: parent.width
+            height: parent.height
 
-			// text areas
-			Rectangle {
-				width: parent.width
-				height: parent.height
-				
-				color: "transparent"
+            // text areas
+            Rectangle {
+                width: parent.width
+                height: parent.height
 
-				Text {
-					id: titleText
-					elide: Text.ElideRight
-					wrapMode: Text.WordWrap
-					
-					anchors {
-						top: parent.top
-						left: parent.left
-						right:  parent.right;
-						leftMargin: popup.titleTextSize * 0.5
-						rightMargin: popup.titleTextSize * 0.5
-					}
-					width: parent.width - (2 * anchors.leftMargin)
-					height: popup.titleTextSize * 1.2
-					color: themeColor.textTitle
-					fontSizeMode: Text.Fit
-					minimumPixelSize: popup.titleTextSize - vpx(2)
-					font {
-						bold: true
-						pixelSize: popup.titleTextSize
-						family: globalFonts.sans
-					}
-				}
+                color: "transparent"
 
-				Text {
-					id: iconText
-					
-					anchors {
-						top: titleText.bottom
-						bottom: parent.bottom
-						right:  parent.right;
-						rightMargin: popup.titleTextSize * 0.1
-					}
-					width: height
-					color: themeColor.textTitle
-					fontSizeMode: Text.Fit
-					minimumPixelSize: popup.iconSize - vpx(10)
-					horizontalAlignment: Text.AlignHCenter
-					verticalAlignment: Text.AlignVCenter					
-					font {
-						pixelSize: popup.iconSize
-						family: globalFonts.sans
-					}
-				}
-				
-				Text {
-					id: messageText
-					elide: Text.ElideRight
-					wrapMode: Text.WordWrap
+                Text {
+                    id: titleText
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
 
 					anchors {
 						top: titleText.bottom

@@ -100,5 +100,6 @@
         <file>assets/libretro-retroarch-simple-logo.png</file>
         <file>search/SearchGame.qml</file>
         <file>dialogs/NetplayDialog.qml</file>
+        <file>assets/project-cd/retroarch-cd.png</file>
     </qresource>
 </RCC>
