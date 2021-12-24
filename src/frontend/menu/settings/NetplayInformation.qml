@@ -177,6 +177,12 @@ FocusScope {
                         netplayTimer.running = false;
                         friendsTimer.running = false;
                         if(isRoomAvailable(roomSelected.ip,roomSelected.port)){
+                            //check that pseudo is empty and if yes, it's set to "Anonymous"
+                            if(api.internal.recalbox.getStringParameter("global.netplay.nickname") === ""){
+                                api.internal.recalbox.setStringParameter("global.netplay.nickname", "Anonymous");
+                                //save it for configgen
+                                api.internal.recalbox.saveParameters();
+                            }
                             //launch game in netplay mode
                             //set parameter for netplay (mode = 1 -> client)
                             gameSelected.modelData.launchNetplay(
@@ -209,6 +215,8 @@ FocusScope {
             confirmDialog.active = false;
             content.focus = true;
             netplayTimer.running = true;
+            //restart spinner
+            spinnerloader.active = true;
         }
     }
 
@@ -706,7 +714,8 @@ FocusScope {
                         }
                         onActivate: {
                             if(!status_icon.includes(isNOK)){
-
+                                //stop spinner
+                                spinnerloader.active = false;
                                 //set data linked to this room that we want to display
                                 //to display logo of this room
                                 confirmDialog.game_logo = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.logo;

@@ -149,12 +149,6 @@ Window {
 					subscreen.setSource("menu/settings/NetplayInformation.qml", {"isCallDirectly": true});
 					subscreen.focus = true;
 					content.state = "sub";
-			
-					//add dialogBox if pseudo not well configured
-                    //TO DO
-                    /*genericMessage.setSource("dialogs/GenericContinueDialog.qml",
-						{ "title": qsTr("Warning"), "message": qsTr("Please configure your pseudo or you will be as 'anonymous'")});
-                        genericMessage.focus = true;*/
 				}
 
 
@@ -544,6 +538,12 @@ Window {
     Connections {
         target: netplayRoomDialog.item
         function onAccept() {
+            //check that pseudo is empty and if yes, it's set to "Anonymous"
+			if(api.internal.recalbox.getStringParameter("global.netplay.nickname") === ""){
+				api.internal.recalbox.setStringParameter("global.netplay.nickname", "Anonymous");
+				//save it for configgen
+				api.internal.recalbox.saveParameters();
+			}    			
             netplayRoomDialog.game.launchNetplay(
                         2, "", "",
                         api.internal.recalbox.getBoolParameter("netplay.password.useforplayer") ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
