@@ -259,9 +259,7 @@ Window {
                                   }
             }
         ]
-
     }
-
 
     Loader {
         id: powerDialog
@@ -310,47 +308,39 @@ Window {
         function onAccept() {
             // deleteLastCollection();
             content.focus = true;
+            api.internal.system.run('python /usr/bin/emulatorlauncher.pyc -p1index 0 -p1guid 050000005e040000e002000003090000 -p1name "Xbox One Wireless Controller" -p1nbaxes 6 -p1nbhats 1 -p1nbbuttons 11 -p1devicepath /dev/input/event18 -p2index 1 -p2guid 050000005e040000e002000003090000 -p2name "Xbox One Wireless Controller" -p2nbaxes 6 -p2nbhats 1 -p2nbbuttons 11 -p2devicepath /dev/input/event19 -system psx -rom cdrom://drive1.cue -emulator libretro -core mednafen_psx_hw -ratio auto');
+        }
+        function onSecondChoice() {
+            // eject disk
+            api.internal.system.run("eject");
+            // return back
+            content.focus = true;
         }
         function onCancel() {
             // return back
             content.focus = true;
         }
     }
+    //list model to manage icons of devices
+    ListModel {
+        id: mySystemIcons
 
+        ListElement { icon: "\uf275"; keywords: "psx"; type:"controller"}
+        ListElement { icon: "\uf294"; keywords: "dreamcast"; type:"controller"}
+        ListElement { icon: "\uf26b"; keywords: "segacd"; type:"controller"}
+        ListElement { icon: "\uf27f"; keywords: "pcenginecd"; type:"controller"}
+    }
     Component {
         id: cdRomPopup
-        GenericOkCancelDialog
+        CdRomDialog
         {
             focus: true
-            title: qsTr("Disk drive")
-            message: gameCdRom + qsTr("A game is in the disk drive, launch it ?")
-            Image {
-                id: pngCdrom
-                source: "qrc:/frontend/assets/project-cd/retroarch-cd.png"
-                fillMode: Image.PreserveAspectFit
-                width: vpx(200)
-                height: vpx(200)
-                anchors {
-                    top: parent.top
-                    topMargin: vpx(50)
-                    left: parent.left
-                    right:  parent.right;
-                }
-                asynchronous: true
-                sourceSize { width: vpx(300); height: vpx(300) }
-                NumberAnimation on rotation {
-                    from: 0
-                    to: 360
-                    running: cdRomPopupLoader.visible === true
-                    loops: Animation.Infinite
-                    easing {
-                        type: Easing.OutElastic
-                        amplitude: 0.5
-                        period: 20
-                    }
-                    duration: 2000
-                }
-            }
+//            title: qsTr("Disk drive")
+            symbol: "\uf275"
+            message: gameCdRom + qsTr("A game is in the disk drive")
+            firstchoice: qsTr("Launch")
+            secondchoice: qsTr("Eject")
+            thirdchoice: qsTr("Back")
         }
     }
 
@@ -360,20 +350,18 @@ Window {
     Timer {
         id: popupCdromDelay
 
-        interval: 10000
+        interval: 8000
         repeat: true
         running: true
         onTriggered: {
             gameCdRom = api.internal.system.run("cat /tmp/cd.conf");
-            console.log(gameCdRom);
             if(gameCdRom.includes("system")) {
-                // cdRomPopupLoader.active = false;
-                // cdRomPopupLoader.active = true;
+                cdRomPopupLoader.active = false;
+                cdRomPopupLoader.active = true;
                 cdRomPopupLoader.focus = true;
             }
         }
     }
-
 
     Connections {
         target: api
