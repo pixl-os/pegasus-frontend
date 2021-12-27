@@ -70,6 +70,7 @@ HashMap<KeyEvent, QVector<QKeySequence>, EnumHash> default_keymap()
         { KeyEvent::PAGE_UP, { Qt::Key_PageUp, GamepadKeyId::L2 }},
         { KeyEvent::PAGE_DOWN, { Qt::Key_PageDown, GamepadKeyId::R2 }},
         { KeyEvent::MAIN_MENU, { Qt::Key_F1, GamepadKeyId::START }},
+		{ KeyEvent::NETPLAY, { Qt::Key_F2, GamepadKeyId::SELECT }},
     };
 }
 

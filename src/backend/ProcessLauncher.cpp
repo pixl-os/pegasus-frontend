@@ -95,29 +95,74 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
         .replace(QLatin1String("{file.dir}"), QDir::toNativeSeparators(finfo.absolutePath()))
         .replace(QLatin1String("{system.shortname}"),shortname)
-        .replace(QLatin1String("{emulator.ratio}"),QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio")))
-        .replace(QLatin1String("{emulator.netplay}"),"");
+        .replace(QLatin1String("{emulator.ratio}"),QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio")));
+
+	if(param == "{emulator.netplay}"){
+	//info about netplay parameters
+        if(gamefile.netplayMode() == 0) param.replace(QLatin1String("{emulator.netplay}"),"");
+        else if(gamefile.netplayMode() == 1){
+            //AS CLIENT:
+            //-netplay client -netplay_port XXXX -netplay_ip xxx.xxx.xxx.xxx
+            QString netplayLine("-netplay client -netplay_port ");
+            netplayLine.append(gamefile.netplayPort()).append(" -netplay_ip ").append(gamefile.netplayIp());
+            // Optional:
+            //	  -netplay_playerpassword "xxxxyyyy"
+            //    -netplay_viewerpassword "zzzzaaaa"
+            //    -netplay_vieweronly
+            //	  -hash AAAAAAAA //(if CRC exist ?!)
+            if (gamefile.netplayPlayerPassword() != "") netplayLine.append(" -netplay_playerpassword ").append('"').append(gamefile.netplayPlayerPassword()).append('"');
+            if (gamefile.netplayViewerPassword() != "") netplayLine.append(" -netplay_viewerpassword ").append('"').append(gamefile.netplayViewerPassword()).append('"');
+            if (gamefile.netplayViewerOnly()) netplayLine.append(" -netplay_vieweronly");
+            if (gamefile.netplayHash() != "") netplayLine.append(" -hash ").append(gamefile.netplayHash());
+            param.replace(QLatin1String("{emulator.netplay}"),netplayLine);
+        }
+        else if(gamefile.netplayMode() == 2){
+            //AS SERVER:
+            //-netplay host -netplay_port XXXX
+            QString netplayLine("-netplay host -netplay_port ");
+            netplayLine.append(QString::fromStdString(RecalboxConf::Instance().AsString("global.netplay.port")));
+            // Optional:
+            //	  -netplay_playerpassword "xxxxyyyy"
+            //    -netplay_viewerpassword "zzzzaaaa"
+            //	  -hash AAAAAAAA //(if CRC exist ?!)
+            if (gamefile.netplayPlayerPassword() != "") netplayLine.append(" -netplay_playerpassword ").append('"').append(gamefile.netplayPlayerPassword()).append('"');
+            if (gamefile.netplayViewerPassword() != "") netplayLine.append(" -netplay_viewerpassword ").append('"').append(gamefile.netplayViewerPassword()).append('"');
+            if (game.hash() != "") netplayLine.append(" -hash ").append(game.hash());
+            param.replace(QLatin1String("{emulator.netplay}"),netplayLine);
+        }
+	}
 
     if(param == "{emulator.name}")
     {   
-        QString emulator = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".emulator").toUtf8().constData()));
-        if(emulator != "")
-        {
-            param.replace(QLatin1String("{emulator.name}"),emulator);
+    //IF NETPLAY activated, replace EMULATOR from what is proposed by server
+        if(gamefile.netplayMode() == 1){
+            param.replace(QLatin1String("{emulator.name}"),gamefile.netplayEmulator());
         }
-        else  param.replace(QLatin1String("{emulator.name}"),game.emulatorName());
-        
-    }            
-    
+        else{
+            QString emulator = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".emulator").toUtf8().constData()));
+            if(emulator != "")
+            {
+                param.replace(QLatin1String("{emulator.name}"),emulator);
+            }
+            else  param.replace(QLatin1String("{emulator.name}"),game.emulatorName());
+        }
+    }
+
     if(param == "{emulator.core}")
     {
-        QString core = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".core").toUtf8().constData()));
-        if(core != "")
-        {
-            param.replace(QLatin1String("{emulator.core}"),core);
+    //IF NETPLAY activated, replace CORE from what is proposed by server
+        if(gamefile.netplayMode() == 1){
+            param.replace(QLatin1String("{emulator.core}"),gamefile.netplayCore());
         }
-        else  param.replace(QLatin1String("{emulator.core}"),game.emulatorCore());
-    }            
+        else{
+            QString core = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".core").toUtf8().constData()));
+            if(core != "")
+            {
+                param.replace(QLatin1String("{emulator.core}"),core);
+            }
+            else  param.replace(QLatin1String("{emulator.core}"),game.emulatorCore());
+        }
+    }
     
     if(param == "{controllers.config}")
     {

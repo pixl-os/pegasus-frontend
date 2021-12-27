@@ -118,8 +118,9 @@ HEADERS += \
 	$$PWD/libretro-common/include/libchdr/coretypes.h \
 	$$PWD/libretro-common/include/lists/dir_list.h \
 	$$PWD/libretro-common/include/lists/file_list.h \
-	$$PWD/libretro-common/include/lists/string_list.h
-
+	$$PWD/libretro-common/include/lists/string_list.h \
+	$$PWD/liboping/src/config.h \
+	$$PWD/liboping/src/oping.h
 	
 SOURCES += \
     $$PWD/CommandTokenizer.cpp \
@@ -205,7 +206,9 @@ SOURCES += \
 	$$PWD/libretro-common/lists/string_list.c \
 	$$PWD/libretro-common/lists/vector_list.c \
 	$$PWD/libretro-common/memmap/memmap.c \
-	$$PWD/libretro-common/memmap/memalign.c
+	$$PWD/libretro-common/memmap/memalign.c \
+	$$PWD/liboping/src/liboping.c \
+	$$PWD/liboping/src/oping.c
 	
 	
 

@@ -28,6 +28,40 @@ struct EmulatorsEntry {
     QString name;
     QString core;
     int priority;
+	int netplay;
+    QString corelongname; //optional - only for retroarch for the moment
+    QString coreversion; //optional - only for retroarch for the moment
+};
+
+//! Immutable core information from retroarch only
+struct CoreInfo
+{
+  private:
+    //! Long name (i.e. "MAME 2003-Plus")
+    std::string mLongName;
+    //! Short name (i.e. "mame2003+")
+    std::string mShortName;
+    //! Version
+    std::string mVersion;
+
+  public:
+    CoreInfo(const std::string& longName, const std::string& shortName, const std::string& version)
+      : mLongName(longName)
+      , mShortName(shortName)
+      , mVersion(version)
+    {
+    }
+
+    CoreInfo() = default;
+
+    //! Long name
+    const std::string& LongName() const { return mLongName; }
+    //! Short name
+    const std::string& ShortName() const { return mShortName; }
+    //! Version
+    const std::string& Version() const { return mVersion; }
+    //! Empty?
+    bool Empty() const { return mLongName.empty(); }
 };
 
 struct SystemEntry {

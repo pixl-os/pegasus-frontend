@@ -120,6 +120,9 @@ size_t create_collection_for(
         Emulator.name = sysentry.emulators[n].name;
         Emulator.core = sysentry.emulators[n].core;
         Emulator.priority = sysentry.emulators[n].priority;
+		Emulator.netplay = sysentry.emulators[n].netplay;
+		Emulator.corelongname = sysentry.emulators[n].corelongname;
+        Emulator.coreversion = sysentry.emulators[n].coreversion;
         AllEmulators.append(Emulator);
         found_cores++;
     }

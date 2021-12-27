@@ -105,9 +105,19 @@ void Game::onEntryPlayStatsChanged()
 void Game::launch()
 {
     Q_ASSERT(m_files->count() > 0);
-
+	
     if (m_files->count() == 1)
         m_files->first()->launch();
+    else
+        emit launchFileSelectorRequested();
+}
+
+void Game::launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash, const QString& emulator, const QString& core)
+{
+    Q_ASSERT(m_files->count() > 0);
+
+	if (m_files->count() == 1)
+        m_files->first()->launchNetplay(mode,port,ip,playerpassword,viewerpassword,vieweronly,hash,emulator,core);
     else
         emit launchFileSelectorRequested();
 }
@@ -148,16 +158,16 @@ void Game::updateRetroAchievements_slot()
 	//Initialize Metahelper for each update and for each games for the moment
 	QString log_tag = "Retroachievements";
     try{
-	const providers::retroAchievements::Metadata metahelper(log_tag);
-	//get all from network for the moment to have last information / one function called for the moment
-	metahelper.fill_from_network_or_cache(*this, true);	
-	//emit signal to alert front-end about end of update
-	emit retroAchievementsChanged();
+		const providers::retroAchievements::Metadata metahelper(log_tag);
+		//get all from network for the moment to have last information / one function called for the moment
+		metahelper.fill_from_network_or_cache(*this, true);	
+		//emit signal to alert front-end about end of update
+		emit retroAchievementsChanged();
     }
     catch ( const std::exception & Exp ) 
     { 
         Log::error(log_tag, LOGMSG("Error: %1.\n").arg(Exp.what()));
-    } 	
+    }
 }
 
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)

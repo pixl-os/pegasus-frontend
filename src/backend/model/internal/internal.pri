@@ -23,3 +23,4 @@ SOURCES += \
 }
 
 include(settings/settings.pri)
+include(netplay/netplay.pri)

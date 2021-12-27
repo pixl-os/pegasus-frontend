@@ -57,6 +57,9 @@ FocusScope {
         }, {
             name: qsTr("Main menu") + api.tr,
             keys: api.keys.menu,
+        }, {
+            name: qsTr("Netplay") + api.tr,
+            keys: api.keys.netplay,
         }]
 
     width: ListView.view.width

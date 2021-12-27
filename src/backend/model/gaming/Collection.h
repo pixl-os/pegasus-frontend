@@ -33,8 +33,11 @@ struct EmulatorsEntry {
     QString name;
     QString core;
     int priority;
+	int netplay;
+    QString corelongname; //optional - only for retroarch for the moment
+    QString coreversion; //optional - only for retroarch for the moment	
 };
-  
+
 struct CollectionData {
     explicit CollectionData(QString name);
 
@@ -98,9 +101,18 @@ public:
 
     //need specific property and invokable function due to QList<struct> is not supported by QML layer
     Q_PROPERTY(int emulatorsCount READ getEmulatorsCount CONSTANT)
-    Q_INVOKABLE QString GetNameAt (const int index) {return m_data.common_emulators.at(index).name;};
-    Q_INVOKABLE QString GetCoreAt (const int index) {return m_data.common_emulators.at(index).core;};
-    Q_INVOKABLE QString GetPriorityAt (const int index) {return QString::number(m_data.common_emulators.at(index).priority);};
+    Q_INVOKABLE QString getNameAt (const int index) {return m_data.common_emulators.at(index).name;};
+    Q_INVOKABLE QString getCoreAt (const int index) {return m_data.common_emulators.at(index).core;};
+    Q_INVOKABLE QString getPriorityAt (const int index) {return QString::number(m_data.common_emulators.at(index).priority);};
+	Q_INVOKABLE bool hasNetplayAt (const int index) {
+		//can't use this method for the moment due to issue in the systemsList.xml as for NES where only fbneo is Netplay compatible ?! strange ?!
+		//if(m_data.common_emulators.at(index).netplay != 0) return true; 
+		//else return false;
+		if(m_data.common_emulators.at(index).corelongname != "") return true; //if not empty, this core exists and use today for netplay
+		else return false;
+	};
+	Q_INVOKABLE QString getCoreLongNameAt (const int index) {return m_data.common_emulators.at(index).corelongname;};
+    Q_INVOKABLE QString getCoreVersionAt (const int index) {return m_data.common_emulators.at(index).coreversion;};
     
     Q_INVOKABLE bool isDefaultEmulatorAt (const int index) {
        // do loop to find the first priorioty (minimum number)

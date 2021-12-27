@@ -50,6 +50,19 @@ struct GameFileData {
         qint64 play_time = 0;
         int play_count = 0;
     } playstats;
+
+    struct Netplay {
+        int mode = 0; //0: no netplay, 1: client, 2: server
+        QString emulator = "libretro"; //emulator by default for netplay
+        QString core;
+        QString port;
+        QString ip;
+        QString playerpassword;
+        QString viewerpassword;
+        bool vieweronly = false;
+        QString hash;
+    } netplay;
+
 };
 
 
@@ -70,6 +83,27 @@ public:
     Q_PROPERTY(int playTime READ playTime NOTIFY playStatsChanged)
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
 
+    int netplayMode() const { return m_data.netplay.mode;}
+    QString netplayEmulator() const { return m_data.netplay.emulator;}
+    QString netplayCore() const { return m_data.netplay.core;}
+    QString netplayPort() const { return m_data.netplay.port;}
+    QString netplayIp() const { return m_data.netplay.ip;}
+    QString netplayPlayerPassword() const { return m_data.netplay.playerpassword;}
+    QString netplayViewerPassword() const { return m_data.netplay.viewerpassword;}
+    bool netplayViewerOnly() const { return m_data.netplay.vieweronly;}
+    QString netplayHash() const { return m_data.netplay.hash;}
+
+    //RFU
+    /*Q_PROPERTY(int netplayMode READ netplayMode CONSTANT)
+    Q_PROPERTY(QString netplayEmulator READ netplayEmulator CONSTANT)
+    Q_PROPERTY(QString netplayCore READ netplayCore CONSTANT)
+    Q_PROPERTY(QString netplayPort READ netplayPort CONSTANT)
+    Q_PROPERTY(QString netplayIp READ netplayIp CONSTANT)
+    Q_PROPERTY(QString netplayPlayerPassword READ netplayPlayerPassword CONSTANT)
+    Q_PROPERTY(QString netplayPlayerViewer READ netplayPlayerViewer CONSTANT)
+    Q_PROPERTY(bool netplayViewerOnly READ netplayViewerOnly CONSTANT)
+    Q_PROPERTY(QString netplayHash READ netplayHash CONSTANT)*/
+
     const QFileInfo& fileinfo() const { return m_data.fileinfo; }
 
 public:
@@ -78,6 +112,7 @@ public:
     model::Game* parentGame() const;
 
     Q_INVOKABLE void launch();
+	Q_INVOKABLE void launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash, const QString& emulator, const QString& core);
 
     void update_playstats(int playcount, qint64 playtime, QDateTime last_played);
 

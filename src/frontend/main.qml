@@ -19,7 +19,7 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
-
+import "dialogs"
 
 Window {
     id: appWindow
@@ -141,6 +141,16 @@ Window {
                     event.accepted = true;
                     mainMenu.focus = true;
                 }
+
+                if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay")){
+                    event.accepted = true;
+                    //netplayMenu.focus = true;
+                    //console.log("api.keys.isNetplay(event)");
+					subscreen.setSource("menu/settings/NetplayInformation.qml", {"isCallDirectly": true});
+					subscreen.focus = true;
+					content.state = "sub";
+				}
+
 
                 if (event.key === Qt.Key_F5) {
                     event.accepted = true;
@@ -494,4 +504,116 @@ Window {
 			}
 		}
 	}
+
+    //Loader/Component/Connection to manage netplay room dialog
+    Loader {
+        id: netplayRoomDialog
+        anchors.fill: parent
+        z:10
+        sourceComponent: netplayRoomComponent
+        active: false
+        asynchronous: true
+        //to set value via loader
+        property var game
+        property var game_logo: game.assets.logo
+        property var game_name: game.title
+    }
+
+    Component {
+        id: netplayRoomComponent
+        NetplayDialog {
+            title: qsTr("Create Netplay room ?") + api.tr
+            message: netplayRoomDialog.game_name
+            symbol: ""
+            firstchoice: qsTr("Play") + api.tr
+            secondchoice: ""
+            thirdchoice: qsTr("Cancel") + api.tr
+
+            //Specific to Netplay
+            game_logo: netplayRoomDialog.game_logo
+            is_to_create_room: true
+        }
+    }
+
+    Connections {
+        target: netplayRoomDialog.item
+        function onAccept() {
+            //check that pseudo is empty and if yes, it's set to "Anonymous"
+			if(api.internal.recalbox.getStringParameter("global.netplay.nickname") === ""){
+				api.internal.recalbox.setStringParameter("global.netplay.nickname", "Anonymous");
+				//save it for configgen
+				api.internal.recalbox.saveParameters();
+			}    			
+            netplayRoomDialog.game.launchNetplay(
+                        2, "", "",
+                        api.internal.recalbox.getBoolParameter("netplay.password.useforplayer") ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
+                        api.internal.recalbox.getBoolParameter("netplay.password.useforviewer") ? api.internal.recalbox.parameterslist.currentName("netplay.password.viewer"):"",
+                        false,
+                        "",
+                        "",
+                        "");
+
+            netplayRoomDialog.active = false;
+            content.focus = true;
+        }
+
+        function onCancel() {
+            //do nothing
+            netplayRoomDialog.active = false;
+            content.focus = true;
+        }
+    }
+
+    //functions provided for themes
+    //to check if game is ready and well configured to run a netplay
+    function isReadyForNetplay(game)
+    {
+        if(api.internal.recalbox.getBoolParameter("global.netplay")){
+            //get collection shortname from game
+            var shortName = game.collections.get(0).shortName;
+            if(api.internal.recalbox.getStringParameter("global.netplay.systems").toLowerCase().includes(shortName.toLowerCase())){
+                //get emulator & core selected or by default
+                var emulator = api.internal.recalbox.getStringParameter(shortName + ".emulator");
+                //console.log("emulator: ",emulator);
+                var core = api.internal.recalbox.getStringParameter(shortName + ".core");
+                //console.log("core: ",core);
+                if((emulator === "") || (core === "")){ //in case of emulator/core not well saved in recalbox.conf
+                   for(var i = 0; i < game.collections.get(0).emulatorsCount ; i++){
+                       //get default one
+                       if(game.collections.get(0).isDefaultEmulatorAt(i)){
+                           //console.log("default emulator: ",game.collections.get(0).getNameAt(i));
+                           //console.log("default core: ",game.collections.get(0).getCoreAt(i));
+                           //console.log("default core has netplay ? ",game.collections.get(0).hasNetplayAt(i));
+                           if(game.collections.get(0).getNameAt(i).toLowerCase().includes("libretro")){
+                               //And return if has netplay or not
+                               return game.collections.get(0).hasNetplayAt(i);
+                           }
+                           else return false; // only libretro supported today
+                       }
+                   }
+                   //return false if not found..strange ?!
+                   return false;
+                }
+                //if libretro emulator and only
+                else if(emulator.toLowerCase().includes("libretro")){
+                    for(var j = 0; j < game.collections.get(0).emulatorsCount ; j++){
+                        //console.log("emulator to check: ",game.collections.get(0).getNameAt(j));
+                        //console.log("core to check: ",game.collections.get(0).getCoreAt(j));
+                        //get if one is matching
+                        if(game.collections.get(0).getCoreAt(j) === core){
+                            //console.log("found emulator: ",game.collections.get(0).getNameAt(j));
+                            //console.log("found core: ",game.collections.get(0).getCoreAt(j));
+                            //And return if has netplay or not
+                            return game.collections.get(0).hasNetplayAt(j);
+                        }
+                    }
+                    //return false if not found..strange ?!
+                    return false;
+                }
+                else return false; //not libretro core
+            }
+            else return false; //not netplay system
+        }
+        else return false; //no netplay activated from menu
+    }
 }

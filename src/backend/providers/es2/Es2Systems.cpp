@@ -19,6 +19,10 @@
 
 #include "Log.h"
 #include "Paths.h"
+#include "RootFolders.h"
+#include "utils/Files.h"
+#include "utils/Strings.h"
+
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "providers/SearchContext.h"
@@ -73,7 +77,7 @@ void set_by_str(HashMap<QLatin1String, QString>& map, const QString& str, const 
 	}
 }
 
-providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStreamReader& xml)
+providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStreamReader& xml,std::vector<providers::es2::CoreInfo>& coreList)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -98,9 +102,9 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
         { QLatin1String("theme"), QString() },
         { QLatin1String("emulators"), QString() },
     };
+
     //emulators/emulator attributes
-    QList< providers::es2::EmulatorsEntry> SystemEmulators;
-    
+    QList<providers::es2::EmulatorsEntry> SystemEmulators;
     // read
     while (xml.readNextStartElement()) {
         const auto it = find_by_str_ref(xml_props, xml.name());
@@ -116,9 +120,24 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                                 while (xml.readNextStartElement()) {
                                     if (xml.name() == "core"){
                                         QString corePriority = xml.attributes().value("priority").toString();
-                                        QString coreName = xml.readElementText();
+										QString coreNetplay = "0";
+										QString coreName = xml.readElementText();
+                                        QString coreLongName = "";
+                                        QString coreVersion = "";
                                         //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
-                                        SystemEmulators.append({ emulatorName, coreName, corePriority.toInt()});
+                                        //For libretro cores only for the moment
+                                        if(emulatorName.toLower().contains("libretro")){
+                                            for(const providers::es2::CoreInfo& info : coreList){
+                                                //Log::debug(log_tag, LOGMSG("Core name: %1 - Core Short name found: %2").arg(coreName,QString::fromStdString(info.ShortName())));
+                                                if (QString::fromStdString(info.ShortName()) == coreName){
+                                                   //Log::debug(log_tag, LOGMSG("Core Long Name: %1 - Core version: %2").arg(QString::fromStdString(info.LongName()),QString::fromStdString(info.Version())));
+                                                   coreLongName = QString::fromStdString(info.LongName());
+                                                   coreVersion = QString::fromStdString(info.Version());
+                                                   break;
+                                               }
+                                            }
+                                        }
+                                        SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(),coreLongName,coreVersion});
                                     }
                                 }
                             }
@@ -183,7 +202,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
     };
 }
 
-providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStreamReader& xml, const QString& defaultsCommand)
+providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStreamReader& xml, const QString& defaultsCommand,std::vector<providers::es2::CoreInfo>& coreList)
 {
     Q_ASSERT(xml.isStartElement() && xml.name() == "system");
 
@@ -234,10 +253,26 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
                                 while (xml.readNextStartElement()) {
                                     if (xml.name() == "core"){
                                         QString corePriority = xml.attributes().value("priority").toString();
-                                        QString coreName = xml.attributes().value("name").toString();
+										QString coreNetplay = xml.attributes().value("netplay").toString();
+									    QString coreName = xml.attributes().value("name").toString();
+                                        QString coreLongName = "";
+                                        QString coreVersion = "";
                                         //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
-                                        SystemEmulators.append({ emulatorName, coreName, corePriority.toInt()});
-										xml.skipCurrentElement(); //because not read of element text
+										
+										//For libretro cores only for the moment
+                                        if(emulatorName.toLower().contains("libretro")){
+                                            for(const providers::es2::CoreInfo& info : coreList){
+                                                //Log::debug(log_tag, LOGMSG("Core name: %1 - Core Short name found: %2").arg(coreName,QString::fromStdString(info.ShortName())));
+                                                if (QString::fromStdString(info.ShortName()) == coreName){
+                                                   //Log::debug(log_tag, LOGMSG("Core Long Name: %1 - Core version: %2").arg(QString::fromStdString(info.LongName()),QString::fromStdString(info.Version())));
+                                                   coreLongName = QString::fromStdString(info.LongName());
+                                                   coreVersion = QString::fromStdString(info.Version());
+                                                   break;
+                                               }
+                                            }
+                                        }
+                                        SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(), coreLongName, coreVersion});
+                                        xml.skipCurrentElement(); //because not read of element text
                                     }
                                 }
                     }
@@ -328,6 +363,20 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
         return {};
     }
 
+    //! Core information list
+    std::vector<providers::es2::CoreInfo> mCoreList;
+    //read also retroarch cores first to complete info
+    std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/retroarch.corenames");
+    for(std::string& line : Strings::Split(content, '\n'))
+    {
+      Strings::Vector parts = Strings::Split(line, ';');
+      if (parts.size() == 3){
+        //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
+        mCoreList.push_back({ parts[0], parts[1], parts[2] });
+      }
+    }
+
+
     // read all <system> nodes
     std::vector<SystemEntry> systems;
 	//Since ROMFS V2, find default as following: 
@@ -351,8 +400,8 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
             continue;
         }
         providers::es2::SystemEntry sysentry;
-        if (defaultsCommand == "") sysentry = read_system_entry(log_tag, xml);
-        else sysentry = read_system_entry_v2(log_tag, xml, defaultsCommand);
+        if (defaultsCommand == "") sysentry = read_system_entry(log_tag, xml,mCoreList);
+        else sysentry = read_system_entry_v2(log_tag, xml, defaultsCommand,mCoreList);
         if (!sysentry.name.isEmpty())
             systems.emplace_back(std::move(sysentry));
     }
