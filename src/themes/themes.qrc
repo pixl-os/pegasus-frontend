@@ -687,5 +687,6 @@
         <file>gameOS/Dialogs/GenericOkCancelDialog.qml</file>
         <file>gameOS/Dialogs/Shade.qml</file>
         <file>gameOS/assets/images/multiplayer.svg</file>
+        <file>gameOS/Search/SearchGameByModel.qml</file>
     </qresource>
 </RCC>
