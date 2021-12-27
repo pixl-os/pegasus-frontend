@@ -1,5 +1,5 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
+// 2021 Strodown
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@ FocusScope {
             Image {
                 id: pngCdrom
                 source: "qrc:/frontend/assets/project-cd/retroarch-cd.png"
+                antialiasing: true
                 fillMode: Image.PreserveAspectFit
                 width: vpx(400)
                 height: vpx(400)
@@ -89,19 +90,19 @@ FocusScope {
                 sourceSize { width: vpx(400); height: vpx(400) }
                 NumberAnimation on rotation {
                     from: 0
-                    to: 360
+                    to: 1080 * 6
                     running: cdRomPopupLoader.visible === true
                     loops: Animation.Infinite
-                    duration: 2000
+                    duration: 12000
+                    easing.type: Easing.InOutQuart
                 }
             }
         }
 
-
         // text area
         Rectangle {
             width: parent.width
-            height: messageText.height + vpx("5")
+            height: messageText.height + vpx("50")
             color: themeColor.secondary
             Text {
                 id: messageText
@@ -129,11 +130,10 @@ FocusScope {
                     right: messageText.left
                     rightMargin: root.titleTextSize * 0.75
                 }
-
                 color: themeColor.textTitle
                 font {
                     bold: false
-                    pixelSize: root.titleTextSize * 2
+                    pixelSize: root.titleTextSize * 2.5
                     family: global.fonts.awesome
                 }
             }
@@ -142,7 +142,6 @@ FocusScope {
         Row {
             width: parent.width
             height: root.textSize * 2
-
 
             Rectangle {
                 id: okButton
@@ -267,3 +266,9 @@ FocusScope {
         }
     ]
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/

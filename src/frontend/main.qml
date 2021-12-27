@@ -36,10 +36,10 @@ Window {
     property var hostname: api.internal.system.run("hostname");
 
 
-    //    onClosing: {
-    //        theme.source = "";
-    //        api.internal.system.quit();
-    //    }
+    /*onClosing: {
+        theme.source = "";
+        api.internal.system.quit();
+    }*/
 
     // Color palette set with 'themeColor.main' or else
     property var themeColor: {
@@ -122,11 +122,12 @@ Window {
             }
             onApiThemePathChanged: source = Qt.binding(getThemeFile)
 
-            //            Keys.onPressed: {
-            //                if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
-            //                    event.accepted = true;
-            //                    mainMenu.focus = true;
-            //                }
+            /*
+            Keys.onPressed: {
+                if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
+                    event.accepted = true;
+                    mainMenu.focus = true;
+                }*/
             Keys.onPressed: {
                 if (api.keys.isMenu(event)) {
                     event.accepted = true;
@@ -135,12 +136,12 @@ Window {
 
                 if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay")){
                     event.accepted = true;
-                    //netplayMenu.focus = true;
-                    //console.log("api.keys.isNetplay(event)");
-					subscreen.setSource("menu/settings/NetplayInformation.qml", {"isCallDirectly": true});
-					subscreen.focus = true;
-					content.state = "sub";
-				}
+                    /*netplayMenu.focus = true;
+                    console.log("api.keys.isNetplay(event)");*/
+                    subscreen.setSource("menu/settings/NetplayInformation.qml", {"isCallDirectly": true});
+                    subscreen.focus = true;
+                    content.state = "sub";
+                }
 
 
                 if (event.key === Qt.Key_F5) {
@@ -287,7 +288,7 @@ Window {
         target: genericMessage.item
         function onClose() { content.focus = true; }
     }
-    
+
     Loader {
         id: genericPopup
         anchors.fill: parent
@@ -305,10 +306,11 @@ Window {
 
     Connections {
         target: cdRomPopupLoader.item
+
         function onAccept() {
-            // deleteLastCollection();
+            // Launch cdrom and stop repeater
             content.focus = true;
-            api.internal.system.run('python /usr/bin/emulatorlauncher.pyc -p1index 0 -p1guid 050000005e040000e002000003090000 -p1name "Xbox One Wireless Controller" -p1nbaxes 6 -p1nbhats 1 -p1nbbuttons 11 -p1devicepath /dev/input/event18 -p2index 1 -p2guid 050000005e040000e002000003090000 -p2name "Xbox One Wireless Controller" -p2nbaxes 6 -p2nbhats 1 -p2nbbuttons 11 -p2devicepath /dev/input/event19 -system psx -rom cdrom://drive1.cue -emulator libretro -core mednafen_psx_hw -ratio auto');
+            api.internal.system.run('python /usr/bin/emulatorlauncher.pyc -p1index 0 -p1guid 03000000c82d00000260000011010000 -p1name "8BitDo SN30 Pro+" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 15 -p1devicepath /dev/input/event18 -p2index 1 -p2guid 050000005e040000e002000003090000 -p2name "Xbox One Wireless Controller" -p2nbaxes 6 -p2nbhats 1 -p2nbbuttons 11 -p2devicepath /dev/input/event19 -system psx -rom cdrom://drive1.cue -emulator libretro -core mednafen_psx_hw -ratio auto');
         }
         function onSecondChoice() {
             // eject disk
@@ -317,52 +319,54 @@ Window {
             content.focus = true;
         }
         function onCancel() {
-            // return back
+            // return back and stop timer
+            popupCdromDelay.running = false;
             content.focus = true;
         }
     }
+
+    property string gameCdRom: ""
+
     //list model to manage icons of devices
     ListModel {
         id: mySystemIcons
 
-        ListElement { icon: "\uf275"; keywords: "psx"; type:"controller"}
-        ListElement { icon: "\uf294"; keywords: "dreamcast"; type:"controller"}
-        ListElement { icon: "\uf26b"; keywords: "segacd"; type:"controller"}
-        ListElement { icon: "\uf27f"; keywords: "pcenginecd"; type:"controller"}
+        ListElement { icon: "\uf275"; system: "system = psx"}
+        ListElement { icon: "\uf26e"; system: "system = dreamcast"}
+        ListElement { icon: "\uf26b"; system: "system = segacd"}
+        ListElement { icon: "\uf271"; system: "system = pcenginecd"}
     }
+
     Component {
         id: cdRomPopup
         CdRomDialog
         {
             focus: true
-//            title: qsTr("Disk drive")
-            symbol: "\uf275"
-            message: gameCdRom + qsTr("A game is in the disk drive")
+            // title: qsTr("Disk drive")
+            symbol:"\uf275"
+            message:qsTr("A game is in the disk drive : ") + gameCdRom
             firstchoice: qsTr("Launch")
             secondchoice: qsTr("Eject")
             thirdchoice: qsTr("Back")
         }
     }
 
-    property string gameCdRom: ""
-
     // Timer to show the popup cdrom
     Timer {
         id: popupCdromDelay
 
-        interval: 8000
+        interval: 5000
         repeat: true
         running: true
         onTriggered: {
             gameCdRom = api.internal.system.run("cat /tmp/cd.conf");
-            if(gameCdRom.includes("system")) {
-                cdRomPopupLoader.active = false;
-                cdRomPopupLoader.active = true;
+            if(gameCdRom.includes("system = psx")) {
                 cdRomPopupLoader.focus = true;
             }
         }
     }
 
+    //Event from API Back-end
     Connections {
         target: api
 
@@ -492,27 +496,72 @@ Window {
                     elide: Text.ElideRight
                     wrapMode: Text.WordWrap
 
-					anchors {
-						top: titleText.bottom
-						bottom: parent.bottom
-						left: parent.left
-						right: (popup.icon !== "") ? iconText.left : parent.right
-						leftMargin: popup.titleTextSize * 0.5
-						rightMargin: popup.titleTextSize * 0.5
-					}
-					width: parent.width - (2 * anchors.leftMargin)
-					verticalAlignment: Text.AlignVCenter
-					color: themeColor.textLabel
-					fontSizeMode: Text.Fit
-					minimumPixelSize: popup.textSize - vpx(4)
-					font {
-						pixelSize: popup.textSize
-						family: globalFonts.sans
-					}
-				}
-			}
-		}
-	}
+                    anchors {
+                        top: parent.top
+                        left: parent.left
+                        right:  parent.right;
+                        leftMargin: popup.titleTextSize * 0.5
+                        rightMargin: popup.titleTextSize * 0.5
+                    }
+                    width: parent.width - (2 * anchors.leftMargin)
+                    height: popup.titleTextSize * 1.2
+                    color: themeColor.textTitle
+                    fontSizeMode: Text.Fit
+                    minimumPixelSize: popup.titleTextSize - vpx(2)
+                    font {
+                        bold: true
+                        pixelSize: popup.titleTextSize
+                        family: globalFonts.sans
+                    }
+                }
+
+                Text {
+                    id: iconText
+
+                    anchors {
+                        top: titleText.bottom
+                        bottom: parent.bottom
+                        right:  parent.right;
+                        rightMargin: popup.titleTextSize * 0.1
+                    }
+                    width: height
+                    color: themeColor.textTitle
+                    fontSizeMode: Text.Fit
+                    minimumPixelSize: popup.iconSize - vpx(10)
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font {
+                        pixelSize: popup.iconSize
+                        family: globalFonts.sans
+                    }
+                }
+
+                Text {
+                    id: messageText
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
+
+                    anchors {
+                        top: titleText.bottom
+                        bottom: parent.bottom
+                        left: parent.left
+                        right: (popup.icon !== "") ? iconText.left : parent.right
+                        leftMargin: popup.titleTextSize * 0.5
+                        rightMargin: popup.titleTextSize * 0.5
+                    }
+                    width: parent.width - (2 * anchors.leftMargin)
+                    verticalAlignment: Text.AlignVCenter
+                    color: themeColor.textLabel
+                    fontSizeMode: Text.Fit
+                    minimumPixelSize: popup.textSize - vpx(4)
+                    font {
+                        pixelSize: popup.textSize
+                        family: globalFonts.sans
+                    }
+                }
+            }
+        }
+    }
 
     //Loader/Component/Connection to manage netplay room dialog
     Loader {
@@ -548,11 +597,11 @@ Window {
         target: netplayRoomDialog.item
         function onAccept() {
             //check that pseudo is empty and if yes, it's set to "Anonymous"
-			if(api.internal.recalbox.getStringParameter("global.netplay.nickname") === ""){
-				api.internal.recalbox.setStringParameter("global.netplay.nickname", "Anonymous");
-				//save it for configgen
-				api.internal.recalbox.saveParameters();
-			}    			
+            if(api.internal.recalbox.getStringParameter("global.netplay.nickname") === ""){
+                api.internal.recalbox.setStringParameter("global.netplay.nickname", "Anonymous");
+                //save it for configgen
+                api.internal.recalbox.saveParameters();
+            }
             netplayRoomDialog.game.launchNetplay(
                         2, "", "",
                         api.internal.recalbox.getBoolParameter("netplay.password.useforplayer") ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
@@ -587,32 +636,32 @@ Window {
                 var core = api.internal.recalbox.getStringParameter(shortName + ".core");
                 //console.log("core: ",core);
                 if((emulator === "") || (core === "")){ //in case of emulator/core not well saved in recalbox.conf
-                   for(var i = 0; i < game.collections.get(0).emulatorsCount ; i++){
-                       //get default one
-                       if(game.collections.get(0).isDefaultEmulatorAt(i)){
-                           //console.log("default emulator: ",game.collections.get(0).getNameAt(i));
-                           //console.log("default core: ",game.collections.get(0).getCoreAt(i));
-                           //console.log("default core has netplay ? ",game.collections.get(0).hasNetplayAt(i));
-                           if(game.collections.get(0).getNameAt(i).toLowerCase().includes("libretro")){
-                               //And return if has netplay or not
-                               return game.collections.get(0).hasNetplayAt(i);
-                           }
-                           else return false; // only libretro supported today
-                       }
-                   }
-                   //return false if not found..strange ?!
-                   return false;
+                    for(var i = 0; i < game.collections.get(0).emulatorsCount ; i++){
+                        //get default one
+                        if(game.collections.get(0).isDefaultEmulatorAt(i)){
+                            /*console.log("default emulator: ",game.collections.get(0).getNameAt(i));
+                            console.log("default core: ",game.collections.get(0).getCoreAt(i));
+                            console.log("default core has netplay ? ",game.collections.get(0).hasNetplayAt(i));*/
+                            if(game.collections.get(0).getNameAt(i).toLowerCase().includes("libretro")){
+                                //And return if has netplay or not
+                                return game.collections.get(0).hasNetplayAt(i);
+                            }
+                            else return false; // only libretro supported today
+                        }
+                    }
+                    //return false if not found..strange ?!
+                    return false;
                 }
                 //if libretro emulator and only
                 else if(emulator.toLowerCase().includes("libretro")){
                     for(var j = 0; j < game.collections.get(0).emulatorsCount ; j++){
-                        //console.log("emulator to check: ",game.collections.get(0).getNameAt(j));
-                        //console.log("core to check: ",game.collections.get(0).getCoreAt(j));
-                        //get if one is matching
+                        /*console.log("emulator to check: ",game.collections.get(0).getNameAt(j));
+                        console.log("core to check: ",game.collections.get(0).getCoreAt(j));
+                        get if one is matching*/
                         if(game.collections.get(0).getCoreAt(j) === core){
-                            //console.log("found emulator: ",game.collections.get(0).getNameAt(j));
-                            //console.log("found core: ",game.collections.get(0).getCoreAt(j));
-                            //And return if has netplay or not
+                            /*console.log("found emulator: ",game.collections.get(0).getNameAt(j));
+                            console.log("found core: ",game.collections.get(0).getCoreAt(j));
+                            And return if has netplay or not*/
                             return game.collections.get(0).hasNetplayAt(j);
                         }
                     }
