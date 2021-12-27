@@ -515,8 +515,8 @@ Window {
         asynchronous: true
         //to set value via loader
         property var game
-        property var game_logo: game.assets.logo
-        property var game_name: game.title
+        property var game_logo: game ? game.assets.logo : null
+        property var game_name: game ? game.title : null
     }
 
     Component {
