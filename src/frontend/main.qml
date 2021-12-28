@@ -359,7 +359,7 @@ Window {
 
         interval: 5000
         repeat: true
-        running: true
+        running: splashScreen.focus ? false : true
         onTriggered: {
             gameCdRom = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf");
             console.log(gameCdRom)
