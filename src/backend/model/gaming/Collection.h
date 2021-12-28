@@ -105,7 +105,7 @@ public:
     Q_INVOKABLE QString getCoreAt (const int index) {return m_data.common_emulators.at(index).core;};
     Q_INVOKABLE QString getPriorityAt (const int index) {return QString::number(m_data.common_emulators.at(index).priority);};
 	Q_INVOKABLE bool hasNetplayAt (const int index) {
-		//can't use this method for the moment due to issue in the systemsList.xml as for NES where only fbneo is Netplay compatible ?! strange ?!
+		//can't use this method for the moment due to issue in the systemList.xml as for NES where only fbneo is Netplay compatible ?! strange ?!
 		//if(m_data.common_emulators.at(index).netplay != 0) return true; 
 		//else return false;
 		if(m_data.common_emulators.at(index).corelongname != "") return true; //if not empty, this core exists and use today for netplay
