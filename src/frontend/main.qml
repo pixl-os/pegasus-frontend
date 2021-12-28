@@ -310,7 +310,7 @@ Window {
         function onAccept() {
             // Launch cdrom and stop repeater
             content.focus = true;
-            api.internal.system.run('python /usr/bin/emulatorlauncher.pyc -p1index 0 -p1guid 03000000c82d00000260000011010000 -p1name "8BitDo SN30 Pro+" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 15 -p1devicepath /dev/input/event18 -p2index 1 -p2guid 050000005e040000e002000003090000 -p2name "Xbox One Wireless Controller" -p2nbaxes 6 -p2nbhats 1 -p2nbbuttons 11 -p2devicepath /dev/input/event19 -system psx -rom cdrom://drive1.cue -emulator libretro -core mednafen_psx_hw -ratio auto');
+            api.internal.system.run('/usr/bin /usr/bin/retroarch -L /usr/lib/libretro/mednafen_psx_hw_libretro.so --config /recalbox/share/system/configs/retroarch/retroarchcustom.cfg --appendconfig /recalbox/share/system/configs/retroarch/retroarchcustom.cfg.overrides.cfg cdrom://drive1.cue');
             api.internal.system.run("rm -f /tmp/cd.conf");
         }
         function onSecondChoice() {
