@@ -310,7 +310,7 @@ Window {
         function onAccept() {
             // Launch cdrom and stop repeater
             content.focus = true;
-            api.internal.system.run('/usr/bin /usr/bin/retroarch -L /usr/lib/libretro/mednafen_psx_hw_libretro.so --config /recalbox/share/system/configs/retroarch/retroarchcustom.cfg --appendconfig /recalbox/share/system/configs/retroarch/retroarchcustom.cfg.overrides.cfg cdrom://drive1.cue');
+            api.internal.system.run('/usr/bin/retroarch -L /usr/lib/libretro/mednafen_psx_hw_libretro.so --config /recalbox/share/system/configs/retroarch/retroarchcustom.cfg --appendconfig /recalbox/share/system/configs/retroarch/retroarchcustom.cfg.overrides.cfg cdrom://drive1.cue');
             api.internal.system.run("rm -f /tmp/cd.conf");
         }
         function onSecondChoice() {
