@@ -361,8 +361,9 @@ Window {
         repeat: true
         running: true
         onTriggered: {
-            gameCdRom = api.internal.system.run("cat /tmp/cd.conf");
-            if(gameCdRom.includes("system = psx")) {
+            gameCdRom = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf");
+            console.log(gameCdRom)
+            if(gameCdRom.includes("system =")) {
                 cdRomPopupLoader.focus = true;
             }
         }
