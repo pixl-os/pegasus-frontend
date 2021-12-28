@@ -22,6 +22,7 @@
 #include "System.h"
 #include "settings/Recalbox.h"
 #include "netplay/Netplay.h"
+#include "singleplay/Singleplay.h"
 #include "settings/Settings.h"
 #include "utils/QmlHelpers.h"
 
@@ -38,6 +39,7 @@ class Internal : public QObject {
     QML_CONST_PROPERTY(model::GamepadManager, gamepad)
     QML_CONST_PROPERTY(model::Recalbox, recalbox)
     QML_CONST_PROPERTY(model::Netplay, netplay)
+	QML_CONST_PROPERTY(model::Singleplay, singleplay)
     
 public:
     explicit Internal(const backend::CliArgs& args, QObject* parent = nullptr);
