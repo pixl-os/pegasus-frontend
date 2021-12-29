@@ -25,6 +25,7 @@ public:
     explicit Singleplay(QObject* parent = nullptr);
     Q_INVOKABLE void setTitle (const QString title) {m_game.setTitle(title);};
     Q_INVOKABLE void setFile (const QString path) {
+        m_game.cleanFiles(); //clean files to avoid to add new file to existing ones for the moment.
         m_game.setFiles({ new model::GameFile(QFileInfo(path), m_game) });
         m_game.setPath(path);
     }
