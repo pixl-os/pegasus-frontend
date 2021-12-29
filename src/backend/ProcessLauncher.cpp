@@ -84,10 +84,17 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     const model::Game& game = *gamefile.parentGame();
     const QFileInfo& finfo = gamefile.fileinfo();
     
-    Log::debug(LOGMSG("Param not updated: '%1'").arg(param));
-    
-    param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())));
-    
+    //Log::debug(LOGMSG("Param not updated: '%1'").arg(param));
+
+    //to manage cdrom case
+    if(gamefile.fileinfo().filePath().contains("cdrom://")){
+        //Log::debug(LOGMSG("PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath())): '%1'").arg(PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath()))));
+        param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath())));
+    }
+    else{
+        param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())));
+    }
+
     QString shortname = game.systemShortName();
     
     param
@@ -207,7 +214,7 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     
     replace_env_vars(param);
     
-    Log::debug(LOGMSG("Param updated: '%1'").arg(param));
+    //Log::debug(LOGMSG("Param updated: '%1'").arg(param));
 
 }
 
@@ -310,9 +317,18 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     }
 #endif
 
-    const QString default_workdir = contains_slash(command)
-        ? QFileInfo(command).absolutePath()
-        : gamefile.fileinfo().absolutePath();
+    QString default_workdir;
+    //to manage cdrom case
+    if(gamefile.fileinfo().filePath().contains("cdrom://")){
+        default_workdir = "cdrom://";
+    }
+    else{
+        default_workdir = contains_slash(command)
+            ? QFileInfo(command).absolutePath()
+            : gamefile.fileinfo().absolutePath();
+    }
+    //Log::debug(LOGMSG("QFileInfo(command).absolutePath(): %1").arg(QFileInfo(command).absolutePath()));
+    //Log::debug(LOGMSG("gamefile.fileinfo().absolutePath(): %1").arg(gamefile.fileinfo().absolutePath()));
 
     QString workdir = game.launchWorkdir();
     replace_variables(workdir, &gamefile);
