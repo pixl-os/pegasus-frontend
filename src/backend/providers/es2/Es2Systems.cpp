@@ -411,5 +411,78 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
     return systems;
 }
 
+SystemEntry find_system(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const QString shortName)
+{
+    providers::es2::SystemEntry sysentry;
+    const QString xml_path = find_systems_xml(possible_config_dirs);
+    if (xml_path.isEmpty()) {
+        Log::info(log_tag, LOGMSG("No installation found"));
+        return {};
+    }
+    Log::info(log_tag, LOGMSG("Found `%1`").arg(xml_path));
+
+    QFile xml_file(xml_path);
+    if (!xml_file.open(QIODevice::ReadOnly)) {
+        Log::error(log_tag, LOGMSG("Could not open `%1`").arg(xml_path));
+        return {};
+    }
+
+    QXmlStreamReader xml(&xml_file);
+    if (!xml.readNextStartElement()) {
+        Log::error(log_tag, LOGMSG("Could not parse `%1`").arg(xml_path));
+        return {};
+    }
+
+    if (xml.name() != QLatin1String("systemList")) {
+        Log::error(log_tag, LOGMSG("`%1` does not have a `<systemList>` root node").arg(xml_path));
+        return {};
+    }
+
+    //! Core information list
+    std::vector<providers::es2::CoreInfo> mCoreList;
+    //read also retroarch cores first to complete info
+    std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/retroarch.corenames");
+    for(std::string& line : Strings::Split(content, '\n'))
+    {
+      Strings::Vector parts = Strings::Split(line, ';');
+      if (parts.size() == 3){
+        //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
+        mCoreList.push_back({ parts[0], parts[1], parts[2] });
+      }
+    }
+
+    //Since ROMFS V2, find default as following: 
+	//<defaults command="python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%"/>
+	QString defaultsCommand = "";
+    while (xml.readNextStartElement()) {
+		QStringRef name = xml.name();
+		if (name == QLatin1String("defaults")) {
+			//ROMFS V2 file identified
+			Log::info(log_tag, LOGMSG("ROMFS V2 xml format Identified"));
+			//Get default command
+			//TO DO to extract from XML
+			defaultsCommand = "python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%";
+            xml.skipCurrentElement();
+            continue;
+			
+		}
+		else if (name != QLatin1String("system")) {
+			Log::debug(log_tag, LOGMSG("Skip this one: %1").arg(name));
+            xml.skipCurrentElement();
+            continue;
+        }
+        if (defaultsCommand == "") sysentry = read_system_entry(log_tag, xml,mCoreList);
+        else sysentry = read_system_entry_v2(log_tag, xml, defaultsCommand,mCoreList);
+        if ((!sysentry.name.isEmpty()) && (sysentry.platforms == shortName)){
+			break; //to get only one system in this case
+		}
+    }
+    if (xml.error())
+        Log::error(log_tag, xml.errorString());
+
+    return sysentry;
+}
+
+
 } // namespace es2
 } // namespace providers

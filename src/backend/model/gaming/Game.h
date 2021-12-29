@@ -228,6 +228,7 @@ public:
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     Game& setFiles(std::vector<model::GameFile*>&&);
+    Game& cleanFiles();
     Game& setCollections(std::vector<model::Collection*>&&);
     const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(!m_files->isEmpty()); return m_files->asList(); }
     const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(!m_collections->isEmpty()); return m_collections->asList(); }
