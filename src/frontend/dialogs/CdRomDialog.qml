@@ -118,17 +118,15 @@ FocusScope {
                 source: getPicture(root.system)
                 antialiasing: true
                 fillMode: Image.PreserveAspectFit
-                width: vpx(400)
-                height: vpx(400)
+                width: vpx(400); height: vpx(400)
+                asynchronous: true
+                sourceSize { width: vpx(400); height: vpx(400) }
                 anchors {
                     verticalCenter: parent.verticalCenter
                     horizontalCenter: parent.horizontalCenter
                 }
-                asynchronous: true
-                sourceSize { width: vpx(400); height: vpx(400) }
                 NumberAnimation on rotation {
-                    from: 0
-                    to: 1080 * 6
+                    from: 0; to: 1080 * 6
                     running: cdRomPopupLoader.visible === true
                     loops: Animation.Infinite
                     duration: 12000
@@ -305,9 +303,3 @@ FocusScope {
         }
     ]
 }
-
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
-##^##*/

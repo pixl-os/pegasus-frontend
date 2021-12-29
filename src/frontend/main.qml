@@ -308,20 +308,21 @@ Window {
         target: cdRomPopupLoader.item
 
         function onAccept() {
-            // Launch cdrom and stop repeater
             content.focus = true;
-            api.internal.system.run('/usr/bin/retroarch -L /usr/lib/libretro/mednafen_psx_hw_libretro.so --config /recalbox/share/system/configs/retroarch/retroarchcustom.cfg --appendconfig /recalbox/share/system/configs/retroarch/retroarchcustom.cfg.overrides.cfg cdrom://drive1.cue');
+            // connect game to launcher
+            api.connectGameFiles(api.internal.singleplay.game);
+            // launch this Game
+            api.internal.singleplay.game.launch();
+            // remove tmp file
             api.internal.system.run("rm -f /tmp/cd.conf");
         }
         function onSecondChoice() {
             // eject disk and delete tmp file
-            // return back
             content.focus = true;
             api.internal.system.run("rm -f /tmp/cd.conf | eject");
         }
         function onCancel() {
             // return back and remove tmp file
-//            popupCdromDelay.running = false;
             content.focus = true;
             api.internal.system.run("rm -f /tmp/cd.conf");
         }
@@ -356,6 +357,12 @@ Window {
             console.log(gameCdRom)
             if(gameCdRom.includes("system =")) {
                 cdRomPopupLoader.focus = true;
+                //just set "cdrom" as title of this game (optional)
+                api.internal.singleplay.setTitle("cdrom");
+                //set rom full path
+                api.internal.singleplay.setFile("cdrom://drive1.cue");
+                //set system to select to run this rom
+                api.internal.singleplay.setSystem("psx"); //using shortName
             }
         }
     }
