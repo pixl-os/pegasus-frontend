@@ -17,7 +17,6 @@
 
 import QtQuick 2.12
 
-
 FocusScope {
     id: root
 
@@ -26,6 +25,7 @@ FocusScope {
     property alias firstchoice: okButtonText.text
     property alias secondchoice: secondButtonText.text
     property alias thirdchoice: cancelButtonText.text
+    property var system;
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
@@ -33,6 +33,44 @@ FocusScope {
     signal accept()
     signal secondChoice()
     signal cancel()
+
+    //list model to manage icons of devices
+    ListModel {
+        id: mySystemIcons
+
+        ListElement { icon: "\uf275"; system: "psx"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd.png"}
+        ListElement { icon: "\uf26e"; system: "dreamcast"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-dreamcast.png"}
+        ListElement { icon: "\uf26b"; system: "segacd"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd.png"}
+        ListElement { icon: "\uf271"; system: "pcenginecd"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd.png"}
+    }
+
+    //function to get icon from system
+    function getIcon(mySystem){
+        let icon = "";
+        let i = 0;
+        //search Icon using the good system
+        do{
+            if (mySystem.includes(mySystemIcons.get(i).system)){
+                    icon = mySystemIcons.get(i).icon;
+            }
+            i = i + 1;
+        }while (icon === "" && i < mySystemIcons.count)
+        return icon;
+    }
+
+    //function to get CD picture from system
+    function getPicture(mySystem){
+        let picture = "";
+        let i = 0;
+        //search Picture using the good system
+        do{
+            if (mySystem.includes(mySystemIcons.get(i).system)){
+                    picture = mySystemIcons.get(i).picture;
+            }
+            i = i + 1;
+        }while (picture === "" && i < mySystemIcons.count)
+        return picture;
+    }
 
     anchors.fill: parent
     visible: shade.opacity > 0
@@ -77,7 +115,7 @@ FocusScope {
             height: pngCdrom.height + vpx("5") * root.textSize
             Image {
                 id: pngCdrom
-                source: "qrc:/frontend/assets/project-cd/retroarch-cd.png"
+                source: getPicture(root.system)
                 antialiasing: true
                 fillMode: Image.PreserveAspectFit
                 width: vpx(400)
@@ -131,6 +169,7 @@ FocusScope {
                     rightMargin: root.titleTextSize * 0.75
                 }
                 color: themeColor.textTitle
+                text: getIcon(root.system)
                 font {
                     bold: false
                     pixelSize: root.titleTextSize * 2.5

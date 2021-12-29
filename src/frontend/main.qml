@@ -329,27 +329,18 @@ Window {
 
     property string gameCdRom: ""
 
-    //list model to manage icons of devices
-    ListModel {
-        id: mySystemIcons
-
-        ListElement { icon: "\uf275"; system: "system = psx"}
-        ListElement { icon: "\uf26e"; system: "system = dreamcast"}
-        ListElement { icon: "\uf26b"; system: "system = segacd"}
-        ListElement { icon: "\uf271"; system: "system = pcenginecd"}
-    }
-
     Component {
         id: cdRomPopup
         CdRomDialog
         {
             focus: true
             // title: qsTr("Disk drive")
-            symbol:"\uf275"
+            //symbol:"\uf275"
             message:qsTr("A game is in the disk drive : ") + gameCdRom
             firstchoice: qsTr("Launch")
             secondchoice: qsTr("Eject")
             thirdchoice: qsTr("Back")
+            system: gameCdRom
         }
     }
 

@@ -102,5 +102,6 @@
         <file>dialogs/NetplayDialog.qml</file>
         <file>assets/project-cd/retroarch-cd.png</file>
         <file>dialogs/CdRomDialog.qml</file>
+        <file>assets/project-cd/retroarch-cd-dreamcast.png</file>
     </qresource>
 </RCC>
