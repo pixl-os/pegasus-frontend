@@ -73,7 +73,7 @@ QStringList GetParametersList(QString Parameter)
           --rotate normal,inverted,left,right */
         ListOfValue << "normal" << "inverted" << "left" << "right";
     }
-    else if (Parameter == "system.marquee.screen.position")
+    else if (Parameter == "system.secondary.screen.position")
     {
         /* parameter List for xrandr option :
         for postion xrandr output :
