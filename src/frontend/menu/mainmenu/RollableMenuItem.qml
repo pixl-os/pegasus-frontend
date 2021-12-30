@@ -69,7 +69,7 @@ FocusScope {
             if (activeFocus)
                 root.state = "";
         }
-
+        symbol:"\uf1ef"
         selected: root.focus
     }
 

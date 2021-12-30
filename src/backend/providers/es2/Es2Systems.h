@@ -75,6 +75,7 @@ struct SystemEntry {
 };
 
 std::vector<SystemEntry> find_systems(const QString&, const std::vector<QString>&);
+SystemEntry find_system(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const QString shortName);
 
 } // namespace es2
 } // namespace providers

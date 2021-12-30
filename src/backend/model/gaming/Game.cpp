@@ -170,6 +170,19 @@ void Game::updateRetroAchievements_slot()
     }
 }
 
+Game& Game::cleanFiles()
+{
+    if(!m_files->isEmpty()){
+        //remove link
+        for (model::GameFile* const gamefile : this->filesConst()) {
+            disconnect(gamefile, &model::GameFile::playStatsChanged,
+                    this, &model::Game::onEntryPlayStatsChanged);
+        }
+        m_files->clear();
+    }
+    return *this;
+}
+
 Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 {
     for (model::GameFile* const gamefile : files) {

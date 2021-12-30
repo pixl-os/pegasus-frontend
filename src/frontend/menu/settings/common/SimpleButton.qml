@@ -23,6 +23,7 @@ FocusScope {
 
     property alias label: label.text
     property alias note: sublabel.text
+    property alias pointerIcon: pointerConfigs.visible
 
     readonly property int fontSize: vpx(22)
     readonly property int horizontalPadding: vpx(30)
@@ -31,7 +32,7 @@ FocusScope {
 
 
     width: parent.width
-//    height: fontSize * 2.5
+    //    height: fontSize * 2.5
     height: labelContainer.height + fontSize * 1.25
 
     Keys.onPressed: {
@@ -40,7 +41,6 @@ FocusScope {
             root.activate();
         }
     }
-
 
     Rectangle {
         id: underline
@@ -86,18 +86,19 @@ FocusScope {
             wrapMode: Text.WordWrap
         }
     }
-//    Text {
-//        id: label
-
-//        anchors.left: parent.left
-//        anchors.leftMargin: horizontalPadding
-//        anchors.verticalCenter: parent.verticalCenter
-
-//        color: "#eee"
-//        font.pixelSize: fontSize
-//        font.family: globalFonts.sans
-//    }
-
+    Text {
+        id: pointerConfigs
+        visible: false
+        anchors {
+            rightMargin: vpx(20)
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+        }
+        color: themeColor.textValue
+        font.pixelSize: vpx(30)
+        font.family: globalFonts.ion
+        text : "\uf3d1"
+    }
     MouseArea {
         id: mouseArea
         anchors.fill: parent

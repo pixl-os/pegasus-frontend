@@ -24,6 +24,7 @@ FocusScope {
     property alias label: label.text
     property alias note: sublabel.text
     property alias checked: toggle.checked
+    property alias symbol: symbolSubMenu.text
 
     property int fontSize: vpx(22)
     property int horizontalPadding: vpx(30)
@@ -42,7 +43,20 @@ FocusScope {
         color: themeColor.underline
         visible: parent.focus || mouseArea.containsMouse
     }
-
+    Text {
+        id: symbolSubMenu
+            anchors {
+                verticalCenter: parent.verticalCenter
+                left: parent.left
+                leftMargin: - vpx("55")
+            }
+        color: themeColor.textTitle
+        font {
+            bold: false
+            pixelSize: fontSize * 2
+            family: global.fonts.ion
+        }
+    }
     Column {
         id: labelContainer
         anchors {
@@ -53,7 +67,6 @@ FocusScope {
 
         spacing: fontSize * 0.25
         height: label.height + (sublabel.text ? spacing + sublabel.height : 0)
-
 
         Text {
             id: label

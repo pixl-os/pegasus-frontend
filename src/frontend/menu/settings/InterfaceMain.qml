@@ -137,6 +137,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Customize interface") + api.tr
                     first: true
+                    symbol: "\uf132"
                 }
                 SimpleButton {
                     id: optMenuControlsConfig
@@ -145,20 +146,8 @@ FocusScope {
 
                     label: qsTr("Change menu controls") + api.tr
                     note: qsTr("Change control assignation only in menu") + api.tr
-
-                    Text {
-                        id: pointeroptMenuControlsConfig
-
-                        anchors.right: parent.right
-//                        anchors.rightMargin: horizontalPadding
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
                         focus = true;

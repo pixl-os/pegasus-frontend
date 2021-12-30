@@ -159,6 +159,28 @@ bool Es2Provider::save_input_data(const inputConfigEntry& input)
     
 }
 
+SystemEntry Es2Provider::find_one_system(const QString shortName)
+{
+    
+    std::vector<QString> possible_config_dirs = [this]{
+        const auto option_it = options().find(QStringLiteral("installdir"));
+        return (option_it != options().cend())
+            ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
+            : default_config_paths();
+    }();
+    
+    for (int i = 0; i < possible_config_dirs.size(); ++i) {
+        Log::debug(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
+    }
+
+    // Find one system
+    QElapsedTimer systems_timer;
+    systems_timer.start();
+    SystemEntry system = find_system(display_name(), possible_config_dirs, shortName);
+    Log::debug(display_name(), LOGMSG("Stats: Found %1 system").arg(system.name));
+    Log::debug(LOGMSG("Stats - Global Timing: System searching took %1ms").arg(systems_timer.elapsed()));
+	return system;
+}
 
 } // namespace es2
 } // namespace providers

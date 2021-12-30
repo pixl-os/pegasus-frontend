@@ -104,6 +104,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Sound configuration") + api.tr
                     first: true
+                    symbol: "\uf11c"
                 }
                 MultivalueOption {
                     id: optAudioMode
@@ -212,25 +213,15 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Video Configuration") + api.tr
                     first: true
+                    symbol: "\uf17f"
                 }
                 SimpleButton {
                     id: optVideoSettings
 
                     label: qsTr("Video configuration") + api.tr
                     note: qsTr("choose output") + api.tr
-
-                    Text {
-                        id: pointeroptVideoSettings
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
                         api.internal.system.run("/usr/bin/xrandr > /tmp/xrandr.tmp");
@@ -285,6 +276,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Storage configuration") + api.tr
                     first: true
+                    symbol: "\uf2ec"
                 }
                 MultivalueOption {
                     id: optStorageDevices
@@ -328,6 +320,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("System language") + api.tr
                     first: true
+                    symbol: "\uf18a"
                 }
                 MultivalueOption {
                     id: optLanguage
@@ -377,6 +370,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("System") + api.tr
                     first: true
+                    symbol: "\uf221"
                 }
                 ToggleOption {
                     id: optDebugMode

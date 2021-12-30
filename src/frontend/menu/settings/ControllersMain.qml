@@ -105,6 +105,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Controllers") + api.tr
                     first: true
+                    symbol: "\uf181"
                 }
                 SimpleButton {
                     id: optBluetoothDevices
@@ -114,19 +115,8 @@ FocusScope {
 
                     label: qsTr("Bluetooth devices") + api.tr
                     note: qsTr("connect your pads") + api.tr
-
-                    Text {
-                        id: pointeroptBluetoothConfig
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 					
                     onActivate: {
                         focus = true;
@@ -142,19 +132,8 @@ FocusScope {
                     focus: !optBluetoothDevices.focus
                     label: qsTr("Gamepad layout") + api.tr
                     note: qsTr("Show game layout configuration controller") + api.tr
-
-                    Text {
-                        id: pointeroptGamepadConfig
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
                         focus = true;
@@ -168,19 +147,8 @@ FocusScope {
 
                     label: qsTr("Advanced controllers configuration") + api.tr
                     note: qsTr("Choose your drivers or Special Controllers") + api.tr
-
-                    Text {
-                        id: pointeroptAdvancedControllers
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
                         focus = true;
@@ -201,6 +169,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Controllers inputs") + api.tr
                     first: false
+                    symbol: "\uf4a9"
                 }
                 Repeater{
                     id:controllersList

@@ -53,6 +53,8 @@ public:
 
     // scanning
     void startScanning();
+	
+    Q_INVOKABLE void connectGameFiles(model::Game* game);
 
 signals:
     void launchGameFile(const model::GameFile*);

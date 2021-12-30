@@ -139,73 +139,73 @@ bool RecalboxSystem::setOverscan(bool enable)
 
 }
 
-// bool RecalboxSystem::setOverclock(const std::string& mode)
-// {
-//   if (!mode.empty())
-//   {
-//     std::string cmd(sConfigScript);
-//     cmd += " overclock";
-//     cmd += ' ';
-//     cmd += mode;
-//     { LOG(LogInfo) << "[System] Launching " << cmd; }
-//     if (system(cmd.c_str()) != 0)
-//     {
-//       { LOG(LogWarning) << "[System] Error executing " << cmd; }
-//       return false;
-//     }
-//     else
-//     {
-//       { LOG(LogInfo) << "[System] Overclocking set to " << mode; }
-//       return true;
-//     }
-//   }
+ /*bool RecalboxSystem::setOverclock(const std::string& mode)
+ {
+   if (!mode.empty())
+   {
+     std::string cmd(sConfigScript);
+     cmd += " overclock";
+     cmd += ' ';
+     cmd += mode;
+     { LOG(LogInfo) << "[System] Launching " << cmd; }
+     if (system(cmd.c_str()) != 0)
+     {
+       { LOG(LogWarning) << "[System] Error executing " << cmd; }
+       return false;
+     }
+     else
+     {
+       { LOG(LogInfo) << "[System] Overclocking set to " << mode; }
+       return true;
+     }
+   }
 
-//   return false;
-// }
+   return false;
+ }
 
-// bool RecalboxSystem::launchKodi(WindowManager& window)
-// {
-//   { LOG(LogInfo) << "[System] Attempting to launch kodi..."; }
+ bool RecalboxSystem::launchKodi(WindowManager& window)
+ {
+   { LOG(LogInfo) << "[System] Attempting to launch kodi..."; }
 
-//   AudioManager::Instance().Deactivate();
+   AudioManager::Instance().Deactivate();
 
-//   InputMapper mapper(nullptr);
-//   //OrderedDevices controllers = InputManager::Instance().GenerateConfiguration(mapper);
-//   std::string commandline = InputManager::Instance().GetMappedDeviceListConfiguration(mapper);
-//   std::string command = "configgen -system kodi -rom '' " + commandline;
+   InputMapper mapper(nullptr);
+   //OrderedDevices controllers = InputManager::Instance().GenerateConfiguration(mapper);
+   std::string commandline = InputManager::Instance().GetMappedDeviceListConfiguration(mapper);
+   std::string command = "configgen -system kodi -rom '' " + commandline;
 
-//   WindowManager::Finalize();
+   WindowManager::Finalize();
 
-//   NotificationManager::Instance().NotifyKodi();
+   NotificationManager::Instance().NotifyKodi();
 
-//   int exitCode = system(command.c_str());
-//   if (WIFEXITED(exitCode))
-//   {
-//     exitCode = WEXITSTATUS(exitCode);
-//   }
+   int exitCode = system(command.c_str());
+   if (WIFEXITED(exitCode))
+   {
+     exitCode = WEXITSTATUS(exitCode);
+   }
 
-//   window.Initialize();
-//   AudioManager::Instance().Reactivate();
-//   window.normalizeNextUpdate();
+   window.Initialize();
+   AudioManager::Instance().Reactivate();
+   window.normalizeNextUpdate();
 
-//   // handle end of kodi
-//   switch (exitCode)
-//   {
-//     case 10: // reboot code
-//     {
-//       MainRunner::RequestQuit(MainRunner::ExitState::NormalReboot);
-//       return true;
-//     }
-//     case 11: // shutdown code
-//     {
-//       MainRunner::RequestQuit(MainRunner::ExitState::Shutdown);
-//       return true;
-//     }
-//     default: break;
-//   }
+   // handle end of kodi
+   switch (exitCode)
+   {
+     case 10: // reboot code
+     {
+       MainRunner::RequestQuit(MainRunner::ExitState::NormalReboot);
+       return true;
+     }
+     case 11: // shutdown code
+     {
+       MainRunner::RequestQuit(MainRunner::ExitState::Shutdown);
+       return true;
+     }
+     default: break;
+   }
 
-//   return exitCode == 0;
-// }
+   return exitCode == 0;
+ }*/
 
 bool RecalboxSystem::backupRecalboxConf()
 {
@@ -466,70 +466,70 @@ std::pair<std::string, int> RecalboxSystem::execute(const std::string& command)
   return std::make_pair(output, WEXITSTATUS(exitCode));
 }
 
-// bool RecalboxSystem::ping()
-// {
-//   return Upgrade::NetworkReady();
-// }
+ /* bool RecalboxSystem::ping()
+ {
+   return Upgrade::NetworkReady();
+ }
 
-// std::pair<std::string, int> RecalboxSystem::getSDLBatteryInfo()
-// {
-//   std::pair<std::string, int> result;
-//   int percent = -1;
-//   auto powerInfo = SDL_GetPowerInfo(nullptr, &percent);
-//   switch (powerInfo)
-//   {
-//     case SDL_POWERSTATE_UNKNOWN:
-//     case SDL_POWERSTATE_NO_BATTERY:
-//     {
-//       percent = -1;
-//       break;
-//     }
-//     case SDL_POWERSTATE_ON_BATTERY:
-//     {
-//       if (percent > 66)
-//         result.first = "\uF1ba";
-//       else if (percent > 33)
-//         result.first = "\uF1b8";
-//       else if (percent > 15)
-//         result.first = "\uF1b1";
-//       else
-//         result.first = "\uF1b5";
-//       break;
-//     }
-//     case SDL_POWERSTATE_CHARGING:
-//     case SDL_POWERSTATE_CHARGED:
-//     {
-//       result.first = "\uf1b4";
-//       break;
-//     }
-//   }
-//   result.second = percent;
+ std::pair<std::string, int> RecalboxSystem::getSDLBatteryInfo()
+ {
+   std::pair<std::string, int> result;
+   int percent = -1;
+   auto powerInfo = SDL_GetPowerInfo(nullptr, &percent);
+   switch (powerInfo)
+   {
+     case SDL_POWERSTATE_UNKNOWN:
+     case SDL_POWERSTATE_NO_BATTERY:
+     {
+       percent = -1;
+       break;
+     }
+     case SDL_POWERSTATE_ON_BATTERY:
+     {
+       if (percent > 66)
+         result.first = "\uF1ba";
+       else if (percent > 33)
+         result.first = "\uF1b8";
+       else if (percent > 15)
+         result.first = "\uF1b1";
+       else
+         result.first = "\uF1b5";
+       break;
+     }
+     case SDL_POWERSTATE_CHARGING:
+     case SDL_POWERSTATE_CHARGED:
+     {
+       result.first = "\uf1b4";
+       break;
+     }
+   }
+   result.second = percent;
 
-//   return result;
-// }
+   return result;
+ }
 
-// bool RecalboxSystem::getSysBatteryInfo(int& charge, int& unicodeIcon)
-// {
-//   if (!Board::Instance().HasBattery()) return false;
+ bool RecalboxSystem::getSysBatteryInfo(int& charge, int& unicodeIcon)
+ {
+   if (!Board::Instance().HasBattery()) return false;
 
-//   charge = Board::Instance().BatteryChargePercent();
+   charge = Board::Instance().BatteryChargePercent();
 
-//   unicodeIcon = 0xf1b4;
-//   if (!Board::Instance().IsBatteryCharging())
-//   {
-//     if (charge > 66)      unicodeIcon = 0xF1ba;
-//     else if (charge > 33) unicodeIcon = 0xF1b8;
-//     else if (charge > 15) unicodeIcon = 0xF1b1;
-//     else                  unicodeIcon = 0xF1b5;
-//   }
+   unicodeIcon = 0xf1b4;
+   if (!Board::Instance().IsBatteryCharging())
+   {
+     if (charge > 66)      unicodeIcon = 0xF1ba;
+     else if (charge > 33) unicodeIcon = 0xF1b8;
+     else if (charge > 15) unicodeIcon = 0xF1b1;
+     else                  unicodeIcon = 0xF1b5;
+   }
 
-//   return true;
-// }
+   return true;
+ }
 
-// bool RecalboxSystem::kodiExists()
-// {
-//   return Path("/usr/bin/kodi").IsFile();
-// }
+ bool RecalboxSystem::kodiExists()
+ {
+   return Path("/usr/bin/kodi").IsFile();
+ } */
 
 bool RecalboxSystem::MakeBootReadOnly()
 {

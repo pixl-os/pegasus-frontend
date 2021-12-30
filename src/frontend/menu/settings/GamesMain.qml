@@ -101,6 +101,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
+                    symbol: "\uf17f"
                 }
                 MultivalueOption {
                     id: optGlobalGameRatio
@@ -239,6 +240,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Gameplay options") + api.tr
                     first: true
+                    symbol: "\uf412"
                 }
                 ToggleOption {
                     id: optGameRewind
@@ -275,6 +277,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Other options") + api.tr
                     first: true
+                    symbol: "\uf1d9"
                 }
 //                SimpleButton {
 //                    id: optBiosChecking
@@ -309,20 +312,8 @@ FocusScope {
 
                     label: qsTr("Advandced emulators settings") + api.tr
                     note: qsTr("choose emulator, ratio and more by system") + api.tr
-
-                    Text {
-                        id: pointeroptAdvancedEmulator
-
-                        anchors.right: parent.right
-//                        anchors.rightMargin: horizontalPadding
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
                         focus = true;

@@ -18,15 +18,33 @@
 import QtQuick 2.12
 
 
+
 Text {
     property bool first: false
+    property alias symbol: symbolTitle.text
+    property int fontSize: vpx(22)
 
     color: themeColor.textSectionTitle
-
-    font.pixelSize: vpx(22)
-    font.family: globalFonts.sans
-    font.capitalization: Font.AllUppercase
-    font.italic: true
-
+    font {
+        pixelSize: fontSize
+        family: globalFonts.sans
+        capitalization: Font.AllUppercase
+        italic: true
+    }
     topPadding: font.pixelSize * (first ? 0.25 : 2.25)
+
+    Text {
+        id: symbolTitle
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+            leftMargin: - vpx("55")
+        }
+        color: themeColor.textTitle
+        font {
+            bold: false
+            pixelSize: fontSize * 2
+            family: global.fonts.ion
+        }
+    }
 }

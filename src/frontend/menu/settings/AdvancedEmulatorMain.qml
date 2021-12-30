@@ -104,19 +104,8 @@ FocusScope {
                         onFocusChanged: container.onFocus(this)
                         KeyNavigation.up: (index != 0) ?  systemButtons.itemAt(index-1) : systemButtons.itemAt(systemButtons.count-1)
                         KeyNavigation.down: (index < systemButtons.count) ? systemButtons.itemAt(index+1) : systemButtons.itemAt(0)
-                        Text {
-                            id: pointer
-
-                            anchors.right: parent.right
-                            anchors.rightMargin: horizontalPadding
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            color: themeColor.textValue
-                            font.pixelSize: fontSize
-                            font.family: globalFonts.ion
-
-                            text : "\uf3d1"
-                        }
+                        //pointer moved in SimpleButton desactived on default
+                        pointerIcon: true
                     }
 
                 }

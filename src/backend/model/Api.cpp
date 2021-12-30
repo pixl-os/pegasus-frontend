@@ -90,6 +90,14 @@ void ApiObject::onSearchFinished()
     Log::info(LOGMSG("Stats - %1 games found").arg(m_allGames->count()));
 }
 
+void ApiObject::connectGameFiles(model::Game* game)
+{
+    for (model::GameFile* const gamefile : game->filesConst()) {
+        connect(gamefile, &model::GameFile::launchRequested,
+                this, &ApiObject::onGameFileLaunchRequested);
+    }
+}
+
 void ApiObject::onGameFileSelectorRequested()
 {
     auto game = static_cast<model::Game*>(QObject::sender());

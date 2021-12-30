@@ -17,9 +17,27 @@
 
 import QtQuick 2.12
 
+
 GenericMenuItem {
+    property alias symbol: symbolMenu.text
+
     z: 1000
     activeColor: themeColor.secondary
     inactiveColor: themeColor.main
     textSizePx: vpx(50)
+    Text {
+        id: symbolMenu
+
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+            leftMargin: vpx("20")
+        }
+        color: themeColor.textTitle
+        font {
+            bold: false
+            pixelSize: vpx(50)
+            family: global.fonts.ion
+        }
+    }
 }

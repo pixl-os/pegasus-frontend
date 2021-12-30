@@ -17,11 +17,11 @@ RecalboxConf::RecalboxConf()
   : IniFile(recalboxConfFile, recalboxConfFileInit),
     StaticLifeCycleControler<RecalboxConf>("RecalboxConf")
 {
-    //Activation of logs in ES source code components
-    //LogError   = 0, //!< Error messages -> Activated by default
-	//LogWarning = 1, //!< Warning messages
-	//LogInfo    = 2, //!< Information message
-	//LogDebug   = 3, //!< Debug message
+    /* Activation of logs in ES source code components
+    LogError   = 0, //!< Error messages -> Activated by default
+    LogWarning = 1, //!< Warning messages
+    LogInfo    = 2, //!< Information message
+    LogDebug   = 3, //!< Debug message */
     if (AsBool("emulationstation.warnlogs")) rLog::setReportingLevel(LogLevel::LogWarning);
     if (AsBool("emulationstation.infologs")) rLog::setReportingLevel(LogLevel::LogInfo);
     if (AsBool("emulationstation.debuglogs")) rLog::setReportingLevel(LogLevel::LogDebug);
@@ -102,16 +102,16 @@ const std::string& RecalboxConf::RelayFromEnum(RecalboxConf::Relay relay)
   return sDefault;
 }
 
-// DefineSystemGetterSetterImplementation(Emulator, std::string, String, sSystemEmulator, "")
-// DefineSystemGetterSetterImplementation(Core, std::string, String, sSystemCore, "")
-// DefineSystemGetterSetterImplementation(Ratio, std::string, String, sSystemRatio, GetGlobalRatio())
-// DefineSystemGetterSetterImplementation(Smooth, bool, Bool, sSystemSmooth, GetGlobalSmooth())
-// DefineSystemGetterSetterImplementation(Rewind, bool, Bool, sSystemRewind, GetGlobalRewind())
-// DefineSystemGetterSetterImplementation(AutoSave, bool, Bool, sSystemAutoSave, GetGlobalAutoSave())
-// DefineSystemGetterSetterImplementation(Shaders, std::string, String, sSystemShaders, GetGlobalShaders())
-// DefineSystemGetterSetterImplementation(ShaderSet, std::string, String, sSystemShaderSet, GetGlobalShaderSet())
+/* DefineSystemGetterSetterImplementation(Emulator, std::string, String, sSystemEmulator, "")
+ DefineSystemGetterSetterImplementation(Core, std::string, String, sSystemCore, "")
+ DefineSystemGetterSetterImplementation(Ratio, std::string, String, sSystemRatio, GetGlobalRatio())
+ DefineSystemGetterSetterImplementation(Smooth, bool, Bool, sSystemSmooth, GetGlobalSmooth())
+ DefineSystemGetterSetterImplementation(Rewind, bool, Bool, sSystemRewind, GetGlobalRewind())
+ DefineSystemGetterSetterImplementation(AutoSave, bool, Bool, sSystemAutoSave, GetGlobalAutoSave())
+ DefineSystemGetterSetterImplementation(Shaders, std::string, String, sSystemShaders, GetGlobalShaders())
+ DefineSystemGetterSetterImplementation(ShaderSet, std::string, String, sSystemShaderSet, GetGlobalShaderSet())
 
-// DefineEmulationStationSystemGetterSetterImplementation(FilterAdult, bool, Bool, sSystemFilterAdult, false)
-// DefineEmulationStationSystemGetterSetterImplementation(FlatFolders, bool, Bool, sSystemFlatFolders, false)
-// DefineEmulationStationSystemGetterSetterNumericEnumImplementation(Sort, FileSorts::Sorts, sSystemSort, FileSorts::Sorts::FileNameAscending)
-// DefineEmulationStationSystemGetterSetterNumericEnumImplementation(RegionFilter, Regions::GameRegions, sSystemRegionFilter, Regions::GameRegions::Unknown)
+ DefineEmulationStationSystemGetterSetterImplementation(FilterAdult, bool, Bool, sSystemFilterAdult, false)
+ DefineEmulationStationSystemGetterSetterImplementation(FlatFolders, bool, Bool, sSystemFlatFolders, false)
+ DefineEmulationStationSystemGetterSetterNumericEnumImplementation(Sort, FileSorts::Sorts, sSystemSort, FileSorts::Sorts::FileNameAscending)
+ DefineEmulationStationSystemGetterSetterNumericEnumImplementation(RegionFilter, Regions::GameRegions, sSystemRegionFilter, Regions::GameRegions::Unknown)*/
