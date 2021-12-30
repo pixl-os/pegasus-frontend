@@ -75,7 +75,7 @@ FocusScope {
 
             enabled: api.internal.meta.allowSettings
             visible: enabled
-
+            symbol:"\uf41a"
             KeyNavigation.down: mbControllersSettings
         }
         PrimaryMenuItem {
@@ -89,7 +89,7 @@ FocusScope {
 
             enabled: api.internal.meta.allowSettings
             visible: enabled
-
+            symbol:"\uf181"
             KeyNavigation.down: mbInterfaceSettings
         }
         PrimaryMenuItem {
@@ -103,7 +103,7 @@ FocusScope {
 
             enabled: api.internal.meta.allowSettings
             visible: enabled
-
+            symbol:"\uf17f"
             KeyNavigation.down: mbGamesSettings
         }
         PrimaryMenuItem {
@@ -117,7 +117,7 @@ FocusScope {
 
             enabled: api.internal.meta.allowSettings
             visible: enabled
-
+            symbol:"\uf221"
             KeyNavigation.down: mbSystemSettings
         }
         PrimaryMenuItem {
@@ -131,7 +131,7 @@ FocusScope {
 
             enabled: api.internal.meta.allowSettings
             visible: enabled
-
+            symbol:"\uf412"
             KeyNavigation.down: scopeQuit
         }
         RollableMenuItem {

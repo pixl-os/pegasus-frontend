@@ -93,24 +93,26 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-                SectionTitle {
-                    text: qsTr("Bluetooth controlers") + api.tr
-                    first: true
-                }
+
                 ToggleOption {
                     id: optBluetoothControllers
                     //controllers.bluetooth.enabled=1
                     // set focus only on first item
                     focus: true
+                    SectionTitle {
+                        text: qsTr("Bluetooth controlers") + api.tr
+                        first: true
+                    }
+//                    label: qsTr("Enable bluetooth") + api.tr
+//                    note: qsTr("Enable support for bluetooth controllers") + api.tr
 
-                    label: qsTr("Enable bluetooth") + api.tr
-                    note: qsTr("Enable support for bluetooth controllers") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled");
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.enabled",checked);
                     }
+                    symbol: "\uf29a"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optBluetoothScanMethods
                 }
@@ -229,30 +231,33 @@ FocusScope {
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.hide.no.name",checked);
-                    }                    onFocusChanged: container.onFocus(this)
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPs3Controllers
                     visible: optBluetoothControllers.checked
                 }
 
-                SectionTitle {
-                    text: qsTr("Sony controllers") + api.tr
-                    first: true
-                    visible: optBluetoothControllers.checked
-                }
+
                 ToggleOption {
                     id: optPs3Controllers
                     //controllers.ps3.enabled=1
                     // set focus only on first item
                     focus: false
 
-                    label: qsTr("Enable Sony Playstation bluetooth controllers") + api.tr
-                    note: qsTr("Sony Playstation 3,4,5 controllers supported") + api.tr
+//                    label: qsTr("Enable Sony Playstation bluetooth controllers") + api.tr
+//                    note: qsTr("Sony Playstation 3,4,5 controllers supported") + api.tr
+                    SectionTitle {
+                        text: qsTr("Sony controllers") + api.tr
+                        first: true
+                        visible: optBluetoothControllers.checked
+                    }
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.ps3.enabled")
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.ps3.enabled",checked);
                     }
+                    symbol: "\uf245"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDriversPs3Controllers
                     visible: optBluetoothControllers.checked
@@ -279,22 +284,24 @@ FocusScope {
                     visible: optPs3Controllers.checked && optBluetoothControllers.checked
 
                 }
-                SectionTitle {
-                    text: qsTr("Db9 controllers") + api.tr
-                    first: true
-                }
+
                 ToggleOption {
                     id: optDB9Controllers
                     //## Enable DB9 drivers for atari, megadrive, amiga controllers (0,1)
                     //controllers.db9.enabled=0
-                    label: qsTr("Enable driver DB9") + api.tr
-                    note: qsTr("Enable DB9 drivers for atari, megadrive, amiga controllers") + api.tr
+//                    label: qsTr("Enable driver DB9") + api.tr
+//                    note: qsTr("Enable DB9 drivers for atari, megadrive, amiga controllers") + api.tr
+                    SectionTitle {
+                        text: qsTr("Db9 controllers") + api.tr
+                        first: true
+                    }
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.db9.enabled")
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.db9.enabled",checked);
                     }
+                    symbol: "\uf13b"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDB9Arguments
                 }
@@ -313,22 +320,24 @@ FocusScope {
                     KeyNavigation.down: optGameconControllers
                     visible: optDB9Controllers.checked
                 }
-                SectionTitle {
-                    text: qsTr("Gamecon controllers") + api.tr
-                    first: true
-                }
+
                 ToggleOption {
                     id: optGameconControllers
                     //## Enable gamecon controllers, for nes, snes, psx (0,1)
                     //controllers.gamecon.enabled=0
-                    label: qsTr("Gamecon controller") + api.tr
-                    note: qsTr("Enable gamecon controllers, for nes, snes, psx") + api.tr
 
+                    //                    label: qsTr("Gamecon controller") + api.tr
+                    //                    note: qsTr("Enable gamecon controllers, for nes, snes, psx") + api.tr
+                    SectionTitle {
+                        text: qsTr("Gamecon controllers") + api.tr
+                        first: true
+                    }
                     checked: api.internal.recalbox.getBoolParameter("controllers.gamecon.enabled")
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.gamecon.enabled",checked);
                     }
+                    symbol: "\uf13b"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGameconArguments
                 }
@@ -347,27 +356,30 @@ FocusScope {
                     KeyNavigation.down: optArcadeStick
                     visible: optGameconControllers.checked
                 }
-                SectionTitle {
-                    text: qsTr("Arcade Stick") + api.tr
-                    first: true
-                }
+
                 ToggleOption {
                     id: optArcadeStick
                     //controllers.xarcade.enabled=1
-                    label: qsTr("Enable driver XGaming's") + api.tr
-                    note: qsTr("XGaming's XArcade Tankstick and other compatible devices") + api.tr
+//                    note: qsTr("Enable driver XGaming's") + api.tr
+//                    note: qsTr("XGaming's XArcade Tankstick and other compatible devices") + api.tr
+                    SectionTitle {
+                        text: qsTr("Arcade Stick Driver") + api.tr
+                        first: true
+                    }
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.xarcade.enabled")
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.xarcade.enabled",checked);
                     }
+                    symbol: "\uf13b"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWiiSensorsBars
                 }
                 SectionTitle {
                     text: qsTr("Dolphin emulators controllers") + api.tr
                     first: true
+                    symbol:"\uf13b" // need dolphin icon
                 }
                 ToggleOption {
                     id: optWiiSensorsBars
@@ -412,21 +424,23 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optJoyconControllers
                 }
-                SectionTitle {
-                    text: qsTr("Joycon controllers") + api.tr
-                    first: true
-                }
+
                 ToggleOption {
                     id: optJoyconControllers
                     //controllers.joycond.enabled=1
-                    label: qsTr("Joycon support") + api.tr
-                    note: qsTr("Use authentics Joycon pads") + api.tr
+//                    label: qsTr("Joycon support") + api.tr
+//                    note: qsTr("Use authentics Joycon pads") + api.tr
+                    SectionTitle {
+                        text: qsTr("Joycon controllers") + api.tr
+                        first: true
+                    }
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.joycond.enabled")
                     onCheckedChanged: {
                         focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.joycond.enabled",checked);
                     }
+                    symbol:"\uf13b" // need joycon icon
                     onFocusChanged: container.onFocus(this)
                 }
                 Item {

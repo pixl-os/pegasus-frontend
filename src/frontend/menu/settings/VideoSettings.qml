@@ -81,6 +81,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Primary screen settings") + api.tr
                     first: true
+                    symbol: "\uf17f"
                 }
                 MultivalueOption {
                     id: optDisplayOutput
@@ -199,6 +200,7 @@ FocusScope {
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("system.secondary.screen.enabled",checked);
                     }
+                    symbol: "\uf115"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDisplayRotation
                     KeyNavigation.down: optDisplayMarqueeOutput

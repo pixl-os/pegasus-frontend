@@ -105,6 +105,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Controllers") + api.tr
                     first: true
+                    symbol: "\uf181"
                 }
                 SimpleButton {
                     id: optBluetoothDevices
@@ -201,6 +202,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Controllers inputs") + api.tr
                     first: false
+                    symbol: "\uf4a9"
                 }
                 Repeater{
                     id:controllersList

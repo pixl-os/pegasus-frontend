@@ -137,6 +137,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Customize interface") + api.tr
                     first: true
+                    symbol: "\uf132"
                 }
                 SimpleButton {
                     id: optMenuControlsConfig

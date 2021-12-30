@@ -104,6 +104,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Sound configuration") + api.tr
                     first: true
+                    symbol: "\uf11c"
                 }
                 MultivalueOption {
                     id: optAudioMode
@@ -212,6 +213,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Video Configuration") + api.tr
                     first: true
+                    symbol: "\uf17f"
                 }
                 SimpleButton {
                     id: optVideoSettings
@@ -285,6 +287,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Storage configuration") + api.tr
                     first: true
+                    symbol: "\uf2ec"
                 }
                 MultivalueOption {
                     id: optStorageDevices
@@ -328,6 +331,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("System language") + api.tr
                     first: true
+                    symbol: "\uf18a"
                 }
                 MultivalueOption {
                     id: optLanguage
@@ -377,6 +381,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("System") + api.tr
                     first: true
+                    symbol: "\uf221"
                 }
                 ToggleOption {
                     id: optDebugMode

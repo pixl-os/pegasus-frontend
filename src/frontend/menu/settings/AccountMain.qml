@@ -115,6 +115,7 @@ FocusScope {
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("global.retroachievements",checked);
                     }
+                    symbol: "\uf39b"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRetroachievementUsername
                 }
@@ -220,6 +221,7 @@ FocusScope {
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("global.netplay",checked);
                     }
+                    symbol: "\uf343"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optUnlockSoundsAchievementActivate
                     KeyNavigation.down: optNetplayInformation

@@ -101,6 +101,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
+                    symbol: "\uf17f"
                 }
                 MultivalueOption {
                     id: optGlobalGameRatio
@@ -239,6 +240,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Gameplay options") + api.tr
                     first: true
+                    symbol: "\uf412"
                 }
                 ToggleOption {
                     id: optGameRewind
@@ -275,6 +277,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Other options") + api.tr
                     first: true
+                    symbol: "\uf1d9"
                 }
 //                SimpleButton {
 //                    id: optBiosChecking
