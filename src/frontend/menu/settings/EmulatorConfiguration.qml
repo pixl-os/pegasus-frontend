@@ -92,6 +92,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
+                    symbol: "\uf17f"
                 }
                 MultivalueOption {
                     id: optSystemGameRatio
@@ -209,6 +210,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Gameplay options") + api.tr
                     first: true
+                    symbol: "\uf412"
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
@@ -248,6 +250,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Core options") + api.tr
                     first: true
+                    symbol: "\uf179"
                 }
                 
                 ButtonGroup  { id: radioGroup }

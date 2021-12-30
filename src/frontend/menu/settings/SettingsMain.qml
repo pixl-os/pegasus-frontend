@@ -220,19 +220,8 @@ FocusScope {
 
                     label: qsTr("Video configuration") + api.tr
                     note: qsTr("choose output") + api.tr
-
-                    Text {
-                        id: pointeroptVideoSettings
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
                         api.internal.system.run("/usr/bin/xrandr > /tmp/xrandr.tmp");

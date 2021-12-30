@@ -354,7 +354,7 @@ Window {
         running: splashScreen.focus ? false : true
         onTriggered: {
             gameCdRom = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf");
-            console.log(gameCdRom)
+//            console.log(gameCdRom)
             if(gameCdRom.includes("system =")) {
                 cdRomPopupLoader.focus = true;
                 //just set "cdrom" as title of this game (optional)

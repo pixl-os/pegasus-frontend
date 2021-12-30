@@ -231,19 +231,8 @@ FocusScope {
 
                     label: qsTr("Netplay information") + api.tr
                     note: qsTr("Show netplay information roms etc ...") + api.tr
-
-                    Text {
-                        id: pointeroptNetplayInformation
-
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
                         focus = true;
@@ -272,7 +261,7 @@ FocusScope {
                     }
 
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up:optNetplayActivate
+                    KeyNavigation.up:optNetplayInformation
                     KeyNavigation.down: optNetplayPswdClientActivate
                     visible: optNetplayActivate.checked
                 }

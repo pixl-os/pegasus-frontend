@@ -312,20 +312,8 @@ FocusScope {
 
                     label: qsTr("Advandced emulators settings") + api.tr
                     note: qsTr("choose emulator, ratio and more by system") + api.tr
-
-                    Text {
-                        id: pointeroptAdvancedEmulator
-
-                        anchors.right: parent.right
-//                        anchors.rightMargin: horizontalPadding
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        color: themeColor.textValue
-                        font.pixelSize: vpx(30)
-                        font.family: globalFonts.ion
-
-                        text : "\uf3d1"
-                    }
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
                         focus = true;
