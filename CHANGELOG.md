@@ -1,6 +1,67 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2021-12-31
+- fix controllers: change delimiter in recalbox.conf for controller parts (to avoid issue for controller name with ":")
+- fix controllers: after test and check of name '|' delimiter seems the best
+- fix bluetooth: add a connect command after recalpair
+- fix bluetooth: to increase timeout from 30s to 60s for some cases
+- fix in es_state.inf lists for game without gamelist data
+- overlay: add on/off option from menu
+- translation: update french ones
+- video: settings display
+- video: add component xandr
+- video: add toogle option and add button to apply
+- menu: color and size of slider and switch
+- video: add two parameter list for position and rotation xrandr
+- video: change menu input name and rework rollable menu
+- video: fix key name for primary and secondary screen
+- bluetooth: add legacy "buggy" scripts if needed
+- system api: add parameters to manage escaped characters or not in run command
+- bluetooth: remove escaped characters to improve legacy pair script
+- system api: new async command way
+- bluetooth: using runAsync function from API
+- bluetooth: add logs in searchDeviceInLists
+- bluetooth: correct matching in case of legacy scanning
+- keys:  add management of new key event for Netplay menu access
+- netplay: introduction of netplay information view
+- netplay: introduction of friend's rooms
+- netplay: management of retroarch lobby/reading list from json downloaded.
+- netplay: adding logo/icons to display and using colors
+- netplay: optimization on list refresh and memory management
+- netplay: usage of searchGame component to search by CRC and file name
+- netplay: display of media as logo and screenshot for the moment in the netplay information buttons
+- netplay: management of case using "00000000" crc value
+- netplay: management of cores version/long name display/comparaisons using system/configs/retroarch.corenames file
+- netplay: new dialog box to select frineds and passwords before to join or create room.
+- netplay: add lob to ping and know latency
+- netplay: add telnet using ip/port checking before to launch retroarch and avoid long black screen display when room is finally not available
+- netplay: introduction of launchNetplay() from game and gameFile object.
+- netplay: add function in main.qml (for all themes) to check netplay capacity for a game
+- gameOS: add icons for netplay room using 'select'
+- gameOS: add button in GameView to play game using netplay (only for system using a core compatible)
+- netplay: add spinner during loading/refresh of lobby
+- netplay: need to activate to have access to lobby and button display.
+- netplay: set to "Anonymous" nickname if netplay activated but nickname empty
+- gameOS: introduction of L1/R1 in gameview to change game quickly in a same system
+- gameOS: demo mode introduced with parameters in Gamedetails settings
+- gameOS: fix on L2/R2 usage in system view
+- project-cd: add png timer and main popup cd
+- project-cd: add personalised popup
+- project-cd: remove tmp file on launch eject or back
+- project-cd:  change cat to grep with -s option for silent log
+- project-cd: running popup on splaslayer complete
+- single play: introduction of new way to run an independnat game/rom (outside a list or/and share)
+- single play: add api to find system from shortname, to set file path and title(optional)
+- single play: add api to "connect" game to launcher
+- single play: manage specifically case for path using "crdom://"
+- project-cd: update cdRomDialog to manage directly icon/cd picture
+- project-cd: add launch api for cdrom
+- project-cd: add default png for many console 
+- video: fix parameter list video
+- menu: add icons for entry menu and sections
+- bump last version of gameOS.
+
 ## [recalbox-integration] - 2021-10-13
 - Fix loading bar progress (upper than 100% were possible)
 - bump last gameOs-pixL theme for :
