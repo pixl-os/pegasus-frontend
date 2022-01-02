@@ -86,6 +86,7 @@ FocusScope {
         focus: true
 
         // add recalbox menu
+        onShowUpdates: root.openScreen("menu/Updates.qml")
         onShowAccountSettings: root.openScreen("menu/AccountSettings.qml")
         onShowControllersSettings: root.openScreen("menu/ControllersSettings.qml")
         onShowGamesSettings: root.openScreen("menu/GamesSettings.qml")

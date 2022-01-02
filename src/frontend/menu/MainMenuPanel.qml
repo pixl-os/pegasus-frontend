@@ -29,6 +29,7 @@ FocusScope {
     enabled: focus
 
     signal close
+    signal showUpdates
     signal showAccountSettings
     signal showControllersSettings
     signal showGamesSettings
@@ -64,6 +65,21 @@ FocusScope {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: vpx(30)
 
+        PrimaryMenuItem {
+            id: mbUpdates
+            text: qsTr("Updates") + api.tr
+            onActivated: {
+                focus = true;
+                root.showUpdates();
+            }
+            selected: focus
+
+            enabled: api.internal.updates.hasAnyUpdate()
+            visible: enabled
+            symbol:"\uf2c6"
+            animated: true
+            KeyNavigation.down: mbAccountSettings
+        }
         PrimaryMenuItem {
             id: mbAccountSettings
             text: qsTr("Accounts") + api.tr

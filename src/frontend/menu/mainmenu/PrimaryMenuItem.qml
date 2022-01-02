@@ -20,6 +20,8 @@ import QtQuick 2.12
 
 GenericMenuItem {
     property alias symbol: symbolMenu.text
+    property var animated: false
+    property var animated_color: "blue"
 
     z: 1000
     activeColor: themeColor.secondary
@@ -34,6 +36,12 @@ GenericMenuItem {
             leftMargin: vpx("20")
         }
         color: themeColor.textTitle
+        SequentialAnimation on color {
+            running: animated
+            loops: Animation.Infinite
+            ColorAnimation { to: animated_color; duration: 500 }
+            ColorAnimation { to: themeColor.textTitle; duration: 500 }
+        }
         font {
             bold: false
             pixelSize: vpx(50)
