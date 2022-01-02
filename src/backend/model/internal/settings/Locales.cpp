@@ -32,7 +32,11 @@ std::vector<model::LocaleEntry> find_available_locales()
     constexpr int QM_SUFFIX_LEN = 3; // length of ".qm"
 
     QStringList qm_files = QDir(QStringLiteral(":/i18n")).entryList(QStringList(QStringLiteral("*.qm")));
-    qm_files.append(QStringLiteral("pegasus_en.qm"));
+	//Log::debug(LOGMSG("The list of available locales is '%1'.").arg(qm_files.join(",")));
+    if(!qm_files.contains("pegasus_en.qm")){
+		qm_files.append(QStringLiteral("pegasus_en.qm"));
+		//Log::debug(LOGMSG("Adding locale file pegasus_en.qm")); // but I don't know why ?!
+    }
     qm_files.sort();
 
     std::vector<model::LocaleEntry> locales;

@@ -410,7 +410,8 @@ void ParametersList::save_selected_parameter()
 {
     //Log::debug(LOGMSG("ParametersList::save_selected_parameter()"));
     const auto& value = m_parameterslist.at(m_current_idx);
-    //Log::debug(LOGMSG("ParametersList::save_selected_parameter() - parameter: `%1`").arg(value.name));
+    //Log::debug(LOGMSG("ParametersList::save_selected_parameter() - parameter value.name: `%1`").arg(value.name));
+    //if (ListOfInternalValue.size() != 0) Log::debug(LOGMSG("ParametersList::save_selected_parameter() - parameter ListOfInternalValue.at(m_current_idx): `%1`").arg(ListOfInternalValue.at(m_current_idx)));
 
     //check in recalbox-boot.conf
     if(m_parameter.contains("boot.", Qt::CaseInsensitive))
