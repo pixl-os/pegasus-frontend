@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - 2021-12-31
+## [recalbox-integration] - Next version - v0.0.2
+- versionning: add version from git release and OS version in Pegasus
+- localization: fix "american english" multiple menu display in buildroot
+
+## [recalbox-integration] - 2021-12-31 - v0.0.1
 - fix controllers: change delimiter in recalbox.conf for controller parts (to avoid issue for controller name with ":")
 - fix controllers: after test and check of name '|' delimiter seems the best
 - fix bluetooth: add a connect command after recalpair
