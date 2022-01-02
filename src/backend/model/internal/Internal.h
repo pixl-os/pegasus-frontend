@@ -23,6 +23,7 @@
 #include "settings/Recalbox.h"
 #include "netplay/Netplay.h"
 #include "singleplay/Singleplay.h"
+#include "updates/Updates.h"
 #include "settings/Settings.h"
 #include "utils/QmlHelpers.h"
 
@@ -40,6 +41,7 @@ class Internal : public QObject {
     QML_CONST_PROPERTY(model::Recalbox, recalbox)
     QML_CONST_PROPERTY(model::Netplay, netplay)
 	QML_CONST_PROPERTY(model::Singleplay, singleplay)
+	QML_CONST_PROPERTY(model::Updates, updates)
     
 public:
     explicit Internal(const backend::CliArgs& args, QObject* parent = nullptr);

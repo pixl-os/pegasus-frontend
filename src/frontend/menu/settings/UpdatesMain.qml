@@ -157,7 +157,8 @@ FocusScope {
                 SectionTitle {
                 id: updates_list_title
                     text: {
-                        return ("  " + qsTr("List of udpate(s) : ") + api.tr); //+ (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
+                        var updateEntry = api.internal.updates.updateDetails("test");
+                        return ("  " + qsTr("List of udpate(s) : ") + api.tr + updateEntry.componentName); //+ (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
                     }
                     first: true
                     visible: true

@@ -25,4 +25,5 @@ SOURCES += \
 include(settings/settings.pri)
 include(netplay/netplay.pri)
 include(singleplay/singleplay.pri)
+include(updates/updates.pri)
 
