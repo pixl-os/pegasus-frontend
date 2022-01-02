@@ -295,6 +295,9 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     for (QString& arg : args)
         replace_variables(arg, &gamefile);
 
+    //to add Verbose arg in debug mode
+    if (RecalboxConf::Instance().AsBool("emulationstation.debuglogs")) args.append("-verbose");
+
     QString command = args.isEmpty() ? QString() : args.takeFirst();
     if (command.isEmpty()) {
         const QString message = LOGMSG("Cannot launch the game `%1` because there is no launch command defined for it.")
