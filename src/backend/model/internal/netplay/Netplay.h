@@ -19,21 +19,14 @@ class Netplay : public QObject {
 
 public:
     explicit Netplay(QObject* parent = nullptr);
-    //Q_PROPERTY(int RoomsCount READ getRoomsCount CONSTANT)    
-    //Q_INVOKABLE void UpdateRooms();
 
 signals:
-    //void batteryStatusChanged();
-    //void batteryLifeChanged();
 
 private slots:
-    //void poll_battery();
 
 public:
-    //int getRoomsCount() const {return rooms.count();}
 
 private:
-	//QTimer m_battery_poll;
-    //BatteryInfo m_battery;
+
 };
 } // namespace model

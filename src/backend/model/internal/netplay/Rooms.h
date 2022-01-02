@@ -94,8 +94,6 @@ private:
     const QHash<int, QByteArray> m_role_names;
 
     std::vector<RoomEntry> m_Rooms;
-    //QList<model::RoomEntry> m_Rooms;
-    //QQmlObjectListModel<model::RoomEntry> m_Rooms;
 
     int m_Count = 0;
     
