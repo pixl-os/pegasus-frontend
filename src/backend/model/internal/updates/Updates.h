@@ -12,10 +12,28 @@
 
 struct UpdateEntry {
       Q_GADGET
-      //Q_PROPERTY(QString title READ title CONSTANT)
-      Q_PROPERTY(QString componentName MEMBER m_componentName)
+      Q_PROPERTY(QString componentName MEMBER m_componentName)  //Name provided during "getRepoInfo" as reference
+      Q_PROPERTY(QString tagName MEMBER m_tag_name)             //from repo json "tag_name": "pixL-edition-v0.0.1",
+      Q_PROPERTY(QString releaseTitle MEMBER m_name)                    //from repo json "name": "pixL-edition-v0.0.1",
+      Q_PROPERTY(bool isDraft MEMBER m_draft)                   //from repo json "draft": false,
+      Q_PROPERTY(bool isPreRelease MEMBER m_prerealease)        //from repo json "prerelease": true,
+      Q_PROPERTY(QString createdAt MEMBER m_created_at)         //from repo json "created_at": "2022-01-01T16:48:18Z",
+      Q_PROPERTY(QString publishedAt MEMBER m_published_at)     //from repo json "published_at": "2022-01-01T18:34:04Z",
+      Q_PROPERTY(QString releaseNote MEMBER m_body) //from repo json "body": "## What's new in this version ? (included in pixL-Beta19)\r\n...
+      Q_PROPERTY(int size MEMBER m_size) //get size of the update, if several files, all sizes will be added to have the full size in this value.
 public:
       QString m_componentName;
+      QString m_tag_name;
+      QString m_name;
+      bool m_draft;
+      bool m_prerealease;
+      QString m_created_at;
+      QString m_published_at;
+      QString m_body;
+      int m_size;
+      bool m_hasanyupdate = false;
+
+
 };
 Q_DECLARE_METATYPE(UpdateEntry)
 
@@ -33,7 +51,7 @@ public:
     //function to check information about updates of any componants and confirm quickly if update using /tmp
     Q_INVOKABLE bool hasUpdate(const QString componentName, const bool betaIncluded);
     //function to get details from last "available" update (and only if available)
-    Q_INVOKABLE UpdateEntry updateDetails(const QString componentName);
+    Q_INVOKABLE UpdateEntry updateDetails(const QString componentName, const bool betaIncluded);
     //function to return the number of version available
     Q_INVOKABLE int componentVersionsCount(const QString componentName);
     //function to get any version details using index
@@ -44,14 +62,21 @@ public:
     Q_INVOKABLE QString getInstallationStatus(const QString componentName);
     //Fucntion to know progress of each installation steps
     Q_INVOKABLE int getInstallationProgress(const QString componentName); //provide pourcentage of downlaod and installation
+private:
+    bool parseJsonComponentFile(const QString componentName);
 
 signals:
 
 private slots:
+    void getRepoInfo_slot();
 
 public:
 
 private:
-
+    QString m_componentName;
+    QString m_repoUrl;
+    QList <UpdateEntry> m_versions;
+    bool m_hasanyupdate = false;
+    QString log_tag = "Updates";
 };
 } // namespace model

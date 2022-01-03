@@ -27,6 +27,30 @@ FocusScope {
     property var actionState : ""
     property var actionListIndex : 0
 
+    //for testing
+    Timer {
+        id: updateTimer
+        interval: 1000 // Run the timer after 1 s
+        repeat: false
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            api.internal.updates.getRepoInfo("Pegasus-frontend","https://api.github.com/repos/bozothegeek/pegasus-frontend/releases");
+        }
+    }
+
+    Timer {
+        id: tagTimer
+        interval: 3000 // Run the timer after 1 s
+        repeat: false
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            var entry = api.internal.updates.updateDetails("Pegasus-frontend",true); //include beta also
+            updates_list_title.tagName = entry.tagName;
+        }
+    }
+
     //loader to load confirm dialog
     Loader {
         id: confirmDialog
@@ -42,7 +66,7 @@ FocusScope {
     Component {
         id: myDialog
         Generic3ChoicesDialog {
-            title: qsTr("Are you that you want to update ?") + api.tr
+            title: qsTr("Are you sure that you want to update ?") + api.tr
             message: qsTr("Update of") + api.tr
             symbol: ""
             firstchoice: qsTr("Update") + api.tr
@@ -114,7 +138,7 @@ FocusScope {
         color: themeColor.main
         anchors {
             top: header.bottom
-            bottom: footer.top
+            bottom: parent.bottom
         }
     }
 
@@ -124,7 +148,7 @@ FocusScope {
         width: content.width
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: header.bottom
-        anchors.bottom: footer.top
+        anchors.bottom: parent.bottom
 
         contentWidth: content.width
         contentHeight: content.height
@@ -156,9 +180,9 @@ FocusScope {
 
                 SectionTitle {
                 id: updates_list_title
+                    property var tagName:"";
                     text: {
-                        var updateEntry = api.internal.updates.updateDetails("test");
-                        return ("  " + qsTr("List of udpate(s) : ") + api.tr + updateEntry.componentName); //+ (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
+                        return ("  " + qsTr("List of udpate(s) : ") + api.tr + " tag :" + tagName); //+ (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
                     }
                     first: true
                     visible: true
