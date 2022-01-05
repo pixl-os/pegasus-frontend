@@ -20,6 +20,7 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
 import "dialogs"
+import QtQuick.VirtualKeyboard 2.15
 
 Window {
     id: appWindow
@@ -675,4 +676,14 @@ Window {
         }
         else return false; //no netplay activated from menu
     }
+
+    //to manage virtual keyboard
+    InputPanel {
+        id: inputPanel
+        y: Qt.inputMethod.visible ? parent.height - inputPanel.height : parent.height
+        anchors.left: parent.left
+        anchors.right: parent.right
+        visible: api.internal.settings.virtualKeyboardSupport
+    }
+
 }
