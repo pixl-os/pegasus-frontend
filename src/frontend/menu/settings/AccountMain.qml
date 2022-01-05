@@ -20,20 +20,20 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
 
-
 FocusScope {
     id: root
 
     signal close
     signal openNetplayInformation
     signal openGameDirSettings
-    signal openMenuBoxSettings
+    //signal openMenuBoxSettings
 
     width: parent.width
     height: parent.height
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
+
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
