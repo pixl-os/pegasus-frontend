@@ -392,6 +392,20 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optDebugMode
+                    KeyNavigation.down: optHideKeyboard
+                }
+                ToggleOption {
+                    id: optHideKeyboard
+
+                    label: qsTr("Enable virtual keyboard support") + api.tr
+                    note: qsTr("By default virtual keyboard is not activated.") + api.tr
+
+                    checked: api.internal.settings.virtualKeyboardSupport
+                    onCheckedChanged: {
+                        api.internal.settings.virtualKeyboardSupport = checked;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.up: optHideMouse
                 }
                 Item {
                     width: parent.width

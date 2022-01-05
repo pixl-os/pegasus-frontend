@@ -144,7 +144,8 @@ General::General()
     , DEFAULT_THEME(QStringLiteral(":/themes/gameOS/"))
     , portable(false)
     , fullscreen(true)
-    , mouse_support(true)
+    , mouse_support(false)
+	, virtualkeyboard_support(false)
     , locale() // intentionally blank
     , theme(DEFAULT_THEME)
 {}
