@@ -108,5 +108,6 @@
         <file>assets/project-cd/retroarch-cd-saturn.png</file>
         <file>assets/project-cd/retroarch-cd-segacd.png</file>
         <file>menu/settings/InformationSystem.qml</file>
+        <file>menu/settings/common/TextFieldOption.qml</file>
     </qresource>
 </RCC>

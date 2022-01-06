@@ -124,7 +124,7 @@ FocusScope {
                     label: qsTr("Connect retroachievement") + api.tr
                     note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
 
-                    TextField {
+                    TextFieldOption {
                         id: retroachievementUsername
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
@@ -144,7 +144,7 @@ FocusScope {
                     // label: qsTr("Connect Retroachievement") + api.tr
                     note: qsTr("then login with your username and password") + api.tr
 
-                    TextField {
+                    TextFieldOption {
                         id: retroachievementPassword
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
@@ -152,7 +152,6 @@ FocusScope {
                         text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
                         horizontalAlignment: TextInput.AlignRight
                         echoMode: TextInput.PasswordEchoOnEdit
-                        // enterKeyAction: EnterKeyAction.Next
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
                         onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.password", retroachievementPassword.text)
                     }
@@ -241,7 +240,7 @@ FocusScope {
 
                     label: qsTr("Netplay nickname") + api.tr
                     note: qsTr("Set your netplay nickname") + api.tr
-                    TextField {
+                    TextFieldOption {
                         id: netplayNickname
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
