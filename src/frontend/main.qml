@@ -677,13 +677,24 @@ Window {
         else return false; //no netplay activated from menu
     }
 
-    //to manage virtual keyboard
-    InputPanel {
-        id: inputPanel
-        y: Qt.inputMethod.visible ? parent.height - inputPanel.height : parent.height
-        anchors.left: parent.left
-        anchors.right: parent.right
-        visible: api.internal.settings.virtualKeyboardSupport
+    //loader for input panel
+    Loader {
+        id: inputPanelLoader
+        anchors.fill: parent
+        z:10
+        sourceComponent: inputPanelComponent
+        active: true
+        asynchronous: true
     }
-
+    Component {
+        id: inputPanelComponent
+        //to manage virtual keyboard
+        InputPanel {
+            id: inputPanel
+            y: Qt.inputMethod.visible ? parent.height - inputPanel.height : parent.height
+            anchors.left: parent.left
+            anchors.right: parent.right
+            visible: api.internal.settings.virtualKeyboardSupport
+        }
+    }
 }
