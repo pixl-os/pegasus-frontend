@@ -15,5 +15,11 @@ public:
         QKeyEvent keyPressEvent = QKeyEvent(QEvent::Type::KeyPress, k, m, QKeySequence(k).toString());
         QCoreApplication::sendEvent(tf, &keyPressEvent);
     }
+
+    Q_INVOKABLE void keyReleased(QObject* tf, Qt::Key k, Qt::KeyboardModifiers m=Qt::NoModifier) {
+        QKeyEvent keyReleaseEvent = QKeyEvent(QEvent::Type::KeyRelease, k, m, QKeySequence(k).toString());
+        QCoreApplication::sendEvent(tf, &keyReleaseEvent);
+    }
+
 };
 #endif // KEYEMITTER_H
