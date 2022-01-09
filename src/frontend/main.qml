@@ -677,7 +677,7 @@ Window {
         else return false; //no netplay activated from menu
     }
 
-    //loader for input panel
+    //loader for input panel for virtual keyboard
     Loader {
         id: inputPanelLoader
         anchors.fill: parent
@@ -697,4 +697,101 @@ Window {
             visible: api.internal.settings.virtualKeyboardSupport
         }
     }
+
+    //to manage event/input/focus/status during edition with virtual Keyboard
+
+    property var counter: 0 //counter use for debug
+    property var previousVirtualKeyboardVisibility: false
+
+    function virtualKeyboardOnReleased(ev){
+        ev.accepted = true;
+        return ev.accepted;
+    }
+
+
+    function virtualKeyboardOnPressed(ev,input,editionActive){
+        //console.log("searchbar.Keys.onPressed : ", counter++);
+        //console.log("previousVirtualKeyboardVisibility : ",previousVirtualKeyboardVisibility);
+        //console.log("ev.key : ", ev.key);
+        //console.log("editionActive : ",editionActive);
+        //console.log("input.focus : ",input.focus);
+        //console.log("cursorVisible : ",	input.cursorVisible);
+        //console.log("Qt.inputMethod.visible : ",Qt.inputMethod.visible);
+        // Accept
+        if (api.keys.isAccept(ev) && !ev.isAutoRepeat) {
+            //console.log("isAccept");
+            ev.accepted = true;
+            //for all cases
+            if (!editionActive) {
+                //console.log("# Use case 1 : with or without virtual keyboard");
+                editionActive = !editionActive;
+                input.focus = true;
+                //for virtual keyboard only
+                if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = true;
+                input.selectAll();
+            }
+            //for virtual keyboard
+            else if(editionActive && (!Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) && (previousVirtualKeyboardVisibility === false)){
+                //console.log("# Use case 2 : wirtuakl keyboard has been removed");
+                //force refresh to display keyboard
+                editionActive = false;
+                input.focus = false;
+                editionActive = true;
+                input.focus = true;
+                //for virtual keyboard only
+                if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = true;
+                input.selectAll();
+            }
+            //for standard keyboard
+            else if(editionActive && !api.internal.settings.virtualKeyboardSupport){
+                //console.log("# Use case 3 : if edition is active and usage of standard keyboard only");
+                editionActive = !editionActive;
+                input.focus = false;
+                input.cursorVisible = false;
+                input.selectAll();
+            }
+            //for virtual keyboard
+            else if ((ev.key !== Qt.Key_Return) && (ev.key !== Qt.Key_Enter)){
+                if(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
+                    //console.log("# Use case 4 : if virtual keyboard visible and PRESS A");
+                    keyEmitter.keyPressed(appWindow, Qt.Key_Return);
+                    keyEmitter.keyReleased(appWindow, Qt.Key_Return);
+                    }
+            }
+            //for virtual keyboard only
+            if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = Qt.inputMethod.visible;
+        }
+
+        // Cancel
+        if (api.keys.isCancel(ev) && !ev.isAutoRepeat) {
+            //console.log("isCancel");
+            ev.accepted = true;
+
+            //for virtual keyboard
+            if(editionActive && Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
+                //console.log("# Use case 1 : edition active with virtual keyboard visible");
+                if ((ev.key !== Qt.Key_Return) && (ev.key !== Qt.Key_Enter)){
+                    keyEmitter.keyReleased(appWindow, Qt.Key_Return);
+                }
+            }
+            //for virtual keyboard
+            else if (editionActive && !Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) {
+                //console.log("# Use case 2 : editon active & virtual keyboard not visible");
+                editionActive = !editionActive;
+                input.focus = true;
+                input.cursorVisible = false;
+            }
+            //for standard keyboard
+            else if (editionActive && Qt.inputMethod.visible && !api.internal.settings.virtualKeyboardSupport){
+                //console.log("# Use case 3 : edtion active with standard keyboard visible");
+                editionActive = !editionActive;
+                input.focus = false;
+                input.cursorVisible = false;
+                input.selectAll();
+            }
+        }
+
+        return ev.accepted, input.focus, editionActive ;
+    }
+
 }
