@@ -683,7 +683,7 @@ Window {
         anchors.fill: parent
         z:10
         sourceComponent: inputPanelComponent
-        active: true
+        active: api.internal.settings.virtualKeyboardSupport
         asynchronous: true
     }
     Component {
