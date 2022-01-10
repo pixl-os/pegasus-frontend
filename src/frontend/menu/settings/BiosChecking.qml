@@ -44,23 +44,22 @@ FocusScope {
         source: "file://recalbox/share/system/.emulationstation/es_bios.xml"
         query: "/biosList/system"
 
-        XmlRole { name: "platform"; query: "@platform/string()" }
+        XmlRole { name: "systems_Shortname"; query: "@platform/string()" }
         XmlRole { name: "systems_Fullname"; query: "@fullname/string()" }
     }
     XmlListModel {
         id: xmlModelBios
         // file:// need for read file system local
         source: "file://recalbox/share/system/.emulationstation/es_bios.xml"
-        //        query : "/biosList/system[@platform='dreamcast']/bios"
         query: {
             if (xmlModelSystems.count !== 0){
-                var system = xmlModelSystems.get(systemsList.currentIndex).platform;
+                var system = xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
                 return ( "/biosList/system[@platform='" + system + "']/bios");
-                //            console.log("systemsList.currentIndex : ", systemsList.currentIndex );
-                //            console.log("xmlModelSystems.count : ", xmlModelSystems.count );
-                //            console.log("xmlModelSystems.get : '", system, "'" );
+                // console.log("systemsList.currentIndex : ", systemsList.currentIndex );
+                // console.log("xmlModelSystems.count : ", xmlModelSystems.count );
+                // console.log("xmlModelSystems.get : '", system, "'" );
             }
-            else return ("/biosList/system[@platform='']/bios");
+            else return system = ("/biosList/system[@platform='']/bios");
         }
         XmlRole { name: "bios_Path"; query: "@path/string()"}
         XmlRole { name: "bios_Md5"; query: "@md5/string()" }
@@ -68,7 +67,12 @@ FocusScope {
         XmlRole { name: "bios_Note"; query: "@note/string()" }
         XmlRole { name: "bios_Mandatory"; query: "boolean(@mandatory)"}
         XmlRole { name: "bios_HashMatchMandatory"; query: "boolean(@hashMatchMandatory)";}
+
     }
+
+    property var biosPath: xmlModelBios.get(biosList.currentIndex).bios_Path;
+    property var biosMd5: xmlModelBios.get(biosList.currentIndex).bios_Md5;
+    property var biosNote: xmlModelBios.get(biosList.currentIndex).bios_Note;
 
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
@@ -115,7 +119,6 @@ FocusScope {
             width: contentColumn.width
             height: contentColumn.height
 
-
             Column {
                 id: contentColumn
                 spacing: vpx(5)
@@ -133,16 +136,12 @@ FocusScope {
                     model: xmlModelSystems
                     delegate: xmlDelegate
                     spacing: vpx(30)
-                    focus: true
+                    clip: true
                     orientation: ListView.Horizontal
-                    //                    opacity: systemsList.isCurrentIndex ? 1 :  0.4 ;
                     highlightFollowsCurrentItem : true
-                    highlightMoveDuration : 5
-                    highlightMoveVelocity : 2
-                    highlightResizeDuration : 0
+                    highlightMoveDuration : 10
+                    highlightResizeDuration : 1
                     highlightRangeMode: ListView.StrictlyEnforceRange
-                    Keys.onLeftPressed: { decrementCurrentIndex() }
-                    Keys.onRightPressed: { incrementCurrentIndex() }
                     Rectangle {
                         id: wrapper
                         Component {
@@ -153,18 +152,17 @@ FocusScope {
                                 color: themeColor.textSectionTitle
                                 horizontalAlignment: Text.AlignHCenter
                                 padding: vpx(7)
-
                                 font {
                                     pixelSize: vpx(22)
                                     family: globalFonts.sans
-
                                 }
                             }
                         }
                     }
                     highlight: Rectangle {
                         color: "transparent"
-                        border.color: "red"
+                        border.color: themeColor.secondary
+                        border.width: vpx(3)
                         radius: 5
                     }
                 }
@@ -172,135 +170,185 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(15)
                 }
-                Column {
+                Row {
                     id: biosColumn
-                    spacing: vpx(5)
-
-                    width: container.width / 2
-                    height: implicitHeight + vpx(200)
+                    spacing: vpx(15)
+                    width: contentColumn.width / 2
+                    height: implicitHeight
                     ListView {
                         id : biosList
-                        width: container.width ; height: vpx(500)
+                        width: biosColumn.width
+                        height: vpx(450)
                         model: xmlModelBios
-//                        focus: true
-                        displayMarginBeginning : - vpx(10)
-                        displayMarginEnd : - vpx(120)
+                        clip: true
+                        focus: true
                         highlightRangeMode: ListView.StrictlyEnforceRange
+                        highlightMoveDuration: 3
                         headerPositioning: ListView.PullBackHeader
-                        delegate: xmlInfoDelegate
                         spacing: vpx(20)
+
+                        highlight: Rectangle {
+                            color: "transparent"
+                            border.color: themeColor.underline
+                            border.width: vpx(3)
+                            radius: 5
+                            z: 2
+                        }
+                        // refresh info bios view
+                        onCurrentItemChanged: {
+                            biosPath = xmlModelBios.get(biosList.currentIndex).bios_Path;
+                            biosMd5 = xmlModelBios.get(biosList.currentIndex).bios_Md5;
+                            biosNote = xmlModelBios.get(biosList.currentIndex).bios_Note;
+                        }
+                        delegate: xmlInfoDelegate
                         Keys.onUpPressed: { decrementCurrentIndex() }
                         Keys.onDownPressed: { incrementCurrentIndex() }
+                        Keys.onLeftPressed: { systemsList.decrementCurrentIndex() }
+                        Keys.onRightPressed: { systemsList.incrementCurrentIndex() }
                     }
                     Component {
                         id: xmlInfoDelegate
                         Rectangle {
-                            height: biosColumn.height + vpx(5); width: biosColumn.width + vpx(5)
-                            color: themeColor.secondary //bios_Mandatory == false ? "yellow" : "#00B000"; // green select
-                            //                        color: "transparent"
-                            border {
-                                color: bios_Mandatory == false ? "yellow" : "#00B000"; // green select
-                                width: vpx(5)
-                            }
-                            // opacity: biosList.isCurrentIndex ? 1 : 0.5;
+                            id: biosButton
+                            height: containerButton.height ; width: biosList.width
+                            color: themeColor.main
+                            property bool selected: ListView.isCurrentItem
+                            scale: selected ? 1 : 0.9
+                            Behavior on scale { NumberAnimation { duration: 350 } }
+                            border.color: themeColor.secondary
+                            border.width: vpx(3)
                             radius: 5
-                            Row {
-                                id: biosColumn
-                                spacing: vpx(8)
-                                padding : vpx(20)
-                                Column {
-                                    Text {
-                                        text: "\uf2a5"
-                                        font {
-                                            family: global.fonts.ion
-                                            pixelSize: vpx(40)
-                                        }
-                                        color: "red"
-                                        verticalAlignment: Text.AlignHCenter
+                            Grid {
+                                id: containerButton
+                                columns: 4
+                                horizontalItemAlignment: Grid.AlignHCenter
+                                verticalItemAlignment: Grid.AlignVCenter
+                                width: biosButton.width
+                                height: implicitHeight
+                                //                                spacing: vpx(10)
+                                padding: vpx(8)
+                                columnSpacing: vpx(20)
+                                //icon state md5 validate
+                                Text {
+                                    text: bios_Mandatory == true ? "\uf2bb" /*ok*/: "\uf2bf"; /*Nok*/
+                                    color: bios_Mandatory == false ? "red" : "green";
+                                    horizontalAlignment: Text.AlignHCenter
+                                    width: Text.width
+                                    font {
+                                        family: global.fonts.ion
+                                        pixelSize: vpx(35)
                                     }
                                 }
-                                // core
-                                Row {
-                                    Text {
-                                        text: qsTr("Core(s): ")
-                                        font.pixelSize: vpx(12)
-                                        verticalAlignment: Text.AlignHCenter
-                                    }
-                                    Text {
-                                        text: bios_Core.replace(/,/gi, "\n")
-                                        font.pixelSize: vpx(10)
-                                        verticalAlignment: Text.AlignHCenter
-                                    }
+                                // Core
+                                Text {
+                                    // replace all ',' element with underline
+                                    text: bios_Core.replace(/,/gi, "\n")
+                                    horizontalAlignment: Text.AlignHCenter
+                                    font.pixelSize: vpx(15)
+                                    color: themeColor.textLabel
                                 }
-                                // path
-                                Row {
-                                    Text {
-                                        text: qsTr("Path(s): ")
-                                        font.pixelSize: vpx(12)
-                                    }
-                                    Text {
-                                        text: bios_Path.replace(/\|/gi, "\n").replace(/\/recalbox\/share\/bios\//gi, "")
-                                        font.pixelSize: vpx(10)
-                                    }
+                                // mandatory or optional bios
+                                Text {
+                                    text: bios_Mandatory == false ? qsTr("Optional") : qsTr("Mandatory");
+                                    color: bios_Mandatory == false ? themeColor.textSublabel : "green";
+                                    font.pixelSize: vpx(12)
                                 }
-                                //                            // mandatory
-                                //                            Row {
-                                //                                Text {
-                                //                                    text: qsTr("Mandatory: ")
-                                //                                    font.pixelSize: vpx(15)
-                                //                                }
-                                //                                Text {
-                                //                                    text: bios_Mandatory
-                                //                                    color: bios_Mandatory == false ? "red" : "green";
-                                //                                    font.pixelSize: vpx(15)
-                                //                                }
-                                //                            }
-                                //                        // md5
-                                //                        Row {
-                                //                            Text {
-                                //                                text: qsTr("Md5 Checksum: ")
-                                //                                font.pixelSize: vpx(15)
-                                //                            }
-                                //                            Text {
-                                //                                //replace empty space
-                                //                                text: bios_Md5.replace(/ /gi, "").replace(/,/gi, "\n")
-                                //                                font {
-                                //                                    capitalization : Font.AllUppercase
-                                //                                    pixelSize: vpx(15)
-                                //                                }
-                                //                            }
-                                //                        }
-                                // note
-                                //                            Row {
-                                //                                // don't show empty note
-                                //                                visible: bios_Note != "" ? true : false
-                                //                                Text {
-                                //                                    text: qsTr("Note: ")
-                                //                                    font.pixelSize: vpx(15)
-                                //                                }
-                                //                                Text {
-                                //                                    text: bios_Note
-                                //                                    font.pixelSize: vpx(15)
-                                //                                    wrapMode: Text.WrapAnywhere
-                                //                                }
-                                //                            }
-
+                                // file name
+                                Text {
+                                    // split to get only last element with pop()
+                                    property var path: bios_Path
+                                    property variant fileName: path.split('/').pop()
+                                    text: fileName
+                                    font.pixelSize: vpx(12)
+                                    color: themeColor.textLabel
+                                }
                             }
                         }
                     }
-                    Column {
-                        // note
-                        Row {
-                            // don't show empty note
-                            visible: xmlModelBios.bios_Note != "" ? true : false
+                    Rectangle {
+                        id: infobios
+                        height: vpx(450) ; width: biosColumn.width
+                        color: themeColor.main
+                        radius: 5
+                        border.color: themeColor.secondary
+                        border.width: vpx(3)
+                        clip: true
+
+                        Grid {
+                            id: infoview
+                            topPadding: vpx(8)
+                            spacing: vpx(8)
+                            horizontalItemAlignment: Grid.AlignHCenter
+                            verticalItemAlignment: Grid.AlignVCenter
+                            columns: 1
+                            rows: 8
+                            width: biosColumn.width
+                            height: implicitHeight
+                            //note if not empty
                             Text {
                                 text: qsTr("Note: ")
-                                font.pixelSize: vpx(12)
+                                font.pixelSize: vpx(15)
+                                width: biosColumn.width - vpx(8)
+                                horizontalAlignment: Text.AlignHCenter
+                                color: themeColor.textSectionTitle
+                                font.bold: true
+                                visible: biosNote == "" ? false : true;
                             }
                             Text {
-                                text: xmlModelBios.bios_Note
-                                font.pixelSize: vpx(10)
-                                wrapMode: Text.WrapAnywhere
+                                text: biosNote
+                                font.pixelSize: vpx(12)
+                                wrapMode: Text.WordWrap
+                                width: biosColumn.width
+                                color: themeColor.textLabel
+                                horizontalAlignment: Text.AlignHCenter
+                                visible: biosNote == "" ? false : true;
+                            }
+                            Rectangle {
+                                color :themeColor.secondary
+                                width: parent.width - vpx(20)
+                                height: vpx(2)
+                                visible: biosNote == "" ? false : true;
+                            }
+                            // path
+                            Text {
+                                text: qsTr("Path(s): ")
+                                font.pixelSize: vpx(15)
+                                horizontalAlignment: Text.AlignHCenter
+                                color: themeColor.textSectionTitle
+                                width: biosColumn.width
+                            }
+                            Text {
+                                // replace all '|' element with underline
+                                text: biosPath.replace(/\|/gi, "\n") //.replace(/\/recalbox\/share\/bios\//gi, "")
+                                fontSizeMode: Text.VerticalFit;
+                                horizontalAlignment: Text.AlignHCenter
+                                color: themeColor.textLabel
+                                width: biosColumn.width
+                                font.pixelSize: vpx(12)
+                            }
+                            Rectangle {
+                                color :themeColor.secondary
+                                width: parent.width - vpx(20)
+                                height: vpx(2)
+                            }
+                            // md5
+                            Text {
+                                text: qsTr("Md5 Checksum: ")
+                                horizontalAlignment: Text.AlignHCenter
+                                color: themeColor.textSectionTitle
+                                font.pixelSize: vpx(15)
+                                width: biosColumn.width
+                            }
+                            Text {
+                                //replace empty space
+                                text: biosMd5.replace(/ /gi, "").replace(/,/gi, "\n")
+                                fontSizeMode: Text.VerticalFit;
+                                horizontalAlignment: Text.AlignHCenter
+                                color: themeColor.textLabel
+                                font {
+                                    capitalization : Font.AllUppercase
+                                    pixelSize: vpx(12)
+                                }
                             }
                         }
                     }
@@ -312,5 +360,224 @@ FocusScope {
             }
         }
     }
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+        Rectangle {
+            id: backButtonIcon
+            height: label.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+
+            anchors {
+                right: label.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#eee"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: label
+            text: qsTr("back") + api.tr
+            verticalAlignment: Text.AlignTop
+
+            color: "#eee"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
+        }
+        Rectangle {
+            id: checkButtonIcon
+            height: label.height
+            width: height
+            radius: width * 0.5
+            border { color: "#eee"; width: vpx(1) }
+            color: "transparent"
+            anchors {
+                right: labelA.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "A"
+                color: "#eee"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: labelA
+            text: qsTr("check") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#eee"
+
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: backButtonIcon.left; rightMargin: parent.width * 0.015
+            }
+        }
+        //add rectangle + text for 'directions' command
+        Rectangle {
+            id: stateOkButtonIcon
+            height: label.height
+            width: height
+            radius: width * 0.5
+            border { color: "#eee"; width: vpx(1) }
+            color: "transparent"
+            anchors {
+                left: parent.left; leftMargin: parent.width * 0.015
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "\uf2bb"
+                // "\uf2bb" /*ok*/: "\uf2bf"; /*Nok*/
+                color: "green"
+                font {
+                    family: global.fonts.ion
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: labelCheckOk
+            text: qsTr("ok") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#eee"
+
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                left: stateOkButtonIcon.right; leftMargin: parent.width * 0.005
+            }
+        }
+        Rectangle {
+            id: stateNokButtonIcon
+            height: label.height
+            width: height
+            radius: width * 0.5
+            border { color: "#eee"; width: vpx(1) }
+            color: "transparent"
+            anchors {
+                left: labelCheckOk.left; leftMargin: parent.width * 0.015
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "\uf2bb"
+                // "\uf2bb" /*ok*/: "\uf2bf"; /*Nok*/
+                color: "yellow"
+                font {
+                    family: global.fonts.ion
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: labelCheckNok
+            text: qsTr("no matching") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#eee"
+
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                left: stateNokButtonIcon.right; leftMargin: parent.width * 0.005
+            }
+        }
+        Rectangle {
+            id: stateNoFoundButtonIcon
+            height: label.height
+            width: height
+            radius: width * 0.5
+            border { color: "#eee"; width: vpx(1) }
+            color: "transparent"
+            anchors {
+                left: stateNokButtonIcon.left;  leftMargin: parent.width * 0.015
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "\uf2bf"
+                // "\uf2bb" /*ok*/: "\uf2bf"; /*Nok*/
+                color: "red"
+                font {
+                    family: global.fonts.ion
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: labelCheckNoFound
+            text: qsTr("not found") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#eee"
+
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                left: stateNoFoundButtonIcon.right;  leftMargin: parent.width * 0.005
+            }
+        }
+    }
 }
+
 
