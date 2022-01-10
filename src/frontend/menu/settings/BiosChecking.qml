@@ -178,7 +178,7 @@ FocusScope {
                     ListView {
                         id : biosList
                         width: biosColumn.width
-                        height: vpx(450)
+                        height: vpx(480)
                         model: xmlModelBios
                         clip: true
                         focus: true
@@ -267,7 +267,7 @@ FocusScope {
                     }
                     Rectangle {
                         id: infobios
-                        height: vpx(450) ; width: biosColumn.width
+                        height: vpx(480) ; width: biosColumn.width
                         color: themeColor.main
                         radius: 5
                         border.color: themeColor.secondary
@@ -360,6 +360,7 @@ FocusScope {
             }
         }
     }
+    // help view
     Item {
         id: footer
         width: parent.width
@@ -373,6 +374,9 @@ FocusScope {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
         }
+        // // // // // // // // // // // // // // // // // //
+
+        // button value
         Rectangle {
             id: backButtonIcon
             height: label.height
@@ -389,7 +393,7 @@ FocusScope {
             }
             Text {
                 text: "B"
-                color: "#eee"
+                color: themeColor.textValue
                 font {
                     family: global.fonts.sans
                     pixelSize: parent.height * 0.7
@@ -397,12 +401,13 @@ FocusScope {
                 anchors.centerIn: parent
             }
         }
+        // info value
         Text {
             id: label
             text: qsTr("back") + api.tr
             verticalAlignment: Text.AlignTop
 
-            color: "#eee"
+            color: themeColor.textValue
             font {
                 family: global.fonts.sans
                 pixelSize: vpx(22)
@@ -414,12 +419,13 @@ FocusScope {
                 right: parent.right; rightMargin: parent.width * 0.015
             }
         }
+        // // // // // // // // // // // // // // // // // //
         Rectangle {
             id: checkButtonIcon
-            height: label.height
+            height: labelA.height
             width: height
             radius: width * 0.5
-            border { color: "#eee"; width: vpx(1) }
+            border { color: themeColor.textValue; width: vpx(1) }
             color: "transparent"
             anchors {
                 right: labelA.left
@@ -429,7 +435,7 @@ FocusScope {
             }
             Text {
                 text: "A"
-                color: "#eee"
+                color: themeColor.textValue
                 font {
                     family: global.fonts.sans
                     pixelSize: parent.height * 0.7
@@ -441,7 +447,7 @@ FocusScope {
             id: labelA
             text: qsTr("check") + api.tr
             verticalAlignment: Text.AlignTop
-            color: "#eee"
+            color: themeColor.textValue
 
             font {
                 family: global.fonts.sans
@@ -454,16 +460,20 @@ FocusScope {
                 right: backButtonIcon.left; rightMargin: parent.width * 0.015
             }
         }
+        // // // // // // // // // // // // // // // // // //
+
+        // // // // // // // // // // // // // // // // // //
+
         //add rectangle + text for 'directions' command
         Rectangle {
             id: stateOkButtonIcon
-            height: label.height
+            height: labelCheckOk.height
             width: height
             radius: width * 0.5
-            border { color: "#eee"; width: vpx(1) }
+            border { color: themeColor.textValue ; width: vpx(1) }
             color: "transparent"
             anchors {
-                left: parent.left; leftMargin: parent.width * 0.015
+                left: parent.left
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: vpx(1)
                 margins: vpx(10)
@@ -483,7 +493,7 @@ FocusScope {
             id: labelCheckOk
             text: qsTr("ok") + api.tr
             verticalAlignment: Text.AlignTop
-            color: "#eee"
+            color: themeColor.textValue
 
             font {
                 family: global.fonts.sans
@@ -496,15 +506,16 @@ FocusScope {
                 left: stateOkButtonIcon.right; leftMargin: parent.width * 0.005
             }
         }
+        // // // // // // // // // // // // // // // // // //
         Rectangle {
             id: stateNokButtonIcon
-            height: label.height
+            height: labelCheckNok.height
             width: height
             radius: width * 0.5
-            border { color: "#eee"; width: vpx(1) }
+            border { color: themeColor.textValue ; width: vpx(1) }
             color: "transparent"
             anchors {
-                left: labelCheckOk.left; leftMargin: parent.width * 0.015
+                left: labelCheckOk.right
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: vpx(1)
                 margins: vpx(10)
@@ -524,11 +535,12 @@ FocusScope {
             id: labelCheckNok
             text: qsTr("no matching") + api.tr
             verticalAlignment: Text.AlignTop
-            color: "#eee"
+            color: themeColor.textValue
 
             font {
                 family: global.fonts.sans
                 pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
             }
             anchors {
                 verticalCenter: parent.verticalCenter
@@ -536,15 +548,16 @@ FocusScope {
                 left: stateNokButtonIcon.right; leftMargin: parent.width * 0.005
             }
         }
+        // // // // // // // // // // // // // // // // // //
         Rectangle {
             id: stateNoFoundButtonIcon
-            height: label.height
+            height: labelCheckNoFound.height
             width: height
             radius: width * 0.5
-            border { color: "#eee"; width: vpx(1) }
+            border { color: themeColor.textValue ; width: vpx(1) }
             color: "transparent"
             anchors {
-                left: stateNokButtonIcon.left;  leftMargin: parent.width * 0.015
+                left: labelCheckNok.right
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: vpx(1)
                 margins: vpx(10)
@@ -564,7 +577,7 @@ FocusScope {
             id: labelCheckNoFound
             text: qsTr("not found") + api.tr
             verticalAlignment: Text.AlignTop
-            color: "#eee"
+            color: themeColor.textValue
 
             font {
                 family: global.fonts.sans
