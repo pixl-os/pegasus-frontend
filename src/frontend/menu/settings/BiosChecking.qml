@@ -50,17 +50,18 @@ FocusScope {
     XmlListModel {
         id: xmlModelBios
         // file:// need for read file system local
+        // get current index in xmlModelSystems
+        property string system : xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
         source: "file://recalbox/share/system/.emulationstation/es_bios.xml"
-        query: {
-            if (xmlModelSystems.count !== 0){
-                var system = xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
-                return ( "/biosList/system[@platform='" + system + "']/bios");
-                // console.log("systemsList.currentIndex : ", systemsList.currentIndex );
-                // console.log("xmlModelSystems.count : ", xmlModelSystems.count );
-                // console.log("xmlModelSystems.get : '", system, "'" );
-            }
-            else return system = ("/biosList/system[@platform='']/bios");
-        }
+        query:"/biosList/system[@platform='" + system + "']/bios"
+//        query: {
+//            if (xmlModelSystems.count !== 0){
+//                var system = xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
+//                return ( "/biosList/system[@platform='" + system + "']/bios");
+//                // console.log("systemsList.currentIndex : ", systemsList.currentIndex );
+//            }
+//            else return system = ("/biosList/system[@platform='']/bios");
+//        }
         XmlRole { name: "bios_Path"; query: "@path/string()"}
         XmlRole { name: "bios_Md5"; query: "@md5/string()" }
         XmlRole { name: "bios_Core"; query: "@core/string()" }
@@ -70,9 +71,9 @@ FocusScope {
 
     }
 
-    property var biosPath: xmlModelBios.get(biosList.currentIndex).bios_Path;
-    property var biosMd5: xmlModelBios.get(biosList.currentIndex).bios_Md5;
-    property var biosNote: xmlModelBios.get(biosList.currentIndex).bios_Note;
+    property string biosPath: xmlModelBios.get(biosList.currentIndex).bios_Path;
+    property string biosMd5: xmlModelBios.get(biosList.currentIndex).bios_Md5;
+    property string biosNote: xmlModelBios.get(biosList.currentIndex).bios_Note;
 
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
@@ -146,6 +147,7 @@ FocusScope {
                         id: wrapper
                         Component {
                             id: xmlDelegate
+
                             Text {
                                 id: fullname
                                 text: systems_Fullname
@@ -157,6 +159,7 @@ FocusScope {
                                     family: globalFonts.sans
                                 }
                             }
+
                         }
                     }
                     highlight: Rectangle {
@@ -178,12 +181,12 @@ FocusScope {
                     ListView {
                         id : biosList
                         width: biosColumn.width
-                        height: vpx(480)
+                        height: vpx(460)
                         model: xmlModelBios
                         clip: true
                         focus: true
                         highlightRangeMode: ListView.StrictlyEnforceRange
-                        highlightMoveDuration: 3
+                        highlightMoveDuration: 10
                         headerPositioning: ListView.PullBackHeader
                         spacing: vpx(20)
 
@@ -267,7 +270,7 @@ FocusScope {
                     }
                     Rectangle {
                         id: infobios
-                        height: vpx(480) ; width: biosColumn.width
+                        height: vpx(460) ; width: biosColumn.width
                         color: themeColor.main
                         radius: 5
                         border.color: themeColor.secondary
