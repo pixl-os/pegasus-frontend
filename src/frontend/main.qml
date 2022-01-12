@@ -702,6 +702,7 @@ Window {
 
     property var counter: 0 //counter use for debug
     property var previousVirtualKeyboardVisibility: false
+    property var forcedSelectAll: false;
 
     function virtualKeyboardOnReleased(ev){
         ev.accepted = true;
@@ -740,7 +741,7 @@ Window {
                 input.focus = true;
                 //for virtual keyboard only
                 if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = true;
-                input.selectAll();
+                if(forcedSelectAll) input.selectAll();
             }
             //for standard keyboard
             else if(editionActive && !api.internal.settings.virtualKeyboardSupport){
