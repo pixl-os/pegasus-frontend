@@ -704,11 +704,14 @@ Window {
     property var previousVirtualKeyboardVisibility: false
     property var forcedSelectAll: false;
 
+    function virtualKeyboardIsVisible(){
+        return (Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport);
+    }
+
     function virtualKeyboardOnReleased(ev){
         ev.accepted = true;
         return ev.accepted;
     }
-
 
     function virtualKeyboardOnPressed(ev,input,editionActive){
         //console.log("searchbar.Keys.onPressed : ", counter++);
