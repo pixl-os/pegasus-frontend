@@ -99,7 +99,7 @@ FocusScope {
         {name: qsTr("Linux Kernel :"), cmd: api.internal.system.run("echo $(uname -s) $(uname -r)")},
         {name: qsTr("Architecture :"), cmd: api.internal.system.run("uname -m")},
         {name: qsTr("CPU :"), cmd: api.internal.system.run("cat /proc/cpuinfo | grep 'model name' | cut -d ':' -f 2 | cut -c 2- | uniq")},
-        {name: qsTr("Number(s) CPU :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l")},
+        {name: qsTr("CPU Number(s) :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l")},
         {name: qsTr("CPU Maximum frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
         {name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0")},
         {name: qsTr("RAM :"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
