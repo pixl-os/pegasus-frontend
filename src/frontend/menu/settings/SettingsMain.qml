@@ -26,6 +26,7 @@ FocusScope {
 
     signal close
     signal openVideoSettings
+    signal openInformationSystem
     /*signal openKeySettings
         signal openGamepadSettings
         signal openGameDirSettings
@@ -231,28 +232,29 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optBiosChecking
                     KeyNavigation.up: optOutputVolume
-                    KeyNavigation.down: optStorageDevices
+                    KeyNavigation.down: optInformationSystem
                 }
-                /*
                 SectionTitle {
-                    text: qsTr("Network") + api.tr
+                    text: qsTr("Systems") + api.tr
                     first: true
+                    symbol: "\uf412"
                 }
-                MultivalueOption {
-                    id: optNetworkSettings
+                SimpleButton {
+                    id: optInformationSystem
 
-                    label: qsTr("Network Settings") + api.tr
-                    note: qsTr("Settings network wifi or else") + api.tr
-                    value: api.internal.settings.locales.currentName
+                    label: qsTr("System information") + api.tr
+                    note: qsTr("More information Ip, Cpu, OpenGL ...") + api.tr
+                    pointerIcon: true
 
                     onActivate: {
                         focus = true;
-                        localeBox.focus = true;
+                        root.openInformationSystem();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.up: optVideoSettings
-                    KeyNavigation.down: optUpdateSettings
+                    KeyNavigation.down: optStorageDevices
                 }
+                /*
                 SectionTitle {
                     text: qsTr("Update System") + api.tr
                     first: true
@@ -269,7 +271,7 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetworkSettings
+                    KeyNavigation.up: optInformationSystem
                     KeyNavigation.down: optStorageDevices
                 }
                 */
@@ -298,7 +300,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optVideoSettings
+                    KeyNavigation.up: optInformationSystem
                     //                    KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optLanguage
                 }

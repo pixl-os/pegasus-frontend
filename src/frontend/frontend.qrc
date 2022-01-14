@@ -107,5 +107,6 @@
         <file>assets/project-cd/retroarch-cd-psx.png</file>
         <file>assets/project-cd/retroarch-cd-saturn.png</file>
         <file>assets/project-cd/retroarch-cd-segacd.png</file>
+        <file>menu/settings/InformationSystem.qml</file>
     </qresource>
 </RCC>
