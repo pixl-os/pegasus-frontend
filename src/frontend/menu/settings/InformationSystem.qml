@@ -73,6 +73,9 @@ sudo lshw -c display | grep product | cut -d ':' -f 2 | cut -c 2-
 #temp intel/amd cpu:
 cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0
 
+ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'
+ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'
+
 */
 FocusScope {
     id: root
@@ -100,11 +103,12 @@ FocusScope {
         {name: qsTr("Architecture :"), cmd: api.internal.system.run("uname -m")},
         {name: qsTr("CPU :"), cmd: api.internal.system.run("cat /proc/cpuinfo | grep 'model name' | cut -d ':' -f 2 | cut -c 2- | uniq")},
         {name: qsTr("CPU Number(s) :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l")},
-        {name: qsTr("CPU Maximum frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
+        {name: qsTr("CPU Maximum Frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
         {name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0")},
         {name: qsTr("RAM :"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
         {name: qsTr("OpenGL :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL ES profile version string' | cut -d ':' -f 2 | cut -c 2-")},
-        {name: qsTr("Local IP :"), cmd: api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'")},
+        {name: qsTr("Wifi Local IP :"), cmd: api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'")},
+        {name: qsTr("Eternet Local IP :"), cmd: api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'")},
         {name: qsTr("External IP :"), cmd: api.internal.system.run("curl -4 'http://icanhazip.com/'")},
         {name: qsTr("Renderer :"), cmd: api.internal.system.run("lshw -c display | grep product | cut -d ':' -f 2 | cut -c 2-")},
         {name: qsTr("Vendor :"), cmd: api.internal.system.run("lshw -c display | grep vendor | cut -d ':' -f 2 | cut -c 2-")}
