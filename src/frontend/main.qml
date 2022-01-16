@@ -831,21 +831,21 @@ Window {
                 console.log("# Use case 1 : with or without virtual keyboard");
                 editionActive = !editionActive;
                 input.focus = true;
+                input.selectAll();
                 //for virtual keyboard only
                 if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = true;
-                input.selectAll();
             }
             //for virtual keyboard
             else if(editionActive && (!Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) && (previousVirtualKeyboardVisibility === false)){
-                console.log("# Use case 2 : wirtuakl keyboard has been removed");
+                console.log("# Use case 2 : virtual keyboard has been removed");
                 //force refresh to display keyboard
                 editionActive = false;
                 input.focus = false;
                 editionActive = true;
                 input.focus = true;
+                if(forcedSelectAll) input.selectAll();
                 //for virtual keyboard only
                 if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = true;
-                if(forcedSelectAll) input.selectAll();
             }
             //for standard keyboard
             else if(editionActive && !api.internal.settings.virtualKeyboardSupport){
