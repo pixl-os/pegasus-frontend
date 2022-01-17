@@ -8,8 +8,8 @@ Controls.TextField {
     id: control
     focus: true
     color: themeColor.textLabel
-    selectionColor: Qt.rgba(0.0, 0.0, 0.0, 0.15)
-    selectedTextColor: color
+    selectionColor: themeColor.screenUnderline //"#32CD32", // selected color blue
+    selectedTextColor: themeColor.screenUnderline
     selectByMouse: false
     font.pixelSize: vpx(22) // Qt.application.font.pixelSize * 2
     font.family: globalFonts.sans
@@ -34,9 +34,9 @@ Controls.TextField {
 //    EnterKeyAction.enabled: control.enterKeyEnabled
 
     background: Rectangle {
-        radius: vpx(20)
-        color: control.activeFocus ? themeColor.secondary : themeColor.main
-//        border.width: 1
-        border.color: control.activeFocus ? themeColor.screenHeader : themeColor.main
+        radius: vpx(10)
+        color: themeColor.secondary
+        border.color: themeColor.screenUnderline
+        border.width: vpx(1)
     }
 }

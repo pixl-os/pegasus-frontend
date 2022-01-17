@@ -94,7 +94,7 @@ FocusScope {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
-        color: themeColor.textValue
+        color: themeColor.underline
         font.pixelSize: vpx(30)
         font.family: globalFonts.ion
         text : "\uf3d1"

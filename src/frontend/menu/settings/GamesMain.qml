@@ -141,7 +141,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.integerscale",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalGameRatio
                     KeyNavigation.down: optSmoothGame
                 }
                 ToggleOption {
@@ -156,7 +155,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.smooth",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optPixelPerfect
                     KeyNavigation.down: optGlobalShaderSet
                 }
                 MultivalueOption {
@@ -180,7 +178,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optSmoothGame
                     KeyNavigation.down: optGlobalShader
                 }
                 MultivalueOption {
@@ -204,7 +201,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalShaderSet
                     KeyNavigation.down: optGlobalOverlays
                 }
                 ToggleOption {
@@ -219,7 +215,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.recalboxoverlays",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalShader
                     KeyNavigation.down: optShowFramerate
                 }
                 ToggleOption {
@@ -234,7 +229,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.showfps",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalOverlays
                     KeyNavigation.down: optGameRewind
                 }
                 SectionTitle {
@@ -254,7 +248,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optShowFramerate
                     KeyNavigation.down: optAutoSave
                 }
                 ToggleOption {
@@ -269,8 +262,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGameRewind
-//                    KeyNavigation.down: optBiosChecking
                     KeyNavigation.down: optAdvancedEmulator
 
                 }

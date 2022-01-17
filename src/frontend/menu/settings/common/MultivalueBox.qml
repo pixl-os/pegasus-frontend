@@ -135,6 +135,7 @@ FocusScope {
             height: root.itemHeight
             radius: vpx(8)
             color: highlighted ? themeColor.secondary : themeColor.main
+            border.color: highlighted ? themeColor.underline : themeColor.main
 
             Text {
                 id: label

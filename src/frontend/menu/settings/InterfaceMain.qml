@@ -184,7 +184,6 @@ FocusScope {
                         themeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optMenuControlsConfig
                     KeyNavigation.down: optGamelistsOnly
                 }
                 ToggleOption {
@@ -198,7 +197,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("emulationstation.gamelistonly",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optTheme
                 }
                 Item {
                     width: parent.width

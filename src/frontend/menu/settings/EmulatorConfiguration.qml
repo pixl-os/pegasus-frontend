@@ -118,7 +118,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.up: optSystemEmulator
                     KeyNavigation.down: optSystemSmoothGame
                 }
                 ToggleOption {
@@ -133,7 +132,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".smooth",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optSystemGameRatio
                     KeyNavigation.down: optSystemShaderSet
                     // not visible if not libretro Core
                     visible : isLibretroCore
@@ -159,7 +157,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optSystemSmoothGame
                     KeyNavigation.down: optGlobalShader
                     // not visible if not libretro Core
                     visible : isLibretroCore
@@ -185,7 +182,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optSystemShaderSet
                     KeyNavigation.down: optSystemOverlays
                     // not visible if not libretro Core
                     visible : isLibretroCore
@@ -202,7 +198,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".recalboxoverlays",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGlobalShader
                     KeyNavigation.down: optSystemGameRewind
                     // not visible if not libretro Core
                     visible : isLibretroCore
@@ -226,7 +221,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optSystemOverlays
                     KeyNavigation.down: optSystemAutoSave
                     // not visible if not libretro Core
                     visible : isLibretroCore
@@ -243,7 +237,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optSystemGameRewind
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
