@@ -45,15 +45,15 @@ FocusScope {
     }
     Text {
         id: symbolSubMenu
-            anchors {
-                verticalCenter: parent.verticalCenter
-                left: parent.left
-                leftMargin: - vpx("55")
-            }
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+            leftMargin: - fontSize * 2
+        }
         color: themeColor.textTitle
         font {
             bold: false
-            pixelSize: fontSize * 2
+            pixelSize: fontSize * 1.25
             family: global.fonts.ion
         }
     }

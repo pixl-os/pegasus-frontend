@@ -202,9 +202,9 @@ QStringList GetParametersList(QString Parameter)
 
         for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
         {
-            Log::info(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
+            Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
             ListOfValue.append(QString::fromStdString(device.DisplayName));
-            Log::info(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
+            Log::debug(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
             ListOfInternalValue.append(QString::fromStdString(device.UUID));
         }
     }

@@ -136,7 +136,6 @@ FocusScope {
                         onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.username", retroachievementUsername.text)
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optRetroachievementActivate
                     KeyNavigation.down: optRetroachievementPassword
                     visible: optRetroachievementActivate.checked
                 }
@@ -158,7 +157,6 @@ FocusScope {
                         onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.password", retroachievementPassword.text)
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optRetroachievementUsername
                     KeyNavigation.down: optHardcoreRetroachievementActivate
                     visible: optRetroachievementActivate.checked
                 }
@@ -173,7 +171,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optRetroachievementPassword
                     KeyNavigation.down: optScreenshootsAchievementActivate
                     visible: optRetroachievementActivate.checked
 
@@ -188,7 +185,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.retroachievement.screenshot",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optHardcoreRetroachievementActivate
                     KeyNavigation.down: optUnlockSoundsAchievementActivate
                     visible: optRetroachievementActivate.checked
 
@@ -203,7 +199,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.retroachievement.unlock.sound",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optScreenshootsAchievementActivate
                     KeyNavigation.down: optNetplayActivate
                     visible: optRetroachievementActivate.checked
 
@@ -223,7 +218,6 @@ FocusScope {
                     }
                     symbol: "\uf343"
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optUnlockSoundsAchievementActivate
                     KeyNavigation.down: optNetplayInformation
                 }
                 SimpleButton {
@@ -239,7 +233,6 @@ FocusScope {
                         root.openNetplayInformation();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetplayActivate
                     KeyNavigation.down: optNetplayNickname
                     visible: optNetplayActivate.checked
                 }
@@ -261,7 +254,6 @@ FocusScope {
                     }
 
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up:optNetplayInformation
                     KeyNavigation.down: optNetplayPswdClientActivate
                     visible: optNetplayActivate.checked
                 }
@@ -281,7 +273,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetplayNickname
                     KeyNavigation.down: optNetplayPswdClient
                     visible: optNetplayActivate.checked
                 }
@@ -305,7 +296,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetplayPswdClientActivate
                     KeyNavigation.down: optNetplayPswdViewerActivate
                     visible: optNetplayPswdClientActivate.checked && optNetplayActivate.checked
 
@@ -321,7 +311,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetplayPswdClient
                     KeyNavigation.down: optNetplayPswdViewer
                     visible: optNetplayActivate.checked
                 }
@@ -345,7 +334,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optNetplayPswdViewerActivate
                     visible: optNetplayPswdViewerActivate.checked && optNetplayActivate.checked
                 }
                 Item {

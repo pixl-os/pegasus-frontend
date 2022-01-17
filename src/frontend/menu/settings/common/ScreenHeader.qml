@@ -49,7 +49,6 @@ Item {
         width: parent.width * 0.97
         height: vpx(1)
         color: themeColor.screenUnderline
-
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
     }

@@ -28,7 +28,7 @@ Text {
     font {
         pixelSize: fontSize
         family: globalFonts.sans
-        capitalization: Font.AllUppercase
+//        capitalization: Font.AllUppercase
         italic: true
     }
     topPadding: font.pixelSize * (first ? 0.25 : 2.25)
@@ -38,12 +38,12 @@ Text {
         anchors {
             verticalCenter: parent.verticalCenter
             left: parent.left
-            leftMargin: - vpx("55")
+            leftMargin: - fontSize * 2
         }
         color: themeColor.textTitle
         font {
             bold: false
-            pixelSize: fontSize * 2
+            pixelSize: fontSize * 1.25
             family: global.fonts.ion
         }
     }

@@ -172,7 +172,6 @@ FocusScope {
                     }
                     */
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optAudioMode
                     KeyNavigation.down: optOutputVolume
                 }
                 SliderOption {
@@ -207,7 +206,6 @@ FocusScope {
                     
                     onFocusChanged: container.onFocus(this)
                     
-                    KeyNavigation.up: optOutputAudio
                     KeyNavigation.down: optVideoSettings
 //                    KeyNavigation.down: optStorageDevices
                 }
@@ -231,7 +229,6 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optBiosChecking
-                    KeyNavigation.up: optOutputVolume
                     KeyNavigation.down: optInformationSystem
                 }
                 SectionTitle {
@@ -251,7 +248,6 @@ FocusScope {
                         root.openInformationSystem();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optVideoSettings
                     KeyNavigation.down: optStorageDevices
                 }
                 /*
@@ -300,7 +296,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optInformationSystem
                     //                    KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optLanguage
                 }
@@ -341,7 +336,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optStorageDevices
                     KeyNavigation.down: optKbLayout
                 }
                 MultivalueOption {
@@ -366,7 +360,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this);
-                    KeyNavigation.up: optLanguage
                     KeyNavigation.down: optDebugMode
                 }
                 SectionTitle {
@@ -385,7 +378,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("emulationstation.debuglogs",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optKbLayout
                     KeyNavigation.down: optHideMouse
                 }
                 ToggleOption {
