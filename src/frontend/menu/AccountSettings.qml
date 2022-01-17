@@ -48,7 +48,7 @@ FocusScope {
         anchors.right: parent.right
 
         onClose: root.close()
-        onOpenNetplayInformation: root.openScreen("settings/NetplayInformation.qml")
+        onOpenNetplayRooms: root.openScreen("settings/NetplayRooms.qml")
         onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
     }
     Loader {

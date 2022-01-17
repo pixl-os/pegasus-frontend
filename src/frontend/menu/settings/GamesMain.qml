@@ -282,7 +282,6 @@ FocusScope {
                         root.openBiosCheckingSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optAutoSave
                     KeyNavigation.down: optAdvancedEmulator
                 }
                 SimpleButton {

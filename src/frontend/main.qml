@@ -133,7 +133,7 @@ Window {
 
                 if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay")){
                     event.accepted = true;
-                    subscreen.setSource("menu/settings/NetplayInformation.qml", {"isCallDirectly": true});
+                    subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
                     subscreen.focus = true;
                     content.state = "sub";
                 }

@@ -24,7 +24,7 @@ FocusScope {
     id: root
 
     signal close
-    signal openNetplayInformation
+    signal openNetplayRooms
     signal openGameDirSettings
     //signal openMenuBoxSettings
 
@@ -122,7 +122,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementUsername
-                    label: qsTr("Connect retroachievement") + api.tr
+                    label: qsTr("Username") + api.tr
                     note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
 
                     TextFieldOption {
@@ -142,7 +142,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementPassword
-                    // label: qsTr("Connect Retroachievement") + api.tr
+                     label: qsTr("Password") + api.tr
                     note: qsTr("then login with your username and password") + api.tr
 
                     TextFieldOption {
@@ -191,7 +191,7 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optUnlockSoundsAchievementActivate
-                    label: qsTr("Activate Unlock Sounds") + api.tr
+                    label: qsTr("Activate unlock sounds") + api.tr
                     note: qsTr("Play Sounds if you unlock a trophies.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievement.unlock.sound")
@@ -218,23 +218,7 @@ FocusScope {
                     }
                     symbol: "\uf343"
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optNetplayInformation
-                }
-                SimpleButton {
-                    id: optNetplayInformation
-
-                    label: qsTr("Netplay information") + api.tr
-                    note: qsTr("Show netplay information roms etc ...") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openNetplayInformation();
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayNickname
-                    visible: optNetplayActivate.checked
                 }
                 MultivalueOption {
                     id: optNetplayNickname
@@ -253,6 +237,22 @@ FocusScope {
                         onEditingFinished: api.internal.recalbox.setStringParameter("global.netplay.nickname", netplayNickname.text)
                     }
 
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optNetplayRooms
+                    visible: optNetplayActivate.checked
+                }
+                SimpleButton {
+                    id: optNetplayRooms
+
+                    label: qsTr("Netplay rooms") + api.tr
+                    note: qsTr("Play online on many systems.\n (current games online, Friends, etc...)") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openNetplayRooms();
+                    }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayPswdClientActivate
                     visible: optNetplayActivate.checked
