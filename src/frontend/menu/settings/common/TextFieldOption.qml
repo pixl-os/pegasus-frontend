@@ -13,6 +13,7 @@ TextField {
     selectByMouse: false
     font.pixelSize: vpx(22) // Qt.application.font.pixelSize * 2
     font.family: globalFonts.sans
+    readOnly: true
 
     //focusReason: Qt.ActiveWindowFocusReason
 
@@ -41,5 +42,23 @@ TextField {
         color: control.activeFocus ? themeColor.secondary : themeColor.main
 //        border.width: 1
         border.color: control.activeFocus ? themeColor.screenHeader : themeColor.main
+    }
+
+    Keys.onReleased:{
+        event.accepted = virtualKeyboardOnReleased(event);
+    }
+    property var active : false; //set to false by default
+    Keys.onPressed: {
+        console.log("-----Before update-----");
+        console.log("event.accepted : ", event.accepted);
+        console.log("control.focus : ", control.focus);
+        console.log("control.readOnly : ", control.readOnly);
+        console.log("active : ",active);
+        event.accepted, control.focus, active = virtualKeyboardOnPressed(event,control,active);
+        console.log("-----After update-----");
+        console.log("event.accepted : ", event.accepted);
+        console.log("control.focus : ", control.focus);
+        console.log("control.readOnly : ", control.readOnly);
+        console.log("active : ",active);
     }
 }
