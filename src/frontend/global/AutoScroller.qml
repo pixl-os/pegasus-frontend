@@ -59,10 +59,11 @@ Item {
             //console.log("flickable.contentY after : ",flickable.contentY);
         }
     }
+
     Timer {
         id: delayedLoading
         repeat: false
-        interval: 300
+        interval: 25
         triggeredOnStart: false
         onTriggered: ensureVisible(flickable)
     }
