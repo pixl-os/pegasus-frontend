@@ -677,7 +677,7 @@ Window {
         anchors.fill: parent
         z:10
         sourceComponent: inputPanelComponent
-        active: api.internal.settings.virtualKeyboardSupport
+        active: true
         asynchronous: true
     }
     Component {
@@ -731,7 +731,7 @@ Window {
                 }
                 AutoScroller {
                     id:autoScroller
-                    verticalLimit: inputPanel.y + vpx(20) //for margin
+                    verticalLimit: (Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) ? inputPanel.y + vpx(20) : 0 //for margin
                 }
             }
         }
@@ -783,7 +783,7 @@ Window {
                 //force refresh to display keyboard
                 editionActive = false;
                 input.focus = false;
-                editionActive = true;
+                editionActive = false;
                 input.focus = true;
                 input.readOnly = false;
                 if(forcedSelectAll) input.selectAll();
@@ -847,6 +847,10 @@ Window {
                 input.cursorVisible = false;
                 input.readOnly = true;
 				input.cursorPosition = 0;
+            }
+            else if(editionActive === false && input.readOnly === true) //if already in readonly and not active, we have to let control to parents
+            {
+                ev.accepted = false;
             }
         }
 
