@@ -753,21 +753,21 @@ Window {
         activeInput = input;
         //console.log("searchbar.Keys.onPressed : ", counter++);
         //console.log("previousVirtualKeyboardVisibility : ",previousVirtualKeyboardVisibility);
-        console.log("ev.key : ", ev.key);
+        //console.log("ev.key : ", ev.key);
         //console.log("editionActive : ",editionActive);
         //console.log("input.focus : ",input.focus);
         //console.log("cursorVisible : ",	input.cursorVisible);
         //console.log("Qt.inputMethod.visible : ",Qt.inputMethod.visible);
-        console.log("Qt.Key_Return : ",Qt.Key_Return);
-        console.log("Qt.Key_Enter : ",Qt.Key_Enter);
-        console.log("Qt.Key_Backspace : ",Qt.Key_Backspace);
+        //console.log("Qt.Key_Return : ",Qt.Key_Return);
+        //console.log("Qt.Key_Enter : ",Qt.Key_Enter);
+        //console.log("Qt.Key_Backspace : ",Qt.Key_Backspace);
 		// Accept
         if (api.keys.isAccept(ev) && !ev.isAutoRepeat) {
-            console.log("isAccept");
+            //console.log("isAccept");
             ev.accepted = true;
             //for all cases
             if (!editionActive) {
-                console.log("# Use case 1 : with or without virtual keyboard");
+                //console.log("# Use case 1 : with or without virtual keyboard");
                 input.readOnly = false;
                 editionActive = false;
                 input.focus = false;
@@ -779,7 +779,7 @@ Window {
             }
             //for virtual keyboard
             else if(editionActive && (!Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) && (previousVirtualKeyboardVisibility === false)){
-                console.log("# Use case 2 : virtual keyboard has been removed");
+                //console.log("# Use case 2 : virtual keyboard has been removed");
                 //force refresh to display keyboard
                 editionActive = false;
                 input.focus = false;
@@ -792,7 +792,7 @@ Window {
             }
             //for standard keyboard
             else if(editionActive && !api.internal.settings.virtualKeyboardSupport){
-                console.log("# Use case 3 : if edition is active and usage of standard keyboard only");
+                //console.log("# Use case 3 : if edition is active and usage of standard keyboard only");
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
@@ -801,9 +801,9 @@ Window {
             }
             //for virtual keyboard
             else if ((ev.key !== Qt.Key_Return) && (ev.key !== Qt.Key_Enter)){
-                console.log("# Use case 4 : if virtual keyboard visible and PRESS A");
+                //console.log("# Use case 4 : if virtual keyboard visible and PRESS A");
 				if(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
-                    console.log("# Use case 4 bis : if virtual keyboard visible and PRESS A");
+                    //console.log("# Use case 4 bis : if virtual keyboard visible and PRESS A");
                     keyEmitter.keyPressed(appWindow, Qt.Key_Return);
                     keyEmitter.keyReleased(appWindow, Qt.Key_Return);
                 }
@@ -820,12 +820,12 @@ Window {
         }
         // Cancel
         else if (api.keys.isCancel(ev) && !ev.isAutoRepeat) {
-            console.log("isCancel");
+            //console.log("isCancel");
             ev.accepted = true;
 
             //for virtual keyboard
             if(editionActive && Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
-                console.log("# Use case 1 : exit from keyboard");
+                //console.log("# Use case 1 : exit from keyboard");
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
@@ -833,7 +833,7 @@ Window {
             }
             //for virtual keyboard
             else if (editionActive && !Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) {
-                console.log("# Use case 2 : editon active & virtual keyboard not visible");
+                //console.log("# Use case 2 : editon active & virtual keyboard not visible");
                 input.focus = true;
                 editionActive = false;
                 input.cursorVisible = false;
@@ -842,7 +842,7 @@ Window {
             }
             //for standard keyboard
             else if (editionActive && Qt.inputMethod.visible && !api.internal.settings.virtualKeyboardSupport){
-                console.log("# Use case 3 : edtion active with standard keyboard visible");
+                //console.log("# Use case 3 : edtion active with standard keyboard visible");
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
