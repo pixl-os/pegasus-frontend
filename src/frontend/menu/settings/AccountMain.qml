@@ -68,14 +68,15 @@ FocusScope {
         contentHeight: content.height
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
-        boundsBehavior: Flickable.StopAtBounds
-        boundsMovement: Flickable.StopAtBounds
+
+        boundsBehavior: api.internal.settings.virtualKeyboardSupport ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
+        boundsMovement: api.internal.settings.virtualKeyboardSupport ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
 
         readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
 
         function onFocus(item) {
-            if (item.focus)
+            if (item.focus && !(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport))
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
         FocusScope {
