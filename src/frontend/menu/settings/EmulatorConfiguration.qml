@@ -252,7 +252,8 @@ FocusScope {
                     id: emulatorButtons
                     model: system.emulatorsCount
                     SimpleButton {
-                        label: system.getNameAt(index) + " " + system.getCoreAt(index);
+                        // system.getCoreAt(index) not visible if not libretro Core for standalone just show emulator name
+                        label: isLibretroCore ? system.getNameAt(index) + " " + system.getCoreAt(index) : system.getNameAt(index) ;
                         note: system.getCoreLongNameAt(index) + " - " + system.getCoreVersionAt(index);
 
                         onActivate: {

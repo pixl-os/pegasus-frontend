@@ -44,7 +44,7 @@ QString find_systems_xml(const std::vector<QString>& possible_config_dirs)
         QString xml_path = dir_path + QStringLiteral("es_systems.cfg");
         if (QFileInfo::exists(xml_path))
             return xml_path;
-		//add search of new ROMFS V2 systems list
+        //add search of new ROMFS V2 systems list
         xml_path = dir_path + QStringLiteral("systemlist.xml");
         if (QFileInfo::exists(xml_path))
             return xml_path;
@@ -68,13 +68,13 @@ void set_by_str(HashMap<QLatin1String, QString>& map, const QString& str, const 
 {
     HashMap<QLatin1String, QString>::iterator it;
     for (it = map.begin(); it != map.end(); ++it)
-	{
+    {
         if (it->first == str)
-		{	
-			it->second = value;
+        {
+            it->second = value;
             break;
-		}
-	}
+        }
+    }
 }
 
 providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStreamReader& xml,std::vector<providers::es2::CoreInfo>& coreList)
@@ -85,11 +85,11 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
 
     // non-optional properties
     const std::vector<QLatin1String> required_keys {{
-        QLatin1String("name"),
-        QLatin1String("path"),
-        QLatin1String("extension"),
-        QLatin1String("command"),
-    }};
+            QLatin1String("name"),
+                    QLatin1String("path"),
+                    QLatin1String("extension"),
+                    QLatin1String("command"),
+                                                    }};
     
     // all supported properties
     HashMap<QLatin1String, QString> xml_props {
@@ -114,27 +114,27 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                     if (xml.name() == "emulator"){
                         QString emulatorName = xml.attributes().value("name").toString();
                         //Log::debug(log_tag,LOGMSG("Emulateur name: %1").arg(emulatorName));
-                    
+
                         while (xml.readNextStartElement()) {
                             if (xml.name() == "cores"){
                                 while (xml.readNextStartElement()) {
                                     if (xml.name() == "core"){
                                         QString corePriority = xml.attributes().value("priority").toString();
-										QString coreNetplay = "0";
-										QString coreName = xml.readElementText();
+                                        QString coreNetplay = "0";
+                                        QString coreName = xml.readElementText();
                                         QString coreLongName = "";
                                         QString coreVersion = "";
                                         //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
                                         //For libretro cores only for the moment
                                         if(emulatorName.toLower().contains("libretro")){
                                             for(const providers::es2::CoreInfo& info : coreList){
-                                                //Log::debug(log_tag, LOGMSG("Core name: %1 - Core Short name found: %2").arg(coreName,QString::fromStdString(info.ShortName())));
+                                                Log::debug(log_tag, LOGMSG("Core name: %1 - Core Short name found: %2").arg(coreName,QString::fromStdString(info.ShortName())));
                                                 if (QString::fromStdString(info.ShortName()) == coreName){
-                                                   //Log::debug(log_tag, LOGMSG("Core Long Name: %1 - Core version: %2").arg(QString::fromStdString(info.LongName()),QString::fromStdString(info.Version())));
-                                                   coreLongName = QString::fromStdString(info.LongName());
-                                                   coreVersion = QString::fromStdString(info.Version());
-                                                   break;
-                                               }
+                                                    Log::debug(log_tag, LOGMSG("Core Long Name: %1 - Core version: %2").arg(QString::fromStdString(info.LongName()),QString::fromStdString(info.Version())));
+                                                    coreLongName = QString::fromStdString(info.LongName());
+                                                    coreVersion = QString::fromStdString(info.Version());
+                                                    break;
+                                                }
                                             }
                                         }
                                         SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(),coreLongName,coreVersion});
@@ -154,7 +154,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
         else{
             xml.skipCurrentElement();
         }
-    
+
     }
     if (xml.error())
         return {};
@@ -164,15 +164,15 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
     for (const QLatin1String& key : required_keys) {
         if (xml_props[key].isEmpty()) {
             Log::warning(log_tag, LOGMSG("The `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
-                .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(xml.lineNumber()), key));
+                         .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(xml.lineNumber()), key));
             return {};
         }
     }
 
     // do some path formatting
     xml_props[QLatin1String("path")]
-        .replace("\\", "/")
-        .replace("~", paths::homePath());
+            .replace("\\", "/")
+            .replace("~", paths::homePath());
 
 
     // construct the new platform
@@ -181,24 +181,24 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
     QString shortname = std::move(xml_props[QLatin1String("name")]);
 
     QString launch_cmd = xml_props[QLatin1String("command")]
-        .replace (QLatin1String("%CONTROLLERSCONFIG%"), QLatin1String("{controllers.config}"))
-        .replace(QLatin1String("%SYSTEM%"), QLatin1String("{system.shortname}"))
-        .replace(QLatin1String("%ROM%"), QLatin1String("{file.path}"))
-        .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
-        .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"))
-        .replace(QLatin1String("%EMULATOR%"), QLatin1String("{emulator.name}"))
-        .replace(QLatin1String("%CORE%"), QLatin1String("{emulator.core}"))
-        .replace(QLatin1String("%RATIO%"), QLatin1String("{emulator.ratio}"))
-        .replace(QLatin1String("%NETPLAY%"), QLatin1String("{emulator.netplay}"));
+            .replace (QLatin1String("%CONTROLLERSCONFIG%"), QLatin1String("{controllers.config}"))
+            .replace(QLatin1String("%SYSTEM%"), QLatin1String("{system.shortname}"))
+            .replace(QLatin1String("%ROM%"), QLatin1String("{file.path}"))
+            .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
+            .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"))
+            .replace(QLatin1String("%EMULATOR%"), QLatin1String("{emulator.name}"))
+            .replace(QLatin1String("%CORE%"), QLatin1String("{emulator.core}"))
+            .replace(QLatin1String("%RATIO%"), QLatin1String("{emulator.ratio}"))
+            .replace(QLatin1String("%NETPLAY%"), QLatin1String("{emulator.netplay}"));
 
     return {
         fullname.isEmpty() ? shortname : fullname,
-        std::move(shortname),
-        std::move(xml_props[QLatin1String("path")]),
-        std::move(xml_props[QLatin1String("extension")]),
-        std::move(xml_props[QLatin1String("platform")]),
-        std::move(launch_cmd), // assumed to be absolute
-        std::move(SystemEmulators),
+                std::move(shortname),
+                std::move(xml_props[QLatin1String("path")]),
+                std::move(xml_props[QLatin1String("extension")]),
+                std::move(xml_props[QLatin1String("platform")]),
+                std::move(launch_cmd), // assumed to be absolute
+                std::move(SystemEmulators),
     };
 }
 
@@ -210,11 +210,11 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
 
     // non-optional properties
     const std::vector<QLatin1String> required_keys {{
-        QLatin1String("name"),
-        QLatin1String("path"),
-        QLatin1String("extension"),
-        QLatin1String("command"),
-    }};
+            QLatin1String("name"),
+                    QLatin1String("path"),
+                    QLatin1String("extension"),
+                    QLatin1String("command"),
+                                                    }};
     
     // all supported properties
     HashMap<QLatin1String, QString> xml_props {
@@ -239,68 +239,278 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
 
     // read
     while (xml.readNextStartElement()) {
-	        if (xml.name() == "descriptor"){
-				//const auto 
-                set_by_str(xml_props, "path",xml.attributes().value("path").toString());
-                set_by_str(xml_props, "extension",xml.attributes().value("extensions").toString());
-				xml.skipCurrentElement(); //because not read of element text
-			}
-            else if (xml.name() == "emulatorList"){
-                while (xml.readNextStartElement()){
-                    if (xml.name() == "emulator"){
-                        QString emulatorName = xml.attributes().value("name").toString();
-                        //Log::debug(log_tag,LOGMSG("Emulateur name: %1").arg(emulatorName));
-                                while (xml.readNextStartElement()) {
-                                    if (xml.name() == "core"){
-                                        QString corePriority = xml.attributes().value("priority").toString();
-										QString coreNetplay = xml.attributes().value("netplay").toString();
-									    QString coreName = xml.attributes().value("name").toString();
-                                        QString coreLongName = "";
-                                        QString coreVersion = "";
-                                        //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
-										
-										//For libretro cores only for the moment
-                                        if(emulatorName.toLower().contains("libretro")){
-                                            for(const providers::es2::CoreInfo& info : coreList){
-                                                //Log::debug(log_tag, LOGMSG("Core name: %1 - Core Short name found: %2").arg(coreName,QString::fromStdString(info.ShortName())));
-                                                if (QString::fromStdString(info.ShortName()) == coreName){
-                                                   //Log::debug(log_tag, LOGMSG("Core Long Name: %1 - Core version: %2").arg(QString::fromStdString(info.LongName()),QString::fromStdString(info.Version())));
-                                                   coreLongName = QString::fromStdString(info.LongName());
-                                                   coreVersion = QString::fromStdString(info.Version());
-                                                   break;
-                                               }
-                                            }
-                                        }
-                                        SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(), coreLongName, coreVersion});
-                                        xml.skipCurrentElement(); //because not read of element text
+        if (xml.name() == "descriptor"){
+            //const auto
+            set_by_str(xml_props, "path",xml.attributes().value("path").toString());
+            set_by_str(xml_props, "extension",xml.attributes().value("extensions").toString());
+            xml.skipCurrentElement(); //because not read of element text
+        }
+        else if (xml.name() == "emulatorList"){
+            while (xml.readNextStartElement()){
+                if (xml.name() == "emulator"){
+                    QString emulatorName = xml.attributes().value("name").toString();
+                    //Log::debug(log_tag,LOGMSG("Emulateur name: %1").arg(emulatorName));
+                    while (xml.readNextStartElement()) {
+                        if (xml.name() == "core"){
+                            QString corePriority = xml.attributes().value("priority").toString();
+                            QString coreNetplay = xml.attributes().value("netplay").toString();
+                            QString coreName = xml.attributes().value("name").toString();
+                            QString coreLongName = "";
+                            QString coreVersion = "";
+                            //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
+
+                            //For libretro cores only for the moment
+                            if(emulatorName.toLower().contains("libretro")){
+                                for(const providers::es2::CoreInfo& info : coreList){
+                                    // Log::debug(log_tag, LOGMSG("Core name: %1 - Core Short name found: %2").arg(coreName,QString::fromStdString(info.ShortName())));
+                                    if (QString::fromStdString(info.ShortName()) == coreName){
+                                        // Log::debug(log_tag, LOGMSG("Core Long Name: %1 - Core version: %2").arg(QString::fromStdString(info.LongName()),QString::fromStdString(info.Version())));
+                                        coreLongName = QString::fromStdString(info.LongName());
+                                        coreVersion = QString::fromStdString(info.Version());
+                                        break;
                                     }
                                 }
+                            }
+                            //QList<QString> standaloneCore = { "citra", "dolphin", "dosbox", "duckstation", "gsplus", "hatari", "hypseus", "mupen64plus", "openbor", "oricutron", "pcsx2", "pcsx_rearmed", "ppsspp", "reicast", "scummvm", "simcoupe", "solarus", "supermodel", "xroar", };
+                            else if(emulatorName.toLower().contains("citra")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/citra.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+//                                        Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("dolphin")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/dolphin.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("dosbox")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/dosbox.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("duckstation")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/duckstation.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("gsplus")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/gsplus.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("hatari")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/hatari.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("hypseus")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/hypseus.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("mupen64plus")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/mupen64plus.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("openbor")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/openbor.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("oricutron")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/oricutron.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("pcsx2")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/pcsx2.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("pcsx_rearmed")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/pcsx_rearmed.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("ppsspp")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/ppsspp.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("reicast")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/reicast.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("scummvm")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/scummvm.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("simcoupe")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/simcoupe.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("solarus")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/solarus.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("supermodel")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/supermodel.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+                            else if(emulatorName.toLower().contains("xroar")){
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/xroar.corenames");
+                                for(std::string& line : Strings::Split(content, '\n'))
+                                {
+                                    Strings::Vector parts = Strings::Split(line, ';');
+                                    if (parts.size() == 3){
+                                        coreLongName = QString::fromStdString(parts[0]);
+                                        coreVersion = QString::fromStdString(parts[2]);
+                                    }
+                                }
+                            }
+
+                            SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(), coreLongName, coreVersion});
+                            xml.skipCurrentElement(); //because not read of element text
+                        }
                     }
                 }
             }
-			else{
-				xml.skipCurrentElement(); //because not read of element text
-            }
         }
+        else{
+            xml.skipCurrentElement(); //because not read of element text
+        }
+    }
     if (xml.error())
-	{
+    {
         Log::debug(log_tag,LOGMSG("xml.error()"));
-		return {};
-	}
+        return {};
+    }
     // check if all required params are present
     for (const QLatin1String& key : required_keys) {
         if (xml_props[key].isEmpty()) {
             Log::warning(log_tag, LOGMSG("The `<system>` node in `%1` that ends at line %2 has no `<%3>` parameter")
-                .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(xml.lineNumber()), key));
+                         .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(xml.lineNumber()), key));
             return {};
         }
     }
 
     // do some path formatting
     xml_props[QLatin1String("path")]
-        .replace("\\", "/")
-        .replace("~", paths::homePath())
-		.replace("%ROOT%","/recalbox/share/roms");
+            .replace("\\", "/")
+            .replace("~", paths::homePath())
+            .replace("%ROOT%","/recalbox/share/roms");
 
 
     // construct the new platform
@@ -309,24 +519,24 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
     QString shortname = std::move(xml_props[QLatin1String("name")]);
 
     QString launch_cmd = xml_props[QLatin1String("command")]
-        .replace (QLatin1String("%CONTROLLERSCONFIG%"), QLatin1String("{controllers.config}"))
-        .replace(QLatin1String("%SYSTEM%"), QLatin1String("{system.shortname}"))
-        .replace(QLatin1String("%ROM%"), QLatin1String("{file.path}"))
-        .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
-        .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"))
-        .replace(QLatin1String("%EMULATOR%"), QLatin1String("{emulator.name}"))
-        .replace(QLatin1String("%CORE%"), QLatin1String("{emulator.core}"))
-        .replace(QLatin1String("%RATIO%"), QLatin1String("{emulator.ratio}"))
-        .replace(QLatin1String("%NETPLAY%"), QLatin1String("{emulator.netplay}"));
+            .replace (QLatin1String("%CONTROLLERSCONFIG%"), QLatin1String("{controllers.config}"))
+            .replace(QLatin1String("%SYSTEM%"), QLatin1String("{system.shortname}"))
+            .replace(QLatin1String("%ROM%"), QLatin1String("{file.path}"))
+            .replace(QLatin1String("%ROM_RAW%"), QLatin1String("{file.path}"))
+            .replace(QLatin1String("%BASENAME%"), QLatin1String("{file.basename}"))
+            .replace(QLatin1String("%EMULATOR%"), QLatin1String("{emulator.name}"))
+            .replace(QLatin1String("%CORE%"), QLatin1String("{emulator.core}"))
+            .replace(QLatin1String("%RATIO%"), QLatin1String("{emulator.ratio}"))
+            .replace(QLatin1String("%NETPLAY%"), QLatin1String("{emulator.netplay}"));
 
     return {
         fullname.isEmpty() ? shortname : fullname,
-        std::move(shortname),
-        std::move(xml_props[QLatin1String("path")]),
-        std::move(xml_props[QLatin1String("extension")]),
-        std::move(xml_props[QLatin1String("platform")]),
-        std::move(launch_cmd), // assumed to be absolute
-        std::move(SystemEmulators),
+                std::move(shortname),
+                std::move(xml_props[QLatin1String("path")]),
+                std::move(xml_props[QLatin1String("extension")]),
+                std::move(xml_props[QLatin1String("platform")]),
+                std::move(launch_cmd), // assumed to be absolute
+                std::move(SystemEmulators),
     };
 }
 
@@ -369,33 +579,33 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
     std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/retroarch.corenames");
     for(std::string& line : Strings::Split(content, '\n'))
     {
-      Strings::Vector parts = Strings::Split(line, ';');
-      if (parts.size() == 3){
-        //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
-        mCoreList.push_back({ parts[0], parts[1], parts[2] });
-      }
+        Strings::Vector parts = Strings::Split(line, ';');
+        if (parts.size() == 3){
+            //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
+            mCoreList.push_back({ parts[0], parts[1], parts[2] });
+        }
     }
 
 
     // read all <system> nodes
     std::vector<SystemEntry> systems;
-	//Since ROMFS V2, find default as following: 
-	//<defaults command="python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%"/>
-	QString defaultsCommand = "";
+    //Since ROMFS V2, find default as following:
+    //<defaults command="python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%"/>
+    QString defaultsCommand = "";
     while (xml.readNextStartElement()) {
-		QStringRef name = xml.name();
-		if (name == QLatin1String("defaults")) {
-			//ROMFS V2 file identified
-			Log::info(log_tag, LOGMSG("ROMFS V2 xml format Identified"));
-			//Get default command
-			//TO DO to extract from XML
-			defaultsCommand = "python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%";
+        QStringRef name = xml.name();
+        if (name == QLatin1String("defaults")) {
+            //ROMFS V2 file identified
+            Log::info(log_tag, LOGMSG("ROMFS V2 xml format Identified"));
+            //Get default command
+            //TO DO to extract from XML
+            defaultsCommand = "python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%";
             xml.skipCurrentElement();
             continue;
-			
-		}
-		else if (name != QLatin1String("system")) {
-			Log::debug(log_tag, LOGMSG("Skip this one: %1").arg(name));
+
+        }
+        else if (name != QLatin1String("system")) {
+            Log::debug(log_tag, LOGMSG("Skip this one: %1").arg(name));
             xml.skipCurrentElement();
             continue;
         }
@@ -444,38 +654,38 @@ SystemEntry find_system(const QString& log_tag, const std::vector<QString>& poss
     std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/retroarch.corenames");
     for(std::string& line : Strings::Split(content, '\n'))
     {
-      Strings::Vector parts = Strings::Split(line, ';');
-      if (parts.size() == 3){
-        //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
-        mCoreList.push_back({ parts[0], parts[1], parts[2] });
-      }
+        Strings::Vector parts = Strings::Split(line, ';');
+        if (parts.size() == 3){
+            //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
+            mCoreList.push_back({ parts[0], parts[1], parts[2] });
+        }
     }
 
-    //Since ROMFS V2, find default as following: 
-	//<defaults command="python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%"/>
-	QString defaultsCommand = "";
+    //Since ROMFS V2, find default as following:
+    //<defaults command="python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%"/>
+    QString defaultsCommand = "";
     while (xml.readNextStartElement()) {
-		QStringRef name = xml.name();
-		if (name == QLatin1String("defaults")) {
-			//ROMFS V2 file identified
-			Log::info(log_tag, LOGMSG("ROMFS V2 xml format Identified"));
-			//Get default command
-			//TO DO to extract from XML
-			defaultsCommand = "python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%";
+        QStringRef name = xml.name();
+        if (name == QLatin1String("defaults")) {
+            //ROMFS V2 file identified
+            Log::info(log_tag, LOGMSG("ROMFS V2 xml format Identified"));
+            //Get default command
+            //TO DO to extract from XML
+            defaultsCommand = "python /usr/bin/emulatorlauncher.pyc %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -emulator %EMULATOR% -core %CORE% -ratio %RATIO% %NETPLAY%";
             xml.skipCurrentElement();
             continue;
-			
-		}
-		else if (name != QLatin1String("system")) {
-			Log::debug(log_tag, LOGMSG("Skip this one: %1").arg(name));
+
+        }
+        else if (name != QLatin1String("system")) {
+            Log::debug(log_tag, LOGMSG("Skip this one: %1").arg(name));
             xml.skipCurrentElement();
             continue;
         }
         if (defaultsCommand == "") sysentry = read_system_entry(log_tag, xml,mCoreList);
         else sysentry = read_system_entry_v2(log_tag, xml, defaultsCommand,mCoreList);
         if ((!sysentry.name.isEmpty()) && (sysentry.platforms == shortName)){
-			break; //to get only one system in this case
-		}
+            break; //to get only one system in this case
+        }
     }
     if (xml.error())
         Log::error(log_tag, xml.errorString());
