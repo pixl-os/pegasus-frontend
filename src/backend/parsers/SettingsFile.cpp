@@ -67,7 +67,8 @@ ConfigEntryMaps::ConfigEntryMaps()
     , str_to_general_opt {
         { QStringLiteral("fullscreen"), GeneralOption::FULLSCREEN },
         { QStringLiteral("input-mouse-support"), GeneralOption::MOUSE_SUPPORT },
-        { QStringLiteral("locale"), GeneralOption::LOCALE },
+		{ QStringLiteral("input-virtualkeyboard-support"), GeneralOption::VIRTUALKEYBOARD_SUPPORT },
+		{ QStringLiteral("locale"), GeneralOption::LOCALE },
         { QStringLiteral("theme"), GeneralOption::THEME },
     }
     , str_to_key_opt {
@@ -168,6 +169,10 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
             break;
         case ConfigEntryGeneralOption::MOUSE_SUPPORT:
             if (!store_bool_maybe(strconv, val, AppSettings::general.mouse_support))
+                log_needs_bool(lineno, key);
+            break;
+        case ConfigEntryGeneralOption::VIRTUALKEYBOARD_SUPPORT:
+            if (!store_bool_maybe(strconv, val, AppSettings::general.virtualkeyboard_support))
                 log_needs_bool(lineno, key);
             break;
         case ConfigEntryGeneralOption::LOCALE:
@@ -299,7 +304,8 @@ void SaveContext::print_general(QTextStream& stream) const
     GeneralStrMap option_values {
         { GeneralOption::FULLSCREEN, AppSettings::general.fullscreen ? STR_TRUE : STR_FALSE },
         { GeneralOption::MOUSE_SUPPORT, AppSettings::general.mouse_support ? STR_TRUE : STR_FALSE },
-        { GeneralOption::LOCALE, AppSettings::general.locale },
+		{ GeneralOption::VIRTUALKEYBOARD_SUPPORT, AppSettings::general.virtualkeyboard_support ? STR_TRUE : STR_FALSE },
+		{ GeneralOption::LOCALE, AppSettings::general.locale },
         { GeneralOption::THEME, theme_path },
     };
 

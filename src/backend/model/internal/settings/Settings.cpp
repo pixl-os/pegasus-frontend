@@ -62,6 +62,13 @@ void change_mouse_support(bool enabled)
     }
 }
 
+void change_virtualkeyboard_support(bool enabled)
+{
+		//do nothing for the moment
+}
+
+
+
 } // namespace
 
 
@@ -71,6 +78,7 @@ Settings::Settings(QObject* parent)
     : QObject(parent)
 {
     change_mouse_support(AppSettings::general.mouse_support);
+    change_virtualkeyboard_support(AppSettings::general.virtualkeyboard_support);
 }
 
 void Settings::setFullscreen(bool new_val)
@@ -95,6 +103,19 @@ void Settings::setMouseSupport(bool new_val)
     change_mouse_support(AppSettings::general.mouse_support);
 
     emit mouseSupportChanged();
+}
+
+void Settings::setVirtualKeyboardSupport(bool new_val)
+{
+    if (new_val == AppSettings::general.virtualkeyboard_support)
+        return;
+
+    AppSettings::general.virtualkeyboard_support = new_val;
+    AppSettings::save_config();
+
+    change_virtualkeyboard_support(AppSettings::general.virtualkeyboard_support);
+
+    emit virtualKeyboardSupportChanged();
 }
 
 QStringList Settings::gameDirs() const

@@ -41,6 +41,7 @@ struct General {
     bool portable;
     bool fullscreen;
     bool mouse_support;
+	bool virtualkeyboard_support;
     QString locale;
     QString theme;
 

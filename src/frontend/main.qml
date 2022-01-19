@@ -20,6 +20,9 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
 import "dialogs"
+import "global"
+import QtQuick.VirtualKeyboard 2.15
+import QtQuick.VirtualKeyboard.Settings 2.15
 
 Window {
     id: appWindow
@@ -122,12 +125,6 @@ Window {
             }
             onApiThemePathChanged: source = Qt.binding(getThemeFile)
 
-            /*
-            Keys.onPressed: {
-                if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
-                    event.accepted = true;
-                    mainMenu.focus = true;
-                }*/
             Keys.onPressed: {
                 if (api.keys.isMenu(event)) {
                     event.accepted = true;
@@ -136,8 +133,6 @@ Window {
 
                 if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay")){
                     event.accepted = true;
-                    /*netplayMenu.focus = true;
-                    console.log("api.keys.isNetplay(event)");*/
                     subscreen.setSource("menu/settings/NetplayInformation.qml", {"isCallDirectly": true});
                     subscreen.focus = true;
                     content.state = "sub";
@@ -675,4 +670,191 @@ Window {
         }
         else return false; //no netplay activated from menu
     }
+
+    //loader for input panel for virtual keyboard
+    Loader {
+        id: inputPanelLoader
+        anchors.fill: parent
+        z:10
+        sourceComponent: inputPanelComponent
+        active: true
+        asynchronous: true
+    }
+    Component {
+        id: inputPanelComponent
+        //to manage virtual keyboard
+        Rectangle{
+            anchors.fill: parent
+            color: "transparent"
+            visible: Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport
+
+            /*  Keyboard input panel.
+
+                The keyboard is anchored to the bottom of the application.
+            */
+            InputPanel {
+                id: inputPanel
+                z: 89
+                y: yPositionWhenHidden
+                x: Screen.orientation === Qt.LandscapeOrientation ? 0 : (parent.width-parent.height) / 2
+                width: Screen.orientation === Qt.LandscapeOrientation ? parent.width : parent.height
+                height: (Screen.orientation === Qt.LandscapeOrientation ? parent.height : parent.width) - keyboard.height
+                visible: Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport
+
+                property real yPositionWhenHidden: Screen.orientation === Qt.LandscapeOrientation ? parent.height : parent.width + (parent.height-parent.width) / 2
+                states: State {
+                    name: "visible"
+                    /*  The visibility of the InputPanel can be bound to the Qt.inputMethod.visible property,
+                        but then the handwriting input panel and the keyboard input panel can be visible
+                        at the same time. Here the visibility is bound to InputPanel.active property instead,
+                        which allows the handwriting panel to control the visibility when necessary.
+                    */
+                    when: inputPanel.active
+                    PropertyChanges {
+                        target: inputPanel
+                        y: inputPanel.yPositionWhenHidden - inputPanel.height
+                    }
+                }
+                transitions: Transition {
+                    id: inputPanelTransition
+                    from: ""
+                    to: "visible"
+                    reversible: true
+                    enabled: !VirtualKeyboardSettings.fullScreenMode
+                    ParallelAnimation {
+                        NumberAnimation {
+                            properties: "y"
+                            duration: 250
+                            easing.type: Easing.InOutQuad
+                        }
+                    }
+                }
+                AutoScroller {
+                    id:autoScroller
+                    verticalLimit: (Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) ? inputPanel.y + vpx(20) : 0 //for margin
+                }
+            }
+        }
+    }
+
+    //to manage event/input/focus/status during edition with virtual Keyboard
+
+    property var counter: 0 //counter use for debug
+    property var previousVirtualKeyboardVisibility: false
+    property var forcedSelectAll: false;
+    property var activeInput;
+
+    function virtualKeyboardOnReleased(ev){
+        ev.accepted = true;
+        return ev.accepted;
+    }
+
+    function virtualKeyboardOnPressed(ev,input,editionActive){
+        activeInput = input;
+        //console.log("searchbar.Keys.onPressed : ", counter++);
+        //console.log("previousVirtualKeyboardVisibility : ",previousVirtualKeyboardVisibility);
+        //console.log("ev.key : ", ev.key);
+        //console.log("editionActive : ",editionActive);
+        //console.log("input.focus : ",input.focus);
+        //console.log("cursorVisible : ",	input.cursorVisible);
+        //console.log("Qt.inputMethod.visible : ",Qt.inputMethod.visible);
+        //console.log("Qt.Key_Return : ",Qt.Key_Return);
+        //console.log("Qt.Key_Enter : ",Qt.Key_Enter);
+        //console.log("Qt.Key_Backspace : ",Qt.Key_Backspace);
+		// Accept
+        if (api.keys.isAccept(ev) && !ev.isAutoRepeat) {
+            //console.log("isAccept");
+            ev.accepted = true;
+            //for all cases
+            if (!editionActive) {
+                //console.log("# Use case 1 : with or without virtual keyboard");
+                input.readOnly = false;
+                editionActive = false;
+                input.focus = false;
+                input.focus = true;
+                editionActive = true;
+                input.selectAll();
+                //for virtual keyboard only
+                if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = true;
+            }
+            //for virtual keyboard
+            else if(editionActive && (!Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) && (previousVirtualKeyboardVisibility === false)){
+                //console.log("# Use case 2 : virtual keyboard has been removed");
+                //force refresh to display keyboard
+                editionActive = false;
+                input.focus = false;
+                editionActive = false;
+                input.focus = true;
+                input.readOnly = false;
+                if(forcedSelectAll) input.selectAll();
+                //for virtual keyboard only
+                if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = true;
+            }
+            //for standard keyboard
+            else if(editionActive && !api.internal.settings.virtualKeyboardSupport){
+                //console.log("# Use case 3 : if edition is active and usage of standard keyboard only");
+                editionActive = false;
+                input.cursorVisible = false;
+                input.readOnly = true;
+				input.cursorPosition = 0;
+
+            }
+            //for virtual keyboard
+            else if ((ev.key !== Qt.Key_Return) && (ev.key !== Qt.Key_Enter)){
+                //console.log("# Use case 4 : if virtual keyboard visible and PRESS A");
+				if(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
+                    //console.log("# Use case 4 bis : if virtual keyboard visible and PRESS A");
+                    keyEmitter.keyPressed(appWindow, Qt.Key_Return);
+                    keyEmitter.keyReleased(appWindow, Qt.Key_Return);
+                }
+            }
+            else if (ev.key === Qt.Key_Return){
+                editionActive = false;
+                input.cursorVisible = false;
+                input.readOnly = true;
+				input.cursorPosition = 0;
+            }
+
+            //for virtual keyboard only
+            if (api.internal.settings.virtualKeyboardSupport) previousVirtualKeyboardVisibility = Qt.inputMethod.visible;
+        }
+        // Cancel
+        else if (api.keys.isCancel(ev) && !ev.isAutoRepeat) {
+            //console.log("isCancel");
+            ev.accepted = true;
+
+            //for virtual keyboard
+            if(editionActive && Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
+                //console.log("# Use case 1 : exit from keyboard");
+                editionActive = false;
+                input.cursorVisible = false;
+                input.readOnly = true;
+				input.cursorPosition = 0;
+            }
+            //for virtual keyboard
+            else if (editionActive && !Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) {
+                //console.log("# Use case 2 : editon active & virtual keyboard not visible");
+                input.focus = true;
+                editionActive = false;
+                input.cursorVisible = false;
+                input.readOnly = true;
+				input.cursorPosition = 0;
+            }
+            //for standard keyboard
+            else if (editionActive && Qt.inputMethod.visible && !api.internal.settings.virtualKeyboardSupport){
+                //console.log("# Use case 3 : edtion active with standard keyboard visible");
+                editionActive = false;
+                input.cursorVisible = false;
+                input.readOnly = true;
+				input.cursorPosition = 0;
+            }
+            else if(editionActive === false && input.readOnly === true) //if already in readonly and not active, we have to let control to parents
+            {
+                ev.accepted = false;
+            }
+        }
+
+        return ev.accepted, input.focus, editionActive ;
+    }
+
 }

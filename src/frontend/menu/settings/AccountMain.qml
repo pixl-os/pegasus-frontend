@@ -20,20 +20,20 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
 
-
 FocusScope {
     id: root
 
     signal close
     signal openNetplayInformation
     signal openGameDirSettings
-    signal openMenuBoxSettings
+    //signal openMenuBoxSettings
 
     width: parent.width
     height: parent.height
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
+
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -68,14 +68,15 @@ FocusScope {
         contentHeight: content.height
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
-        boundsBehavior: Flickable.StopAtBounds
-        boundsMovement: Flickable.StopAtBounds
+
+        boundsBehavior: api.internal.settings.virtualKeyboardSupport ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
+        boundsMovement: api.internal.settings.virtualKeyboardSupport ? Flickable.DragAndOvershootBounds : Flickable.StopAtBounds
 
         readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
 
         function onFocus(item) {
-            if (item.focus)
+            if (item.focus && !(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport))
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
         FocusScope {
@@ -124,7 +125,7 @@ FocusScope {
                     label: qsTr("Connect retroachievement") + api.tr
                     note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
 
-                    TextField {
+                    TextFieldOption {
                         id: retroachievementUsername
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
@@ -144,7 +145,7 @@ FocusScope {
                     // label: qsTr("Connect Retroachievement") + api.tr
                     note: qsTr("then login with your username and password") + api.tr
 
-                    TextField {
+                    TextFieldOption {
                         id: retroachievementPassword
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
@@ -152,7 +153,6 @@ FocusScope {
                         text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
                         horizontalAlignment: TextInput.AlignRight
                         echoMode: TextInput.PasswordEchoOnEdit
-                        // enterKeyAction: EnterKeyAction.Next
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
                         onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.password", retroachievementPassword.text)
                     }
@@ -241,7 +241,7 @@ FocusScope {
 
                     label: qsTr("Netplay nickname") + api.tr
                     note: qsTr("Set your netplay nickname") + api.tr
-                    TextField {
+                    TextFieldOption {
                         id: netplayNickname
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter

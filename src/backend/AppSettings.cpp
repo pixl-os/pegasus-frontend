@@ -62,7 +62,7 @@ HashMap<KeyEvent, QVector<QKeySequence>, EnumHash> default_keymap()
         { KeyEvent::UP, { Qt::Key_Up }},
         { KeyEvent::DOWN, { Qt::Key_Down }},
         { KeyEvent::ACCEPT, { Qt::Key_Return, Qt::Key_Enter, GamepadKeyId::A }},
-        { KeyEvent::CANCEL, { Qt::Key_Escape, Qt::Key_Backspace, GamepadKeyId::B }},
+        { KeyEvent::CANCEL, { Qt::Key_Escape, GamepadKeyId::B }},
         { KeyEvent::DETAILS, { Qt::Key_I, GamepadKeyId::X }},
         { KeyEvent::FILTERS, { Qt::Key_F, GamepadKeyId::Y }},
         { KeyEvent::NEXT_PAGE, { Qt::Key_E, Qt::Key_D, GamepadKeyId::R1 }},
@@ -144,7 +144,8 @@ General::General()
     , DEFAULT_THEME(QStringLiteral(":/themes/gameOS/"))
     , portable(false)
     , fullscreen(true)
-    , mouse_support(true)
+    , mouse_support(false)
+	, virtualkeyboard_support(false)
     , locale() // intentionally blank
     , theme(DEFAULT_THEME)
 {}

@@ -39,6 +39,9 @@ class Settings : public QObject {
     Q_PROPERTY(bool mouseSupport
                READ mouseSupport WRITE setMouseSupport
                NOTIFY mouseSupportChanged)
+    Q_PROPERTY(bool virtualKeyboardSupport
+               READ virtualKeyboardSupport WRITE setVirtualKeyboardSupport
+               NOTIFY virtualKeyboardSupportChanged)
     Q_PROPERTY(QStringList gameDirs READ gameDirs NOTIFY gameDirsChanged)
 
     QML_CONST_PROPERTY(model::KeyEditor, keyEditor)
@@ -54,7 +57,10 @@ public:
 
     bool mouseSupport() const { return AppSettings::general.mouse_support; }
     void setMouseSupport(bool);
-
+	
+	bool virtualKeyboardSupport() const { return AppSettings::general.virtualkeyboard_support; }
+    void setVirtualKeyboardSupport(bool);
+	
     QStringList gameDirs() const;
     Q_INVOKABLE void addGameDir(const QString&);
     Q_INVOKABLE void removeGameDirs(const QVariantList&);
@@ -64,6 +70,7 @@ public:
 signals:
     void fullscreenChanged();
     void mouseSupportChanged();
+	void virtualKeyboardSupportChanged();
     void gameDirsChanged();
     void providerReloadingRequested();
 };
