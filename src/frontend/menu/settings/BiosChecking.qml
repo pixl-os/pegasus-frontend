@@ -25,6 +25,7 @@ import QtQuick.XmlListModel 2.0
 FocusScope {
     id: root
 
+    readonly property string biosFilePath: "file://recalbox/share_init/system/.emulationstation/es_bios.xml"
     signal close
 
     anchors.fill: parent
@@ -41,7 +42,7 @@ FocusScope {
     XmlListModel {
         id: xmlModelSystems
         // file:// need for read file system local
-        source: "file://recalbox/share/system/.emulationstation/es_bios.xml"
+        source: biosFilePath
         query: "/biosList/system"
 
         XmlRole { name: "systems_Shortname"; query: "@platform/string()" }
@@ -52,7 +53,7 @@ FocusScope {
         // file:// need for read file system local
         // get current index in xmlModelSystems
         property string system : xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
-        source: "file://recalbox/share/system/.emulationstation/es_bios.xml"
+        source: biosFilePath
         query:"/biosList/system[@platform='" + system + "']/bios"
 //        query: {
 //            if (xmlModelSystems.count !== 0){
@@ -284,7 +285,7 @@ FocusScope {
                             horizontalItemAlignment: Grid.AlignHCenter
                             verticalItemAlignment: Grid.AlignVCenter
                             columns: 1
-                            rows: 8
+                            rows: 10 // to come back to 8 after test lines removed
                             width: biosColumn.width
                             height: implicitHeight
                             //note if not empty
@@ -329,6 +330,25 @@ FocusScope {
                                 width: biosColumn.width
                                 font.pixelSize: vpx(12)
                             }
+                            //**************for test purpose only**********
+                            Text {
+                                text: "Full path : " + biosPath
+                                fontSizeMode: Text.VerticalFit;
+                                horizontalAlignment: Text.AlignHCenter
+                                width: biosColumn.width
+                                font.pixelSize: vpx(12)
+                                color: "yellow"
+                            }
+                            Text {
+                                text: "Hash Calculated (empty if not found) : " + api.internal.bios.md5(biosPath)
+                                fontSizeMode: Text.VerticalFit;
+                                horizontalAlignment: Text.AlignHCenter
+                                width: biosColumn.width
+                                font.pixelSize: vpx(12)
+                                color: "yellow"
+                            }
+                            //*********************************************
+
                             Rectangle {
                                 color :themeColor.secondary
                                 width: parent.width - vpx(20)
