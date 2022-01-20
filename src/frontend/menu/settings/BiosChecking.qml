@@ -52,29 +52,23 @@ FocusScope {
         id: xmlModelBios
         // file:// need for read file system local
         // get current index in xmlModelSystems
+
         property string system : xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
         source: biosFilePath
         query:"/biosList/system[@platform='" + system + "']/bios"
-//        query: {
-//            if (xmlModelSystems.count !== 0){
-//                var system = xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
-//                return ( "/biosList/system[@platform='" + system + "']/bios");
-//                // console.log("systemsList.currentIndex : ", systemsList.currentIndex );
-//            }
-//            else return system = ("/biosList/system[@platform='']/bios");
-//        }
         XmlRole { name: "bios_Path"; query: "@path/string()"}
         XmlRole { name: "bios_Md5"; query: "@md5/string()" }
         XmlRole { name: "bios_Core"; query: "@core/string()" }
         XmlRole { name: "bios_Note"; query: "@note/string()" }
         XmlRole { name: "bios_Mandatory"; query: "boolean(@mandatory)"}
         XmlRole { name: "bios_HashMatchMandatory"; query: "boolean(@hashMatchMandatory)";}
-
     }
 
-    property string biosPath: xmlModelBios.get(biosList.currentIndex).bios_Path;
-    property string biosMd5: xmlModelBios.get(biosList.currentIndex).bios_Md5;
-    property string biosNote: xmlModelBios.get(biosList.currentIndex).bios_Note;
+    property string biosPath: ""
+    property string biosMd5: ""
+    property string biosNote: ""
+    property string hashCalc: ""
+    property bool hashMatch: hashCalc == "" ? true : false;
 
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
@@ -203,12 +197,26 @@ FocusScope {
                             biosPath = xmlModelBios.get(biosList.currentIndex).bios_Path;
                             biosMd5 = xmlModelBios.get(biosList.currentIndex).bios_Md5;
                             biosNote = xmlModelBios.get(biosList.currentIndex).bios_Note;
+                            hashCalc = api.internal.bios.md5(biosPath);
+                            hashMatch: hashCalc == "" ? true : false;
                         }
                         delegate: xmlInfoDelegate
                         Keys.onUpPressed: { decrementCurrentIndex() }
                         Keys.onDownPressed: { incrementCurrentIndex() }
                         Keys.onLeftPressed: { systemsList.decrementCurrentIndex() }
                         Keys.onRightPressed: { systemsList.incrementCurrentIndex() }
+                        Keys.onPressed: {
+                            if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                                event.accepted = true;
+                                hashCalc;
+                                console.log("Check Md5 File ")
+                            }
+                            if (api.keys.isFilters(event) && !event.isAutoRepeat) {
+                                event.accepted = true;
+                                hashCalc;
+                                console.log("filter mandatory ")
+                            }
+                        }
                     }
                     Component {
                         id: xmlInfoDelegate
@@ -217,11 +225,11 @@ FocusScope {
                             height: containerButton.height ; width: biosList.width
                             color: themeColor.main
                             property bool selected: ListView.isCurrentItem
-                            scale: selected ? 1 : 0.9
                             Behavior on scale { NumberAnimation { duration: 350 } }
                             border.color: themeColor.secondary
                             border.width: vpx(3)
                             radius: 5
+                            property string md5String: api.internal.bios.md5(xmlModelBios.get(index).bios_Path)
                             Grid {
                                 id: containerButton
                                 columns: 4
@@ -229,13 +237,13 @@ FocusScope {
                                 verticalItemAlignment: Grid.AlignVCenter
                                 width: biosButton.width
                                 height: implicitHeight
-                                //                                spacing: vpx(10)
+                                //spacing: vpx(10)
                                 padding: vpx(8)
                                 columnSpacing: vpx(20)
                                 //icon state md5 validate
                                 Text {
-                                    text: bios_Mandatory == true ? "\uf2bb" /*ok*/: "\uf2bf"; /*Nok*/
-                                    color: bios_Mandatory == false ? "red" : "green";
+                                    text: md5String === "" ? "\uf2bf" /*Nok*/ :"\uf2bb"; /*ok*/
+                                    color: md5String === "" ? "red" : "green";
                                     horizontalAlignment: Text.AlignHCenter
                                     width: Text.width
                                     font {
@@ -285,7 +293,7 @@ FocusScope {
                             horizontalItemAlignment: Grid.AlignHCenter
                             verticalItemAlignment: Grid.AlignVCenter
                             columns: 1
-                            rows: 10 // to come back to 8 after test lines removed
+                            rows: 12 // to come back to 8 after test lines removed
                             width: biosColumn.width
                             height: implicitHeight
                             //note if not empty
@@ -294,7 +302,7 @@ FocusScope {
                                 font.pixelSize: vpx(15)
                                 width: biosColumn.width - vpx(8)
                                 horizontalAlignment: Text.AlignHCenter
-                                color: themeColor.textSectionTitle
+                                color: themeColor.textSublabel
                                 font.bold: true
                                 visible: biosNote == "" ? false : true;
                             }
@@ -318,7 +326,7 @@ FocusScope {
                                 text: qsTr("Path(s): ")
                                 font.pixelSize: vpx(15)
                                 horizontalAlignment: Text.AlignHCenter
-                                color: themeColor.textSectionTitle
+                                color: themeColor.textSublabel
                                 width: biosColumn.width
                             }
                             Text {
@@ -330,25 +338,6 @@ FocusScope {
                                 width: biosColumn.width
                                 font.pixelSize: vpx(12)
                             }
-                            //**************for test purpose only**********
-                            Text {
-                                text: "Full path : " + biosPath
-                                fontSizeMode: Text.VerticalFit;
-                                horizontalAlignment: Text.AlignHCenter
-                                width: biosColumn.width
-                                font.pixelSize: vpx(12)
-                                color: "yellow"
-                            }
-                            Text {
-                                text: "Hash Calculated (empty if not found) : " + api.internal.bios.md5(biosPath)
-                                fontSizeMode: Text.VerticalFit;
-                                horizontalAlignment: Text.AlignHCenter
-                                width: biosColumn.width
-                                font.pixelSize: vpx(12)
-                                color: "yellow"
-                            }
-                            //*********************************************
-
                             Rectangle {
                                 color :themeColor.secondary
                                 width: parent.width - vpx(20)
@@ -356,11 +345,31 @@ FocusScope {
                             }
                             // md5
                             Text {
-                                text: qsTr("Md5 Checksum: ")
+                                text: qsTr("Calculed Md5 Checksum: ")
                                 horizontalAlignment: Text.AlignHCenter
-                                color: themeColor.textSectionTitle
+                                color: themeColor.textSublabel
                                 font.pixelSize: vpx(15)
                                 width: biosColumn.width
+                            }
+                            Text {
+                                text: hashCalc == "" ? qsTr("bios not present or hash not matching") : hashCalc;
+                                fontSizeMode: Text.VerticalFit;
+                                horizontalAlignment: Text.AlignHCenter
+                                color: hashCalc == "" ? "red" : "green";
+                                //color: themeColor.textLabel
+                                font {
+                                    capitalization : Font.AllUppercase
+                                    pixelSize: vpx(12)
+                                }
+                            }
+                            Text {
+                                text: qsTr("Possible Md5 Bios: ")
+                                horizontalAlignment: Text.AlignHCenter
+                                color: themeColor.textSublabel
+                                font.pixelSize: vpx(15)
+                                width: biosColumn.width
+                                visible: hashMatch
+
                             }
                             Text {
                                 //replace empty space
@@ -368,6 +377,7 @@ FocusScope {
                                 fontSizeMode: Text.VerticalFit;
                                 horizontalAlignment: Text.AlignHCenter
                                 color: themeColor.textLabel
+                                visible: hashMatch
                                 font {
                                     capitalization : Font.AllUppercase
                                     pixelSize: vpx(12)
@@ -397,8 +407,6 @@ FocusScope {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
         }
-        // // // // // // // // // // // // // // // // // //
-
         // button value
         Rectangle {
             id: backButtonIcon
@@ -442,7 +450,6 @@ FocusScope {
                 right: parent.right; rightMargin: parent.width * 0.015
             }
         }
-        // // // // // // // // // // // // // // // // // //
         Rectangle {
             id: checkButtonIcon
             height: labelA.height
@@ -483,10 +490,6 @@ FocusScope {
                 right: backButtonIcon.left; rightMargin: parent.width * 0.015
             }
         }
-        // // // // // // // // // // // // // // // // // //
-
-        // // // // // // // // // // // // // // // // // //
-
         //add rectangle + text for 'directions' command
         Rectangle {
             id: stateOkButtonIcon
@@ -529,7 +532,6 @@ FocusScope {
                 left: stateOkButtonIcon.right; leftMargin: parent.width * 0.005
             }
         }
-        // // // // // // // // // // // // // // // // // //
         Rectangle {
             id: stateNokButtonIcon
             height: labelCheckNok.height
@@ -571,7 +573,6 @@ FocusScope {
                 left: stateNokButtonIcon.right; leftMargin: parent.width * 0.005
             }
         }
-        // // // // // // // // // // // // // // // // // //
         Rectangle {
             id: stateNoFoundButtonIcon
             height: labelCheckNoFound.height
