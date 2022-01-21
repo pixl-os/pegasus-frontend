@@ -25,8 +25,8 @@ import QtQuick 2.12
 Flickable {
     id: container
 
-    property int scrollWaitDuration: 3000
-    property int pixelsPerSecond: 26
+    property int scrollWaitDuration: 1500
+    property int pixelsPerSecond: 10
 
     function stopScroll() {
         scrollAnimGroup.complete();
