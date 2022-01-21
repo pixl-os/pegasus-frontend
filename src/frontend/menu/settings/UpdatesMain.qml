@@ -27,32 +27,6 @@ FocusScope {
     property var actionState : ""
     property var actionListIndex : 0
 
-    //for testing
-    Timer {
-        id: updateTimer
-        interval: 1000 // Run the timer after 1 s
-        repeat: false
-        running: true
-        triggeredOnStart: false
-        onTriggered: {
-            api.internal.updates.getRepoInfo("Pegasus-frontend","https://api.github.com/repos/bozothegeek/pegasus-frontend/releases");
-        }
-    }
-
-    Timer {
-        id: tagTimer
-        interval: 3000 // Run the timer after 1 s
-        repeat: false
-        running: true
-        triggeredOnStart: false
-        onTriggered: {
-            var entry = api.internal.updates.updateDetails("Pegasus-frontend",true); //include beta also
-            updates_list_title.tagName = entry.tagName;
-			updates_list_title.size = entry.size;
-			
-        }
-    }
-
     //loader to load confirm dialog
     Loader {
         id: confirmDialog
@@ -181,39 +155,17 @@ FocusScope {
                 }
 
                 SectionTitle {
-                id: updates_list_title
-                    property var tagName: ""
-					property var size: 0
+                id: updatesListTitle
                     text: {
-                        return ("  " + qsTr("List of udpate(s) : ") + api.tr + " tag :" + tagName + " size :" + size); //+ (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
+                        return (qsTr("Update(s) list : ")+ api.tr);
                     }
                     first: true
                     visible: true
                 }
-                //for test purpose only
-                /*ListModel {
-                    id: availableNetplayRoomsModel
-                    ListElement { country: "br"; username: "Anonymous";
-                                  game_name: "Metal Slug X (U) [SLUS-01212]";
-                                  game_crc: "D634567DF";
-                                  core_name: "PCSX-ReARMed";
-                                  core_version: "r22 36f3ea6";
-                                  retroarch_version: "1.8.8";
-                                  frontend: "win32 x64";
-                                  ip: "192.168.0.1";
-                                  port: 8080;
-                                  mitm_ip: "";
-                                  mitm_port: 0;
-                                  host_method : 0;
-                                  has_password: false;
-                                  has_spectate_password: true;
-                                  created: "19 Oct 21 12:05 UTC";
-                                  updated: "19 Oct 21 12:10 UTC";
-                                }
-                }*/
+
                 Repeater {
                     id: availableUpdates
-                    model: 0
+                    model: componentsListModel
                     //property var selectedButtonIndex : 0
                     property var hidden : 0
                     onItemRemoved:{
@@ -225,79 +177,57 @@ FocusScope {
                         //console.log("onItemAdded: ", index)
                     }
                     delegate: DetailedButton {
-                        width: parent.width - vpx(100)
-                        visible :{
-                            return true;
+                        // cross operability with ListModel and plain JS object list
+                        property var item: model.modelData ? model.modelData : model
+                        property var entry: {
+                            console.log("item.componentName : ",item.componentName);
+                            console.log("item.hasUpdate : ", item.hasUpdate);
+                            if(typeof(item.hasUpdate) !== "undefined"){
+                                if(item.hasUpdate === true){
+                                    return api.internal.updates.updateDetails(item.componentName,true);
+                                }
+                            }
+                            return null;
                         }
+                        width: parent.width - vpx(100)
+                        visible : entry !== null ? true : false
                         enabled: visible
-                        //for preview
+
+                        //Status not used
                         status:{
                             return "";
                         }
                         status_color:{
                             return "";
                         }
-                        label: {
-                            return "";
-                        }
-                        label_color: {
-                            return "";
-                        }
-                        note: {
-                            return "";
-                        }
-                        //add image of country
-                        icon: {
-                            return "";
-                        }
-                        detailed_line2: {
-                            return "Retroarch version : ";
-                        }
-                        detailed_line3: {
-                            return "Core: ";
-                        }
-                        detailed_line4: {
-                            return "Core version : ";
-                        }
-                        detailed_line5: {
-                            return "Architecture : ";
-                        }
-                        detailed_line6: {
-                            return "Game CRC : ";
-                        }
-                        detailed_line7: {
-                            return "Game file : ";
-                        }
-                        detailed_line10: {
-                            return "";
-                        }
-                        detailed_line11: {
-                            return "";
-                        }
-                        detailed_line11_color: {
-                            return "";
-                        }
-                        detailed_line12: {
-                            return "";
-                        }
-                        detailed_line12_color: {
-                            return "";
-                        }
-                        detailed_line13: {
-                            return "";
-                        }
-                        detailed_line14: {
-                            return "";
-                        }
-                        detailed_line14_color: {
-                            return "";
-                        }
-                        detailed_line15: {
-                            return "";
-                        }
-                        detailed_line15_color: {
-                            return "";
-                        }
+
+                        // label used with default color
+                        label: entry !== null ? (entry.componentName + " / " + entry.releaseTitle) + (entry.isPreRelease ? " / " + qsTr("Pre-released") + api.tr : "") : ""
+                        //label_color: "white"
+
+                        note: entry !== null ? (qsTr("Size") + " : " + entry.size +  " / " + qsTr("Published at") + " : " + entry.publishedAt) : "";
+                        icon: ""
+                        icon2: item.icon
+                        //will be displayed when selected and not selected
+                        icon2_forced_display: true
+                        picture: item.picture
+                        //first column - if empty that is not used
+                        //detailed_line1: qsTr("Size") + " : " + api.tr;
+                        //detailed_line2: entry.isPreRelease ? qsTr("Pre-released") + " : " + api.tr : "";
+                        //detailed_line3: entry.isDraft ? qsTr("Draft") + " : " + api.tr : "";
+                        detailed_line4: "" //qsTr("Description") + " : " + api.tr;
+                        detailed_line5: ""
+                        detailed_line6: ""
+                        detailed_line7: ""
+                        detailed_line8: ""
+                        detailed_description: entry.releaseNote;
+                        //second column - if empty that is not used
+                        //detailed_line9: entry.size;
+                        //detailed_line10: entry.isPreRelease ? qsTr("Yes") + api.tr : "";
+                        //detailed_line11: entry.isDraft ? qsTr("Yes") + api.tr : "";
+                        detailed_line12: ""
+                        detailed_line13: ""
+
                         focus:{
                             if (index === 0){
                                     return true;

@@ -74,7 +74,7 @@ FocusScope {
             }
             selected: focus
 
-            enabled: api.internal.updates.hasAnyUpdate()
+            enabled: numberOfUpdates !== 0 ? true : false
             visible: enabled
             symbol:"\uf2c6"
             animated: true
