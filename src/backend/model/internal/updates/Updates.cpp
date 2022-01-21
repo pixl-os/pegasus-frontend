@@ -126,7 +126,7 @@ bool Updates::hasAnyUpdate(){
 }
 
 //function to check information about updates of any componants and confirm quickly if update using /tmp
-bool Updates::hasUpdate(const QString componentName, const bool betaIncluded){
+bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, const QString filter){
     //get data of update/versions and store in QList<UpdateEntry>
     if(parseJsonComponentFile(componentName))
     {
@@ -134,6 +134,20 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded){
         //To do
         //compare with version install using date of installation for the moment (date of "modifying" for file on file system)
         //may be use a manifest file in the future
+
+        //For specific component, we check version from pegasus directly as Pegasus-frontend itself
+        if(componentName.toLower() == "pegasus-frontend"){
+			//check internal version
+			//check date
+			//Check if more recent
+			//check version
+			//check if version is equal(if date more recent) or upper
+			//using QStringLiteral(GIT_REVISION) and QStringLiteral(GIT_DATE)
+		}
+        else
+        {
+
+        }
     }
     return false;//no file or issue = no update ;-)
 }
@@ -197,12 +211,36 @@ bool Updates::parseJsonComponentFile(const QString componentName)
         int i = 0;
 
         m_versions.clear(); //to reset QList before new parsing
-        UpdateEntry emptyVersion;// to keep empty please !!!
+        UpdateEntry emptyVersion;// to keep empty please !!! ;-)
         for (const auto& array_entry : json_root) {
             //create new object in Qlist
             m_versions.append(emptyVersion);
-            Log::debug(log_tag, LOGMSG("array_entry[QL1('tag_name')].toString(): %1").arg(array_entry[QL1("tag_name")].toString()));
+            //Log::debug(log_tag, LOGMSG("array_entry[QL1('tag_name')].toString(): %1").arg(array_entry[QL1("tag_name")].toString()));
+            m_versions[i].m_componentName = componentName;
             m_versions[i].m_tag_name = array_entry[QL1("tag_name")].toString();
+            m_versions[i].m_name = array_entry[QL1("name")].toString();
+            m_versions[i].m_draft = array_entry[QL1("draft")].toBool();
+            m_versions[i].m_prerealease = array_entry[QL1("prerelease")].toBool();
+            m_versions[i].m_created_at = array_entry[QL1("created_at")].toString();
+            m_versions[i].m_published_at = array_entry[QL1("published_at")].toString();
+            m_versions[i].m_body = array_entry[QL1("body")].toString();
+
+            //reading of assets
+            const auto assets = array_entry[QL1("assets")].toArray();
+            for (const auto& asset_entry : assets) {
+                //but only one asset
+                m_versions[i].m_name_asset = asset_entry[QL1("name")].toString();
+                m_versions[i].m_created_at_asset = asset_entry[QL1("created_at")].toString();
+                m_versions[i].m_published_at_asset = asset_entry[QL1("published_at")].toString();
+                m_versions[i].m_size = asset_entry[QL1("size")].toInt();
+                m_versions[i].m_download_url = asset_entry[QL1("browser_download_url")].toInt();
+                //take only first one
+                break;
+            }
+            //int m_size;
+            //bool m_hasanyupdate = false;
+
+
 
     //        const auto fields = array_entry[QL1("fields")].toObject();
     //        const auto Id = fields[QL1("id")].toInt();

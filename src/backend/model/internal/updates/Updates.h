@@ -20,7 +20,11 @@ struct UpdateEntry {
       Q_PROPERTY(QString createdAt MEMBER m_created_at)         //from repo json "created_at": "2022-01-01T16:48:18Z",
       Q_PROPERTY(QString publishedAt MEMBER m_published_at)     //from repo json "published_at": "2022-01-01T18:34:04Z",
       Q_PROPERTY(QString releaseNote MEMBER m_body) //from repo json "body": "## What's new in this version ? (included in pixL-Beta19)\r\n...
+      //from asset
       Q_PROPERTY(int size MEMBER m_size) //get size of the update, if several files, all sizes will be added to have the full size in this value.
+
+
+
 public:
       QString m_componentName;
       QString m_tag_name;
@@ -30,8 +34,18 @@ public:
       QString m_created_at;
       QString m_published_at;
       QString m_body;
+
+      //for asset
+      QString m_name_asset;
+      QString m_created_at_asset;
+      QString m_published_at_asset;
       int m_size;
+      QString m_download_url;
+
+      //flag if update detected
       bool m_hasanyupdate = false;
+
+
 
 
 };
@@ -49,7 +63,7 @@ public:
     //function to check if any updates is available using /tmp
     Q_INVOKABLE bool hasAnyUpdate();
     //function to check information about updates of any componants and confirm quickly if update using /tmp
-    Q_INVOKABLE bool hasUpdate(const QString componentName, const bool betaIncluded);
+    Q_INVOKABLE bool hasUpdate(const QString componentName, const bool betaIncluded, const QString filter = "");
     //function to get details from last "available" update (and only if available)
     Q_INVOKABLE UpdateEntry updateDetails(const QString componentName, const bool betaIncluded);
     //function to return the number of version available

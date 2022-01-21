@@ -48,6 +48,8 @@ FocusScope {
         onTriggered: {
             var entry = api.internal.updates.updateDetails("Pegasus-frontend",true); //include beta also
             updates_list_title.tagName = entry.tagName;
+			updates_list_title.size = entry.size;
+			
         }
     }
 
@@ -180,9 +182,10 @@ FocusScope {
 
                 SectionTitle {
                 id: updates_list_title
-                    property var tagName:"";
+                    property var tagName: ""
+					property var size: 0
                     text: {
-                        return ("  " + qsTr("List of udpate(s) : ") + api.tr + " tag :" + tagName); //+ (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
+                        return ("  " + qsTr("List of udpate(s) : ") + api.tr + " tag :" + tagName + " size :" + size); //+ (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
                     }
                     first: true
                     visible: true
