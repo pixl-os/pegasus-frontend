@@ -671,6 +671,7 @@ Window {
         else return false; //no netplay activated from menu
     }
 
+    //***********************************************************BEGIN OF VIRTUAL KEYBOARD PARTS**********************************************************
     //loader for input panel for virtual keyboard
     Loader {
         id: inputPanelLoader
@@ -856,5 +857,56 @@ Window {
 
         return ev.accepted, input.focus, editionActive ;
     }
+    //***********************************************************END OF VIRTUAL KEYBOARD PARTS**********************************************************
+
+    //***********************************************************BEGIN OF UPDATES PARTS*****************************************************************
+    ListModel {
+        id: componentsListModel
+        ListElement { componentName: "Pegasus-frontend"; repoUrl:"https://api.github.com/repos/bozothegeek/pegasus-frontend/releases";icon: "qrc:/frontend/assets/logopegasus.png"; picture: ""}
+        //ADD HERE new ListElement to add new component updatable
+    }
+
+    Timer {//timer to download last versions
+        id: repoStatusRefreshTimer
+        interval: 60000 * 15 // Check every 15 minutes and at start
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        onTriggered: {
+            //loop to launch download of all json repository files
+            for(var i = 0;i < componentsListModel.count; i++){
+                api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoUrl);
+            }
+            //start timer to check one minute later the result
+            jsonStatusRefreshTimer.running = true;
+        }
+    }
+    property var numberOfUpdates: 0
+    Timer {//timer to check json after download (1 minute later)
+        id: jsonStatusRefreshTimer
+        interval: 5000 //60000 // check after 1 minute / 5 seconds for test ;-)
+        repeat: false // no need to repeat
+        running: false
+        triggeredOnStart: false
+        onTriggered: {
+            for(var i = 0;i < componentsListModel.count; i++){
+                //check all components (including pre-release for the moment and without filter)
+                numberOfUpdates = 0;
+                if(api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , true)){
+                    numberOfUpdates = numberOfUpdates + 1;
+                    componentsListModel.setProperty(i,"hasUpdate", true);
+                    //contruct string about all udpates
+                    //TO DO
+                }
+            }
+            if(numberOfUpdates !== 0){
+                //to popup to alert about all udpates
+                //TO DO
+            }
+        }
+    }
+    //***********************************************************END OF UPDATES PARTS*******************************************************************
+
+
 
 }
