@@ -16,6 +16,7 @@
 
 
 import QtQuick 2.12
+import "qrc:/qmlutils" as PegasusUtils
 
 
 FocusScope {
@@ -29,6 +30,7 @@ FocusScope {
     property alias note: sublabel.text
     property alias icon: icon.source
     property alias icon2: icon2.source
+    property var icon2_forced_display: false;
 
     //second line a full detailed
     //first column (titles)
@@ -40,6 +42,7 @@ FocusScope {
     property alias detailed_line6: line6.text
     property alias detailed_line7: line7.text
     property alias detailed_line8: line8.text
+    property alias detailed_description: scrolltext.text
     //second column (status and details)
     property alias detailed_line9: line9.text
     property alias detailed_line9_color: line9.color
@@ -142,6 +145,7 @@ FocusScope {
             top: parent.top
         }
         spacing: fontSize * 0.25
+
         //just to have a space at the top
         Row{
         id: paddingRow
@@ -150,10 +154,12 @@ FocusScope {
                 text: " "
             }
         }
+
         Row{
         id: previewRow
             spacing: vpx(5)
             width: parent.width
+
             Column{
             id:labelsColumn
                 Row{
@@ -168,6 +174,7 @@ FocusScope {
                         font.pixelSize: fontSize
                         font.family: globalFonts.awesome
                         elide: Text.ElideRight
+                        visible: text !== "" ? true : false
                     }
                     Text {
                         id: label
@@ -176,6 +183,7 @@ FocusScope {
                         font.pixelSize: fontSize
                         font.family: globalFonts.awesome
                         elide: Text.ElideRight
+                        visible: text !== "" ? true : false
                     }
                 }
                 Row{
@@ -196,6 +204,7 @@ FocusScope {
                         font.family: globalFonts.awesome
                         font.italic: true
                         wrapMode: Text.WordWrap
+                        visible: text !== "" ? true : false
                     }
                 }
 
@@ -215,6 +224,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line2
@@ -222,6 +232,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line3
@@ -229,6 +240,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line4
@@ -236,6 +248,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line5
@@ -243,6 +256,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line6
@@ -250,6 +264,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line7
@@ -257,6 +272,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line8
@@ -264,6 +280,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    visible: text !== "" ? true : false
                 }
 
             }
@@ -275,6 +292,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.bold: false
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line10
@@ -282,6 +300,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.bold: false
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line11
@@ -289,6 +308,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.bold: false
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line12
@@ -296,6 +316,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.bold: false
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line13
@@ -303,6 +324,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.bold: false
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line14
@@ -310,6 +332,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.bold: false
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line15
@@ -317,6 +340,7 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.bold: false
+                    visible: text !== "" ? true : false
                 }
                 Text{
                     id: line16
@@ -324,8 +348,26 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.bold: false
+                    visible: text !== "" ? true : false
                 }
             }
+            // Description
+            PegasusUtils.AutoScroll
+            {
+                width: parent.width - horizontalPadding
+                height: root.focus ? detailPartHeight : 0
+                Text{
+                    id: scrolltext
+                    color: themeColor.textSublabel
+                    font.pixelSize: fontSize * 0.8
+                    font.family: globalFonts.awesome
+                    font.italic: true
+                    visible: (text !== "") && root.focus ? true : false
+                    elide: Text.ElideRight
+                    wrapMode: Text.WordWrap
+                }
+            }
+
         }
     }
     Column {
@@ -346,13 +388,10 @@ FocusScope {
             Image {
                 id: icon2
                 asynchronous: true
-                height: !root.focus ? (label.height + labelContainer.spacing + sublabel.height) : 0
-                //width: parent.width
-                //width: height * (4/3) // for 4/3 video sized
-                //source: picture2.source
+                height: (icon2_forced_display || !root.focus) ? (label.height + labelContainer.spacing + sublabel.height) : 0
                 fillMode: Image.PreserveAspectFit
                 smooth: true
-                visible: !root.focus
+                visible: (icon2_forced_display || !root.focus) ? true : false
             }
         }
     }
@@ -375,26 +414,13 @@ FocusScope {
                 id: picture
                 asynchronous: true
                 height: root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
-                //width: parent.width
-                //width: height * (4/3) // for 4/3 video sized
-                //source: picture2.source
                 fillMode: Image.PreserveAspectFit
                 smooth: true
                 visible: root.focus
             }
         }
     }
-    //    Text {
-//        id: label
 
-//        anchors.left: parent.left
-//        anchors.leftMargin: horizontalPadding
-//        anchors.verticalCenter: parent.verticalCenter
-
-//        color: "#eee"
-//        font.pixelSize: fontSize
-//        font.family: globalFonts.sans
-//    }
 
     MouseArea {
         id: mouseArea
