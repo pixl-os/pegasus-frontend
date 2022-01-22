@@ -365,9 +365,14 @@ FocusScope {
                     visible: (text !== "") && root.focus ? true : false
                     elide: Text.ElideRight
                     wrapMode: Text.WordWrap
+                    onVisibleChanged: {
+                        //tips :
+                        //the 'Width' setting generate Binding loop detection for property "contentWidth" from Autoscroll !
+                        //but if set during visible changed for Word wrapping, we avoid the warning ;-)
+                        width = parent.width;
+                    }
                 }
             }
-
         }
     }
     Column {
@@ -400,8 +405,8 @@ FocusScope {
         anchors.right: parent.right;
         anchors.rightMargin: horizontalPadding;
         anchors.top: parent.top
-        height: root.focus ? parent.height : 0
-        width: parent.width * (1/4)
+        height: ((picture.source !== "") && root.focus) ? parent.height : 0
+        width: (picture.source !== "") ? parent.width * (1/4) : 0
         spacing: fontSize * 0.25
         Row{
             Text{
@@ -413,10 +418,10 @@ FocusScope {
             Image {
                 id: picture
                 asynchronous: true
-                height: root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
+                height: (source !== "") && root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
                 fillMode: Image.PreserveAspectFit
                 smooth: true
-                visible: root.focus
+                visible: (source !== "") && root.focus
             }
         }
     }
