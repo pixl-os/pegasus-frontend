@@ -362,15 +362,12 @@ FocusScope {
                     font.pixelSize: fontSize * 0.8
                     font.family: globalFonts.awesome
                     font.italic: true
+                    width: parent.width
+                    //the 'Width' setting generate Binding loop detection for property "contentWidth" from Autoscroll !
+                    //no way to avoid the warning for the moment ;-)
                     visible: (text !== "") && root.focus ? true : false
                     elide: Text.ElideRight
                     wrapMode: Text.WordWrap
-                    onVisibleChanged: {
-                        //tips :
-                        //the 'Width' setting generate Binding loop detection for property "contentWidth" from Autoscroll !
-                        //but if set during visible changed for Word wrapping, we avoid the warning ;-)
-                        width = parent.width;
-                    }
                 }
             }
         }
