@@ -166,7 +166,7 @@ FocusScope {
                 Repeater {
                     id: availableUpdates
                     model: componentsListModel
-                    //property var selectedButtonIndex : 0
+                    property var selectedButtonIndex : 0
                     property var hidden : 0
                     onItemRemoved:{
                         //RFU
@@ -228,12 +228,7 @@ FocusScope {
                         detailed_line12: ""
                         detailed_line13: ""
 
-                        focus:{
-                            if (index === 0){
-                                    return true;
-                            }
-                            else return false;
-                        }
+                        focus: index === 0 ? true : false
                         onActivate: {
                                 //to display logo of this room
                                 //confirmDialog.game_logo = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.logo;
@@ -245,31 +240,30 @@ FocusScope {
                                 //to force change of focus
                                 confirmDialog.focus = true;
                             }
-                        }
 
                         onFocusChanged:{
-						}
+                        }
 
                         Keys.onPressed: {
                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
                                 if (index !== 0) {
                                     availableUpdates.selectedButtonIndex = index-1;
                                     KeyNavigation.up = availableUpdates.itemAt(index-1);
-								}
+                                }
                                 else {
                                     KeyNavigation.up = availableUpdates.itemAt(0);
                                     availableUpdates.selectedButtonIndex = 0;
-								}
+                                }
                             }
                             if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
                                 if (index < availableUpdates.count-1) {
                                     KeyNavigation.down = availableUpdates.itemAt(index+1);
                                     availableUpdates.selectedButtonIndex = index+1;
-								}
+                                }
                                 else {
                                     KeyNavigation.down = availableUpdates.itemAt(availableUpdates.count-1);
                                     availableUpdates.selectedButtonIndex = availableUpdates.count-1;
-								}
+                                }
                             }
                             container.contentY = Math.min(Math.max(0, y - (height * 0.7)), container.contentHeight - height);
                         }
@@ -279,20 +273,13 @@ FocusScope {
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
                             text: qsTr("Update ?") + api.tr
-                            visible: {
-                                if(parent.focus){
-                                    return true;
-                                }
-                                else{
-                                    return false;
-                                }
-                            }
+                            visible: parent.focus
                             anchors.left: parent.right
                             anchors.leftMargin: vpx(20)
                             anchors.verticalCenter: parent.verticalCenter
-                            
-							contentItem: Text {
-                                text: playButton.text
+
+                            contentItem: Text {
+                                text: updateButton.text
                                 font.pixelSize: fontSize
                                 font.family: globalFonts.sans
                                 opacity: 1.0
@@ -301,8 +288,8 @@ FocusScope {
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
                             }
-							
-							background: Rectangle {
+
+                            background: Rectangle {
                                 implicitWidth: 100
                                 implicitHeight: parent.height
                                 opacity: 1.0
@@ -315,5 +302,6 @@ FocusScope {
                     }
                 }				
 			}
+        }
 	}
 }
