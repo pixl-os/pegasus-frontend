@@ -10,6 +10,14 @@
 #include <QObject>
 #include <QTimer>
 
+struct Assets {
+    QString m_name_asset;
+    QString m_created_at_asset;
+    QString m_published_at_asset;
+    int m_size;
+    QString m_download_url;
+};
+
 struct UpdateEntry {
       Q_GADGET
       Q_PROPERTY(QString componentName MEMBER m_componentName)  //Name provided during "getRepoInfo" as reference
@@ -34,19 +42,18 @@ public:
       QString m_created_at;
       QString m_published_at;
       QString m_body;
+      int m_size; //to have the total size
 
       //for asset
-      QString m_name_asset;
-      QString m_created_at_asset;
-      QString m_published_at_asset;
-      int m_size;
-      QString m_download_url;
+      QList <Assets> m_assets;
+
+      //QString m_name_asset;
+      //QString m_created_at_asset;
+      //QString m_published_at_asset;
+      //QString m_download_url;
 
       //flag if update detected
       bool m_hasanyupdate = false;
-
-
-
 
 };
 Q_DECLARE_METATYPE(UpdateEntry)

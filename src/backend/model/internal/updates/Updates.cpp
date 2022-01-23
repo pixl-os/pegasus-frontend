@@ -225,42 +225,20 @@ bool Updates::parseJsonComponentFile(const QString componentName)
 
             //reading of assets
             const auto assets = array_entry[QL1("assets")].toArray();
+            m_versions[i].m_size = 0;
             for (const auto& asset_entry : assets) {
                 //but only one asset
-                m_versions[i].m_name_asset = asset_entry[QL1("name")].toString();
-                m_versions[i].m_created_at_asset = asset_entry[QL1("created_at")].toString();
-                m_versions[i].m_published_at_asset = asset_entry[QL1("published_at")].toString();
-                m_versions[i].m_size = asset_entry[QL1("size")].toInt();
-                m_versions[i].m_download_url = asset_entry[QL1("browser_download_url")].toInt();
-                //take only first one
-                break;
+                m_versions[i].m_assets.append({ asset_entry[QL1("name")].toString(),
+                                                asset_entry[QL1("created_at")].toString(),
+                                                asset_entry[QL1("published_at")].toString(),
+                                                asset_entry[QL1("size")].toInt(),
+                                                asset_entry[QL1("browser_download_url")].toString()});
+                m_versions[i].m_size = m_versions[i].m_size + asset_entry[QL1("size")].toInt();
+
+                //take only first one for the moment for asset
+                //break;
             }
-            //int m_size;
-            //bool m_hasanyupdate = false;
-
-
-
-    //        const auto fields = array_entry[QL1("fields")].toObject();
-    //        const auto Id = fields[QL1("id")].toInt();
-    //        const auto Username = fields[QL1("username")].toString();
-    //        const auto Country = fields[QL1("country")].toString();
-    //        const auto Game_name = fields[QL1("game_name")].toString();
-    //        const auto Game_crc = fields[QL1("game_crc")].toString();
-    //        const auto Core_name = fields[QL1("core_name")].toString();
-    //        const auto Core_version = fields[QL1("core_version")].toString();
-    //        const auto Subsystem_name = fields[QL1("subsystem_name")].toString();
-    //        const auto Retroarch_version = fields[QL1("retroarch_version")].toString();
-    //        const auto Frontend = fields[QL1("frontend")].toString();
-    //        const auto Ip = fields[QL1("ip")].toString();
-    //        const auto Port = fields[QL1("port")].toInt();
-    //        const auto Mitm_ip = fields[QL1("mitm_ip")].toString();
-    //        const auto Mitm_port = fields[QL1("mitm_port")].toInt();
-    //        const auto Host_method = fields[QL1("host_method")].toInt();
-    //        const auto Has_password = fields[QL1("has_password")].toBool();
-    //        const auto Has_spectate_password = fields[QL1("has_spectate_password")].toBool();
-    //        const auto Created = fields[QL1("created")].toString();
-    //        const auto Updated = fields[QL1("updated")].toString();
-    //        const auto Latency = 1000; //default value / unknown
+            //m_versions[i].m_hasanyupdate = false;
             i++;
         }
         return true;
