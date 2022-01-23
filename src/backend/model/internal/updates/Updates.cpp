@@ -92,11 +92,11 @@ Updates::Updates(QObject* parent)
 void Updates::getRepoInfo(const QString componentName, const QString repoUrl){
     //Just Download JSON file from repo and save it from componentName
     //example of url: https://api.github.com/repos/bozothegeek/pegasus-frontend/releases
-    m_componentName = componentName;
-    m_repoUrl = repoUrl;
-    QMetaObject::invokeMethod(this,"getRepoInfo_slot", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this,"getRepoInfo_slot", Qt::QueuedConnection,
+                              Q_ARG(QString,componentName),Q_ARG(QString,repoUrl));
 }
-void Updates::getRepoInfo_slot(){
+
+void Updates::getRepoInfo_slot(QString componentName, QString url_str){
     //Log::debug(LOGMSG("void Rooms::refresh_slot()"));
     QJsonDocument json;
     //bool result = false;
@@ -104,8 +104,6 @@ void Updates::getRepoInfo_slot(){
         //Create Network Access
         QNetworkAccessManager *manager = new QNetworkAccessManager(this);
         //get json url
-        const QString url_str = m_repoUrl;
-        const QString componentName = m_componentName;
         json = get_json_from_url(url_str, log_tag, *manager);
         //save json in a file in /tmp directory
         saveJson(json, "/tmp/" + componentName + ".json");

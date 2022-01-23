@@ -82,7 +82,7 @@ private:
 signals:
 
 private slots:
-    void getRepoInfo_slot();
+    void getRepoInfo_slot(QString componentName, QString repoUrl);
 
 public:
 
