@@ -94,8 +94,6 @@ private slots:
 public:
 
 private:
-    QString m_componentName;
-    QString m_repoUrl;
     QList <UpdateEntry> m_versions;
     bool m_hasanyupdate = false;
     QString log_tag = "Updates";

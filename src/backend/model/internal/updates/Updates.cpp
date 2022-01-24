@@ -25,6 +25,54 @@
 #include <QElapsedTimer>
 
 namespace {
+//function to extract version from any string
+//folloxing this rules
+//version should start by '-v' (lower case)
+//finish by '-' or nothing
+//as following String examples and QList<int> results:
+// 'pixl-edition-v0.0.1' -> [0,0,1]
+// 'pixl-edition-v0.0.1-45-g6928bd092' -> [0,0,1]
+// 'mame-v0.238' -> [0,238]
+// 'mame-v237' -> [237]
+// 'retroarch-v1.9.14" -> [1,9,14]
+// 'retroarch-v1.9.14 test" -> [1,9,14]
+//Other string format will be not OK and can't be well parsed
+
+bool isNewVersion(QList<int> existingVersionNumbers, QList<int> newVersionNumbers){
+
+    //iteration from new version, to manage case as : 1.0 -> 1.0.1
+    // but we could manage also: 1.0.1 -> 1.1 or 2.0
+    for(int i=0; i < newVersionNumbers.count();i++){
+        if(i < existingVersionNumbers.count()){
+            if(existingVersionNumbers.at(i) < newVersionNumbers.at(i)){
+                return true;
+            }
+            else if(existingVersionNumbers.at(i) > newVersionNumbers.at(i)){
+                return false; //to avoid to consider new if 0.0.1 -> 0.0.0.1
+            }
+        }
+        else return true; // also if we have 2.0 -> 2.0.0
+    }
+    //if no new version detected
+    return false;
+}
+
+QList<int> getVersionNumbers(const QString versionString){
+    QRegularExpression regex("(-v|v)(\\d+.*?)(-|\\s|$)");// to get between "v" or "-v" and ("-" or end of line or space)
+
+    QRegularExpressionMatch match = regex.match(versionString);
+    QList<int> versionNumbers = {};
+    Log::debug("getVersionNumbers", LOGMSG("versionString: %1").arg(versionString));
+    if (match.hasMatch()) {
+        Log::debug("getVersionNumbers", LOGMSG("match.captured(2): %1").arg(match.captured(2)));
+        QStringList splits = match.captured(2).split(".");
+        for(int i = 0; i < splits.count(); i++){
+            versionNumbers.append(splits.at(i).toInt());
+        }
+    }
+    return versionNumbers; // return each number of version in QList<int> or empty one if no version found
+}
+
 QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
 {
     QNetworkAccessManager* const manager_ptr = &manager;
@@ -119,7 +167,6 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
 
 //function to check if any updates is available using /tmp
 bool Updates::hasAnyUpdate(){
-    m_hasanyupdate = true; // as forced for testing
     return m_hasanyupdate;
 }
 
@@ -128,39 +175,81 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, co
     //get data of update/versions and store in QList<UpdateEntry>
     if(parseJsonComponentFile(componentName))
     {
-        return true; //just that for the moment
-        //To do
+        //search index of version selected depeding of betaIncluded or not.
+        int versionIndex = -1;
+        //in case that we want to keep only release version
+        if(!betaIncluded){
+            for(int i = 0;i < m_versions.count();i++){
+                if(!m_versions[i].m_prerealease){
+                   versionIndex = i;
+                   break;// to stop search
+                }
+            }
+            if(versionIndex == -1){
+                //no release version found
+                return false;
+            }
+        }
+        else versionIndex = 0;
+
         //compare with version install using date of installation for the moment (date of "modifying" for file on file system)
         //may be use a manifest file in the future
-
+        QString existingVersion;
+        //QString existingDate;
+        QList<int> existingVersionNumbers;
+        QList<int> newVersionNumbers;
         //For specific component, we check version from pegasus directly as Pegasus-frontend itself
         if(componentName.toLower() == "pegasus-frontend"){
-			//check internal version
-			//check date
-			//Check if more recent
-			//check version
-			//check if version is equal(if date more recent) or upper
-			//using QStringLiteral(GIT_REVISION) and QStringLiteral(GIT_DATE)
-		}
+            //get internal version of Pegasus
+            existingVersion = QStringLiteral(GIT_REVISION);
+            //no check of date for the moment
+            //existingDate = QStringLiteral(GIT_DATE);
+            //may be to do for beta ?!
+        }
         else
         {
+            //for other case, the getting of the version could be different and using a script
+            //read assets to find the script for that
+
 
         }
+
+        existingVersionNumbers = getVersionNumbers(existingVersion);
+
+        newVersionNumbers = getVersionNumbers(m_versions[versionIndex].m_tag_name);
+
+        if(isNewVersion(existingVersionNumbers, newVersionNumbers)){
+            m_hasanyupdate = true;
+            return true;
+        }
     }
-    return false;//no file or issue = no update ;-)
+    return false;//no file or issue or no update ;-)
 }
 //function to get details from last "available" update (and only if available)
 UpdateEntry Updates::updateDetails(const QString componentName, const bool betaIncluded){
+    UpdateEntry Empty;
     //get data of update/versions and store in QList<UpdateEntry>
     if(parseJsonComponentFile(componentName))
     {
-        return m_versions[0]; //just that for the moment
-        //To do
-        //compare with version install using date of installation for the moment (date of "modifying" for file on file system)
-        //may be use a manifest file in the future
+        //search index of version selected depeding of betaIncluded or not.
+        int versionIndex = -1;
+        //in case that we want to keep only release version
+        if(!betaIncluded){
+            for(int i = 0;i < m_versions.count();i++){
+                if(!m_versions[i].m_prerealease){
+                   versionIndex = i;
+                   break;// to stop search
+                }
+            }
+            if(versionIndex == -1){
+                //no release version found
+                return Empty;
+            }
+        }
+        else versionIndex = 0;
+        return m_versions[versionIndex]; //just the last version found that for the moment
     }
-    UpdateEntry Empty;
-    return Empty;//no file or issue = no update ;-)
+    return Empty;//no file or issue or no update ;-)
 }
 //function to return the number of version available
 int Updates::componentVersionsCount(const QString componentName){
