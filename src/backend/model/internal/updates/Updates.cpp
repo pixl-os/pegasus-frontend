@@ -25,18 +25,6 @@
 #include <QElapsedTimer>
 
 namespace {
-//function to extract version from any string
-//folloxing this rules
-//version should start by '-v' (lower case)
-//finish by '-' or nothing
-//as following String examples and QList<int> results:
-// 'pixl-edition-v0.0.1' -> [0,0,1]
-// 'pixl-edition-v0.0.1-45-g6928bd092' -> [0,0,1]
-// 'mame-v0.238' -> [0,238]
-// 'mame-v237' -> [237]
-// 'retroarch-v1.9.14" -> [1,9,14]
-// 'retroarch-v1.9.14 test" -> [1,9,14]
-//Other string format will be not OK and can't be well parsed
 
 bool isNewVersion(QList<int> existingVersionNumbers, QList<int> newVersionNumbers){
 
@@ -57,7 +45,20 @@ bool isNewVersion(QList<int> existingVersionNumbers, QList<int> newVersionNumber
     return false;
 }
 
+//function to extract version from any string
 QList<int> getVersionNumbers(const QString versionString){
+    //folloxing this rules
+    //version should start by '-v' (lower case)
+    //finish by '-' or nothing
+    //as following String examples and QList<int> results:
+    // 'pixl-edition-v0.0.1' -> [0,0,1]
+    // 'pixl-edition-v0.0.1-45-g6928bd092' -> [0,0,1]
+    // 'mame-v0.238' -> [0,238]
+    // 'mame-v237' -> [237]
+    // 'retroarch-v1.9.14" -> [1,9,14]
+    // 'retroarch-v1.9.14 test" -> [1,9,14]
+    //Other string format will be not OK and can't be well parsed
+
     QRegularExpression regex("(-v|v)(\\d+.*?)(-|\\s|$)");// to get between "v" or "-v" and ("-" or end of line or space)
 
     QRegularExpressionMatch match = regex.match(versionString);
@@ -164,7 +165,25 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
         Log::error(log_tag, LOGMSG("Error: %1.\n").arg(Exp.what()));
     }
 }
-
+//function to select version depending "Beta flag"
+int Updates::selectVersionIndex(const bool betaIncluded){
+    //search index of version selected depeding of betaIncluded or not.
+    int versionIndex = -1;
+    //in case that we want to keep only release version
+    if(!betaIncluded){
+        for(int i = 0;i < m_versions.count();i++){
+            if(!m_versions[i].m_prerealease){
+               versionIndex = i;
+               break;// to stop search
+            }
+        }
+        if(versionIndex == -1){
+            //no release version found
+            return versionIndex;
+        }
+    }
+    else versionIndex = 0;
+}
 //function to check if any updates is available using /tmp
 bool Updates::hasAnyUpdate(){
     return m_hasanyupdate;
@@ -176,21 +195,11 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, co
     if(parseJsonComponentFile(componentName))
     {
         //search index of version selected depeding of betaIncluded or not.
-        int versionIndex = -1;
-        //in case that we want to keep only release version
-        if(!betaIncluded){
-            for(int i = 0;i < m_versions.count();i++){
-                if(!m_versions[i].m_prerealease){
-                   versionIndex = i;
-                   break;// to stop search
-                }
-            }
-            if(versionIndex == -1){
-                //no release version found
-                return false;
-            }
+        int versionIndex = selectVersionIndex(betaIncluded);
+        if(versionIndex == -1){
+            //no release version found
+            return false;
         }
-        else versionIndex = 0;
 
         //compare with version install using date of installation for the moment (date of "modifying" for file on file system)
         //may be use a manifest file in the future

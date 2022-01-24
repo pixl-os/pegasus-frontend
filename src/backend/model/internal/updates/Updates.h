@@ -85,6 +85,7 @@ public:
     Q_INVOKABLE int getInstallationProgress(const QString componentName); //provide pourcentage of downlaod and installation
 private:
     bool parseJsonComponentFile(const QString componentName);
+    int selectVersionIndex(const bool betaIncluded);
 
 signals:
 
