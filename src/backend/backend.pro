@@ -21,6 +21,7 @@ SOURCES += \
     GamepadAxisNavigation.cpp \
     PegasusAssets.cpp \
     ProcessLauncher.cpp \
+    ProgressBar.cpp \
     ScriptRunner.cpp \
     Paths.cpp \
     AppSettings.cpp \
@@ -29,7 +30,8 @@ SOURCES += \
     RecalboxConf.cpp \
     RootFolders.cpp \
     ScriptManager.cpp \
-    RecalboxSystem.cpp
+    RecalboxSystem.cpp \
+    downloadmanager.cpp
 
 HEADERS += \
     Backend.h \
@@ -38,6 +40,7 @@ HEADERS += \
     GamepadAxisNavigation.h \
     PegasusAssets.h \
     ProcessLauncher.h \
+    ProgressBar.h \
     ScriptRunner.h \
     Paths.h \
     AppSettings.h \
@@ -47,7 +50,8 @@ HEADERS += \
     RootFolders.h \
     ScriptManager.h \
     KeyEmitter.h \
-    RecalboxSystem.h
+    RecalboxSystem.h \
+    downloadmanager.h
 
 include(imggen/imggen.pri)
 include(model/model.pri)
