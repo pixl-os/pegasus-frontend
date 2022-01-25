@@ -202,10 +202,10 @@ FocusScope {
                         }
 
                         // label used with default color
-                        label: entry !== null ? (entry.componentName + " / " + entry.releaseTitle) + (entry.isPreRelease ? " / " + qsTr("Pre-released") + api.tr : "") : ""
+                        label: entry !== null ? (entry.componentName + " / " + entry.tagName) + (entry.isPreRelease ? " / " + qsTr("Pre-released") + api.tr : "") : ""
                         //label_color: "white"
 
-                        note: entry !== null ? ( qsTr("Tag") + " : " + entry.tagName + " / " + qsTr("Size") + " : " + entry.size +  " / " + qsTr("Published at") + " : " + entry.publishedAt) : "";
+                        note: entry !== null ? ( qsTr("Size") + " : " + entry.size +  " / " + qsTr("Published at") + " : " + entry.publishedAt) : "";
                         icon: ""
                         icon2: item.icon
                         //will be displayed when selected and not selected
