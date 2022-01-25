@@ -32,7 +32,8 @@ FocusScope {
     property alias icon2: icon2.source
     property var icon2_forced_display: false;
 
-    //second line a full detailed
+    property real firstColumnRatio: 3/4
+
     //first column (titles)
     property alias detailed_line1: line1.text
     property alias detailed_line2: line2.text
@@ -43,10 +44,12 @@ FocusScope {
     property alias detailed_line7: line7.text
     property alias detailed_line8: line8.text
     property alias detailed_description: scrolltext.text
+
+    property real secondColumnRatio: 1/4
+
     //second column (status and details)
     property alias detailed_line9: line9.text
     property alias detailed_line9_color: line9.color
-
     property alias detailed_line10: line10.text
     property alias detailed_line10_color: line10.color
 
@@ -72,11 +75,17 @@ FocusScope {
 
 
     readonly property int fontSize: vpx(22)
-    readonly property int horizontalPadding: vpx(20)
+    readonly property int horizontalPadding: vpx(10)
+    readonly property int verticalPadding: vpx(10)
     readonly property int detailPartHeight: vpx(150)
 
-    signal activate()
+    //for progress bar
+    property real progress: 0.33
 
+    Behavior on progress { NumberAnimation {} }
+
+
+    signal activate()
 
     width: parent.width
     height: labelContainer.height + vpx(10)
@@ -136,7 +145,7 @@ FocusScope {
 
     Column {
     id: labelContainer
-        width: parent.width *(3/4)
+        width: parent.width *(firstColumnRatio)
         anchors {
             left: parent.left;
             leftMargin: horizontalPadding;
@@ -282,7 +291,6 @@ FocusScope {
                     font.italic: true
                     visible: text !== "" ? true : false
                 }
-
             }
             Column{
                 spacing: vpx(4)
@@ -354,6 +362,7 @@ FocusScope {
             // Description
             PegasusUtils.AutoScroll
             {
+                id: autoscroll
                 width: parent.width - horizontalPadding  - screenshotContainer.width
                 height: root.focus ? detailPartHeight : 0
                 Text{
@@ -376,25 +385,99 @@ FocusScope {
         id: logoContainer
         anchors.right: parent.right;
         anchors.rightMargin: horizontalPadding;
-        anchors.top: parent.top
+        //anchors.top: parent.top
         height: !root.focus ? parent.height : 0
-        width: parent.width * (1/4)
+        width: parent.width * (secondColumnRatio)
         spacing: fontSize * 0.25
-        Row{
-            Text{
-                height: vpx(2)
-                text: " "
-            }
+
+        Image {
+            id: icon2
+            asynchronous: true
+            height: (icon2_forced_display || !root.focus) ? (label.height + labelContainer.spacing + sublabel.height) : 0
+            fillMode: Image.PreserveAspectFit
+            width: (root.width * (secondColumnRatio)) - rightline.width;
+            horizontalAlignment:  Image.AlignRight
+            //anchors.right: rightline.left;
+            smooth: true
+            visible: ((icon2_forced_display || !root.focus) && (root.progress === 0.0)) ? true : false
         }
-        Row{
-            Image {
-                id: icon2
-                asynchronous: true
-                height: (icon2_forced_display || !root.focus) ? (label.height + labelContainer.spacing + sublabel.height) : 0
-                fillMode: Image.PreserveAspectFit
-                smooth: true
-                visible: (icon2_forced_display || !root.focus) ? true : false
-            }
+
+        Rectangle {
+             id: progressRoot
+
+             property int padding: vpx(5)
+
+             width: logoContainer.width * 0.92 // - (padding * 2)
+             height: vpx(30)
+             radius: vpx(10)
+             //color: "#000000"
+             color: "transparent"
+             anchors.top: parent.top //textRow.bottom
+             anchors.topMargin: height * 1.0
+
+             anchors.horizontalCenter: logoContainer.horizontalCenter
+             visible: (root.progress > 0.0) ? true : false
+             clip: true
+
+             Image {
+                 source: "../../../assets/pbar.png"
+
+                 property int animatedWidth: 0
+                 width: parent.width + animatedWidth
+                 height: parent.height - progressRoot.padding * 2
+
+                 fillMode: Image.Tile
+                 horizontalAlignment: Image.AlignLeft
+
+                 anchors.verticalCenter: parent.verticalCenter
+                 anchors.right: parent.right
+                 anchors.rightMargin: parent.width * (1.0 - root.progress)
+
+                 SequentialAnimation on animatedWidth {
+                     loops: Animation.Infinite
+                     PropertyAnimation { duration: 500; to: vpx(68) }
+                     PropertyAnimation { duration: 0; to: 0 }
+                 }
+                 Image {
+                     source: "../../../assets/pbar-left.png"
+                     anchors.top: parent.top
+                     anchors.bottom: parent.bottom
+                     anchors.left: parent.left
+                     fillMode: Image.PreserveAspectFit
+                 }
+                 Image {
+                     source: "../../../assets/pbar-right.png"
+                     anchors.top: parent.top
+                     anchors.bottom: parent.bottom
+                     anchors.right: parent.right
+                     fillMode: Image.PreserveAspectFit
+                 }
+             }
+             Rectangle {
+                 // inner border above the image
+                 anchors.fill: parent
+                 color: "transparent"
+
+                 radius: vpx(10)
+                 border.width: parent.padding
+                 border.color: "black" //parent.color
+             }
+        }
+
+        Text{
+          id: progressText
+            visible: root.progress > 0.0 ? true : false
+
+            text: "loading..."
+            color: themeColor.textSublabel
+            font.pixelSize: vpx(16)
+            font.family: global.fonts.sans
+            font.italic: true
+
+            anchors.top: progressRoot.bottom
+            anchors.topMargin: vpx(8)
+            anchors.right: progressRoot.right
+            anchors.rightMargin: vpx(5)
         }
     }
     Column {
@@ -403,7 +486,7 @@ FocusScope {
         anchors.rightMargin: horizontalPadding;
         anchors.top: parent.top
         height: ((picture.source !== "") && root.focus) ? parent.height : 0
-        width: (picture.source !== "") ? parent.width * (1/4) : 0
+        width: (picture.source !== "") ? parent.width * (secondColumnRatio) : 0
         spacing: fontSize * 0.25
         Row{
             Text{
@@ -411,18 +494,20 @@ FocusScope {
                 text: " "
             }
         }
-        Row{
+        //Row{
             Image {
                 id: picture
                 asynchronous: true
                 height: (source !== "") && root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
                 fillMode: Image.PreserveAspectFit
+                width: (root.width * (secondColumnRatio)) - rightline.width;
+                horizontalAlignment:  Image.AlignRight
+                //anchors.right: rightline.left;
                 smooth: true
                 visible: (source !== "") && root.focus
             }
-        }
+        //}
     }
-
 
     MouseArea {
         id: mouseArea
