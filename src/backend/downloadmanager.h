@@ -84,7 +84,7 @@ private:
     QNetworkReply *currentDownload = nullptr;
     QFile output;
     QElapsedTimer downloadTimer;
-    TextProgressBar progressBar;
+    ProgressBar progressBar;
 
     int downloadedCount = 0;
     int totalCount = 0;
