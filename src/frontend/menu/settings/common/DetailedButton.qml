@@ -76,11 +76,13 @@ FocusScope {
 
     readonly property int fontSize: vpx(22)
     readonly property int horizontalPadding: vpx(10)
-    readonly property int verticalPadding: vpx(10)
+    readonly property int verticalPadding: vpx(4)
     readonly property int detailPartHeight: vpx(150)
 
     //for progress bar
-    property real progress: 0.33
+    property real progress: 0.0
+    property string progressStatus: ""
+
 
     Behavior on progress { NumberAnimation {} }
 
@@ -405,70 +407,66 @@ FocusScope {
         Rectangle {
              id: progressRoot
 
-             property int padding: vpx(5)
+             property int border: vpx(3)
 
-             width: logoContainer.width * 0.92 // - (padding * 2)
-             height: vpx(30)
+             width: logoContainer.width
+             height: vpx(25)
              radius: vpx(10)
-             //color: "#000000"
              color: "transparent"
+
              anchors.top: parent.top //textRow.bottom
-             anchors.topMargin: height * 1.0
+             anchors.topMargin: root.verticalPadding
+
+             anchors.left: parent.left //textRow.bottom
+             anchors.leftMargin: border
 
              anchors.horizontalCenter: logoContainer.horizontalCenter
              visible: (root.progress > 0.0) ? true : false
              clip: true
-
              Image {
                  source: "../../../assets/pbar.png"
 
                  property int animatedWidth: 0
                  width: parent.width + animatedWidth
-                 height: parent.height - progressRoot.padding * 2
-
+                 height: parent.height -(progressRoot.border * 2)
                  fillMode: Image.Tile
-                 horizontalAlignment: Image.AlignLeft
-
                  anchors.verticalCenter: parent.verticalCenter
                  anchors.right: parent.right
-                 anchors.rightMargin: parent.width * (1.0 - root.progress)
+                 anchors.rightMargin: (parent.width * (1.0 - root.progress)) //+ progressRoot.border
+                 //anchors.left: parent.left
+                 //anchors.leftMargin: progressRoot.border
 
                  SequentialAnimation on animatedWidth {
                      loops: Animation.Infinite
                      PropertyAnimation { duration: 500; to: vpx(68) }
                      PropertyAnimation { duration: 0; to: 0 }
                  }
-                 Image {
-                     source: "../../../assets/pbar-left.png"
-                     anchors.top: parent.top
-                     anchors.bottom: parent.bottom
-                     anchors.left: parent.left
-                     fillMode: Image.PreserveAspectFit
-                 }
-                 Image {
-                     source: "../../../assets/pbar-right.png"
-                     anchors.top: parent.top
-                     anchors.bottom: parent.bottom
-                     anchors.right: parent.right
-                     fillMode: Image.PreserveAspectFit
-                 }
              }
+
              Rectangle {
                  // inner border above the image
-                 anchors.fill: parent
+                 anchors.top: parent.top
+                 anchors.bottom: parent.bottom
+                 anchors.left: parent.left
+                 //anchors.leftMargin: - vpx(progressRoot.border)
+                 anchors.right: parent.right
+                 //anchors.rightMargin: - vpx(progressRoot.border)
+                 //z: 10
+                 //anchors.fill: parent
                  color: "transparent"
 
-                 radius: vpx(10)
-                 border.width: parent.padding
+                 //radius: vpx(10)
+                 border.width: parent.border
                  border.color: "black" //parent.color
              }
+
         }
 
         Text{
           id: progressText
             visible: root.progress > 0.0 ? true : false
 
-            text: "loading..."
+            text: progressStatus
             color: themeColor.textSublabel
             font.pixelSize: vpx(16)
             font.family: global.fonts.sans

@@ -193,6 +193,14 @@ FocusScope {
                         visible : entry !== null ? true : false
                         enabled: visible
 
+                        //columns sizes
+                        firstColumnRatio: 2/3
+                        secondColumnRatio: 1/3
+                        //progress bar and status
+                        progress: 0.01
+                        progressStatus: qsTr("Loading...") + api.tr
+
+
                         //Status not used
                         status:{
                             return "";
