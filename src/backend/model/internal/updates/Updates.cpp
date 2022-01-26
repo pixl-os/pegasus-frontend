@@ -177,12 +177,11 @@ int Updates::selectVersionIndex(const bool betaIncluded){
                break;// to stop search
             }
         }
-        if(versionIndex == -1){
-            //no release version found
-            return versionIndex;
-        }
     }
-    else versionIndex = 0;
+    else{
+        versionIndex = 0;
+    }
+    return versionIndex;
 }
 //function to check if any updates is available using /tmp
 bool Updates::hasAnyUpdate(){
