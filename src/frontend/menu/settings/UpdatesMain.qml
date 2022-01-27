@@ -36,22 +36,20 @@ FocusScope {
         active: false
         asynchronous: true
         //to set value via loader
-        property var component_logo: ""
+        property var componentLogo: ""
+        property var componentText: ""
     }
 
     Component {
         id: myDialog
         Generic3ChoicesDialog {
             title: qsTr("Are you sure that you want to update ?") + api.tr
-            message: qsTr("Update of") + api.tr
+            message: qsTr("Update to") + " " + confirmDialog.componentText + api.tr
             symbol: ""
             firstchoice: qsTr("Update") + api.tr
             secondchoice: ""
             thirdchoice: qsTr("Cancel") + api.tr
-
-            //Specific to Netplay
-            //to add in generic dialog one
-            //logo: component_logo
+            logo: confirmDialog.componentLogo
         }
     }
 
@@ -239,7 +237,8 @@ FocusScope {
                         focus: index === 0 ? true : false
                         onActivate: {
                                 //to display logo of this room
-                                //confirmDialog.game_logo = searchByCRCorFile.result.games.get(searchByCRCorFile.resultIndex).assets.logo;
+                                confirmDialog.componentText = label;
+                                confirmDialog.componentLogo = item.icon;
                                 confirmDialog.focus = false;
                                 confirmDialog.active = true;
                                 //Save action states for later
