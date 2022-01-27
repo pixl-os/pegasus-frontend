@@ -27,6 +27,7 @@ FocusScope {
     property alias firstchoice: okButtonText.text
     property alias secondchoice: secondButtonText.text
     property alias thirdchoice: cancelButtonText.text
+    property string logo: ""
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
@@ -139,6 +140,25 @@ FocusScope {
                     pixelSize: root.titleTextSize * 4
                     family: globalFonts.sans
                 }
+            }
+        }
+        Rectangle {
+            width: visible ? parent.width : 0
+            height: visible ? vpx(80): 0
+            color: themeColor.secondary
+            visible: (logo !== "") ? true : false
+            Image {
+                id: picture
+
+                asynchronous: true
+                source: logo
+                height: parent.height * 0.8
+                width: parent.width * 0.8
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                visible: parent.visible
             }
         }
         // button row
