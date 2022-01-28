@@ -17,11 +17,11 @@ DEFINES *= HAVE_CDROM
 
 SOURCES += \
     Backend.cpp \
+    DownloadManager.cpp \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
     PegasusAssets.cpp \
     ProcessLauncher.cpp \
-    ProgressBar.cpp \
     ScriptRunner.cpp \
     Paths.cpp \
     AppSettings.cpp \
@@ -30,17 +30,16 @@ SOURCES += \
     RecalboxConf.cpp \
     RootFolders.cpp \
     ScriptManager.cpp \
-    RecalboxSystem.cpp \
-    downloadmanager.cpp
+    RecalboxSystem.cpp
 
 HEADERS += \
     Backend.h \
     CliArgs.h \
+    DownloadManager.h \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
     PegasusAssets.h \
     ProcessLauncher.h \
-    ProgressBar.h \
     ScriptRunner.h \
     Paths.h \
     AppSettings.h \
@@ -50,8 +49,7 @@ HEADERS += \
     RootFolders.h \
     ScriptManager.h \
     KeyEmitter.h \
-    RecalboxSystem.h \
-    downloadmanager.h
+    RecalboxSystem.h
 
 include(imggen/imggen.pri)
 include(model/model.pri)
