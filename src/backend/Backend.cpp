@@ -85,9 +85,6 @@ void register_api_classes()
     // QML utilities
     qmlRegisterType<FolderListModel>("Pegasus.FolderListModel", 1, 0, "FolderListModel");
 
-    //Custom Type declaration to manage "updates" structure ;-)
-    qRegisterMetaType<UpdateEntry>();
-
     // third-party
     qmlRegisterUncreatableType<QQmlObjectListModelBase>("QtQmlTricks.SmartDataModels",
                                                         2, 0, "ObjectListModel", error_msg);
