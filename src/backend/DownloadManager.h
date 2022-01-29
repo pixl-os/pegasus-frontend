@@ -47,9 +47,7 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-
-#ifndef DOWNLOADMANAGER_H
-#define DOWNLOADMANAGER_H
+//Adapted by BozoTheGeek 29/01/2022
 
 #include <QtNetwork>
 #include <QtCore>
@@ -64,7 +62,8 @@ public:
     static QString saveFileName(const QUrl &url);
     void clear();
     QString statusMessage;
-    float statusProgress;
+    QString statusSpeed;
+    float statusProgress = 0.0;
     int downloadedCount = 0;
     int totalCount = 0;
 
@@ -79,6 +78,7 @@ private slots:
 
 private:
     void setMessage(const QString &m);
+    void setSpeed(const QString &m);
     void setStatus(qint64 val, qint64 max);
     bool isHttpRedirect() const;
     QUrl reportRedirect();
@@ -97,5 +97,3 @@ private:
     QString log_tag = "DownloadManager";
 
 };
-
-#endif

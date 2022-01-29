@@ -47,6 +47,7 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
+//Adapted by BozoTheGeek 29/01/2022
 
 #include "DownloadManager.h"
 #include "Log.h"
@@ -70,7 +71,7 @@ void DownloadManager::clear(){
     maximum = -1;
     iteration = 0;
     statusMessage = "";
-    statusProgress = 0.0;
+    statusProgress = 0.01; // not zero to consider that is started
 }
 
 void DownloadManager::setMessage(const QString &m)
@@ -78,13 +79,21 @@ void DownloadManager::setMessage(const QString &m)
     statusMessage = m;
 }
 
+void DownloadManager::setSpeed(const QString &m)
+{
+    statusSpeed = m;
+}
+
 void DownloadManager::setStatus(qint64 val, qint64 max)
 {
     ++iteration; // for RFU to manage when we don't have maximum
     value = val;
     maximum = max;
+
     if (maximum > 0) {
-        statusProgress = val / max;
+        statusProgress = float(value) / float(maximum);
+        //Log::debug("DownloadManager", LOGMSG("setStatus: %1").arg(statusProgress));
+
     }
     else{
         //TO DO
@@ -102,9 +111,9 @@ void DownloadManager::append(const QStringList &urls)
 
 void DownloadManager::append(const QUrl &url, const QString &filename)
 {
-    Log::debug("DownloadManager", LOGMSG("append('%1','%2')").arg(url.toString(),filename));
+    //Log::debug("DownloadManager", LOGMSG("append('%1','%2')").arg(url.toString(),filename));
     if (downloadQueue.isEmpty()){
-        Log::debug("DownloadManager", LOGMSG("downloadQueue.isEmpty()"));
+        //Log::debug("DownloadManager", LOGMSG("downloadQueue.isEmpty()"));
         QTimer::singleShot(0, this, &DownloadManager::startNextDownload);
     }
 
@@ -132,7 +141,7 @@ QString DownloadManager::saveFileName(const QUrl &url)
 
         basename += QString::number(i);
     }
-    Log::debug("DownloadManager", LOGMSG("basename: %1").arg(basename));
+    //Log::debug("DownloadManager", LOGMSG("basename: %1").arg(basename));
     return basename;
 }
 
@@ -141,21 +150,25 @@ void DownloadManager::startNextDownload()
     //Log::debug("DownloadManager", LOGMSG("startNextDownload()"));
 
     if (downloadQueue.isEmpty()) {
-        Log::debug("DownloadManager", LOGMSG(" %1 / %2 files downloaded successfully\n").arg(QString::number(downloadedCount),QString::number(totalCount)));
+        //Log::debug("DownloadManager", LOGMSG(" %1 / %2 files downloaded successfully\n").arg(QString::number(downloadedCount),QString::number(totalCount)));
+        setMessage(QString(" %1/%2 files downloaded successfully").arg(QString::number(downloadedCount),QString::number(totalCount)));
+        setSpeed(""); //stop speed
         emit finished();
         return;
     }
 
     QUrl url = downloadQueue.dequeue();
     QString filename = filenameQueue.dequeue();
+
     if(filename == ""){
         filename = saveFileName(url);
     }
     output.setFileName(filename);
+    setMessage(QString("Download of %1 started...").arg(output.fileName()));
+
     if (!output.open(QIODevice::WriteOnly)) {
-        fprintf(stderr, "Problem opening save file '%s' for download '%s': %s\n",
-                qPrintable(filename), url.toEncoded().constData(),
-                qPrintable(output.errorString()));
+        setMessage(QString("Problem to save %1 : %2").arg(qPrintable(filename),
+                                                          qPrintable(output.errorString())));
 
         startNextDownload();
         return;                 // skip this download
@@ -171,15 +184,17 @@ void DownloadManager::startNextDownload()
             this, &DownloadManager::downloadReadyRead);
 
     // prepare the output
-    Log::debug("DownloadManager", LOGMSG("Downloading %1...\n").arg(url.toEncoded().constData()));
+    //Log::debug("DownloadManager", LOGMSG("Downloading %1...\n").arg(url.toEncoded().constData()));
 
     downloadTimer.start();
 }
 
 void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-    Log::debug("DownloadManager", LOGMSG("Receive: %1 / %2 Bytes").arg(QString::number(bytesReceived),QString::number(bytesTotal)));
 
+    //Log::debug("DownloadManager", LOGMSG("Receive: %1 / %2 Bytes").arg(QString::number(bytesReceived),QString::number(bytesTotal)));
+
+    setMessage(QString("%1 ...").arg(output.fileName()));
 
     setStatus(bytesReceived, bytesTotal);
 
@@ -196,19 +211,19 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
         unit = "MB/s";
     }
 
-    setMessage(QString::fromLatin1("%1 %2")
+    setSpeed(QString::fromLatin1("%1 %2")
                            .arg(speed, 3, 'f', 1).arg(unit));
 }
 
 void DownloadManager::downloadFinished()
 {
-    Log::debug("DownloadManager", LOGMSG("downloadFinished()"));
+    //Log::debug("DownloadManager", LOGMSG("downloadFinished()"));
 
     output.close();
 
     if (currentDownload->error()) {
         // download failed
-        fprintf(stderr, "Failed: %s\n", qPrintable(currentDownload->errorString()));
+        setMessage(QString("Failed: %1").arg(qPrintable(currentDownload->errorString())));
         output.remove();
     } else {
         // let's check if it was actually a redirect
@@ -219,7 +234,7 @@ void DownloadManager::downloadFinished()
             //append it to tentative to download it
             append(redirectUrl,output.fileName());
         } else {
-            printf("Succeeded.\n");
+            setMessage(QString("%1 downloaded").arg(output.fileName()));
             ++downloadedCount;
         }
     }
@@ -243,9 +258,9 @@ QUrl DownloadManager::reportRedirect()
 {
     int statusCode = currentDownload->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     QUrl requestUrl = currentDownload->request().url();
-    QTextStream(stderr) << "Request: " << requestUrl.toDisplayString()
+    /*QTextStream(stderr) << "Request: " << requestUrl.toDisplayString()
                         << " was redirected with code: " << statusCode
-                        << '\n';
+                        << '\n';*/
 
     QVariant target = currentDownload->attribute(QNetworkRequest::RedirectionTargetAttribute);
     if (!target.isValid()){
@@ -255,8 +270,8 @@ QUrl DownloadManager::reportRedirect()
     QUrl redirectUrl = target.toUrl();
     if (redirectUrl.isRelative())
         redirectUrl = requestUrl.resolved(redirectUrl);
-    QTextStream(stderr) << "Redirected to: " << redirectUrl.toDisplayString()
-                        << '\n';
+    /*QTextStream(stderr) << "Redirected to: " << redirectUrl.toDisplayString()
+                        << '\n';*/
     //return URL to be abale to download this URL also if needed
     return redirectUrl;
 }
