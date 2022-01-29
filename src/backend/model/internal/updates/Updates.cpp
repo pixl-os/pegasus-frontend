@@ -135,6 +135,10 @@ namespace model {
 Updates::Updates(QObject* parent)
     : QObject(parent)
 {
+    //Custom Type declaration to manage all structure ;-)
+    qRegisterMetaType<UpdateEntry>();
+    qRegisterMetaType<Assets>();
+    qRegisterMetaType<UpdateStatus>();
 }
 
 //Asynchronous function to get last version in background tasts from repo and store it in /tmp
@@ -166,7 +170,7 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
     }
 }
 //function to select version depending "Beta flag"
-int Updates::selectVersionIndex(const bool betaIncluded){
+int Updates::selectVersionIndex(QList <UpdateEntry> m_versions, const bool betaIncluded){
     //search index of version selected depeding of betaIncluded or not.
     int versionIndex = -1;
     //in case that we want to keep only release version
@@ -190,11 +194,13 @@ bool Updates::hasAnyUpdate(){
 
 //function to check information about updates of any componants and confirm quickly if update using /tmp
 bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, const QString filter){
+    QList <UpdateEntry> m_versions;
     //get data of update/versions and store in QList<UpdateEntry>
-    if(parseJsonComponentFile(componentName))
+    m_versions = parseJsonComponentFile(componentName);
+    if(m_versions.count() != 0)
     {
         //search index of version selected depeding of betaIncluded or not.
-        int versionIndex = selectVersionIndex(betaIncluded);
+        int versionIndex = selectVersionIndex(m_versions,betaIncluded);
         if(versionIndex == -1){
             //no release version found
             return false;
@@ -236,8 +242,10 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, co
 //function to get details from last "available" update (and only if available)
 UpdateEntry Updates::updateDetails(const QString componentName, const bool betaIncluded){
     UpdateEntry Empty;
+    QList <UpdateEntry> m_versions;
     //get data of update/versions and store in QList<UpdateEntry>
-    if(parseJsonComponentFile(componentName))
+    m_versions = parseJsonComponentFile(componentName);
+    if(m_versions.count() != 0)
     {
         //search index of version selected depeding of betaIncluded or not.
         int versionIndex = -1;
@@ -270,19 +278,131 @@ UpdateEntry Updates::componentVersionDetails(const QString componentName, const 
 //Asynchronous function to install a component
 void Updates::launchComponentInstallation(const QString componentName, const QString version){
 
+    Log::debug(log_tag, LOGMSG("launchComponentInstallation for: %1 in version: %2\n").arg(componentName,version));
+    QList <UpdateEntry> m_versions;
+    //get data of update/versions and store in QList<UpdateEntry>
+    m_versions = parseJsonComponentFile(componentName);
+    if(m_versions.count() != 0)
+    {
+        //search index of version selected depending of tag stored in version
+        int versionIndex = -1;
+        for(int i = 0;i < m_versions.count();i++){
+            if(m_versions[i].m_tag_name == version){
+               versionIndex = i;
+               break;// to stop search
+            }
+        }
+        Log::debug(log_tag, LOGMSG("launchComponentInstallation , version index: %1\n").arg(QString::number(versionIndex)));
+        if(versionIndex == -1){
+            //TO DO: add a error status and progress for this component installation
+        }
+        else{
+            //get urls
+            Assets zipAsset;
+            zipAsset.m_name_asset = "";
+            Assets installationScriptAsset;
+            installationScriptAsset.m_name_asset = "";
+            for(int j = 0;j < m_versions[versionIndex].m_assets.count();j++){
+                if(m_versions[versionIndex].m_assets[j].m_download_url.endsWith(".zip",Qt::CaseInsensitive)){
+                    zipAsset = m_versions[versionIndex].m_assets[j];
+                }
+                else if(m_versions[versionIndex].m_assets[j].m_download_url.endsWith(".sh",Qt::CaseInsensitive) ||
+                m_versions[versionIndex].m_assets[j].m_download_url.endsWith(".py",Qt::CaseInsensitive)){
+                    installationScriptAsset = m_versions[versionIndex].m_assets[j];
+                }
+            }
+            //check if valid
+            if((zipAsset.m_name_asset != "") && (installationScriptAsset.m_name_asset != "")){
+                //launch installation
+                QMetaObject::invokeMethod(this,"launchComponentInstallation_slot", Qt::QueuedConnection,
+                                          Q_ARG(QString,componentName),Q_ARG(Assets, zipAsset),Q_ARG(Assets, installationScriptAsset));
+            }
+            else
+            {
+                //TO DO: add a error status and progress for this component installation
+            }
+        }
+    }
+    //TO DO: add a error status and progress for this component installation
+}
+
+//void Updates::launchComponentInstallation_slot(const QString componentName, const QString zipUrl, const QString installationScriptUrl){
+void Updates::launchComponentInstallation_slot(const QString componentName, const Assets zipAsset, const Assets installationScriptAsset){
+
+    //check and create directory if needed
+    QString diretoryPath = "/tmp/" + componentName;
+    if(!QDir(diretoryPath).exists()) {
+        //create it
+        QDir().mkdir(diretoryPath);
+    }
+    //check if update already exists
+    int foundIndex = -1;
+    for(int i=0;i<m_updates.count();i++){
+        if(m_updates[i].m_componentName == componentName){
+            foundIndex = i;
+            break;
+        }
+    }
+
+    //set update to for follow-up
+    if(foundIndex == -1){
+        m_updates.append({componentName,0.01,"",downloaderIndex});
+        foundIndex = m_updates.count()-1;
+        //increase index for later
+        downloaderIndex = downloaderIndex + 1;
+        if(downloaderIndex == MAX_DOWNLOADER){
+            downloaderIndex = 0; //reset to 0 to do the loop
+        }
+    }
+    else{
+        m_updates[foundIndex].m_installationProgress = 0.01;
+        m_updates[foundIndex].m_installationStatus = "";
+    }
+
+    //first download zip & script file + clear before to use or reuse the slot
+    downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
+    downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
+    downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
+
+    //do loop on connect to wait download in this case
+    QEventLoop loop;
+    QObject::connect(&downloadManager[0], &DownloadManager::finished, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    //launch installation,
+    //TO DO
 }
 
 //Function to know status - as "Download", "Installation", "Completed" or "error"
 QString Updates::getInstallationStatus(const QString componentName){
+    for(int i = 0;i < m_updates.count();i++){
+        if(m_updates[i].m_componentName == componentName){
+            if(downloadManager[m_updates[i].m_downloaderIndex].statusSpeed != ""){
+                return downloadManager[m_updates[i].m_downloaderIndex].statusMessage + " - " +
+                       downloadManager[m_updates[i].m_downloaderIndex].statusSpeed;
+
+            }else{
+                return downloadManager[m_updates[i].m_downloaderIndex].statusMessage;
+
+            }
+        }
+    }
+    return "";
 }
 
 //Fucntion to know progress of each installation steps
-int Updates::getInstallationProgress(const QString componentName){
+float Updates::getInstallationProgress(const QString componentName){
+    for(int i = 0;i < m_updates.count();i++){
+        if(m_updates[i].m_componentName == componentName){
+            return downloadManager[m_updates[i].m_downloaderIndex].statusProgress;
+        }
+    }
+    return 0.0;
+}
 
-} //provide pourcentage of downlaod and installation
-
-bool Updates::parseJsonComponentFile(const QString componentName)
+QList <UpdateEntry> Updates::parseJsonComponentFile(const QString componentName)
 {
+    QList <UpdateEntry> m_versions;
     //parse json file if exist
     if(QFileInfo::exists("/tmp/" + componentName + ".json")){
         //load json from file in /tmp directory
@@ -293,13 +413,13 @@ bool Updates::parseJsonComponentFile(const QString componentName)
         if (json.isNull())
         {
             Log::debug(log_tag, LOGMSG("json.isNull()"));
-            return false;
+            return m_versions;
         }
         const auto json_root = json.array();
         if (json_root.isEmpty())
         {
             Log::debug(log_tag, LOGMSG("json_root.isEmpty()"));
-            return false;
+            return m_versions;
         }
         else Log::debug(log_tag, LOGMSG("nb version found: %1").arg(json_root.count()));
 
@@ -331,19 +451,11 @@ bool Updates::parseJsonComponentFile(const QString componentName)
                                                 asset_entry[QL1("size")].toInt(),
                                                 asset_entry[QL1("browser_download_url")].toString()});
                 m_versions[i].m_size = m_versions[i].m_size + asset_entry[QL1("size")].toInt();
-
-                //take only first one for the moment for asset
-                //break;
             }
-            //m_versions[i].m_hasanyupdate = false;
             i++;
         }
-        return true;
     }
-    //Log::info(log_tag, LOGMSG("json_root.count(): %1.").arg(json_root.count()));
-    //Log::info(log_tag, LOGMSG("m_Count: %1.").arg(m_Count));
-    //Log::info(log_tag, LOGMSG("rowCount(): %1.").arg(rowCount()));
-    return false;
+    return m_versions;
 }
 
 } // namespace model

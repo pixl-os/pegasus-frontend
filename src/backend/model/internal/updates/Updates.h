@@ -9,6 +9,9 @@
 #include <QString>
 #include <QObject>
 #include <QTimer>
+#include "DownloadManager.h"
+
+const int MAX_DOWNLOADER = 20;
 
 struct Assets {
     QString m_name_asset;
@@ -17,6 +20,22 @@ struct Assets {
     int m_size;
     QString m_download_url;
 };
+Q_DECLARE_METATYPE(Assets)
+
+struct UpdateStatus {
+    Q_GADGET
+    Q_PROPERTY(QString componentName MEMBER m_componentName);
+    Q_PROPERTY(float installationProgress MEMBER m_installationProgress);
+    Q_PROPERTY(QString installationStatus MEMBER m_installationStatus)  //Name provided during "getRepoInfo" as reference
+    Q_PROPERTY(int downloaderIndex MEMBER m_downloaderIndex);
+
+public:
+    QString m_componentName;
+    float m_installationProgress;
+    QString m_installationStatus;
+    int m_downloaderIndex;
+};
+Q_DECLARE_METATYPE(UpdateStatus)
 
 struct UpdateEntry {
       Q_GADGET
@@ -46,11 +65,6 @@ public:
 
       //for asset
       QList <Assets> m_assets;
-
-      //QString m_name_asset;
-      //QString m_created_at_asset;
-      //QString m_published_at_asset;
-      //QString m_download_url;
 
       //flag if update detected
       bool m_hasanyupdate = false;
@@ -82,20 +96,27 @@ public:
     //Function to know status - as "Download", "Installation", "Completed" or "error"
     Q_INVOKABLE QString getInstallationStatus(const QString componentName);
     //Fucntion to know progress of each installation steps
-    Q_INVOKABLE int getInstallationProgress(const QString componentName); //provide pourcentage of downlaod and installation
+    Q_INVOKABLE float getInstallationProgress(const QString componentName); //provide pourcentage of downlaod and installation
+
 private:
-    bool parseJsonComponentFile(const QString componentName);
-    int selectVersionIndex(const bool betaIncluded);
+    QList <UpdateEntry> parseJsonComponentFile(const QString componentName);
+    int selectVersionIndex(QList <UpdateEntry> m_versions, const bool betaIncluded);
 
 signals:
 
 private slots:
+    //to have thread to download JSON file from repo
     void getRepoInfo_slot(QString componentName, QString repoUrl);
+    //to have thread to download ZIP file/Script and to install the new component
+    void launchComponentInstallation_slot(const QString componentName, const Assets zipAsset, const Assets installationScriptAsset);
 
 public:
 
 private:
-    QList <UpdateEntry> m_versions;
+    //to follow status of updates
+    QList <UpdateStatus> m_updates;
+    DownloadManager downloadManager[MAX_DOWNLOADER];
+    int downloaderIndex = 0;
     bool m_hasanyupdate = false;
     QString log_tag = "Updates";
 };

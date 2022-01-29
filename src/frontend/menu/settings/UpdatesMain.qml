@@ -26,6 +26,7 @@ FocusScope {
     //to be able to follow action done on Bluetooth Devices Lists
     property var actionState : ""
     property var actionListIndex : 0
+    property var actionVersionToInstall: ""
 
     //loader to load confirm dialog
     Loader {
@@ -58,7 +59,9 @@ FocusScope {
         function onAccept() { //first choice
             switch (actionState) {
                     case "Update": //-> TO UPDATE
-                    break;
+                        //launch process of udpate (including download and installation)
+                        api.internal.updates.launchComponentInstallation(componentsListModel.get(actionListIndex).componentName,componentsListModel.get(actionListIndex).versionToInstall);
+                        break;
             }
             confirmDialog.active = false;
             content.focus = true;
@@ -161,6 +164,22 @@ FocusScope {
                     visible: true
                 }
 
+                Timer {
+                    id: statusRefresh
+                    interval: 100 // Run the timer every 100 seconds
+                    repeat: true
+                    running: true
+                    triggeredOnStart: false
+                    onTriggered: {
+                        for(var i = 0; i < availableUpdates.count;i++){
+                            var item = availableUpdates.itemAt(i).item;
+                            availableUpdates.itemAt(i).progressStatus = api.internal.updates.getInstallationStatus(item.componentName);
+                            //console.log("availableUpdates.itemAt(i).progressStatus : ",availableUpdates.itemAt(i).progressStatus);
+                            availableUpdates.itemAt(i).progress = api.internal.updates.getInstallationProgress(item.componentName);
+                            //console.log("availableUpdates.itemAt(i).progress : ",availableUpdates.itemAt(i).progress);
+                        }
+                    }
+                }
                 Repeater {
                     id: availableUpdates
                     model: componentsListModel
@@ -195,9 +214,8 @@ FocusScope {
                         firstColumnRatio: 2/3
                         secondColumnRatio: 1/3
                         //progress bar and status
-                        progress: 0.01
-                        progressStatus: qsTr("Loading...") + api.tr
-
+                        progress: 0.0
+                        progressStatus: ""
 
                         //Status not used
                         status:{
@@ -244,9 +262,10 @@ FocusScope {
                                 //Save action states for later
                                 actionState = "Update";
                                 actionListIndex = index;
+                                componentsListModel.setProperty(index,"versionToInstall", entry.tagName);
                                 //to force change of focus
                                 confirmDialog.focus = true;
-                            }
+                        }
 
                         onFocusChanged:{
                         }
