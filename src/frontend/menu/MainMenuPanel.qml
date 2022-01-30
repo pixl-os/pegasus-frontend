@@ -27,6 +27,10 @@ FocusScope {
     height: parent.height
     visible: x < parent.width && 0 < x + width
     enabled: focus
+    onFocusChanged: {
+        //console.log("MainMenuPanel::onFocusChanged");
+        mbUpdates.enabled = api.internal.updates.hasAnyUpdate();
+    }
 
     signal close
     signal showUpdates
@@ -74,7 +78,7 @@ FocusScope {
             }
             selected: focus
 
-            enabled: numberOfUpdates !== 0 ? true : false
+            enabled: api.internal.updates.hasAnyUpdate();
             visible: enabled
             symbol:"\uf2c6"
             animated: true
