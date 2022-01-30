@@ -211,7 +211,7 @@ FocusScope {
                     Text {
                         id: sublabel
                         color: themeColor.textSublabel
-                        font.pixelSize: fontSize * 0.8
+                        font.pixelSize: fontSize * 0.7
                         font.family: globalFonts.awesome
                         font.italic: true
                         wrapMode: Text.WordWrap
@@ -365,7 +365,7 @@ FocusScope {
             PegasusUtils.AutoScroll
             {
                 id: autoscroll
-                width: parent.width - horizontalPadding  - screenshotContainer.width
+                width: parent.width - (horizontalPadding * 2)  - screenshotContainer.width
                 height: root.focus ? detailPartHeight : 0
                 Text{
                     id: scrolltext
@@ -414,10 +414,10 @@ FocusScope {
              radius: vpx(10)
              color: "transparent"
 
-             anchors.top: parent.top //textRow.bottom
+             anchors.top: parent.top
              anchors.topMargin: root.verticalPadding
 
-             anchors.left: parent.left //textRow.bottom
+             anchors.left: parent.left
              anchors.leftMargin: border
 
              anchors.horizontalCenter: logoContainer.horizontalCenter
@@ -468,7 +468,7 @@ FocusScope {
 
             text: progressStatus
             color: themeColor.textSublabel
-            font.pixelSize: vpx(16)
+            font.pixelSize: fontSize * 0.7
             font.family: global.fonts.sans
             font.italic: true
 
@@ -483,8 +483,9 @@ FocusScope {
         anchors.right: parent.right;
         anchors.rightMargin: horizontalPadding;
         anchors.top: parent.top
-        height: ((picture.source !== "") && root.focus) ? parent.height : 0
-        width: (picture.source !== "") ? parent.width * (secondColumnRatio) : 0
+        anchors.topMargin: (root.progress > 0.0) ? (label.height + labelContainer.spacing + sublabel.height) : 0
+        height: ((picture.source !== "") && root.focus) ? ((label.height + labelContainer.spacing + sublabel.height + detailPartHeight) - anchors.topMargin) : 0
+        width: (picture.source !== "") ? ((parent.width * (secondColumnRatio)) - horizontalPadding)   : 0
         spacing: fontSize * 0.25
         Row{
             Text{
@@ -492,19 +493,16 @@ FocusScope {
                 text: " "
             }
         }
-        //Row{
-            Image {
-                id: picture
-                asynchronous: true
-                height: (source !== "") && root.focus ? (label.height + labelContainer.spacing + sublabel.height + detailPartHeight) : 0
-                fillMode: Image.PreserveAspectFit
-                width: (root.width * (secondColumnRatio)) - rightline.width;
-                horizontalAlignment:  Image.AlignRight
-                //anchors.right: rightline.left;
-                smooth: true
-                visible: (source !== "") && root.focus
-            }
-        //}
+        Image {
+            id: picture
+            asynchronous: true
+            height: (source !== "") && root.focus ? parent.height : 0
+            width: parent.width
+            horizontalAlignment:  Image.AlignRight
+            smooth: true
+            fillMode: Image.PreserveAspectFit
+            visible: (source !== "") && root.focus
+        }
     }
 
     MouseArea {
