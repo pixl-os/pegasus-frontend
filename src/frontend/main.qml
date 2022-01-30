@@ -869,7 +869,7 @@ Window {
 
     Timer {//timer to download last versions
         id: repoStatusRefreshTimer
-        interval: 60000 * 15 // Check every 15 minutes and at start
+        interval: 60000 * 30 // Check every 30 minutes and at start
         repeat: true
         running: true
         triggeredOnStart: true
@@ -879,6 +879,7 @@ Window {
                 api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoUrl);
             }
             //start timer to check one minute later the result
+            jsonStatusRefreshTimer.running = false;
             jsonStatusRefreshTimer.running = true;
         }
     }
