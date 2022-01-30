@@ -208,7 +208,7 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, co
 
         //compare with version install using date of installation for the moment (date of "modifying" for file on file system)
         //may be use a manifest file in the future
-        QString existingVersion;
+        QString existingVersion = "";
         //QString existingDate;
         QList<int> existingVersionNumbers;
         QList<int> newVersionNumbers;
@@ -438,7 +438,7 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(const QString componentName)
             m_versions[i].m_prerealease = array_entry[QL1("prerelease")].toBool();
             m_versions[i].m_created_at = array_entry[QL1("created_at")].toString();
             m_versions[i].m_published_at = array_entry[QL1("published_at")].toString();
-            m_versions[i].m_body = array_entry[QL1("body")].toString();
+            m_versions[i].m_body = array_entry[QL1("body")].toString().replace("\r","");
 
             //reading of assets
             const auto assets = array_entry[QL1("assets")].toArray();
