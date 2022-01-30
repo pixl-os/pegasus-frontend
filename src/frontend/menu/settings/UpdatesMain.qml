@@ -231,10 +231,10 @@ FocusScope {
 
                         note: entry !== null ? ( qsTr("Size") + " : " + entry.size +  " / " + qsTr("Published at") + " : " + entry.publishedAt) : "";
                         icon: ""
-                        icon2: item.icon
+                        icon2: item.icon !== "" ? item.icon : entry.icon
                         //will be displayed when selected and not selected
-                        icon2_forced_display: true
-                        picture: item.picture
+                        icon2_forced_display: picture === "" ? true : false
+                        picture: item.picture !== "" ? item.picture : entry.picture
                         //first column - if empty that is not used
                         //detailed_line1: qsTr("Size") + " : " + api.tr;
                         //detailed_line2: entry.isPreRelease ? qsTr("Pre-released") + " : " + api.tr : "";
@@ -256,7 +256,7 @@ FocusScope {
                         onActivate: {
                                 //to display logo of this room
                                 confirmDialog.componentText = label;
-                                confirmDialog.componentLogo = item.icon;
+                                confirmDialog.componentLogo = icon2;
                                 confirmDialog.focus = false;
                                 confirmDialog.active = true;
                                 //Save action states for later

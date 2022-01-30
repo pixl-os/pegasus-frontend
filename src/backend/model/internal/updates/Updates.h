@@ -48,6 +48,8 @@ struct UpdateEntry {
       Q_PROPERTY(QString publishedAt MEMBER m_published_at)     //from repo json "published_at": "2022-01-01T18:34:04Z",
       Q_PROPERTY(QString releaseNote MEMBER m_body) //from repo json "body": "## What's new in this version ? (included in pixL-Beta19)\r\n...
       //from asset
+      Q_PROPERTY(QString icon MEMBER m_icon)
+      Q_PROPERTY(QString picture MEMBER m_picture)
       Q_PROPERTY(int size MEMBER m_size) //get size of the update, if several files, all sizes will be added to have the full size in this value.
 
 
@@ -61,6 +63,9 @@ public:
       QString m_created_at;
       QString m_published_at;
       QString m_body;
+      //if available from repo
+      QString m_icon;
+      QString m_picture;
       int m_size; //to have the total size
 
       //for asset
