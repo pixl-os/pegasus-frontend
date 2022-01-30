@@ -229,7 +229,27 @@ FocusScope {
                         label: entry !== null ? (entry.componentName + " / " + entry.tagName) + (entry.isPreRelease ? " / " + qsTr("Pre-released") + api.tr : "") : ""
                         //label_color: "white"
 
-                        note: entry !== null ? ( qsTr("Size") + " : " + entry.size +  " / " + qsTr("Published at") + " : " + entry.publishedAt) : "";
+                        note: {
+                            if(entry !== null){
+                                // calculate unit of size
+                                var size = entry.size;
+                                let unit;
+                                if (size < 1024) {
+                                    unit = qsTr("bytes") + api.tr;
+                                } else if (size < 1024*1024) {
+                                    size /= 1024;
+                                    unit = qsTr("KB") + api.tr;
+                                } else {
+                                    size /= 1024*1024;
+                                    unit = qsTr("MB") + api.tr;
+                                }
+                                size = size.toFixed(2);
+                                return qsTr("Size") + " : " + size + " " + unit + " - " + qsTr("Published at") + " : " + entry.publishedAt;
+                            }
+                            else{
+                                return "";
+                            }
+                        }
                         icon: ""
                         icon2: item.icon !== "" ? item.icon : entry.icon
                         //will be displayed when selected and not selected
