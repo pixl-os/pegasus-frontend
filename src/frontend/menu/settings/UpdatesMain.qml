@@ -227,7 +227,6 @@ FocusScope {
 
                         // label used with default color
                         label: entry !== null ? (entry.componentName + " / " + entry.tagName) + (entry.isPreRelease ? " / " + qsTr("Pre-released") + api.tr : "") : ""
-                        //label_color: "white"
 
                         note: {
                             if(entry !== null){
@@ -256,22 +255,7 @@ FocusScope {
                         icon2_forced_display: picture === "" ? true : false
                         picture: item.picture !== "" ? item.picture : entry.picture
                         //first column - if empty that is not used
-                        //detailed_line1: qsTr("Size") + " : " + api.tr;
-                        //detailed_line2: entry.isPreRelease ? qsTr("Pre-released") + " : " + api.tr : "";
-                        //detailed_line3: entry.isDraft ? qsTr("Draft") + " : " + api.tr : "";
-                        detailed_line4: "" //qsTr("Description") + " : " + api.tr;
-                        detailed_line5: ""
-                        detailed_line6: ""
-                        detailed_line7: ""
-                        detailed_line8: ""
                         detailed_description: entry.releaseNote;
-                        //second column - if empty that is not used
-                        //detailed_line9: entry.size;
-                        //detailed_line10: entry.isPreRelease ? qsTr("Yes") + api.tr : "";
-                        //detailed_line11: entry.isDraft ? qsTr("Yes") + api.tr : "";
-                        detailed_line12: ""
-                        detailed_line13: ""
-
                         focus: index === 0 ? true : false
                         onActivate: {
                                 //to display logo of this room
