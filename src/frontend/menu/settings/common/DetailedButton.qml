@@ -365,7 +365,7 @@ FocusScope {
             PegasusUtils.AutoScroll
             {
                 id: autoscroll
-                width: parent.width - (horizontalPadding * 2)  - screenshotContainer.width
+                width: parent.width - (horizontalPadding *2) - picture.paintedWidth
                 height: root.focus ? detailPartHeight : 0
                 Text{
                     id: scrolltext
