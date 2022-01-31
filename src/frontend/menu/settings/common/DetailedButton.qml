@@ -361,24 +361,31 @@ FocusScope {
                     visible: text !== "" ? true : false
                 }
             }
-            // Description
-            PegasusUtils.AutoScroll
-            {
-                id: autoscroll
-                width: parent.width - (horizontalPadding *2) - picture.paintedWidth
-                height: root.focus ? detailPartHeight : 0
-                Text{
-                    id: scrolltext
-                    color: themeColor.textSublabel
-                    font.pixelSize: fontSize * 0.8
-                    font.family: globalFonts.awesome
-                    font.italic: true
+            Rectangle {
+                color: themeColor.secondary
+                width: (root.focus && (scrolltext.text !== "")) ? (parent.width - (horizontalPadding *3) - picture.paintedWidth) : 0
+                height: (root.focus && (scrolltext.text !== "")) ? parent.height : 0
+                radius: vpx(10)
+                clip: true
+                // Description
+                PegasusUtils.AutoScroll
+                {
+                    id: autoscroll
                     width: parent.width
-                    //the 'Width' setting generate Binding loop detection for property "contentWidth" from Autoscroll !
-                    //no way to avoid the warning for the moment ;-)
-                    visible: (text !== "") && root.focus ? true : false
-                    elide: Text.ElideRight
-                    wrapMode: Text.WordWrap
+                    height: parent.height
+                    Text{
+                        id: scrolltext
+                        color: themeColor.textValue
+                        font.pixelSize: fontSize * 0.8
+                        font.family: globalFonts.awesome
+                        font.italic: true
+                        width: parent.width
+                        //the 'Width' setting generate Binding loop detection for property "contentWidth" from Autoscroll !
+                        //no way to avoid the warning for the moment ;-)
+                        visible: (text !== "") && root.focus ? true : false
+                        elide: Text.ElideRight
+                        wrapMode: Text.WordWrap
+                    }
                 }
             }
         }
