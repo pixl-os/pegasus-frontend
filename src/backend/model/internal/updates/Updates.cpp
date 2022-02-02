@@ -24,6 +24,10 @@
 #include <QEventLoop>
 #include <QElapsedTimer>
 
+//for RunProcess, just use script manager
+#include "ScriptManager.h"
+
+
 namespace {
 
 bool isNewVersion(QList<int> existingVersionNumbers, QList<int> newVersionNumbers){
@@ -129,6 +133,7 @@ void saveJson(QJsonDocument document, QString fileName) {
     jsonFile.write(document.toJson());
 }
 
+
 } // namespace
 
 namespace model {
@@ -137,7 +142,7 @@ Updates::Updates(QObject* parent)
 {
     //Custom Type declaration to manage all structure ;-)
     qRegisterMetaType<UpdateEntry>();
-    qRegisterMetaType<Assets>();
+    qRegisterMetaType<UpdateAssets>();
     qRegisterMetaType<UpdateStatus>();
 }
 
@@ -277,7 +282,6 @@ UpdateEntry Updates::componentVersionDetails(const QString componentName, const 
 }
 //Asynchronous function to install a component
 void Updates::launchComponentInstallation(const QString componentName, const QString version){
-
     Log::debug(log_tag, LOGMSG("launchComponentInstallation for: %1 in version: %2\n").arg(componentName,version));
     QList <UpdateEntry> m_versions;
     //get data of update/versions and store in QList<UpdateEntry>
@@ -298,9 +302,9 @@ void Updates::launchComponentInstallation(const QString componentName, const QSt
         }
         else{
             //get urls
-            Assets zipAsset;
+            UpdateAssets zipAsset;
             zipAsset.m_name_asset = "";
-            Assets installationScriptAsset;
+            UpdateAssets installationScriptAsset;
             installationScriptAsset.m_name_asset = "";
             for(int j = 0;j < m_versions[versionIndex].m_assets.count();j++){
                 if(m_versions[versionIndex].m_assets[j].m_download_url.endsWith(".zip",Qt::CaseInsensitive)){
@@ -315,7 +319,7 @@ void Updates::launchComponentInstallation(const QString componentName, const QSt
             if((zipAsset.m_name_asset != "") && (installationScriptAsset.m_name_asset != "")){
                 //launch installation
                 QMetaObject::invokeMethod(this,"launchComponentInstallation_slot", Qt::QueuedConnection,
-                                          Q_ARG(QString,componentName),Q_ARG(Assets, zipAsset),Q_ARG(Assets, installationScriptAsset));
+                                          Q_ARG(QString,componentName),Q_ARG(UpdateAssets, zipAsset),Q_ARG(UpdateAssets, installationScriptAsset));
             }
             else
             {
@@ -327,7 +331,7 @@ void Updates::launchComponentInstallation(const QString componentName, const QSt
 }
 
 //void Updates::launchComponentInstallation_slot(const QString componentName, const QString zipUrl, const QString installationScriptUrl){
-void Updates::launchComponentInstallation_slot(const QString componentName, const Assets zipAsset, const Assets installationScriptAsset){
+void Updates::launchComponentInstallation_slot(const QString componentName, const UpdateAssets zipAsset, const UpdateAssets installationScriptAsset){
 
     //check and create directory if needed
     QString diretoryPath = "/tmp/" + componentName;
@@ -346,7 +350,7 @@ void Updates::launchComponentInstallation_slot(const QString componentName, cons
 
     //set update to for follow-up
     if(foundIndex == -1){
-        m_updates.append({componentName,0.01,"",downloaderIndex});
+        m_updates.append({componentName,0.01,"",downloaderIndex,0});
         foundIndex = m_updates.count()-1;
         //increase index for later
         downloaderIndex = downloaderIndex + 1;
@@ -357,6 +361,7 @@ void Updates::launchComponentInstallation_slot(const QString componentName, cons
     else{
         m_updates[foundIndex].m_installationProgress = 0.01;
         m_updates[foundIndex].m_installationStatus = "";
+        m_updates[foundIndex].m_installationStep = 0;
     }
 
     //first download zip & script file + clear before to use or reuse the slot
@@ -365,12 +370,37 @@ void Updates::launchComponentInstallation_slot(const QString componentName, cons
     downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
 
     //do loop on connect to wait download in this case
+    m_updates[foundIndex].m_installationStep = 1;
     QEventLoop loop;
     QObject::connect(&downloadManager[0], &DownloadManager::finished, &loop, &QEventLoop::quit);
     loop.exec();
+    Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
 
-    //launch installation,
-    //TO DO
+    //launch installation after download
+    m_updates[foundIndex].m_installationStep = 2;
+    if(installationScriptAsset.m_name_asset.endsWith(".sh")){
+        //launch shell script
+        //TO DO
+        //ScriptManager::Instance().RunProcess(,"",false,false);
+        //If OK
+        m_updates[foundIndex].m_installationStep = 3;
+        //or Reboot if needed
+        m_updates[foundIndex].m_installationStep = 4;
+
+    }
+    else if(installationScriptAsset.m_name_asset.endsWith(".py")){
+        //launch python script
+        //To Do
+        //If OK
+        m_updates[foundIndex].m_installationStep = 3;
+        //or Reboot if needed
+        m_updates[foundIndex].m_installationStep = 4;
+
+    }
+    else{
+        //not supported format
+        m_updates[foundIndex].m_installationStep = 5;
+    }
 }
 
 //Function to know status - as "Download", "Installation", "Completed" or "error"

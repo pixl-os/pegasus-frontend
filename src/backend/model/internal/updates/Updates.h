@@ -13,14 +13,14 @@
 
 const int MAX_DOWNLOADER = 20;
 
-struct Assets {
+struct UpdateAssets {
     QString m_name_asset;
     QString m_created_at_asset;
     QString m_published_at_asset;
     int m_size;
     QString m_download_url;
 };
-Q_DECLARE_METATYPE(Assets)
+Q_DECLARE_METATYPE(UpdateAssets)
 
 struct UpdateStatus {
     Q_GADGET
@@ -28,12 +28,14 @@ struct UpdateStatus {
     Q_PROPERTY(float installationProgress MEMBER m_installationProgress);
     Q_PROPERTY(QString installationStatus MEMBER m_installationStatus)  //Name provided during "getRepoInfo" as reference
     Q_PROPERTY(int downloaderIndex MEMBER m_downloaderIndex);
+    Q_PROPERTY(int installationStep MEMBER m_installationStep);
 
 public:
     QString m_componentName;
     float m_installationProgress;
     QString m_installationStatus;
     int m_downloaderIndex;
+    int m_installationStep; //0: not started, 1: download files under progress, 2: installation under progress, 3: done, 4:need reboot, 5:issue to download/install
 };
 Q_DECLARE_METATYPE(UpdateStatus)
 
@@ -69,7 +71,7 @@ public:
       int m_size; //to have the total size
 
       //for asset
-      QList <Assets> m_assets;
+      QList <UpdateAssets> m_assets;
 
       //flag if update detected
       bool m_hasanyupdate = false;
@@ -113,7 +115,7 @@ private slots:
     //to have thread to download JSON file from repo
     void getRepoInfo_slot(QString componentName, QString repoUrl);
     //to have thread to download ZIP file/Script and to install the new component
-    void launchComponentInstallation_slot(const QString componentName, const Assets zipAsset, const Assets installationScriptAsset);
+    void launchComponentInstallation_slot(const QString componentName, const UpdateAssets zipAsset, const UpdateAssets installationScriptAsset);
 
 public:
 
