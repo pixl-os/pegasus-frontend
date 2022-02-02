@@ -97,6 +97,14 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param actionParameters Optional action parameters
      */
     void Notify(Notification action, const std::string& actionParameters) { Notify(nullptr, action, actionParameters); }
+
+    /*!
+     * @brief Run the target using the given arguments.
+     * The target is run aither natively or using python or sh regarding the target extension
+     * @param target executable/scriupt to run
+     * @param arguments arguments passed to the target
+     */
+    void RunProcess(const Path& target, const Strings::Vector& arguments, bool synchronous, bool permanent);
     
   private:
     /*!
@@ -275,14 +283,6 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param param Optional action parameter
      */
     void RunScripts(Notification action, const std::string& param);
-
-    /*!
-     * @brief Run the target using the given arguments.
-     * The target is run aither natively or using python or sh regarding the target extension
-     * @param target executable/scriupt to run
-     * @param arguments arguments passed to the target
-     */
-    void RunProcess(const Path& target, const Strings::Vector& arguments, bool synchronous, bool permanent);
 
     /*!
      * @brief Build es_state.info Common information into output string
