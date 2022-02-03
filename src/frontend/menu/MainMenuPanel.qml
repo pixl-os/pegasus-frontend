@@ -208,7 +208,7 @@ FocusScope {
                     KeyNavigation.down: mbQuitShutdown
                 }
             ]
-            KeyNavigation.down: mbAccountSettings
+            KeyNavigation.down: api.internal.updates.hasAnyUpdate() ? mbUpdates : mbAccountSettings
         }
     }
     PegasusUtils.HorizontalSwipeArea {
