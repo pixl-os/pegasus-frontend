@@ -25,6 +25,7 @@
 #include <QElapsedTimer>
 
 //for RunProcess, just use script manager
+#include <utils/Files.h>
 #include "ScriptManager.h"
 
 
@@ -49,8 +50,24 @@ bool isNewVersion(QList<int> existingVersionNumbers, QList<int> newVersionNumber
     return false;
 }
 
-//function to extract version from any string
-QList<int> getVersionNumbers(const QString versionString){
+QString getExistingRawVersion(const QString componentName, const QString versionScript){
+    QString existingVersion = "";
+
+    //For specific component, we check version from pegasus directly as Pegasus-frontend itself
+    if(componentName.toLower() == "pegasus-frontend"){
+        //get internal version of Pegasus
+        existingVersion = QStringLiteral(GIT_REVISION);
+    }
+    else
+    {
+        //for other case, the getting of the version could be different and using a script
+        //read assets to find the script for that
+    }
+    return existingVersion;
+}
+
+//function to extract "test" version from any string
+QString getVersionString(const QString rawVersion){
     //folloxing this rules
     //version should start by '-v' (lower case)
     //finish by '-' or nothing
@@ -65,15 +82,24 @@ QList<int> getVersionNumbers(const QString versionString){
 
     QRegularExpression regex("(-v|v)(\\d+.*?)(-|\\s|$)");// to get between "v" or "-v" and ("-" or end of line or space)
 
-    QRegularExpressionMatch match = regex.match(versionString);
+    QRegularExpressionMatch match = regex.match(rawVersion);
+    Log::debug("getVersionNumbers", LOGMSG("versionString: %1").arg(rawVersion));
+    if (match.hasMatch()) {
+        Log::debug("getVersionString", LOGMSG("match.captured(2): %1").arg(match.captured(2)));
+        return match.captured(2);
+    }
+    else return ""; // return empty string if not matching
+}
+
+
+//function to extract version from any string
+QList<int> getVersionNumbers(const QString rawVersion){
+    QString versionString = getVersionString(rawVersion);
     QList<int> versionNumbers = {};
     Log::debug("getVersionNumbers", LOGMSG("versionString: %1").arg(versionString));
-    if (match.hasMatch()) {
-        Log::debug("getVersionNumbers", LOGMSG("match.captured(2): %1").arg(match.captured(2)));
-        QStringList splits = match.captured(2).split(".");
-        for(int i = 0; i < splits.count(); i++){
-            versionNumbers.append(splits.at(i).toInt());
-        }
+    QStringList splits = versionString.split(".");
+    for(int i = 0; i < splits.count(); i++){
+        versionNumbers.append(splits.at(i).toInt());
     }
     return versionNumbers; // return each number of version in QList<int> or empty one if no version found
 }
@@ -133,7 +159,6 @@ void saveJson(QJsonDocument document, QString fileName) {
     jsonFile.write(document.toJson());
 }
 
-
 } // namespace
 
 namespace model {
@@ -174,6 +199,7 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
         Log::error(log_tag, LOGMSG("Error: %1.\n").arg(Exp.what()));
     }
 }
+
 //function to select version depending "Beta flag"
 int Updates::selectVersionIndex(QList <UpdateEntry> m_versions, const bool betaIncluded){
     //search index of version selected depeding of betaIncluded or not.
@@ -192,6 +218,7 @@ int Updates::selectVersionIndex(QList <UpdateEntry> m_versions, const bool betaI
     }
     return versionIndex;
 }
+
 //function to check if any updates is available using /tmp
 bool Updates::hasAnyUpdate(){
     return m_hasanyupdate;
@@ -211,32 +238,10 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, co
             return false;
         }
 
-        //compare with version install using date of installation for the moment (date of "modifying" for file on file system)
-        //may be use a manifest file in the future
-        QString existingVersion = "";
-        //QString existingDate;
-        QList<int> existingVersionNumbers;
-        QList<int> newVersionNumbers;
-        //For specific component, we check version from pegasus directly as Pegasus-frontend itself
-        if(componentName.toLower() == "pegasus-frontend"){
-            //get internal version of Pegasus
-            existingVersion = QStringLiteral(GIT_REVISION);
-            //no check of date for the moment
-            //existingDate = QStringLiteral(GIT_DATE);
-            //may be to do for beta ?!
-        }
-        else
-        {
-            //for other case, the getting of the version could be different and using a script
-            //read assets to find the script for that
-
-
-        }
-
-        existingVersionNumbers = getVersionNumbers(existingVersion);
-
-        newVersionNumbers = getVersionNumbers(m_versions[versionIndex].m_tag_name);
-
+        //compare with version install
+        QString existingVersion = getExistingRawVersion(componentName,""); //no usage of script for the moment
+        QList<int> existingVersionNumbers = getVersionNumbers(existingVersion);
+        QList<int> newVersionNumbers = getVersionNumbers(m_versions[versionIndex].m_tag_name);
         if(isNewVersion(existingVersionNumbers, newVersionNumbers)){
             m_hasanyupdate = true;
             return true;
@@ -244,6 +249,7 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, co
     }
     return false;//no file or issue or no update ;-)
 }
+
 //function to get details from last "available" update (and only if available)
 UpdateEntry Updates::updateDetails(const QString componentName, const bool betaIncluded){
     UpdateEntry Empty;
@@ -272,17 +278,26 @@ UpdateEntry Updates::updateDetails(const QString componentName, const bool betaI
     }
     return Empty;//no file or issue or no update ;-)
 }
+
 //function to return the number of version available
 int Updates::componentVersionsCount(const QString componentName){
-
 }
+
 //function to get any version details using index
 UpdateEntry Updates::componentVersionDetails(const QString componentName, const int index){
 
 }
+
 //Asynchronous function to install a component
 void Updates::launchComponentInstallation(const QString componentName, const QString version){
     Log::debug(log_tag, LOGMSG("launchComponentInstallation for: %1 in version: %2\n").arg(componentName,version));
+    //launch installation
+    QMetaObject::invokeMethod(this,"launchComponentInstallation_slot", Qt::QueuedConnection,
+                              Q_ARG(QString,componentName),Q_ARG(QString,version));
+}
+
+//void Updates::launchComponentInstallation_slot(const QString componentName, const QString zipUrl, const QString installationScriptUrl){
+void Updates::launchComponentInstallation_slot(const QString componentName, const QString version){
     QList <UpdateEntry> m_versions;
     //get data of update/versions and store in QList<UpdateEntry>
     m_versions = parseJsonComponentFile(componentName);
@@ -296,110 +311,108 @@ void Updates::launchComponentInstallation(const QString componentName, const QSt
                break;// to stop search
             }
         }
-        Log::debug(log_tag, LOGMSG("launchComponentInstallation , version index: %1\n").arg(QString::number(versionIndex)));
-        if(versionIndex == -1){
-            //TO DO: add a error status and progress for this component installation
-        }
-        else{
+        Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot , version index: %1\n").arg(QString::number(versionIndex)));
+        if(versionIndex != -1){
             //get urls
             UpdateAssets zipAsset;
             zipAsset.m_name_asset = "";
             UpdateAssets installationScriptAsset;
             installationScriptAsset.m_name_asset = "";
+            UpdateAssets versionScriptAsset;
+            versionScriptAsset.m_name_asset = "";
+
             for(int j = 0;j < m_versions[versionIndex].m_assets.count();j++){
-                if(m_versions[versionIndex].m_assets[j].m_download_url.endsWith(".zip",Qt::CaseInsensitive)){
+                //if it's a zip file, we consider that's the package to download
+                if(m_versions[versionIndex].m_assets[j].m_name_asset.endsWith(".zip",Qt::CaseInsensitive)){
                     zipAsset = m_versions[versionIndex].m_assets[j];
-                }
-                else if(m_versions[versionIndex].m_assets[j].m_download_url.endsWith(".sh",Qt::CaseInsensitive) ||
-                m_versions[versionIndex].m_assets[j].m_download_url.endsWith(".py",Qt::CaseInsensitive)){
+                }//if it's a file with "install.", we consider that it will be the script for installation
+                else if(m_versions[versionIndex].m_assets[j].m_name_asset.startsWith("install.",Qt::CaseInsensitive)){
                     installationScriptAsset = m_versions[versionIndex].m_assets[j];
+                }//if it's a file with "version.", we consider that it will be the script for checking of existing version
+                else if(m_versions[versionIndex].m_assets[j].m_name_asset.startsWith("version.",Qt::CaseInsensitive)){
+                    versionScriptAsset = m_versions[versionIndex].m_assets[j];
+                }
+
+            }
+            //prepare version also
+            QString rawVersion = getExistingRawVersion(componentName,versionScriptAsset.m_name_asset); //no usage of script for the moment
+            QString existingVersion = getVersionString(rawVersion);
+            QString newVersion = getVersionString(version);
+
+            //check if valid (at minimum to have a package and an installation script and with an existing version)
+            if((zipAsset.m_name_asset != "") && (installationScriptAsset.m_name_asset != "") && (existingVersion != "")){
+
+                //check and create directory if needed
+                QString diretoryPath = "/tmp/" + componentName;
+                if(!QDir(diretoryPath).exists()) {
+                    //create it
+                    QDir().mkdir(diretoryPath);
+                }
+
+                //check if update already exists
+                int foundIndex = -1;
+                for(int i=0;i<m_updates.count();i++){
+                    if(m_updates[i].m_componentName == componentName){
+                        foundIndex = i;
+                        break;
+                    }
+                }
+
+                //folloxing this rules
+                //set update to for follow-up
+                if(foundIndex == -1){
+                    m_updates.append({componentName,0.01,"",downloaderIndex,0});
+                    foundIndex = m_updates.count()-1;
+                    //increase index for later
+                    downloaderIndex = downloaderIndex + 1;
+                    if(downloaderIndex == MAX_DOWNLOADER){
+                        downloaderIndex = 0; //reset to 0 to do the loop
+                    }
+                }
+                else{
+                    m_updates[foundIndex].m_installationProgress = 0.01;
+                    m_updates[foundIndex].m_installationStatus = "";
+                    m_updates[foundIndex].m_installationStep = 0;
+                }
+
+                //first download zip & script file + clear before to use or reuse the slot
+                downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
+                downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
+                downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
+
+                //do loop on connect to wait download in this case
+                m_updates[foundIndex].m_installationStep = 1;
+                QEventLoop loop;
+                QObject::connect(&downloadManager[0], &DownloadManager::finished, &loop, &QEventLoop::quit);
+                loop.exec();
+                Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
+
+                //launch installation after download
+                m_updates[foundIndex].m_installationStep = 2;
+
+                //launch installation script
+                // Build parameters
+                Strings::Vector args;
+                args.push_back("-e");
+                args.push_back(QString(existingVersion).toStdString());
+                args.push_back("-n");
+                args.push_back(QString(newVersion).toStdString());
+                args.push_back("-c");
+                args.push_back(QString(componentName).toStdString());
+
+                //prepare script to run
+                const Path path = Path(QString(diretoryPath + "/" + installationScriptAsset.m_name_asset).toStdString());
+                const ScriptManager::ScriptData script = { path, Notification::None , true };
+                ScriptManager::Instance().RunProcess(script.mPath,args,script.mSync,false);
+                //Check if OK and no error during installation
+                if(getInstallationError(componentName) == 0){
+                    m_updates[foundIndex].m_installationStep = 3; //installation finish
+                }
+                else{
+                    m_updates[foundIndex].m_installationStep = 4; //installation finish on error
                 }
             }
-            //check if valid
-            if((zipAsset.m_name_asset != "") && (installationScriptAsset.m_name_asset != "")){
-                //launch installation
-                QMetaObject::invokeMethod(this,"launchComponentInstallation_slot", Qt::QueuedConnection,
-                                          Q_ARG(QString,componentName),Q_ARG(UpdateAssets, zipAsset),Q_ARG(UpdateAssets, installationScriptAsset));
-            }
-            else
-            {
-                //TO DO: add a error status and progress for this component installation
-            }
         }
-    }
-    //TO DO: add a error status and progress for this component installation
-}
-
-//void Updates::launchComponentInstallation_slot(const QString componentName, const QString zipUrl, const QString installationScriptUrl){
-void Updates::launchComponentInstallation_slot(const QString componentName, const UpdateAssets zipAsset, const UpdateAssets installationScriptAsset){
-
-    //check and create directory if needed
-    QString diretoryPath = "/tmp/" + componentName;
-    if(!QDir(diretoryPath).exists()) {
-        //create it
-        QDir().mkdir(diretoryPath);
-    }
-    //check if update already exists
-    int foundIndex = -1;
-    for(int i=0;i<m_updates.count();i++){
-        if(m_updates[i].m_componentName == componentName){
-            foundIndex = i;
-            break;
-        }
-    }
-
-    //set update to for follow-up
-    if(foundIndex == -1){
-        m_updates.append({componentName,0.01,"",downloaderIndex,0});
-        foundIndex = m_updates.count()-1;
-        //increase index for later
-        downloaderIndex = downloaderIndex + 1;
-        if(downloaderIndex == MAX_DOWNLOADER){
-            downloaderIndex = 0; //reset to 0 to do the loop
-        }
-    }
-    else{
-        m_updates[foundIndex].m_installationProgress = 0.01;
-        m_updates[foundIndex].m_installationStatus = "";
-        m_updates[foundIndex].m_installationStep = 0;
-    }
-
-    //first download zip & script file + clear before to use or reuse the slot
-    downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
-    downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
-    downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
-
-    //do loop on connect to wait download in this case
-    m_updates[foundIndex].m_installationStep = 1;
-    QEventLoop loop;
-    QObject::connect(&downloadManager[0], &DownloadManager::finished, &loop, &QEventLoop::quit);
-    loop.exec();
-    Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
-
-    //launch installation after download
-    m_updates[foundIndex].m_installationStep = 2;
-    if(installationScriptAsset.m_name_asset.endsWith(".sh")){
-        //launch shell script
-        //TO DO
-        //ScriptManager::Instance().RunProcess(,"",false,false);
-        //If OK
-        m_updates[foundIndex].m_installationStep = 3;
-        //or Reboot if needed
-        m_updates[foundIndex].m_installationStep = 4;
-
-    }
-    else if(installationScriptAsset.m_name_asset.endsWith(".py")){
-        //launch python script
-        //To Do
-        //If OK
-        m_updates[foundIndex].m_installationStep = 3;
-        //or Reboot if needed
-        m_updates[foundIndex].m_installationStep = 4;
-
-    }
-    else{
-        //not supported format
-        m_updates[foundIndex].m_installationStep = 5;
     }
 }
 
@@ -407,13 +420,22 @@ void Updates::launchComponentInstallation_slot(const QString componentName, cons
 QString Updates::getInstallationStatus(const QString componentName){
     for(int i = 0;i < m_updates.count();i++){
         if(m_updates[i].m_componentName == componentName){
-            if(downloadManager[m_updates[i].m_downloaderIndex].statusSpeed != ""){
-                return downloadManager[m_updates[i].m_downloaderIndex].statusMessage + " - " +
-                       downloadManager[m_updates[i].m_downloaderIndex].statusSpeed;
-
-            }else{
-                return downloadManager[m_updates[i].m_downloaderIndex].statusMessage;
-
+            if(m_updates[i].m_installationStep == 1){//if we are downloading...
+                if(downloadManager[m_updates[i].m_downloaderIndex].statusSpeed != ""){
+                    return downloadManager[m_updates[i].m_downloaderIndex].statusMessage + " - " +
+                           downloadManager[m_updates[i].m_downloaderIndex].statusSpeed;
+                }else{
+                    return downloadManager[m_updates[i].m_downloaderIndex].statusMessage;
+                }
+            }
+            else if(m_updates[i].m_installationStep >= 2){//if we are installing... and more
+               //return content of file /tmp/componentName/install.log
+                QFile installFile("/tmp/" + componentName + "/install.log");
+                if (installFile.open(QFile::ReadOnly | QFile::Text)) {
+                   QTextStream stream(&installFile);
+                   QString line = stream.readAll();
+                   return line;
+                }
             }
         }
     }
@@ -424,10 +446,42 @@ QString Updates::getInstallationStatus(const QString componentName){
 float Updates::getInstallationProgress(const QString componentName){
     for(int i = 0;i < m_updates.count();i++){
         if(m_updates[i].m_componentName == componentName){
-            return downloadManager[m_updates[i].m_downloaderIndex].statusProgress;
+            if(m_updates[i].m_installationStep == 1){//if we are downloading...
+                return downloadManager[m_updates[i].m_downloaderIndex].statusProgress;
+            }
+            else if(m_updates[i].m_installationStep >= 2){//if we are installing...
+                //return content of file /tmp/componentName/progress.log
+                QFile progressFile("/tmp/" + componentName + "/progress.log");
+                if (progressFile.open(QFile::ReadOnly | QFile::Text)) {
+                   QTextStream stream(&progressFile);
+                   QString line = stream.readAll();
+                   return line.toFloat();
+                }
+                else return 0.1;
+            }
         }
     }
     return 0.0;
+}
+
+int Updates::getInstallationError(const QString componentName){
+    for(int i = 0;i < m_updates.count();i++){
+        if(m_updates[i].m_componentName == componentName){
+            if(m_updates[i].m_installationStep == 1){
+                return 0; //no error code manage during this step at the moment
+            }
+            else if(m_updates[i].m_installationStep >= 2){//if we are installing...and more.
+               //return content of file /tmp/componentName/install.err
+                QFile installFile("/tmp/" + componentName + "/install.err");
+                if (installFile.open(QFile::ReadOnly | QFile::Text)) {
+                   QTextStream stream(&installFile);
+                   QString line = stream.readAll();
+                   return line.toInt();
+                }
+            }
+        }
+    }
+    return 0;
 }
 
 QList <UpdateEntry> Updates::parseJsonComponentFile(const QString componentName)

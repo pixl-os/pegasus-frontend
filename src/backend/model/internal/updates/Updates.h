@@ -35,7 +35,7 @@ public:
     float m_installationProgress;
     QString m_installationStatus;
     int m_downloaderIndex;
-    int m_installationStep; //0: not started, 1: download files under progress, 2: installation under progress, 3: done, 4:need reboot, 5:issue to download/install
+    int m_installationStep; //0: not started, 1: download files under progress, 2: installation under progress, 3: done, 4:issue to download/install
 };
 Q_DECLARE_METATYPE(UpdateStatus)
 
@@ -104,6 +104,8 @@ public:
     Q_INVOKABLE QString getInstallationStatus(const QString componentName);
     //Fucntion to know progress of each installation steps
     Q_INVOKABLE float getInstallationProgress(const QString componentName); //provide pourcentage of downlaod and installation
+    //Function to know if error during installation step
+    Q_INVOKABLE int getInstallationError(const QString componentName); //provide code from 0 to 3 - 0=no error
 
 private:
     QList <UpdateEntry> parseJsonComponentFile(const QString componentName);
@@ -115,7 +117,7 @@ private slots:
     //to have thread to download JSON file from repo
     void getRepoInfo_slot(QString componentName, QString repoUrl);
     //to have thread to download ZIP file/Script and to install the new component
-    void launchComponentInstallation_slot(const QString componentName, const UpdateAssets zipAsset, const UpdateAssets installationScriptAsset);
+    void launchComponentInstallation_slot(const QString componentName, const QString version);
 
 public:
 
