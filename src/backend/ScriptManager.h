@@ -49,6 +49,15 @@ DEFINE_BITFLAG_ENUM(Notification, int)
 class ScriptManager : public StaticLifeCycleControler<ScriptManager>
 {
   public:
+    /*!
+     * @brief Script data
+     */
+    struct ScriptData
+    {
+      Path         mPath;      //!< Script path
+      Notification mFilter;    //!< Bitflag of notifications this script must reply to
+      bool         mSync;      //!< RunSynchronously?
+    };
 
     /*!
      * @brief Default constructor
@@ -107,15 +116,6 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
     void RunProcess(const Path& target, const Strings::Vector& arguments, bool synchronous, bool permanent);
     
   private:
-    /*!
-     * @brief Script data
-     */
-    struct ScriptData
-    {
-      Path         mPath;      //!< Script path
-      Notification mFilter;    //!< Bitflag of notifications this script must reply to
-      bool         mSync;      //!< RunSynchronously?
-    };
 
     //! Shortcut :)
     typedef std::vector<ScriptData> ScriptList;
