@@ -82,6 +82,7 @@ FocusScope {
     //for progress bar
     property real progress: 0.0
     property string progressStatus: ""
+    property int errorCode: 0
 
 
     Behavior on progress { NumberAnimation {} }
@@ -431,7 +432,7 @@ FocusScope {
              visible: (root.progress > 0.0) ? true : false
              clip: true
              Image {
-                 source: "../../../assets/pbar.png"
+                 source: ((root.errorCode <= 0) && (root.progress < 1.0)) ? "../../../assets/pbar.png" : ((root.errorCode <= 0) && (root.progress === 1.0)) ? "../../../assets/pbar-green.png" : "../../../assets/pbar-red.png"
 
                  property int animatedWidth: 0
                  width: parent.width + animatedWidth

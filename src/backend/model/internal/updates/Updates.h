@@ -105,7 +105,7 @@ public:
     //Fucntion to know progress of each installation steps
     Q_INVOKABLE float getInstallationProgress(const QString componentName); //provide pourcentage of downlaod and installation
     //Function to know if error during installation step
-    Q_INVOKABLE int getInstallationError(const QString componentName); //provide code from 0 to 3 - 0=no error
+    Q_INVOKABLE int getInstallationError(const QString componentName); //provide code from -2 to 3 / 0 : no error / >0: errors/need retry / -1: need restart / -2: need reboot
 
 private:
     QList <UpdateEntry> parseJsonComponentFile(const QString componentName);

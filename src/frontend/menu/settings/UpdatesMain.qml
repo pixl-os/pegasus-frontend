@@ -177,6 +177,8 @@ FocusScope {
                             //console.log("availableUpdates.itemAt(i).progressStatus : ",availableUpdates.itemAt(i).progressStatus);
                             availableUpdates.itemAt(i).progress = api.internal.updates.getInstallationProgress(item.componentName);
                             //console.log("availableUpdates.itemAt(i).progress : ",availableUpdates.itemAt(i).progress);
+                            availableUpdates.itemAt(i).errorCode = api.internal.updates.getInstallationError(item.componentName);
+                            //console.log("availableUpdates.itemAt(i).errorCode : ",availableUpdates.itemAt(i).errorCode);
                         }
                     }
                 }
@@ -216,6 +218,7 @@ FocusScope {
                         //progress bar and status
                         progress: 0.0
                         progressStatus: ""
+                        errorCode: 0
 
                         //Status not used
                         status:{
@@ -258,6 +261,7 @@ FocusScope {
                         detailed_description: entry.releaseNote;
                         focus: index === 0 ? true : false
                         onActivate: {
+                            if(updateButton.visible){
                                 //to display logo of this room
                                 confirmDialog.componentText = label;
                                 confirmDialog.componentLogo = icon2;
@@ -269,6 +273,7 @@ FocusScope {
                                 componentsListModel.setProperty(index,"versionToInstall", entry.tagName);
                                 //to force change of focus
                                 confirmDialog.focus = true;
+                            }
                         }
 
                         onFocusChanged:{
@@ -302,8 +307,8 @@ FocusScope {
                             id: updateButton
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
-                            text: qsTr("Update ?") + api.tr
-                            visible: parent.focus
+                            text: errorCode === 0 ? qsTr("Update ?") + api.tr : (errorCode > 0 ? qsTr("Retry ?") + api.tr : (errorCode === -1 ? qsTr("Restart ?") + api.tr : (errorCode === -2 ? qsTr("Reboot ?") + api.tr : "")))
+                            visible: ((progress === 0.0) || (errorCode !== 0)) && parent.focus
                             anchors.left: parent.right
                             anchors.leftMargin: vpx(20)
                             anchors.verticalCenter: parent.verticalCenter
