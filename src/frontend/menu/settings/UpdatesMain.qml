@@ -261,7 +261,7 @@ FocusScope {
                         detailed_description: entry.releaseNote;
                         focus: index === 0 ? true : false
                         onActivate: {
-                            if(updateButton.visible){
+                            if(updateButton.visible && (errorCode >= 0)){
                                 //to display logo of this room
                                 confirmDialog.componentText = label;
                                 confirmDialog.componentLogo = icon2;
@@ -273,6 +273,14 @@ FocusScope {
                                 componentsListModel.setProperty(index,"versionToInstall", entry.tagName);
                                 //to force change of focus
                                 confirmDialog.focus = true;
+                            }
+                            else if(updateButton.visible && (errorCode === -1)){ //restart
+                                powerDialog.source = "../../dialogs/RestartDialog.qml"
+                                powerDialog.focus = true;
+                            }
+                            else if(updateButton.visible && (errorCode === -2)){ //reboot
+                                powerDialog.source = "dialogs/RebootDialog.qml"
+                                powerDialog.focus = true;
                             }
                         }
 
