@@ -114,5 +114,6 @@
         <file>menu/settings/UpdatesMain.qml</file>
         <file>assets/pbar-red.png</file>
         <file>assets/pbar-green.png</file>
+        <file>dialogs/RestartDialog.qml</file>
     </qresource>
 </RCC>

@@ -34,6 +34,7 @@ public:
     Q_INVOKABLE void quit();
     Q_INVOKABLE void reboot();
     Q_INVOKABLE void shutdown();
+	Q_INVOKABLE void restart();
 
     Q_INVOKABLE QString run(const QString& Command);
 

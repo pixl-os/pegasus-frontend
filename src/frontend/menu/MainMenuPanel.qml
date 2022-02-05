@@ -44,6 +44,7 @@ FocusScope {
 
     signal requestShutdown
     signal requestReboot
+    signal requestRestart
     signal requestQuit
 
     Keys.onPressed: {
@@ -174,6 +175,17 @@ FocusScope {
                 }
             }
             entries: [
+                SecondaryMenuItem {
+                    id: mbQuitRestart
+                    text: qsTr("Restart") + api.tr
+                    onActivated: requestRestart()
+
+                    readonly property bool callable: api.internal.meta.allowRestart
+                    enabled: callable
+                    visible: callable
+
+                    KeyNavigation.down: mbQuitShutdown
+                },
                 SecondaryMenuItem {
                     id: mbQuitShutdown
                     text: qsTr("Shutdown") + api.tr

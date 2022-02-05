@@ -45,7 +45,7 @@ const char* ScriptManager::ActionToString(Notification action)
     case Notification::Stop:                 return "stop";
     case Notification::Shutdown:             return "shutdown";
     case Notification::Reboot:               return "reboot";
-    case Notification::Relaunch:             return "relaunch";
+	case Notification::Relaunch:             return "relaunch";
     case Notification::Quit:                 return "quit";
     case Notification::SystemBrowsing:       return "systembrowsing";
     case Notification::GamelistBrowsing:     return "gamelistbrowsing";
@@ -76,7 +76,7 @@ Notification ScriptManager::ActionFromString(const std::string& action)
     { "shutdown"            , Notification::Shutdown             },
     { "reboot"              , Notification::Reboot               },
     { "relaunch"            , Notification::Relaunch             },
-    { "quit"                , Notification::Quit                 },
+	{ "quit"                , Notification::Quit                 },
     { "systembrowsing"      , Notification::SystemBrowsing       },
     { "gamelistbrowsing"    , Notification::GamelistBrowsing     },
     { "runkodi"             , Notification::RunKodi              },
@@ -271,7 +271,7 @@ void ScriptManager::BuildStateCompatibility(std::string& output, Notification ac
     case Notification::Stop:
     case Notification::Shutdown:
     case Notification::Reboot:
-    case Notification::Relaunch:
+	case Notification::Relaunch:
     case Notification::Quit:
     case Notification::SystemBrowsing:
     case Notification::GamelistBrowsing:

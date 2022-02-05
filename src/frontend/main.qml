@@ -182,6 +182,10 @@ Window {
                 powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;
             }
+            function onRequestRestart() {
+                powerDialog.source = "dialogs/RestartDialog.qml"
+                powerDialog.focus = true;
+            }
             function onRequestQuit() {
                 theme.source = "";
                 api.internal.system.quit();
@@ -863,7 +867,7 @@ Window {
     ListModel {
         id: componentsListModel
         ListElement { componentName: "Pegasus-frontend"; repoUrl:"https://api.github.com/repos/bozothegeek/pegasus-frontend/releases";icon: "qrc:/frontend/assets/logopegasus.png"; picture: ""}
-        ListElement { componentName: "RetroArch"; repoUrl:"https://api.github.com/repos/bozothegeek/pegasus-frontend/releases";icon: "qrc:/frontend/assets/libretro-retroarch-simple-logo.png"; picture: ""}
+        //ListElement { componentName: "RetroArch"; repoUrl:"https://api.github.com/repos/bozothegeek/pegasus-frontend/releases";icon: "qrc:/frontend/assets/libretro-retroarch-simple-logo.png"; picture: ""}
         //ADD HERE new ListElement to add new component updatable
     }
 
