@@ -182,6 +182,10 @@ Window {
                 powerDialog.source = "dialogs/RebootDialog.qml"
                 powerDialog.focus = true;
             }
+            function onRequestRestart() {
+                powerDialog.source = "dialogs/RestartDialog.qml"
+                powerDialog.focus = true;
+            }
             function onRequestQuit() {
                 theme.source = "";
                 api.internal.system.quit();
@@ -298,7 +302,6 @@ Window {
         anchors.fill: parent
         sourceComponent: cdRomPopup
     }
-
     Connections {
         target: cdRomPopupLoader.item
 
@@ -349,7 +352,7 @@ Window {
         running: splashScreen.focus ? false : true
         onTriggered: {
             gameCdRom = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf");
-//            console.log(gameCdRom)
+//console.log(gameCdRom)
             if(gameCdRom.includes("system =")) {
                 cdRomPopupLoader.focus = true;
                 //just set "cdrom" as title of this game (optional)
@@ -381,7 +384,7 @@ Window {
             popup.message = message;
             //icon is optional but should be set to empty string if not use
             popup.icon = icon;
-
+            popup.iconfont = globalFonts.sans;
             //delay provided in second and interval is in ms
             popupDelay.interval = delay * 1000;
 
@@ -447,7 +450,9 @@ Window {
         property int textSize: vpx(12)
         property int iconSize: vpx(60)
 
-        width:  vpx(200)
+        property alias iconfont: iconText.font.family
+
+        width:  (message.lenght > title.lenght) ? vpx(message.length * 7.5 + ((icon.length !== 0) ? 50 : 0)) + popup.titleTextSize : vpx(title.length * 7.5 + ((icon.length !== 0) ? 50 : 0) + popup.titleTextSize) //vpx(200)
         height: vpx(70)
 
         background: Rectangle {
@@ -559,6 +564,7 @@ Window {
         }
     }
 
+    //***********************************************************BEGIN OF NETPLAY PARTS*******************************************************************
     //Loader/Component/Connection to manage netplay room dialog
     Loader {
         id: netplayRoomDialog
@@ -572,7 +578,6 @@ Window {
         property var game_logo: game ? game.assets.logo : null
         property var game_name: game ? game.title : null
     }
-
     Component {
         id: netplayRoomComponent
         NetplayDialog {
@@ -588,7 +593,6 @@ Window {
             is_to_create_room: true
         }
     }
-
     Connections {
         target: netplayRoomDialog.item
         function onAccept() {
@@ -670,7 +674,9 @@ Window {
         }
         else return false; //no netplay activated from menu
     }
+    //***********************************************************END OF NETPLAY PARTS*********************************************************************
 
+    //***********************************************************BEGIN OF VIRTUAL KEYBOARD PARTS**********************************************************
     //loader for input panel for virtual keyboard
     Loader {
         id: inputPanelLoader
@@ -856,5 +862,73 @@ Window {
 
         return ev.accepted, input.focus, editionActive ;
     }
+    //***********************************************************END OF VIRTUAL KEYBOARD PARTS**********************************************************
+
+    //***********************************************************BEGIN OF UPDATES PARTS*****************************************************************
+    ListModel {
+        id: componentsListModel
+        ListElement { componentName: "Pegasus-frontend"; repoUrl:"https://api.github.com/repos/bozothegeek/pegasus-frontend/releases";icon: "qrc:/frontend/assets/logopegasus.png"; picture: ""}
+        //ListElement { componentName: "RetroArch"; repoUrl:"https://api.github.com/repos/bozothegeek/pegasus-frontend/releases";icon: "qrc:/frontend/assets/libretro-retroarch-simple-logo.png"; picture: ""}
+        //ADD HERE new ListElement to add new component updatable
+    }
+
+    Timer {//timer to download last versions
+        id: repoStatusRefreshTimer
+        interval: 60000 * 30 // Check every 30 minutes and at start
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        onTriggered: {
+            //loop to launch download of all json repository files
+            for(var i = 0;i < componentsListModel.count; i++){
+                api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoUrl);
+            }
+            //start timer to check one minute later the result
+            jsonStatusRefreshTimer.running = false;
+            jsonStatusRefreshTimer.running = true;
+        }
+    }
+
+    property var numberOfUpdates: 0
+    property var listOfUpdates : ""
+    Timer {//timer to check json after download (1 minute later)
+        id: jsonStatusRefreshTimer
+        interval: 5000 //60000 // check after 1 minute / 5 seconds for test ;-)
+        repeat: false // no need to repeat
+        running: false
+        triggeredOnStart: false
+        onTriggered: {
+            for(var i = 0;i < componentsListModel.count; i++){
+                //check all components (including pre-release for the moment and without filter)
+                numberOfUpdates = 0;
+                listOfUpdates = "";
+                if(api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , true)){
+                    numberOfUpdates = numberOfUpdates + 1;
+                    componentsListModel.setProperty(i,"hasUpdate", true);
+                    //contruct string about all udpates
+                    listOfUpdates = listOfUpdates + (listOfUpdates !== "" ? " / " : "") + componentsListModel.get(i).componentName;
+                }
+            }
+            if(numberOfUpdates !== 0){
+                //to popup to alert about all udpates
+                //init parameters
+                popup.title = (numberOfUpdates === 1) ?  (qsTr("Update available") + api.tr) : (qsTr("Updates available") + api.tr);
+                popup.message = listOfUpdates;
+                //icon is optional but should be set to empty string if not use
+                popup.icon = "\uf2c6";
+                popup.iconfont = global.fonts.ion;
+                //delay provided in second and interval is in ms
+                popupDelay.interval = 5 * 1000;
+                //Open popup and set it as showable to have animation
+                popup.open();
+                popup.showing = true;
+                //start timer to close popup automatically
+                popupDelay.restart();
+            }
+        }
+    }
+    //***********************************************************END OF UPDATES PARTS*******************************************************************
+
+
 
 }

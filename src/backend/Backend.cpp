@@ -99,6 +99,11 @@ void on_app_close(AppCloseType type)
     QString AppCloseTypeName;
     ScriptRunner::run(ScriptEvent::QUIT);
     switch (type) {
+        case AppCloseType::RESTART:
+            AppCloseTypeName = "Restart";
+            ScriptManager::Instance().Notify(Notification::Relaunch,"normal");
+            ScriptRunner::run(ScriptEvent::RESTART);
+            break;
         case AppCloseType::REBOOT:
             AppCloseTypeName = "Reboot";
             ScriptManager::Instance().Notify(Notification::Reboot,"normal");
@@ -117,6 +122,9 @@ void on_app_close(AppCloseType type)
     
     QCoreApplication::quit();
     switch (type) {
+        case AppCloseType::RESTART:
+            platform::power::restart();
+            break;
         case AppCloseType::REBOOT:
             platform::power::reboot();
             break;
@@ -202,7 +210,7 @@ Backend::Backend(const CliArgs& args, char** environment)
     QObject::connect(&m_api->internal().meta(), &model::Meta::qmlClearCacheRequested,
                      m_frontend, &FrontendLayer::clearCache);
 
-    // quit/reboot/shutdown request
+    // quit/reboot/restart/shutdown request
     QObject::connect(&m_api->internal().system(), &model::System::appCloseRequested, on_app_close);
 }
 

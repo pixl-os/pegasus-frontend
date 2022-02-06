@@ -25,6 +25,7 @@ FocusScope {
     signal close()
     signal requestShutdown()
     signal requestReboot()
+	signal requestRestart()
     signal requestQuit()
 
     function triggerClose() {
@@ -86,6 +87,7 @@ FocusScope {
         focus: true
 
         // add recalbox menu
+        onShowUpdates: root.openScreen("menu/Updates.qml")
         onShowAccountSettings: root.openScreen("menu/AccountSettings.qml")
         onShowControllersSettings: root.openScreen("menu/ControllersSettings.qml")
         onShowGamesSettings: root.openScreen("menu/GamesSettings.qml")
@@ -98,6 +100,7 @@ FocusScope {
         onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
+		onRequestRestart: root.requestRestart()
         onRequestQuit: root.requestQuit()
     }
 

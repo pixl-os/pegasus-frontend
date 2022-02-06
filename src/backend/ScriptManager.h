@@ -49,6 +49,15 @@ DEFINE_BITFLAG_ENUM(Notification, int)
 class ScriptManager : public StaticLifeCycleControler<ScriptManager>
 {
   public:
+    /*!
+     * @brief Script data
+     */
+    struct ScriptData
+    {
+      Path         mPath;      //!< Script path
+      Notification mFilter;    //!< Bitflag of notifications this script must reply to
+      bool         mSync;      //!< RunSynchronously?
+    };
 
     /*!
      * @brief Default constructor
@@ -97,17 +106,16 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param actionParameters Optional action parameters
      */
     void Notify(Notification action, const std::string& actionParameters) { Notify(nullptr, action, actionParameters); }
+
+    /*!
+     * @brief Run the target using the given arguments.
+     * The target is run aither natively or using python or sh regarding the target extension
+     * @param target executable/scriupt to run
+     * @param arguments arguments passed to the target
+     */
+    void RunProcess(const Path& target, const Strings::Vector& arguments, bool synchronous, bool permanent);
     
   private:
-    /*!
-     * @brief Script data
-     */
-    struct ScriptData
-    {
-      Path         mPath;      //!< Script path
-      Notification mFilter;    //!< Bitflag of notifications this script must reply to
-      bool         mSync;      //!< RunSynchronously?
-    };
 
     //! Shortcut :)
     typedef std::vector<ScriptData> ScriptList;
@@ -275,14 +283,6 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param param Optional action parameter
      */
     void RunScripts(Notification action, const std::string& param);
-
-    /*!
-     * @brief Run the target using the given arguments.
-     * The target is run aither natively or using python or sh regarding the target extension
-     * @param target executable/scriupt to run
-     * @param arguments arguments passed to the target
-     */
-    void RunProcess(const Path& target, const Strings::Vector& arguments, bool synchronous, bool permanent);
 
     /*!
      * @brief Build es_state.info Common information into output string

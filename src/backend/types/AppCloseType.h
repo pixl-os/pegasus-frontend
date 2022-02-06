@@ -20,5 +20,6 @@
 enum AppCloseType : unsigned char {
     QUIT,
     REBOOT,
+	RESTART,
     SHUTDOWN,
 };

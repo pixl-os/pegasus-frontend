@@ -23,6 +23,7 @@ class QStringList;
 enum class ScriptEvent : unsigned char {
     QUIT,
     REBOOT,
+	RESTART,
     SHUTDOWN,
     CONFIG_CHANGED,
     SETTINGS_CHANGED,

@@ -21,6 +21,7 @@
 
 #include <QProcess>
 
+#include <QGuiApplication>
 
 namespace {
 
@@ -87,6 +88,11 @@ namespace power {
 void reboot()
 {
     QProcess::startDetached(QLatin1String("reboot"), QStringList());
+}
+
+void restart()
+{
+    QProcess::startDetached(QCoreApplication::arguments()[0], QCoreApplication::arguments());
 }
 
 void shutdown()

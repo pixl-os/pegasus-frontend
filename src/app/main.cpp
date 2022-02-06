@@ -133,6 +133,10 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
         QStringLiteral("disable-menu-reboot"),
         CMDMSG("Hides the system reboot entry in the main menu"));
 
+    const QCommandLineOption arg_menu_restart = add_cli_option(argparser,
+        QStringLiteral("disable-menu-restart"),
+        CMDMSG("Hides Pegasus restart entry in the main menu"));
+
     const QCommandLineOption arg_menu_shutdown = add_cli_option(argparser,
         QStringLiteral("disable-menu-shutdown"),
         CMDMSG("Hides the system shutdown entry in the main menu"));
@@ -150,7 +154,8 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
         CMDMSG("Alias for:\n"
                "--disable-menu-reboot\n"
                "--disable-menu-shutdown\n"
-               "--enable-menu-appclose\n"
+			   "--disable-menu-restart\n"
+			   "--enable-menu-appclose\n"
                "--disable-menu-settings"));
 
     const QCommandLineOption arg_gamepad_autoconfig = add_cli_option(argparser,
@@ -177,6 +182,7 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
 #else
     args.enable_menu_shutdown = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_shutdown));
     args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
+    args.enable_menu_restart = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_restart));
 #endif
     return args;
 

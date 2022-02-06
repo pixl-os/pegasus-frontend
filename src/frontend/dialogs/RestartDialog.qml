@@ -13,19 +13,20 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
+//
+// created by BozoTheGeek 05/02/2022
+//
+
+import QtQuick 2.12
 
 
-#pragma once
+GenericOkCancelDialog
+{
+    focus: true
 
+    title: qsTr("Restart") + api.tr
+    message: qsTr("Pegasus will restart. Are you sure?") + api.tr
+//    symbol: "\u21BB"
 
-namespace platform {
-/// Contains the implementation of platform-specific system calls,
-/// such as reboot, restart or shutdown
-namespace power {
-
-void reboot();
-void restart();
-void shutdown();
-
-} // namespace power
-} // namespace platform
+    onAccept: api.internal.system.restart()
+}

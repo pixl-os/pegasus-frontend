@@ -17,6 +17,7 @@ DEFINES *= HAVE_CDROM
 
 SOURCES += \
     Backend.cpp \
+    DownloadManager.cpp \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
     PegasusAssets.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 HEADERS += \
     Backend.h \
     CliArgs.h \
+    DownloadManager.h \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
     PegasusAssets.h \

@@ -27,8 +27,13 @@ FocusScope {
     height: parent.height
     visible: x < parent.width && 0 < x + width
     enabled: focus
+    onFocusChanged: {
+        //console.log("MainMenuPanel::onFocusChanged");
+        mbUpdates.enabled = api.internal.updates.hasAnyUpdate();
+    }
 
     signal close
+    signal showUpdates
     signal showAccountSettings
     signal showControllersSettings
     signal showGamesSettings
@@ -39,6 +44,7 @@ FocusScope {
 
     signal requestShutdown
     signal requestReboot
+    signal requestRestart
     signal requestQuit
 
     Keys.onPressed: {
@@ -64,6 +70,21 @@ FocusScope {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: vpx(30)
 
+        PrimaryMenuItem {
+            id: mbUpdates
+            text: qsTr("Updates") + api.tr
+            onActivated: {
+                focus = true;
+                root.showUpdates();
+            }
+            selected: focus
+
+            enabled: api.internal.updates.hasAnyUpdate();
+            visible: enabled
+            symbol:"\uf2c6"
+            animated: true
+            KeyNavigation.down: mbAccountSettings
+        }
         PrimaryMenuItem {
             id: mbAccountSettings
             text: qsTr("Accounts") + api.tr
@@ -155,6 +176,17 @@ FocusScope {
             }
             entries: [
                 SecondaryMenuItem {
+                    id: mbQuitRestart
+                    text: qsTr("Restart") + api.tr
+                    onActivated: requestRestart()
+
+                    readonly property bool callable: api.internal.meta.allowRestart
+                    enabled: callable
+                    visible: callable
+
+                    KeyNavigation.down: mbQuitShutdown
+                },
+                SecondaryMenuItem {
                     id: mbQuitShutdown
                     text: qsTr("Shutdown") + api.tr
                     onActivated: requestShutdown()
@@ -188,7 +220,7 @@ FocusScope {
                     KeyNavigation.down: mbQuitShutdown
                 }
             ]
-            KeyNavigation.down: mbAccountSettings
+            KeyNavigation.down: api.internal.updates.hasAnyUpdate() ? mbUpdates : mbAccountSettings
         }
     }
     PegasusUtils.HorizontalSwipeArea {

@@ -36,6 +36,11 @@ void System::reboot()
     emit appCloseRequested(AppCloseType::REBOOT);
 }
 
+void System::restart()
+{
+    emit appCloseRequested(AppCloseType::RESTART);
+}
+
 void System::shutdown()
 {
     emit appCloseRequested(AppCloseType::SHUTDOWN);

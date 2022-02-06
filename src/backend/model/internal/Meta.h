@@ -40,6 +40,7 @@ class Meta : public QObject {
     Q_PROPERTY(QString logFilePath MEMBER m_log_path CONSTANT)
 
     Q_PROPERTY(bool allowReboot MEMBER m_enable_menu_reboot CONSTANT)
+	Q_PROPERTY(bool allowRestart MEMBER m_enable_menu_restart CONSTANT)
     Q_PROPERTY(bool allowShutdown MEMBER m_enable_menu_shutdown CONSTANT)
     Q_PROPERTY(bool allowAppClose MEMBER m_enable_menu_appclose CONSTANT)
     Q_PROPERTY(bool allowSettings MEMBER m_enable_menu_settings CONSTANT)
@@ -79,6 +80,7 @@ private:
     const QString m_log_path;
 
     const bool m_enable_menu_reboot;
+	const bool m_enable_menu_restart;
     const bool m_enable_menu_shutdown;
     const bool m_enable_menu_appclose;
     const bool m_enable_menu_settings;
