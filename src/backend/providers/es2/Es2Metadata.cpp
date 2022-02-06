@@ -171,7 +171,7 @@ HashMap<MetaType, QString, EnumHash> Metadata::parse_gamelist_game_node(QXmlStre
     return xml_props;
 }
 
-void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, providers::SearchContext& sctx, const QString& system_name) const
+void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, const providers::SearchContext& sctx, const QString& system_name) const
 {
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
@@ -249,7 +249,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
     }
 }
 
-void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchContext& sctx) const
+void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::SearchContext& sctx) const
 {
     Q_ASSERT(!sysentry.name.isEmpty());
     Q_ASSERT(!sysentry.path.isEmpty());
@@ -422,15 +422,14 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
 
     // then the numbers
     const int play_count = xml_props[MetaType::PLAYCOUNT].toInt();
-    game.setRating(qBound(0.f, xml_props[MetaType::RATING].toFloat(), 1.f));
+    game.setRating(xml_props[MetaType::RATING].toFloat());
 
     // the player count can be a range
     const QString players_field = xml_props[MetaType::PLAYERS];
     const auto players_match = m_players_regex.match(players_field);
     if (players_match.hasMatch()) {
-        short a = 0, b = 0;
-        a = players_match.captured(1).toShort();
-        b = players_match.captured(3).toShort();
+        const short a = players_match.captured(1).toShort();
+        const short b = players_match.captured(3).toShort();
         game.setPlayerCount(std::max(a, b));
     }
 
