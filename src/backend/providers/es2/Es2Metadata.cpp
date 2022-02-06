@@ -186,7 +186,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
     }
 
     //need collection for gamelist only activated
-    model::Collection& collection = *sctx.get_or_create_collection(system_name);
+    //model::Collection& collection = *sctx.get_or_create_collection(system_name);
     
     size_t found_games = 0;
     // read all <game> nodes
@@ -216,13 +216,13 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
         {
             // create game now in this case (don't care if exist or not on file system to go quicker)
-            model::Game* game_ptr = sctx.game_by_filepath(path);
+            /*model::Game* game_ptr = sctx.game_by_filepath(path);
             if (!game_ptr) {
                 game_ptr = sctx.create_game_for(collection);
                 sctx.game_add_filepath(*game_ptr, std::move(path));
             }    
             sctx.game_add_to(*game_ptr, collection);
-            found_games++;
+			*/
         }
         else
         {    
@@ -230,6 +230,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
             if (!finfo.exists())
                 continue;
         }
+		found_games++;
         model::GameFile* const entry_ptr = sctx.gamefile_by_filepath(path);
         if (!entry_ptr)  // ie. the file was not picked up by the system's extension list
             continue;
