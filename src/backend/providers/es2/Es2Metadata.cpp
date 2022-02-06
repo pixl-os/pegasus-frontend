@@ -171,7 +171,7 @@ HashMap<MetaType, QString, EnumHash> Metadata::parse_gamelist_game_node(QXmlStre
     return xml_props;
 }
 
-void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, const providers::SearchContext& sctx, const QString& system_name) const
+void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, providers::SearchContext& sctx, const QString& system_name) const
 {
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
@@ -186,8 +186,8 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
     }
 
     //need collection for gamelist only activated
-    //model::Collection& collection = *sctx.get_or_create_collection(system_name);
-    
+    model::Collection& collection = *sctx.get_or_create_collection(system_name);
+	
     size_t found_games = 0;
     // read all <game> nodes
     while (xml.readNextStartElement()) {
@@ -216,13 +216,13 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
         {
             // create game now in this case (don't care if exist or not on file system to go quicker)
-            /*model::Game* game_ptr = sctx.game_by_filepath(path);
+            model::Game* game_ptr = sctx.game_by_filepath(path);
             if (!game_ptr) {
                 game_ptr = sctx.create_game_for(collection);
                 sctx.game_add_filepath(*game_ptr, std::move(path));
             }    
             sctx.game_add_to(*game_ptr, collection);
-			*/
+			found_games++;
         }
         else
         {    
@@ -230,7 +230,6 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
             if (!finfo.exists())
                 continue;
         }
-		found_games++;
         model::GameFile* const entry_ptr = sctx.gamefile_by_filepath(path);
         if (!entry_ptr)  // ie. the file was not picked up by the system's extension list
             continue;
@@ -249,7 +248,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
     }
 }
 
-void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::SearchContext& sctx) const
+void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchContext& sctx) const
 {
     Q_ASSERT(!sysentry.name.isEmpty());
     Q_ASSERT(!sysentry.path.isEmpty());
@@ -284,15 +283,17 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, const providers::S
     process_gamelist_xml(xml_dir, xml, sctx, sysentry.name);
     Log::info(LOGMSG("Stats - Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));    
     
-    //to add images stored by skraper and linked to gamelist/system of ES
-    QElapsedTimer skraper_media_timer;
-    skraper_media_timer.start();
-    add_skraper_media_metadata(xml_dir, sctx);
-    Log::info(LOGMSG("Stats - Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
-    
+    if(!RecalboxConf::Instance().AsBool("pegasus.deactivateskrapermedia"))
+    {
+        //to add images stored by skraper and linked to gamelist/system of ES
+        QElapsedTimer skraper_media_timer;
+        skraper_media_timer.start();
+        add_skraper_media_metadata(xml_dir, sctx);
+        Log::info(LOGMSG("Stats - Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
+    }
 }
 
-void Metadata::add_skraper_media_metadata(const QDir& system_dir, const providers::SearchContext& sctx) const
+void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::SearchContext& sctx) const
 {
     Log::info(m_log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
     // NOTE: The entries are ordered by priority

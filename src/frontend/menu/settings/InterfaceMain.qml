@@ -197,6 +197,20 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("emulationstation.gamelistonly",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDeactivateSkraperMedia
+
+                }
+                ToggleOption {
+                    id: optDeactivateSkraperMedia
+
+                    label: qsTr("Deactivate Skraper media") + api.tr
+                    note: qsTr("Once enabled, only media from gamelist will be take into account. \n ( Best loading ;-) / Less Media :-( )") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.deactivateskrapermedia")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.deactivateskrapermedia",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
