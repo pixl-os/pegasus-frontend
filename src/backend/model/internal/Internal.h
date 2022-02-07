@@ -24,6 +24,7 @@
 #include "netplay/Netplay.h"
 #include "singleplay/Singleplay.h"
 #include "updates/Updates.h"
+#include "bios/Bios.h"
 #include "settings/Settings.h"
 #include "utils/QmlHelpers.h"
 
@@ -42,6 +43,7 @@ class Internal : public QObject {
     QML_CONST_PROPERTY(model::Netplay, netplay)
 	QML_CONST_PROPERTY(model::Singleplay, singleplay)
 	QML_CONST_PROPERTY(model::Updates, updates)
+	QML_CONST_PROPERTY(model::Bios, bios)
     
 public:
     explicit Internal(const backend::CliArgs& args, QObject* parent = nullptr);

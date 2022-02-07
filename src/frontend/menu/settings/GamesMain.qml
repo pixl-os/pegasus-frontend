@@ -262,7 +262,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optAdvancedEmulator
+                    KeyNavigation.down: optBiosChecking
 
                 }
                 SectionTitle {
@@ -270,34 +270,20 @@ FocusScope {
                     first: true
                     symbol: "\uf1d9"
                 }
-//                SimpleButton {
-//                    id: optBiosChecking
+                SimpleButton {
+                    id: optBiosChecking
 
-//                    label: qsTr("Bios Checking") + api.tr
-//                    note: qsTr("Check all necessary bios !") + api.tr
+                    label: qsTr("Bios Checking") + api.tr
+                    note: qsTr("Check all necessary bios !") + api.tr
+                    pointerIcon: true
 
-//                    Text {
-//                        id: pointeroptBiosChecking
-
-//                        anchors.right: parent.right
-//                        anchors.rightMargin: horizontalPadding
-//                        anchors.verticalCenter: parent.verticalCenter
-
-//                        color: themeColor.textValue
-//                        font.pixelSize: vpx(30)
-//                        font.family: globalFonts.ion
-
-//                        text : "\uf3d1"
-//                    }
-
-//                    onActivate: {
-//                        focus = true;
-//                        //root.openBiosCheckingSettings();
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.up: optAutoSave
-//                    KeyNavigation.down: optAdvancedEmulator
-//                }
+                    onActivate: {
+                        focus = true;
+                        root.openBiosCheckingSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optAdvancedEmulator
+                }
                 SimpleButton {
                     id: optAdvancedEmulator
 
@@ -311,7 +297,7 @@ FocusScope {
                         root.openAdvancedEmulatorSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.up: optBiosChecking
+                    KeyNavigation.up: optBiosChecking
                 }
                 Item {
                     width: parent.width

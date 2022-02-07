@@ -16,7 +16,7 @@ FocusScope {
 
     readonly property int iNB_RESULTS_MAX : 50
 
-	property bool isCallDirectly : false
+    property bool isCallDirectly : false
 
     //use as status and icon at the same time
     readonly property string isOK :  "\uf1c0"
@@ -29,13 +29,13 @@ FocusScope {
     height: parent.height
 
     anchors.fill: parent
-	
+
     //enabled: focus
     
     visible: 0 < (x + width) && x < Window.window.width
 
     //timer to refresh Netplay list
-    property var counter: 0
+    property int counter: 0
     Timer {
         id: netplayTimer
         interval: 200 // Run the timer 200 ms
@@ -43,17 +43,17 @@ FocusScope {
         running: true
         triggeredOnStart: true
         onTriggered: {
-                if (counter === 1){ // to start after 200ms (to let page loading)
-                    //console.log("netplayTimer - before refresh: availableNetplayRooms.selectedButtonIndex", availableNetplayRooms.selectedButtonIndex);
-                    api.internal.netplay.rooms.refresh();
-				}
-                else if ((interval*counter/1000) === 3){ //wait 3 seconds before to refresh latency
-                    api.internal.netplay.rooms.refresh_latency();
-                }
-                else if((interval*counter/1000) >= 5){ //wait 5 seconds before to refresh list
-                    counter = 0;
-                }
-                counter = counter + 1;
+            if (counter === 1){ // to start after 200ms (to let page loading)
+                //console.log("netplayTimer - before refresh: availableNetplayRooms.selectedButtonIndex", availableNetplayRooms.selectedButtonIndex);
+                api.internal.netplay.rooms.refresh();
+            }
+            else if ((interval*counter/1000) === 3){ //wait 3 seconds before to refresh latency
+                api.internal.netplay.rooms.refresh_latency();
+            }
+            else if((interval*counter/1000) >= 5){ //wait 5 seconds before to refresh list
+                counter = 0;
+            }
+            counter = counter + 1;
         }
     }
 
@@ -75,11 +75,11 @@ FocusScope {
         }
     }
     //to be able to follow action done on Bluetooth Devices Lists
-    property var actionState : ""
-    property var actionListIndex : 0
+    property string actionState : ""
+    property int actionListIndex : 0
     property bool friendsOnly: false
     property bool launchableOnly: false
-    property var friendsCount: 0
+    property int friendsCount: 0
     property var gameSelected
     property var roomSelected
     property var searchSelected
@@ -111,10 +111,10 @@ FocusScope {
         active: false
         asynchronous: true
         //to set value via loader
-        property var game_logo: ""
-        property var game_name: ""
-        property var player_name: ""
-        property var system_logo: ""
+        property string game_logo: ""
+        property string game_name: ""
+        property string player_name: ""
+        property string system_logo: ""
         property bool has_password: false
         property bool has_spectate_password: false
     }
@@ -141,30 +141,30 @@ FocusScope {
         target: confirmDialog.item
         function onAccept() { //first choice
             switch (actionState) {
-                    case "PlayOrView": //-> TO PLAY
-                        //stop scanning during playing ;-)
-                        netplayTimer.running = false;
-                        friendsTimer.running = false;
-                        if(isRoomAvailable(roomSelected.ip,roomSelected.port)){
-                            //launch game in netplay mode
-                            //set parameter for netplay (mode = 1 -> client)
-                            gameSelected.modelData.launchNetplay(
-                                        1, roomSelected.port, roomSelected.ip,
-                                        roomSelected.has_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
-                                        "", //let viewer password empty in this case
-                                        false,
-                                        roomSelected.hash,
-                                        "libretro",
-                                        searchSelected.coreFound);
-                            //clean rooms model
-                            api.internal.netplay.rooms.reset();
-                        }
-                        else{
-                            //restart scanning
-                            netplayTimer.running = true;
-                            friendsTimer.running = true;
-                        }
-                    break;
+            case "PlayOrView": //-> TO PLAY
+                //stop scanning during playing ;-)
+                netplayTimer.running = false;
+                friendsTimer.running = false;
+                if(isRoomAvailable(roomSelected.ip,roomSelected.port)){
+                    //launch game in netplay mode
+                    //set parameter for netplay (mode = 1 -> client)
+                    gameSelected.modelData.launchNetplay(
+                                1, roomSelected.port, roomSelected.ip,
+                                roomSelected.has_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.client"):"",
+                                "", //let viewer password empty in this case
+                                false,
+                                roomSelected.hash,
+                                "libretro",
+                                searchSelected.coreFound);
+                    //clean rooms model
+                    api.internal.netplay.rooms.reset();
+                }
+                else{
+                    //restart scanning
+                    netplayTimer.running = true;
+                    friendsTimer.running = true;
+                }
+                break;
             }
             confirmDialog.active = false;
             content.focus = true;
@@ -172,36 +172,36 @@ FocusScope {
 
         function onSecondChoice() {
             switch (actionState) {
-                    case "PlayOrView": // -> TO VIEW
-                        //stop scanning during playing ;-)
-                        netplayTimer.running = false;
-                        friendsTimer.running = false;
-                        if(isRoomAvailable(roomSelected.ip,roomSelected.port)){
-                            //check that pseudo is empty and if yes, it's set to "Anonymous"
-                            if(api.internal.recalbox.getStringParameter("global.netplay.nickname") === ""){
-                                api.internal.recalbox.setStringParameter("global.netplay.nickname", "Anonymous");
-                                //save it for configgen
-                                api.internal.recalbox.saveParameters();
-                            }
-                            //launch game in netplay mode
-                            //set parameter for netplay (mode = 1 -> client)
-                            gameSelected.modelData.launchNetplay(
-                                        1, roomSelected.port, roomSelected.ip,
-                                        "", //let player password empty in this case
-                                        roomSelected.has_spectate_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.viewer"):"",
-                                        true,
-                                        roomSelected.hash,
-                                        "libretro",
-                                        searchSelected.coreFound);
-                            //clean rooms model
-                            api.internal.netplay.rooms.reset();
-                        }
-                        else{
-                            //restart scanning
-                            netplayTimer.running = true;
-                            friendsTimer.running = true;
-                        }
-                    break;
+            case "PlayOrView": // -> TO VIEW
+                //stop scanning during playing ;-)
+                netplayTimer.running = false;
+                friendsTimer.running = false;
+                if(isRoomAvailable(roomSelected.ip,roomSelected.port)){
+                    //check that pseudo is empty and if yes, it's set to "Anonymous"
+                    if(api.internal.recalbox.getStringParameter("global.netplay.nickname") === ""){
+                        api.internal.recalbox.setStringParameter("global.netplay.nickname", "Anonymous");
+                        //save it for configgen
+                        api.internal.recalbox.saveParameters();
+                    }
+                    //launch game in netplay mode
+                    //set parameter for netplay (mode = 1 -> client)
+                    gameSelected.modelData.launchNetplay(
+                                1, roomSelected.port, roomSelected.ip,
+                                "", //let player password empty in this case
+                                roomSelected.has_spectate_password ? api.internal.recalbox.parameterslist.currentName("netplay.password.viewer"):"",
+                                true,
+                                roomSelected.hash,
+                                "libretro",
+                                searchSelected.coreFound);
+                    //clean rooms model
+                    api.internal.netplay.rooms.reset();
+                }
+                else{
+                    //restart scanning
+                    netplayTimer.running = true;
+                    friendsTimer.running = true;
+                }
+                break;
             }
             confirmDialog.active = false;
             content.focus = true;
@@ -235,7 +235,7 @@ FocusScope {
         else{
             //display dialog box to alert that room is not accessible finally
             genericMessage.setSource("../../dialogs/GenericOkDialog.qml",
-               { "title": qsTr("Connection error"), "message": qsTr("Room seems not available finally, may be reference is obsolete from lobby or not compatible ?!") });
+                                     { "title": qsTr("Connection error"), "message": qsTr("Room seems not available finally, may be reference is obsolete from lobby or not compatible ?!") });
             genericMessage.focus = true;
             return false;
         }
@@ -305,7 +305,7 @@ FocusScope {
 
     ScreenHeader {
         id: header
-        text: isCallDirectly ? qsTr("Netplay information") + api.tr : qsTr("Accounts > Netplay information") + api.tr
+        text: isCallDirectly ? qsTr("Netplay Rooms") + api.tr : qsTr("Accounts > Netplay Rooms") + api.tr
         z: 2
     }
 
@@ -333,25 +333,25 @@ FocusScope {
         boundsBehavior: Flickable.StopAtBounds
         boundsMovement: Flickable.StopAtBounds
 
-		FocusScope {
-			id: content
+        FocusScope {
+            id: content
 
-			focus: true
-			enabled: focus
+            focus: true
+            enabled: focus
 
-			width: contentColumn.width
-			height: contentColumn.height
+            width: contentColumn.width
+            height: contentColumn.height
 
-			Column {
-				id: contentColumn
-				spacing: vpx(5)
+            Column {
+                id: contentColumn
+                spacing: vpx(5)
 
                 width: root.width * 0.9
-				height: implicitHeight
+                height: implicitHeight
 
                 Item {
-					width: parent.width
-					height: implicitHeight + vpx(30)
+                    width: parent.width
+                    height: implicitHeight + vpx(30)
                 }
 
                 Row{
@@ -363,7 +363,7 @@ FocusScope {
                         fillMode: Image.PreserveAspectFit
                     }
                     SectionTitle {
-                    id: retroarch_title
+                        id: retroarch_title
                         text: {
                             if(friendsOnly)
                                 return ("  " + qsTr("Retroarch lobby : ") + (friendsCount) + qsTr(" 'Friend' room(s)") + api.tr);
@@ -428,8 +428,8 @@ FocusScope {
                 Repeater {
                     id: availableNetplayRooms
                     model: api.internal.netplay.rooms  // availableNetplayRoomsModel //for test purpose
-                    property var selectedButtonIndex : 0
-                    property var hidden : 0
+                    property int selectedButtonIndex : 0
+                    property int hidden : 0
                     onItemRemoved:{
                         //RFU
                         //console.log("onItemRemoved: ", index)
@@ -441,12 +441,12 @@ FocusScope {
                     delegate: DetailedButton {
                         SearchGame {
                             id: searchByCRCorFile;
-                            property var crcMatched : false
-                            property var fileMatched : false
-                            property var coreFound: ""
-                            property var coreLongNameFound: ""
-                            property var coreVersionFound: ""
-                            property var resultIndex: -1
+                            property bool crcMatched : false
+                            property bool fileMatched : false
+                            property string coreFound: ""
+                            property string coreLongNameFound: ""
+                            property string coreVersionFound: ""
+                            property int resultIndex: -1
                             onMaxChanged:{
                                 //console.log("onMaxChanged - enabled :",searchByCRCorFile.enabled);
                                 //console.log("onMaxChanged - max :",searchByCRCorFile.max);
@@ -550,18 +550,18 @@ FocusScope {
                             availableNetplayRooms.hidden = api.internal.netplay.rooms.nbEmptyRooms()
                             if ((game_crc === "") && (game_name === "")) return false;
                             else if (friendsOnly){
-                               if(api.internal.recalbox.getBoolParameter("netplay.friend." + username)){
-                                   if(launchableOnly){
-                                       if(!status_icon.includes(isNOK)){
-                                           return true;
-                                       }
-                                       else{
-                                          return false;
-                                       }
-                                   }
-                                   else return true;
-                               }
-                               else return false;
+                                if(api.internal.recalbox.getBoolParameter("netplay.friend." + username)){
+                                    if(launchableOnly){
+                                        if(!status_icon.includes(isNOK)){
+                                            return true;
+                                        }
+                                        else{
+                                            return false;
+                                        }
+                                    }
+                                    else return true;
+                                }
+                                else return false;
                             }
                             else
                             {
@@ -570,7 +570,7 @@ FocusScope {
                                         return true;
                                     }
                                     else{
-                                       return false;
+                                        return false;
                                     }
                                 }
                                 else return true;
@@ -746,7 +746,7 @@ FocusScope {
                         }
 
                         onFocusChanged:{
-						}
+                        }
 
                         Keys.onPressed: {
                             //verify if finally other lists are empty or not when we are just before to change list
@@ -756,22 +756,22 @@ FocusScope {
                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
                                 if (index !== 0) {
                                     availableNetplayRooms.selectedButtonIndex = index-1;
-									KeyNavigation.up = availableNetplayRooms.itemAt(index-1);
-								}
+                                    KeyNavigation.up = availableNetplayRooms.itemAt(index-1);
+                                }
                                 else {
-									KeyNavigation.up = availableNetplayRooms.itemAt(0);
+                                    KeyNavigation.up = availableNetplayRooms.itemAt(0);
                                     availableNetplayRooms.selectedButtonIndex = 0;
-								}
+                                }
                             }
                             if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
                                 if (index < availableNetplayRooms.count-1) {
-									KeyNavigation.down = availableNetplayRooms.itemAt(index+1);
+                                    KeyNavigation.down = availableNetplayRooms.itemAt(index+1);
                                     availableNetplayRooms.selectedButtonIndex = index+1;
-								}
+                                }
                                 else {
-									KeyNavigation.down = availableNetplayRooms.itemAt(availableNetplayRooms.count-1);
+                                    KeyNavigation.down = availableNetplayRooms.itemAt(availableNetplayRooms.count-1);
                                     availableNetplayRooms.selectedButtonIndex = availableNetplayRooms.count-1;
-								}
+                                }
                             }
                             container.contentY = Math.min(Math.max(0, y - (height * 0.7)), container.contentHeight - height);
                             //console.log("index during: ",index)
@@ -798,7 +798,7 @@ FocusScope {
                             anchors.leftMargin: vpx(20)
                             anchors.verticalCenter: parent.verticalCenter
                             
-							contentItem: Text {
+                            contentItem: Text {
                                 text: playButton.text
                                 font.pixelSize: fontSize
                                 font.family: globalFonts.sans
@@ -808,8 +808,8 @@ FocusScope {
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
                             }
-							
-							background: Rectangle {
+
+                            background: Rectangle {
                                 implicitWidth: 100
                                 implicitHeight: parent.height
                                 opacity: 1.0
@@ -820,16 +820,16 @@ FocusScope {
                             }
                         }
                     }
-                }				
-				
-				SectionTitle {
-					text: qsTr("Dolphin") + api.tr
+                }
+
+                SectionTitle {
+                    text: qsTr("Dolphin") + api.tr
                     first: false
                     visible: false // hide for the moment
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 
     Item {
         id: footer
