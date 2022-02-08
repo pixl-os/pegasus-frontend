@@ -29,6 +29,8 @@
 #include <QThread>
 #include <QMetaObject>
 
+#include <QtConcurrent/QtConcurrent>
+
 
 namespace {
 QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
@@ -50,11 +52,15 @@ Game::Game(QString name, QObject* parent)
     , m_collections(new QQmlObjectListModel<model::Collection>(this))
     , m_data(std::move(name))
     , m_assets(new model::Assets(this))
-{}
+{
+   qRegisterMetaType<model::Collection*>();
+}
 
 Game::Game(QObject* parent)
     : Game(QString(), parent)
-{}
+{
+    qRegisterMetaType<model::Collection*>();
+}
 
 QString Game::developerStr() const { return joined_list(m_data.developers); }
 QString Game::publisherStr() const { return joined_list(m_data.publishers); }
@@ -201,6 +207,17 @@ Game& Game::setFiles(std::vector<model::GameFile*>&& files)
     onEntryPlayStatsChanged();
 
     return *this;
+}
+
+//to append collections one by one during during parsing
+Game& Game::setCollection(model::Collection& collection)
+{
+    QMetaObject::invokeMethod(this,"setCollection_slot", Qt::DirectConnection,Q_ARG(model::Collection*,&collection));
+    return *this;
+}
+
+void Game::setCollection_slot(model::Collection* collection){
+    m_collections->append(std::move(collection));
 }
 
 Game& Game::setCollections(std::vector<model::Collection*>&& collections)

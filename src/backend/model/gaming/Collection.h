@@ -18,6 +18,7 @@
 #pragma once
 
 #include "QtQmlTricks/QQmlObjectListModel.h"
+#include "utils/QmlHelpers.h"
 #include <QString>
 
 #ifdef Q_CC_MSVC
@@ -58,7 +59,6 @@ struct CollectionData {
 private:
     QString m_short_name;
 };
-
 
 class Collection : public QObject {
     Q_OBJECT
@@ -147,6 +147,7 @@ public:
 
 public:
     explicit Collection(QString name, QObject* parent = nullptr);
+
     int getEmulatorsCount() const { return m_data.common_emulators.count(); }
     void finalize();
 
@@ -158,6 +159,8 @@ private:
     Assets* assetsPtr() { return m_assets; }
 };
 
-
 bool sort_collections(const model::Collection* const, const model::Collection* const);
 } // namespace model
+Q_DECLARE_METATYPE(model::Collection*)
+
+

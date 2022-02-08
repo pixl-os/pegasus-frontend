@@ -125,12 +125,18 @@ void ProviderManager::run(
         // TODO: C++17
         QVector<model::Collection*> collections;
         QVector<model::Game*> games;
+
         std::tie(collections, games) = sctx.finalize(parent());
 
+        Log::info(LOGMSG("Game list post-processing took %1ms (tie including finalize)").arg(finalize_timer.elapsed()));
+
         std::swap(collections, *m_target_collection_list);
+
+        Log::info(LOGMSG("Game list post-processing took %1ms ( + swap collections)").arg(finalize_timer.elapsed()));
+
         std::swap(games, *m_target_game_list);
 
-        Log::info(LOGMSG("Game list post-processing took %1ms").arg(finalize_timer.elapsed()));
+        Log::info(LOGMSG("Game list post-processing took %1ms (+ swap games)").arg(finalize_timer.elapsed()));
         m_progress_finished = 1.f;
         emit progressChanged(m_progress_finished, "Loading theme now...");
         //sleep 1s to see animation ;-)
