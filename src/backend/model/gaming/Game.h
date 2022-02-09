@@ -232,7 +232,7 @@ public:
     Game& setCollections(std::vector<model::Collection*>&&);
 	
 	//to set append collection one by one during parsing
-    Game& setCollection(model::Collection&);
+    Game& setCollection(model::Collection*);
 	
     const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(!m_files->isEmpty()); return m_files->asList(); }
     const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(!m_collections->isEmpty()); return m_collections->asList(); }

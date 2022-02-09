@@ -210,9 +210,19 @@ Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 }
 
 //to append collections one by one during during parsing
-Game& Game::setCollection(model::Collection& collection)
+Game& Game::setCollection(model::Collection* collection)
 {
-    QMetaObject::invokeMethod(this,"setCollection_slot", Qt::DirectConnection,Q_ARG(model::Collection*,&collection));
+
+    QMetaObject::invokeMethod(this,"setCollection_slot",  Qt::QueuedConnection,Q_ARG(model::Collection*,collection));
+    //Qt::QueuedConnection
+    //Qt::DirectConnection
+    //Qt::AutoConnection
+
+    //Process event in the queue
+    //QCoreApplication::processEvents();
+
+    //m_collections->append(std::move(collection));
+
     return *this;
 }
 

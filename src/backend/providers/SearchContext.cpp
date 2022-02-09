@@ -88,7 +88,7 @@ model::Game* SearchContext::create_game_for(model::Collection& collection)
     auto* const game_ptr = new model::Game();
 
     //set collection during creation now
-    (*game_ptr).setCollection(collection);
+    //(*game_ptr).setCollection(&collection);
 
     (*game_ptr)
         .setLaunchCmd(collection.commonLaunchCmd())
@@ -296,7 +296,7 @@ void SearchContext::finalize_apply_lists()
     }
 	Log::info(LOGMSG("Game list post-processing took %1ms (+ including pair.first->setFiles(std::move(pair.second));)").arg(finalize_apply_lists_timer.elapsed()));
 
-    /*
+
     // Apply collections to games using the following HashMap
     HashMap<model::Game*, std::vector<model::Collection*>> game_collections;
     for (const auto& pair : m_collection_games) {
@@ -310,7 +310,6 @@ void SearchContext::finalize_apply_lists()
         pair.first->setCollections(std::move(pair.second));
     }
 	Log::info(LOGMSG("Game list post-processing took %1ms (+ including pair.first->setCollections(std::move(pair.second));)").arg(finalize_apply_lists_timer.elapsed()));
-    */
 
     // Apply games to collections
     for (auto& pair : m_collection_games) {
@@ -328,13 +327,13 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
     internal_finalize_timer.start();
 
     finalize_cleanup_games();
-    Log::info(LOGMSG("Game list post-processing took %1ms (+ including finalize_cleanup_games())").arg(internal_finalize_timer.elapsed()));
+    Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including finalize_cleanup_games())").arg(internal_finalize_timer.elapsed()));
 
     finalize_cleanup_collections();
-    Log::info(LOGMSG("Game list post-processing took %1ms (+ including finalize_cleanup_collections())").arg(internal_finalize_timer.elapsed()));
+    Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including finalize_cleanup_collections())").arg(internal_finalize_timer.elapsed()));
 
     finalize_apply_lists();
-    Log::info(LOGMSG("Game list post-processing took %1ms (+ including finalize_apply_lists())").arg(internal_finalize_timer.elapsed()));
+    Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including finalize_apply_lists())").arg(internal_finalize_timer.elapsed()));
 
 
     QVector<model::Game*> games;
@@ -353,7 +352,7 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
 
         games.append(pair.first);
     }
-    Log::info(LOGMSG("Game list post-processing took %1ms (+ including for (const auto& pair : m_game_entries) )").arg(internal_finalize_timer.elapsed()));
+    Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including for (const auto& pair : m_game_entries) )").arg(internal_finalize_timer.elapsed()));
 
 
 
@@ -368,14 +367,14 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
 
         collections.append(pair.second);
     }
-    Log::info(LOGMSG("Game list post-processing took %1ms (+ including for (auto& pair : m_collections) )").arg(internal_finalize_timer.elapsed()));
+    Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including for (auto& pair : m_collections) )").arg(internal_finalize_timer.elapsed()));
 
 
     std::sort(collections.begin(), collections.end(), model::sort_collections);
-    Log::info(LOGMSG("Game list post-processing took %1ms (+ including collections sorting)").arg(internal_finalize_timer.elapsed()));
+    Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including collections sorting)").arg(internal_finalize_timer.elapsed()));
 
     std::sort(games.begin(), games.end(), model::sort_games);
-    Log::info(LOGMSG("Game list post-processing took %1ms (+ including games sorting)").arg(internal_finalize_timer.elapsed()));
+    Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including games sorting)").arg(internal_finalize_timer.elapsed()));
 
 
     return std::make_pair(std::move(collections), std::move(games));
