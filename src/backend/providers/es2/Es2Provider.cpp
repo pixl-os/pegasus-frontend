@@ -31,6 +31,7 @@
 #include <QDir>
 #include <QStringBuilder>
 #include <QElapsedTimer>
+#include <QCoreApplication>
 
 namespace {
 std::vector<QString> default_config_paths()
@@ -108,10 +109,11 @@ Provider& Es2Provider::run(SearchContext& sctx)
     const Metadata metahelper(display_name(), std::move(possible_config_dirs));
     for (const SystemEntry& sysentry : systems) {
         emit progressStage(sysentry.name);
-        metahelper.find_metadata_for(sysentry, sctx);
-
         progress += progress_step;
         emit progressChanged(progress);
+		//Process event in the queue
+        QCoreApplication::processEvents();
+        metahelper.find_metadata_for(sysentry, sctx);
     }
     Log::info(LOGMSG("Stats - Global Timing: Gamelists/Assets parsing/searching took %1ms").arg(assets_timer.elapsed()));
     return *this;
