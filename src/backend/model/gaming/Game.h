@@ -227,24 +227,27 @@ public:
     Assets& assetsMut() { return *m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
+    const Collection& collections() const { return *m_collections; }
+    Collection* collectionMut() { return m_collections; }
+    Q_PROPERTY(model::Collection* collections READ collectionPtr CONSTANT)
+
     Game& setFiles(std::vector<model::GameFile*>&&);
     Game& cleanFiles();
     Game& setCollections(std::vector<model::Collection*>&&);
-	
-	//to set append collection one by one during parsing
-    Game& setCollection(model::Collection*);
-	
+		
     const QVector<model::GameFile*>& filesConst() const { Q_ASSERT(!m_files->isEmpty()); return m_files->asList(); }
-    const QVector<model::Collection*>& collectionsConst() const { Q_ASSERT(!m_collections->isEmpty()); return m_collections->asList(); }
+
     QML_OBJMODEL_PROPERTY(model::GameFile, files)
-    QML_OBJMODEL_PROPERTY(model::Collection, collections)
 
 private:
     GameData m_data;
     Assets* const m_assets;
+    Collection* m_collections;
     QVariantMap m_extra;
 
     Assets* assetsPtr() const { return m_assets; }
+    Collection* collectionPtr() const { return m_collections; }
+
 
 signals:
     void launchFileSelectorRequested();
@@ -257,7 +260,6 @@ private slots:
     void onEntryPlayStatsChanged();
 	void updateRetroAchievements_slot();
 	void initRetroAchievements_slot();
-    void setCollection_slot(model::Collection*);
 
 public:
     explicit Game(QObject* parent = nullptr);

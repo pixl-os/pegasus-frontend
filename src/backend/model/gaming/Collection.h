@@ -101,6 +101,11 @@ public:
 
     //need specific property and invokable function due to QList<struct> is not supported by QML layer
     Q_PROPERTY(int emulatorsCount READ getEmulatorsCount CONSTANT)
+
+    //to be retro-compatible with legacy "Themes" but using only one collection (ex: game.collections.get(0)....)
+    Q_INVOKABLE model::Collection* get (const int index) { if (index == 0) return this;
+                                                           else return nullptr; //as undefined
+                                                         };
     Q_INVOKABLE QString getNameAt (const int index) {return m_data.common_emulators.at(index).name;};
     Q_INVOKABLE QString getCoreAt (const int index) {return m_data.common_emulators.at(index).core;};
     Q_INVOKABLE QString getPriorityAt (const int index) {return QString::number(m_data.common_emulators.at(index).priority);};
@@ -161,6 +166,5 @@ private:
 
 bool sort_collections(const model::Collection* const, const model::Collection* const);
 } // namespace model
-Q_DECLARE_METATYPE(model::Collection*)
 
 
