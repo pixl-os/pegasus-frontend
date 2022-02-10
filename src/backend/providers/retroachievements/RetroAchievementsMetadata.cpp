@@ -347,7 +347,7 @@ QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager
 		}
 	}
 	
-	Log::info(log_tag, LOGMSG("Stats - Timing: Get token processing: %1ms").arg(get_token_timer.elapsed()));    
+	//Log::info(log_tag, LOGMSG("Stats - Timing: Get token processing: %1ms").arg(get_token_timer.elapsed()));    
 	return token;
 }	
 
@@ -368,7 +368,7 @@ int get_gameid_from_hash(QString Hash, QString log_tag, QNetworkAccessManager &m
 		gameid = apply_gameid_json(log_tag, json);
 	}
 	
-	Log::info(log_tag, LOGMSG("Stats - Timing: Get GameID processing: %1ms").arg(get_gameid_timer.elapsed()));    
+	//Log::info(log_tag, LOGMSG("Stats - Timing: Get GameID processing: %1ms").arg(get_gameid_timer.elapsed()));    
 	return gameid;
 }	
 
@@ -401,7 +401,7 @@ bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, 
 			}
 		}
 	}
-	Log::info(log_tag, LOGMSG("Stats - Timing: Get Game Details processing: %1ms").arg(get_game_details_timer.elapsed()));    
+	//Log::info(log_tag, LOGMSG("Stats - Timing: Get Game Details processing: %1ms").arg(get_game_details_timer.elapsed()));    
 	return result;
 }
 
@@ -425,7 +425,7 @@ bool get_achievements_status_from_gameid(int gameid, QString token, model::Game&
 		result = apply_achievements_status_json(game,Hardcore, log_tag, json);
 	}
 	
-	Log::info(log_tag, LOGMSG("Stats - Timing: Get achievements status processing: %1ms").arg(get_achievements_status_timer.elapsed()));    
+	//Log::info(log_tag, LOGMSG("Stats - Timing: Get achievements status processing: %1ms").arg(get_achievements_status_timer.elapsed()));    
 	return gameid;
 }
 
@@ -555,8 +555,8 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
             break;
 	} */
 	rc_hash_destroy_iterator(&iterator);
-	Log::info(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));    
-	Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
+	//Log::info(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));    
+	//Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
 	return QString::fromLocal8Bit(hash_iterator);
 }	
 //***********************END OF HASH FUNCTIONS***********************************//

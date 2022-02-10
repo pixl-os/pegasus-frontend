@@ -238,7 +238,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
     if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
     {    
-        Log::info(m_log_tag, LOGMSG("Stats - System `%1` gamelist provided %2 games")
+        Log::info(m_log_tag, LOGMSG("System `%1` gamelist provided %2 games")
         .arg(system_name, QString::number(found_games)));     
     }
     
@@ -271,7 +271,7 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchC
         Log::warning(m_log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
         return;
     }
-    Log::info(m_log_tag, LOGMSG("Stats - Found `%1`").arg(gamelist_path));
+    Log::info(m_log_tag, LOGMSG("Found `%1`").arg(gamelist_path));
 
     QFile xml_file(gamelist_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
@@ -281,7 +281,7 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchC
 
     QXmlStreamReader xml(&xml_file);
     process_gamelist_xml(xml_dir, xml, sctx, sysentry.name);
-    Log::info(LOGMSG("Stats - Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));    
+    Log::info(LOGMSG("Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));    
     
     if(!RecalboxConf::Instance().AsBool("pegasus.deactivateskrapermedia"))
     {
@@ -289,7 +289,7 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchC
         QElapsedTimer skraper_media_timer;
         skraper_media_timer.start();
         add_skraper_media_metadata(xml_dir, sctx);
-        Log::info(LOGMSG("Stats - Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
+        Log::info(LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
     }
 }
 
@@ -403,7 +403,7 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::Sea
         }
     }
  
-     Log::info(m_log_tag, LOGMSG("Stats - %1 assets found").arg(QString::number(found_assets_cnt)));
+     Log::info(m_log_tag, LOGMSG("%1 assets found").arg(QString::number(found_assets_cnt)));
    
 }
 

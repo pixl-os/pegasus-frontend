@@ -136,7 +136,7 @@ void ProviderManager::run(
 
         std::swap(games, *m_target_game_list);
 
-        Log::info(LOGMSG("Game list post-processing took %1 ms").arg(finalize_timer.elapsed()));
+        Log::info(LOGMSG("Stats - Game list post-processing took %1 ms").arg(finalize_timer.elapsed()));
         m_progress_finished = 1.f;
         emit progressChanged(m_progress_finished, "Loading theme now...");
         //sleep 1s to see animation ;-)
