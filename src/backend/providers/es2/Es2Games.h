@@ -30,8 +30,7 @@ namespace providers { namespace es2 { struct SystemEntry; } }
 namespace providers {
 namespace es2 {
 
-std::vector<QString> read_mame_blacklists(const QString&, const std::vector<QString>&);
-size_t find_games_for(const SystemEntry&, SearchContext&, const std::vector<QString>&);
+size_t find_games_for(const SystemEntry&, SearchContext&);
 size_t create_collection_for(const SystemEntry&, SearchContext&);
 
 } // namespace es2

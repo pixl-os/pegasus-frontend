@@ -93,9 +93,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
             // Find games if not Gamelist Only activated
             if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
             {
-                // Load MAME blacklist, if exists
-                const std::vector<QString> mame_blacklist = read_mame_blacklists(display_name(), possible_config_dirs);
-                const size_t found_games = find_games_for(sysentry, sctx, mame_blacklist);
+				const size_t found_games = find_games_for(sysentry, sctx);
                 Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
                 .arg(sysentry.name, QString::number(found_games)));
             }

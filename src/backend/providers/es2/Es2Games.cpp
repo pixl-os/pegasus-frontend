@@ -59,47 +59,6 @@ QStringList parse_filters(const QString& filters_raw) {
 namespace providers {
 namespace es2 {
 
-std::vector<QString> read_mame_blacklists(const QString& log_tag, const std::vector<QString>& possible_config_dirs)
-{
-    using L1Str = QLatin1String;
-
-    const QString resources_path = possible_config_dirs.front() % L1Str("/resources/");
-    const std::vector<std::pair<L1Str, L1Str>> blacklists {
-        { L1Str("mamebioses.xml"), L1Str("bios") },
-        { L1Str("mamedevices.xml"), L1Str("device") },
-    };
-
-    std::vector<QString> out;
-
-    // TODO: C++17
-    for (const auto& blacklist_entry : blacklists) {
-        const QString file_path = resources_path % blacklist_entry.first;
-        QFile file(file_path);
-        if (!file.open(QFile::ReadOnly | QFile::Text))
-            continue;
-
-        const QString line_head = QStringLiteral("<%1>").arg(blacklist_entry.second);
-        const QString line_tail = QStringLiteral("</%1>").arg(blacklist_entry.second);
-
-        QTextStream stream(&file);
-        QString line;
-        int hit_count = 0;
-        while (stream.readLineInto(&line, 128)) {
-            const bool is_valid = line.startsWith(line_head) && line.endsWith(line_tail);
-            if (!is_valid)
-                continue;
-
-            const int len = line.length() - line_head.length() - line_tail.length();
-            out.emplace_back(line.mid(line_head.length(), len));
-            hit_count++;
-        }
-
-        Log::info(log_tag, LOGMSG("Found `%1`, %2 entries loaded").arg(file_path, QString::number(hit_count)));
-    }
-
-    return out;
-}
-
 size_t create_collection_for(
     const SystemEntry& sysentry,
     SearchContext& sctx)
@@ -133,8 +92,7 @@ size_t create_collection_for(
 
 size_t find_games_for(
     const SystemEntry& sysentry,
-    SearchContext& sctx,
-    const std::vector<QString>& filename_blacklist)
+    SearchContext& sctx)
 {
     model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
 
@@ -153,12 +111,6 @@ size_t find_games_for(
         return result;
     }();
 
-    // use the blacklist maybe
-    const QVector<QStringRef> platforms = split_list(sysentry.platforms);
-    const bool use_blacklist = VEC_CONTAINS(platforms, QLatin1String("arcade"))
-                            || VEC_CONTAINS(platforms, QLatin1String("neogeo"));
-
-
     // scan for game files 
     constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto entry_flags = QDirIterator::FollowSymlinks;
@@ -172,8 +124,6 @@ size_t find_games_for(
             QFileInfo fileinfo = files_it.fileInfo();
 
             const QString filename = fileinfo.completeBaseName();
-            if (use_blacklist && VEC_CONTAINS(filename_blacklist, filename))
-                continue;
 
             QString path = ::clean_abs_path(fileinfo);
             model::Game* game_ptr = sctx.game_by_filepath(path);
