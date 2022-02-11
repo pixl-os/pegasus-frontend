@@ -115,6 +115,7 @@ enum class MetaType : unsigned char {
     FAVORITE,
     HASH,
     GENREID,
+    HIDDEN,
 };
 
 Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
@@ -140,6 +141,7 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
         { QStringLiteral("hash"), MetaType::HASH },
 		{ QStringLiteral("path"), MetaType::PATH },
 		{ QStringLiteral("genreid"), MetaType::GENREID },
+        { QStringLiteral("hidden"), MetaType::HIDDEN },
     }
     , m_date_format(QStringLiteral("yyyyMMdd'T'HHmmss"))
     , m_players_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
@@ -200,7 +202,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
         // process node
         HashMap<MetaType, QString, EnumHash> xml_props = parse_gamelist_game_node(xml);
-        if (xml_props.empty())
+        if (xml_props.empty() || (xml_props[MetaType::HIDDEN] == "true") )
             continue;
 
         const QString shell_filepath = xml_props[MetaType::PATH];
