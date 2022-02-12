@@ -29,6 +29,8 @@
 #include <QThread>
 #include <QMetaObject>
 
+#include <QtConcurrent/QtConcurrent>
+
 
 namespace {
 QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
@@ -47,14 +49,15 @@ GameData::GameData(QString new_title)
 Game::Game(QString name, QObject* parent)
     : QObject(parent)
     , m_files(new QQmlObjectListModel<model::GameFile>(this))
-    , m_collections(new QQmlObjectListModel<model::Collection>(this))
     , m_data(std::move(name))
     , m_assets(new model::Assets(this))
-{}
+{
+}
 
 Game::Game(QObject* parent)
     : Game(QString(), parent)
-{}
+{
+}
 
 QString Game::developerStr() const { return joined_list(m_data.developers); }
 QString Game::publisherStr() const { return joined_list(m_data.publishers); }
@@ -124,13 +127,13 @@ void Game::launchNetplay(const int mode, const QString& port, const QString& ip,
 
 void Game::initRetroAchievements()
 {
-	Log::debug(LOGMSG("Game::initRetroAchievements_slot() put in Qt::QueuedConnection"));
+    //Log::debug(LOGMSG("Game::initRetroAchievements_slot() put in Qt::QueuedConnection"));
 	QMetaObject::invokeMethod(this,"initRetroAchievements_slot", Qt::QueuedConnection);
 }
 
 void Game::initRetroAchievements_slot()
 {
-	Log::debug(LOGMSG("Game::initRetroAchievements_slot()"));
+    //Log::debug(LOGMSG("Game::initRetroAchievements_slot()"));
 	//Initialize Metahelper for each update and for each games for the moment
 	QString log_tag = "Retroachievements";
     try{
@@ -148,13 +151,13 @@ void Game::initRetroAchievements_slot()
 
 void Game::updateRetroAchievements()
 {
-	Log::debug(LOGMSG("Game::updateRetroAchievements_slot() put in Qt::QueuedConnection"));
+    //Log::debug(LOGMSG("Game::updateRetroAchievements_slot() put in Qt::QueuedConnection"));
 	QMetaObject::invokeMethod(this,"updateRetroAchievements_slot", Qt::QueuedConnection);
 }
 
 void Game::updateRetroAchievements_slot()
 {
-	Log::debug(LOGMSG("Game::updateRetroAchievements_slot()"));	
+    //Log::debug(LOGMSG("Game::updateRetroAchievements_slot()"));
 	//Initialize Metahelper for each update and for each games for the moment
 	QString log_tag = "Retroachievements";
     try{
@@ -205,13 +208,8 @@ Game& Game::setFiles(std::vector<model::GameFile*>&& files)
 
 Game& Game::setCollections(std::vector<model::Collection*>&& collections)
 {
-    std::sort(collections.begin(), collections.end(), model::sort_collections);
-
-    QVector<model::Collection*> modelvec;
-    modelvec.reserve(collections.size());
-    std::move(collections.begin(), collections.end(), std::back_inserter(modelvec));
-
-    m_collections->append(std::move(modelvec));
+    //finally, only one is set to go quicker
+    m_collections = std::move(collections.at(0));
     return *this;
 }
 

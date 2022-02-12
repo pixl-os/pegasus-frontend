@@ -115,6 +115,7 @@ enum class MetaType : unsigned char {
     FAVORITE,
     HASH,
     GENREID,
+    HIDDEN,
 };
 
 Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
@@ -140,6 +141,7 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
         { QStringLiteral("hash"), MetaType::HASH },
 		{ QStringLiteral("path"), MetaType::PATH },
 		{ QStringLiteral("genreid"), MetaType::GENREID },
+        { QStringLiteral("hidden"), MetaType::HIDDEN },
     }
     , m_date_format(QStringLiteral("yyyyMMdd'T'HHmmss"))
     , m_players_regex(QStringLiteral("(\\d+)(-(\\d+))?"))
@@ -187,7 +189,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
     //need collection for gamelist only activated
     model::Collection& collection = *sctx.get_or_create_collection(system_name);
-    
+	
     size_t found_games = 0;
     // read all <game> nodes
     while (xml.readNextStartElement()) {
@@ -200,7 +202,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
         // process node
         HashMap<MetaType, QString, EnumHash> xml_props = parse_gamelist_game_node(xml);
-        if (xml_props.empty())
+        if (xml_props.empty() || (xml_props[MetaType::HIDDEN] == "true") )
             continue;
 
         const QString shell_filepath = xml_props[MetaType::PATH];
@@ -222,7 +224,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
                 sctx.game_add_filepath(*game_ptr, std::move(path));
             }    
             sctx.game_add_to(*game_ptr, collection);
-            found_games++;
+			found_games++;
         }
         else
         {    
@@ -238,7 +240,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
     if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
     {    
-        Log::info(m_log_tag, LOGMSG("Stats - System `%1` gamelist provided %2 games")
+        Log::info(m_log_tag, LOGMSG("System `%1` gamelist provided %2 games")
         .arg(system_name, QString::number(found_games)));     
     }
     
@@ -271,7 +273,7 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchC
         Log::warning(m_log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
         return;
     }
-    Log::info(m_log_tag, LOGMSG("Stats - Found `%1`").arg(gamelist_path));
+    Log::info(m_log_tag, LOGMSG("Found `%1`").arg(gamelist_path));
 
     QFile xml_file(gamelist_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
@@ -281,17 +283,19 @@ void Metadata::find_metadata_for(const SystemEntry& sysentry, providers::SearchC
 
     QXmlStreamReader xml(&xml_file);
     process_gamelist_xml(xml_dir, xml, sctx, sysentry.name);
-    Log::info(LOGMSG("Stats - Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));    
+    Log::info(LOGMSG("Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));    
     
-    //to add images stored by skraper and linked to gamelist/system of ES
-    QElapsedTimer skraper_media_timer;
-    skraper_media_timer.start();
-    add_skraper_media_metadata(xml_dir, sctx);
-    Log::info(LOGMSG("Stats - Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
-    
+    if(!RecalboxConf::Instance().AsBool("pegasus.deactivateskrapermedia"))
+    {
+        //to add images stored by skraper and linked to gamelist/system of ES
+        QElapsedTimer skraper_media_timer;
+        skraper_media_timer.start();
+        add_skraper_media_metadata(xml_dir, sctx);
+        Log::info(LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
+    }
 }
 
-void Metadata::add_skraper_media_metadata(const QDir& system_dir, const providers::SearchContext& sctx) const
+void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::SearchContext& sctx) const
 {
     Log::info(m_log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
     // NOTE: The entries are ordered by priority
@@ -401,7 +405,7 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, const provider
         }
     }
  
-     Log::info(m_log_tag, LOGMSG("Stats - %1 assets found").arg(QString::number(found_assets_cnt)));
+     Log::info(m_log_tag, LOGMSG("%1 assets found").arg(QString::number(found_assets_cnt)));
    
 }
 
@@ -421,15 +425,14 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
 
     // then the numbers
     const int play_count = xml_props[MetaType::PLAYCOUNT].toInt();
-    game.setRating(qBound(0.f, xml_props[MetaType::RATING].toFloat(), 1.f));
+    game.setRating(xml_props[MetaType::RATING].toFloat());
 
     // the player count can be a range
     const QString players_field = xml_props[MetaType::PLAYERS];
     const auto players_match = m_players_regex.match(players_field);
     if (players_match.hasMatch()) {
-        short a = 0, b = 0;
-        a = players_match.captured(1).toShort();
-        b = players_match.captured(3).toShort();
+        const short a = players_match.captured(1).toShort();
+        const short b = players_match.captured(3).toShort();
         game.setPlayerCount(std::max(a, b));
     }
 

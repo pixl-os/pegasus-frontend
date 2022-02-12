@@ -260,224 +260,31 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
                             //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
 
                             //For libretro cores only for the moment
-                            if(emulatorName.toLower().contains("libretro")){
+                            if(emulatorName.contains("libretro",Qt::CaseInsensitive)){
                                 for(const providers::es2::CoreInfo& info : coreList){
-                                    // Log::debug(log_tag, LOGMSG("Core name: %1 - Core Short name found: %2").arg(coreName,QString::fromStdString(info.ShortName())));
+                                    //Log::debug(log_tag, LOGMSG("Core name: %1 - Core Short name found: %2").arg(coreName,QString::fromStdString(info.ShortName())));
                                     if (QString::fromStdString(info.ShortName()) == coreName){
-                                        // Log::debug(log_tag, LOGMSG("Core Long Name: %1 - Core version: %2").arg(QString::fromStdString(info.LongName()),QString::fromStdString(info.Version())));
+                                        //Log::debug(log_tag, LOGMSG("Core Long Name: %1 - Core version: %2").arg(QString::fromStdString(info.LongName()),QString::fromStdString(info.Version())));
                                         coreLongName = QString::fromStdString(info.LongName());
                                         coreVersion = QString::fromStdString(info.Version());
                                         break;
                                     }
                                 }
                             }
-                            //QList<QString> standaloneCore = { "citra", "dolphin", "dosbox", "duckstation", "gsplus", "hatari", "hypseus", "mupen64plus", "openbor", "oricutron", "pcsx2", "pcsx_rearmed", "ppsspp", "reicast", "scummvm", "simcoupe", "solarus", "supermodel", "xroar", };
-                            else if(emulatorName.toLower().contains("citra")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/citra.corenames");
+                            //For other cores /  standalone as "citra", "dolphin", "dosbox", "duckstation", "gsplus", "hatari", "hypseus", "mupen64plus", "openbor", "oricutron", "pcsx2", "pcsx_rearmed", "ppsspp", "reicast", "scummvm", "simcoupe", "solarus", "supermodel", "xroar"
+                            else{
+                                //Log::debug(log_tag,LOGMSG("emulatorName.toLower().toStdString(): '%1' ").arg(emulatorName.toLower()));
+                                std::string filepath = "system/configs/" + emulatorName.toLower().toStdString() + ".corenames";
+                                //Log::debug(log_tag,LOGMSG("filepath: '%1' ").arg(QString::fromStdString(filepath)));
+                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / filepath);
+
                                 for(std::string& line : Strings::Split(content, '\n'))
                                 {
                                     Strings::Vector parts = Strings::Split(line, ';');
                                     if (parts.size() == 3){
-//                                        Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
+                                        //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
                                         coreLongName = QString::fromStdString(parts[0]);
                                         coreVersion = QString::fromStdString(parts[2]);                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("dolphin")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/dolphin.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("dosbox")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/dosbox.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("duckstation")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/duckstation.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("gsplus")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/gsplus.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("hatari")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/hatari.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("hypseus")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/hypseus.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("mupen64plus")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/mupen64plus.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("openbor")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/openbor.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("oricutron")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/oricutron.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("pcsx2")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/pcsx2.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("pcsx_rearmed")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/pcsx_rearmed.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("ppsspp")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/ppsspp.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("reicast")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/reicast.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("scummvm")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/scummvm.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("simcoupe")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/simcoupe.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("solarus")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/solarus.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("supermodel")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/supermodel.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
-                                }
-                            }
-                            else if(emulatorName.toLower().contains("xroar")){
-                                std::string content = Files::LoadFile(RootFolders::DataRootFolder / "system/configs/xroar.corenames");
-                                for(std::string& line : Strings::Split(content, '\n'))
-                                {
-                                    Strings::Vector parts = Strings::Split(line, ';');
-                                    if (parts.size() == 3){
-                                        coreLongName = QString::fromStdString(parts[0]);
-                                        coreVersion = QString::fromStdString(parts[2]);
-                                    }
                                 }
                             }
 

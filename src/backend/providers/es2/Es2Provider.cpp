@@ -31,6 +31,7 @@
 #include <QDir>
 #include <QStringBuilder>
 #include <QElapsedTimer>
+#include <QCoreApplication>
 
 namespace {
 std::vector<QString> default_config_paths()
@@ -79,7 +80,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
 
     const float progress_step = 1.f / (systems.size() * 2);
     float progress = 0.f;
-    Log::info(LOGMSG("Stats - Global Timing: Systems searching took %1ms").arg(systems_timer.elapsed()));
+    Log::info(LOGMSG("Global Timing: Systems searching took %1ms").arg(systems_timer.elapsed()));
     
     // Find games (file by file) - take bios files also or other file hide
     QElapsedTimer games_timer;
@@ -92,26 +93,25 @@ Provider& Es2Provider::run(SearchContext& sctx)
             // Find games if not Gamelist Only activated
             if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
             {
-                // Load MAME blacklist, if exists
-                const std::vector<QString> mame_blacklist = read_mame_blacklists(display_name(), possible_config_dirs);
-                const size_t found_games = find_games_for(sysentry, sctx, mame_blacklist);
-                Log::info(display_name(), LOGMSG("Stats - System `%1` provided %2 games")
+				const size_t found_games = find_games_for(sysentry, sctx);
+                Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
                 .arg(sysentry.name, QString::number(found_games)));
             }
             progress += progress_step;
             emit progressChanged(progress);
     }
-    Log::info(LOGMSG("Stats - Global Timing: Game files searching took %1ms").arg(games_timer.elapsed()));
+    Log::info(LOGMSG("Global Timing: Game files searching took %1ms").arg(games_timer.elapsed()));
     // Find assets and games in case of gamelist only
     QElapsedTimer assets_timer;
     assets_timer.start(); 
     const Metadata metahelper(display_name(), std::move(possible_config_dirs));
     for (const SystemEntry& sysentry : systems) {
         emit progressStage(sysentry.name);
-        metahelper.find_metadata_for(sysentry, sctx);
-
         progress += progress_step;
         emit progressChanged(progress);
+		//Process event in the queue
+        QCoreApplication::processEvents();
+        metahelper.find_metadata_for(sysentry, sctx);
     }
     Log::info(LOGMSG("Stats - Global Timing: Gamelists/Assets parsing/searching took %1ms").arg(assets_timer.elapsed()));
     return *this;
@@ -170,15 +170,15 @@ SystemEntry Es2Provider::find_one_system(const QString shortName)
     }();
     
     for (int i = 0; i < possible_config_dirs.size(); ++i) {
-        Log::debug(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
+        //Log::debug(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
     }
 
     // Find one system
     QElapsedTimer systems_timer;
     systems_timer.start();
     SystemEntry system = find_system(display_name(), possible_config_dirs, shortName);
-    Log::debug(display_name(), LOGMSG("Stats: Found %1 system").arg(system.name));
-    Log::debug(LOGMSG("Stats - Global Timing: System searching took %1ms").arg(systems_timer.elapsed()));
+    Log::debug(display_name(), LOGMSG("Found %1 system").arg(system.name));
+    //Log::debug(LOGMSG("System searching took %1ms").arg(systems_timer.elapsed()));
 	return system;
 }
 
