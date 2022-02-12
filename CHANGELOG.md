@@ -1,9 +1,76 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - Next version - v0.0.2
+## [recalbox-integration] - 2022-02-12 - v0.0.2
 - versionning: add version from git release and OS version in Pegasus
 - localization: fix "american english" multiple menu display in buildroot
+- add "-verbose" argument to configgen launching in case of debug activated
+- introduce "information system" view:
+	- add eth0/wlan0 in "information system"
+- remove MenuBox.qml legacy code
+- introduction of "virtual keyboard" component:
+	- management of display or not of virtual keyboard
+	- introduce InputPanel to manage VirtualKeyboard UI
+	- TextFieldOption.qml done to replace progressively TextFiled.qml
+	- add loader in inputPanel to access object from child view
+	- new generic functions to manage virtual keyboard
+	- active virtualkeyboard loader only if activated in settings
+	- introduction of autoscroller for editbox using virtual keyboard
+	- fix on appsettings to remove backspace keyboard touch as cancel command
+	- fix in main to manage virtual keyboard in flickable
+	- bump theme to sync virtual keyboard dev
+- cleaning: comments some debug logs
+- introduction of "updates" management feature:
+	- first API functions and with structure to interact with QML
+	- add parsing about assets
+	- add scan structure for updates
+	- adding visible condition and scroll text for description in detailedbutton
+	- changes to integrate model and way to manage menu display in detailedbutton
+	- optimize visibility of picture and word wrapping in detailedbutton
+	- improve parrallel download of json information
+	- improve assets management from github
+	- verify version using vX.Y.Z format and manage beta version
+	- add tag in note of updates
+	- simplify way to use tag without annotate it
+	- add download manager and progress bar
+	- add selection of version index depending of beta flag
+	- modify column width to adapt with preview display in detailedbutton
+	- remove releaseTitle and keep only tag in title
+	- fix updates class in case of pre-release take into account
+	- add picture as png logo in generic dialog
+	- optimized version using until 20 parallel downloaders
+	- improve resize, margin depending data to display in detailedbutton
+	- manage icon and picture online from repo
+	- fix to remove "return" in description from repo
+	- add unit for total assets size
+	- change frequency of repo check and timer runnings
+	- add background description using color from theme in detailedbutton
+	- add management of installation steps and skeleton to run process
+	- fix in mainmenu to manage when "updates" button is visible for key nav
+	- introduction of progressbar with green and red ones.
+	- errorCode management added
+	- add restart and reboot using errorCode for updates
+	- bump theme to sync virtual keyboard dev
+- restart feature added in menu with popup of confirmation
+- introduction of "Bios Checking menu":
+	- fix bios info view
+	- add button help view 
+	- fix many property 
+	- introduction of API with md5 calculation for bios
+	- integration of bios api in QML interface
+- rename NetplayInformation to NetplayRooms
+- add display of version for all standalone emulator also as for libretro ones
+- improvements on loading performance:
+	- some metadata processing improvements
+	- add skraper media option
+	- tentative to use multithread and multicores (cancelled)
+	- fix to well display the name of gamelist under parsing
+	- change list of collections in game by a simple collection
+	- cleaning some debug/info logs
+	- remove legacy filtering about arcade games
+	- optimization loading versions detail of standalone cores
+	- fix support of "hidden" tag from gamelists
+	- bump gameos theme for perf-loading-improvements
 
 ## [recalbox-integration] - 2021-12-31 - v0.0.1
 - fix controllers: change delimiter in recalbox.conf for controller parts (to avoid issue for controller name with ":")
