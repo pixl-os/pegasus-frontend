@@ -743,8 +743,9 @@ void GamepadManagerSDL2::start(const backend::CliArgs& args)
             print_sdl_error();
     }
 
-    for (const QString& dir : paths::configDirs())
-        load_user_gamepaddb(dir);
+	//problem to use personal mapping from the beginning, impossible to have the name from udev in this case if same GUID
+    /*for (const QString& dir : paths::configDirs())
+        load_user_gamepaddb(dir);*/
 
     m_poll_timer.start(16);
 }
@@ -808,6 +809,63 @@ std::string GamepadManagerSDL2::get_user_gamepaddb_mapping(const QString& dir, c
     return ""; // not found
 }
 
+std::string GamepadManagerSDL2::get_user_gamepaddb_mapping_with_name(const QString& dir, const QString& guid_to_find, const QString& name_to_find)
+{
+    //Log::debug(m_log_tag, LOGMSG("GamepadManagerSDL2::get_user_gamepaddb_mapping(const QString& dir, const QString& guid_to_find)"));
+    constexpr size_t GUID_HEX_CNT = 16;
+    constexpr size_t GUID_STR_LEN = GUID_HEX_CNT * 2;
+
+    const QString path = dir + QLatin1String(USERCFG_FILE);
+    if (!QFileInfo::exists(path))
+        return "";
+
+    QFile db_file(path);
+    if (!db_file.open(QFile::ReadOnly | QFile::Text)) {
+        Log::warning(LOGMSG("SDL: could not open `%1`, ignored").arg(path));
+        return "";
+    }
+    Log::info(LOGMSG("SDL: loading controller mappings from `%1`").arg(path));
+
+    QTextStream db_stream(&db_file);
+    QString line;
+    int linenum = 0;
+    while (db_stream.readLineInto(&line)) {
+        linenum++;
+
+        if (line.startsWith('#'))
+            continue;
+
+        const std::string guid_str = line.left(GUID_STR_LEN).toStdString();
+        const bool has_comma = line.length() > static_cast<int>(GUID_STR_LEN)
+            && line.at(GUID_STR_LEN + 1) == QLatin1Char(',');
+        if (guid_str.length() != GUID_STR_LEN || has_comma) {
+            Log::warning(LOGMSG("SDL: in `%1` line #%2, the line format is incorrect, skipped")
+                .arg(path, QString::number(linenum)));
+            continue;
+        }
+        const auto bytes = QByteArray::fromHex(QByteArray::fromRawData(guid_str.data(), GUID_STR_LEN));
+        if (bytes.count() != GUID_HEX_CNT) {
+            Log::warning(LOGMSG("SDL: in `%1` line #%2, the GUID is incorrect, skipped")
+                .arg(path, QString::number(linenum)));
+            continue;
+        }
+
+
+		std::string existing_name = line.split(",").at(1).toStdString();
+
+        if((guid_to_find.toUtf8().constData() == guid_str) &&
+           (name_to_find.toUtf8().constData() == existing_name))
+        {
+            Log::debug(LOGMSG("SDL: user gamepad db mapping found for `%1`/'%2'")
+                .arg(guid_to_find, name_to_find));
+            std::string existing_mapping = line.toStdString();
+            return existing_mapping; //found
+        }
+    }
+    return ""; // not found
+}
+
+
 void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
 {
     //Log::debug(m_log_tag, LOGMSG("GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)"));
@@ -859,7 +917,8 @@ void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
             print_sdl_error();
             continue;
         }
-        update_mapping_store(std::move(new_mapping));
+		//may be avoid to add mapping to store ?!
+        //update_mapping_store(std::move(new_mapping));
     }
 }
 
@@ -978,7 +1037,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             return;
         }
 
-        //get mapping found by SDL DB
+        //get mapping found by SDL DB or driver itself
         const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
         
         //if no mapping, strange ?!
@@ -1026,7 +1085,8 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         std::string user_mapping = "";
         for (const QString& dir : paths::configDirs())
         {
-            user_mapping = get_user_gamepaddb_mapping(dir, guid_str);
+            //user_mapping = get_user_gamepaddb_mapping(dir, guid_str); //to change by adding name also ?! no ?
+            user_mapping = get_user_gamepaddb_mapping_with_name(dir, guid_str, name); //to change by adding name also ?! no ?
             if(user_mapping != "") break; //exit for if not empty
         }
         
@@ -1062,7 +1122,8 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 write_mappings(m_custom_mappings);
                 //force reload new mapping
                 Log::debug(m_log_tag, LOGMSG("Force reload new mapping for menu !"));
-                for (const QString& dir : paths::configDirs())
+                //TO REDO but without game loading of user gamepadddb
+				for (const QString& dir : paths::configDirs())
                     load_user_gamepaddb(dir);
             }
 			//to propose to configure or not the new controller

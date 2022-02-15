@@ -85,6 +85,8 @@ private:
     std::vector<std::string> m_custom_mappings;
     void load_user_gamepaddb(const QString&);
     std::string get_user_gamepaddb_mapping(const QString&, const QString&);
+	std::string get_user_gamepaddb_mapping_with_name(const QString&, const QString&, const QString&);
+	
 };
 
 } // namespace model
