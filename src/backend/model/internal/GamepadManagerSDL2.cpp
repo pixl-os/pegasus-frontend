@@ -743,9 +743,9 @@ void GamepadManagerSDL2::start(const backend::CliArgs& args)
             print_sdl_error();
     }
 
-	//problem to use personal mapping from the beginning, impossible to have the name from udev in this case if same GUID
-    /*for (const QString& dir : paths::configDirs())
-        load_user_gamepaddb(dir);*/
+    //Load existing user configuration in a local store but don't load the mapping in SDL for the moment.
+    for (const QString& dir : paths::configDirs())
+        load_user_gamepaddb(dir);
 
     m_poll_timer.start(16);
 }
@@ -911,14 +911,8 @@ void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
         memmove(guid.data, bytes.data(), GUID_HEX_CNT);
 
         std::string new_mapping = line.toStdString();
-        if (SDL_GameControllerAddMapping(new_mapping.data()) < 0) {
-            Log::warning(LOGMSG("SDL: in `%1` line #%2, could not add controller mapping, skipped")
-                .arg(path, QString::number(linenum)));
-            print_sdl_error();
-            continue;
-        }
-		//may be avoid to add mapping to store ?!
-        //update_mapping_store(std::move(new_mapping));
+
+        update_mapping_store(std::move(new_mapping));
     }
 }
 
@@ -1081,13 +1075,20 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         const auto guid_str = QLatin1String(guid_raw_str.data()).trimmed();
         Log::debug(m_log_tag, LOGMSG("With gUId : %1").arg(guid_str));
 
-        //check if gamepad has been configured by user previously using guid
+        //check if gamepad has been configured by user previously using guid/name
         std::string user_mapping = "";
         for (const QString& dir : paths::configDirs())
         {
             //user_mapping = get_user_gamepaddb_mapping(dir, guid_str); //to change by adding name also ?! no ?
             user_mapping = get_user_gamepaddb_mapping_with_name(dir, guid_str, name); //to change by adding name also ?! no ?
-            if(user_mapping != "") break; //exit for if not empty
+            if(user_mapping != "") {
+                //And add this mapping in SDL to be take into account
+                if (SDL_GameControllerAddMapping(user_mapping.data()) < 0) {
+                    print_sdl_error();
+                    continue;
+                }
+                break; //exit for if not empty
+            }
         }
         
         //if no user mapping defined / else we do nothing because it seems a pad already configured by user
@@ -1118,13 +1119,16 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 std::string new_mapping = create_mapping_from_es_input(inputConfigEntry);
                 //write user SDL2 mapping in es_input.cfg
                 Log::debug(m_log_tag, LOGMSG("save es_input.cfg mapping in sdl_controllers.txt to be able to use this conf in menu !"));
-                update_mapping_store(std::move(new_mapping));
-                write_mappings(m_custom_mappings);
                 //force reload new mapping
                 Log::debug(m_log_tag, LOGMSG("Force reload new mapping for menu !"));
-                //TO REDO but without game loading of user gamepadddb
-				for (const QString& dir : paths::configDirs())
-                    load_user_gamepaddb(dir);
+                //And add this mapping in SDL to be take into account
+                if (SDL_GameControllerAddMapping(new_mapping.data()) < 0) {
+                    print_sdl_error();
+                }
+                //add/udpate mapping in local store m_custom_mappings
+                update_mapping_store(std::move(new_mapping));
+                //saving of local store m_custom_mappings in file sdl_controllers.txt
+                write_mappings(m_custom_mappings);
             }
 			//to propose to configure or not the new controller
 			emit newController(device_idx, name);
