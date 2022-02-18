@@ -1182,7 +1182,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             cancel_recording();
 
         emit disconnected(device_idx);
-        //Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
+        Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
         
         const QString RemovedPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_idx));
         std::string initial_path = "";
@@ -1198,33 +1198,43 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             std::string uuid = "";
             std::string name = "";         
             const QString Parameter = QString("pegasus.pad%1").arg(i);
-            const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(i+1));
-            Strings::SplitInThree(NextPadPegasus.toUtf8().constData(), '|', uuid, name, path, true);
-            //Log::debug(m_log_tag, LOGMSG("pegasus.pad%1=%2:%3:%4").arg(QString::number(i+1),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
-            
-            if (path != "")
-            {   
-                //replace the existing one by the next one
-                RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), NextPadPegasus.toUtf8().constData());
-                //shift device data by index and recreate record
-                const SDL_JoystickID iid = m_idx_to_iid.at(i+1);
-                //Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
-                
-                m_idx_to_iid.emplace(i,iid);
-                //remove before to recreate
-                m_iid_to_idx.erase(iid);
-                m_iid_to_idx.emplace(iid,i);
-                //remove shifted value also
-                m_idx_to_iid.erase(i+1);
-                
-                //to change name in gamepad info
-                //Log::debug(m_log_tag, LOGMSG("name : %1").arg(QString::fromStdString(name)));
-                emit nameChanged(i, QString::fromStdString(name));
+            bool updated = false;
+            //find next valid one if exist
+            for(int j = (i+1); (RecalboxConf::Instance().GetPadPegasus(j) != "") && (j < MaxInputDevices); j++)
+            {
+                const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(j));
+                Strings::SplitInThree(NextPadPegasus.toUtf8().constData(), '|', uuid, name, path, true);
+                //Log::debug(m_log_tag, LOGMSG("pegasus.pad%1=%2|%3|%4").arg(QString::number(j),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
+                //Log::debug(LOGMSG("m_idx_to_iid(device_idx).count(%1): %2").arg(QString::number(i),QString::number(m_idx_to_iid.count(i))));
+                //Log::debug(LOGMSG("m_idx_to_iid(device_idx+1).count(%1): %2").arg(QString::number(j),QString::number(m_idx_to_iid.count(j))));
+                if ((path != "") && (m_idx_to_iid.count(j) != 0)){ //any instance exists
+                    //replace the existing one by the next one
+                    RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), NextPadPegasus.toUtf8().constData());
+
+                    //shift device data by index and recreate record
+                    const SDL_JoystickID iid = m_idx_to_iid.at(j);
+                    //Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
+
+                    m_idx_to_iid.emplace(i,iid);
+                    //remove before to recreate
+                    m_iid_to_idx.erase(iid);
+                    m_iid_to_idx.emplace(iid,i);
+                    //remove shifted value also
+                    m_idx_to_iid.erase(j);
+
+                    //to change name in gamepad info
+                    //Log::debug(m_log_tag, LOGMSG("name : %1").arg(QString::fromStdString(name)));
+                    updated = true;
+                    emit nameChanged(i, QString::fromStdString(name));
+                    //to exit for on succeed
+                    break;
+                }
             }
-            else
-            {//erase existing record in recalbox.conf (no need to clear hasmaps already erase and udpated)
-               RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), "");
-               emit removed(i); // remove last one in all cases
+            if(!updated){
+                //erase existing record in recalbox.conf (no need to clear hasmaps already erase and udpated)
+                Log::debug(m_log_tag, LOGMSG("Remove : %1").arg(QString::fromStdString(Parameter.toUtf8().constData())));
+                RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), "");
+                emit removed(i); // remove last one in all cases
             }
         }
         
