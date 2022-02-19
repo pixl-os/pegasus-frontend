@@ -938,6 +938,13 @@ void GamepadManagerSDL2::cancel_recording()
     m_recording.reset();
 }
 
+void GamepadManagerSDL2::move(int existingIndex, int newIndex)
+{
+    //TO DO
+    Log::debug(LOGMSG("SDL: move function - existingIndex: %1 - newIndex: %2").arg(QString::number(existingIndex),QString::number(newIndex)));
+                
+}
+
 void GamepadManagerSDL2::poll()
 {
     //Log::debug(LOGMSG("void GamepadManagerSDL2::poll()"));

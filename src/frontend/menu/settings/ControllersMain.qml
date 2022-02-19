@@ -174,6 +174,8 @@ FocusScope {
                 Repeater{
                     id:controllersList
                     model: api.internal.gamepad.devices
+                    //specific properties to manage interactions between items of the repeater
+                    property bool moveMode: false
                     onItemRemoved:{
                         //if previous focus was the removed one
                         if(controllersListItemIndexHasFocus === index){
@@ -192,6 +194,12 @@ FocusScope {
                             }
                         }
                     }
+                    onMoveModeChanged: {
+                        //DO TO
+                        //change background and add icon to display that we could move or not the item
+                        //and for index using controllersList.itemAt(index)...
+                        
+                    }
 
                     SimpleButton {
                         label: (modelData) ? "#" + (index + 1) + ": " + modelData.name : ""
@@ -206,21 +214,49 @@ FocusScope {
                         onFocusChanged:{
                             container.onFocus(this);
                         }
+                        
                         Keys.onPressed: {
+                            //Activation/Desactivation "move Mode" to change order of controllers connected
+                            if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                                event.accepted = true;
+                                controllersList.moveMode = !controllersList.moveMode;
+                                console.log("controllersList.moveMode : ", controllersList.moveMode);
+                            }
+                            //Desactivation of "move Mode" to change order of controllers connected
+                            if (api.keys.isCancel(event) && !event.isAutoRepeat) {
+                                if(controllersList.moveMode) event.accepted = true;
+                                controllersList.moveMode = false;
+                                console.log("controllersList.moveMode : ", controllersList.moveMode);
+                            }
                             //verify if finally other lists are empty or not when we are just before to change list
                             //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
-
-                                if (index > 0) KeyNavigation.up = controllersList.itemAt(index-1);
-                                else {
-
-                                    KeyNavigation.up = optAdvancedControllers;
-                                    console.log("Keys.onPressed - controllersListItemIndexHasFocus = -1;");
-                                    controllersListItemIndexHasFocus = -1;
+                                if (index > 0) {
+                                    KeyNavigation.up = controllersList.itemAt(index-1);
+                                    //Call api to change index of controller
+                                    if (controllersList.moveMode){
+                                        api.internal.gamepad.move(index,index-1);
+                                    }
+                                }
+                                else{
+                                    if(!controllersList.moveMode){
+                                        KeyNavigation.up = optAdvancedControllers;
+                                        //console.log("Keys.onPressed - controllersListItemIndexHasFocus = -1;");
+                                        controllersListItemIndexHasFocus = -1;
+                                    }
+                                    else{
+                                        KeyNavigation.up = controllersList.itemAt(0);
+                                    }
                                 }
                             }
                             if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
-                                if (index < controllersList.count-1) KeyNavigation.down = controllersList.itemAt(index+1);
+                                if (index < controllersList.count-1){
+                                    KeyNavigation.down = controllersList.itemAt(index+1);
+                                    //Call api to change index of controller
+                                    if (controllersList.moveMode){
+                                        api.internal.gamepad.move(index,index+1);
+                                    }
+                                }
                                 else KeyNavigation.down = controllersList.itemAt(controllersList.count-1);
                             }
                         }
