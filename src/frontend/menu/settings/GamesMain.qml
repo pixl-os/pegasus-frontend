@@ -137,7 +137,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.integerscale")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.integerscale",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -151,7 +150,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.smooth")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.smooth",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -211,7 +209,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.recalboxoverlays")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.recalboxoverlays",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -225,7 +222,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.showfps")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.showfps",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -244,7 +240,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.rewind")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -258,7 +253,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.autosave")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("global.autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)

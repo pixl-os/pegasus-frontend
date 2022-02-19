@@ -109,7 +109,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled");
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.enabled",checked);
                     }
                     symbol: "\uf29a"
@@ -184,7 +183,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.ertm")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.ertm",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -199,7 +197,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.hide.unknown.vendor",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -214,7 +211,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.no.name")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.hide.no.name",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -228,13 +224,12 @@ FocusScope {
                     // note: qsTr("Sony Playstation 3,4,5 controllers supported") + api.tr
                     SectionTitle {
                         text: qsTr("Sony controllers") + api.tr
-                        first: true
+//                        first: true
                         visible: optBluetoothControllers.checked
                     }
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.ps3.enabled")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.ps3.enabled",checked);
                     }
                     symbol: "\uf245"
@@ -277,7 +272,6 @@ FocusScope {
 
 //                    checked: api.internal.recalbox.getBoolParameter("controllers.db9.enabled")
 //                    onCheckedChanged: {
-//                        focus = true;
 //                        api.internal.recalbox.setBoolParameter("controllers.db9.enabled",checked);
 //                    }
 //                    symbol: "\uf13b"
@@ -292,7 +286,6 @@ FocusScope {
 
 //                    checked: api.internal.recalbox.getBoolParameter("controllers.db9.enabled")
 //                    onCheckedChanged: {
-//                        focus = true;
 //                        api.internal.recalbox.setBoolParameter("controllers.db9.enabled",checked);
 //                    }
 //                    onFocusChanged: container.onFocus(this)
@@ -313,7 +306,6 @@ FocusScope {
 //                    }
 //                    checked: api.internal.recalbox.getBoolParameter("controllers.gamecon.enabled")
 //                    onCheckedChanged: {
-//                        focus = true;
 //                        api.internal.recalbox.setBoolParameter("controllers.gamecon.enabled",checked);
 //                    }
 //                    symbol: "\uf13b"
@@ -328,7 +320,6 @@ FocusScope {
 
 //                    checked: api.internal.recalbox.getBoolParameter("controllers.gamecon.args=map")
 //                    onCheckedChanged: {
-//                        focus = true;
 //                        api.internal.recalbox.setBoolParameter("controllers.gamecon.args=map",checked);
 //                    }
 //                    onFocusChanged: container.onFocus(this)
@@ -348,7 +339,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.xarcade.enabled")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.xarcade.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -367,7 +357,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("wii.sensorbar.position")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("wii.sensorbar.position",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -381,7 +370,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("wii.realwiimotes")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("wii.realwiimotes",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -395,7 +383,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("gamecube.realgamecubepads")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("gamecube.realgamecubepads",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -414,7 +401,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.joycond.enabled")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter("controllers.joycond.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
