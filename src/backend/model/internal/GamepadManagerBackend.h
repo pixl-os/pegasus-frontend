@@ -38,7 +38,7 @@ public:
     virtual void start_recording(int, GamepadButton) {}
     virtual void start_recording(int, GamepadAxis) {}
     virtual void cancel_recording() {}
-    virtual void move(int, int) {}
+    virtual void swap(int, int) {}
 
 signals:
     void connected(int, QString);

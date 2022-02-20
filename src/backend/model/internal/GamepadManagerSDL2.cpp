@@ -938,7 +938,7 @@ void GamepadManagerSDL2::cancel_recording()
     m_recording.reset();
 }
 
-void GamepadManagerSDL2::move(int existingIndex, int newIndex)
+void GamepadManagerSDL2::swap(int device_idx1, int device_idx2)
 {
     //TO DO
     Log::debug(LOGMSG("SDL: move function - existingIndex: %1 - newIndex: %2").arg(QString::number(existingIndex),QString::number(newIndex)));

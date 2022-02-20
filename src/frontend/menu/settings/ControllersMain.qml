@@ -235,7 +235,7 @@ FocusScope {
                                     KeyNavigation.up = controllersList.itemAt(index-1);
                                     //Call api to change index of controller
                                     if (controllersList.moveMode){
-                                        api.internal.gamepad.move(index,index-1);
+                                        api.internal.gamepad.swap(index,index-1);
                                     }
                                 }
                                 else{
@@ -254,7 +254,7 @@ FocusScope {
                                     KeyNavigation.down = controllersList.itemAt(index+1);
                                     //Call api to change index of controller
                                     if (controllersList.moveMode){
-                                        api.internal.gamepad.move(index,index+1);
+                                        api.internal.gamepad.swap(index,index+1);
                                     }
                                 }
                                 else KeyNavigation.down = controllersList.itemAt(controllersList.count-1);

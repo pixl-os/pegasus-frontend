@@ -132,9 +132,9 @@ void GamepadManager::cancelConfiguration() {
     m_backend->cancel_recording();
 }
 
-void GamepadManager::move(int existingIndex, int newIndex)
+void GamepadManager::swap(int existingIndex, int newIndex)
 {
-     m_backend->move(existingIndex, newIndex);
+     m_backend->swap(existingIndex, newIndex);
 }
 
 void GamepadManager::bkOnConnected(int device_id, QString name)
