@@ -805,11 +805,63 @@ FocusScope {
         } while (result !== "");
     }
 
+    //As readSavedDevicesList but check also pairing at the same time
+    function readSavedDevicesListAndPairing(list,parameter){
+        let result = "";
+        let i = 0;
+        let icon;
+        let allmacaddresses = "";
+        //First to populate list from recalbox.conf and check if exists as paired
+        do {
+          result = api.internal.recalbox.getStringParameter(parameter + i);
+          if(result !== ""){
+            const parameters = result.split("|");
+            if(!isDebugEnv()) result = api.internal.system.run("timeout 0.02 bluetoothctl info " + parameters[0] + " | grep -i 'paired' | awk '{print $2}'");
+            //with timeout of 20 ms
+            else result = api.internal.system.run("timeout 0.02 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
+            console.log("result:",result);
+            if(result.toLowerCase().includes("yes")){
+              icon = getIcon(parameters[2],parameters[3]);
+              list.append({icon: icon, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
+              allmacaddresses = allmacaddresses + parameters[0];
+              i = i + 1;
+            }
+            else{
+              //replace by next one
+              let nextOne = api.internal.recalbox.getStringParameter(parameter + (i+1));
+              api.internal.recalbox.setStringParameter(parameter + i,nextOne);
+            }
+          }
+        } while (result !== "");
+
+        //Check if anyone paired is missing from list
+        //TO DO
+        //if(!isDebugEnv()) result = api.internal.system.run("timeout 0.1 bluetoothctl paired-devices | grep -i 'Device' | awk '{print $2\"|\";$1=\"\";gsub(/ \t]+/,\"\");print $0}'");
+        //console.log(result);
+        //with timeout of 100 ms
+        //else result = api.internal.system.run("timeout 0.1 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
+
+        /*for(var j = 0;j < output.count;j++){
+            const details = devices[j].split(" ");
+            if(!allmacaddresses.includes(details[1])){//if paired device is missing
+                //Add to list
+                icon = getIcon(details[2],"");
+                list.append({icon: icon, vendor:"", name: details[2], macaddress: details[1], service: "" });
+                //Add to recalbox.conf
+                api.internal.recalbox.setStringParameter(parameter + i,details[1] +"||" + details[2]);
+                i = i + 1;
+            }
+        }*/
+    }
+
     Component.onCompleted:{
         //delete tmp file
         var result = api.internal.system.run("rm /tmp/btlist");
-        //read devices already known
-        readSavedDevicesList(myDevicesModel,"pegasus.bt.my.device");
+
+        //read devices already known and if paired
+        readSavedDevicesListAndPairing(myDevicesModel,"pegasus.bt.my.device");
+
+        //read devices already known and to ignore
         readSavedDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
     }
 
