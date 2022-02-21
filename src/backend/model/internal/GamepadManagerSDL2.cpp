@@ -944,6 +944,7 @@ void GamepadManagerSDL2::swap(int device_idx1, int device_idx2)
     //shift device data by index and recreate record
     const SDL_JoystickID device1 = m_idx_to_iid.at(device_idx1);
     const SDL_JoystickID device2 = m_idx_to_iid.at(device_idx2);
+    Log::debug(LOGMSG("SDL: swap function - device1: %1 - device2: %2").arg(QString::number(device1),QString::number(device2)));
 
     //to hashMap to swap
     //HashMap<SDL_JoystickID, const int> m_iid_to_idx;
@@ -967,6 +968,8 @@ void GamepadManagerSDL2::swap(int device_idx1, int device_idx2)
     std::string path = "";
     std::string uuid = "";
     std::string name = "";
+	std::string sdlid = "";
+	
     const QString device1PadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_idx1));
     const QString device2PadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_idx2));
     const QString ParameterIndex1 = QString("pegasus.pad%1").arg(device_idx1);
@@ -975,11 +978,11 @@ void GamepadManagerSDL2::swap(int device_idx1, int device_idx2)
     RecalboxConf::Instance().SetString(ParameterIndex1.toUtf8().constData(), device2PadPegasus.toUtf8().constData());
 
     //emit change for device 1
-    Strings::SplitInThree(device1PadPegasus.toUtf8().constData(), '|', uuid, name, path, true);
+    Strings::SplitInFour(device1PadPegasus.toUtf8().constData(), '|', uuid, name, path, sdlid, true);
     emit nameChanged(device_idx2, QString::fromStdString(name));
 
     //emit change for device 2
-    Strings::SplitInThree(device2PadPegasus.toUtf8().constData(), '|', uuid, name, path, true);
+    Strings::SplitInFour(device2PadPegasus.toUtf8().constData(), '|', uuid, name, path, sdlid, true);
     emit nameChanged(device_idx1, QString::fromStdString(name));
 }
 
@@ -1184,12 +1187,12 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         #ifdef WITHOUT_LEGACY_SDL
         //for QT creator test without SDL 1 compatibility
         Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
-        const QString Value = QString("%1|%2|%3").arg(guid_str,name,"/dev/input/bidon");
+        const QString Value = QString("%1|%2|%3|%4").arg(guid_str,name,"/dev/input/bidon","0");
         #else
         // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
-        Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
-        const QString Value = QString("%1|%2|%3").arg(guid_str,name,SDL_JoystickDevicePathById(device_idx));
-        #endif   
+        Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(iid)));
+        const QString Value = QString("%1|%2|%3|%4").arg(guid_str,name,SDL_JoystickDevicePathById(iid),QString::number(iid));
+        #endif
         Log::debug(m_log_tag, LOGMSG("Saved as %1=%2").arg(Parameter,Value));
         RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), Value.toUtf8().constData());
         
@@ -1237,7 +1240,8 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
         std::string initial_path = "";
         std::string initial_uuid = "";
         std::string initial_name = "";
-        Strings::SplitInThree(RemovedPadPegasus.toUtf8().constData(), '|', initial_uuid, initial_name, initial_path, true);
+		std::string initial_sdlid = "";
+		Strings::SplitInFour(RemovedPadPegasus.toUtf8().constData(), '|', initial_uuid, initial_name, initial_path,initial_sdlid, true);
         
         //persistence saved in recalbox.conf (to remove this pad) and reorder others (after this pad)
         int MaxInputDevices = 10;
@@ -1245,14 +1249,15 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
         {
             std::string path = "";
             std::string uuid = "";
-            std::string name = "";         
+            std::string name = "";
+            std::string sdlid = "";
             const QString Parameter = QString("pegasus.pad%1").arg(i);
             bool updated = false;
             //find next valid one if exist
             for(int j = (i+1); (RecalboxConf::Instance().GetPadPegasus(j) != "") && (j < MaxInputDevices); j++)
             {
                 const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(j));
-                Strings::SplitInThree(NextPadPegasus.toUtf8().constData(), '|', uuid, name, path, true);
+                Strings::SplitInFour(NextPadPegasus.toUtf8().constData(), '|', uuid, name, path, sdlid, true);
                 //Log::debug(m_log_tag, LOGMSG("pegasus.pad%1=%2|%3|%4").arg(QString::number(j),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
                 //Log::debug(LOGMSG("m_idx_to_iid(device_idx).count(%1): %2").arg(QString::number(i),QString::number(m_idx_to_iid.count(i))));
                 //Log::debug(LOGMSG("m_idx_to_iid(device_idx+1).count(%1): %2").arg(QString::number(j),QString::number(m_idx_to_iid.count(j))));

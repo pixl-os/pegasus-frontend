@@ -112,6 +112,8 @@ class Strings
     static bool SplitAt(const std::string& _string, char splitter, std::string& left, std::string& right, bool trim);
     
     static bool SplitInThree(const std::string& _string, char splitter, std::string& left, std::string& middle, std::string& right, bool trim);
+
+    static bool SplitInFour(const std::string& _string, char splitter, std::string& left, std::string& middleleft, std::string& middleright, std::string& right, bool trim);
     
     static std::string Join(const std::vector<std::string>& _string, const std::string& joiner);
 

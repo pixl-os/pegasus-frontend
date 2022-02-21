@@ -886,6 +886,36 @@ bool Strings::SplitInThree(const std::string& _string, char splitter, std::strin
   return true;
 }
 
+
+bool Strings::SplitInFour(const std::string& _string, char splitter, std::string& left, std::string& middleleft, std::string& middleright, std::string& right, bool trim)
+{
+  size_t pos = _string.find(splitter);
+  if (pos == std::string::npos) return false;
+  left  = _string.substr(0, pos);
+  
+  size_t pos2 = _string.substr(pos + 1).find(splitter);
+  if (pos2 == std::string::npos) return false;
+  middleleft = _string.substr(pos + 1, pos2);
+
+  size_t pos3 = _string.substr(pos + 1 + pos2 + 1).find(splitter);
+  if (pos3 == std::string::npos) return false;
+  middleright = _string.substr(pos + 1 + pos2 + 1, pos3);
+  
+  if (_string.length() <= (pos + 1 + pos2 + 1 + pos3 + 1)) return false;
+  right = _string.substr(pos + 1 + pos2 + 1 + pos3 + 1);
+  
+  if (trim)
+  {
+    left = Trim(left, " \t\r\n");
+    right = Trim(right, " \t\r\n");
+	middleleft = Trim(middleleft, " \t\r\n");
+    middleright = Trim(middleright, " \t\r\n");
+  }
+
+  return true;
+}
+
+
 Strings::Vector Strings::SplitQuotted(const std::string& _string, char splitter)
 {
   return SplitQuotted(_string, splitter, INT32_MAX);
