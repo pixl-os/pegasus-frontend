@@ -24,7 +24,7 @@ FocusScope {
     id: root
 
     property alias bluetoothDeviceVisibility: optBluetoothDevices.visible
-    property var controllersListItemIndexHasFocus: -1
+    property int controllersListItemIndexHasFocus: -1
 
     signal close
     signal openBluetoothDevices
@@ -168,7 +168,7 @@ FocusScope {
                 }
                 SectionTitle {
                     text: qsTr("Controllers inputs") + api.tr
-                    first: false
+                    first: true
                     symbol: "\uf4a9"
                 }
                 Repeater{

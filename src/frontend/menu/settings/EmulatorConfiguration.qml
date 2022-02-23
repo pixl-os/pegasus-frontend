@@ -128,7 +128,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(system.shortName + ".smooth")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter(system.shortName + ".smooth",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -194,7 +193,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter(system.shortName + ".recalboxoverlays",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -217,7 +215,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(system.shortName + ".rewind")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter(system.shortName + ".rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
@@ -233,7 +230,6 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(system.shortName + ".autosave")
                     onCheckedChanged: {
-                        focus = true;
                         api.internal.recalbox.setBoolParameter(system.shortName + ".autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)

@@ -261,6 +261,7 @@ FocusScope {
                     text: qsTr("Password netplay") + api.tr
                     first: true
                     visible: optNetplayActivate.checked
+                    symbol: "\uf071"
                 }
                 ToggleOption {
                     id: optNetplayPswdClientActivate
