@@ -835,23 +835,22 @@ FocusScope {
         } while (result !== "");
 
         //Check if anyone paired is missing from list
-        //TO DO
-        //if(!isDebugEnv()) result = api.internal.system.run("timeout 0.1 bluetoothctl paired-devices | grep -i 'Device' | awk '{print $2\"|\";$1=\"\";gsub(/ \t]+/,\"\");print $0}'");
-        //console.log(result);
         //with timeout of 100 ms
-        //else result = api.internal.system.run("timeout 0.1 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
-
-        /*for(var j = 0;j < output.count;j++){
-            const details = devices[j].split(" ");
-            if(!allmacaddresses.includes(details[1])){//if paired device is missing
+        result = api.internal.system.run("timeout 0.1 bluetoothctl paired-devices | grep -i 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}'");
+        //console.log(result);
+        var devices = result.split("\r\n");
+        for(var j = 0;j < devices.count;j++){
+            console.log("device:",devices[j]);
+            const details = devices[j].split("|");
+            if(!allmacaddresses.includes(details[0])){//if paired device is missing
                 //Add to list
-                icon = getIcon(details[2],"");
-                list.append({icon: icon, vendor:"", name: details[2], macaddress: details[1], service: "" });
+                icon = getIcon(details[1],"");
+                list.append({icon: icon, vendor:"", name: details[1], macaddress: details[0], service: "" });
                 //Add to recalbox.conf
-                api.internal.recalbox.setStringParameter(parameter + i,details[1] +"||" + details[2]);
+                api.internal.recalbox.setStringParameter(parameter + i,details[0] +"||" + details[1]);
                 i = i + 1;
             }
-        }*/
+        }
     }
 
     Component.onCompleted:{
