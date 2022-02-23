@@ -224,7 +224,7 @@ FocusScope {
                     // note: qsTr("Sony Playstation 3,4,5 controllers supported") + api.tr
                     SectionTitle {
                         text: qsTr("Sony controllers") + api.tr
-//                        first: true
+                        first: true
                         visible: optBluetoothControllers.checked
                     }
 
