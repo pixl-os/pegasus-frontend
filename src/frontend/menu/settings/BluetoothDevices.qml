@@ -837,8 +837,8 @@ FocusScope {
         //Check if anyone paired is missing from list
         //with timeout of 100 ms
         result = api.internal.system.run("timeout 0.1 bluetoothctl paired-devices | grep -i 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}'");
-        //console.log(result);
-        var devices = result.split("\r\n");
+        console.log(result);
+        var devices = result.split("/\r?\n/"); //LF (character : \n, Unicode : U+000A, ASCII : 10, hex : 0x0a):
         for(var j = 0;j < devices.count;j++){
             console.log("device:",devices[j]);
             const details = devices[j].split("|");
