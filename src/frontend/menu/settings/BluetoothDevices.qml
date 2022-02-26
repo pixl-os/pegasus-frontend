@@ -501,14 +501,19 @@ FocusScope {
     //timer to udpate the vendor value in Discovered Devices
     Timer {
         id: vendorTimer
-        interval: 2000 // every 2 seconds to avoid saturation of server
+        interval: 3000 // every 3 seconds to avoid saturation of server
         repeat: true
         running: true
         triggeredOnStart: true
+        property int indexParameterToSaveLater : -1
         onTriggered: {
+
+            //for My Devices just discovered
             var list = myDiscoveredDevicesModel;
             var oneAPICallDone = false; // to limit to one call every 2 seconds
-            for(var i = 0;i < list.count; i++){
+            var i;
+
+            for(i = 0;i < list.count; i++){
                 if ((list.get(i).vendor === "") && !oneAPICallDone){
                     //search and update vendor from macadress
                     searchVendorAndUpdate(list, i)
@@ -521,6 +526,43 @@ FocusScope {
                     if(list.get(i).macaddress.substring(0,8) === list.get(i-1).macaddress.substring(0,8)){
                         //console.log("Same vendor: ",list.get(i-1).vendor);
                         list.get(i).vendor = list.get(i-1).vendor;
+                    }
+                    else break;
+                }
+            }
+
+
+            //for My Devices
+            list = myDevicesModel;
+            if(indexParameterToSaveLater !== -1){
+                //Update to recalbox.conf in this case also
+                /*console.log("Write of pegasus.bt.my.device",indexParameterToSaveLater,":",
+                            list.get(indexParameterToSaveLater).macaddress + "|"
+                            + list.get(indexParameterToSaveLater).vendor + "|"
+                            + list.get(indexParameterToSaveLater).name + "|"
+                            + list.get(indexParameterToSaveLater).service);*/
+                api.internal.recalbox.setStringParameter("pegasus.bt.my.device" + indexParameterToSaveLater,
+                                                         list.get(indexParameterToSaveLater).macaddress + "|"
+                                                         + list.get(indexParameterToSaveLater).vendor + "|"
+                                                         + list.get(indexParameterToSaveLater).name + "|"
+                                                         + list.get(indexParameterToSaveLater).service);
+                indexParameterToSaveLater = -1;
+            }
+            for(i = 0;i < list.count; i++){
+                if ((list.get(i).vendor === "") && !oneAPICallDone){
+                    //search and update vendor from macadress
+                    searchVendorAndUpdate(list, i)
+                    oneAPICallDone = true;
+                    indexParameterToSaveLater = i;
+                }
+                else if(list.get(i).vendor === "" && indexParameterToSaveLater === -1)
+                {
+                    //search if previous search is for the same device
+                    //console.log("Check vendor mac part: ",list.get(i).macaddress.substring(0,8));
+                    if(list.get(i).macaddress.substring(0,8) === list.get(i-1).macaddress.substring(0,8)){
+                        //console.log("Same vendor: ",list.get(i-1).vendor);
+                        list.get(i).vendor = list.get(i-1).vendor;
+                        indexParameterToSaveLater = i;
                     }
                     else break;
                 }
