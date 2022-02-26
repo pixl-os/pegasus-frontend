@@ -620,10 +620,13 @@ FocusScope {
 
     //little function to faciliate check of value in 2 name and service from a keyword
     function isKeywordFound(name,service,keyword){
-        if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
-            return true;
+        if(typeof(name) !== "undefined" && typeof(service) !== "undefined"){
+            if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
+                return true;
+            }
+            else return false;
         }
-        else return false;
+        else return false
     }
 
     //function to dynamically set icon "character" from name and/or service
