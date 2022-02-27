@@ -637,6 +637,9 @@ FocusScope {
 
         ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"}
         ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,sega"; type:"controller"}
+
+        ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"}
+
         //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
         //04/10/21: add 'plt focus'
         //06/10/21: add 'qcy50' and 'jbl go'
