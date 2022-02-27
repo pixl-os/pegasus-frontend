@@ -1072,6 +1072,7 @@ FocusScope {
                                                     { "title": myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service,
                                                       "message": connected ? (qsTr("Do you want to forget or disconnect this device ?") + api.tr) : (qsTr("Are you sure to forget this device ?") + api.tr),
                                                       "symbol": myDevicesModel.get(index).icon,
+                                                      "symbolfont" : globalFonts.awesome,
                                                       "firstchoice": connected ? qsTr("Forget") + api.tr : qsTr("Yes") + api.tr,
                                                       "secondchoice": connected ? qsTr("Disconnect") + api.tr : "",
                                                       "thirdchoice": connected ? qsTr("Cancel") + api.tr : qsTr("No") + api.tr});
@@ -1232,6 +1233,7 @@ FocusScope {
                                                     { "title": myDiscoveredDevicesModel.get(index).vendor + " " + myDiscoveredDevicesModel.get(index).name + " " + myDiscoveredDevicesModel.get(index).service,
                                                       "message": qsTr("Do you want to pair or ignored this device ?") + api.tr,
                                                       "symbol": myDiscoveredDevicesModel.get(index).icon,
+													  "symbolfont" : globalFonts.awesome,
                                                       "firstchoice": qsTr("Pair") + api.tr,
                                                       "secondchoice": qsTr("Ignored") + api.tr,
                                                       "thirdchoice": qsTr("Cancel") + api.tr});
@@ -1341,6 +1343,7 @@ FocusScope {
                                                     { "title": myIgnoredDevicesModel.get(index).vendor + " " + myIgnoredDevicesModel.get(index).name + " " + myIgnoredDevicesModel.get(index).service,
                                                       "message": qsTr("Are you sure to unblock this device ?") + api.tr,
                                                       "symbol": myIgnoredDevicesModel.get(index).icon,
+													  "symbolfont" : globalFonts.awesome,
                                                       "firstchoice": qsTr("Yes") + api.tr,
                                                       "secondchoice": "",
                                                       "thirdchoice": qsTr("No") + api.tr});

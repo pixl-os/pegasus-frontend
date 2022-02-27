@@ -24,6 +24,7 @@ FocusScope {
     property alias title: titleText.text
     property alias message: messageText.text
     property alias symbol: symbolText.text
+    property alias symbolfont : symbolText.font.family
     property alias firstchoice: okButtonText.text
     property alias secondchoice: secondButtonText.text
     property alias thirdchoice: cancelButtonText.text
