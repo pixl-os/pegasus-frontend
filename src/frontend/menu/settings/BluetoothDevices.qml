@@ -438,8 +438,11 @@ FocusScope {
             var result = "";
             //Get a list for later else stop here.
             for(var i = 0;i < list.count; i++){
-                    macaddress = list.get(i).macaddress;
-                    myDevices.itemAt(i).batteryStatusText = getBatteryStatus(macaddress);
+                    if(myDevices.itemAt(i).batteryStatusText === "" && myDevices.itemAt(i).connected) {
+                        //console.log("myDevices.itemAt(i).batteryStatusText : ",myDevices.itemAt(i).batteryStatusText);
+                        macaddress = list.get(i).macaddress;
+                        myDevices.itemAt(i).batteryStatusText = getBatteryStatus(macaddress);
+                    }
             }
         }
     }
@@ -1011,7 +1014,7 @@ FocusScope {
                     model: myDevicesModel //for test purpose
                     SimpleButton {
                         property var connected: false;
-                        property var batteryStatusText: getBatteryStatus(macaddress);
+                        property var batteryStatusText: ""
                         width: parent.width - vpx(100)
                         Text {
                             id: batteryStatus
