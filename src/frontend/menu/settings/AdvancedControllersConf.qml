@@ -214,9 +214,24 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.hide.no.name",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optBluetoothStartReset
+                    visible: optBluetoothControllers.checked
+                }
+                ToggleOption {
+                    id: optBluetoothStartReset
+                    //controllers.bluetooth.startreset=1
+                    label: qsTr("Reset Bluetooth at start") + api.tr
+                    note: qsTr("The goal is to restart the bluetooth stack at start/restart of Pegasus - could resolve issue of pairing") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.startreset")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("controllers.bluetooth.startreset",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPs3Controllers
                     visible: optBluetoothControllers.checked
                 }
+
                 ToggleOption {
                     id: optPs3Controllers
                     //controllers.ps3.enabled=1

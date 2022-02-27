@@ -946,17 +946,13 @@ Window {
         id:bluetoothRestartTimer
         interval: 500 //to restart quicker ;-)
         repeat: false // no need to repeat
-        running: true
-        triggeredOnStart: true
+        running: api.internal.recalbox.getBoolParameter("controllers.bluetooth.startreset")
+        triggeredOnStart: false
         onTriggered: {
+            console.log("bluetoothRestartTimer triggered !");
             if (!isDebugEnv()){
-                //api.internal.system.runAsync("killall bluetoothd");
-                api.internal.system.run("mount -o remount,rw /");
-                api.internal.system.runAsync("/etc/init.d/S07bluetooth stop");
-                api.internal.system.run("sleep 1");
-                api.internal.system.runAsync("/etc/init.d/S07bluetooth start");
-                api.internal.system.run("sleep 1");
-                api.internal.system.runAsync("bluetoothctl power on");
+                api.internal.system.run("/etc/init.d/S40bluetooth restart");
+                api.internal.system.run("bluetoothctl power on");
             }
         }
     }
