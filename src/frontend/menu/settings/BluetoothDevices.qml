@@ -284,20 +284,6 @@ FocusScope {
         }
     }
 
-    //function to know if we are on standard linux for testing
-    function isDebugEnv()
-    {
-        //for the moment, we use the hostname only, to improve later if possible
-        if (hostname.toLowerCase().includes("recalbox")||hostname.toLowerCase().includes("pixl"))
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
     //To keep only one line without CR or LF or hidden char
     function uniqueCleanLineCommand()
     {

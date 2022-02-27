@@ -37,7 +37,19 @@ Window {
 
     //for debug reason on QT creator to know if we are or not on a real recalbox/pixl
     property var hostname: api.internal.system.run("hostname");
-
+    //function to know if we are on standard linux for testing
+    function isDebugEnv()
+    {
+        //for the moment, we use the hostname only, to improve later if possible
+        if (hostname.toLowerCase().includes("recalbox")||hostname.toLowerCase().includes("pixl"))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 
     /*onClosing: {
         theme.source = "";
@@ -929,6 +941,25 @@ Window {
     }
     //***********************************************************END OF UPDATES PARTS*******************************************************************
 
-
+    //***********************************************************BEGIN OF BLUETOOTH RESTART*************************************************************
+    Timer {//timer to restart bluetooth service and power on
+        id:bluetoothRestartTimer
+        interval: 500 //to restart quicker ;-)
+        repeat: false // no need to repeat
+        running: true
+        triggeredOnStart: true
+        onTriggered: {
+            if (!isDebugEnv()){
+                //api.internal.system.runAsync("killall bluetoothd");
+                api.internal.system.run("mount -o remount,rw /");
+                api.internal.system.runAsync("/etc/init.d/S07bluetooth stop");
+                api.internal.system.run("sleep 1");
+                api.internal.system.runAsync("/etc/init.d/S07bluetooth start");
+                api.internal.system.run("sleep 1");
+                api.internal.system.runAsync("bluetoothctl power on");
+            }
+        }
+    }
+    //***********************************************************END OF BLUETOOTH RESTART***************************************************************
 
 }
