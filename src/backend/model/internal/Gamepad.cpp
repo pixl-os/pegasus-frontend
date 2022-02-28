@@ -19,10 +19,11 @@
 
 namespace model {
 
-Gamepad::Gamepad(const int device_id, QString name, QObject* parent)
+Gamepad::Gamepad(const int device_idx, QString name, const int device_iid, QObject* parent)
     : QObject(parent)
-    , m_device_id(device_id)
+    , m_device_idx(device_idx)
     , m_name(std::move(name))
+    , m_device_iid(device_iid)
 {}
 
 void Gamepad::setName(QString name)
@@ -30,6 +31,13 @@ void Gamepad::setName(QString name)
     m_name = std::move(name);
     emit nameChanged(m_name);
 }
+
+void Gamepad::setInstance(const int device_iid)
+{
+    m_device_iid = device_iid;
+    //emit nameChanged(m_name);
+}
+
 
 void Gamepad::setButtonState(GamepadButton button, bool pressed)
 {

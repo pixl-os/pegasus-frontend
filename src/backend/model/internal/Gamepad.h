@@ -69,14 +69,17 @@ class Gamepad : public QObject {
 
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(int deviceId READ deviceId CONSTANT)
+    Q_PROPERTY(int deviceInstance READ deviceInstance CONSTANT)
 
 public:
-    explicit Gamepad(int device_id, QString name, QObject* parent);
+    explicit Gamepad(int device_idx, QString name, int device_idd, QObject* parent);
 
-    int deviceId() const { return m_device_id; }
+    int deviceId() const { return m_device_idx; }
+    int deviceInstance() const { return m_device_iid; }
     const QString& name() const { return m_name; }
 
     void setName(QString);
+    void setInstance(int);
     void setButtonState(GamepadButton, bool);
     void setAxisState(GamepadAxis, double);
 
@@ -111,7 +114,9 @@ signals:
     void axisRightYChanged(double);
 
 private:
-    const int m_device_id;
+    const int m_device_idx;
     QString m_name;
+    int m_device_iid;
+
 };
 } // namespace model

@@ -138,14 +138,14 @@ void GamepadManager::swap(int existingIndex, int newIndex)
      m_backend->swap(existingIndex, newIndex);
 }
 
-void GamepadManager::bkOnConnected(int device_id, QString name)
+void GamepadManager::bkOnConnected(int device_idx, QString name, int device_idd)
 {
     if (name.isEmpty())
         name = QLatin1String("generic");
 
-    m_devices->append(new Gamepad(device_id, name, m_devices));
+    m_devices->append(new Gamepad(device_idx, name, device_idd, m_devices));
 
-    Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_id), name));
+    Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), name));
     
     //showpopup for 4 seconds by default
     //Depreacated, removing of icon setting at this step: emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
@@ -186,13 +186,15 @@ void GamepadManager::bkOnNewController(int device_idx, QString name)
     emit newController(device_idx, name);
 }
 
-void GamepadManager::bkOnNameChanged(int device_id, QString name)
+void GamepadManager::bkOnNameChanged(int device_idx, QString name, int device_idd)
 {
     //Log::info(m_log_tag, LOGMSG("void GamepadManager::bkOnNameChanged(int device_id, QString name)"));
     try{
-        const auto it = find_by_deviceid(*m_devices, device_id);
+        const auto it = find_by_deviceid(*m_devices, device_idx);
         if (it != m_devices->constEnd()) {
-            Log::debug(m_log_tag, LOGMSG("Set name of device %1 to '%2'").arg(pretty_id(device_id), name));
+            Log::debug(m_log_tag, LOGMSG("Set instance of device %1 to '%2'").arg(pretty_id(device_idx), pretty_id(device_idd)));
+            (*it)->setInstance(device_idd);
+            Log::debug(m_log_tag, LOGMSG("Set name of device %1 to '%2'").arg(pretty_id(device_idx), name));
             (*it)->setName(std::move(name));
         }
     }

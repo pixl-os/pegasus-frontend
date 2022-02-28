@@ -41,10 +41,10 @@ public:
     virtual void swap(int, int) {}
 
 signals:
-    void connected(int, QString);
+    void connected(int, QString, int);
     void disconnected(int);
 	void newController(int, QString);
-    void nameChanged(int, QString);
+    void nameChanged(int, QString, int);
     void removed(int);
     
     void buttonChanged(int, GamepadButton, bool);

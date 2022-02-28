@@ -202,7 +202,7 @@ FocusScope {
                     }
 
                     SimpleButton {
-                        label: (modelData) ? "#" + (index + 1) + ": " + modelData.name : ""
+                        label: (modelData) ? "#" + (index + 1) + ": " + modelData.name + " (" + modelData.deviceInstance + ")" : ""
                         // set focus only on first item
                         focus: index == 0 ? true : false
                         onActivate: {
@@ -269,7 +269,9 @@ FocusScope {
             }
         }
     }
-    MultivalueBox {
+
+    //to clean, legacy copy/paste ;-)
+    /*MultivalueBox {
         id: localeBox
         z: 3
 
@@ -278,15 +280,229 @@ FocusScope {
 
         onClose: content.focus = true
         onSelect: api.internal.settings.locales.currentIndex = index
-    }
-    MultivalueBox {
+    }*/
+    /*MultivalueBox {
         id: themeBox
         z: 3
-
         model: api.internal.settings.themes
         index: api.internal.settings.themes.currentIndex
 
         onClose: content.focus = true
         onSelect: api.internal.settings.themes.currentIndex = index
+    }*/
+
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        visible: controllersListItemIndexHasFocus !== -1
+        z:2
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.1
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to "Change controller order"
+        Rectangle {
+            id: validButtonIcon
+            height: labelA.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: !controllersList.moveMode
+            anchors {
+                right: labelA.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "A"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelA
+            text: qsTr("Change the order") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            visible: !controllersList.moveMode
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
+        }
+
+        //for the help for "stop moving"
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height*2
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: controllersList.moveMode
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "A/B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Stop Moving") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: controllersList.moveMode
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
+        }
+
+        //for the help to "gamepad layout"
+        Rectangle {
+            id: filterButtonIcon
+            height: labelY.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: !controllersList.moveMode
+
+            anchors {
+                right: labelY.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "Y"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelY
+            text: qsTr("Selected gamepad layout") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: !controllersList.moveMode
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: validButtonIcon.left; rightMargin: parent.width * 0.015
+            }
+        }
+
+        //for the help to 'RFU'
+        Rectangle {
+            id: detailButtonIcon
+            height: labelX.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return false;
+            }
+            anchors {
+                right: labelX.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "X"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelX
+            text: qsTr("") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            visible: {
+                return false;
+            }
+
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: filterButtonIcon.left; rightMargin: parent.width * 0.015
+            }
+        }
+
     }
+
+
+
+
 }

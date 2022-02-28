@@ -184,7 +184,7 @@ FocusScope {
 								if (index !== (gamepadList.count-1)) next = "  \uf3d1"; // > from ionicons
 							}
                             if (isNewController) return api.internal.gamepad.devices.get(newControllerIndex).name;
-                            else return (previous + "#" + (index + 1) + ": " + modelData.name + next);
+                            else return (previous + "#" + (index + 1) + ": " + modelData.name + " (" + modelData.deviceInstance + ")" + next);
 						}
 						else return ""; 						
 					}

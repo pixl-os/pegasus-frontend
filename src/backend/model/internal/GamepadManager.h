@@ -80,10 +80,10 @@ signals:
 	void newController(int device_idx, QString message);
 
 private slots:
-    void bkOnConnected(int, QString);
+    void bkOnConnected(int, QString, int);
     void bkOnDisconnected(int);
     void bkOnNewController(int, QString);
-    void bkOnNameChanged(int, QString);
+    void bkOnNameChanged(int, QString, int);
     void bkOnRemoved(int);
 
     void bkOnButtonCfg(int, GamepadButton);

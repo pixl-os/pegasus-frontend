@@ -942,27 +942,27 @@ void GamepadManagerSDL2::swap(int device_idx1, int device_idx2)
 {
     Log::debug(LOGMSG("SDL: swap function - device_idx1: %1 - device_idx2: %2").arg(QString::number(device_idx1),QString::number(device_idx2)));
     //shift device data by index and recreate record
-    const SDL_JoystickID device1 = m_idx_to_iid.at(device_idx1);
-    const SDL_JoystickID device2 = m_idx_to_iid.at(device_idx2);
-    Log::debug(LOGMSG("SDL: swap function - device1: %1 - device2: %2").arg(QString::number(device1),QString::number(device2)));
+    const SDL_JoystickID device_iid1 = m_idx_to_iid.at(device_idx1);
+    const SDL_JoystickID device_iid2 = m_idx_to_iid.at(device_idx2);
+    Log::debug(LOGMSG("SDL: swap function - device1: %1 - device2: %2").arg(QString::number(device_iid1),QString::number(device_iid2)));
 
     //to hashMap to swap
     //HashMap<SDL_JoystickID, const int> m_iid_to_idx;
     //HashMap<int, const SDL_JoystickID> m_idx_to_iid;
 
     //remove before
-    m_iid_to_idx.erase(device1);
-    m_iid_to_idx.erase(device2);
+    m_iid_to_idx.erase(device_iid1);
+    m_iid_to_idx.erase(device_iid2);
     m_idx_to_iid.erase(device_idx1);
     m_idx_to_iid.erase(device_idx2);
 
     //update indexes with swapped device instances
-    m_idx_to_iid.emplace(device_idx1,device2);
-    m_idx_to_iid.emplace(device_idx2,device1);
+    m_idx_to_iid.emplace(device_idx1,device_iid2);
+    m_idx_to_iid.emplace(device_idx2,device_iid1);
 
     //update instances with swapped device indexes
-    m_iid_to_idx.emplace(device1,device_idx2);
-    m_iid_to_idx.emplace(device2,device_idx1);
+    m_iid_to_idx.emplace(device_iid1,device_idx2);
+    m_iid_to_idx.emplace(device_iid2,device_idx1);
 
     //swap also in recalbox.conf also
     std::string path = "";
@@ -979,11 +979,11 @@ void GamepadManagerSDL2::swap(int device_idx1, int device_idx2)
 
     //emit change for device 1
     Strings::SplitInFour(device1PadPegasus.toUtf8().constData(), '|', uuid, name, path, sdlid, true);
-    emit nameChanged(device_idx2, QString::fromStdString(name));
+    emit nameChanged(device_idx2, QString::fromStdString(name),device_iid1);
 
     //emit change for device 2
     Strings::SplitInFour(device2PadPegasus.toUtf8().constData(), '|', uuid, name, path, sdlid, true);
-    emit nameChanged(device_idx1, QString::fromStdString(name));
+    emit nameChanged(device_idx1, QString::fromStdString(name),device_iid2);
 }
 
 void GamepadManagerSDL2::poll()
@@ -1103,7 +1103,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         SDL_Joystick* const joystick = SDL_GameControllerGetJoystick(pad);
         const SDL_JoystickID iid = SDL_JoystickInstanceID(joystick);
         
-        //Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
+        Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
 
         m_idx_to_iid.emplace(device_idx,iid);
         m_iid_to_idx.emplace(iid, device_idx);
@@ -1199,7 +1199,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         //save in file for test purpose
         RecalboxConf::Instance().Save();
 
-        emit connected(device_idx, name);
+        emit connected(device_idx, name, iid);
         }
     catch ( const std::exception & Exp ) 
     { 
@@ -1279,7 +1279,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
                     //to change name in gamepad info
                     //Log::debug(m_log_tag, LOGMSG("name : %1").arg(QString::fromStdString(name)));
                     updated = true;
-                    emit nameChanged(i, QString::fromStdString(name));
+                    emit nameChanged(i, QString::fromStdString(name),iid);
                     //to exit for on succeed
                     break;
                 }
