@@ -926,7 +926,9 @@ FocusScope {
 
                             anchors.right: deviceStatus.left
                             anchors.rightMargin: vpx(5)
-                            anchors.verticalCenter: parent.verticalCenter
+                            //anchors.verticalCenter: parent.verticalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: vpx(10)
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
                             font.family: iconfont //globalFonts.awesome
@@ -1088,7 +1090,9 @@ FocusScope {
 
                             anchors.right: isPairingIssue ? deviceDiscoveredStatus.left : parent.left
                             anchors.rightMargin: vpx(10)
-                            anchors.verticalCenter: parent.verticalCenter
+                            //anchors.verticalCenter: parent.verticalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: vpx(10)
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
                             font.family: iconfont //globalFonts.awesome
@@ -1212,7 +1216,9 @@ FocusScope {
 
                             anchors.right: parent.left
                             anchors.rightMargin: vpx(10)
-                            anchors.verticalCenter: parent.verticalCenter
+                            //anchors.verticalCenter: parent.verticalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: vpx(10)
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
                             font.family: iconfont //globalFonts.awesome

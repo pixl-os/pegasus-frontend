@@ -202,6 +202,22 @@ FocusScope {
                     }
 
                     SimpleButton {
+                        Text {
+                            id: deviceIcon
+
+                            anchors.right: parent.left
+                            anchors.rightMargin: vpx(10)
+                            //anchors.verticalCenter: parent.verticalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: vpx(10)
+
+                            color: themeColor.textLabel
+                            text : getIcon(modelData.name,"");
+                            font.pixelSize: (parent.fontSize)*getIconRatio(deviceIcon.text)
+                            font.family: getIconFont //globalFonts.awesome
+                            height: parent.height
+                            visible: true  //parent.focus
+                        }
                         label: (modelData) ? "#" + (index + 1) + ": " + modelData.name + " (" + modelData.deviceInstance + ")" : ""
                         // set focus only on first item
                         focus: index == 0 ? true : false
