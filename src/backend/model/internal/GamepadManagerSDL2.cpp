@@ -74,6 +74,9 @@ uint16_t linked_sdl_version()
 QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)
 {
     //Log::debug(LOGMSG("QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)"));
+    if (version(2, 0, 14) <= linked_ver) //use SDL 2.0.16 format with our SDL 2.0.14 (pixL version ;-)
+        return QLatin1String("2016");
+
     if (version(2, 0, 9) <= linked_ver)
         return QLatin1String("209");
 
