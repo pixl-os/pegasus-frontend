@@ -394,9 +394,17 @@ Window {
             //init parameters
             popup.title = title;
             popup.message = message;
-            //icon is optional but should be set to empty string if not use
-            popup.icon = icon;
-            popup.iconfont = globalFonts.sans;
+            //getIcon() is used optionaly but icon should be set to empty string if not use
+            //getIconFont is a global property to get font in same time of icon selected by the getIcon()
+            //if empty we search icon from message and title
+            if(icon === "") {
+                popup.icon = getIcon(title,message);
+                popup.iconfont = getIconFont;
+            }
+            else {
+                popup.icon = icon;
+                popup.iconfont = globalFonts.sans; //default font
+            }
             //delay provided in second and interval is in ms
             popupDelay.interval = delay * 1000;
 
@@ -957,5 +965,131 @@ Window {
         }
     }
     //***********************************************************END OF BLUETOOTH RESTART***************************************************************
+
+    //***********************************************************BEGIN OF DATA MODELS*******************************************************************
+    //list model to manage type of devices
+    ListModel {
+        id: myDeviceTypes
+        ListElement { type: "controller"; keywords: "controller,gamepad,stick"} //as XBOX for the moment, need icon for 360
+        ListElement { type: "audio"; keywords: "audio,av,headset,speaker"} //as XBOX for the moment, need icon for 360
+    }
+    //list model to manage icons of devices
+    ListModel {
+        id: myDeviceIcons
+
+        //CONTROLLERS PART
+        ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment, need icon for 360
+        ListElement { icon: "\uf2f0"; keywords: "xbox one"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"; iconfont: "awesome"} //as XBOX one for the moment, need icon for series
+        ListElement { icon: "\uf2f0"; keywords: "xbox,microsoft"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment, need icon for 360
+
+        ListElement { icon: "\uf2ca"; keywords: "ps5,playstation 5,dualsense"; type:"controller"; iconfont: "awesome"} //as PS4 for the moment, need icon for PS5
+        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; type:"controller"; iconfont: "awesome"} // add wireless controller as usual PS name used by Sony
+        ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"; iconfont: "awesome"}
+
+        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"}
+        ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64"; type:"controller" ; iconfont: "awesome"}
+        ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"; iconfont: "awesome"}
+
+        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,sega"; type:"controller"; iconfont: "awesome"}
+
+        //27/02/2022 2 controllers added snakebyte idroid:con and 8bitdo sn30 pro+
+        ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+"; type:"controller"; iconfont: "awesome"}
+
+        //28/02/2022 to add wheels/cockpit devices
+        ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}
+
+        //AUDIO PART
+        //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
+        //04/10/21: add 'plt focus'
+        //06/10/21: add 'qcy50' and 'jbl go'
+        ListElement { icon: "\uf1e2"; keywords: "headset,plt focus,qcy50,jbl go"; type:"audio"; iconfont: "awesome"}
+        ListElement { icon: "\uf1e1"; keywords: "speaker"; type:"audio"; iconfont: "awesome"}
+        ListElement { icon: "\uf1b0"; keywords: ""; types:"audio"; iconfont: "awesome"} //as generic icon for audio
+
+    }
+    //little function to faciliate check of value in 2 name and service from a keyword
+    function isKeywordFound(name,service,keyword){
+        if(typeof(name) !== "undefined" && typeof(service) !== "undefined"){
+            if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
+                return true;
+            }
+            else return false;
+        }
+        else return false
+    }
+
+    //to change icon size for audio ones especially and keep standard one for others.
+    function getIconRatio(icon){
+        var ratio;
+        switch(icon){
+        case "\uf1e2":
+            ratio = 2;
+            break;
+        case "\uf1e1":
+            ratio = 2;
+            break;
+        case "\uf1b0":
+            ratio = 2;
+            break;
+        case "\uf0c8":
+            ratio = 2.5
+            break;
+        case "\uf0c9":
+            ratio = 2.5
+            break;
+        default:
+            ratio = 3;
+            break;
+        }
+        return ratio;
+    }
+    property var getIconFont : globalFonts.sans //default value
+    //function to dynamically set icon "character" from name and/or service
+    function getIcon(name,service){
+        var icon = "";
+        let type = "";
+        let i = 0;
+        //search the good type
+         do{
+             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
+             for(var j = 0; j < typeKeywords.length;j++)
+             {
+                 if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
+             }
+             i = i + 1;
+         }while (type === "" && i < myDeviceTypes.count)
+        //reset counter
+         i = 0;
+        //searchIcon using the good type
+        do{
+            const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
+            for(var k = 0; k < iconKeywords.length;k++)
+            {
+                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
+                    icon = myDeviceIcons.get(i).icon;
+                    if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
+                    else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
+                    else getIconFont = globalFonts.sans; //as default one for the moment
+                }
+            }
+            i = i + 1;
+        }while (icon === "" && i < myDeviceIcons.count)
+
+        return icon;
+    }
+
+
+    //***********************************************************END OF DATA MODELS*********************************************************************
+
 
 }

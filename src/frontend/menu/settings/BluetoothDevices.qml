@@ -195,6 +195,7 @@ FocusScope {
                         if(result.toLowerCase().includes("yes")){
                             //Add to My Devices list
                             myDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
+                                         iconfont: myDiscoveredDevicesModel.get(actionListIndex).iconfont,
                                          vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
                                          name: myDiscoveredDevicesModel.get(actionListIndex).name,
                                          macaddress: myDiscoveredDevicesModel.get(actionListIndex).macaddress,
@@ -242,6 +243,7 @@ FocusScope {
                     case "Pair": // as "Ignored" in fact for second choice
                         //Add to Ignored devices list
                         myIgnoredDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
+                                     iconfont: myDiscoveredDevicesModel.get(actionListIndex).iconfont,
                                      vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
                                      name: myDiscoveredDevicesModel.get(actionListIndex).name,
                                      macaddress: myDiscoveredDevicesModel.get(actionListIndex).macaddress,
@@ -362,7 +364,7 @@ FocusScope {
                 //add to discovered list
                 //set vendor later from API & mac address
                 //we can't set vendor immediately, it will be done by timer
-                myDiscoveredDevicesModel.append({icon: icon, vendor: "", name: name, macaddress: macaddress, service: service });
+                myDiscoveredDevicesModel.append({icon: icon, iconfont: getIconFont,  vendor: "", name: name, macaddress: macaddress, service: service });
                 //console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
             }
         }
@@ -607,65 +609,6 @@ FocusScope {
         }
     }
 
-    //list model to manage type of devices
-    ListModel {
-        id: myDeviceTypes
-        ListElement { type: "controller"; keywords: "controller,gamepad,stick"} //as XBOX for the moment, need icon for 360
-        ListElement { type: "audio"; keywords: "audio,av,headset,speaker"} //as XBOX for the moment, need icon for 360
-    }
-
-    //list model to manage icons of devices
-    ListModel {
-        id: myDeviceIcons
-
-        ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360"; type:"controller"} //as XBOX for the moment, need icon for 360
-        ListElement { icon: "\uf2f0"; keywords: "xbox one"; type:"controller"}
-        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"} //as XBOX one for the moment, need icon for series
-        ListElement { icon: "\uf2f0"; keywords: "xbox,microsoft"; type:"controller"} //as XBOX for the moment, need icon for 360
-
-        ListElement { icon: "\uf2ca"; keywords: "ps5,playstation 5,dualsense"; type:"controller"} //as PS4 for the moment, need icon for PS5
-        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; type:"controller"} // add wireless controller as usual PS name used by Sony
-        ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"}
-        ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"}
-        ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"}
-
-        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"}
-        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller"}
-        ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"}
-        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64"; type:"controller"}
-        ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"}
-        ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"}
-        ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"}
-        ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"}
-
-        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"}
-        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,sega"; type:"controller"}
-
-        ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"}
-
-        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+"; type:"controller"}
-
-
-        //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
-        //04/10/21: add 'plt focus'
-        //06/10/21: add 'qcy50' and 'jbl go'
-        ListElement { icon: "\uf1e2"; keywords: "headset,plt focus,qcy50,jbl go"; type:"audio"}
-        ListElement { icon: "\uf1e1"; keywords: "speaker"; type:"audio"}
-        ListElement { icon: "\uf1b0"; keywords: ""; types:"audio"} //as generic icon for audio
-
-    }
-
-    //little function to faciliate check of value in 2 name and service from a keyword
-    function isKeywordFound(name,service,keyword){
-        if(typeof(name) !== "undefined" && typeof(service) !== "undefined"){
-            if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
-                return true;
-            }
-            else return false;
-        }
-        else return false
-    }
-
     //function to dynamically set icon "character" from name and/or service
     function getBatteryStatus(macaddress){
         var result = "";
@@ -756,63 +699,6 @@ FocusScope {
         else return ""; //no battery well detected
     }
 
-    //to change icon size for audio ones especially and keep standard one for others.
-    function getIconRatio(icon){
-        var ratio;
-        switch(icon){
-        case "\uf1e2":
-            ratio = 2;
-            break;
-        case "\uf1e1":
-            ratio = 2;
-            break;
-        case "\uf1b0":
-            ratio = 2;
-            break;
-        case "\uf0c8":
-            ratio = 2.5
-            break;
-        case "\uf0c9":
-            ratio = 2.5
-            break;
-        default:
-            ratio = 3;
-            break;
-        }
-        return ratio;
-    }
-
-    //function to dynamically set icon "character" from name and/or service
-    function getIcon(name,service){
-        let icon = "";
-        let type = "";
-        let i = 0;
-        //search the good type
-         do{
-             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
-             for(var j = 0; j < typeKeywords.length;j++)
-             {
-                 if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
-             }
-             i = i + 1;
-         }while (type === "" && i < myDeviceTypes.count)
-        //reset counter
-         i = 0;
-        //searchIcon using the good type
-        do{
-            const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
-            for(var k = 0; k < iconKeywords.length;k++)
-            {
-                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
-                    icon = myDeviceIcons.get(i).icon;
-                }
-            }
-            i = i + 1;
-        }while (icon === "" && i < myDeviceIcons.count)
-
-        return icon;
-    }
-
     //function to read saved data from recalbox.conf. Could be used for My Devices and Ignored Devices
     function saveDevicesList(list,parameter){
         //to populate list from recalbox.conf
@@ -839,7 +725,7 @@ FocusScope {
           if (result !== ""){
                 const parameters = result.split("|");
                 let icon = getIcon(parameters[2],parameters[3])
-                list.append({icon: icon, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
+                list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
           }
           i = i + 1;
         } while (result !== "");
@@ -862,7 +748,7 @@ FocusScope {
             console.log("result:",result);
             if(result.toLowerCase().includes("yes")){
               icon = getIcon(parameters[2],parameters[3]);
-              list.append({icon: icon, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
+              list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
               allmacaddresses = allmacaddresses + parameters[0];
               i = i + 1;
             }
@@ -891,7 +777,7 @@ FocusScope {
             if(!allmacaddresses.includes(details[0])){//if paired device is missing
                 //Add to list
                 icon = getIcon(details[1],"");
-                list.append({icon: icon, vendor:"", name: details[1], macaddress: details[0], service: "" });
+                list.append({icon: icon, iconfont: getIconFont, vendor:"", name: details[1], macaddress: details[0], service: "" });
                 //Add to recalbox.conf
                 api.internal.recalbox.setStringParameter(parameter + i,details[0] + "||" + details[1] + "|");
                 i = i + 1;
@@ -1043,7 +929,7 @@ FocusScope {
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
-                            font.family: globalFonts.awesome
+                            font.family: iconfont //globalFonts.awesome
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
@@ -1078,7 +964,7 @@ FocusScope {
                                                     { "title": myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service,
                                                       "message": connected ? (qsTr("Do you want to forget or disconnect this device ?") + api.tr) : (qsTr("Are you sure to forget this device ?") + api.tr),
                                                       "symbol": myDevicesModel.get(index).icon,
-                                                      "symbolfont" : globalFonts.awesome,
+                                                      "symbolfont" : myDevicesModel.get(index).iconfont,
                                                       "firstchoice": connected ? qsTr("Forget") + api.tr : qsTr("Yes") + api.tr,
                                                       "secondchoice": connected ? qsTr("Disconnect") + api.tr : "",
                                                       "thirdchoice": connected ? qsTr("Cancel") + api.tr : qsTr("No") + api.tr});
@@ -1205,7 +1091,7 @@ FocusScope {
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
-                            font.family: globalFonts.awesome
+                            font.family: iconfont //globalFonts.awesome
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
@@ -1239,7 +1125,7 @@ FocusScope {
                                                     { "title": myDiscoveredDevicesModel.get(index).vendor + " " + myDiscoveredDevicesModel.get(index).name + " " + myDiscoveredDevicesModel.get(index).service,
                                                       "message": qsTr("Do you want to pair or ignored this device ?") + api.tr,
                                                       "symbol": myDiscoveredDevicesModel.get(index).icon,
-													  "symbolfont" : globalFonts.awesome,
+                                                      "symbolfont" : myDiscoveredDevicesModel.get(index).iconfont,
                                                       "firstchoice": qsTr("Pair") + api.tr,
                                                       "secondchoice": qsTr("Ignored") + api.tr,
                                                       "thirdchoice": qsTr("Cancel") + api.tr});
@@ -1329,7 +1215,7 @@ FocusScope {
                             anchors.verticalCenter: parent.verticalCenter
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
-                            font.family: globalFonts.awesome
+                            font.family: iconfont //globalFonts.awesome
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
@@ -1349,7 +1235,7 @@ FocusScope {
                                                     { "title": myIgnoredDevicesModel.get(index).vendor + " " + myIgnoredDevicesModel.get(index).name + " " + myIgnoredDevicesModel.get(index).service,
                                                       "message": qsTr("Are you sure to unblock this device ?") + api.tr,
                                                       "symbol": myIgnoredDevicesModel.get(index).icon,
-													  "symbolfont" : globalFonts.awesome,
+                                                      "symbolfont" : myIgnoredDevicesModel.get(index).iconfont,
                                                       "firstchoice": qsTr("Yes") + api.tr,
                                                       "secondchoice": "",
                                                       "thirdchoice": qsTr("No") + api.tr});

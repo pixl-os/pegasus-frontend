@@ -47,6 +47,7 @@ inline QString pretty_id(int device_id) {
     return QLatin1String("0x") % QString::number(device_id, 16);
 }
 
+/*Depreacted: done in QML part now to maintain list in QML
 QString getIconByName(QString name)
 {
 	//check if xbox or ps4 pad for surprise ;-)
@@ -65,7 +66,7 @@ QString getIconByName(QString name)
 		icon = "\uf0c7";
 	}
 	return icon;
-}
+}*/
 
 } // namespace
 
@@ -147,9 +148,9 @@ void GamepadManager::bkOnConnected(int device_id, QString name)
     Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_id), name));
     
     //showpopup for 4 seconds by default
-    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
-    
-    emit connected(device_id);
+    //Depreacated, removing of icon setting at this step: emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
+    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(""), 4);
+    emit connected(device_idx);
     
 }
 
@@ -167,8 +168,9 @@ void GamepadManager::bkOnDisconnected(int device_id)
         Log::info(m_log_tag, LOGMSG("Disconnected device %1 (%2)").arg(pretty_id(device_id), name));
 
 		//showpopup for 4 seconds by default
-		emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);		
-		
+        //Depreacted to set icon here: emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
+        emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(""), 4);
+
         emit disconnected(std::move(name));
     }
     catch ( const std::exception & Exp ) 
