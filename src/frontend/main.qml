@@ -1008,6 +1008,10 @@ Window {
         //28/02/2022 to add wheels/cockpit devices
         ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}
 
+        //28/02/2022 to add arcade panel device
+        //2 codes exists "\uf0cd" & "\uf0ce", respectivelly fill and transparent version
+        ListElement { icon: "\uf0cd"; keywords: "dragonrise,xinmo,xin-mo"; type:"controller"; iconfont: "awesome"}
+
         //AUDIO PART
         //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
         //04/10/21: add 'plt focus'
