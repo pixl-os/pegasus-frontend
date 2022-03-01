@@ -202,6 +202,8 @@ FocusScope {
                     }
 
                     SimpleButton {
+                        selectButton: controllersList.moveMode && focus
+                        showUnderline: !selectButton
                         Text {
                             id: deviceIcon
 
@@ -219,6 +221,24 @@ FocusScope {
                             visible: true  //parent.focus
                         }
                         label: (modelData) ? "#" + (index + 1) + ": " + modelData.name + " (" + modelData.deviceInstance + ")" : ""
+                        Text {
+                            id: moveIcon
+
+                            anchors.left: parent.right
+                            anchors.leftMargin: vpx(10)
+                            anchors.verticalCenter: parent.verticalCenter
+                            //anchors.bottom: parent.bottom
+                            //anchors.bottomMargin: vpx(10)
+
+                            color: themeColor.textLabel
+                            text : "\uf220"
+                            font.pixelSize: (parent.fontSize)*getIconRatio(moveIcon.text)
+                            font.family: globalFonts.ion
+                            height: parent.height
+                            visible: controllersList.moveMode && parent.focus
+                        }
+
+
                         // set focus only on first item
                         focus: index == 0 ? true : false
                         onActivate: {
@@ -235,14 +255,14 @@ FocusScope {
                             //Activation/Desactivation "move Mode" to change order of controllers connected
                             if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                                 event.accepted = true;
-                                controllersList.moveMode = !controllersList.moveMode;
-                                console.log("controllersList.moveMode : ", controllersList.moveMode);
+                                if(controllersList.count > 1) controllersList.moveMode = !controllersList.moveMode;
+                                //console.log("controllersList.moveMode : ", controllersList.moveMode);
                             }
                             //Desactivation of "move Mode" to change order of controllers connected
                             if (api.keys.isCancel(event) && !event.isAutoRepeat) {
                                 if(controllersList.moveMode) event.accepted = true;
                                 controllersList.moveMode = false;
-                                console.log("controllersList.moveMode : ", controllersList.moveMode);
+                                //console.log("controllersList.moveMode : ", controllersList.moveMode);
                             }
                             //verify if finally other lists are empty or not when we are just before to change list
                             //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
@@ -331,96 +351,6 @@ FocusScope {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
-        //for the help to "Change controller order"
-        Rectangle {
-            id: validButtonIcon
-            height: labelA.height
-            width: height
-            radius: width * 0.5
-            border { color: "#777"; width: vpx(1) }
-            color: "transparent"
-            visible: !controllersList.moveMode
-            anchors {
-                right: labelA.left
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: vpx(1)
-                margins: vpx(10)
-            }
-            Text {
-                text: "A"
-                color: "#777"
-                font {
-                    family: global.fonts.sans
-                    pixelSize: parent.height * 0.7
-                }
-                anchors.centerIn: parent
-            }
-        }
-
-        Text {
-            id: labelA
-            text: qsTr("Change the order") + api.tr
-            verticalAlignment: Text.AlignTop
-            color: "#777"
-            visible: !controllersList.moveMode
-            font {
-                family: global.fonts.sans
-                pixelSize: vpx(22)
-                capitalization: Font.SmallCaps
-            }
-            anchors {
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: vpx(-1)
-                right: parent.right; rightMargin: parent.width * 0.015
-            }
-        }
-
-        //for the help for "stop moving"
-        Rectangle {
-            id: backButtonIcon
-            height: labelB.height
-            width: height*2
-            radius: width * 0.5
-            border { color: "#777"; width: vpx(1) }
-            color: "transparent"
-            visible: controllersList.moveMode
-
-            anchors {
-                right: labelB.left
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: vpx(1)
-                margins: vpx(10)
-            }
-            Text {
-                text: "A/B"
-                color: "#777"
-                font {
-                    family: global.fonts.sans
-                    pixelSize: parent.height * 0.7
-                }
-                anchors.centerIn: parent
-            }
-        }
-
-        Text {
-            id: labelB
-            text: qsTr("Stop Moving") + api.tr
-            verticalAlignment: Text.AlignTop
-            visible: controllersList.moveMode
-
-            color: "#777"
-            font {
-                family: global.fonts.sans
-                pixelSize: vpx(22)
-                capitalization: Font.SmallCaps
-            }
-            anchors {
-                verticalCenter: parent.verticalCenter
-                verticalCenterOffset: vpx(-1)
-                right: parent.right; rightMargin: parent.width * 0.015
-            }
-        }
-
         //for the help to "gamepad layout"
         Rectangle {
             id: filterButtonIcon
@@ -463,7 +393,100 @@ FocusScope {
             anchors {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: vpx(-1)
-                right: validButtonIcon.left; rightMargin: parent.width * 0.015
+                right: (controllersList.count > 1) ? validButtonIcon.left : parent.right;
+                rightMargin: parent.width * 0.015
+            }
+        }
+
+
+        //for the help to "Change controller order"
+        Rectangle {
+            id: validButtonIcon
+            height: labelA.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: (controllersList.count > 1) //!controllersList.moveMode
+            anchors {
+                right: labelA.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: controllersList.moveMode ? vpx(5) : vpx(10)
+            }
+            Text {
+                text: "A"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelA
+            text: controllersList.moveMode ? "/" : qsTr("Change the order") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            visible: (controllersList.count > 1)
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: controllersList.moveMode ? backButtonIcon.left : parent.right
+                rightMargin: controllersList.moveMode ? vpx(5) : parent.width * 0.015
+            }
+        }
+
+        //for the help for "stop moving"
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: controllersList.moveMode
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Stop moving") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: controllersList.moveMode
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
             }
         }
 
