@@ -22,8 +22,6 @@
 #include "Log.h"
 #include "Paths.h"
 #include "utils/StdStringHelpers.h"
-//to access recalbox.conf
-#include "RecalboxConf.h"
 
 #include <QDataStream>
 #include <QFile>
@@ -941,60 +939,6 @@ void GamepadManagerSDL2::cancel_recording()
     m_recording.reset();
 }
 
-void GamepadManagerSDL2::swap(int device_id1, int device_id2)
-{
-    //we just swap order in the gamepad list, we should not modify device_iid (SDL instance id) and device_idx (index of SDL connection)
-    Log::debug(LOGMSG("SDL: swap function - device_id: %1 - device_id: %2").arg(QString::number(device_id1),QString::number(device_id2)));
-
-    //shift device data by index and recreate record
-    //const SDL_JoystickID device_iid1 = m_idx_to_iid.at(device_idx1);
-    //const SDL_JoystickID device_iid2 = m_idx_to_iid.at(device_idx2);
-    //Log::debug(LOGMSG("SDL: swap function - device1: %1 - device2: %2").arg(QString::number(device_iid1),QString::number(device_iid2)));
-
-    //to hashMap to swap
-    //HashMap<SDL_JoystickID, const int> m_iid_to_idx;
-    //HashMap<int, const SDL_JoystickID> m_idx_to_iid;
-
-    //remove before
-    /*
-    m_iid_to_idx.erase(device_iid1);
-    m_iid_to_idx.erase(device_iid2);
-    m_idx_to_iid.erase(device_idx1);
-    m_idx_to_iid.erase(device_idx2);
-
-    //update indexes with swapped device instances
-    m_idx_to_iid.emplace(device_idx1,device_iid2);
-    m_idx_to_iid.emplace(device_idx2,device_iid1);
-
-    //update instances with swapped device indexes
-    m_iid_to_idx.emplace(device_iid1,device_idx2);
-    m_iid_to_idx.emplace(device_iid2,device_idx1);
-    */
-
-    //swap also in recalbox.conf also
-    std::string path = "";
-    std::string uuid = "";
-    std::string name = "";
-    std::string sdlidx = "";
-	
-    const QString device1PadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_id1));
-    const QString device2PadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_id2));
-    const QString ParameterIndex1 = QString("pegasus.pad%1").arg(device_id1);
-    const QString ParameterIndex2 = QString("pegasus.pad%1").arg(device_id2);
-    RecalboxConf::Instance().SetString(ParameterIndex2.toUtf8().constData(), device1PadPegasus.toUtf8().constData());
-    RecalboxConf::Instance().SetString(ParameterIndex1.toUtf8().constData(), device2PadPegasus.toUtf8().constData());
-
-    //emit change for device 1
-    Strings::SplitInFour(device1PadPegasus.toUtf8().constData(), '|', uuid, name, path, sdlidx, true);
-    const SDL_JoystickID device_iid1 = m_idx_to_iid.at(QString::fromStdString(sdlidx).toInt());
-    emit nameChanged(device_id2, QString::fromStdString(name),device_iid1);
-
-    //emit change for device 2
-    Strings::SplitInFour(device2PadPegasus.toUtf8().constData(), '|', uuid, name, path, sdlidx, true);
-    const SDL_JoystickID device_iid2 = m_idx_to_iid.at(QString::fromStdString(sdlidx).toInt());
-    emit nameChanged(device_id1, QString::fromStdString(name),device_iid2);
-}
-
 void GamepadManagerSDL2::poll()
 {
     //Log::debug(LOGMSG("void GamepadManagerSDL2::poll()"));
@@ -1190,28 +1134,19 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 			//to propose to configure or not the new controller
 			emit newController(device_idx, name);
         }
-       
-        //persistence saved in recalbox.conf
-        const QString Parameter = QString("pegasus.pad%1").arg(device_idx);
-        #ifdef WITHOUT_LEGACY_SDL
-        //for QT creator test without SDL 1 compatibility
-        Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
-        const QString Value = QString("%1|%2|%3|%4").arg(guid_str,name,"/dev/input/bidon",QString::number(device_idx));
-        #else
-        // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
-        Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
-        Log::debug(m_log_tag, LOGMSG("And instance using device_idx : %1").arg(QString::number(device_idx)));
-        Log::debug(m_log_tag, LOGMSG("And instance using iid : %1").arg(QString::number(iid)));
-        //we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
-        const QString Value = QString("%1|%2|%3|%4").arg(guid_str,name,SDL_JoystickDevicePathById(device_idx),QString::number(device_idx));
-        #endif
-        Log::debug(m_log_tag, LOGMSG("Saved as %1=%2").arg(Parameter,Value));
-        RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), Value.toUtf8().constData());
-        
-        //save in file for test purpose
-        RecalboxConf::Instance().Save();
-
-        emit connected(device_idx, name, iid); //device_idx = device_id when we connect device
+		#ifdef WITHOUT_LEGACY_SDL
+		//for QT creator test without SDL 1 compatibility
+		Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
+		const QString JoystickDevicePath = "/dev/input/bidon";
+		#else
+		// SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
+		Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
+		Log::debug(m_log_tag, LOGMSG("And instance using device_idx : %1").arg(QString::number(device_idx)));
+		Log::debug(m_log_tag, LOGMSG("And instance using iid : %1").arg(QString::number(iid)));
+		//we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
+		const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx));
+		#endif
+        emit connected(device_idx, guid_str, name, SDL_JoystickDevicePathById(device_idx), iid); //device_idx = device_id when we connect device
         }
     catch ( const std::exception & Exp ) 
     { 
@@ -1242,75 +1177,29 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
         m_iid_to_idx.erase(instance_id);
         m_idx_to_iid.erase(device_idx);
         
-        if (m_recording.device == device_idx) //TO DO: is it the good one ?
+        if (m_recording.device == device_idx) //Good here finally, the index should be used, but still to verify in other function also, take care !
             cancel_recording();
 
-
-        //TO DO: emit only for the good device_idx identified
-        emit disconnected(device_idx);
-        Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
-        
-
-        //TO DO: we don't remove the good PAD if we moved PAD !!!!
-        const QString RemovedPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_idx));
-        std::string initial_path = "";
-        std::string initial_uuid = "";
-        std::string initial_name = "";
-        std::string initial_sdlidx = "";
-        Strings::SplitInFour(RemovedPadPegasus.toUtf8().constData(), '|', initial_uuid, initial_name, initial_path,initial_sdlidx, true);
-        
-        //persistence saved in recalbox.conf (to remove this pad) and reorder others (after this pad)
-        int MaxInputDevices = 10;
-        for(int i = device_idx; (RecalboxConf::Instance().GetPadPegasus(i) != "") && (i < MaxInputDevices); i++)
-        {
-            std::string path = "";
-            std::string uuid = "";
-            std::string name = "";
-            std::string sdlidx = "";
-            const QString Parameter = QString("pegasus.pad%1").arg(i);
-            bool updated = false;
-            //find next valid one if exist
-            for(int j = (i+1); (RecalboxConf::Instance().GetPadPegasus(j) != "") && (j < MaxInputDevices); j++)
-            {
-                const QString NextPadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(j));
-                Strings::SplitInFour(NextPadPegasus.toUtf8().constData(), '|', uuid, name, path, sdlidx, true);
-                //Log::debug(m_log_tag, LOGMSG("pegasus.pad%1=%2|%3|%4").arg(QString::number(j),QString::fromStdString(uuid),QString::fromStdString(name),QString::fromStdString(path)));
-                //Log::debug(LOGMSG("m_idx_to_iid(device_idx).count(%1): %2").arg(QString::number(i),QString::number(m_idx_to_iid.count(i))));
-                //Log::debug(LOGMSG("m_idx_to_iid(device_idx+1).count(%1): %2").arg(QString::number(j),QString::number(m_idx_to_iid.count(j))));
-                if ((path != "") && (m_idx_to_iid.count(j) != 0)){ //any instance exists
-                    //replace the existing one by the next one
-                    RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), NextPadPegasus.toUtf8().constData());
-
-                    //shift device data by index and recreate record
-                    const SDL_JoystickID iid = m_idx_to_iid.at(j);
-                    //Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
-
-                    m_idx_to_iid.emplace(i,iid);
-                    //remove before to recreate
-                    m_iid_to_idx.erase(iid);
-                    m_iid_to_idx.emplace(iid,i);
-                    //remove shifted value also
-                    m_idx_to_iid.erase(j);
-
-                    //to change name in gamepad info
-                    //Log::debug(m_log_tag, LOGMSG("name : %1").arg(QString::fromStdString(name)));
-                    updated = true;
-                    emit nameChanged(i, QString::fromStdString(name),iid);
-                    //to exit for on succeed
-                    break;
-                }
-            }
-            if(!updated){
-                //erase existing record in recalbox.conf (no need to clear hasmaps already erase and udpated)
-                Log::debug(m_log_tag, LOGMSG("Remove : %1").arg(QString::fromStdString(Parameter.toUtf8().constData())));
-                RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), "");
-                emit removed(i); // remove last one in all cases
-            }
-        }
-        
-        //save in file for test purpose
-        RecalboxConf::Instance().Save();
-
+		//Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
+        emit disconnected(device_idx); /*diconnected change to use SDL "connection" index 
+									   remove also in model:gamepad & an change recalbox.conf now.*/        
+									   
+		//need to clean also other index now due to removal of one pad
+		for(int i = 0; (i <= m_idx_to_iid.size()) && (m_idx_to_iid.size() != 0); i++){ //we check more than hashmap to take into account the one removed
+			if(i > device_idx){ //if index upper
+				if (m_idx_to_iid.count(i) == 1){ //if index exist
+				//need to redo hasmaps
+				const SDL_JoystickID iid idd = m_idx_to_iid.at(i); //keep instance
+				//remove previous value
+				m_iid_to_idx.erase(idd);
+				m_idx_to_iid.erase(i);
+				//store new value using an index decremented
+				m_iid_to_idx.emplace(iid,i-1);
+				m_idx_to_iid.emplace(i-1,iid);
+				//Request to update indexes in model::gamepad 
+                emit indexChanged(i, i-1);				
+			}
+		}
     }
     catch ( const std::exception & Exp ) 
     { 
@@ -1495,8 +1384,7 @@ void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 
 
 std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const field, const char* const recording_field,
                                                            const SDL_GameControllerButtonBind& current_bind,
-                                                           std::string mapping)
-{
+                                                           std::string mapping){
     // new mapping
     if (field == recording_field)
         return std::string(field) + ':' + m_recording.sign + m_recording.value;

@@ -69,8 +69,8 @@ public:
     Q_INVOKABLE void swap(int, int);
 
 signals:
-    void connected(int deviceId);
-    void disconnected(QString deviceId);
+    //void connected(int deviceId);
+    //void disconnected(QString deviceId);
 
     void buttonConfigured(int deviceId, model::GamepadManager::GMButton button);
     void axisConfigured(int deviceId, model::GamepadManager::GMAxis axis);
@@ -80,10 +80,11 @@ signals:
 	void newController(int device_idx, QString message);
 
 private slots:
-    void bkOnConnected(int, QString, int);
+    void bkOnConnected(int, QString, QString, QString, int);
     void bkOnDisconnected(int);
     void bkOnNewController(int, QString);
-    void bkOnNameChanged(int, QString, int);
+    void bkOnNameChanged(int, QString);
+	void bkOnIndexChanged(int, int);
     void bkOnRemoved(int);
 
     void bkOnButtonCfg(int, GamepadButton);

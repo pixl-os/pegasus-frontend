@@ -37,7 +37,6 @@ public:
     void start_recording(int, GamepadButton) final;
     void start_recording(int, GamepadAxis) final;
     void cancel_recording() final;
-    void swap(int, int) final;
 
 private slots:
     void poll();

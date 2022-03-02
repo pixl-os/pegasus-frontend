@@ -75,9 +75,9 @@ class Gamepad : public QObject {
 public:
     explicit Gamepad(int device_id, QString name, int device_idd, int device_idx, QObject* parent);
 
-    int deviceId() const { return m_device_id; }
-    int deviceInstance() const { return m_device_iid; }
-    int deviceIndex() const { return m_device_idx; }
+    int deviceId() const { return m_device_id; } // as player id
+    int deviceInstance() const { return m_device_iid; } // as sdl instance id
+    int deviceIndex() const { return m_device_idx; } // as index of connection and change during deconnection
 
     const QString& name() const { return m_name; }
 
