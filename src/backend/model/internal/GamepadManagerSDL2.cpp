@@ -22,6 +22,8 @@
 #include "Log.h"
 #include "Paths.h"
 #include "utils/StdStringHelpers.h"
+#include "utils/Strings.h"
+
 
 #include <QDataStream>
 #include <QFile>
@@ -1146,7 +1148,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 		//we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
 		const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx));
 		#endif
-        emit connected(device_idx, guid_str, name, SDL_JoystickDevicePathById(device_idx), iid); //device_idx = device_id when we connect device
+        emit connected(device_idx, guid_str, name, JoystickDevicePath, iid); //device_idx = device_id when we connect device
         }
     catch ( const std::exception & Exp ) 
     { 
@@ -1164,14 +1166,19 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 
 void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
 {
-    //Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)"));
+    Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)"));
     try{
         Q_ASSERT(m_iid_to_idx.count(instance_id) == 1);
         Q_ASSERT(m_iid_to_device.count(instance_id) == 1);
 
         const int device_idx = m_iid_to_idx.at(instance_id);
-        //Log::debug(m_log_tag, LOGMSG("int device_idx : %1").arg(device_idx));
-        
+        Log::debug(m_log_tag, LOGMSG("int device_idx : %1").arg(device_idx));
+        Log::debug(m_log_tag, LOGMSG("int instance_id : %1").arg(instance_id));
+
+        //Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
+        emit disconnected(instance_id); /*diconnected change to SDL "connection" index
+                                       remove also in model:gamepad & an change recalbox.conf now.*/
+
         //erase existing device index/device and instance id
         m_iid_to_device.erase(instance_id);
         m_iid_to_idx.erase(instance_id);
@@ -1180,24 +1187,21 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
         if (m_recording.device == device_idx) //Good here finally, the index should be used, but still to verify in other function also, take care !
             cancel_recording();
 
-		//Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
-        emit disconnected(device_idx); /*diconnected change to use SDL "connection" index 
-									   remove also in model:gamepad & an change recalbox.conf now.*/        
-									   
 		//need to clean also other index now due to removal of one pad
-		for(int i = 0; (i <= m_idx_to_iid.size()) && (m_idx_to_iid.size() != 0); i++){ //we check more than hashmap to take into account the one removed
+        for(int i = 0; (i <= (int)m_idx_to_iid.size()) && (m_idx_to_iid.size() != 0); i++){ //we check more than hashmap to take into account the one removed
 			if(i > device_idx){ //if index upper
 				if (m_idx_to_iid.count(i) == 1){ //if index exist
-				//need to redo hasmaps
-				const SDL_JoystickID iid idd = m_idx_to_iid.at(i); //keep instance
-				//remove previous value
-				m_iid_to_idx.erase(idd);
-				m_idx_to_iid.erase(i);
-				//store new value using an index decremented
-				m_iid_to_idx.emplace(iid,i-1);
-				m_idx_to_iid.emplace(i-1,iid);
-				//Request to update indexes in model::gamepad 
-                emit indexChanged(i, i-1);				
+                    //need to redo hasmaps
+                    const SDL_JoystickID iid = m_idx_to_iid.at(i); //keep instance
+                    //remove previous value
+                    m_iid_to_idx.erase(iid);
+                    m_idx_to_iid.erase(i);
+                    //store new value using an index decremented
+                    m_iid_to_idx.emplace(iid,i-1);
+                    m_idx_to_iid.emplace(i-1,iid);
+                    //Request to update indexes in model::gamepad & recalbox.conf
+                    emit indexChanged(i, i-1);
+                }
 			}
 		}
     }

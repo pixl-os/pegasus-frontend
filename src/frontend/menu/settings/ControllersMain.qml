@@ -220,7 +220,7 @@ FocusScope {
                             height: parent.height
                             visible: true  //parent.focus
                         }
-                        label: (modelData) ? "#" + (index + 1) + ": " + modelData.name + " (idx:" + modelData.deviceId + "/iid:" + modelData.deviceInstance + ")" : ""
+                        label: (modelData) ? "#" + (index + 1) + ": " + modelData.name + " (idx:" + modelData.deviceIndex + "/iid:" + modelData.deviceInstance + ")" : ""
                         Text {
                             id: moveIcon
 

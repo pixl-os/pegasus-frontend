@@ -69,8 +69,8 @@ class Gamepad : public QObject {
 
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(int deviceId READ deviceId CONSTANT) //position in Gamepad #?
-    Q_PROPERTY(int deviceInstance READ deviceInstance CONSTANT) //SDL instance
-    Q_PROPERTY(int deviceIndex READ deviceIndex CONSTANT) //SDL index (at connection and could change when any device is disconnected)
+    Q_PROPERTY(int deviceInstance READ deviceInstance NOTIFY instanceChanged) //SDL instance
+    Q_PROPERTY(int deviceIndex READ deviceIndex NOTIFY indexChanged) //SDL index (at connection and could change when any device is disconnected)
 
 public:
     explicit Gamepad(int device_id, QString name, int device_idd, int device_idx, QObject* parent);
@@ -90,6 +90,9 @@ public:
 signals:
     // NOTE: moc can't handle signals in preprocessor code
     void nameChanged(QString);
+    void instanceChanged(int);
+    void indexChanged(int);
+
 
     void buttonUpChanged(bool);
     void buttonDownChanged(bool);

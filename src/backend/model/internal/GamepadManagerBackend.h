@@ -44,6 +44,7 @@ signals:
     void disconnected(int);
 	void newController(int, QString);
     void nameChanged(int, QString);
+    void indexChanged(int, int);
     void removed(int);
     
     void buttonChanged(int, GamepadButton, bool);

@@ -36,11 +36,13 @@ void Gamepad::setName(QString name)
 void Gamepad::setInstance(const int device_iid)
 {
     m_device_iid = device_iid;
+    emit instanceChanged(m_device_iid);
 }
 
 void Gamepad::setIndex(const int device_idx)
 {
     m_device_idx = device_idx;
+    emit indexChanged(m_device_idx);
 }
 
 void Gamepad::setButtonState(GamepadButton button, bool pressed)

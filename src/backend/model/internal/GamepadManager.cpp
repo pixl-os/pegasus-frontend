@@ -57,6 +57,15 @@ find_by_deviceidx(QQmlObjectListModel<model::Gamepad>& model, int device_idx)
         model.constEnd(),
         [device_idx](const model::Gamepad* const gp){ return gp->deviceIndex() == device_idx; });
 }
+//to search by SDL instance
+QQmlObjectListModel<model::Gamepad>::const_iterator
+find_by_deviceiid(QQmlObjectListModel<model::Gamepad>& model, int device_iid)
+{
+    return std::find_if(
+        model.constBegin(),
+        model.constEnd(),
+        [device_iid](const model::Gamepad* const gp){ return gp->deviceInstance() == device_iid; });
+}
 
 inline QString pretty_id(int device_id) {
     return QLatin1String("0x") % QString::number(device_id, 16);
@@ -85,6 +94,8 @@ GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
             this, &GamepadManager::bkOnNewController);			            
     connect(m_backend, &GamepadManagerBackend::nameChanged,
             this, &GamepadManager::bkOnNameChanged);
+    connect(m_backend, &GamepadManagerBackend::indexChanged,
+            this, &GamepadManager::bkOnIndexChanged);
     connect(m_backend, &GamepadManagerBackend::removed,
             this, &GamepadManager::bkOnRemoved);
 
@@ -137,8 +148,12 @@ void GamepadManager::swap(int device_id1, int device_id2)
     std::string sdlidx = "";	
 		
     const QString device1PadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_id1));
+    Log::debug(m_log_tag, LOGMSG("device_id2: %1 device1PadPegasus: %2").arg(QString::number(device_id2), device1PadPegasus));
+
     const QString device2PadPegasus = QString::fromStdString(RecalboxConf::Instance().GetPadPegasus(device_id2));
-	RecalboxConf::Instance().SetPadPegasus(device_id1,device2PadPegasus.toUtf8().constData());
+    Log::debug(m_log_tag, LOGMSG("device_id1: %1 device2PadPegasus: %2").arg(QString::number(device_id1), device2PadPegasus));
+
+    RecalboxConf::Instance().SetPadPegasus(device_id1,device2PadPegasus.toUtf8().constData());
 	RecalboxConf::Instance().SetPadPegasus(device_id2,device1PadPegasus.toUtf8().constData());
 	
     //swap now in model::gamepad also
@@ -150,30 +165,33 @@ void GamepadManager::swap(int device_id1, int device_id2)
         const auto it = find_by_deviceid(*m_devices, device_id1);
         if (it != m_devices->constEnd()) {
 			name1 = (*it)->name();
-			idd1 = (*it)->deviceInstance();
+            iid1 = (*it)->deviceInstance();
 			idx1 = (*it)->deviceIndex();
         }
-		QString name1;
-		int instance1;
-		int index1;
+        QString name2;
+        int iid2;
+        int idx2;
 		//search second device
 		const auto it2 = find_by_deviceid(*m_devices, device_id2);
         if (it2 != m_devices->constEnd()) {
 			name2 = (*it2)->name();
-			idd2 = (*it2)->deviceInstance();
+            iid2 = (*it2)->deviceInstance();
 			idx2 = (*it2)->deviceIndex();
         }
 		
 		//swap information
 		if (it != m_devices->constEnd()) {
-			(*it)->setName(std::move(name2));
-			(*it)->setInstance(idd2));
-			(*it)->setIndex(idx2));
+
+            //(*it)->setName(std::move(name2));
+            (*it)->setName(name2);
+            (*it)->setInstance(iid2);
+            (*it)->setIndex(idx2);
 		}
 		if (it2 != m_devices->constEnd()) {
-			(*it2)->setName(std::move(name1));
-			(*it2)->setInstance(idd1));
-			(*it2)->setIndex(idx1));
+            //(*it2)->setName(std::move(name1));
+            (*it2)->setName(name1);
+            (*it2)->setInstance(iid1);
+            (*it2)->setIndex(idx1);
 		}		
     }
     catch ( const std::exception & Exp ) 
@@ -195,40 +213,41 @@ void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString 
 	//save in file immediately for test/follow-up purpose
 	RecalboxConf::Instance().Save();	
 
-    m_devices->append(new Gamepad(device_idx, name, device_idd, device_idx, m_devices)); //device_id equals to device_idx at connnection
+    m_devices->append(new Gamepad(device_idx, device_name, device_idd, device_idx, m_devices)); //device_id equals to device_idx at connnection
 
-    Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), name));
+    Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), device_name));
     
     //showpopup for 4 seconds by default
     //Depreacated, removing of icon setting at this step: emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
-    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(""), 4);
+    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(device_name),QStringLiteral("%1").arg(""), 4);
 }
 
-void GamepadManager::bkOnDisconnected(int device_idx)
+void GamepadManager::bkOnDisconnected(int device_iid)
 {
     QString name;
     
     try{
         QString name;
-		int device_id
-        
-		//const auto it = find_by_deviceid(*m_devices, device_id);
-		const auto it = find_by_deviceidx(*m_devices, device_idx);
-		
+        int device_id;
+        int device_idx;
+
+        Log::info(m_log_tag, LOGMSG("Disconnected device from iid: %1").arg(pretty_id(device_iid)));
+        const auto it = find_by_deviceiid(*m_devices, device_iid);
 		if (it != m_devices->constEnd()) {
             name = (*it)->name();
 			device_id = (*it)->deviceId();
-            //finally, remove device independently in a second time
-        }
-		
-        Log::info(m_log_tag, LOGMSG("Disconnected device %1 (%2)").arg(pretty_id(device_idx), name));
+            device_idx = (*it)->deviceIndex();
+            Log::info(m_log_tag, LOGMSG("Disconnected device from id: %1 (%2)").arg(pretty_id(device_id), name));
+            Log::info(m_log_tag, LOGMSG("Disconnected device from index: %1 (%2)").arg(pretty_id(device_idx), name));
 
-		//showpopup for 4 seconds by default
-        //Depreacted to set icon here: emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
-        emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(""), 4);
-		
-		//to remove in model::gamepad and in recalbox.conf
-		bkOnRemoved(device_id); 
+            //finally, remove device independently in a second time
+            //to remove in model::gamepad and in recalbox.conf
+            bkOnRemoved(device_id);
+
+            //showpopup for 4 seconds by default
+            //Depreacted to set icon here: emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
+            emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(""), 4);
+            }
     }
     catch ( const std::exception & Exp ) 
     { 
@@ -262,11 +281,9 @@ void GamepadManager::bkOnNameChanged(int device_id, QString name)
 void GamepadManager::bkOnIndexChanged(int device_idx1, int device_idx2)
 {
     try{
-		int device_id
+        int device_id;
 		const auto it = find_by_deviceidx(*m_devices, device_idx1);
-		
 		if (it != m_devices->constEnd()) {
-            name = (*it)->name();
 			device_id = (*it)->deviceId();
             Log::debug(m_log_tag, LOGMSG("Change index of device '%1' with '%2'").arg(pretty_id(device_id), pretty_id(device_idx2)));
             (*it)->setIndex(device_idx2);
@@ -292,9 +309,10 @@ void GamepadManager::bkOnIndexChanged(int device_idx1, int device_idx2)
 		newPadPegasusValue.append("|");
 		newPadPegasusValue.append(sdlidx);
 		//write with nen value
-		RecalboxConf::Instance().SetPadPegasus(device_id,newPadPegasusValue));
+        Log::debug(m_log_tag, LOGMSG("newPadPegasusValue: %1").arg(QString::fromStdString(newPadPegasusValue)));
+        RecalboxConf::Instance().SetPadPegasus(device_id,newPadPegasusValue);
 		//save in file for test/follow-up purpose
-		RecalboxConf::Instance().Save();	
+        RecalboxConf::Instance().Save();
     }
     catch ( const std::exception & Exp ) 
     { 
