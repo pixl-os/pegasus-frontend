@@ -143,7 +143,7 @@ void GamepadManager::bkOnConnected(int device_idx, QString name, int device_idd)
     if (name.isEmpty())
         name = QLatin1String("generic");
 
-    m_devices->append(new Gamepad(device_idx, name, device_idd, m_devices));
+    m_devices->append(new Gamepad(device_idx, name, device_idd, device_idx, m_devices)); //device_id equals to device_idx at connnection
 
     Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), name));
     
