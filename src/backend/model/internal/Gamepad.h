@@ -68,7 +68,7 @@ class Gamepad : public QObject {
 #undef GEN
 
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
-    Q_PROPERTY(int deviceId READ deviceId CONSTANT) //position in Gamepad #?
+    Q_PROPERTY(int deviceId READ deviceId NOTIFY idChanged) //position in Gamepad #?
     Q_PROPERTY(int deviceInstance READ deviceInstance NOTIFY instanceChanged) //SDL instance
     Q_PROPERTY(int deviceIndex READ deviceIndex NOTIFY indexChanged) //SDL index (at connection and could change when any device is disconnected)
 
@@ -82,6 +82,7 @@ public:
     const QString& name() const { return m_name; }
 
     void setName(QString);
+    void setId(int);
     void setInstance(int);
     void setIndex(int);
     void setButtonState(GamepadButton, bool);
@@ -92,7 +93,7 @@ signals:
     void nameChanged(QString);
     void instanceChanged(int);
     void indexChanged(int);
-
+    void idChanged(int);
 
     void buttonUpChanged(bool);
     void buttonDownChanged(bool);
@@ -121,7 +122,7 @@ signals:
     void axisRightYChanged(double);
 
 private:
-    const int m_device_id;
+    int m_device_id;
     QString m_name;
     int m_device_iid;
     int m_device_idx;

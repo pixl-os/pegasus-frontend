@@ -33,6 +33,12 @@ void Gamepad::setName(QString name)
     emit nameChanged(m_name);
 }
 
+void Gamepad::setId(const int device_id)
+{
+    m_device_id = device_id;
+    emit idChanged(m_device_id);
+}
+
 void Gamepad::setInstance(const int device_iid)
 {
     m_device_iid = device_iid;

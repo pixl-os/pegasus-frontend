@@ -285,7 +285,7 @@ void GamepadManager::bkOnIndexChanged(int device_idx1, int device_idx2)
 		const auto it = find_by_deviceidx(*m_devices, device_idx1);
 		if (it != m_devices->constEnd()) {
 			device_id = (*it)->deviceId();
-            Log::debug(m_log_tag, LOGMSG("Change index of device '%1' with '%2'").arg(pretty_id(device_id), pretty_id(device_idx2)));
+            Log::debug(m_log_tag, LOGMSG("Change index of device id: '%1' with new index: '%2'").arg(pretty_id(device_id), pretty_id(device_idx2)));
             (*it)->setIndex(device_idx2);
         }		
 
@@ -340,10 +340,22 @@ void GamepadManager::bkOnRemoved(int device_id)
 				if (i != MaxInputDevices-1){
 					//Get next line 
 					std::string NextPadPegasus = RecalboxConf::Instance().GetPadPegasus(i+1);
+                    Log::info(m_log_tag, LOGMSG("Update pegasus.pad%1 : %2").arg(QString::number(i),QString::fromStdString(NextPadPegasus)));
 					//Set existing line with next one
 					RecalboxConf::Instance().SetPadPegasus(i,NextPadPegasus);
+                    if(NextPadPegasus!= ""){//if next one not empty
+                        //change id in gamepad::model
+                        const auto it2 = find_by_deviceid(*m_devices, i+1);
+                        if (it2 != m_devices->constEnd())
+                        {
+                            (*it2)->setId(i);
+                        }
+                    }
 				}
-				else RecalboxConf::Instance().SetPadPegasus(i,"");
+                else{
+                    Log::info(m_log_tag, LOGMSG("Update pegasus.pad%1 : %2").arg(QString::number(i),""));
+                    RecalboxConf::Instance().SetPadPegasus(i,"");
+                }
 			}
 			//save in file for test/follow-up purpose
 			RecalboxConf::Instance().Save();			
