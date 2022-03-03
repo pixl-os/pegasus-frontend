@@ -37,7 +37,7 @@ FocusScope {
         root.close();
     }
     readonly property var gamepad: isNewController ? gamepadList.model.get(newControllerIndex) : gamepadList.model.get(gamepadList.currentIndex)
-    readonly property bool hasGamepads: gamepad !== null
+    readonly property bool hasGamepads: (gamepad !== null) || (gamepadList.count !== 0)
 
     property ConfigField recordingField: null
  
@@ -174,7 +174,7 @@ FocusScope {
                 GamepadName {
                     text: {
 						// to add info to notice that one or several controllers  is/are available !
-                        //console.log("Controller: #", newControllerIndex," - isNewController: ", isNewController);
+                        console.log("Controller: #", newControllerIndex," - isNewController: ", isNewController);
                         if (modelData) {
                             var previous = "";
                             var next = "";
