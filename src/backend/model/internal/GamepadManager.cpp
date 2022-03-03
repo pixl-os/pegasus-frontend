@@ -338,18 +338,22 @@ void GamepadManager::bkOnRemoved(int device_id)
 			for(int i = device_id; (RecalboxConf::Instance().GetPadPegasus(i) != "") && (i < MaxInputDevices); i++)
 			{
 				if (i != MaxInputDevices-1){
-					//Get next line 
-					std::string NextPadPegasus = RecalboxConf::Instance().GetPadPegasus(i+1);
-                    Log::info(m_log_tag, LOGMSG("Update pegasus.pad%1 : %2").arg(QString::number(i),QString::fromStdString(NextPadPegasus)));
-					//Set existing line with next one
-					RecalboxConf::Instance().SetPadPegasus(i,NextPadPegasus);
-                    if(NextPadPegasus!= ""){//if next one not empty
-                        //change id in gamepad::model
-                        const auto it2 = find_by_deviceid(*m_devices, i+1);
-                        if (it2 != m_devices->constEnd())
-                        {
-                            (*it2)->setId(i);
-                        }
+                    //check and change id in gamepad::model
+                    const auto it2 = find_by_deviceid(*m_devices, i+1);
+                    if (it2 != m_devices->constEnd()) //if exist
+                    {
+                        //Get next line
+                        std::string NextPadPegasus = RecalboxConf::Instance().GetPadPegasus(i+1);
+                        Log::info(m_log_tag, LOGMSG("Update pegasus.pad%1 : %2").arg(QString::number(i),QString::fromStdString(NextPadPegasus)));
+                        //Set existing line with next one
+                        RecalboxConf::Instance().SetPadPegasus(i,NextPadPegasus);
+                        //set id to avoid issue
+                        (*it2)->setId(i);
+                    }
+                    else
+                    {
+                        Log::info(m_log_tag, LOGMSG("Update pegasus.pad%1 : %2").arg(QString::number(i),""));
+                        RecalboxConf::Instance().SetPadPegasus(i,"");
                     }
 				}
                 else{
