@@ -1521,6 +1521,7 @@ void GamepadManagerSDL2::finish_recording()
     write_mappings(m_custom_mappings);
 
     //Log::debug(LOGMSG("m_recording.value : %1").arg(QString::fromStdString(m_recording.value))); 
+    Log::debug(LOGMSG("m_recording.device : %1").arg(QString::number(m_recording.device)));
 
     if (m_recording.target_button != GamepadButton::INVALID)
     {
@@ -1530,7 +1531,7 @@ void GamepadManagerSDL2::finish_recording()
     else
     {
         //Log::debug(LOGMSG("emit axisConfigured(m_recording.device, m_recording.target_axis);"));
-        emit axisConfigured(m_recording.device, m_recording.target_axis);
+		emit axisConfigured(m_recording.device, m_recording.target_axis);
     }    
 
     m_recording.reset();

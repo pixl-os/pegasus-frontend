@@ -36,7 +36,16 @@ FocusScope {
         root.stopEscapeTimer();
         root.close();
     }
-    readonly property var gamepad: isNewController ? gamepadList.model.get(newControllerIndex) : gamepadList.model.get(gamepadList.model.get(gamepadList.currentIndex).deviceIndex)
+    readonly property var gamepad: {
+        if(isNewController) return gamepadList.model.get(newControllerIndex);
+        else{
+            var selectedGamepad = gamepadList.model.get(gamepadList.currentIndex);
+            console.log("Selected gamepad.deviceId : ", selectedGamepad.deviceId);
+            console.log("Selected gamepad.deviceIndex : ",selectedGamepad.deviceIndex);
+            console.log("Selected gamepad.deviceInstance : ",selectedGamepad.deviceInstance);
+            return selectedGamepad;
+        }
+    }
     readonly property bool hasGamepads: (gamepad !== null) || (gamepadList.count !== 0)
 
     property ConfigField recordingField: null
