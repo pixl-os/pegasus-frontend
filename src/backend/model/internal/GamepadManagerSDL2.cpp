@@ -1146,7 +1146,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 		Log::debug(m_log_tag, LOGMSG("And instance using device_idx : %1").arg(QString::number(device_idx)));
 		Log::debug(m_log_tag, LOGMSG("And instance using iid : %1").arg(QString::number(iid)));
 		//we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
-		const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx));
+        const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx);
 		#endif
         emit connected(device_idx, guid_str, name, JoystickDevicePath, iid); //device_idx = device_id when we connect device
         }
