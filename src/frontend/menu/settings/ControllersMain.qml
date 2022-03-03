@@ -223,7 +223,7 @@ FocusScope {
                         label: (modelData) ? "#" + (index + 1) + ": " + modelData.name +
                                              (api.internal.recalbox.getBoolParameter("emulationstation.debuglogs") ?
                                              " (id:" + modelData.deviceId + "/idx:" + modelData.deviceIndex + "/iid:" + modelData.deviceInstance + ")" :
-                                             " (" +modelData.deviceIndex + ")") :
+                                             " (" +modelData.deviceInstance + ")") :
                                              ""
                         Text {
                             id: moveIcon
