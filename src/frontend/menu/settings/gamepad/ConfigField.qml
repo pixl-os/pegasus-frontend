@@ -64,11 +64,11 @@ Rectangle {
 		if (validProgress > 1.0) {
 			if(inputType === "button")
 			{
-				api.internal.gamepad.configureButton(gamepad.deviceId, input);
+                api.internal.gamepad.configureButton(gamepad.deviceIndex, input);
 			}
 			else if(inputType === "axis")
 			{
-				api.internal.gamepad.configureAxis(gamepad.deviceId, input);
+				api.internal.gamepad.configureAxis(gamepad.deviceIndex, input);
 			}
 		}	
 		root.stopValidTimer();

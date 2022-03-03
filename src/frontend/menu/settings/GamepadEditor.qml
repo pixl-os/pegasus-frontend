@@ -36,7 +36,7 @@ FocusScope {
         root.stopEscapeTimer();
         root.close();
     }
-    readonly property var gamepad: isNewController ? gamepadList.model.get(newControllerIndex) : gamepadList.model.get(gamepadList.currentIndex)
+    readonly property var gamepad: isNewController ? gamepadList.model.get(newControllerIndex) : gamepadList.model.get(gamepadList.model.get(gamepadList.currentIndex).deviceIndex)
     readonly property bool hasGamepads: (gamepad !== null) || (gamepadList.count !== 0)
 
     property ConfigField recordingField: null
