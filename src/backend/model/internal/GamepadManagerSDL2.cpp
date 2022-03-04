@@ -1187,8 +1187,35 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
         if (m_recording.device == device_idx) //Good here finally, the index should be used, but still to verify in other function also, take care !
             cancel_recording();
 
+        //check instance for all indexes after this removing
+        //Get number of Joystick
+        int count = SDL_NumJoysticks();
+        for(int j = 0; j < count; j++ ){
+            //Get Device
+            SDL_Joystick* joystick = SDL_JoystickOpen(j);
+            //Get global index of Device
+            SDL_JoystickID joystickIdentifier = SDL_JoystickInstanceID(joystick);
+            //Get previous index from instance
+            int previousIndex = m_iid_to_idx.at(joystickIdentifier);
+            //Clode device
+            SDL_JoystickClose(joystick);
+            if(previousIndex != j){
+                //need to redo hasmaps
+                //remove previous value
+                m_iid_to_idx.erase(joystickIdentifier);
+                m_idx_to_iid.erase(previousIndex);
+                //store new value using an index decremented
+                m_iid_to_idx.emplace(joystickIdentifier,j);
+                m_idx_to_iid.emplace(j,joystickIdentifier);
+                //Request to update indexes in model::gamepad & recalbox.conf
+                emit indexChanged(previousIndex, j);
+            }
+
+        }
+
+
 		//need to clean also other index now due to removal of one pad
-        for(int i = 0; (i <= (int)m_idx_to_iid.size()) && (m_idx_to_iid.size() != 0); i++){ //we check more than hashmap to take into account the one removed
+        /*for(int i = 0; (i <= (int)m_idx_to_iid.size()) && (m_idx_to_iid.size() != 0); i++){ //we check more than hashmap to take into account the one removed
 			if(i > device_idx){ //if index upper
 				if (m_idx_to_iid.count(i) == 1){ //if index exist
                     //need to redo hasmaps
@@ -1203,7 +1230,7 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
                     emit indexChanged(i, i-1);
                 }
 			}
-		}
+        }*/
     }
     catch ( const std::exception & Exp ) 
     { 
