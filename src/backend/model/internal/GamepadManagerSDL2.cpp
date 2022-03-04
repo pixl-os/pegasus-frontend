@@ -948,22 +948,22 @@ void GamepadManagerSDL2::poll()
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
             case SDL_CONTROLLERDEVICEADDED:
-                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEADDED"));
+                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEADDED - event.cdevice.which: %1").arg(QString::number(event.cdevice.which)));
                 // ignored in favor of SDL_JOYDEVICEADDED
                 break;
             case SDL_CONTROLLERDEVICEREMOVED:
-                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEREMOVED"));
+                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEREMOVED - event.cdevice.which: %1").arg(QString::number(event.cdevice.which)));
                 remove_pad_by_iid(event.cdevice.which);
                 break;
             case SDL_CONTROLLERDEVICEREMAPPED:
-                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEREMAPPED"));
+                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERDEVICEREMAPPED - event.cdevice.which: %1").arg(QString::number(event.cdevice.which)));
                 break;
             case SDL_JOYDEVICEADDED:
-                //Log::debug(LOGMSG("SDL: SDL_JOYDEVICEADDED"));
+                //Log::debug(LOGMSG("SDL: SDL_JOYDEVICEADDED - event.jdevice.which: %1").arg(QString::number(event.jdevice.which)));;
                 add_controller_by_idx(event.jdevice.which);
                 break;
             case SDL_JOYDEVICEREMOVED:
-                //Log::debug(LOGMSG("SDL: SDL_JOYDEVICEREMOVED"));
+                //Log::debug(LOGMSG("SDL: SDL_JOYDEVICEREMOVED - event.jdevice.which: %1").arg(QString::number(event.jdevice.which)));
                 // ignored in favor of SDL_CONTROLLERDEVICEREMOVED
                 break;
             case SDL_CONTROLLERBUTTONUP:
