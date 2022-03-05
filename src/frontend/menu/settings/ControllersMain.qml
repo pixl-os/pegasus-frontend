@@ -28,7 +28,7 @@ FocusScope {
 
     signal close
     signal openBluetoothDevices
-    signal openGamepadSettings
+    signal openGamepadSettings(var parameters)
     signal openGameDirSettings
     signal openAdvancedControllersConfiguration
 
@@ -137,7 +137,7 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        root.openGamepadSettings();
+                        root.openGamepadSettings({"selectedGamepadIndex":0});
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAdvancedControllers
@@ -267,6 +267,16 @@ FocusScope {
                                 if(controllersList.moveMode) event.accepted = true;
                                 controllersList.moveMode = false;
                                 //console.log("controllersList.moveMode : ", controllersList.moveMode);
+                            }
+                            //Launch gamepadeditor from selected gamepad from the controllersList
+                            else if(api.keys.isFilters(event) && !event.isAutoRepeat) { //Y
+                                //console.log("api.keys.isFilters(event)");
+                                event.accepted = true;
+                                if(!controllersList.moveMode) root.openGamepadSettings({"selectedGamepadIndex":index});
+                            }
+                            else if (api.keys.isDetails(event) && !event.isAutoRepeat) { //X
+                                //console.log("api.keys.isDetails(event)");
+                                //RFU
                             }
                             //verify if finally other lists are empty or not when we are just before to change list
                             //it's a tip to refresh the KeyNavigations value just before to change from one list to an other

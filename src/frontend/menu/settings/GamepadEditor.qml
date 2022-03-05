@@ -26,6 +26,8 @@ import QtQuick.Window 2.12
 FocusScope {
     id: root
 
+    property var selectedGamepadIndex: 0
+
     signal close
 
     anchors.fill: parent
@@ -40,9 +42,9 @@ FocusScope {
         if(isNewController) return gamepadList.model.get(newControllerIndex);
         else{
             var selectedGamepad = gamepadList.model.get(gamepadList.currentIndex);
-            console.log("Selected gamepad.deviceId : ", selectedGamepad.deviceId);
-            console.log("Selected gamepad.deviceIndex : ",selectedGamepad.deviceIndex);
-            console.log("Selected gamepad.deviceInstance : ",selectedGamepad.deviceInstance);
+            //console.log("Selected gamepad.deviceId : ", selectedGamepad.deviceId);
+            //console.log("Selected gamepad.deviceIndex : ",selectedGamepad.deviceIndex);
+            //console.log("Selected gamepad.deviceInstance : ",selectedGamepad.deviceInstance);
             return selectedGamepad;
         }
     }
@@ -172,7 +174,11 @@ FocusScope {
             highlightRangeMode: ListView.StrictlyEnforceRange
             highlightMoveDuration: 300
             orientation: ListView.Horizontal
-			Component.onCompleted : currentIndex = (isNewController ? newControllerIndex : 0);
+            Component.onCompleted : {
+                gamepadList.currentIndex = (isNewController ? newControllerIndex : selectedGamepadIndex);
+                //console.log("Controller: #", isNewController ? newControllerIndex : selectedGamepadIndex," - isNewController: ", isNewController);
+                //console.log("gamepadList.currentIndex : ", gamepadList.currentIndex);
+			}
 
             model: api.internal.gamepad.devices
 
@@ -181,21 +187,23 @@ FocusScope {
                 height: ListView.view.height
 
                 GamepadName {
+                    id:gamepadname
                     text: {
 						// to add info to notice that one or several controllers  is/are available !
-                        console.log("Controller: #", newControllerIndex," - isNewController: ", isNewController);
                         if (modelData) {
                             var previous = "";
                             var next = "";
 							if ((gamepadList.count > 1) && !isNewController)
 							{								
-								if (index !== 0) previous = "\uf3cf  "; // < from ionicons
-								if (index !== (gamepadList.count-1)) next = "  \uf3d1"; // > from ionicons
+                                if (gamepadList.currentIndex !== 0) previous = "\uf3cf  "; // < from ionicons
+                                if (gamepadList.currentIndex !== (gamepadList.count-1)) next = "  \uf3d1"; // > from ionicons
 							}
+                            console.log("GamepadName index : ",index);
                             if (isNewController) return api.internal.gamepad.devices.get(newControllerIndex).name + " (" + api.internal.gamepad.devices.get(newControllerIndex).deviceInstance + ")";
-                            else return (previous + "#" + (index + 1) + ": " + modelData.name + " (" + modelData.deviceInstance + ")" + next);
-						}
-						else return ""; 						
+                            //else return (previous + "#" + (index + 1) + ": " + modelData.name + " (" + modelData.deviceInstance + ")" + next);
+                            else return (previous + "#" + (gamepadList.currentIndex + 1) + ": " + api.internal.gamepad.devices.get(gamepadList.currentIndex).name + " (" + api.internal.gamepad.devices.get(gamepadList.currentIndex).deviceInstance + ")" + next);
+                        }
+                        else return "";
 					}
 					highlighted: deviceSelect.focus
                 }
