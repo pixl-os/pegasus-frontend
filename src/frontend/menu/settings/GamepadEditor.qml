@@ -198,7 +198,7 @@ FocusScope {
                                 if (gamepadList.currentIndex !== 0) previous = "\uf3cf  "; // < from ionicons
                                 if (gamepadList.currentIndex !== (gamepadList.count-1)) next = "  \uf3d1"; // > from ionicons
 							}
-                            console.log("GamepadName index : ",index);
+                            //console.log("GamepadName index : ",index);
                             if (isNewController) return api.internal.gamepad.devices.get(newControllerIndex).name + " (" + api.internal.gamepad.devices.get(newControllerIndex).deviceInstance + ")";
                             //else return (previous + "#" + (index + 1) + ": " + modelData.name + " (" + modelData.deviceInstance + ")" + next);
                             else return (previous + "#" + (gamepadList.currentIndex + 1) + ": " + api.internal.gamepad.devices.get(gamepadList.currentIndex).name + " (" + api.internal.gamepad.devices.get(gamepadList.currentIndex).deviceInstance + ")" + next);

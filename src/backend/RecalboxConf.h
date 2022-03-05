@@ -171,7 +171,7 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
     DefineGetterSetter(NetplayEnabled, bool, Bool, sNetplayEnabled, false)
     DefineGetterSetter(NetplayLogin, std::string, String, sNetplayLogin, "")
     DefineGetterSetter(NetplayLobby, std::string, String, sNetplayLobby, "http://lobby.libretro.com/list/")
-    DefineGetterSetter(NetplayPort, int, Int, sNetplayPort, sNetplayDefaultPort)
+    DefineGetterSetter(NetplayPort, int, Int, sNetplayPort, iNetplayDefaultPort)
     DefineGetterSetterEnum(NetplayRelay, Relay, sNetplayRelay, Relay)
 
     DefineGetterSetter(RetroAchievementOnOff, bool, Bool, sRetroAchievementOnOff, false)
@@ -390,7 +390,11 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
     static constexpr const char* sPadHeader                = "emulationstation.pad";
 	static constexpr const char* sPadHeaderPegasus         = "pegasus.pad";
 
-    static constexpr const int sNetplayDefaultPort           = 55435;
+    static constexpr const int iNetplayDefaultPort           = 55435;
+
+    static constexpr const int iMaxInputDevices = 10;
+
+
   private:
     /*
      * Culture

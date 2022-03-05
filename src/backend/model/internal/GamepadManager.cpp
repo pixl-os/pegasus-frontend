@@ -210,6 +210,13 @@ void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString 
 	const QString Value = QString("%1|%2|%3|%4").arg(device_guid,device_name,device_path,QString::number(device_idx));
 	Log::debug(m_log_tag, LOGMSG("Saved as %1=%2").arg(Parameter,Value));
 	RecalboxConf::Instance().SetString(Parameter.toUtf8().constData(), Value.toUtf8().constData());
+
+    //clean if other lines exists (after shutdown or crash for example if could be possible)
+    for(int i = device_idx+1; (RecalboxConf::Instance().GetPadPegasus(i) != "") && (i < RecalboxConf::iMaxInputDevices); i++)
+    {
+        RecalboxConf::Instance().SetPadPegasus(i,"");
+    }
+
 	//save in file immediately for test/follow-up purpose
 	RecalboxConf::Instance().Save();	
 
@@ -334,10 +341,9 @@ void GamepadManager::bkOnRemoved(int device_id)
 			
 			//remove device from recalbox.conf in pegasus.pad parameters using the device_id
 			//and move other pegasus.pad lined due to one line removed
-			int MaxInputDevices = 10;
-			for(int i = device_id; (RecalboxConf::Instance().GetPadPegasus(i) != "") && (i < MaxInputDevices); i++)
+            for(int i = device_id; (RecalboxConf::Instance().GetPadPegasus(i) != "") && (i < RecalboxConf::iMaxInputDevices); i++)
 			{
-				if (i != MaxInputDevices-1){
+                if (i != RecalboxConf::iMaxInputDevices-1){
                     //check and change id in gamepad::model
                     const auto it2 = find_by_deviceid(*m_devices, i+1);
                     if (it2 != m_devices->constEnd()) //if exist

@@ -11,7 +11,6 @@
 
 static Path recalboxConfFile("/recalbox/share/system/recalbox.conf");
 static Path recalboxConfFileInit("/recalbox/share_init/system/recalbox.conf");
-constexpr const int RecalboxConf::sNetplayDefaultPort;
 
 RecalboxConf::RecalboxConf()
   : IniFile(recalboxConfFile, recalboxConfFileInit),

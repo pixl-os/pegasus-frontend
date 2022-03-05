@@ -195,7 +195,6 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         // Fill from ES/Recalbox configuration methods
         std::string uuid, name, path, sdlidx, udevidx, index;
         std::string command = "";
-        int MaxInputDevices = 10;
         //to access ES provider
         providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
 
@@ -205,7 +204,7 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         //Log::debug(LOGMSG("result: %1").arg(result));
         QStringList joysticks = result.split("\n");
 
-        for(int player = 0; player < MaxInputDevices; ++player)
+        for(int player = 0; player < RecalboxConf::iMaxInputDevices; ++player)
         {
             path = "";
             uuid = "";
@@ -243,7 +242,8 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
                 //Log::debug(LOGMSG("Udev index of %1 : %2").arg(QString::fromStdString(path),QString::fromStdString(index)));
               }
 
-              if (inputConfigEntry.inputConfigAttributs.deviceName == QString::fromStdString(name))
+              if (inputConfigEntry.inputConfigAttributs.deviceName == QString::fromStdString(name)
+                  && index != "")
               {//Device found 
                   std::string p(" -p"); p.append(Strings::ToString(player + 1)); 
                   command.append(p).append("index ").append(index)
