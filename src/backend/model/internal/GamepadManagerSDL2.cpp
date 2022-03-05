@@ -24,6 +24,9 @@
 #include "utils/StdStringHelpers.h"
 #include "utils/Strings.h"
 
+#include <linux/input.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <QDataStream>
 #include <QFile>
@@ -1147,7 +1150,20 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 		Log::debug(m_log_tag, LOGMSG("And instance using iid : %1").arg(QString::number(iid)));
 		//we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
         const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx);
-		#endif
+        #endif
+        //test to get name
+        int fd = open(JoystickDevicePath.toUtf8().constData(), O_RDONLY);
+        if (fd < 0)
+        {
+          Log::debug(m_log_tag, LOGMSG("[UDEV] Can't open device %1").arg(JoystickDevicePath));
+        }
+
+        unsigned short id[4] = {};
+        ioctl(fd, EVIOCGID, id);
+        char udevname[256] = {};
+        ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device: %1").arg(QString::fromStdString(udevname)));
+        //end of test
         emit connected(device_idx, guid_str, name, JoystickDevicePath, iid); //device_idx = device_id when we connect device
         }
     catch ( const std::exception & Exp ) 
