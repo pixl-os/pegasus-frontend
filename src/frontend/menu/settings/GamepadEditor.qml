@@ -573,7 +573,7 @@ FocusScope {
                 }
             }
         }
-        GamepadPreview.Container {
+        GamepadPreview.ContainerSNES {
             id: padPreview
             gamepad: root.gamepad
         }
