@@ -198,9 +198,8 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         //to access ES provider
         providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
 
-        //TIPS to get get all udev joysticks index if needed later without udevlib and to avoid mouse
-        //may be wiimote will be a concern with dolphin bar ?!
-        QString result = run("cat /proc/bus/input/devices | grep -I ' js\\|=js'  | grep -v mouse | cut -d= -f2 | sort -n");
+        //TIPS to get get all udev joysticks index if needed later without udevlib (and using ID8INPUT_JOYSTICK=1 as in retroarch ;-)
+        QString result = run("udevadm info -e | grep -B 10 'ID_INPUT_JOYSTICK=1' | grep 'DEVNAME=/dev/input/event' | cut -d= -f2");
         //Log::debug(LOGMSG("result: %1").arg(result));
         QStringList joysticks = result.split("\n");
 
@@ -226,17 +225,11 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
                 index = sdlidx;
               }
               else{ //if auto or udev
-                //get udev index using path and get it from js index
-                //get last part of the path
-                QString event = QString::fromStdString(path).split("/").last();
+                //get udev index using path and get it from the list of events done previously
                 //search if event is in the joysticks list
                 for(int k=0; k < joysticks.count(); k++){
-                    QStringList handlers = joysticks.at(k).split(" ");
-                    //Log::debug(LOGMSG("[UDEV] Joystick index: %1, Handlers: %2").arg(QString::number(k),joysticks.at(k)));
-                    for(int h=0; h < handlers.count(); h++){
-                        if(handlers.at(h) == event) {
-                            index = std::to_string(k);
-                        }
+                    if(joysticks.at(k).toLower() == QString::fromStdString(path).toLower()) {
+                        index = std::to_string(k);
                     }
                 }
                 //Log::debug(LOGMSG("Udev index of %1 : %2").arg(QString::fromStdString(path),QString::fromStdString(index)));
