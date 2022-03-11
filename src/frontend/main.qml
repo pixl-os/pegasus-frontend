@@ -1010,7 +1010,7 @@ Window {
 
         //28/02/2022 to add arcade panel device
         //2 codes exists "\uf0cd" & "\uf0ce", respectivelly fill and transparent version
-        ListElement { icon: "\uf0cd"; keywords: "dragonrise,xinmo,xin-mo"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cd"; keywords: "dragonrise,xinmo,xin-mo,j-pac,jpac"; type:"controller"; iconfont: "awesome"}
 
         //AUDIO PART
         //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
