@@ -22,45 +22,34 @@ Item {
     property var gamepad
 
     Image {
-        id:pressedImage
+        id:initialImage
         z: 50
-        //anchors.fill: parent
-        width: parent.width //* 0.95
-        height: parent.height //* 0.95
+        width: parent.width
+        height: parent.height
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-
-        //fillMode: Image.PreserveAspectFit
         source: "qrc:/frontend/assets/gamepad/dpad_snes.png"
-        /*sourceSize {
-            width: 128
-            height: 128
-        }*/
-        visible: false //test.pressed
+        visible: !dpleft.pressed
     }
-
-    BrightnessContrast {
-        z:100
-        visible: test.pressed
-        //enabled: pressed
-        anchors.fill: pressedImage
-        source: pressedImage
-        brightness: 0.5
-        contrast: 0.5
-        transform: Rotation { origin.x: pressedImage.width/2; origin.y: pressedImage.height/2; axis { x: 0; y: 1; z: 0 } angle: 20 }
-    }
-
-
-
 
     DpadHighlightSNES {
-        id:test
+        id: dpleft
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
 
         highlighted: padContainer.currentButton === "dpleft"
         pressed: gamepad && gamepad.buttonLeft
     }
+    BrightnessContrast {
+        z:100
+        visible: dpleft.pressed
+        anchors.fill: initialImage
+        source: initialImage
+        brightness: 0.5
+        contrast: 0.5
+        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 0; y: 1; z: 0 } angle: 20 }
+    }
+
     DpadHighlightSNES {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter

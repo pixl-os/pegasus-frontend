@@ -25,55 +25,34 @@ Item {
     //property alias sourceWidth: pieceImage.sourceSize.width
     //property alias sourceHeight: pieceImage.sourceSize.height
 
-    /*Image {
+    Image {
         id: initialImage
         z: 50
         width: parent.width
         height: parent.height
-
-        //fillMode: Image.PreserveAspectFit
-
         anchors.fill: parent.fill
-
         source: "qrc:/frontend/assets/gamepad/" + shortName + "_snes.png"
-        visible: false
-    }*/
+        visible: !pressed
+    }
+
     Image {
         id: pressedImage
-        z: 50
-        width: parent.width * 0.95
-        height: parent.height * 0.95
-
-        //fillMode: Image.PreserveAspectFit
-
-        //anchors.fill: parent.fill
-
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-
-
-
-        source: "qrc:/frontend/assets/gamepad/" + shortName + "_snes.png"
-        /*sourceSize {
-            width: 71
-            height: 71
-        }*/
-        visible: pressed
+        width: initialImage.width * 0.95
+        height: initialImage.height * 0.95
+        anchors.verticalCenter: initialImage.verticalCenter
+        anchors.horizontalCenter: initialImage.horizontalCenter
+        source: initialImage.source
+        visible: false
     }
 
     BrightnessContrast {
         z:100
         visible: pressed
-        //enabled: pressed
         anchors.fill: pressedImage
         source: pressedImage
         brightness: 0.5
         contrast: 0.5
     }
-
-
-
-
 
     Rectangle {
         id: highlight

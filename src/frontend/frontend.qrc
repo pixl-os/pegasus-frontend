@@ -125,5 +125,7 @@
         <file>menu/settings/gamepad/preview/DpadSNES.qml</file>
         <file>assets/gamepad/dpad_snes.png</file>
         <file>menu/settings/gamepad/preview/DpadHighlightSNES.qml</file>
+        <file>assets/gamepad/select_snes.png</file>
+        <file>assets/gamepad/start_snes.png</file>
     </qresource>
 </RCC>
