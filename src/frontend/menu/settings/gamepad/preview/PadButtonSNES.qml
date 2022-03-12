@@ -1,33 +1,18 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//Created by Bozo The Geek 12/03/2022
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 
 import QtQuick 2.12
 import QtGraphicalEffects 1.12
-
 Item {
     property string shortName
     property bool pressed: false
 
-    //property alias sourceWidth: pieceImage.sourceSize.width
-    //property alias sourceHeight: pieceImage.sourceSize.height
-
+    //initial image loaded
     Image {
         id: initialImage
-        z: 50
+        z: 65
         width: parent.width
         height: parent.height
         anchors.fill: parent.fill
@@ -35,6 +20,24 @@ Item {
         visible: !pressed
     }
 
+    //to have a border more than 1 pixel and behind initial image !!! ;-)
+    ColorOverlay {
+        z:60
+        visible: padContainer.currentButton === shortName
+        width: initialImage.width * 1.2
+        height: initialImage.height * 1.2
+        anchors.verticalCenter: initialImage.verticalCenter
+        anchors.horizontalCenter: initialImage.horizontalCenter
+
+        source: initialImage
+        color: {
+            if (root.recordingField !== null ) return "#c33";
+            else if (padContainer.currentButton) return themeColor.underline;
+            else return "transparent";
+        }
+    }
+
+    //to have an image prepared but not displayed when we press on button
     Image {
         id: pressedImage
         width: initialImage.width * 0.95
@@ -45,26 +48,13 @@ Item {
         visible: false
     }
 
+    //for animation when we press button
     BrightnessContrast {
-        z:100
+        z:70
         visible: pressed
         anchors.fill: pressedImage
         source: pressedImage
         brightness: 0.5
         contrast: 0.5
-    }
-
-    Rectangle {
-        id: highlight
-        color: {
-				if (pressed) return "blue";
-				else if (root.recordingField !== null ) return "#c33";
-				else return themeColor.underline;
-		}
-        anchors.fill: parent
-        radius: width * 0.5
-
-        // FIXME: this is not really nice, but makes the code shorter
-        visible: false//pressed || padContainer.currentButton === shortName
     }
 }

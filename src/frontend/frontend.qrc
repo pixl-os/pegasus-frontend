@@ -127,5 +127,6 @@
         <file>menu/settings/gamepad/preview/DpadHighlightSNES.qml</file>
         <file>assets/gamepad/select_snes.png</file>
         <file>assets/gamepad/start_snes.png</file>
+        <file>global/CustomBorder.qml</file>
     </qresource>
 </RCC>
