@@ -975,7 +975,7 @@ Window {
     }
     //list model to manage icons of devices
     ListModel {
-        id: myDeviceIcons
+        id: myDeviceIcons //now include also layout definition
 
         //CONTROLLERS PART
         ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment, need icon for 360
@@ -989,7 +989,7 @@ Window {
         ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"; iconfont: "awesome"}
 
-        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"; iconfont: "awesome"; layout: "snes"}
         ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"}
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64"; type:"controller" ; iconfont: "awesome"}

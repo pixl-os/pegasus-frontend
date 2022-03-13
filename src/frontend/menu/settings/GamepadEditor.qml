@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import "gamepad/preview" as GamepadPreview
+//import "gamepad/preview" as GamepadPreview
 import "gamepad"
 import "qrc:/qmlutils" as PegasusUtils
 import Pegasus.Model 0.12
@@ -27,6 +27,8 @@ FocusScope {
     id: root
 
     property var selectedGamepadIndex: 0
+
+    property var padPreview
 
     signal close
 
@@ -48,6 +50,18 @@ FocusScope {
             return selectedGamepad;
         }
     }
+    onGamepadChanged: {
+        //console.log("onGamepadChanged");
+        //to force reload of Pad Preview when we change gamepad
+        if(root.gamepad !== null){
+            loaderPadPreview.enabled = false;
+            loaderPadPreview.source = "";
+            loaderPadPreview.source = layoutArea.getContainer(root.gamepad.name);
+            //console.log("root.gamepad.name : ", root.gamepad.name);
+            loaderPadPreview.enabled = true;
+        }
+    }
+
     readonly property bool hasGamepads: (gamepad !== null) || (gamepadList.count !== 0)
 
     property ConfigField recordingField: null
@@ -573,9 +587,68 @@ FocusScope {
                 }
             }
         }
-        GamepadPreview.ContainerSNES {
-            id: padPreview
-            gamepad: root.gamepad
+
+        //use loader to load container dynamically
+        //list model to manage layout parameters (file name, etc...)
+        ListModel {
+            id: myControllerLayout
+            //CONTROLLERS LAYOUT TO DISPLAY IN EDITOR depending of layout name
+            //ListElement { name: "default"; qml: "gamepad/preview/Container.qml"} // By default
+            ListElement { name: "default"/*"snes"*/; qml: "gamepad/preview/ContainerSNES.qml"} //As for SNES (with L1) but also L2 as on switch ones)
+        }
+        //function to dynamically set container layout from gamepad name
+        function getContainer(controllerName) {
+            var layoutName = "";
+            var layoutQml = "";
+            let type = "controller";
+            let i = 0;
+            //searchIcon using the good type
+            do{
+                const keywords = myDeviceIcons.get(i).keywords.split(",");
+                for(var j = 0; j < keywords.length;j++)
+                {
+                    if (isKeywordFound(controllerName, "", keywords[j]) && (myDeviceIcons.get(i).type === type ) && (keywords[j] !== "")){
+                        layoutName = myDeviceIcons.get(i).layout;
+                        for(var k = 0; k < myControllerLayout.count;k++)
+                        {
+                            if(myControllerLayout.get(k).name === layoutName){
+                                layoutQml = myControllerLayout.get(k).qml;
+                            }
+                        }
+                    }
+                }
+                i = i + 1;
+            }while (layoutQml === "" && i < myDeviceIcons.count)
+            if (layoutQml === ""){
+                //to get default one if empty
+                for(var l = 0; l < myControllerLayout.count;l++)
+                {
+                    if(myControllerLayout.get(l).name === "default"){
+                        layoutQml = myControllerLayout.get(l).qml;
+                    }
+                }
+            }
+            return layoutQml;
+        }
+        Loader {
+            id: loaderPadPreview
+            anchors.fill: parent
+            enabled: true
+            source: parent.getContainer(root.gamepad.name);
+            asynchronous: true
+            onStatusChanged: {
+                //console.log("onStatusChanged");
+                if (loaderPadPreview.status === Loader.Ready) {
+                    //console.log("root.gamepad : ", root.gamepad);
+                    if(root.gamepad !== null){
+                        loaderPadPreview.item.gamepad = root.gamepad;
+                        root.padPreview = loaderPadPreview.item
+                    }                }
+                else if (status == Loader.Error){
+                        //TO DO if needed
+                        console.log("Error to load QML for this controller !");
+                }
+            }
         }
     }
     Item {
