@@ -34,16 +34,23 @@ Item {
     BrightnessContrast {
         z:60
         visible: dpleft.pressed
-        anchors.fill: initialImage
+
+        width: parent.width
+        height: parent.height
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: (parent.width/2) * -(pressAngle/1000)
+
         source: initialImage
         brightness: 0.5
         contrast: 0.5
-        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 0; y: 1; z: 0 } angle: 20 }
+        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 0; y: 1; z: 0 } angle: -pressAngle }
     }
 
     DpadHighlightSNES {
         z:70
         id: dpright
+
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
 
@@ -54,17 +61,24 @@ Item {
     BrightnessContrast {
         z:60
         visible: gamepad && gamepad.buttonRight
-        anchors.fill: initialImage
+
+        width: parent.width
+        height: parent.height
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: (parent.width/2) * (pressAngle/1000)
+
         source: initialImage
         brightness: 0.5
         contrast: 0.5
-        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 0; y: 1; z: 0 } angle: -pressAngle }
+        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 0; y: 1; z: 0 } angle: pressAngle }
     }
 
 
     DpadHighlightSNES {
         id: dpup
         z:70
+
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -75,16 +89,23 @@ Item {
     BrightnessContrast {
         z:60
         visible: gamepad && gamepad.buttonUp
-        anchors.fill: initialImage
+
+        width: parent.width
+        height: parent.height
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenterOffset: (parent.height/2) * -(pressAngle/1000)
+
         source: initialImage
         brightness: 0.5
         contrast: 0.5
-        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 1; y: 0; z: 0 } angle: -pressAngle }
+        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 1; y: 0; z: 0 } angle: pressAngle }
     }
 
     DpadHighlightSNES {
         id: dpdown
         z: 70
+
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
 
@@ -95,11 +116,17 @@ Item {
     BrightnessContrast {
         z:60
         visible: gamepad && gamepad.buttonDown
-        anchors.fill: initialImage
+
+        width: parent.width
+        height: parent.height
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenterOffset: (parent.height/2) * (pressAngle/1000)
+
         source: initialImage
         brightness: 0.5
         contrast: 0.5
-        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 1; y: 0; z: 0 } angle: pressAngle }
+        transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 1; y: 0; z: 0 } angle: -pressAngle }
     }
 
 }
