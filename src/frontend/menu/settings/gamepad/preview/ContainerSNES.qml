@@ -175,7 +175,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
 
             shortName: "b"
-            pressed: gamepad && gamepad.buttonSouth
+            pressed: gamepad ? gamepad.buttonSouth : false
 
         }
         PadButtonSNES {
@@ -186,7 +186,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             shortName: "a"
-            pressed: gamepad && gamepad.buttonEast
+            pressed: gamepad ? gamepad.buttonEast : false
         }
         PadButtonSNES {
             id: padY
@@ -196,7 +196,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
 
             shortName: "y"
-            pressed: gamepad && gamepad.buttonWest
+            pressed: gamepad ? gamepad.buttonWest : false
         }
         PadButtonSNES {
             id: padX
@@ -205,7 +205,7 @@ Item {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             shortName: "x"
-            pressed: gamepad && gamepad.buttonNorth
+            pressed: gamepad ? gamepad.buttonNorth : false
         }
     }
 

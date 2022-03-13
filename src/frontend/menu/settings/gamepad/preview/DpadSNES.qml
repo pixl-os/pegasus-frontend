@@ -18,7 +18,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         source: "qrc:/frontend/assets/gamepad/dpad_snes.png"
-        visible: !gamepad.buttonLeft && !gamepad.buttonRight && !gamepad.buttonUp && !gamepad.buttonDown
+        visible: gamepad && !gamepad.buttonLeft && !gamepad.buttonRight && !gamepad.buttonUp && !gamepad.buttonDown
     }
 
     DpadHighlightSNES {
