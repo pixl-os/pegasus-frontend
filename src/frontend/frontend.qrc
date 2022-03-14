@@ -135,5 +135,13 @@
         <file>assets/gamepad/r1_snes.png</file>
         <file>assets/gamepad/l2_snes.png</file>
         <file>assets/gamepad/r2_snes.png</file>
+        <file>assets/gamepad/base_nes.png</file>
+        <file>assets/gamepad/dpad_nes.png</file>
+        <file>assets/gamepad/r1_nes.png</file>
+        <file>assets/gamepad/l1_nes.png</file>
+        <file>assets/gamepad/start_nes.png</file>
+        <file>assets/gamepad/select_nes.png</file>
+        <file>assets/gamepad/a_nes.png</file>
+        <file>assets/gamepad/b_nes.png</file>
     </qresource>
 </RCC>
