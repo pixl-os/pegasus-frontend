@@ -128,5 +128,6 @@
         <file>assets/gamepad/select_snes.png</file>
         <file>assets/gamepad/start_snes.png</file>
         <file>global/CustomBorder.qml</file>
+        <file>assets/gamepad/guide_snes.png</file>
     </qresource>
 </RCC>

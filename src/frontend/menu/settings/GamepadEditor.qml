@@ -593,8 +593,8 @@ FocusScope {
         ListModel {
             id: myControllerLayout
             //CONTROLLERS LAYOUT TO DISPLAY IN EDITOR depending of layout name
-            //ListElement { name: "default"; qml: "gamepad/preview/Container.qml"} // By default
-            ListElement { name: "default"/*"snes"*/; qml: "gamepad/preview/ContainerSNES.qml"} //As for SNES (with L1) but also L2 as on switch ones)
+            ListElement { name: "default"; qml: "gamepad/preview/Container.qml"} // By default
+            ListElement { name: "snes"; qml: "gamepad/preview/ContainerSNES.qml"} //As for SNES (with L1) but also L2 as on switch ones)
         }
         //function to dynamically set container layout from gamepad name
         function getContainer(controllerName) {

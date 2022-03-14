@@ -1,19 +1,7 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2019  Mátyás Mustoha
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//Created by Bozo The Geek 12/03/2022
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 
 import QtQuick 2.12
 
@@ -27,20 +15,54 @@ Item {
     property var gamepad
     property string currentButton: ""
 
+    //parameters for base
+    property var ratio: 80/100 //at 80% of the size
+    property var padBaseSourceSizeWidth : 906
+    property var padBaseSourceSizeHeight : 398
+
+    //parameters for select
+    property var padSelectWidth : 69
+    property var padSelectHeight : 59
+    property var padSelectTopY: 205
+    property var padSelectLeftX: 334
+
+    //parameters for start
+    property var padStartWidth : 69
+    property var padStartHeight : 59
+    property var padStartTopY: 205
+    property var padStartLeftX: 432
+
+    //parameters for A/B/X/Y
+    property var padABXYAreaTopY: 103
+    property var padABXYAreaBottomY: 308
+    property var padABXYAreaLeftX: 590
+    property var padABXYAreaRightX: 836
+    property var padAWidth : 71
+    property var padAHeight : 70
+    property var padBWidth : 71
+    property var padBHeight : 71
+    property var padXWidth : 71
+    property var padXHeight : 71
+    property var padYWidth : 73
+    property var padYHeight : 72
+
+    //parameter for Dpad
+    property var dpadAreaTopY: 126
+    property var dpadAreaBottomY: 285
+    property var dpadAreaLeftX: 112
+    property var dpadAreaRightX: 270
 
     Image {
         id: padBase
         width: parent.width
-        height: vpx(398 * 80/100) //at 80% of the size
+        height: vpx(padBaseSourceSizeHeight * ratio)
         anchors.centerIn: parent
 
         fillMode: Image.PreserveAspectFit
-        //source: "qrc:/frontend/assets/gamepad/base.svg"
-        //source: "qrc:/frontend/assets/gamepad/snes_layout.png"
         source: "qrc:/frontend/assets/gamepad/base_snes.png"
         sourceSize {
-            width: 906
-            height: 398
+            width: padBaseSourceSizeWidth
+            height: padBaseSourceSizeHeight
         }
     }
 /*
@@ -97,78 +119,76 @@ Item {
         pressed: gamepad && gamepad.buttonR1
     }
     */
-    /*Item {
-        width: padSelect.width + padGuide.width + padStart.width + 10
-        height: padGuide.height
+
+    PadButtonSNES {
+        id: padSelect
+        width: vpx(padSelectWidth * ratio)
+        height: vpx(padSelectHeight * ratio)
+
         anchors {
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: vpx(-20)
             horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padSelectTopY + (padSelectHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padSelectLeftX + (padSelectWidth/2))) * ratio);
         }
-        PadButton {
-            id: padSelect
-            width: vpx(38)
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
 
-            shortName: "select"
-            pressed: gamepad && gamepad.buttonSelect
-        }
-        PadButton {
-            id: padStart
-            width: vpx(38)
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
+        shortName: "select"
+        pressed: gamepad ? (gamepad.buttonSelect || gamepad.buttonGuide)  : false
+        visible: gamepad ? !padGuide.pressed : true
 
-            shortName: "start"
-            pressed: gamepad && gamepad.buttonStart
-        }
-        PadButton {
-            id: padGuide
-            width: vpx(50)
-            anchors.centerIn: parent
+    }
 
-            shortName: "guide"
-            pressed: gamepad && gamepad.buttonGuide
+    PadButtonSNES {
+        id: padGuide //as select one in case of SNES layout
+
+        width: vpx(padSelectWidth * ratio)
+        height: vpx(padSelectHeight * ratio)
+
+        anchors {
+            verticalCenter: padBase.verticalCenter
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padSelectTopY + (padSelectHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padSelectLeftX + (padSelectWidth/2))) * ratio);
         }
-    }*/
+
+        shortName: "guide"
+        pressed: gamepad ? gamepad.buttonGuide : false
+        visible: gamepad ? !padSelect.pressed : true
+    }
+
+    PadButtonSNES {
+        id: padStart
+
+        width: vpx(padStartWidth * ratio)
+        height: vpx(padStartHeight * ratio)
+
+        anchors {
+            verticalCenter: padBase.verticalCenter
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padStartTopY + (padStartHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padStartLeftX + (padStartWidth/2))) * ratio);
+        }
+
+        shortName: "start"
+        pressed: gamepad ? gamepad.buttonStart : false
+    }
 
     Item {
         id: padABXYArea
-        //Global Ratio to be in the container: 80/100
-        //PADButtons AREA
-        //left X: 590
-        //Right X: 834
-        //Top Y: 103
-        //Bottom Y: 308
-        //Image Height: 398
-        //Image Width: 906
-        //Vertical Center position : 206
 
-        width: vpx((834-590) * 80/100)
-        height: vpx((308-103) * 80/100)
+        width: vpx((padABXYAreaRightX-padABXYAreaLeftX) * ratio)
+        height: vpx((padABXYAreaBottomY-padABXYAreaTopY) * ratio)
         anchors {
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: vpx(-((398/2)-206) * 80/100)
-            left: padBase.horizontalCenter
-            leftMargin: vpx((590-(906/2)) * 80/100)
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padABXYAreaTopY + ((padABXYAreaBottomY-padABXYAreaTopY)/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padABXYAreaLeftX + ((padABXYAreaRightX-padABXYAreaLeftX)/2))) * ratio);
         }
-
-        //for test purpose only
-        /*Rectangle {
-            id: areaplace
-            color: "red"
-            anchors.fill: parent
-            opacity: 0.5
-            visible: true
-        }*/
 
         PadButtonSNES {
             id: padB
-            //width of button in pixel : 71
-            //height of button in pixel : 71
-            width: vpx(71 * 80/100)
-            height: vpx(71 * 80/100)
+            width: vpx(padBWidth * ratio)
+            height: vpx(padBHeight * ratio)
 
             anchors.bottom: parent.bottom
 
@@ -180,8 +200,8 @@ Item {
         }
         PadButtonSNES {
             id: padA
-            width: vpx(71 * 80/100)
-            height: vpx(70 * 80/100)
+            width: vpx(padAWidth * ratio)
+            height: vpx(padAHeight * ratio)
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
 
@@ -190,8 +210,8 @@ Item {
         }
         PadButtonSNES {
             id: padY
-            width: vpx(73 * 80/100)
-            height: vpx(72 * 80/100)
+            width: vpx(padYWidth * ratio)
+            height: vpx(padYHeight * ratio)
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
 
@@ -200,8 +220,8 @@ Item {
         }
         PadButtonSNES {
             id: padX
-            width: vpx(71 * 80/100)
-            height: vpx(71 * 80/100)
+            width: vpx(padXWidth * ratio)
+            height: vpx(padXHeight * ratio)
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             shortName: "x"
@@ -211,68 +231,16 @@ Item {
 
     DpadSNES {
         id: padDpadArea
-        //Global Ratio to be in the container: 80/100
-        //DPAD AREA
-        //left X: 112
-        //Right X: 270
-        //Top Y: 126
-        //Bottom Y: 285
-        //Image Height: 398
-        //Image Width: 906
-        //Vertical Center position : 206
-        width: vpx((270-112) * 80/100)
-        height: vpx((285-126) * 80/100)
+
+        width: vpx((dpadAreaRightX-dpadAreaLeftX) * ratio)
+        height: vpx((dpadAreaBottomY-dpadAreaTopY) * ratio)
         anchors {
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: vpx(-((398/2)-206) * 80/100)
-            //left: padBase.horizontalCenter
-            //leftMargin: vpx((112-(906/2)) * 80/100)
-            right: padBase.horizontalCenter
-            rightMargin: vpx(((906/2) - 270) *80/100)
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (dpadAreaTopY + ((dpadAreaBottomY-dpadAreaTopY)/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (dpadAreaLeftX + ((dpadAreaRightX-dpadAreaLeftX)/2))) * ratio);
         }
-
-        /*width: padABXYArea.width * 0.95
-        height: width
-        anchors {
-            verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: padABXYArea.anchors.verticalCenterOffset
-            right: padBase.horizontalCenter
-            rightMargin: padABXYArea.anchors.leftMargin
-        }*/
-
-
 
         gamepad: parent.gamepad
     }
-
-/*    Stick {
-        id: padLeftStick
-        width: vpx(110)
-        anchors {
-            top: padBase.verticalCenter
-            topMargin: vpx(22)
-            right: padBase.horizontalCenter
-            rightMargin: vpx(18)
-        }
-
-        side: "l"
-        pressed: gamepad && gamepad.buttonL3
-        xPercent: (gamepad && gamepad.axisLeftX) || 0.0
-        yPercent: (gamepad && gamepad.axisLeftY) || 0.0
-    }
-    Stick {
-        id: padRightStick
-        width: padLeftStick.width
-        anchors {
-            top: padBase.verticalCenter
-            topMargin: padLeftStick.anchors.topMargin
-            left: padBase.horizontalCenter
-            leftMargin: padLeftStick.anchors.rightMargin
-        }
-        side: "r"
-        pressed: gamepad && gamepad.buttonR3
-        xPercent: (gamepad && gamepad.axisRightX) || 0.0
-        yPercent: (gamepad && gamepad.axisRightY) || 0.0
-    }
-*/
 }
