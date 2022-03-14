@@ -256,6 +256,7 @@ FocusScope {
             ConfigField {
                 focus: true
                 id: configL1
+                visible: (typeof(root.padPreview.hasL1) !== 'undefined') ? root.padPreview.hasL1 : true
                 text: qsTr("shoulder") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l1"
@@ -269,6 +270,7 @@ FocusScope {
             }
             ConfigField {
                 id: configL2
+                visible: (typeof(root.padPreview.hasL2) !== 'undefined') ? root.padPreview.hasL2 : true
                 text: qsTr("trigger") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l2"
@@ -342,6 +344,7 @@ FocusScope {
             }
         }
         ConfigGroup {
+            visible: (typeof(root.padPreview.hasLeftStick) !== 'undefined') ? root.padPreview.hasLeftStick : true
             label: qsTr("left stick") + api.tr
             anchors {
                 left: parent.horizontalCenter
@@ -399,6 +402,7 @@ FocusScope {
             }
             ConfigField {
                 id: configR1
+                visible: (typeof(root.padPreview.hasR1) !== 'undefined') ? root.padPreview.hasR1 : true
                 text: qsTr("shoulder") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r1"
@@ -411,6 +415,7 @@ FocusScope {
             }
             ConfigField {
                 id: configR2
+                visible: (typeof(root.padPreview.hasR2) !== 'undefined') ? root.padPreview.hasR2 : true
                 text: qsTr("trigger") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r2"
@@ -485,6 +490,7 @@ FocusScope {
             }
         }
         ConfigGroup {
+            visible: (typeof(root.padPreview.hasRightStick) !== 'undefined') ? root.padPreview.hasRightStick : true
             label: qsTr("right stick") + api.tr
             alignment: Text.AlignRight
             anchors {
@@ -643,7 +649,8 @@ FocusScope {
                     if(root.gamepad !== null){
                         loaderPadPreview.item.gamepad = root.gamepad;
                         root.padPreview = loaderPadPreview.item
-                    }                }
+                    }
+                }
                 else if (status == Loader.Error){
                         //TO DO if needed
                         console.log("Error to load QML for this controller !");

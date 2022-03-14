@@ -15,6 +15,23 @@ Item {
     property var gamepad
     property string currentButton: ""
 
+    //layout availability features list
+    property var hasSelect : true
+    property var hasStart : true
+    property var hasDedicatedGuide : false
+    property var hasDpad : true
+    property var hasA : true
+    property var hasB : true
+    property var hasX : true
+    property var hasY : true
+    property var hasL1 : true
+    property var hasR1 : true
+    property var hasL2 : true
+    property var hasR2 : true
+    property var hasLeftStick : false
+    property var hasRightStick : false
+    property var hasScreenshotButton : false
+
     //parameters for base
     property var ratio: 80/100 //at 80% of the size
     property var padBaseSourceSizeWidth : 906
