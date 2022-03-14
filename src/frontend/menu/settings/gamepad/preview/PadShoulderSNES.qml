@@ -2,6 +2,7 @@
 //
 //Created by Bozo The Geek 12/03/2022
 //
+// it's a copy of PadButtonSNES adapted for shoulder
 
 import QtQuick 2.12
 import QtGraphicalEffects 1.12
@@ -40,8 +41,8 @@ Item {
     //to have an image prepared but not displayed when we press on button
     Image {
         id: pressedImage
-        width: initialImage.width * 0.95
-        height: initialImage.height * 0.95
+        width: initialImage.width //* 0.95
+        height: initialImage.height //* 0.95
         anchors.verticalCenter: initialImage.verticalCenter
         anchors.horizontalCenter: initialImage.horizontalCenter
         source: initialImage.source

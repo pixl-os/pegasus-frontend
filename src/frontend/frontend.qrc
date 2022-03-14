@@ -129,5 +129,11 @@
         <file>assets/gamepad/start_snes.png</file>
         <file>global/CustomBorder.qml</file>
         <file>assets/gamepad/guide_snes.png</file>
+        <file>menu/settings/gamepad/preview/PadShoulderSNES.qml</file>
+        <file>menu/settings/gamepad/preview/PadTriggerSNES.qml</file>
+        <file>assets/gamepad/l1_snes.png</file>
+        <file>assets/gamepad/r1_snes.png</file>
+        <file>assets/gamepad/l2_snes.png</file>
+        <file>assets/gamepad/r2_snes.png</file>
     </qresource>
 </RCC>

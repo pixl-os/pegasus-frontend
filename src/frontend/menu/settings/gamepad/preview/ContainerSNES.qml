@@ -52,6 +52,29 @@ Item {
     property var dpadAreaLeftX: 112
     property var dpadAreaRightX: 270
 
+    //parameter for L1
+    property var padL1Width : 198
+    property var padL1Height : 37
+    property var padL1TopY: 0
+    property var padL1LeftX: 97
+    //parameter for R1
+    property var padR1Width : 198
+    property var padR1Height : 36
+    property var padR1TopY: 1
+    property var padR1LeftX: 612
+
+    //parameter for L2
+    property var padL2Width : 48
+    property var padL2Height : 5
+    property var padL2TopY: 4
+    property var padL2LeftX: 350
+    //parameter for R2
+    property var padR2Width : 54
+    property var padR2Height: 6
+    property var padR2TopY: 4
+    property var padR2LeftX: 509
+
+
     Image {
         id: padBase
         width: parent.width
@@ -65,60 +88,70 @@ Item {
             height: padBaseSourceSizeHeight
         }
     }
-/*
-    PadTrigger {
+
+    PadTriggerSNES {
         id: padL2
-        width: vpx(50)
+        width: vpx(padL2Width * ratio)
+        height: vpx(padL2Height * ratio)
+
         anchors {
-            bottom: padBase.verticalCenter
-            bottomMargin: vpx(113)
-            right: padBase.horizontalCenter
-            rightMargin: vpx(131)
+            verticalCenter: padBase.verticalCenter
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padL2TopY + (padL2Height/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padL2LeftX + (padL2Width/2))) * ratio);
         }
 
         shortName: "l2"
-        pressed: gamepad && gamepad.buttonL2
+        pressed: gamepad ? gamepad.buttonL2 : false
     }
-    PadShoulder {
+
+    PadShoulderSNES {
         id: padL1
-        width: vpx(110)
+        width: vpx(padL1Width * ratio)
+        height: vpx(padL1Height * ratio)
+
         anchors {
-            bottom: padBase.verticalCenter
-            bottomMargin: vpx(84)
-            right: padBase.horizontalCenter
-            rightMargin: vpx(110)
+            verticalCenter: padBase.verticalCenter
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padL1TopY + (padL1Height/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padL1LeftX + (padL1Width/2))) * ratio);
         }
 
         shortName: "l1"
-        pressed: gamepad && gamepad.buttonL1
+        pressed: gamepad ? gamepad.buttonL1 : false
     }
-    PadTrigger {
+    PadTriggerSNES {
         id: padR2
-        width: padL2.width
+        width: vpx(padR2Width * ratio)
+        height: vpx(padR2Height * ratio)
+
         anchors {
-            bottom: padBase.verticalCenter
-            bottomMargin: padL2.anchors.bottomMargin
-            left: padBase.horizontalCenter
-            leftMargin: padL2.anchors.rightMargin
+            verticalCenter: padBase.verticalCenter
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padR2TopY + (padR2Height/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padR2LeftX + (padR2Width/2))) * ratio);
         }
 
         shortName: "r2"
-        pressed: gamepad && gamepad.buttonR2
+        pressed: gamepad ? gamepad.buttonR2 : false
     }
-    PadShoulder {
+
+    PadShoulderSNES {
         id: padR1
-        width: padL1.width
+        width: vpx(padR1Width * ratio)
+        height: vpx(padR1Height * ratio)
+
         anchors {
-            bottom: padBase.verticalCenter
-            bottomMargin: padL1.anchors.bottomMargin
-            left: padBase.horizontalCenter
-            leftMargin: padL1.anchors.rightMargin
+            verticalCenter: padBase.verticalCenter
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padR1TopY + (padR1Height/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padR1LeftX + (padR1Width/2))) * ratio);
         }
 
         shortName: "r1"
-        pressed: gamepad && gamepad.buttonR1
+        pressed: gamepad ? gamepad.buttonR1 : false
     }
-    */
+
 
     PadButtonSNES {
         id: padSelect
