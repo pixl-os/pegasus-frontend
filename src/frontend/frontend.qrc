@@ -143,5 +143,12 @@
         <file>assets/gamepad/select_nes.png</file>
         <file>assets/gamepad/a_nes.png</file>
         <file>assets/gamepad/b_nes.png</file>
+        <file>menu/settings/gamepad/preview/ContainerCustom.qml</file>
+        <file>menu/settings/gamepad/preview/DpadHighlightCustom.qml</file>
+        <file>menu/settings/gamepad/preview/DpadCustom.qml</file>
+        <file>menu/settings/gamepad/preview/PadButtonCustom.qml</file>
+        <file>menu/settings/gamepad/preview/PadShoulderCustom.qml</file>
+        <file>menu/settings/gamepad/preview/PadTriggerCustom.qml</file>
+        <file>assets/gamepad/guide_nes.png</file>
     </qresource>
 </RCC>

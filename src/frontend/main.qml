@@ -990,7 +990,7 @@ Window {
         ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"; iconfont: "awesome"}
 
         ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"; iconfont: "awesome"; layout: "snes"}
-        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"}
+        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64"; type:"controller" ; iconfont: "awesome"}
         ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"; iconfont: "awesome"}
