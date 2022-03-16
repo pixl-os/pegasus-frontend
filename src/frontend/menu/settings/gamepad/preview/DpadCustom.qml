@@ -18,8 +18,8 @@ Item {
         height: parent.height
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        source: "qrc:/frontend/assets/gamepad/dpad_" + name + ".png"
-        visible: gamepad && !gamepad.buttonLeft && !gamepad.buttonRight && !gamepad.buttonUp && !gamepad.buttonDown
+        source: name ? "qrc:/frontend/assets/gamepad/dpad_" + name + ".png" : ""
+        visible: gamepad ? (!gamepad.buttonLeft && !gamepad.buttonRight && !gamepad.buttonUp && !gamepad.buttonDown) : false
     }
 
     DpadHighlightCustom {
@@ -29,7 +29,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
 
         highlighted: padContainer.currentButton === "dpleft"
-        pressed: gamepad && gamepad.buttonLeft
+        pressed: gamepad ? gamepad.buttonLeft : false
     }
 
     BrightnessContrast {
@@ -56,12 +56,12 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
 
         highlighted: padContainer.currentButton === "dpright"
-        pressed: gamepad && gamepad.buttonRight
+        pressed: gamepad ? gamepad.buttonRight : false
     }
 
     BrightnessContrast {
         z:60
-        visible: gamepad && gamepad.buttonRight
+        visible: gamepad ? gamepad.buttonRight : false
 
         width: parent.width
         height: parent.height
@@ -84,12 +84,12 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         highlighted: padContainer.currentButton === "dpup"
-        pressed: gamepad && gamepad.buttonUp
+        pressed: gamepad ? gamepad.buttonUp : false
     }
 
     BrightnessContrast {
         z:60
-        visible: gamepad && gamepad.buttonUp
+        visible: gamepad ? gamepad.buttonUp : false
 
         width: parent.width
         height: parent.height
@@ -111,12 +111,12 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         highlighted: padContainer.currentButton === "dpdown"
-        pressed: gamepad && gamepad.buttonDown
+        pressed: gamepad ? gamepad.buttonDown : false
     }
 
     BrightnessContrast {
         z:60
-        visible: gamepad && gamepad.buttonDown
+        visible: gamepad ? gamepad.buttonDown : false
 
         width: parent.width
         height: parent.height

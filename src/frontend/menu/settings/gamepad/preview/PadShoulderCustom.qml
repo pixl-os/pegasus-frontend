@@ -18,7 +18,7 @@ Item {
         width: parent.width
         height: parent.height
         anchors.fill: parent.fill
-        source: "qrc:/frontend/assets/gamepad/" + shortName + "_" + name + ".png"
+        source: name ? "qrc:/frontend/assets/gamepad/" + shortName + "_" + name + ".png" : ""
         visible: !pressed
     }
 

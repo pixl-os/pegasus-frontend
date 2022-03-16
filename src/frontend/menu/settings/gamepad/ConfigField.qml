@@ -61,7 +61,7 @@ Rectangle {
 	}
 	Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) ) {
 		event.accepted = true;
-		if (validProgress > 1.0) {
+        if ((validProgress > 1.0) && gamepad) {
 			if(inputType === "button")
 			{
                 api.internal.gamepad.configureButton(gamepad.deviceIndex, input);
