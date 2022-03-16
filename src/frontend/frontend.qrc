@@ -115,22 +115,16 @@
         <file>assets/pbar-red.png</file>
         <file>assets/pbar-green.png</file>
         <file>dialogs/RestartDialog.qml</file>
-        <file>menu/settings/gamepad/preview/ContainerSNES.qml</file>
         <file>assets/gamepad/base_snes.png</file>
         <file>assets/gamepad/x_snes.png</file>
-        <file>menu/settings/gamepad/preview/PadButtonSNES.qml</file>
         <file>assets/gamepad/y_snes.png</file>
         <file>assets/gamepad/a_snes.png</file>
         <file>assets/gamepad/b_snes.png</file>
-        <file>menu/settings/gamepad/preview/DpadSNES.qml</file>
         <file>assets/gamepad/dpad_snes.png</file>
-        <file>menu/settings/gamepad/preview/DpadHighlightSNES.qml</file>
         <file>assets/gamepad/select_snes.png</file>
         <file>assets/gamepad/start_snes.png</file>
         <file>global/CustomBorder.qml</file>
         <file>assets/gamepad/guide_snes.png</file>
-        <file>menu/settings/gamepad/preview/PadShoulderSNES.qml</file>
-        <file>menu/settings/gamepad/preview/PadTriggerSNES.qml</file>
         <file>assets/gamepad/l1_snes.png</file>
         <file>assets/gamepad/r1_snes.png</file>
         <file>assets/gamepad/l2_snes.png</file>

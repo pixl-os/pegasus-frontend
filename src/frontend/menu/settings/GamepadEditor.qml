@@ -51,10 +51,10 @@ FocusScope {
         }
     }
     onGamepadChanged: {
-        console.log("onGamepadChanged");
+        //console.log("onGamepadChanged");
         //to force reload of Pad Preview when we change gamepad
         if(root.gamepad !== null){
-            console.log("root.gamepad.name : ", root.gamepad.name);
+            //console.log("root.gamepad.name : ", root.gamepad.name);
             loaderPadPreview.enabled = false;
             loaderPadPreview.source = "";
             loaderPadPreview.layoutIndex = layoutArea.getControllerLayoutIndex(root.gamepad.name);
@@ -605,61 +605,132 @@ FocusScope {
             id: myControllerLayout
             //CONTROLLERS LAYOUT TO DISPLAY IN EDITOR depending of layout name
             ListElement { name: "default"; qml: "gamepad/preview/Container.qml"} // By default
-            ListElement { name: "snes"; qml: "gamepad/preview/ContainerSNES.qml"} //As for SNES (with L1) but also L2 as on switch ones)
-            //tentative to manage display/info of buttons here
-            ListElement { name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
-                          hasDedicatedGuide: false;
-                          hasX: false; hasY: false;
-                          hasL2 : false; hasR2 : false;
-                          hasLeftStick : false; hasRightStick : false;
-                          hasScreenshotButton : false;
-                          ratio: 0.8; padBaseSourceSizeWidth : 778 ; padBaseSourceSizeHeight : 347;
-                          //parameters for select
-                          padSelectWidth : 62;
-                          padSelectHeight : 25;
-                          padSelectTopY: 245;
-                          padSelectLeftX: 279;
 
-                          //parameters for start
-                          padStartWidth : 62;
-                          padStartHeight : 25;
-                          padStartTopY: 245;
-                          padStartLeftX: 380;
+            ListElement {   name: "snes"; qml: "gamepad/preview/ContainerCustom.qml";
+                            hasDedicatedGuide: false;
+                            hasX: true; hasY: true;
+                            hasL2 : true; hasR2 : true;
+                            hasLeftStick : false; hasRightStick : false;
+                            hasScreenshotButton : false;
+                            ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
+                            //parameters for select
+                            padSelectWidth : 69;
+                            padSelectHeight : 59;
+                            padSelectTopY: 205;
+                            padSelectLeftX: 334;
 
-                          //parameters for A/B/X/ // we don't care for custom we don't manage padABXY area
-                          //padABXYAreaTopY: 228;
-                          //padABXYAreaBottomY: 296;
-                          //padABXYAreaLeftX: 511;
-                          //padABXYAreaRightX: 682;
+                            //parameters for start
+                            padStartWidth : 69;
+                            padStartHeight : 59;
+                            padStartTopY: 205;
+                            padStartLeftX: 432;
 
-                          padAWidth : 69;
-                          padAHeight : 68;
-                          padATopY: 228;
-                          padALeftX: 612;
+                            //parameters for A/B/X/Y
+                            padAWidth : 71;
+                            padAHeight : 70;
+                            padATopY: 170;
+                            padALeftX: 763;
 
-                          padBWidth : 69;
-                          padBHeight : 67;
-                          padBTopY: 228;
-                          padBLeftX: 511;
+                            padBWidth : 71;
+                            padBHeight : 71;
+                            padBTopY: 237;
+                            padBLeftX: 677;
 
-                          //parameter for Dpad
-                          dpadAreaTopY: 163;
-                          dpadAreaBottomY: 289;
-                          dpadAreaLeftX: 64;
-                          dpadAreaRightX: 205;
+                            padXWidth : 71;
+                            padXHeight : 71;
+                            padXTopY: 103;
+                            padXLeftX: 677;
 
-                          //parameter for L1
-                          padL1Width : 53;
-                          padL1Height : 12;
-                          padL1TopY: 7;
-                          padL1LeftX: 213;
-                          //parameter for R1
-                          padR1Width : 52;
-                          padR1Height : 12;
-                          padR1TopY: 7;
-                          padR1LeftX: 473;
+                            padYWidth : 73;
+                            padYHeight : 72;
+                            padYTopY: 170;
+                            padYLeftX: 590;
 
-            } //As for NES (but with L1 as for switch online ones)
+                            //parameter for Dpad
+                            dpadAreaTopY: 126;
+                            dpadAreaBottomY: 285;
+                            dpadAreaLeftX: 112;
+                            dpadAreaRightX: 270;
+
+                            //parameter for L1
+                            padL1Width : 198;
+                            padL1Height : 37;
+                            padL1TopY: 0;
+                            padL1LeftX: 97;
+
+                            //parameter for R1
+                            padR1Width : 198;
+                            padR1Height : 36;
+                            padR1TopY: 1;
+                            padR1LeftX: 612;
+
+                            //parameter for L2
+                            padL2Width : 48;
+                            padL2Height : 5;
+                            padL2TopY: 4;
+                            padL2LeftX: 350;
+
+                            //parameter for R2
+                            padR2Width : 54;
+                            padR2Height : 6;
+                            padR2TopY: 4;
+                            padR2LeftX: 509;
+
+            } //As SNES pad (but with L2/R2 to be compatible with switch online ones)
+
+            ListElement {   name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
+                            hasDedicatedGuide: false;
+                            hasX: false; hasY: false;
+                            hasL2 : false; hasR2 : false;
+                            hasLeftStick : false; hasRightStick : false;
+                            hasScreenshotButton : false;
+                            ratio: 0.8; padBaseSourceSizeWidth : 778 ; padBaseSourceSizeHeight : 347;
+                            //parameters for select
+                            padSelectWidth : 62;
+                            padSelectHeight : 25;
+                            padSelectTopY: 245;
+                            padSelectLeftX: 279;
+
+                            //parameters for start
+                            padStartWidth : 62;
+                            padStartHeight : 25;
+                            padStartTopY: 245;
+                            padStartLeftX: 380;
+
+                            //parameters for A/B/X/ // we don't care for custom we don't manage padABXY area
+                            //padABXYAreaTopY: 228;
+                            //padABXYAreaBottomY: 296;
+                            //padABXYAreaLeftX: 511;
+                            //padABXYAreaRightX: 682;
+
+                            padAWidth : 69;
+                            padAHeight : 68;
+                            padATopY: 228;
+                            padALeftX: 612;
+
+                            padBWidth : 69;
+                            padBHeight : 67;
+                            padBTopY: 228;
+                            padBLeftX: 511;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 163;
+                            dpadAreaBottomY: 289;
+                            dpadAreaLeftX: 64;
+                            dpadAreaRightX: 205;
+
+                            //parameter for L1
+                            padL1Width : 53;
+                            padL1Height : 12;
+                            padL1TopY: 7;
+                            padL1LeftX: 213;
+                            //parameter for R1
+                            padR1Width : 52;
+                            padR1Height : 12;
+                            padR1TopY: 7;
+                            padR1LeftX: 473;
+
+            } //As NES pad (but with L1/R1 to be compatible with switch online ones)
         }
 
         //function to dynamically set container layout from gamepad name
@@ -708,23 +779,24 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).hasSelect) !== 'undefined') root.padPreview.hasSelect = myControllerLayout.get(index).hasSelect;
                 if(typeof(myControllerLayout.get(index).hasStart) !== 'undefined') root.padPreview.hasStart = myControllerLayout.get(index).hasStart;
 
-                if(typeof(myControllerLayout.get(index).hasDedicatedGuide) !== 'undefined'){
-                    console.log("myControllerLayout.get(index).hasDedicatedGuide : ", myControllerLayout.get(index).hasDedicatedGuide);
-                    console.log("root.padPreview.hasDedicatedGuide : ", root.padPreview.hasDedicatedGuide);
-                    root.padPreview.hasDedicatedGuide = myControllerLayout.get(index).hasDedicatedGuide;
-                }
+                if(typeof(myControllerLayout.get(index).hasDedicatedGuide) !== 'undefined') root.padPreview.hasDedicatedGuide = myControllerLayout.get(index).hasDedicatedGuide;
 
                 if(typeof(myControllerLayout.get(index).hasDpad) !== 'undefined') root.padPreview.hasDpad = myControllerLayout.get(index).hasDpad;
+
                 if(typeof(myControllerLayout.get(index).hasA) !== 'undefined') root.padPreview.hasA = myControllerLayout.get(index).hasA;
                 if(typeof(myControllerLayout.get(index).hasB) !== 'undefined') root.padPreview.hasB = myControllerLayout.get(index).hasB;
                 if(typeof(myControllerLayout.get(index).hasX) !== 'undefined') root.padPreview.hasX = myControllerLayout.get(index).hasX;
                 if(typeof(myControllerLayout.get(index).hasY) !== 'undefined') root.padPreview.hasY = myControllerLayout.get(index).hasY;
+
                 if(typeof(myControllerLayout.get(index).hasL1) !== 'undefined') root.padPreview.hasL1 = myControllerLayout.get(index).hasL1;
                 if(typeof(myControllerLayout.get(index).hasR1) !== 'undefined') root.padPreview.hasR1 = myControllerLayout.get(index).hasR1;
+
                 if(typeof(myControllerLayout.get(index).hasL2) !== 'undefined') root.padPreview.hasL2 = myControllerLayout.get(index).hasL2;
                 if(typeof(myControllerLayout.get(index).hasR2) !== 'undefined') root.padPreview.hasR2 = myControllerLayout.get(index).hasR2;
+
                 if(typeof(myControllerLayout.get(index).hasLeftStick) !== 'undefined') root.padPreview.hasLeftStick = myControllerLayout.get(index).hasLeftStick;
                 if(typeof(myControllerLayout.get(index).hasRightStick) !== 'undefined') root.padPreview.hasRightStick = myControllerLayout.get(index).hasRightStick;
+
                 if(typeof(myControllerLayout.get(index).hasScreenshotButton) !== 'undefined') root.padPreview.hasScreenshotButton = myControllerLayout.get(index).hasScreenshotButton;
 
                 //Settings of parameters for base
@@ -797,6 +869,7 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).dpadAreaLeftX) !== 'undefined') root.padPreview.dpadAreaLeftX = myControllerLayout.get(index).dpadAreaLeftX;
                 if(typeof(myControllerLayout.get(index).dpadAreaRightX) !== 'undefined') root.padPreview.dpadAreaRightX = myControllerLayout.get(index).dpadAreaRightX;
 
+                //set name at the end to avoid error/warning to early ;-)
                 root.padPreview.name = myControllerLayout.get(index).name;
             }
         }
@@ -808,7 +881,7 @@ FocusScope {
             property var layoutIndex
             asynchronous: true
             onStatusChanged: {
-                console.log("onStatusChanged");
+                //console.log("onStatusChanged");
                 if (loaderPadPreview.status === Loader.Loading) {
                     //console.log("Loader.Loading");
                     //RFU
