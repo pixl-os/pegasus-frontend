@@ -19,7 +19,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         source: name ? "qrc:/frontend/assets/gamepad/dpad_" + name + ".png" : ""
-        visible: gamepad ? (!gamepad.buttonLeft && !gamepad.buttonRight && !gamepad.buttonUp && !gamepad.buttonDown) : false
+        visible: gamepad ? (!gamepad.buttonLeft && !gamepad.buttonRight && !gamepad.buttonUp && !gamepad.buttonDown) : true
     }
 
     DpadHighlightCustom {

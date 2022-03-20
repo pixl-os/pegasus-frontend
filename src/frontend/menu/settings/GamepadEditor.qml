@@ -243,6 +243,489 @@ FocusScope {
         property int horizontalOffset: vpx(-560)
         property int verticalSpacing: vpx(170)
 
+        //use loader to load container dynamically
+        //list model to manage layout parameters (file name, etc...)
+        ListModel {
+            id: myControllerLayout
+            //CONTROLLERS LAYOUT TO DISPLAY IN EDITOR depending of layout name
+            ListElement { name: "default"; qml: "gamepad/preview/Container.qml"} // By default
+
+            ListElement {   name: "snes"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: false;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: true;
+                            hasY: true;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : false; hasRightStick : false;
+                            hasL3 : false; hasR3 : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
+                            //parameters for select
+                            padSelectWidth : 69;
+                            padSelectHeight : 59;
+                            padSelectTopY: 205;
+                            padSelectLeftX: 334;
+
+                            //parameters for start
+                            padStartWidth : 69;
+                            padStartHeight : 59;
+                            padStartTopY: 205;
+                            padStartLeftX: 432;
+
+                            //parameters for A/B/X/Y
+                            padAWidth : 71;
+                            padAHeight : 70;
+                            padATopY: 170;
+                            padALeftX: 763;
+
+                            padBWidth : 71;
+                            padBHeight : 71;
+                            padBTopY: 237;
+                            padBLeftX: 677;
+
+                            padXWidth : 71;
+                            padXHeight : 71;
+                            padXTopY: 103;
+                            padXLeftX: 677;
+
+                            padYWidth : 73;
+                            padYHeight : 72;
+                            padYTopY: 170;
+                            padYLeftX: 590;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 126;
+                            dpadAreaBottomY: 285;
+                            dpadAreaLeftX: 112;
+                            dpadAreaRightX: 270;
+
+                            //parameter for L1
+                            padL1Width : 198;
+                            padL1Height : 37;
+                            padL1TopY: 0;
+                            padL1LeftX: 97;
+
+                            //parameter for R1
+                            padR1Width : 198;
+                            padR1Height : 36;
+                            padR1TopY: 1;
+                            padR1LeftX: 612;
+
+                            //parameter for L2
+                            padL2Width : 48;
+                            padL2Height : 5;
+                            padL2TopY: 4;
+                            padL2LeftX: 350;
+
+                            //parameter for R2
+                            padR2Width : 54;
+                            padR2Height : 6;
+                            padR2TopY: 4;
+                            padR2LeftX: 509;
+
+            } //As SNES pad (but with L2/R2 to be compatible with switch online ones)
+
+            ListElement {   name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: false;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: false;
+                            hasY: false;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : false; hasR2 : false;
+
+                            hasLeftStick : false; hasRightStick : false;
+                            hasL3 : false; hasR3 : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.8; padBaseSourceSizeWidth : 778 ; padBaseSourceSizeHeight : 347;
+                            //parameters for select
+                            padSelectWidth : 62;
+                            padSelectHeight : 25;
+                            padSelectTopY: 245;
+                            padSelectLeftX: 279;
+
+                            //parameters for start
+                            padStartWidth : 62;
+                            padStartHeight : 25;
+                            padStartTopY: 245;
+                            padStartLeftX: 380;
+
+                            //parameters for A/B/X/ // we don't care for custom we don't manage padABXY area
+                            //padABXYAreaTopY: 228;
+                            //padABXYAreaBottomY: 296;
+                            //padABXYAreaLeftX: 511;
+                            //padABXYAreaRightX: 682;
+
+                            padAWidth : 69;
+                            padAHeight : 68;
+                            padATopY: 228;
+                            padALeftX: 612;
+
+                            padBWidth : 69;
+                            padBHeight : 67;
+                            padBTopY: 228;
+                            padBLeftX: 511;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 163;
+                            dpadAreaBottomY: 289;
+                            dpadAreaLeftX: 64;
+                            dpadAreaRightX: 205;
+
+                            //parameter for L1
+                            padL1Width : 53;
+                            padL1Height : 12;
+                            padL1TopY: 7;
+                            padL1LeftX: 213;
+                            //parameter for R1
+                            padR1Width : 52;
+                            padR1Height : 12;
+                            padR1TopY: 7;
+                            padR1LeftX: 473;
+
+            } //As NES pad (but with L1/R1 to be compatible with switch online ones)
+
+            ListElement {   name: "xbox360"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: true;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: true;
+                            hasY: true;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : true; hasRightStick : true;
+                            hasL3 : true; hasR3 : true;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.6; padBaseSourceSizeWidth : 958 ; padBaseSourceSizeHeight : 751;
+
+                            //parameters for select
+                            padSelectWidth : 50;
+                            padSelectHeight : 43;
+                            padSelectTopY: 252;
+                            padSelectLeftX: 352;
+
+                            //parameters for start
+                            padStartWidth : 50;
+                            padStartHeight : 43;
+                            padStartTopY: 252;
+                            padStartLeftX: 558;
+
+                            //parameters for guide/hotkey
+                            padGuideWidth : 94;
+                            padGuideHeight : 94;
+                            padGuideTopY: 227;
+                            padGuideLeftX: 434;
+
+                            //parameters for A/B/X/Y
+                            padAWidth : 65;
+                            padAHeight : 67;
+                            padATopY: 308;
+                            padALeftX: 730;
+
+                            padBWidth : 65;
+                            padBHeight : 66;
+                            padBTopY: 233;
+                            padBLeftX: 806;
+
+                            padXWidth : 66;
+                            padXHeight : 67;
+                            padXTopY: 233;
+                            padXLeftX: 655;
+
+                            padYWidth : 66;
+                            padYHeight : 67;
+                            padYTopY: 158;
+                            padYLeftX: 730;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 357;
+                            dpadAreaBottomY: 516;
+                            dpadAreaLeftX: 253;
+                            dpadAreaRightX: 411;
+
+                            //parameter for L1
+                            padL1Width : 171;
+                            padL1Height : 74;
+                            padL1TopY: 77;
+                            padL1LeftX: 113;
+
+                            //parameter for R1
+                            padR1Width : 173;
+                            padR1Height : 72;
+                            padR1TopY: 76;
+                            padR1LeftX: 673;
+
+                            //parameter for L2
+                            padL2Width : 64;
+                            padL2Height : 79;
+                            padL2TopY: 0;
+                            padL2LeftX: 194;
+
+                            //parameter for R2
+                            padR2Width : 62;
+                            padR2Height : 77;
+                            padR2TopY: 1;
+                            padR2LeftX: 701;
+
+                            //parameter for Left stick
+                            lStickWidth : 127;
+                            lStickHeight : 128;
+                            lStickTopY: 200;
+                            lStickLeftX: 130;
+
+                            //parameter for L3
+                            /*padL3Width : 127;
+                            padL3Height : 128;
+                            padL3TopY: 200;
+                            padL3LeftX: 130;*/
+
+                            //parameter for Right stick
+                            rStickWidth : 129;
+                            rStickHeight : 129;
+                            rStickTopY: 374;
+                            rStickLeftX: 553;
+
+                            //parameter for R3
+                            /*padR3Width : 129;
+                            padR3Height : 129;
+                            padR3TopY: 374;
+                            padR3LeftX: 553;*/
+
+            } //As Microsoft XBOX 360 pad
+
+        }
+
+        //function to dynamically set container layout from gamepad name
+        function getControllerLayoutIndex(controllerName) {
+            var layoutName = "";
+            var layoutQml = "";
+            let type = "controller";
+            let i = 0;
+            //searchIcon using the good type
+            do{
+                const keywords = myDeviceIcons.get(i).keywords.split(",");
+                for(var j = 0; j < keywords.length;j++)
+                {
+                    if (isKeywordFound(controllerName, "", keywords[j]) && (myDeviceIcons.get(i).type === type ) && (keywords[j] !== "")){
+                        layoutName = myDeviceIcons.get(i).layout;
+                        for(var k = 0; k < myControllerLayout.count;k++)
+                        {
+                            if(myControllerLayout.get(k).name === layoutName){
+                                layoutQml = myControllerLayout.get(k).qml;
+                                return k;
+                            }
+                        }
+                    }
+                }
+                i = i + 1;
+            }while (layoutQml === "" && i < myDeviceIcons.count)
+            if (layoutQml === ""){
+                //to get default one if empty
+                for(var l = 0; l < myControllerLayout.count;l++)
+                {
+                    if(myControllerLayout.get(l).name === "default"){
+                        layoutQml = myControllerLayout.get(l).qml;
+                        return l;
+                    }
+                }
+            }
+            //if issue/never reach
+            return -1;
+        }
+
+        function setParameters(index){
+
+            if(myControllerLayout.get(index).qml.includes("ContainerCustom")){ //if we use the one that we could customize
+
+                //Settings of layout availability features list
+                if(typeof(myControllerLayout.get(index).hasSelect) !== 'undefined') root.padPreview.hasSelect = myControllerLayout.get(index).hasSelect;
+                if(typeof(myControllerLayout.get(index).hasStart) !== 'undefined') root.padPreview.hasStart = myControllerLayout.get(index).hasStart;
+
+                if(typeof(myControllerLayout.get(index).hasDedicatedGuide) !== 'undefined') root.padPreview.hasDedicatedGuide = myControllerLayout.get(index).hasDedicatedGuide;
+
+                if(typeof(myControllerLayout.get(index).hasDpad) !== 'undefined') root.padPreview.hasDpad = myControllerLayout.get(index).hasDpad;
+
+                if(typeof(myControllerLayout.get(index).hasA) !== 'undefined') root.padPreview.hasA = myControllerLayout.get(index).hasA;
+                if(typeof(myControllerLayout.get(index).hasB) !== 'undefined') root.padPreview.hasB = myControllerLayout.get(index).hasB;
+                if(typeof(myControllerLayout.get(index).hasX) !== 'undefined') root.padPreview.hasX = myControllerLayout.get(index).hasX;
+                if(typeof(myControllerLayout.get(index).hasY) !== 'undefined') root.padPreview.hasY = myControllerLayout.get(index).hasY;
+
+                if(typeof(myControllerLayout.get(index).hasL1) !== 'undefined') root.padPreview.hasL1 = myControllerLayout.get(index).hasL1;
+                if(typeof(myControllerLayout.get(index).hasR1) !== 'undefined') root.padPreview.hasR1 = myControllerLayout.get(index).hasR1;
+
+                if(typeof(myControllerLayout.get(index).hasL2) !== 'undefined') root.padPreview.hasL2 = myControllerLayout.get(index).hasL2;
+                if(typeof(myControllerLayout.get(index).hasR2) !== 'undefined') root.padPreview.hasR2 = myControllerLayout.get(index).hasR2;
+
+
+                if(typeof(myControllerLayout.get(index).hasLeftStick) !== 'undefined') root.padPreview.hasLeftStick = myControllerLayout.get(index).hasLeftStick;
+                if(typeof(myControllerLayout.get(index).hasRightStick) !== 'undefined') root.padPreview.hasRightStick = myControllerLayout.get(index).hasRightStick;
+                //L3/R3 included in left/right sticks
+                if(typeof(myControllerLayout.get(index).hasL3) !== 'undefined') root.padPreview.hasL3 = myControllerLayout.get(index).hasL3;
+                if(typeof(myControllerLayout.get(index).hasR3) !== 'undefined') root.padPreview.hasR3 = myControllerLayout.get(index).hasR3;
+
+                if(typeof(myControllerLayout.get(index).hasScreenshotButton) !== 'undefined') root.padPreview.hasScreenshotButton = myControllerLayout.get(index).hasScreenshotButton;
+
+                //Settings of parameters for base
+                if(typeof(myControllerLayout.get(index).ratio) !== 'undefined') root.padPreview.ratio = myControllerLayout.get(index).ratio;
+                if(typeof(myControllerLayout.get(index).padBaseSourceSizeWidth) !== 'undefined') root.padPreview.padBaseSourceSizeWidth = myControllerLayout.get(index).padBaseSourceSizeWidth;
+                if(typeof(myControllerLayout.get(index).padBaseSourceSizeHeight) !== 'undefined') root.padPreview.padBaseSourceSizeHeight = myControllerLayout.get(index).padBaseSourceSizeHeight;
+
+                //Settings of parameters for select
+                if(typeof(myControllerLayout.get(index).padSelectWidth) !== 'undefined') root.padPreview.padSelectWidth = myControllerLayout.get(index).padSelectWidth;
+                if(typeof(myControllerLayout.get(index).padSelectHeight) !== 'undefined') root.padPreview.padSelectHeight = myControllerLayout.get(index).padSelectHeight;
+                if(typeof(myControllerLayout.get(index).padSelectTopY) !== 'undefined') root.padPreview.padSelectTopY = myControllerLayout.get(index).padSelectTopY;
+                if(typeof(myControllerLayout.get(index).padSelectLeftX) !== 'undefined') root.padPreview.padSelectLeftX = myControllerLayout.get(index).padSelectLeftX;
+
+                //Settings of parameters for start
+                if(typeof(myControllerLayout.get(index).padStartWidth) !== 'undefined') root.padPreview.padStartWidth = myControllerLayout.get(index).padStartWidth;
+                if(typeof(myControllerLayout.get(index).padStartHeight) !== 'undefined') root.padPreview.padStartHeight = myControllerLayout.get(index).padStartHeight;
+                if(typeof(myControllerLayout.get(index).padStartTopY) !== 'undefined') root.padPreview.padStartTopY = myControllerLayout.get(index).padStartTopY;
+                if(typeof(myControllerLayout.get(index).padStartLeftX) !== 'undefined') root.padPreview.padStartLeftX = myControllerLayout.get(index).padStartLeftX;
+
+                //Settings of parameters for guide
+                if(typeof(myControllerLayout.get(index).padGuideWidth) !== 'undefined') root.padPreview.padGuideWidth = myControllerLayout.get(index).padGuideWidth;
+                if(typeof(myControllerLayout.get(index).padGuideHeight) !== 'undefined') root.padPreview.padGuideHeight = myControllerLayout.get(index).padGuideHeight;
+                if(typeof(myControllerLayout.get(index).padGuideTopY) !== 'undefined') root.padPreview.padGuideTopY = myControllerLayout.get(index).padGuideTopY;
+                if(typeof(myControllerLayout.get(index).padGuideLeftX) !== 'undefined') root.padPreview.padGuideLeftX = myControllerLayout.get(index).padGuideLeftX;
+
+                //Settings of parameters for A/B/X/Y
+                if(typeof(myControllerLayout.get(index).padABXYAreaTopY) !== 'undefined') root.padPreview.padABXYAreaTopY = myControllerLayout.get(index).padABXYAreaTopY;
+                if(typeof(myControllerLayout.get(index).padABXYAreaBottomY) !== 'undefined') root.padPreview.padABXYAreaBottomY = myControllerLayout.get(index).padABXYAreaBottomY;
+                if(typeof(myControllerLayout.get(index).padABXYAreaLeftX) !== 'undefined') root.padPreview.padABXYAreaLeftX = myControllerLayout.get(index).padABXYAreaLeftX;
+                if(typeof(myControllerLayout.get(index).padABXYAreaRightX) !== 'undefined') root.padPreview.padABXYAreaRightX = myControllerLayout.get(index).padABXYAreaRightX;
+
+                if(typeof(myControllerLayout.get(index).padAWidth) !== 'undefined') root.padPreview.padAWidth = myControllerLayout.get(index).padAWidth;
+                if(typeof(myControllerLayout.get(index).padAHeight) !== 'undefined') root.padPreview.padAHeight = myControllerLayout.get(index).padAHeight;
+                if(typeof(myControllerLayout.get(index).padATopY) !== 'undefined') root.padPreview.padATopY = myControllerLayout.get(index).padATopY;
+                if(typeof(myControllerLayout.get(index).padALeftX) !== 'undefined') root.padPreview.padALeftX = myControllerLayout.get(index).padALeftX;
+
+                if(typeof(myControllerLayout.get(index).padBWidth) !== 'undefined') root.padPreview.padBWidth = myControllerLayout.get(index).padBWidth;
+                if(typeof(myControllerLayout.get(index).padBHeight) !== 'undefined') root.padPreview.padBHeight = myControllerLayout.get(index).padBHeight;
+                if(typeof(myControllerLayout.get(index).padBTopY) !== 'undefined') root.padPreview.padBTopY = myControllerLayout.get(index).padBTopY;
+                if(typeof(myControllerLayout.get(index).padBLeftX) !== 'undefined') root.padPreview.padBLeftX = myControllerLayout.get(index).padBLeftX;
+
+                if(typeof(myControllerLayout.get(index).padXWidth) !== 'undefined') root.padPreview.padXWidth = myControllerLayout.get(index).padXWidth;
+                if(typeof(myControllerLayout.get(index).padXHeight) !== 'undefined') root.padPreview.padXHeight = myControllerLayout.get(index).padXHeight;
+                if(typeof(myControllerLayout.get(index).padXTopY) !== 'undefined') root.padPreview.padXTopY = myControllerLayout.get(index).padXTopY;
+                if(typeof(myControllerLayout.get(index).padXLeftX) !== 'undefined') root.padPreview.padXLeftX = myControllerLayout.get(index).padXLeftX;
+
+                if(typeof(myControllerLayout.get(index).padYWidth) !== 'undefined') root.padPreview.padYWidth = myControllerLayout.get(index).padYWidth;
+                if(typeof(myControllerLayout.get(index).padYHeight) !== 'undefined') root.padPreview.padYHeight = myControllerLayout.get(index).padYHeight;
+                if(typeof(myControllerLayout.get(index).padYTopY) !== 'undefined') root.padPreview.padYTopY = myControllerLayout.get(index).padYTopY;
+                if(typeof(myControllerLayout.get(index).padYLeftX) !== 'undefined') root.padPreview.padYLeftX = myControllerLayout.get(index).padYLeftX;
+
+                //Settings of parameters for L1/R1/L2/R2/L3/R3
+                if(typeof(myControllerLayout.get(index).padL1Width) !== 'undefined') root.padPreview.padL1Width = myControllerLayout.get(index).padL1Width;
+                if(typeof(myControllerLayout.get(index).padL1Height) !== 'undefined') root.padPreview.padL1Height = myControllerLayout.get(index).padL1Height;
+                if(typeof(myControllerLayout.get(index).padL1TopY) !== 'undefined') root.padPreview.padL1TopY = myControllerLayout.get(index).padL1TopY;
+                if(typeof(myControllerLayout.get(index).padL1LeftX) !== 'undefined') root.padPreview.padL1LeftX = myControllerLayout.get(index).padL1LeftX;
+
+                if(typeof(myControllerLayout.get(index).padL2Width) !== 'undefined') root.padPreview.padL2Width = myControllerLayout.get(index).padL2Width;
+                if(typeof(myControllerLayout.get(index).padL2Height) !== 'undefined') root.padPreview.padL2Height = myControllerLayout.get(index).padL2Height;
+                if(typeof(myControllerLayout.get(index).padL2TopY) !== 'undefined') root.padPreview.padL2TopY = myControllerLayout.get(index).padL2TopY;
+                if(typeof(myControllerLayout.get(index).padL2LeftX) !== 'undefined') root.padPreview.padL2LeftX = myControllerLayout.get(index).padL2LeftX;
+
+                /*if(typeof(myControllerLayout.get(index).padL3Width) !== 'undefined') root.padPreview.padL3Width = myControllerLayout.get(index).padL3Width;
+                if(typeof(myControllerLayout.get(index).padL3Height) !== 'undefined') root.padPreview.padL3Height = myControllerLayout.get(index).padL3Height;
+                if(typeof(myControllerLayout.get(index).padL3TopY) !== 'undefined') root.padPreview.padL3TopY = myControllerLayout.get(index).padL3TopY;
+                if(typeof(myControllerLayout.get(index).padL3LeftX) !== 'undefined') root.padPreview.padL3LeftX = myControllerLayout.get(index).padL3LeftX;
+                */
+
+                if(typeof(myControllerLayout.get(index).padR1Width) !== 'undefined') root.padPreview.padR1Width = myControllerLayout.get(index).padR1Width;
+                if(typeof(myControllerLayout.get(index).padR1Height) !== 'undefined') root.padPreview.padR1Height = myControllerLayout.get(index).padR1Height;
+                if(typeof(myControllerLayout.get(index).padR1TopY) !== 'undefined') root.padPreview.padR1TopY = myControllerLayout.get(index).padR1TopY;
+                if(typeof(myControllerLayout.get(index).padR1LeftX) !== 'undefined') root.padPreview.padR1LeftX = myControllerLayout.get(index).padR1LeftX;
+
+                if(typeof(myControllerLayout.get(index).padR2Width) !== 'undefined') root.padPreview.padR2Width = myControllerLayout.get(index).padR2Width;
+                if(typeof(myControllerLayout.get(index).padR2Height) !== 'undefined') root.padPreview.padR2Height = myControllerLayout.get(index).padR2Height;
+                if(typeof(myControllerLayout.get(index).padR2TopY) !== 'undefined') root.padPreview.padR2TopY = myControllerLayout.get(index).padR2TopY;
+                if(typeof(myControllerLayout.get(index).padR2LeftX) !== 'undefined') root.padPreview.padR2LeftX = myControllerLayout.get(index).padR2LeftX;
+
+                /*if(typeof(myControllerLayout.get(index).padR3Width) !== 'undefined') root.padPreview.padR3Width = myControllerLayout.get(index).padR3Width;
+                if(typeof(myControllerLayout.get(index).padR3Height) !== 'undefined') root.padPreview.padR3Height = myControllerLayout.get(index).padR3Height;
+                if(typeof(myControllerLayout.get(index).padR3TopY) !== 'undefined') root.padPreview.padR3TopY = myControllerLayout.get(index).padR3TopY;
+                if(typeof(myControllerLayout.get(index).padR3LeftX) !== 'undefined') root.padPreview.padR3LeftX = myControllerLayout.get(index).padR3LeftX;
+                */
+
+                //Settings of parameters for Dpad
+                if(typeof(myControllerLayout.get(index).dpadAreaTopY) !== 'undefined') root.padPreview.dpadAreaTopY = myControllerLayout.get(index).dpadAreaTopY;
+                if(typeof(myControllerLayout.get(index).dpadAreaBottomY) !== 'undefined') root.padPreview.dpadAreaBottomY = myControllerLayout.get(index).dpadAreaBottomY;
+                if(typeof(myControllerLayout.get(index).dpadAreaLeftX) !== 'undefined') root.padPreview.dpadAreaLeftX = myControllerLayout.get(index).dpadAreaLeftX;
+                if(typeof(myControllerLayout.get(index).dpadAreaRightX) !== 'undefined') root.padPreview.dpadAreaRightX = myControllerLayout.get(index).dpadAreaRightX;
+
+                //Settings of parameters for lStick/rStick
+                if(typeof(myControllerLayout.get(index).lStickWidth) !== 'undefined') root.padPreview.lStickWidth = myControllerLayout.get(index).lStickWidth;
+                if(typeof(myControllerLayout.get(index).lStickHeight) !== 'undefined') root.padPreview.lStickHeight = myControllerLayout.get(index).lStickHeight;
+                if(typeof(myControllerLayout.get(index).lStickTopY) !== 'undefined') root.padPreview.lStickTopY = myControllerLayout.get(index).lStickTopY;
+                if(typeof(myControllerLayout.get(index).lStickLeftX) !== 'undefined') root.padPreview.lStickLeftX = myControllerLayout.get(index).lStickLeftX;
+
+                if(typeof(myControllerLayout.get(index).rStickWidth) !== 'undefined') root.padPreview.rStickWidth = myControllerLayout.get(index).rStickWidth;
+                if(typeof(myControllerLayout.get(index).rStickHeight) !== 'undefined') root.padPreview.rStickHeight = myControllerLayout.get(index).rStickHeight;
+                if(typeof(myControllerLayout.get(index).rStickTopY) !== 'undefined') root.padPreview.rStickTopY = myControllerLayout.get(index).rStickTopY;
+                if(typeof(myControllerLayout.get(index).rStickLeftX) !== 'undefined') root.padPreview.rStickLeftX = myControllerLayout.get(index).rStickLeftX;
+
+
+                //set name at the end to avoid error/warning to early ;-)
+                root.padPreview.name = myControllerLayout.get(index).name;
+            }
+        }
+
+        Loader {
+            id: loaderPadPreview
+            anchors.fill: parent
+            enabled: false
+            property var layoutIndex
+            asynchronous: false
+            onStatusChanged: {
+                //console.log("onStatusChanged");
+                if (loaderPadPreview.status === Loader.Loading) {
+                    //console.log("Loader.Loading");
+                    //RFU
+                }
+                else if (loaderPadPreview.status === Loader.Ready) {
+                    //console.log("Loader.Ready");
+                    if(loaderPadPreview.item !== null){
+                        root.padPreview = loaderPadPreview.item
+                        //set dynamically the layoutIndex
+                        parent.setParameters(layoutIndex);
+                    }
+                    //console.log("root.gamepad : ", root.gamepad);
+                    if(root.gamepad !== null){
+                            loaderPadPreview.item.gamepad = root.gamepad;
+                    }
+                }
+                else if (status == Loader.Error){
+                     //RFU
+                     console.log("Error to load QML for this controller !");
+                }
+            }
+        }
+
         onActiveFocusChanged:
             if (!activeFocus && padPreview) padPreview.currentButton = ""
 
@@ -470,6 +953,7 @@ FocusScope {
             ConfigField {
                 id: configX
                 visible: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasX) !== 'undefined') ? root.padPreview.hasX : true) : false
+
                 text: "x"
                 onActiveFocusChanged:
                     if (activeFocus && padPreview) padPreview.currentButton = "x"
@@ -598,449 +1082,8 @@ FocusScope {
                 }
             }
         }
-
-        //use loader to load container dynamically
-        //list model to manage layout parameters (file name, etc...)
-        ListModel {
-            id: myControllerLayout
-            //CONTROLLERS LAYOUT TO DISPLAY IN EDITOR depending of layout name
-            ListElement { name: "default"; qml: "gamepad/preview/Container.qml"} // By default
-
-            ListElement {   name: "snes"; qml: "gamepad/preview/ContainerCustom.qml";
-                            hasDedicatedGuide: false;
-                            hasX: true; hasY: true;
-                            hasL2 : true; hasR2 : true;
-                            hasLeftStick : false; hasRightStick : false;
-                            hasScreenshotButton : false;
-                            ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
-                            //parameters for select
-                            padSelectWidth : 69;
-                            padSelectHeight : 59;
-                            padSelectTopY: 205;
-                            padSelectLeftX: 334;
-
-                            //parameters for start
-                            padStartWidth : 69;
-                            padStartHeight : 59;
-                            padStartTopY: 205;
-                            padStartLeftX: 432;
-
-                            //parameters for A/B/X/Y
-                            padAWidth : 71;
-                            padAHeight : 70;
-                            padATopY: 170;
-                            padALeftX: 763;
-
-                            padBWidth : 71;
-                            padBHeight : 71;
-                            padBTopY: 237;
-                            padBLeftX: 677;
-
-                            padXWidth : 71;
-                            padXHeight : 71;
-                            padXTopY: 103;
-                            padXLeftX: 677;
-
-                            padYWidth : 73;
-                            padYHeight : 72;
-                            padYTopY: 170;
-                            padYLeftX: 590;
-
-                            //parameter for Dpad
-                            dpadAreaTopY: 126;
-                            dpadAreaBottomY: 285;
-                            dpadAreaLeftX: 112;
-                            dpadAreaRightX: 270;
-
-                            //parameter for L1
-                            padL1Width : 198;
-                            padL1Height : 37;
-                            padL1TopY: 0;
-                            padL1LeftX: 97;
-
-                            //parameter for R1
-                            padR1Width : 198;
-                            padR1Height : 36;
-                            padR1TopY: 1;
-                            padR1LeftX: 612;
-
-                            //parameter for L2
-                            padL2Width : 48;
-                            padL2Height : 5;
-                            padL2TopY: 4;
-                            padL2LeftX: 350;
-
-                            //parameter for R2
-                            padR2Width : 54;
-                            padR2Height : 6;
-                            padR2TopY: 4;
-                            padR2LeftX: 509;
-
-            } //As SNES pad (but with L2/R2 to be compatible with switch online ones)
-
-            ListElement {   name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
-                            hasDedicatedGuide: false;
-                            hasX: false; hasY: false;
-                            hasL2 : false; hasR2 : false;
-                            hasLeftStick : false; hasRightStick : false;
-                            hasScreenshotButton : false;
-                            ratio: 0.8; padBaseSourceSizeWidth : 778 ; padBaseSourceSizeHeight : 347;
-                            //parameters for select
-                            padSelectWidth : 62;
-                            padSelectHeight : 25;
-                            padSelectTopY: 245;
-                            padSelectLeftX: 279;
-
-                            //parameters for start
-                            padStartWidth : 62;
-                            padStartHeight : 25;
-                            padStartTopY: 245;
-                            padStartLeftX: 380;
-
-                            //parameters for A/B/X/ // we don't care for custom we don't manage padABXY area
-                            //padABXYAreaTopY: 228;
-                            //padABXYAreaBottomY: 296;
-                            //padABXYAreaLeftX: 511;
-                            //padABXYAreaRightX: 682;
-
-                            padAWidth : 69;
-                            padAHeight : 68;
-                            padATopY: 228;
-                            padALeftX: 612;
-
-                            padBWidth : 69;
-                            padBHeight : 67;
-                            padBTopY: 228;
-                            padBLeftX: 511;
-
-                            //parameter for Dpad
-                            dpadAreaTopY: 163;
-                            dpadAreaBottomY: 289;
-                            dpadAreaLeftX: 64;
-                            dpadAreaRightX: 205;
-
-                            //parameter for L1
-                            padL1Width : 53;
-                            padL1Height : 12;
-                            padL1TopY: 7;
-                            padL1LeftX: 213;
-                            //parameter for R1
-                            padR1Width : 52;
-                            padR1Height : 12;
-                            padR1TopY: 7;
-                            padR1LeftX: 473;
-
-            } //As NES pad (but with L1/R1 to be compatible with switch online ones)
-
-            ListElement {   name: "xbox360"; qml: "gamepad/preview/ContainerCustom.qml";
-                            hasDedicatedGuide: true;
-                            hasX: true; hasY: true;
-                            hasL2 : true; hasR2 : true;
-                            hasL3 : true; hasR3 : true;
-                            hasLeftStick : true; hasRightStick : true;
-                            hasScreenshotButton : false;
-                            ratio: 0.6; padBaseSourceSizeWidth : 958 ; padBaseSourceSizeHeight : 751;
-
-                            //parameters for select
-                            padSelectWidth : 50;
-                            padSelectHeight : 43;
-                            padSelectTopY: 252;
-                            padSelectLeftX: 352;
-
-                            //parameters for start
-                            padStartWidth : 50;
-                            padStartHeight : 43;
-                            padStartTopY: 252;
-                            padStartLeftX: 558;
-
-                            //parameters for guide/hotkey
-                            padGuideWidth : 94;
-                            padGuideHeight : 94;
-                            padGuideTopY: 227;
-                            padGuideLeftX: 434;
-
-                            //parameters for A/B/X/Y
-                            padAWidth : 65;
-                            padAHeight : 67;
-                            padATopY: 308;
-                            padALeftX: 730;
-
-                            padBWidth : 65;
-                            padBHeight : 66;
-                            padBTopY: 233;
-                            padBLeftX: 806;
-
-                            padXWidth : 66;
-                            padXHeight : 67;
-                            padXTopY: 233;
-                            padXLeftX: 655;
-
-                            padYWidth : 66;
-                            padYHeight : 67;
-                            padYTopY: 158;
-                            padYLeftX: 730;
-
-                            //parameter for Dpad
-                            dpadAreaTopY: 357;
-                            dpadAreaBottomY: 516;
-                            dpadAreaLeftX: 253;
-                            dpadAreaRightX: 411;
-
-                            //parameter for L1
-                            padL1Width : 171;
-                            padL1Height : 74;
-                            padL1TopY: 77;
-                            padL1LeftX: 113;
-
-                            //parameter for R1
-                            padR1Width : 173;
-                            padR1Height : 72;
-                            padR1TopY: 76;
-                            padR1LeftX: 673;
-
-                            //parameter for L2
-                            padL2Width : 64;
-                            padL2Height : 79;
-                            padL2TopY: 0;
-                            padL2LeftX: 194;
-
-                            //parameter for R2
-                            padR2Width : 62;
-                            padR2Height : 77;
-                            padR2TopY: 1;
-                            padR2LeftX: 701;
-
-                            //parameter for Left stick
-                            lStickWidth : 127;
-                            lStickHeight : 128;
-                            lStickTopY: 200;
-                            lStickLeftX: 130;
-
-                            //parameter for L3
-                            padL3Width : 127;
-                            padL3Height : 128;
-                            padL3TopY: 200;
-                            padL3LeftX: 130;
-
-                            //parameter for Right stick
-                            rStickWidth : 129;
-                            rStickHeight : 129;
-                            rStickTopY: 374;
-                            rStickLeftX: 553;
-
-                            //parameter for R3
-                            padR3Width : 129;
-                            padR3Height : 129;
-                            padR3TopY: 374;
-                            padR3LeftX: 553;
-
-            } //As Microsoft XBOX 360 pad
-
-        }
-
-        //function to dynamically set container layout from gamepad name
-        function getControllerLayoutIndex(controllerName) {
-            var layoutName = "";
-            var layoutQml = "";
-            let type = "controller";
-            let i = 0;
-            //searchIcon using the good type
-            do{
-                const keywords = myDeviceIcons.get(i).keywords.split(",");
-                for(var j = 0; j < keywords.length;j++)
-                {
-                    if (isKeywordFound(controllerName, "", keywords[j]) && (myDeviceIcons.get(i).type === type ) && (keywords[j] !== "")){
-                        layoutName = myDeviceIcons.get(i).layout;
-                        for(var k = 0; k < myControllerLayout.count;k++)
-                        {
-                            if(myControllerLayout.get(k).name === layoutName){
-                                layoutQml = myControllerLayout.get(k).qml;
-                                return k;
-                            }
-                        }
-                    }
-                }
-                i = i + 1;
-            }while (layoutQml === "" && i < myDeviceIcons.count)
-            if (layoutQml === ""){
-                //to get default one if empty
-                for(var l = 0; l < myControllerLayout.count;l++)
-                {
-                    if(myControllerLayout.get(l).name === "default"){
-                        layoutQml = myControllerLayout.get(l).qml;
-                        return l;
-                    }
-                }
-            }
-            //if issue/never reach
-            return -1;
-        }
-
-        function setParameters(index){
-
-            if(myControllerLayout.get(index).qml.includes("ContainerCustom")){ //if we use the one that we could customize
-
-                //Settings of layout availability features list
-                if(typeof(myControllerLayout.get(index).hasSelect) !== 'undefined') root.padPreview.hasSelect = myControllerLayout.get(index).hasSelect;
-                if(typeof(myControllerLayout.get(index).hasStart) !== 'undefined') root.padPreview.hasStart = myControllerLayout.get(index).hasStart;
-
-                if(typeof(myControllerLayout.get(index).hasDedicatedGuide) !== 'undefined') root.padPreview.hasDedicatedGuide = myControllerLayout.get(index).hasDedicatedGuide;
-
-                if(typeof(myControllerLayout.get(index).hasDpad) !== 'undefined') root.padPreview.hasDpad = myControllerLayout.get(index).hasDpad;
-
-                if(typeof(myControllerLayout.get(index).hasA) !== 'undefined') root.padPreview.hasA = myControllerLayout.get(index).hasA;
-                if(typeof(myControllerLayout.get(index).hasB) !== 'undefined') root.padPreview.hasB = myControllerLayout.get(index).hasB;
-                if(typeof(myControllerLayout.get(index).hasX) !== 'undefined') root.padPreview.hasX = myControllerLayout.get(index).hasX;
-                if(typeof(myControllerLayout.get(index).hasY) !== 'undefined') root.padPreview.hasY = myControllerLayout.get(index).hasY;
-
-                if(typeof(myControllerLayout.get(index).hasL1) !== 'undefined') root.padPreview.hasL1 = myControllerLayout.get(index).hasL1;
-                if(typeof(myControllerLayout.get(index).hasR1) !== 'undefined') root.padPreview.hasR1 = myControllerLayout.get(index).hasR1;
-
-                if(typeof(myControllerLayout.get(index).hasL2) !== 'undefined') root.padPreview.hasL2 = myControllerLayout.get(index).hasL2;
-                if(typeof(myControllerLayout.get(index).hasR2) !== 'undefined') root.padPreview.hasR2 = myControllerLayout.get(index).hasR2;
-
-                if(typeof(myControllerLayout.get(index).hasL3) !== 'undefined') root.padPreview.hasL3 = myControllerLayout.get(index).hasL3;
-                if(typeof(myControllerLayout.get(index).hasR3) !== 'undefined') root.padPreview.hasR3 = myControllerLayout.get(index).hasR3;
-
-                if(typeof(myControllerLayout.get(index).hasLeftStick) !== 'undefined') root.padPreview.hasLeftStick = myControllerLayout.get(index).hasLeftStick;
-                if(typeof(myControllerLayout.get(index).hasRightStick) !== 'undefined') root.padPreview.hasRightStick = myControllerLayout.get(index).hasRightStick;
-
-                if(typeof(myControllerLayout.get(index).hasScreenshotButton) !== 'undefined') root.padPreview.hasScreenshotButton = myControllerLayout.get(index).hasScreenshotButton;
-
-                //Settings of parameters for base
-                if(typeof(myControllerLayout.get(index).ratio) !== 'undefined') root.padPreview.ratio = myControllerLayout.get(index).ratio;
-                if(typeof(myControllerLayout.get(index).padBaseSourceSizeWidth) !== 'undefined') root.padPreview.padBaseSourceSizeWidth = myControllerLayout.get(index).padBaseSourceSizeWidth;
-                if(typeof(myControllerLayout.get(index).padBaseSourceSizeHeight) !== 'undefined') root.padPreview.padBaseSourceSizeHeight = myControllerLayout.get(index).padBaseSourceSizeHeight;
-
-                //Settings of parameters for select
-                if(typeof(myControllerLayout.get(index).padSelectWidth) !== 'undefined') root.padPreview.padSelectWidth = myControllerLayout.get(index).padSelectWidth;
-                if(typeof(myControllerLayout.get(index).padSelectHeight) !== 'undefined') root.padPreview.padSelectHeight = myControllerLayout.get(index).padSelectHeight;
-                if(typeof(myControllerLayout.get(index).padSelectTopY) !== 'undefined') root.padPreview.padSelectTopY = myControllerLayout.get(index).padSelectTopY;
-                if(typeof(myControllerLayout.get(index).padSelectLeftX) !== 'undefined') root.padPreview.padSelectLeftX = myControllerLayout.get(index).padSelectLeftX;
-
-                //Settings of parameters for start
-                if(typeof(myControllerLayout.get(index).padStartWidth) !== 'undefined') root.padPreview.padStartWidth = myControllerLayout.get(index).padStartWidth;
-                if(typeof(myControllerLayout.get(index).padStartHeight) !== 'undefined') root.padPreview.padStartHeight = myControllerLayout.get(index).padStartHeight;
-                if(typeof(myControllerLayout.get(index).padStartTopY) !== 'undefined') root.padPreview.padStartTopY = myControllerLayout.get(index).padStartTopY;
-                if(typeof(myControllerLayout.get(index).padStartLeftX) !== 'undefined') root.padPreview.padStartLeftX = myControllerLayout.get(index).padStartLeftX;
-
-                //Settings of parameters for guide
-                if(typeof(myControllerLayout.get(index).padGuideWidth) !== 'undefined') root.padPreview.padGuideWidth = myControllerLayout.get(index).padGuideWidth;
-                if(typeof(myControllerLayout.get(index).padGuideHeight) !== 'undefined') root.padPreview.padGuideHeight = myControllerLayout.get(index).padGuideHeight;
-                if(typeof(myControllerLayout.get(index).padGuideTopY) !== 'undefined') root.padPreview.padGuideTopY = myControllerLayout.get(index).padGuideTopY;
-                if(typeof(myControllerLayout.get(index).padGuideLeftX) !== 'undefined') root.padPreview.padGuideLeftX = myControllerLayout.get(index).padGuideLeftX;
-
-                //Settings of parameters for A/B/X/Y
-                if(typeof(myControllerLayout.get(index).padABXYAreaTopY) !== 'undefined') root.padPreview.padABXYAreaTopY = myControllerLayout.get(index).padABXYAreaTopY;
-                if(typeof(myControllerLayout.get(index).padABXYAreaBottomY) !== 'undefined') root.padPreview.padABXYAreaBottomY = myControllerLayout.get(index).padABXYAreaBottomY;
-                if(typeof(myControllerLayout.get(index).padABXYAreaLeftX) !== 'undefined') root.padPreview.padABXYAreaLeftX = myControllerLayout.get(index).padABXYAreaLeftX;
-                if(typeof(myControllerLayout.get(index).padABXYAreaRightX) !== 'undefined') root.padPreview.padABXYAreaRightX = myControllerLayout.get(index).padABXYAreaRightX;
-
-                if(typeof(myControllerLayout.get(index).padAWidth) !== 'undefined') root.padPreview.padAWidth = myControllerLayout.get(index).padAWidth;
-                if(typeof(myControllerLayout.get(index).padAHeight) !== 'undefined') root.padPreview.padAHeight = myControllerLayout.get(index).padAHeight;
-                if(typeof(myControllerLayout.get(index).padATopY) !== 'undefined') root.padPreview.padATopY = myControllerLayout.get(index).padATopY;
-                if(typeof(myControllerLayout.get(index).padALeftX) !== 'undefined') root.padPreview.padALeftX = myControllerLayout.get(index).padALeftX;
-
-                if(typeof(myControllerLayout.get(index).padBWidth) !== 'undefined') root.padPreview.padBWidth = myControllerLayout.get(index).padBWidth;
-                if(typeof(myControllerLayout.get(index).padBHeight) !== 'undefined') root.padPreview.padBHeight = myControllerLayout.get(index).padBHeight;
-                if(typeof(myControllerLayout.get(index).padBTopY) !== 'undefined') root.padPreview.padBTopY = myControllerLayout.get(index).padBTopY;
-                if(typeof(myControllerLayout.get(index).padBLeftX) !== 'undefined') root.padPreview.padBLeftX = myControllerLayout.get(index).padBLeftX;
-
-                if(typeof(myControllerLayout.get(index).padXWidth) !== 'undefined') root.padPreview.padXWidth = myControllerLayout.get(index).padXWidth;
-                if(typeof(myControllerLayout.get(index).padXHeight) !== 'undefined') root.padPreview.padXHeight = myControllerLayout.get(index).padXHeight;
-                if(typeof(myControllerLayout.get(index).padXTopY) !== 'undefined') root.padPreview.padXTopY = myControllerLayout.get(index).padXTopY;
-                if(typeof(myControllerLayout.get(index).padXLeftX) !== 'undefined') root.padPreview.padXLeftX = myControllerLayout.get(index).padXLeftX;
-
-                if(typeof(myControllerLayout.get(index).padYWidth) !== 'undefined') root.padPreview.padYWidth = myControllerLayout.get(index).padYWidth;
-                if(typeof(myControllerLayout.get(index).padYHeight) !== 'undefined') root.padPreview.padYHeight = myControllerLayout.get(index).padYHeight;
-                if(typeof(myControllerLayout.get(index).padYTopY) !== 'undefined') root.padPreview.padYTopY = myControllerLayout.get(index).padYTopY;
-                if(typeof(myControllerLayout.get(index).padYLeftX) !== 'undefined') root.padPreview.padYLeftX = myControllerLayout.get(index).padYLeftX;
-
-                //Settings of parameters for L1/R1/L2/R2/L3/R3
-                if(typeof(myControllerLayout.get(index).padL1Width) !== 'undefined') root.padPreview.padL1Width = myControllerLayout.get(index).padL1Width;
-                if(typeof(myControllerLayout.get(index).padL1Height) !== 'undefined') root.padPreview.padL1Height = myControllerLayout.get(index).padL1Height;
-                if(typeof(myControllerLayout.get(index).padL1TopY) !== 'undefined') root.padPreview.padL1TopY = myControllerLayout.get(index).padL1TopY;
-                if(typeof(myControllerLayout.get(index).padL1LeftX) !== 'undefined') root.padPreview.padL1LeftX = myControllerLayout.get(index).padL1LeftX;
-
-                if(typeof(myControllerLayout.get(index).padL2Width) !== 'undefined') root.padPreview.padL2Width = myControllerLayout.get(index).padL2Width;
-                if(typeof(myControllerLayout.get(index).padL2Height) !== 'undefined') root.padPreview.padL2Height = myControllerLayout.get(index).padL2Height;
-                if(typeof(myControllerLayout.get(index).padL2TopY) !== 'undefined') root.padPreview.padL2TopY = myControllerLayout.get(index).padL2TopY;
-                if(typeof(myControllerLayout.get(index).padL2LeftX) !== 'undefined') root.padPreview.padL2LeftX = myControllerLayout.get(index).padL2LeftX;
-
-                if(typeof(myControllerLayout.get(index).padL3Width) !== 'undefined') root.padPreview.padL3Width = myControllerLayout.get(index).padL3Width;
-                if(typeof(myControllerLayout.get(index).padL3Height) !== 'undefined') root.padPreview.padL3Height = myControllerLayout.get(index).padL3Height;
-                if(typeof(myControllerLayout.get(index).padL3TopY) !== 'undefined') root.padPreview.padL3TopY = myControllerLayout.get(index).padL3TopY;
-                if(typeof(myControllerLayout.get(index).padL3LeftX) !== 'undefined') root.padPreview.padL3LeftX = myControllerLayout.get(index).padL3LeftX;
-
-                if(typeof(myControllerLayout.get(index).padR1Width) !== 'undefined') root.padPreview.padR1Width = myControllerLayout.get(index).padR1Width;
-                if(typeof(myControllerLayout.get(index).padR1Height) !== 'undefined') root.padPreview.padR1Height = myControllerLayout.get(index).padR1Height;
-                if(typeof(myControllerLayout.get(index).padR1TopY) !== 'undefined') root.padPreview.padR1TopY = myControllerLayout.get(index).padR1TopY;
-                if(typeof(myControllerLayout.get(index).padR1LeftX) !== 'undefined') root.padPreview.padR1LeftX = myControllerLayout.get(index).padR1LeftX;
-
-                if(typeof(myControllerLayout.get(index).padR2Width) !== 'undefined') root.padPreview.padR2Width = myControllerLayout.get(index).padR2Width;
-                if(typeof(myControllerLayout.get(index).padR2Height) !== 'undefined') root.padPreview.padR2Height = myControllerLayout.get(index).padR2Height;
-                if(typeof(myControllerLayout.get(index).padR2TopY) !== 'undefined') root.padPreview.padR2TopY = myControllerLayout.get(index).padR2TopY;
-                if(typeof(myControllerLayout.get(index).padR2LeftX) !== 'undefined') root.padPreview.padR2LeftX = myControllerLayout.get(index).padR2LeftX;
-
-                if(typeof(myControllerLayout.get(index).padR3Width) !== 'undefined') root.padPreview.padR3Width = myControllerLayout.get(index).padR3Width;
-                if(typeof(myControllerLayout.get(index).padR3Height) !== 'undefined') root.padPreview.padR3Height = myControllerLayout.get(index).padR3Height;
-                if(typeof(myControllerLayout.get(index).padR3TopY) !== 'undefined') root.padPreview.padR3TopY = myControllerLayout.get(index).padR3TopY;
-                if(typeof(myControllerLayout.get(index).padR3LeftX) !== 'undefined') root.padPreview.padR3LeftX = myControllerLayout.get(index).padR3LeftX;
-
-                //Settings of parameters for Dpad
-                if(typeof(myControllerLayout.get(index).dpadAreaTopY) !== 'undefined') root.padPreview.dpadAreaTopY = myControllerLayout.get(index).dpadAreaTopY;
-                if(typeof(myControllerLayout.get(index).dpadAreaBottomY) !== 'undefined') root.padPreview.dpadAreaBottomY = myControllerLayout.get(index).dpadAreaBottomY;
-                if(typeof(myControllerLayout.get(index).dpadAreaLeftX) !== 'undefined') root.padPreview.dpadAreaLeftX = myControllerLayout.get(index).dpadAreaLeftX;
-                if(typeof(myControllerLayout.get(index).dpadAreaRightX) !== 'undefined') root.padPreview.dpadAreaRightX = myControllerLayout.get(index).dpadAreaRightX;
-
-                //Settings of parameters for lStick/rStick
-                if(typeof(myControllerLayout.get(index).lStickWidth) !== 'undefined') root.padPreview.lStickWidth = myControllerLayout.get(index).lStickWidth;
-                if(typeof(myControllerLayout.get(index).lStickHeight) !== 'undefined') root.padPreview.lStickHeight = myControllerLayout.get(index).lStickHeight;
-                if(typeof(myControllerLayout.get(index).lStickTopY) !== 'undefined') root.padPreview.lStickTopY = myControllerLayout.get(index).lStickTopY;
-                if(typeof(myControllerLayout.get(index).lStickLeftX) !== 'undefined') root.padPreview.lStickLeftX = myControllerLayout.get(index).lStickLeftX;
-
-                if(typeof(myControllerLayout.get(index).rStickWidth) !== 'undefined') root.padPreview.rStickWidth = myControllerLayout.get(index).rStickWidth;
-                if(typeof(myControllerLayout.get(index).rStickHeight) !== 'undefined') root.padPreview.rStickHeight = myControllerLayout.get(index).rStickHeight;
-                if(typeof(myControllerLayout.get(index).rStickTopY) !== 'undefined') root.padPreview.rStickTopY = myControllerLayout.get(index).rStickTopY;
-                if(typeof(myControllerLayout.get(index).rStickLeftX) !== 'undefined') root.padPreview.rStickLeftX = myControllerLayout.get(index).rStickLeftX;
-
-
-                //set name at the end to avoid error/warning to early ;-)
-                root.padPreview.name = myControllerLayout.get(index).name;
-            }
-        }
-
-        Loader {
-            id: loaderPadPreview
-            anchors.fill: parent
-            enabled: false
-            property var layoutIndex
-            asynchronous: true
-            onStatusChanged: {
-                //console.log("onStatusChanged");
-                if (loaderPadPreview.status === Loader.Loading) {
-                    //console.log("Loader.Loading");
-                    //RFU
-                }
-                else if (loaderPadPreview.status === Loader.Ready) {
-                    //console.log("Loader.Ready");
-                    if(loaderPadPreview.item !== null){
-                        root.padPreview = loaderPadPreview.item
-                        //set dynamically the layoutIndex
-                        parent.setParameters(layoutIndex);
-                    }
-                    //console.log("root.gamepad : ", root.gamepad);
-                    if(root.gamepad !== null){
-                            loaderPadPreview.item.gamepad = root.gamepad;
-                    }
-                }
-                else if (status == Loader.Error){
-                     //RFU
-                     console.log("Error to load QML for this controller !");
-                }
-            }
-        }
     }
+
     Item {
         id: footer
         width: parent.width
