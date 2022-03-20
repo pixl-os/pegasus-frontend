@@ -1,21 +1,10 @@
 // Pegasus Frontend
-// Copyright (C) 2017  Mátyás Mustoha
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//Created by Bozo The Geek 20/03/2022
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
-
 
 import QtQuick 2.12
+import QtGraphicalEffects 1.12
 
 Item {
     property string side
@@ -26,19 +15,10 @@ Item {
 
     height: width
 
-    Rectangle {
-        // basement
-        width: parent.width * 0.64
-        height: width
-        anchors.centerIn: parent
-
-        color: themeColor.main
-        border { width: 1.5; color: themeColor.textSublabel }
-        radius: width * 0.5
-    }
-
     Image {
-        width: parent.width * 0.7
+        id: initialImage
+        z:65
+        width: parent.width
         anchors {
             centerIn: parent
             horizontalCenterOffset: parent.width * 0.15 * xPercent
@@ -47,7 +27,6 @@ Item {
 
         fillMode: Image.PreserveAspectFit
         source: name != "" ? "qrc:/frontend/assets/gamepad/" + side + "stick_" + name +".png" : ""
-        //source: "qrc:/frontend/assets/gamepad/stick.svg"
         sourceSize {
             width: 128
             height: 128
@@ -67,37 +46,63 @@ Item {
         ]
     }
 
-    Rectangle {
-        // L3/R3 highlight
-        width: parent.width * 0.4
-        height: width
-        anchors.centerIn: parent
+    //to have a border more than 1 pixel and behind initial image !!! ;-)
+    ColorOverlay {
+        z:60
+        visible: padContainer.currentButton === (side + "3")
+        width: initialImage.width + vpx(10)
+        height: initialImage.height + vpx(10)
+        anchors.verticalCenter: initialImage.verticalCenter
+        anchors.horizontalCenter: initialImage.horizontalCenter
 
+        source: initialImage
         color: {
-			if (pressed) return "blue";
-			else if (root.recordingField !== null) return "#c33";
-			else return themeColor.underline;
-		}
-        radius: width * 0.5
-
-        visible: pressed || padContainer.currentButton === (side + "3")
+            if (root.recordingField !== null ) return "#c33";
+            else if (padContainer.currentButton) return themeColor.underline;
+            else return "transparent";
+        }
     }
+
+    //to have an image prepared but not displayed when we press on button
+    Image {
+        id: pressedImage
+        width: initialImage.width * 0.95
+        height: initialImage.height * 0.95
+        anchors.verticalCenter: initialImage.verticalCenter
+        anchors.horizontalCenter: initialImage.horizontalCenter
+        source: initialImage.source
+        visible: false
+    }
+
+    //for animation when we press button
+    BrightnessContrast {
+        z:70
+        visible: pressed
+        anchors.fill: pressedImage
+        source: pressedImage
+        brightness: 0.5
+        contrast: 0.5
+    }
+
     Rectangle {
         id: highlightX
-        width: parent.width * 0.9
+        z:75
+        width: parent.width * 1.2
         height: vpx(2)
         anchors.centerIn: parent
 
         color: themeColor.underline
         visible: padContainer.currentButton === (side + "x")
     }
+
     Rectangle {
-        // highlightY
-        width: highlightX.height
-        height: highlightX.width
+        id: highlightY
+        z:75
+        width: vpx(2)
+        height: parent.width * 1.2
         anchors.centerIn: parent
 
-        color: highlightX.color
+        color: themeColor.underline
         visible: padContainer.currentButton === (side + "y")
     }
 }
