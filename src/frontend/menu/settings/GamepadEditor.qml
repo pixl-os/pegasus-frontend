@@ -731,6 +731,111 @@ FocusScope {
                             padR1LeftX: 473;
 
             } //As NES pad (but with L1/R1 to be compatible with switch online ones)
+
+            ListElement {   name: "xbox360"; qml: "gamepad/preview/ContainerCustom.qml";
+                            hasDedicatedGuide: true;
+                            hasX: true; hasY: true;
+                            hasL2 : true; hasR2 : true;
+                            hasL3 : true; hasR3 : true;
+                            hasLeftStick : true; hasRightStick : true;
+                            hasScreenshotButton : false;
+                            ratio: 0.6; padBaseSourceSizeWidth : 958 ; padBaseSourceSizeHeight : 751;
+
+                            //parameters for select
+                            padSelectWidth : 50;
+                            padSelectHeight : 43;
+                            padSelectTopY: 252;
+                            padSelectLeftX: 352;
+
+                            //parameters for start
+                            padStartWidth : 50;
+                            padStartHeight : 43;
+                            padStartTopY: 252;
+                            padStartLeftX: 558;
+
+                            //parameters for guide/hotkey
+                            padGuideWidth : 94;
+                            padGuideHeight : 94;
+                            padGuideTopY: 227;
+                            padGuideLeftX: 434;
+
+                            //parameters for A/B/X/Y
+                            padAWidth : 65;
+                            padAHeight : 67;
+                            padATopY: 308;
+                            padALeftX: 730;
+
+                            padBWidth : 65;
+                            padBHeight : 66;
+                            padBTopY: 233;
+                            padBLeftX: 806;
+
+                            padXWidth : 66;
+                            padXHeight : 67;
+                            padXTopY: 233;
+                            padXLeftX: 655;
+
+                            padYWidth : 66;
+                            padYHeight : 67;
+                            padYTopY: 158;
+                            padYLeftX: 730;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 357;
+                            dpadAreaBottomY: 516;
+                            dpadAreaLeftX: 253;
+                            dpadAreaRightX: 411;
+
+                            //parameter for L1
+                            padL1Width : 171;
+                            padL1Height : 74;
+                            padL1TopY: 77;
+                            padL1LeftX: 113;
+
+                            //parameter for R1
+                            padR1Width : 173;
+                            padR1Height : 72;
+                            padR1TopY: 76;
+                            padR1LeftX: 673;
+
+                            //parameter for L2
+                            padL2Width : 64;
+                            padL2Height : 79;
+                            padL2TopY: 0;
+                            padL2LeftX: 194;
+
+                            //parameter for R2
+                            padR2Width : 62;
+                            padR2Height : 77;
+                            padR2TopY: 1;
+                            padR2LeftX: 701;
+
+                            //parameter for Left stick
+                            lStickWidth : 127;
+                            lStickHeight : 128;
+                            lStickTopY: 200;
+                            lStickLeftX: 130;
+
+                            //parameter for L3
+                            padL3Width : 127;
+                            padL3Height : 128;
+                            padL3TopY: 200;
+                            padL3LeftX: 130;
+
+                            //parameter for Right stick
+                            rStickWidth : 129;
+                            rStickHeight : 129;
+                            rStickTopY: 374;
+                            rStickLeftX: 553;
+
+                            //parameter for R3
+                            padR3Width : 129;
+                            padR3Height : 129;
+                            padR3TopY: 374;
+                            padR3LeftX: 553;
+
+            } //As Microsoft XBOX 360 pad
+
         }
 
         //function to dynamically set container layout from gamepad name
@@ -794,6 +899,9 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).hasL2) !== 'undefined') root.padPreview.hasL2 = myControllerLayout.get(index).hasL2;
                 if(typeof(myControllerLayout.get(index).hasR2) !== 'undefined') root.padPreview.hasR2 = myControllerLayout.get(index).hasR2;
 
+                if(typeof(myControllerLayout.get(index).hasL3) !== 'undefined') root.padPreview.hasL3 = myControllerLayout.get(index).hasL3;
+                if(typeof(myControllerLayout.get(index).hasR3) !== 'undefined') root.padPreview.hasR3 = myControllerLayout.get(index).hasR3;
+
                 if(typeof(myControllerLayout.get(index).hasLeftStick) !== 'undefined') root.padPreview.hasLeftStick = myControllerLayout.get(index).hasLeftStick;
                 if(typeof(myControllerLayout.get(index).hasRightStick) !== 'undefined') root.padPreview.hasRightStick = myControllerLayout.get(index).hasRightStick;
 
@@ -815,6 +923,12 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).padStartHeight) !== 'undefined') root.padPreview.padStartHeight = myControllerLayout.get(index).padStartHeight;
                 if(typeof(myControllerLayout.get(index).padStartTopY) !== 'undefined') root.padPreview.padStartTopY = myControllerLayout.get(index).padStartTopY;
                 if(typeof(myControllerLayout.get(index).padStartLeftX) !== 'undefined') root.padPreview.padStartLeftX = myControllerLayout.get(index).padStartLeftX;
+
+                //Settings of parameters for guide
+                if(typeof(myControllerLayout.get(index).padGuideWidth) !== 'undefined') root.padPreview.padGuideWidth = myControllerLayout.get(index).padGuideWidth;
+                if(typeof(myControllerLayout.get(index).padGuideHeight) !== 'undefined') root.padPreview.padGuideHeight = myControllerLayout.get(index).padGuideHeight;
+                if(typeof(myControllerLayout.get(index).padGuideTopY) !== 'undefined') root.padPreview.padGuideTopY = myControllerLayout.get(index).padGuideTopY;
+                if(typeof(myControllerLayout.get(index).padGuideLeftX) !== 'undefined') root.padPreview.padGuideLeftX = myControllerLayout.get(index).padGuideLeftX;
 
                 //Settings of parameters for A/B/X/Y
                 if(typeof(myControllerLayout.get(index).padABXYAreaTopY) !== 'undefined') root.padPreview.padABXYAreaTopY = myControllerLayout.get(index).padABXYAreaTopY;
@@ -842,7 +956,7 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).padYTopY) !== 'undefined') root.padPreview.padYTopY = myControllerLayout.get(index).padYTopY;
                 if(typeof(myControllerLayout.get(index).padYLeftX) !== 'undefined') root.padPreview.padYLeftX = myControllerLayout.get(index).padYLeftX;
 
-                //Settings of parameters for L1/R1/L2/R2
+                //Settings of parameters for L1/R1/L2/R2/L3/R3
                 if(typeof(myControllerLayout.get(index).padL1Width) !== 'undefined') root.padPreview.padL1Width = myControllerLayout.get(index).padL1Width;
                 if(typeof(myControllerLayout.get(index).padL1Height) !== 'undefined') root.padPreview.padL1Height = myControllerLayout.get(index).padL1Height;
                 if(typeof(myControllerLayout.get(index).padL1TopY) !== 'undefined') root.padPreview.padL1TopY = myControllerLayout.get(index).padL1TopY;
@@ -852,6 +966,11 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).padL2Height) !== 'undefined') root.padPreview.padL2Height = myControllerLayout.get(index).padL2Height;
                 if(typeof(myControllerLayout.get(index).padL2TopY) !== 'undefined') root.padPreview.padL2TopY = myControllerLayout.get(index).padL2TopY;
                 if(typeof(myControllerLayout.get(index).padL2LeftX) !== 'undefined') root.padPreview.padL2LeftX = myControllerLayout.get(index).padL2LeftX;
+
+                if(typeof(myControllerLayout.get(index).padL3Width) !== 'undefined') root.padPreview.padL3Width = myControllerLayout.get(index).padL3Width;
+                if(typeof(myControllerLayout.get(index).padL3Height) !== 'undefined') root.padPreview.padL3Height = myControllerLayout.get(index).padL3Height;
+                if(typeof(myControllerLayout.get(index).padL3TopY) !== 'undefined') root.padPreview.padL3TopY = myControllerLayout.get(index).padL3TopY;
+                if(typeof(myControllerLayout.get(index).padL3LeftX) !== 'undefined') root.padPreview.padL3LeftX = myControllerLayout.get(index).padL3LeftX;
 
                 if(typeof(myControllerLayout.get(index).padR1Width) !== 'undefined') root.padPreview.padR1Width = myControllerLayout.get(index).padR1Width;
                 if(typeof(myControllerLayout.get(index).padR1Height) !== 'undefined') root.padPreview.padR1Height = myControllerLayout.get(index).padR1Height;
@@ -863,11 +982,28 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).padR2TopY) !== 'undefined') root.padPreview.padR2TopY = myControllerLayout.get(index).padR2TopY;
                 if(typeof(myControllerLayout.get(index).padR2LeftX) !== 'undefined') root.padPreview.padR2LeftX = myControllerLayout.get(index).padR2LeftX;
 
+                if(typeof(myControllerLayout.get(index).padR3Width) !== 'undefined') root.padPreview.padR3Width = myControllerLayout.get(index).padR3Width;
+                if(typeof(myControllerLayout.get(index).padR3Height) !== 'undefined') root.padPreview.padR3Height = myControllerLayout.get(index).padR3Height;
+                if(typeof(myControllerLayout.get(index).padR3TopY) !== 'undefined') root.padPreview.padR3TopY = myControllerLayout.get(index).padR3TopY;
+                if(typeof(myControllerLayout.get(index).padR3LeftX) !== 'undefined') root.padPreview.padR3LeftX = myControllerLayout.get(index).padR3LeftX;
+
                 //Settings of parameters for Dpad
                 if(typeof(myControllerLayout.get(index).dpadAreaTopY) !== 'undefined') root.padPreview.dpadAreaTopY = myControllerLayout.get(index).dpadAreaTopY;
                 if(typeof(myControllerLayout.get(index).dpadAreaBottomY) !== 'undefined') root.padPreview.dpadAreaBottomY = myControllerLayout.get(index).dpadAreaBottomY;
                 if(typeof(myControllerLayout.get(index).dpadAreaLeftX) !== 'undefined') root.padPreview.dpadAreaLeftX = myControllerLayout.get(index).dpadAreaLeftX;
                 if(typeof(myControllerLayout.get(index).dpadAreaRightX) !== 'undefined') root.padPreview.dpadAreaRightX = myControllerLayout.get(index).dpadAreaRightX;
+
+                //Settings of parameters for lStick/rStick
+                if(typeof(myControllerLayout.get(index).lStickWidth) !== 'undefined') root.padPreview.lStickWidth = myControllerLayout.get(index).lStickWidth;
+                if(typeof(myControllerLayout.get(index).lStickHeight) !== 'undefined') root.padPreview.lStickHeight = myControllerLayout.get(index).lStickHeight;
+                if(typeof(myControllerLayout.get(index).lStickTopY) !== 'undefined') root.padPreview.lStickTopY = myControllerLayout.get(index).lStickTopY;
+                if(typeof(myControllerLayout.get(index).lStickLeftX) !== 'undefined') root.padPreview.lStickLeftX = myControllerLayout.get(index).lStickLeftX;
+
+                if(typeof(myControllerLayout.get(index).rStickWidth) !== 'undefined') root.padPreview.rStickWidth = myControllerLayout.get(index).rStickWidth;
+                if(typeof(myControllerLayout.get(index).rStickHeight) !== 'undefined') root.padPreview.rStickHeight = myControllerLayout.get(index).rStickHeight;
+                if(typeof(myControllerLayout.get(index).rStickTopY) !== 'undefined') root.padPreview.rStickTopY = myControllerLayout.get(index).rStickTopY;
+                if(typeof(myControllerLayout.get(index).rStickLeftX) !== 'undefined') root.padPreview.rStickLeftX = myControllerLayout.get(index).rStickLeftX;
+
 
                 //set name at the end to avoid error/warning to early ;-)
                 root.padPreview.name = myControllerLayout.get(index).name;

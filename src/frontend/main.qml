@@ -978,7 +978,7 @@ Window {
         id: myDeviceIcons //now include also layout definition
 
         //CONTROLLERS PART
-        ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment, need icon for 360
+        ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360"; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
         ListElement { icon: "\uf2f0"; keywords: "xbox one"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"; iconfont: "awesome"} //as XBOX one for the moment, need icon for series
         ListElement { icon: "\uf2f0"; keywords: "xbox,microsoft"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment, need icon for 360

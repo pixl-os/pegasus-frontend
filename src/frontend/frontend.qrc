@@ -144,5 +144,23 @@
         <file>menu/settings/gamepad/preview/PadShoulderCustom.qml</file>
         <file>menu/settings/gamepad/preview/PadTriggerCustom.qml</file>
         <file>assets/gamepad/guide_nes.png</file>
+        <file>assets/gamepad/r2_xbox360.png</file>
+        <file>assets/gamepad/l2_xbox360.png</file>
+        <file>assets/gamepad/r1_xbox360.png</file>
+        <file>assets/gamepad/l1_xbox360.png</file>
+        <file>assets/gamepad/base_xbox360.png</file>
+        <file>assets/gamepad/a_xbox360.png</file>
+        <file>assets/gamepad/b_xbox360.png</file>
+        <file>assets/gamepad/y_xbox360.png</file>
+        <file>assets/gamepad/x_xbox360.png</file>
+        <file>assets/gamepad/l3_xbox360.png</file>
+        <file>assets/gamepad/r3_xbox360.png</file>
+        <file>assets/gamepad/lstick_xbox360.png</file>
+        <file>assets/gamepad/rstick_xbox360.png</file>
+        <file>assets/gamepad/dpad_xbox360.png</file>
+        <file>assets/gamepad/start_xbox360.png</file>
+        <file>assets/gamepad/select_xbox360.png</file>
+        <file>assets/gamepad/guide_xbox360.png</file>
+        <file>menu/settings/gamepad/preview/StickCustom.qml</file>
     </qresource>
 </RCC>
