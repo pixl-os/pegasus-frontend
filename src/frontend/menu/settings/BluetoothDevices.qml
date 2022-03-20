@@ -745,7 +745,7 @@ FocusScope {
             if(!isDebugEnv()) result = api.internal.system.run("timeout 0.50 bluetoothctl info " + parameters[0] + " | grep -i 'paired' | awk '{print $2}'");
             //with timeout of 50 ms
             else result = api.internal.system.run("timeout 0.50 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
-            console.log("result:",result);
+            //console.log("result:",result);
             if(result.toLowerCase().includes("yes")){
               icon = getIcon(parameters[2],parameters[3]);
               list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
@@ -765,22 +765,24 @@ FocusScope {
         if(!isDebugEnv()) result = api.internal.system.run("timeout 0.05 bluetoothctl paired-devices | grep -i 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}'");
         else result = api.internal.system.run("timeout 0.05 echo -e 'paired-devices' | bluetoothctl | grep -I 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}' | grep -v 'NEW'");
 
-        console.log("***********");
-        console.log(result);
-        console.log("***********");
+        //console.log("***********");
+        //console.log(result);
+        //console.log("***********");
 
         const devices = result.split('\n');//Split by LF ;-)
-        console.log("devices.length:",devices.length);
+        console.log("Paired devices found:",devices.length - 1);
         for(var j = 0;j < devices.length;j++){
-            console.log("device:",devices[j]);
-            const details = devices[j].split("|");
-            if(!allmacaddresses.includes(details[0])){//if paired device is missing
-                //Add to list
-                icon = getIcon(details[1],"");
-                list.append({icon: icon, iconfont: getIconFont, vendor:"", name: details[1], macaddress: details[0], service: "" });
-                //Add to recalbox.conf
-                api.internal.recalbox.setStringParameter(parameter + i,details[0] + "||" + details[1] + "|");
-                i = i + 1;
+            if (devices[j] !== "") {
+                console.log("device:",devices[j]);
+                const details = devices[j].split("|");
+                if(!allmacaddresses.includes(details[0])){//if paired device is missing
+                    //Add to list
+                    icon = getIcon(details[1],"");
+                    list.append({icon: icon, iconfont: getIconFont, vendor:"", name: details[1], macaddress: details[0], service: "" });
+                    //Add to recalbox.conf
+                    api.internal.recalbox.setStringParameter(parameter + i,details[0] + "||" + details[1] + "|");
+                    i = i + 1;
+                }
             }
         }
     }
