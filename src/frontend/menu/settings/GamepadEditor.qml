@@ -260,6 +260,7 @@ FocusScope {
                             hasB: true;
                             hasX: true;
                             hasY: true;
+                            hasNintendoPad : true;
 
                             hasL1 : true; hasR1 : true;
                             hasL2 : true; hasR2 : true;
@@ -343,6 +344,7 @@ FocusScope {
 
                             hasA: true;
                             hasB: true;
+                            hasNintendoPad : true
                             hasX: false;
                             hasY: false;
 
@@ -412,6 +414,7 @@ FocusScope {
                             hasB: true;
                             hasX: true;
                             hasY: true;
+                            hasNintendoPad : false;
 
                             hasL1 : true; hasR1 : true;
                             hasL2 : true; hasR2 : true;
@@ -638,6 +641,8 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).padYHeight) !== 'undefined') root.padPreview.padYHeight = myControllerLayout.get(index).padYHeight;
                 if(typeof(myControllerLayout.get(index).padYTopY) !== 'undefined') root.padPreview.padYTopY = myControllerLayout.get(index).padYTopY;
                 if(typeof(myControllerLayout.get(index).padYLeftX) !== 'undefined') root.padPreview.padYLeftX = myControllerLayout.get(index).padYLeftX;
+
+                if(typeof(myControllerLayout.get(index).hasNintendoPad) !== 'undefined') root.padPreview.hasNintendoPad = myControllerLayout.get(index).hasNintendoPad;
 
                 //Settings of parameters for L1/R1/L2/R2/L3/R3
                 if(typeof(myControllerLayout.get(index).padL1Width) !== 'undefined') root.padPreview.padL1Width = myControllerLayout.get(index).padL1Width;
@@ -931,9 +936,19 @@ FocusScope {
                         padPreview.currentButton = "a";
                     }
                 }
-                pressed: gamepad && gamepad.buttonSouth
-				input: GamepadManager.GMButton.South
-				inputType: "button"
+
+                pressed: gamepad &&
+                         ((typeof(root.padPreview) !== 'undefined') ?
+                              (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                   (root.padPreview.hasNintendoPad ?  gamepad.buttonEast : gamepad.buttonSouth)
+                                 : gamepad.buttonSouth)
+                            : gamepad.buttonSouth );
+                input: ((typeof(root.padPreview) !== 'undefined') ?
+                            (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                 (root.padPreview.hasNintendoPad ?  GamepadManager.GMButton.East : GamepadManager.GMButton.South)
+                               : GamepadManager.GMButton.South)
+                          : GamepadManager.GMButton.South );
+                inputType: "button"
 
                 KeyNavigation.down: configB
             }
@@ -944,9 +959,18 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus && padPreview) padPreview.currentButton = "b"
 
-                pressed: gamepad && gamepad.buttonEast
-				input: GamepadManager.GMButton.East
-				inputType: "button"
+                pressed: gamepad &&
+                         ((typeof(root.padPreview) !== 'undefined') ?
+                              (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                   (root.padPreview.hasNintendoPad ?  gamepad.buttonSouth : gamepad.buttonEast)
+                                 : gamepad.buttonEast)
+                            : gamepad.buttonEast );
+                input: ((typeof(root.padPreview) !== 'undefined') ?
+                            (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                 (root.padPreview.hasNintendoPad ?  GamepadManager.GMButton.South : GamepadManager.GMButton.East)
+                               : GamepadManager.GMButton.East)
+                          : GamepadManager.GMButton.East );
+                inputType: "button"
 
                 KeyNavigation.down: configX
             }
@@ -958,8 +982,17 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus && padPreview) padPreview.currentButton = "x"
 
-                pressed: gamepad && gamepad.buttonWest
-				input: GamepadManager.GMButton.West
+                pressed: gamepad &&
+                         ((typeof(root.padPreview) !== 'undefined') ?
+                              (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                   (root.padPreview.hasNintendoPad ?  gamepad.buttonNorth : gamepad.buttonWest)
+                                 : gamepad.buttonWest)
+                            : gamepad.buttonWest );
+                input: ((typeof(root.padPreview) !== 'undefined') ?
+                            (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                 (root.padPreview.hasNintendoPad ?  GamepadManager.GMButton.North : GamepadManager.GMButton.West)
+                               : GamepadManager.GMButton.West)
+                          : GamepadManager.GMButton.West );
 				inputType: "button"
 
                 KeyNavigation.down: configY
@@ -971,8 +1004,17 @@ FocusScope {
                 onActiveFocusChanged:
                     if (activeFocus && padPreview) padPreview.currentButton = "y"
 
-                pressed: gamepad && gamepad.buttonNorth
- 				input: GamepadManager.GMButton.North
+                pressed: gamepad &&
+                         ((typeof(root.padPreview) !== 'undefined') ?
+                              (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                   (root.padPreview.hasNintendoPad ?  gamepad.buttonWest : gamepad.buttonNorth)
+                                 : gamepad.buttonNorth)
+                            : gamepad.buttonNorth );
+                input: ((typeof(root.padPreview) !== 'undefined') ?
+                            (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                 (root.padPreview.hasNintendoPad ?  GamepadManager.GMButton.West : GamepadManager.GMButton.North)
+                               : GamepadManager.GMButton.North)
+                          : GamepadManager.GMButton.North );
 				inputType: "button"
 
                 KeyNavigation.down: configRightStickX
@@ -1147,7 +1189,11 @@ FocusScope {
                 margins: vpx(10)
             }
             Text {
-                text: "B"
+                text: ((typeof(root.padPreview) !== 'undefined') ?
+                           (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                (root.padPreview.hasNintendoPad ?  "A" : "B")
+                              : "B")
+                              : "B" );
                 color: escapeStartTime ? "#eee" : "#777"
                 font {
                     family: global.fonts.sans
@@ -1230,7 +1276,11 @@ FocusScope {
                 margins: vpx(10)
             }
             Text {
-                text: "A"
+                text: ((typeof(root.padPreview) !== 'undefined') ?
+                           (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                (root.padPreview.hasNintendoPad ?  "B" : "A")
+                              : "A")
+                              : "A" );
                 color: "#777"
                 font {
                     family: global.fonts.sans

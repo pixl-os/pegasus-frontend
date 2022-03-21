@@ -21,6 +21,7 @@ Item {
     property var hasStart : true
     property var hasDedicatedGuide: true; //if false, the select is usually reused
     property var hasDpad : true
+    property var hasNintendoPad : false
     property var hasA : true
     property var hasB : true
     property var hasX : true
@@ -277,7 +278,7 @@ Item {
 
         shortName: "b"
         name: hasB ? padContainer.name : ""
-        pressed: gamepad ? gamepad.buttonSouth : false
+        pressed: gamepad ? (hasNintendoPad ? gamepad.buttonSouth : gamepad.buttonEast) : false
     }
     PadButtonCustom {
         id: padA
@@ -293,7 +294,7 @@ Item {
 
         shortName: "a"
         name: hasA ? padContainer.name : ""
-        pressed: gamepad ? gamepad.buttonEast : false
+        pressed: gamepad ? (hasNintendoPad ? gamepad.buttonEast : gamepad.buttonSouth) : false
     }
     PadButtonCustom {
         id: padY
@@ -309,7 +310,7 @@ Item {
 
         shortName: "y"
         name: hasY ? padContainer.name : ""
-        pressed: gamepad ? gamepad.buttonWest : false
+        pressed: gamepad ? (hasNintendoPad ? gamepad.buttonWest : gamepad.buttonNorth) : false
     }
 
     PadButtonCustom {
@@ -326,7 +327,7 @@ Item {
 
         shortName: "x"
         name: hasX ? padContainer.name : ""
-        pressed: gamepad ? gamepad.buttonNorth : false
+        pressed: gamepad ? (hasNintendoPad ? gamepad.buttonNorth : gamepad.buttonWest) : false
     }
 
     DpadCustom {
