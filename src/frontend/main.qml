@@ -1003,7 +1003,7 @@ Window {
 
         //27/02/2022 2 controllers added snakebyte idroid:con and 8bitdo sn30 pro+
         ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+,pro 2"; type:"controller"; iconfont: "awesome"}
 
         //28/02/2022 to add wheels/cockpit devices
         ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}
