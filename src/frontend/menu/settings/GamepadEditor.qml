@@ -1081,7 +1081,7 @@ FocusScope {
                 }
                 ConfigField {
                     id: configGuide
-                    text: qsTr("guide") + api.tr
+                    text: qsTr("guide/hotkey") + api.tr
                     onActiveFocusChanged:
                         if (activeFocus && padPreview) padPreview.currentButton = "guide"
 
