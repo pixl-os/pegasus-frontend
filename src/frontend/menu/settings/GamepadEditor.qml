@@ -827,7 +827,7 @@ FocusScope {
             }
             ConfigField {
                 id: configLeftStickX
-                text: qsTr("x axis") + api.tr
+                text: recording ? qsTr("go x axis to left") + api.tr  : qsTr("x axis") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "lx"
 
@@ -840,7 +840,7 @@ FocusScope {
             }
             ConfigField {
                 id: configLeftStickY
-                text: qsTr("y axis") + api.tr
+                text: recording ? qsTr("go y axis to up") + api.tr  : qsTr("y axis") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "ly"
 
@@ -1016,7 +1016,7 @@ FocusScope {
             }
             ConfigField {
                 id: configRightStickX
-                text: qsTr("x axis") + api.tr
+                text: recording ? qsTr("go x axis to left") + api.tr  : qsTr("x axis") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "rx"
 
@@ -1028,7 +1028,7 @@ FocusScope {
             }
             ConfigField {
                 id: configRightStickY
-                text: qsTr("y axis") + api.tr
+                text: recording ? qsTr("go y axis to up") + api.tr  : qsTr("y axis") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "ry"
 
