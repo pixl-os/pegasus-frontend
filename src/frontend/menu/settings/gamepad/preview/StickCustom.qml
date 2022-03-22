@@ -91,7 +91,10 @@ Item {
         height: vpx(2)
         anchors.centerIn: parent
 
-        color: themeColor.underline
+        color: {
+            if (root.recordingField !== null ) return "#c33";
+            else return themeColor.underline;
+        }
         visible: padContainer.currentButton === (side + "x")
     }
 
@@ -102,7 +105,10 @@ Item {
         height: parent.width * 1.2
         anchors.centerIn: parent
 
-        color: themeColor.underline
+        color: {
+            if (root.recordingField !== null ) return "#c33";
+            else return themeColor.underline;
+        }
         visible: padContainer.currentButton === (side + "y")
     }
 }

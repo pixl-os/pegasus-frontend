@@ -369,11 +369,7 @@ FocusScope {
                             padStartTopY: 245;
                             padStartLeftX: 380;
 
-                            //parameters for A/B/X/ // we don't care for custom we don't manage padABXY area
-                            //padABXYAreaTopY: 228;
-                            //padABXYAreaBottomY: 296;
-                            //padABXYAreaLeftX: 511;
-                            //padABXYAreaRightX: 682;
+                            //parameters for A/B (no X/Y in this case)
 
                             padAWidth : 69;
                             padAHeight : 68;
@@ -501,23 +497,11 @@ FocusScope {
                             lStickTopY: 200;
                             lStickLeftX: 130;
 
-                            //parameter for L3
-                            /*padL3Width : 127;
-                            padL3Height : 128;
-                            padL3TopY: 200;
-                            padL3LeftX: 130;*/
-
                             //parameter for Right stick
                             rStickWidth : 129;
                             rStickHeight : 129;
                             rStickTopY: 374;
                             rStickLeftX: 553;
-
-                            //parameter for R3
-                            /*padR3Width : 129;
-                            padR3Height : 129;
-                            padR3TopY: 374;
-                            padR3LeftX: 553;*/
 
             } //As Microsoft XBOX 360 pad
 
