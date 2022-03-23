@@ -984,7 +984,7 @@ Window {
         ListElement { icon: "\uf2f0"; keywords: "xbox,microsoft"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment, need icon for 360
 
         ListElement { icon: "\uf2ca"; keywords: "ps5,playstation 5,dualsense"; type:"controller"; iconfont: "awesome"} //as PS4 for the moment, need icon for PS5
-        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; type:"controller"; iconfont: "awesome"} // add wireless controller as usual PS name used by Sony
+        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; type:"controller"; iconfont: "awesome"; layout: "ps4"} // add wireless controller as usual PS name used by Sony
         ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"; iconfont: "awesome"}

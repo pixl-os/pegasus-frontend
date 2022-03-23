@@ -160,5 +160,23 @@
         <file>assets/gamepad/select_xbox360.png</file>
         <file>assets/gamepad/guide_xbox360.png</file>
         <file>menu/settings/gamepad/preview/StickCustom.qml</file>
+        <file>assets/gamepad/base_ps4.png</file>
+        <file>assets/gamepad/r2_ps4.png</file>
+        <file>assets/gamepad/l2_ps4.png</file>
+        <file>assets/gamepad/r1_ps4.png</file>
+        <file>assets/gamepad/l1_ps4.png</file>
+        <file>assets/gamepad/start_ps4.png</file>
+        <file>assets/gamepad/select_ps4.png</file>
+        <file>assets/gamepad/down_ps4.png</file>
+        <file>assets/gamepad/left_ps4.png</file>
+        <file>assets/gamepad/right_ps4.png</file>
+        <file>assets/gamepad/up_ps4.png</file>
+        <file>assets/gamepad/x_ps4.png</file>
+        <file>assets/gamepad/y_ps4.png</file>
+        <file>assets/gamepad/b_ps4.png</file>
+        <file>assets/gamepad/a_ps4.png</file>
+        <file>assets/gamepad/rstick_ps4.png</file>
+        <file>assets/gamepad/lstick_ps4.png</file>
+        <file>assets/gamepad/guide_ps4.png</file>
     </qresource>
 </RCC>
