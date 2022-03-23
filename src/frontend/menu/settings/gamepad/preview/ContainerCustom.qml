@@ -140,23 +140,6 @@ Item {
         }
     }
 
-    PadShoulderCustom {
-        id: padL1
-        width: vpx(padL1Width * ratio)
-        height: vpx(padL1Height * ratio)
-
-        anchors {
-            verticalCenter: padBase.verticalCenter
-            horizontalCenter: padBase.horizontalCenter
-            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padL1TopY + (padL1Height/2))) * ratio);
-            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padL1LeftX + (padL1Width/2))) * ratio);
-        }
-
-        shortName: "l1"
-        name: hasL1 ? padContainer.name : ""
-        pressed: gamepad ? gamepad.buttonL1 : false
-    }
-
     PadTriggerCustom {
         id: padL2
         width: vpx(padL2Width * ratio)
@@ -175,20 +158,20 @@ Item {
     }
 
     PadShoulderCustom {
-        id: padR1
-        width: vpx(padR1Width * ratio)
-        height: vpx(padR1Height * ratio)
+        id: padL1
+        width: vpx(padL1Width * ratio)
+        height: vpx(padL1Height * ratio)
 
         anchors {
             verticalCenter: padBase.verticalCenter
             horizontalCenter: padBase.horizontalCenter
-            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padR1TopY + (padR1Height/2))) * ratio);
-            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padR1LeftX + (padR1Width/2))) * ratio);
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padL1TopY + (padL1Height/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padL1LeftX + (padL1Width/2))) * ratio);
         }
 
-        shortName: "r1"
-        name: hasR1 ? padContainer.name : ""
-        pressed: gamepad ? gamepad.buttonR1 : false
+        shortName: "l1"
+        name: hasL1 ? padContainer.name : ""
+        pressed: gamepad ? gamepad.buttonL1 : false
     }
 
     PadTriggerCustom {
@@ -206,6 +189,23 @@ Item {
         shortName: "r2"
         name: hasR2 ? padContainer.name : ""
         pressed: gamepad ? gamepad.buttonR2 : false
+    }
+
+    PadShoulderCustom {
+        id: padR1
+        width: vpx(padR1Width * ratio)
+        height: vpx(padR1Height * ratio)
+
+        anchors {
+            verticalCenter: padBase.verticalCenter
+            horizontalCenter: padBase.horizontalCenter
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padR1TopY + (padR1Height/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padR1LeftX + (padR1Width/2))) * ratio);
+        }
+
+        shortName: "r1"
+        name: hasR1 ? padContainer.name : ""
+        pressed: gamepad ? gamepad.buttonR1 : false
     }
 
     PadButtonCustom {
