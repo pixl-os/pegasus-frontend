@@ -10,6 +10,8 @@ Item {
     property string shortName
     property bool pressed: false
     property string name: "" //used to find file named as "shortName_name.jpg" : l1_nes.png or r2_snes.png for example
+    property alias brightness: animation.brightness
+    property alias contrast: animation.contrast
 
     //initial image loaded
     Image {
@@ -52,6 +54,7 @@ Item {
 
     //for animation when we press button
     BrightnessContrast {
+        id: animation
         z:70
         visible: pressed
         anchors.fill: pressedImage

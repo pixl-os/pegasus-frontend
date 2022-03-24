@@ -167,10 +167,10 @@
         <file>assets/gamepad/l1_ps4.png</file>
         <file>assets/gamepad/start_ps4.png</file>
         <file>assets/gamepad/select_ps4.png</file>
-        <file>assets/gamepad/down_ps4.png</file>
-        <file>assets/gamepad/left_ps4.png</file>
-        <file>assets/gamepad/right_ps4.png</file>
-        <file>assets/gamepad/up_ps4.png</file>
+        <file>assets/gamepad/dpdown_ps4.png</file>
+        <file>assets/gamepad/dpleft_ps4.png</file>
+        <file>assets/gamepad/dpright_ps4.png</file>
+        <file>assets/gamepad/dpup_ps4.png</file>
         <file>assets/gamepad/x_ps4.png</file>
         <file>assets/gamepad/y_ps4.png</file>
         <file>assets/gamepad/b_ps4.png</file>

@@ -21,6 +21,7 @@ Item {
     property var hasStart : true
     property var hasDedicatedGuide: true; //if false, the select is usually reused
     property var hasDpad : true
+    property var hasButtonsForDpad : false
     property var hasNintendoPad : false
     property var hasA : true
     property var hasB : true
@@ -60,11 +61,6 @@ Item {
     property var padGuideLeftX: 0
 
     //parameters for A/B/X/Y
-    property var padABXYAreaTopY: 103
-    property var padABXYAreaBottomY: 308
-    property var padABXYAreaLeftX: 590
-    property var padABXYAreaRightX: 836
-
     property var padAWidth : 71
     property var padAHeight : 70
     property var padATopY: -1
@@ -86,10 +82,31 @@ Item {
     property var padYLeftX: -1
 
     //parameter for Dpad
-    property var dpadAreaTopY: 126
-    property var dpadAreaBottomY: 285
-    property var dpadAreaLeftX: 112
-    property var dpadAreaRightX: 270
+    property var dpadAreaTopY: -1
+    property var dpadAreaBottomY: -1
+    property var dpadAreaLeftX: -1
+    property var dpadAreaRightX: -1
+
+    //parameter for Dpad with dedicated buttons and separated
+    property var dpadUpWidth : 69
+    property var dpadUpHeight : 89
+    property var dpadUpTopY: -1
+    property var dpadUpLeftX: -1
+
+    property var dpadDownWidth : 67
+    property var dpadDownHeight : 89
+    property var dpadDownTopY: -1
+    property var dpadDownLeftX: -1
+
+    property var dpadLeftWidth : 89
+    property var dpadLeftHeight : 70
+    property var dpadLeftTopY: -1
+    property var dpadLeftLeftX: -1
+
+    property var dpadRightWidth : 88
+    property var dpadRightHeight : 70
+    property var dpadRightTopY: -1
+    property var dpadRightLeftX: -1
 
     //parameter for L1
     property var padL1Width : 198
@@ -125,6 +142,9 @@ Item {
     property var rStickTopY: 0
     property var rStickLeftX: 0
 
+    //to manage contrast/brightness for button effects
+    property var contrast: 0.5
+    property var brightness: 0.5
 
     Image {
         id: padBase
@@ -152,6 +172,8 @@ Item {
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padL2LeftX + (padL2Width/2))) * ratio);
         }
 
+        contrast: padContainer.contrast
+        brightness: padContainer.brightness
         shortName: "l2"
         name: hasL2 ? padContainer.name : ""
         pressed: gamepad ? gamepad.buttonL2 : false
@@ -169,6 +191,8 @@ Item {
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padL1LeftX + (padL1Width/2))) * ratio);
         }
 
+        contrast: padContainer.contrast
+        brightness: padContainer.brightness
         shortName: "l1"
         name: hasL1 ? padContainer.name : ""
         pressed: gamepad ? gamepad.buttonL1 : false
@@ -186,6 +210,8 @@ Item {
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padR2LeftX + (padR2Width/2))) * ratio);
         }
 
+        contrast: padContainer.contrast
+        brightness: padContainer.brightness
         shortName: "r2"
         name: hasR2 ? padContainer.name : ""
         pressed: gamepad ? gamepad.buttonR2 : false
@@ -203,6 +229,8 @@ Item {
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padR1LeftX + (padR1Width/2))) * ratio);
         }
 
+        contrast: padContainer.contrast
+        brightness: padContainer.brightness
         shortName: "r1"
         name: hasR1 ? padContainer.name : ""
         pressed: gamepad ? gamepad.buttonR1 : false
@@ -220,6 +248,8 @@ Item {
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padSelectLeftX + (padSelectWidth/2))) * ratio);
         }
 
+        contrast: padContainer.contrast
+        brightness: padContainer.brightness
         shortName: "select"
         name: hasSelect ? padContainer.name : ""
         pressed: gamepad ? gamepad.buttonSelect : false
@@ -240,6 +270,8 @@ Item {
             horizontalCenterOffset: hasDedicatedGuide ? vpx(-((padBaseSourceSizeWidth/2) - (padGuideLeftX + (padGuideWidth/2))) * ratio) : vpx(-((padBaseSourceSizeWidth/2) - (padSelectLeftX + (padSelectWidth/2))) * ratio);
         }
 
+        contrast: padContainer.contrast
+        brightness: padContainer.brightness
         shortName: "guide"
         name: (hasSelect || hasDedicatedGuide) ? padContainer.name : ""
         pressed: gamepad ? gamepad.buttonGuide : false
@@ -259,6 +291,8 @@ Item {
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padStartLeftX + (padStartWidth/2))) * ratio);
         }
 
+        contrast: padContainer.contrast
+        brightness: padContainer.brightness
         shortName: "start"
         name: hasStart ? padContainer.name : ""
         pressed: gamepad ? gamepad.buttonStart : false
@@ -272,8 +306,8 @@ Item {
         anchors {
             horizontalCenter: padBase.horizontalCenter;
             verticalCenter: padBase.verticalCenter;
-            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padBTopY + (padBWidth/2))) * ratio);
-            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padBLeftX + (padBHeight/2))) * ratio);
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padBTopY + (padBHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padBLeftX + (padBWidth/2))) * ratio);
         }
 
         shortName: "b"
@@ -288,8 +322,8 @@ Item {
         anchors {
             horizontalCenter: padBase.horizontalCenter
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padATopY + (padAWidth/2))) * ratio);
-            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padALeftX + (padAHeight/2))) * ratio);
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padATopY + (padAHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padALeftX + (padAWidth/2))) * ratio);
         }
 
         shortName: "a"
@@ -304,15 +338,14 @@ Item {
         anchors {
             horizontalCenter: padBase.horizontalCenter
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padYTopY + (padYWidth/2))) * ratio);
-            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padYLeftX + (padYHeight/2))) * ratio);
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padYTopY + (padYHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padYLeftX + (padYWidth/2))) * ratio);
         }
 
         shortName: "y"
         name: hasY ? padContainer.name : ""
         pressed: gamepad ? (hasNintendoPad ? gamepad.buttonWest : gamepad.buttonNorth) : false
     }
-
     PadButtonCustom {
         id: padX
         width: vpx(padXWidth * ratio)
@@ -321,8 +354,8 @@ Item {
         anchors {
             horizontalCenter: padBase.horizontalCenter
             verticalCenter: padBase.verticalCenter
-            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padXTopY + (padXWidth/2))) * ratio);
-            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padXLeftX + (padXHeight/2))) * ratio);
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (padXTopY + (padXHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (padXLeftX + (padXWidth/2))) * ratio);
         }
 
         shortName: "x"
@@ -341,8 +374,84 @@ Item {
             verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (dpadAreaTopY + ((dpadAreaBottomY-dpadAreaTopY)/2))) * ratio);
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (dpadAreaLeftX + ((dpadAreaRightX-dpadAreaLeftX)/2))) * ratio);
         }
-        name: hasDpad ? padContainer.name : ""
+        name: (hasDpad && !hasButtonsForDpad) ? padContainer.name : ""
         gamepad: parent.gamepad
+    }
+
+    PadButtonCustom {
+        id: dpadUp
+        width: vpx(dpadUpWidth * ratio)
+        height: vpx(dpadUpHeight * ratio)
+
+        anchors {
+            horizontalCenter: padBase.horizontalCenter;
+            verticalCenter: padBase.verticalCenter;
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (dpadUpTopY + (dpadUpHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (dpadUpLeftX + (dpadUpWidth/2))) * ratio);
+        }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
+        shortName: "dpup"
+        name: (hasDpad && hasButtonsForDpad) ? padContainer.name : ""
+        pressed: gamepad ? gamepad.buttonUp : false
+    }
+
+    PadButtonCustom {
+        id: dpadDown
+        width: vpx(dpadDownWidth * ratio)
+        height: vpx(dpadDownHeight * ratio)
+
+        anchors {
+            horizontalCenter: padBase.horizontalCenter;
+            verticalCenter: padBase.verticalCenter;
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (dpadDownTopY + (dpadDownHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (dpadDownLeftX + (dpadDownWidth/2))) * ratio);
+        }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
+        shortName: "dpdown"
+        name: (hasDpad && hasButtonsForDpad) ? padContainer.name : ""
+        pressed: gamepad ? gamepad.buttonDown : false
+    }
+
+    PadButtonCustom {
+        id: dpadLeft
+        width: vpx(dpadLeftWidth * ratio)
+        height: vpx(dpadLeftHeight * ratio)
+
+        anchors {
+            horizontalCenter: padBase.horizontalCenter;
+            verticalCenter: padBase.verticalCenter;
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (dpadLeftTopY + (dpadLeftHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (dpadLeftLeftX + (dpadLeftWidth/2))) * ratio);
+        }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
+        shortName: "dpleft"
+        name: (hasDpad && hasButtonsForDpad) ? padContainer.name : ""
+        pressed: gamepad ? gamepad.buttonLeft : false
+    }
+
+    PadButtonCustom {
+        id: dpadRight
+        width: vpx(dpadRightWidth * ratio)
+        height: vpx(dpadRightHeight * ratio)
+
+        anchors {
+            horizontalCenter: padBase.horizontalCenter;
+            verticalCenter: padBase.verticalCenter;
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (dpadRightTopY + (dpadRightHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (dpadRightLeftX + (dpadRightWidth/2))) * ratio);
+        }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
+        shortName: "dpright"
+        name: (hasDpad && hasButtonsForDpad) ? padContainer.name : ""
+        pressed: gamepad ? gamepad.buttonRight : false
     }
 
     StickCustom {
@@ -355,6 +464,8 @@ Item {
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (lStickLeftX + (lStickWidth/2))) * ratio);
         }
 
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
         side: "l"
         name: hasLeftStick ? padContainer.name : ""
         pressed: hasL3 && gamepad ? gamepad.buttonL3 : false
@@ -371,6 +482,9 @@ Item {
             verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (rStickTopY + (rStickHeight/2))) * ratio);
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (rStickLeftX + (rStickWidth/2))) * ratio);
         }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
         side: "r"
         name: hasRightStick ? padContainer.name : ""
         pressed: hasR3 && gamepad ? gamepad.buttonR3 : false

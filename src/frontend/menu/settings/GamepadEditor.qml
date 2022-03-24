@@ -268,6 +268,9 @@ FocusScope {
                             hasLeftStick : false; hasRightStick : false;
                             hasL3 : false; hasR3 : false;
 
+                            hadDpad : true;
+                            hasButtonsForDpad : false;
+
                             hasScreenshotButton : false;
 
                             ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
@@ -354,6 +357,9 @@ FocusScope {
                             hasLeftStick : false; hasRightStick : false;
                             hasL3 : false; hasR3 : false;
 
+                            hadDpad : true;
+                            hasButtonsForDpad : false;
+
                             hasScreenshotButton : false;
 
                             ratio: 0.8; padBaseSourceSizeWidth : 778 ; padBaseSourceSizeHeight : 347;
@@ -417,6 +423,9 @@ FocusScope {
 
                             hasLeftStick : true; hasRightStick : true;
                             hasL3 : true; hasR3 : true;
+
+                            hadDpad : true;
+                            hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
 
@@ -494,14 +503,18 @@ FocusScope {
                             //parameter for Left stick
                             lStickWidth : 127;
                             lStickHeight : 128;
-                            lStickTopY: 200;
-                            lStickLeftX: 130;
+                            lStickTopY: 202;
+                            lStickLeftX: 131;
 
                             //parameter for Right stick
                             rStickWidth : 129;
                             rStickHeight : 129;
                             rStickTopY: 374;
                             rStickLeftX: 553;
+
+                            //to adapt contrast/brightness
+                            contrast : 0.1
+                            brightness: 0.2
 
             } //As Microsoft XBOX 360 pad
 
@@ -522,6 +535,9 @@ FocusScope {
 
                             hasLeftStick : true; hasRightStick : true;
                             hasL3 : true; hasR3 : true;
+
+                            hadDpad : true;
+                            hasButtonsForDpad : true;
 
                             hasScreenshotButton : false;
 
@@ -548,34 +564,34 @@ FocusScope {
                             //parameters for A/B/X/Y
 
                             //As cross
-                            padAWidth : 93;
-                            padAHeight : 94;
-                            padATopY: 344;
-                            padALeftX: 977;
+                            padAWidth : 95;
+                            padAHeight : 96;
+                            padATopY: 342;
+                            padALeftX: 975;
 
                             //As cycle
-                            padBWidth : 94;
-                            padBHeight : 92;
-                            padBTopY: 253;
-                            padBLeftX: 1068;
+                            padBWidth : 96;
+                            padBHeight : 94;
+                            padBTopY: 251;
+                            padBLeftX: 1066;
 
                             //As square
-                            padXWidth : 93;
-                            padXHeight : 92;
-                            padXTopY: 252;
-                            padXLeftX: 887;
+                            padXWidth : 95;
+                            padXHeight : 94;
+                            padXTopY: 250;
+                            padXLeftX: 885;
 
                             //As Triangle
-                            padYWidth : 92;
-                            padYHeight : 93;
-                            padYTopY: 162;
-                            padYLeftX: 978;
+                            padYWidth : 94;
+                            padYHeight : 96;
+                            padYTopY: 160;
+                            padYLeftX: 975;
 
                             //parameter for Dpad with dedicated buttons and separated
                             dpadUpWidth : 69;
                             dpadUpHeight : 89;
-                            dpadUpTopY: 190;
-                            dpadUpLeftX: 214;
+                            dpadUpTopY: 189;
+                            dpadUpLeftX: 213;
 
                             dpadDownWidth : 67;
                             dpadDownHeight : 89;
@@ -585,14 +601,12 @@ FocusScope {
                             dpadLeftWidth : 89;
                             dpadLeftHeight : 70;
                             dpadLeftTopY: 259;
-                            dpadLeftLeftX: 292;
+                            dpadLeftLeftX: 145;
 
                             dpadRightWidth : 88;
                             dpadRightHeight : 70;
                             dpadRightTopY: 259;
                             dpadRightLeftX: 264;
-
-
 
                             //parameter for L1
                             padL1Width : 161;
@@ -619,17 +633,20 @@ FocusScope {
                             padR2LeftX: 933;
 
                             //parameter for Left stick
-                            lStickWidth : 152;
-                            lStickHeight : 152;
-                            lStickTopY: 387;
-                            lStickLeftX: 360;
+                            lStickWidth : 156;
+                            lStickHeight : 156;
+                            lStickTopY: 386;
+                            lStickLeftX: 358;
 
                             //parameter for Right stick
-                            rStickWidth : 152;
-                            rStickHeight : 152;
+                            rStickWidth : 156;
+                            rStickHeight : 156;
                             rStickTopY: 389;
                             rStickLeftX: 754;
 
+                            //to adapt contrast/brightness
+                            contrast : 0.5
+                            brightness: 0.8
             } //As Sony PS4 pad
 
         }
@@ -683,6 +700,7 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).hasDedicatedGuide) !== 'undefined') root.padPreview.hasDedicatedGuide = myControllerLayout.get(index).hasDedicatedGuide;
 
                 if(typeof(myControllerLayout.get(index).hasDpad) !== 'undefined') root.padPreview.hasDpad = myControllerLayout.get(index).hasDpad;
+                if(typeof(myControllerLayout.get(index).hasButtonsForDpad) !== 'undefined') root.padPreview.hasButtonsForDpad = myControllerLayout.get(index).hasButtonsForDpad;
 
                 if(typeof(myControllerLayout.get(index).hasA) !== 'undefined') root.padPreview.hasA = myControllerLayout.get(index).hasA;
                 if(typeof(myControllerLayout.get(index).hasB) !== 'undefined') root.padPreview.hasB = myControllerLayout.get(index).hasB;
@@ -766,12 +784,6 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).padL2TopY) !== 'undefined') root.padPreview.padL2TopY = myControllerLayout.get(index).padL2TopY;
                 if(typeof(myControllerLayout.get(index).padL2LeftX) !== 'undefined') root.padPreview.padL2LeftX = myControllerLayout.get(index).padL2LeftX;
 
-                /*if(typeof(myControllerLayout.get(index).padL3Width) !== 'undefined') root.padPreview.padL3Width = myControllerLayout.get(index).padL3Width;
-                if(typeof(myControllerLayout.get(index).padL3Height) !== 'undefined') root.padPreview.padL3Height = myControllerLayout.get(index).padL3Height;
-                if(typeof(myControllerLayout.get(index).padL3TopY) !== 'undefined') root.padPreview.padL3TopY = myControllerLayout.get(index).padL3TopY;
-                if(typeof(myControllerLayout.get(index).padL3LeftX) !== 'undefined') root.padPreview.padL3LeftX = myControllerLayout.get(index).padL3LeftX;
-                */
-
                 if(typeof(myControllerLayout.get(index).padR1Width) !== 'undefined') root.padPreview.padR1Width = myControllerLayout.get(index).padR1Width;
                 if(typeof(myControllerLayout.get(index).padR1Height) !== 'undefined') root.padPreview.padR1Height = myControllerLayout.get(index).padR1Height;
                 if(typeof(myControllerLayout.get(index).padR1TopY) !== 'undefined') root.padPreview.padR1TopY = myControllerLayout.get(index).padR1TopY;
@@ -782,17 +794,32 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).padR2TopY) !== 'undefined') root.padPreview.padR2TopY = myControllerLayout.get(index).padR2TopY;
                 if(typeof(myControllerLayout.get(index).padR2LeftX) !== 'undefined') root.padPreview.padR2LeftX = myControllerLayout.get(index).padR2LeftX;
 
-                /*if(typeof(myControllerLayout.get(index).padR3Width) !== 'undefined') root.padPreview.padR3Width = myControllerLayout.get(index).padR3Width;
-                if(typeof(myControllerLayout.get(index).padR3Height) !== 'undefined') root.padPreview.padR3Height = myControllerLayout.get(index).padR3Height;
-                if(typeof(myControllerLayout.get(index).padR3TopY) !== 'undefined') root.padPreview.padR3TopY = myControllerLayout.get(index).padR3TopY;
-                if(typeof(myControllerLayout.get(index).padR3LeftX) !== 'undefined') root.padPreview.padR3LeftX = myControllerLayout.get(index).padR3LeftX;
-                */
-
                 //Settings of parameters for Dpad
                 if(typeof(myControllerLayout.get(index).dpadAreaTopY) !== 'undefined') root.padPreview.dpadAreaTopY = myControllerLayout.get(index).dpadAreaTopY;
                 if(typeof(myControllerLayout.get(index).dpadAreaBottomY) !== 'undefined') root.padPreview.dpadAreaBottomY = myControllerLayout.get(index).dpadAreaBottomY;
                 if(typeof(myControllerLayout.get(index).dpadAreaLeftX) !== 'undefined') root.padPreview.dpadAreaLeftX = myControllerLayout.get(index).dpadAreaLeftX;
                 if(typeof(myControllerLayout.get(index).dpadAreaRightX) !== 'undefined') root.padPreview.dpadAreaRightX = myControllerLayout.get(index).dpadAreaRightX;
+
+                //Settings of parameters for Dpad using dedicated buttons for each directions
+                if(typeof(myControllerLayout.get(index).dpadUpWidth) !== 'undefined') root.padPreview.dpadUpWidth = myControllerLayout.get(index).dpadUpWidth;
+                if(typeof(myControllerLayout.get(index).dpadUpHeight) !== 'undefined') root.padPreview.dpadUpHeight = myControllerLayout.get(index).dpadUpHeight;
+                if(typeof(myControllerLayout.get(index).dpadUpTopY) !== 'undefined') root.padPreview.dpadUpTopY = myControllerLayout.get(index).dpadUpTopY;
+                if(typeof(myControllerLayout.get(index).dpadUpLeftX) !== 'undefined') root.padPreview.dpadUpLeftX = myControllerLayout.get(index).dpadUpLeftX;
+
+                if(typeof(myControllerLayout.get(index).dpadDownWidth) !== 'undefined') root.padPreview.dpadDownWidth = myControllerLayout.get(index).dpadDownWidth;
+                if(typeof(myControllerLayout.get(index).dpadDownHeight) !== 'undefined') root.padPreview.dpadDownHeight = myControllerLayout.get(index).dpadDownHeight;
+                if(typeof(myControllerLayout.get(index).dpadDownTopY) !== 'undefined') root.padPreview.dpadDownTopY = myControllerLayout.get(index).dpadDownTopY;
+                if(typeof(myControllerLayout.get(index).dpadDownLeftX) !== 'undefined') root.padPreview.dpadDownLeftX = myControllerLayout.get(index).dpadDownLeftX;
+
+                if(typeof(myControllerLayout.get(index).dpadLeftWidth) !== 'undefined') root.padPreview.dpadLeftWidth = myControllerLayout.get(index).dpadLeftWidth;
+                if(typeof(myControllerLayout.get(index).dpadLeftHeight) !== 'undefined') root.padPreview.dpadLeftHeight = myControllerLayout.get(index).dpadLeftHeight;
+                if(typeof(myControllerLayout.get(index).dpadLeftTopY) !== 'undefined') root.padPreview.dpadLeftTopY = myControllerLayout.get(index).dpadLeftTopY;
+                if(typeof(myControllerLayout.get(index).dpadLeftLeftX) !== 'undefined') root.padPreview.dpadLeftLeftX = myControllerLayout.get(index).dpadLeftLeftX;
+
+                if(typeof(myControllerLayout.get(index).dpadRightWidth) !== 'undefined') root.padPreview.dpadRightWidth = myControllerLayout.get(index).dpadRightWidth;
+                if(typeof(myControllerLayout.get(index).dpadRightHeight) !== 'undefined') root.padPreview.dpadRightHeight = myControllerLayout.get(index).dpadRightHeight;
+                if(typeof(myControllerLayout.get(index).dpadRightTopY) !== 'undefined') root.padPreview.dpadRightTopY = myControllerLayout.get(index).dpadRightTopY;
+                if(typeof(myControllerLayout.get(index).dpadRightLeftX) !== 'undefined') root.padPreview.dpadRightLeftX = myControllerLayout.get(index).dpadRightLeftX;
 
                 //Settings of parameters for lStick/rStick
                 if(typeof(myControllerLayout.get(index).lStickWidth) !== 'undefined') root.padPreview.lStickWidth = myControllerLayout.get(index).lStickWidth;
@@ -805,6 +832,9 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).rStickTopY) !== 'undefined') root.padPreview.rStickTopY = myControllerLayout.get(index).rStickTopY;
                 if(typeof(myControllerLayout.get(index).rStickLeftX) !== 'undefined') root.padPreview.rStickLeftX = myControllerLayout.get(index).rStickLeftX;
 
+                //Settings of contrast/brightness
+                if(typeof(myControllerLayout.get(index).contrast) !== 'undefined') root.padPreview.contrast = myControllerLayout.get(index).contrast;
+                if(typeof(myControllerLayout.get(index).brightness) !== 'undefined') root.padPreview.brightness = myControllerLayout.get(index).brightness;
 
                 //set name at the end to avoid error/warning to early ;-)
                 root.padPreview.name = myControllerLayout.get(index).name;

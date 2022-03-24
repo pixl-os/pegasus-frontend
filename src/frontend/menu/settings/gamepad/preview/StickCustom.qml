@@ -12,6 +12,8 @@ Item {
     property real xPercent: 0.0
     property real yPercent: 0.0
     property string name: "" //used to find file named as "shortName_name.jpg" : b_nes.png or a_snes.png for example
+    property alias brightness: animation.brightness
+    property alias contrast: animation.contrast
 
     height: width
 
@@ -76,6 +78,7 @@ Item {
 
     //for animation when we press button
     BrightnessContrast {
+        id: animation
         z:70
         visible: pressed
         anchors.fill: pressedImage

@@ -10,6 +10,8 @@ Item {
     property var gamepad
     property var pressAngle: 15
     property string name: "" //used to find file named as "dpad_name.jpg" : dpad_nes.png or dpad_snes.png for example
+    property alias brightness: animation.brightness
+    property alias contrast: animation.contrast
 
     Image {
         id:initialImage
@@ -60,6 +62,7 @@ Item {
     }
 
     BrightnessContrast {
+        id: animation
         z:60
         visible: gamepad ? gamepad.buttonRight : false
 
