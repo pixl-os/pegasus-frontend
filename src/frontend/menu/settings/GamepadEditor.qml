@@ -337,6 +337,10 @@ FocusScope {
                             padR2TopY: 4;
                             padR2LeftX: 509;
 
+                            //to adapt contrast/brightness
+                            contrast : 0.5
+                            brightness: 0.5
+
             } //As SNES pad (but with L2/R2 to be compatible with switch online ones)
 
             ListElement {   name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
@@ -403,6 +407,10 @@ FocusScope {
                             padR1Height : 12;
                             padR1TopY: 7;
                             padR1LeftX: 473;
+
+                            //to adapt contrast/brightness
+                            contrast : 0.5
+                            brightness: 0.5
 
             } //As NES pad (but with L1/R1 to be compatible with switch online ones)
 
