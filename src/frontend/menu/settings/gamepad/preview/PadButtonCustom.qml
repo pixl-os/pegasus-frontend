@@ -11,6 +11,7 @@ Item {
     property string name: "" //used to find file named as "shortName_name.jpg" : b_nes.png or a_snes.png for example
     property alias brightness: animation.brightness
     property alias contrast: animation.contrast
+    visible: name ? true : false
 
     //initial image loaded
     Image {

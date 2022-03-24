@@ -337,10 +337,6 @@ FocusScope {
                             padR2TopY: 4;
                             padR2LeftX: 509;
 
-                            //to adapt contrast/brightness
-                            contrast : 0.5
-                            brightness: 0.5
-
             } //As SNES pad (but with L2/R2 to be compatible with switch online ones)
 
             ListElement {   name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
@@ -409,8 +405,8 @@ FocusScope {
                             padR1LeftX: 473;
 
                             //to adapt contrast/brightness
-                            contrast : 0.5
-                            brightness: 0.5
+                            contrast : 0.4
+                            brightness: 0.6
 
             } //As NES pad (but with L1/R1 to be compatible with switch online ones)
 
@@ -653,8 +649,8 @@ FocusScope {
                             rStickLeftX: 754;
 
                             //to adapt contrast/brightness
-                            contrast : 0.5
-                            brightness: 0.8
+                            contrast : 0.4
+                            brightness: 0.6
             } //As Sony PS4 pad
 
         }
@@ -841,8 +837,14 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).rStickLeftX) !== 'undefined') root.padPreview.rStickLeftX = myControllerLayout.get(index).rStickLeftX;
 
                 //Settings of contrast/brightness
-                if(typeof(myControllerLayout.get(index).contrast) !== 'undefined') root.padPreview.contrast = myControllerLayout.get(index).contrast;
-                if(typeof(myControllerLayout.get(index).brightness) !== 'undefined') root.padPreview.brightness = myControllerLayout.get(index).brightness;
+                //console.log("typeof(myControllerLayout.get(index).brightness) : ",typeof(myControllerLayout.get(index).brightness));
+                //console.log("myControllerLayout.get(index).brightness : ", myControllerLayout.get(index).brightness);
+                //console.log("typeof(myControllerLayout.get(index).contrast) : ",typeof(myControllerLayout.get(index).contrast));
+                //console.log("myControllerLayout.get(index).contrast : ", myControllerLayout.get(index).contrast);
+
+                //to set specific brightness/contrast for L/R Buttons, start/select/guide & DPADs independent buttons.
+                if((typeof(myControllerLayout.get(index).contrast) !== 'undefined') && (myControllerLayout.get(index).contrast !== 0)) root.padPreview.contrast = myControllerLayout.get(index).contrast;
+                if((typeof(myControllerLayout.get(index).brightness) !== 'undefined') && (myControllerLayout.get(index).brightness !== 0)) root.padPreview.brightness = myControllerLayout.get(index).brightness;
 
                 //set name at the end to avoid error/warning to early ;-)
                 root.padPreview.name = myControllerLayout.get(index).name;
