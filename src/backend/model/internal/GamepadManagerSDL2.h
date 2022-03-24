@@ -33,10 +33,11 @@ public:
     ~GamepadManagerSDL2();
 
     void start(const backend::CliArgs&) final;
-
     void start_recording(int, GamepadButton) final;
     void start_recording(int, GamepadAxis) final;
     void cancel_recording() final;
+    void reset(int, GamepadButton) final;
+    void reset(int, GamepadAxis) final;
 
 private slots:
     void poll();

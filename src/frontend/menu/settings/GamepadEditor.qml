@@ -92,8 +92,15 @@ FocusScope {
             recordingField.recording = true;
             //console.log("recordingField.recording = true");
            }
-    
     }
+
+    function resetConfig(inputType,text) {
+        //display dialog box to alert that nutton/axis is reset now
+        genericMessage.setSource("../../dialogs/GenericOkDialog.qml",
+                                 { "title": qsTr("Reset") + " " + inputType, "message": qsTr("You remove now the assignment of ") + text.toUpperCase() });
+        genericMessage.focus = true;
+    }
+
     property real escapeDelay: 1500
     property real escapeStartTime: 0
     property real escapeProgress: 0
@@ -101,6 +108,11 @@ FocusScope {
     property real validDelay: 1000 //quicker than B/Save/Quit command ;-)
     property real validStartTime: 0
     property real validProgress: 0
+
+    property real resetDelay: 2000 //quicker than A/B/Valid/Record/Save/Quit command ;-)
+    property real resetStartTime: 0
+    property real resetProgress: 0
+
 	property ConfigField fieldUnderConfiguration: null
 
     Timer {
@@ -126,6 +138,15 @@ FocusScope {
 				recordConfig(fieldUnderConfiguration);
 		}
     }
+    Timer {
+        id: resetTimer
+        interval: 50
+        repeat: true
+        onTriggered: {
+            var currentTime = new Date().getTime();
+            resetProgress = (currentTime - resetStartTime) / resetDelay;
+        }
+    }
     function stopEscapeTimer() {
         escapeTimer.stop();
         escapeStartTime = 0;
@@ -135,7 +156,13 @@ FocusScope {
         validTimer.stop();
         validStartTime = 0;
         validProgress = 0;
-    }	
+    }
+    function stopResetTimer() {
+        resetTimer.stop();
+        resetStartTime = 0;
+        resetProgress = 0;
+    }
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -1290,6 +1317,9 @@ FocusScope {
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
         }
+
+
+        //Help for 'back' button (using canvas)
         Canvas {
             width: backButtonIcon.width + vpx(4)
             height: width
@@ -1376,7 +1406,8 @@ FocusScope {
                 right: parent.right; rightMargin: parent.width * 0.015
             }
         }
-		//add rectangle + text for 'valid' button
+
+        //Help for 'valid' button (using canvas)
         Canvas {
             width: validButtonIcon.width + vpx(4)
             height: width
@@ -1464,7 +1495,98 @@ FocusScope {
                 right: backButtonIcon.left; rightMargin: parent.width * 0.015
             }
         }
-		//add rectangle + text for 'wizard' launch
+
+        //Help for 'details' button (using canvas)
+        Canvas {
+            width: detailsButtonIcon.width + vpx(4)
+            height: width
+            anchors.centerIn: detailsButtonIcon
+            visible: {
+                if(recordingField !== null){
+                    if (recordingField.recording) return false;
+                }
+                return true;
+            }
+
+            property real progress: resetProgress
+            onProgressChanged: requestPaint()
+
+            onPaint: {
+                var ctx = getContext('2d');
+                ctx.clearRect(0, 0, width, height);
+
+                var center = width / 2;
+                var startAngle = -Math.PI / 2
+
+                ctx.beginPath();
+                ctx.fillStyle = "#eee";
+                ctx.moveTo(center, center);
+                ctx.arc(center, center, center,
+                        startAngle, startAngle + Math.PI * 2 * progress, false);
+                ctx.fill();
+            }
+        }
+        Rectangle {
+            id: detailsButtonIcon
+            height: label.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                if (deviceSelect.focus) return false;
+                if(recordingField !== null){
+                    if (recordingField.recording) return false;
+                }
+                return true;
+            }
+            anchors {
+                right: labelX.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: ((typeof(root.padPreview) !== 'undefined') ?
+                           (typeof(root.padPreview.hasNintendoPad) !== 'undefined' ?
+                                (root.padPreview.hasNintendoPad ?  "Y" : "X")
+                              : "X")
+                              : "X" );
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+        Text {
+            id: labelX
+            text: qsTr("hold down to remove assignment") + api.tr
+            verticalAlignment: Text.AlignTop
+            color: "#777"
+            visible: {
+                if (deviceSelect.focus) return false;
+                if(recordingField !== null){
+                    if (recordingField.recording) return false;
+                }
+                return true;
+            }
+
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: validButtonIcon.left; rightMargin: parent.width * 0.015
+            }
+        }
+
+
+        //Help for 'wizard' launch (RFU)
         Rectangle {
             id: wizardButtonIcon
             height: labelWizard.height
@@ -1511,7 +1633,8 @@ FocusScope {
                 left: wizardButtonIcon.right; leftMargin: parent.width * 0.005
             }
         }
-		//add rectangle + text for 'directions' command
+
+        //help for 'directions' commands
         Rectangle {
             id: directionsButtonIcon
             height: labelDirections.height

@@ -134,8 +134,19 @@ void GamepadManager::configureAxis(int deviceId, GMAxis axis)
     Q_ASSERT(axis != GMAxis::Invalid);
     m_backend->start_recording(deviceId, static_cast<GamepadAxis>(axis));
 }
-void GamepadManager::cancelConfiguration() {
+void GamepadManager::cancelConfiguration()
+{
     m_backend->cancel_recording();
+}
+void GamepadManager::resetButton(int deviceId, GMButton button)
+{
+    Q_ASSERT(button != GMButton::Invalid);
+    m_backend->reset(deviceId, static_cast<GamepadButton>(button));
+}
+void GamepadManager::resetAxis(int deviceId, GMAxis axis)
+{
+    Q_ASSERT(axis != GMAxis::Invalid);
+    m_backend->reset(deviceId, static_cast<GamepadAxis>(axis));
 }
 
 void GamepadManager::swap(int device_id1, int device_id2)

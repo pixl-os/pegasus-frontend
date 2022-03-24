@@ -53,24 +53,51 @@ Rectangle {
             margins: vpx(5)
         }
     }
-	Keys.onPressed: if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-		event.accepted = true;
-		validStartTime = new Date().getTime();
-		validTimer.start();					
-		root.fieldUnderConfiguration = this;
+	Keys.onPressed: {
+		if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+			event.accepted = true;
+			validStartTime = new Date().getTime();
+			validTimer.start();
+			root.fieldUnderConfiguration = this;
+		}
+		else if (api.keys.isDetails(event) && !event.isAutoRepeat) {
+			event.accepted = true;
+			resetStartTime = new Date().getTime();
+			resetTimer.start();
+			root.fieldUnderConfiguration = this;
+		}
 	}
-	Keys.onReleased: if (api.keys.isAccept(event) && !event.isAutoRepeat && api.keys.isAccept(event) ) {
-		event.accepted = true;
-        if ((validProgress > 1.0) && gamepad) {
-			if(inputType === "button")
-			{
-                api.internal.gamepad.configureButton(gamepad.deviceIndex, input);
-			}
-			else if(inputType === "axis")
-			{
-				api.internal.gamepad.configureAxis(gamepad.deviceIndex, input);
-			}
-		}	
-		root.stopValidTimer();
+	Keys.onReleased: {
+        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+			event.accepted = true;
+			if ((validProgress > 1.0) && gamepad) {
+				if(inputType === "button")
+				{
+					api.internal.gamepad.configureButton(gamepad.deviceIndex, input);
+				}
+				else if(inputType === "axis")
+				{
+					api.internal.gamepad.configureAxis(gamepad.deviceIndex, input);
+				}
+            }
+            root.stopValidTimer();
+        }
+        else if (api.keys.isDetails(event) && !event.isAutoRepeat) {
+			event.accepted = true;
+			if ((resetProgress > 1.0) && gamepad) {
+                if(inputType === "button")
+				{
+                    api.internal.gamepad.resetButton(gamepad.deviceIndex, input);
+				}
+				else if(inputType === "axis")
+				{
+                    api.internal.gamepad.resetAxis(gamepad.deviceIndex, input);
+				}
+                root.stopResetTimer();
+                root.resetConfig(inputType,text);
+            }
+            else root.stopResetTimer();
+
+		}
 	}	
 }

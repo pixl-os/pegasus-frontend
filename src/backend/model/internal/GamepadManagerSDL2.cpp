@@ -935,13 +935,32 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
     m_recording.device = device_idx;
     m_recording.target_axis = axis;
 }
-
 void GamepadManagerSDL2::cancel_recording()
 {
     if (m_recording.is_active())
         emit configurationCanceled(m_recording.device);
 
     m_recording.reset();
+}
+
+void GamepadManagerSDL2::reset(int device_idx, GamepadButton button)
+{
+    m_recording.reset();
+    m_recording.device = device_idx;
+    m_recording.target_button = button;
+    m_recording.sign = "";
+    m_recording.value = "";
+    finish_recording();
+}
+
+void GamepadManagerSDL2::reset(int device_idx, GamepadAxis axis)
+{
+    m_recording.reset();
+    m_recording.device = device_idx;
+    m_recording.target_axis = axis;
+    m_recording.sign = "";
+    m_recording.value = "";
+    finish_recording();
 }
 
 void GamepadManagerSDL2::poll()
