@@ -1072,49 +1072,86 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             return;
         }
 
-        //get mapping found by SDL DB or driver itself
-        const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
-        
-        //if no mapping, strange ?!
-        if (!mapping){
-            Log::error(m_log_tag, LOGMSG("SDL2: 'default' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
-			//tentative to generate mapping by default
-			try_register_default_mapping(device_idx);
-			//retry to 'force' mapping
-			const auto second_mapping = freeable_str(SDL_GameControllerMapping(pad));
-			//if no mapping, it's a major issue !!!
-			if (!second_mapping){
-				Log::error(m_log_tag, LOGMSG("SDL2: 'forced' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), second_mapping.get()));
-			}
-		}	
+        //****************************//
+        //0) Get all names and details//
+        //****************************//
 
-        //get the name found by sdl in assets/sdl2/gamecontrollerdb_209.txt or sdl_controllers.txt (user mappings)
-        Log::debug(m_log_tag, LOGMSG("Device name found by SDL (not trimmed): '%1'").arg(QLatin1String(SDL_GameControllerName(pad))));
-        QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
-        Log::debug(m_log_tag, LOGMSG("Device name found by SDL (trimmed): '%1'").arg(name));
+        #ifdef WITHOUT_LEGACY_SDL
+        //for QT creator test without SDL 1 compatibility
+        //Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
+        const QString JoystickDevicePath = "/dev/input/bidon";
+        #else
+        // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
+        //Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
+        //Log::debug(m_log_tag, LOGMSG("And instance using device_idx : %1").arg(QString::number(device_idx)));
+        //Log::debug(m_log_tag, LOGMSG("And instance using iid : %1").arg(QString::number(iid)));
+        //we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
+        const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx);
+        #endif
+
+        //Get name from UDEV NAME
+        int fd = open(JoystickDevicePath.toUtf8().constData(), O_RDONLY);
+        if (fd < 0)
+        {
+          Log::debug(m_log_tag, LOGMSG("[UDEV] Can't open device %1").arg(JoystickDevicePath));
+        }
+        unsigned short id[4] = {};
+        ioctl(fd, EVIOCGID, id);
+        char udevname[256] = {};
+        ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
+        QString name = QString::fromStdString(udevname);
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - NAME: %1").arg(name));
+
+        //Get name from UDEV HID NAME
+        //TIPS to get get all udev info using udevadm
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - JoystickDevicePath: '%1'").arg(JoystickDevicePath));
+        QString hidpath = run("udevadm info -e | grep -B 10 'DEVNAME=" +
+                            JoystickDevicePath +
+                            "' | grep 'P:'" +
+                             " | awk '{print $2}'" +
+                             " | awk -F '/input/' '{print $1}'" +
+                             " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID PATH: '%1'").arg(hidpath));
+
+        QString hidname = run("udevadm info -e | grep -A 6 'P: " +
+                            hidpath +
+                            "' | grep 'HID_NAME='" +
+                            " | cut -d= -f2" +
+                            " | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID NAME: '%1'").arg(hidname));
+
+        //Get GUID
+        constexpr size_t GUID_LEN = 33; // 16x2 + null
+        std::array<char, GUID_LEN> guid_raw_str;
+
+        const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
+
+        SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());
+
+        // concatenation doesn't work with QLatin1Strings...
+        const auto guid_str = QLatin1String(guid_raw_str.data()).trimmed();
+        Log::debug(m_log_tag, LOGMSG("With gUId : %1").arg(guid_str));
+
+        //Register controller/pad
+        //get the name found by sdl in assets/sdl2/gamecontrollerdb_2016.txt or sdl_controllers.txt (user mappings)
+        //Log::debug(m_log_tag, LOGMSG("Device name found by SDL (not trimmed): '%1'").arg(QLatin1String(SDL_GameControllerName(pad))));
+        //QString name = QLatin1String(SDL_GameControllerName(pad)).trimmed();
+        //Log::debug(m_log_tag, LOGMSG("Device name found by SDL (trimmed): '%1'").arg(name));
 
         SDL_Joystick* const joystick = SDL_GameControllerGetJoystick(pad);
         const SDL_JoystickID iid = SDL_JoystickInstanceID(joystick);
-        
-        Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
+
+        //Log::debug(m_log_tag, LOGMSG("iid value = %1").arg(iid));
 
         m_idx_to_iid.emplace(device_idx,iid);
         m_iid_to_idx.emplace(iid, device_idx);
         m_iid_to_device.emplace(iid, device_ptr(pad, SDL_GameControllerClose));
-       
-        //Log::debug(m_log_tag, LOGMSG("device_idx : %1").arg(device_idx)); 
-            
-        //Get GUID
-        constexpr size_t GUID_LEN = 33; // 16x2 + null
-        std::array<char, GUID_LEN> guid_raw_str;
-        
-        const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
-        
-        SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());    
-        
-        // concatenation doesn't work with QLatin1Strings...
-        const auto guid_str = QLatin1String(guid_raw_str.data()).trimmed();
-        Log::debug(m_log_tag, LOGMSG("With gUId : %1").arg(guid_str));
+
+        //Log::debug(m_log_tag, LOGMSG("device_idx : %1").arg(device_idx));
+
+        //******************************************************************************//
+        //1) Check first if controller is already known as define in sdl_controllers.txt//
+        //******************************************************************************//
 
         //check if gamepad has been configured by user previously using guid/name
         std::string user_mapping = "";
@@ -1131,7 +1168,11 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 break; //exit for if not empty
             }
         }
-        
+
+        //*****************************************************************//
+        //2) check es_input.cfg first about configuration already known !!!//
+        //*****************************************************************//
+
         //if no user mapping defined / else we do nothing because it seems a pad already configured by user
         if (user_mapping == "")
         {
@@ -1141,17 +1182,44 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             //check if we already saved this configuration (same guid/same name)
             providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(name, guid_str);
             //Log::debug(m_log_tag, LOGMSG("inputConfigEntry.inputConfigAttributs.deviceName : '%1'").arg(inputConfigEntry.inputConfigAttributs.deviceName));
-        
+
             //if nothing is in es_input with this name -> we update es_input with the SDL conf
             if (inputConfigEntry.inputConfigAttributs.deviceName == "")
             {
                 Log::debug(m_log_tag, LOGMSG("no mapping found in es_input.cfg for this controller"));
-                //get default mapping from SDL2
-                std::string existing_mapping = generate_mapping(device_idx).c_str();
-				Log::debug(LOGMSG("existing_mapping : %1").arg(QString::fromStdString(existing_mapping))); 
-				//write user SDL2 mapping in es_input.cfg
-                Log::debug(m_log_tag, LOGMSG("save default SDL2 mapping in es_input.cfg to be able to play right now !"));
-                update_es_input(device_idx, existing_mapping);
+                //*********************************************************//
+                //3) check sdl db in a second time if not found previously //
+                //*********************************************************//
+                //get mapping found by SDL DB
+                const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
+                //if no mapping, strange ?!
+                if (!mapping){
+                    Log::error(m_log_tag, LOGMSG("SDL2: 'default' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
+                    //tentative to generate mapping by default
+                    try_register_default_mapping(device_idx);
+                    //retry to 'force' mapping
+                    const auto second_mapping = freeable_str(SDL_GameControllerMapping(pad));
+                    //if no mapping, it's a major issue !!!
+                    if (!second_mapping){
+                        Log::error(m_log_tag, LOGMSG("SDL2: 'forced' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), second_mapping.get()));
+                        //get default mapping from SDL2
+                        std::string existing_mapping = generate_mapping(device_idx).c_str();
+                        Log::debug(LOGMSG("existing_mapping : %1").arg(QString::fromStdString(existing_mapping)));
+                        //write user SDL2 mapping in es_input.cfg
+                        Log::debug(m_log_tag, LOGMSG("save default SDL2 mapping in es_input.cfg to be able to play right now !"));
+                        update_es_input(device_idx, existing_mapping);
+                    }
+                    else{
+                        //write user SDL2 mapping in es_input.cfg
+                        Log::debug(m_log_tag, LOGMSG("save 'second' SDL2 mapping in es_input.cfg to be able to play right now !"));
+                        update_es_input(device_idx, second_mapping.get());
+                    }
+                }
+                else{
+                    //write user SDL2 mapping in es_input.cfg
+                    Log::debug(m_log_tag, LOGMSG("save default SDL2 mapping in es_input.cfg to be able to play right now !"));
+                    update_es_input(device_idx, mapping.get());
+                }
             }
             else //if anything is in es_input with this name -> we update user conf (sdl_controllers.txt) and reload
             {
@@ -1171,56 +1239,13 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 //saving of local store m_custom_mappings in file sdl_controllers.txt
                 write_mappings(m_custom_mappings);
             }
-			//to propose to configure or not the new controller
-			emit newController(device_idx, name);
-        }
-		#ifdef WITHOUT_LEGACY_SDL
-		//for QT creator test without SDL 1 compatibility
-		Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
-		const QString JoystickDevicePath = "/dev/input/bidon";
-		#else
-		// SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
-		Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
-		Log::debug(m_log_tag, LOGMSG("And instance using device_idx : %1").arg(QString::number(device_idx)));
-		Log::debug(m_log_tag, LOGMSG("And instance using iid : %1").arg(QString::number(iid)));
-		//we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
-        const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx);
-        #endif
-		//test to get name
-        int fd = open(JoystickDevicePath.toUtf8().constData(), O_RDONLY);
-        if (fd < 0)
-        {
-          Log::debug(m_log_tag, LOGMSG("[UDEV] Can't open device %1").arg(JoystickDevicePath));
+            //to propose to configure or not the new controller
+            emit newController(device_idx, name);
         }
 
-        unsigned short id[4] = {};
-        ioctl(fd, EVIOCGID, id);
-        char udevname[256] = {};
-        ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - NAME: %1").arg(QString::fromStdString(udevname)));
-        //end of test
-        
-		//test to get hid_name
-        //TIPS to get get all udev info using udevadm
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - JoystickDevicePath: '%1'").arg(JoystickDevicePath));
-        QString hidpath = run("udevadm info -e | grep -B 10 'DEVNAME=" +
-							JoystickDevicePath + 
-							"' | grep 'P:'" +
-							 " | awk '{print $2}'" +
-                             " | awk -F '/input/' '{print $1}'" +
-                             " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID PATH: '%1'").arg(hidpath));
-
-        QString hidname = run("udevadm info -e | grep -A 6 'P: " +
-                            hidpath +
-							"' | grep 'HID_NAME='" +
-                            " | cut -d= -f2" +
-                            " | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID NAME: '%1'").arg(hidname));
- 		//enf of test
-		
-		
-		
+        //****************************//
+        //4) emit signal as connected //
+        //****************************//
         emit connected(device_idx, guid_str, name, JoystickDevicePath, iid); //device_idx = device_id when we connect device
         }
     catch ( const std::exception & Exp ) 
