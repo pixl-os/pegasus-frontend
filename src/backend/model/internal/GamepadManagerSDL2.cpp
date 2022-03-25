@@ -45,6 +45,22 @@ constexpr uint16_t version(uint16_t major, uint16_t minor, uint16_t micro)
     return major * 1000u + minor * 100u + micro;
 }
 
+QString run(const QString& Command)
+{
+  const std::string& command = Command.toUtf8().constData();
+  std::string output;
+  char buffer[4096];
+  FILE* pipe = popen(command.data(), "r");
+  if (pipe != nullptr)
+  {
+    while (feof(pipe) == 0)
+      if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        output.append(buffer);
+    pclose(pipe);
+  }
+  return QString::fromStdString(output);
+}
+
 unsigned constexpr const_hash(char const *input) {
     return *input ?
     static_cast<unsigned int>(*input) + 33 * const_hash(input + 1) :
@@ -1170,7 +1186,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 		//we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
         const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx);
         #endif
-        //test to get name
+		//test to get name
         int fd = open(JoystickDevicePath.toUtf8().constData(), O_RDONLY);
         if (fd < 0)
         {
@@ -1181,8 +1197,30 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         ioctl(fd, EVIOCGID, id);
         char udevname[256] = {};
         ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device: %1").arg(QString::fromStdString(udevname)));
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - NAME: %1").arg(QString::fromStdString(udevname)));
         //end of test
+        
+		//test to get hid_name
+        //TIPS to get get all udev info using udevadm
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - JoystickDevicePath: '%1'").arg(JoystickDevicePath));
+        QString hidpath = run("udevadm info -e | grep -B 10 'DEVNAME=" +
+							JoystickDevicePath + 
+							"' | grep 'P:'" +
+							 " | awk '{print $2}'" +
+                             " | awk -F '/input/' '{print $1}'" +
+                             " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID PATH: '%1'").arg(hidpath));
+
+        QString hidname = run("udevadm info -e | grep -A 6 'P: " +
+                            hidpath +
+							"' | grep 'HID_NAME='" +
+                            " | cut -d= -f2" +
+                            " | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID NAME: '%1'").arg(hidname));
+ 		//enf of test
+		
+		
+		
         emit connected(device_idx, guid_str, name, JoystickDevicePath, iid); //device_idx = device_id when we connect device
         }
     catch ( const std::exception & Exp ) 
