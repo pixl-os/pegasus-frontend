@@ -1079,7 +1079,18 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         #ifdef WITHOUT_LEGACY_SDL
         //for QT creator test without SDL 1 compatibility
         //Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
-        const QString JoystickDevicePath = "/dev/input/bidon";
+        //TIPS to get get all udev joysticks index if needed later without udevlib (and using ID8INPUT_JOYSTICK=1 as in retroarch ;-)
+        QString result = run("udevadm info -e | grep -B 10 'ID_INPUT_JOYSTICK=1' | grep 'DEVNAME=/dev/input/event' | cut -d= -f2");
+        //Log::debug(LOGMSG("result: %1").arg(result));
+        QStringList joysticks = result.split("\n");
+        //take last one not empty
+        int k;
+        for(k=joysticks.count()-1; k >= 0; k--){
+            if(joysticks.at(k).toLower() != "") {
+                break;
+            }
+        }
+        const QString JoystickDevicePath = joysticks.at(k).toLower();
         #else
         // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
         //Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
