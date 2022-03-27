@@ -131,7 +131,7 @@ bool load_internal_gamepaddb(uint16_t linked_ver)
     return true;
 }
 
-void try_register_default_mapping(int device_idx)
+void try_register_default_mapping(int device_idx, QString fullname)
 {
     //Log::debug(LOGMSG("try_register_default_mapping"));
     std::array<char, GUID_LEN> guid_raw_str;
@@ -140,7 +140,7 @@ void try_register_default_mapping(int device_idx)
 
     // concatenation doesn't work with QLatin1Strings...
     const auto guid_str = QLatin1String(guid_raw_str.data()).trimmed();
-    const auto name = QLatin1String(SDL_JoystickNameForIndex(device_idx));
+    const auto name = QLatin1String(fullname.toLatin1());
     constexpr auto default_mapping("," // emscripten default
         "a:b0,b:b1,x:b2,y:b3,"
         "dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,"
@@ -295,7 +295,7 @@ void write_mappings(const std::vector<std::string>& mappings)
         db_stream << mapping.data() << '\n';
 }
 
-std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry& inputConfigEntry)
+std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry& inputConfigEntry, const QString fullName = "")
 {
 
     //example of Pegasus Mapping data: 
@@ -310,9 +310,13 @@ std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry&
     
     //GET GUID
     ListMappingData.append(inputConfigEntry.inputConfigAttributs.deviceGUID);
-    
-    //GET NAME
-    ListMappingData.append(inputConfigEntry.inputConfigAttributs.deviceName);
+
+    if(fullName == "")
+        //GET Device NAME from existing ES input
+        ListMappingData.append(inputConfigEntry.inputConfigAttributs.deviceName);
+    else
+        //GET Device NAME from fullName provided
+        ListMappingData.append(fullName);
     
     //SET TYPE
     //inputConfigEntry.inputConfigAttributs.type = "joystick"; //TO DO: or keyboard ???
@@ -480,7 +484,7 @@ std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry&
     
 }
 
-void update_es_input(int device_idx, std::string new_mapping)
+void update_es_input(int device_idx, std::string new_mapping, const QString fullName = "")
 {
     Log::debug(LOGMSG("Controller full Mapping data:`%1`").arg(QString::fromStdString(new_mapping)));
     
@@ -499,9 +503,14 @@ void update_es_input(int device_idx, std::string new_mapping)
     //GET GUID
     inputConfigEntry.inputConfigAttributs.deviceGUID = ListMappingData.at(0);
     
-    //GET NAME
-    inputConfigEntry.inputConfigAttributs.deviceName = ListMappingData.at(1);
-    
+    if(fullName == "")
+        //GET Device NAME from existing SDL2 mapping
+        inputConfigEntry.inputConfigAttributs.deviceName = ListMappingData.at(1);
+    else
+        //GET Device NAME from fullName provided
+        inputConfigEntry.inputConfigAttributs.deviceName = fullName;
+
+
     //SET TYPE
     inputConfigEntry.inputConfigAttributs.type = "joystick"; //TO DO: or keyboard ???
     
@@ -1055,23 +1064,6 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         Q_ASSERT(m_idx_to_iid.count(device_idx) == 0);
         //Log::debug(LOGMSG("m_idx_to_iid(device_idx).count(%1): %2").arg(QString::number(device_idx),QString::number(m_idx_to_iid.count(device_idx))));
 
-        
-        //Check if the given joystick is supported by the game controller interface.
-        if (!SDL_IsGameController(device_idx))
-        {
-            Log::debug(LOGMSG("Not SDL_IsGameController(%1)").arg(device_idx));
-			//generate a mapping by default (forced)
-            try_register_default_mapping(device_idx);
-        }
-        
-        //if problem to connect this device
-        SDL_GameController* const pad = SDL_GameControllerOpen(device_idx);
-        if (!pad) {
-            Log::error(LOGMSG("SDL2: could not open gamepad %1").arg(pretty_idx(device_idx)));
-            print_sdl_error();
-            return;
-        }
-
         //****************************//
         //0) Get all names and details//
         //****************************//
@@ -1104,7 +1096,8 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         int fd = open(JoystickDevicePath.toUtf8().constData(), O_RDONLY);
         if (fd < 0)
         {
-          Log::debug(m_log_tag, LOGMSG("[UDEV] Can't open device %1").arg(JoystickDevicePath));
+            Log::debug(m_log_tag, LOGMSG("[UDEV] Can't open device %1").arg(JoystickDevicePath));
+            return;
         }
         unsigned short id[4] = {};
         ioctl(fd, EVIOCGID, id);
@@ -1130,6 +1123,32 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                             " | cut -d= -f2" +
                             " | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
         Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID NAME: '%1'").arg(hidname));
+
+        //Prepare the fullname
+        QString fullname;
+        if ((name.toLower() != hidname.toLower()) && (hidname != "")){
+            fullname = name + " - " + hidname;
+        }
+        else fullname = name;
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - FULL NAME: '%1'").arg(fullname));
+        
+        //Check if the given joystick is supported by the game controller interface.
+        if (!SDL_IsGameController(device_idx))
+        {
+            Log::debug(LOGMSG("Not SDL_IsGameController(%1)").arg(device_idx));
+            print_sdl_error();
+            //generate a mapping by default (forced)
+            try_register_default_mapping(device_idx, fullname);
+        }
+        
+        //if problem to connect this device
+        SDL_GameController* const pad = SDL_GameControllerOpen(device_idx);
+        if (!pad) {
+            Log::error(LOGMSG("SDL2: could not open gamepad %1").arg(pretty_idx(device_idx)));
+            print_sdl_error();
+            return;
+        }
+
 
         //Get GUID
         constexpr size_t GUID_LEN = 33; // 16x2 + null
@@ -1164,12 +1183,13 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         //1) Check first if controller is already known as define in sdl_controllers.txt//
         //******************************************************************************//
 
-        //check if gamepad has been configured by user previously using guid/name
+        //check if gamepad has been configured by user previously using guid/fullname
         std::string user_mapping = "";
         for (const QString& dir : paths::configDirs())
         {
-            //user_mapping = get_user_gamepaddb_mapping(dir, guid_str); //to change by adding name also ?! no ?
-            user_mapping = get_user_gamepaddb_mapping_with_name(dir, guid_str, name); //to change by adding name also ?! no ?
+            user_mapping = get_user_gamepaddb_mapping(dir, guid_str);
+            //or using name ? to test/activate if method change...
+            //user_mapping = get_user_gamepaddb_mapping_with_name(dir, guid_str, fullname);
             if(user_mapping != "") {
                 //And add this mapping in SDL to be take into account
                 if (SDL_GameControllerAddMapping(user_mapping.data()) < 0) {
@@ -1192,9 +1212,15 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
             //check if we already saved this configuration (same guid/same name)
             providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(name, guid_str);
-            //Log::debug(m_log_tag, LOGMSG("inputConfigEntry.inputConfigAttributs.deviceName : '%1'").arg(inputConfigEntry.inputConfigAttributs.deviceName));
-
-            //if nothing is in es_input with this name -> we update es_input with the SDL conf
+            //if nothing is in es_input with this name -> we search a second time with full name
+            if ((inputConfigEntry.inputConfigAttributs.deviceName == "") && (fullname != name)){
+                inputConfigEntry = Provider->load_input_data(fullname, guid_str);
+            }
+            //if nothing is in es_input with this fullname -> we search a second time with empty name to search by id only as default value
+            if (inputConfigEntry.inputConfigAttributs.deviceName == ""){
+                inputConfigEntry = Provider->load_input_data("", guid_str);
+            }
+            //if nothing is in es_input with this name and this fullname -> we update es_input with the SDL conf
             if (inputConfigEntry.inputConfigAttributs.deviceName == "")
             {
                 Log::debug(m_log_tag, LOGMSG("no mapping found in es_input.cfg for this controller"));
@@ -1207,36 +1233,44 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 if (!mapping){
                     Log::error(m_log_tag, LOGMSG("SDL2: 'default' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
                     //tentative to generate mapping by default
-                    try_register_default_mapping(device_idx);
+                    try_register_default_mapping(device_idx, fullname);
                     //retry to 'force' mapping
                     const auto second_mapping = freeable_str(SDL_GameControllerMapping(pad));
                     //if no mapping, it's a major issue !!!
                     if (!second_mapping){
                         Log::error(m_log_tag, LOGMSG("SDL2: 'forced' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), second_mapping.get()));
+
                         //get default mapping from SDL2
                         std::string existing_mapping = generate_mapping(device_idx).c_str();
-                        Log::debug(LOGMSG("existing_mapping : %1").arg(QString::fromStdString(existing_mapping)));
-                        //write user SDL2 mapping in es_input.cfg
-                        Log::debug(m_log_tag, LOGMSG("save default SDL2 mapping in es_input.cfg to be able to play right now !"));
-                        update_es_input(device_idx, existing_mapping);
+                        Log::debug(LOGMSG("Generated mapping : %1").arg(QString::fromStdString(existing_mapping)));
+
+                        Log::debug(m_log_tag, LOGMSG("Save SDL2 generated mapping in sdl local store & es_input.cfg to be able to play right now !"));
+                        //add/udpate mapping in local store m_custom_mappings
+                        update_mapping_store(existing_mapping); //std::move(existing_mapping));
+                        //add/udpate mapping in es_input.cfg
+                        update_es_input(device_idx, existing_mapping,fullname);
                     }
                     else{
-                        //write user SDL2 mapping in es_input.cfg
-                        Log::debug(m_log_tag, LOGMSG("save 'second' SDL2 mapping in es_input.cfg to be able to play right now !"));
-                        update_es_input(device_idx, second_mapping.get());
+                        Log::debug(m_log_tag, LOGMSG("Save 'second' SDL2 mapping in sdl local store & es_input.cfg to be able to play right now !"));
+                        //add/udpate mapping in local store m_custom_mappings
+                        update_mapping_store(second_mapping.get());//std::move(second_mapping.get()));
+                        //add/udpate mapping in es_input.cfg
+                        update_es_input(device_idx, second_mapping.get(),fullname);
                     }
                 }
                 else{
-                    //write user SDL2 mapping in es_input.cfg
-                    Log::debug(m_log_tag, LOGMSG("save default SDL2 mapping in es_input.cfg to be able to play right now !"));
-                    update_es_input(device_idx, mapping.get());
+                    Log::debug(m_log_tag, LOGMSG("Save default SDL2 mapping in sdl local store & es_input.cfg to be able to play right now !"));
+                    //add/udpate mapping in local store m_custom_mappings
+                    update_mapping_store(mapping.get()); //std::move(mapping.get()));
+                    //add/udpate mapping in es_input.cfg
+                    update_es_input(device_idx, mapping.get(),fullname);
                 }
             }
-            else //if anything is in es_input with this name -> we update user conf (sdl_controllers.txt) and reload
+            else //if anything is in es_input with this name/fullname or guid -> we update user conf (sdl_controllers.txt) and reload
             {
-                Log::debug(m_log_tag, LOGMSG("mapping with same name found in es_input.cfg for this controller"));
+                Log::debug(m_log_tag, LOGMSG("mapping with same name/fullname or guid found in es_input.cfg for this controller"));
                 //get default mapping from es_input.cfg to SDL2 format
-                std::string new_mapping = create_mapping_from_es_input(inputConfigEntry);
+                std::string new_mapping = create_mapping_from_es_input(inputConfigEntry, fullname);
                 //write user SDL2 mapping in es_input.cfg
                 Log::debug(m_log_tag, LOGMSG("save es_input.cfg mapping in sdl_controllers.txt to be able to use this conf in menu !"));
                 //force reload new mapping
@@ -1246,18 +1280,20 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                     print_sdl_error();
                 }
                 //add/udpate mapping in local store m_custom_mappings
-                update_mapping_store(std::move(new_mapping));
-                //saving of local store m_custom_mappings in file sdl_controllers.txt
-                write_mappings(m_custom_mappings);
+                update_mapping_store(new_mapping);//std::move(new_mapping));
+                //rewrite mapping in es_input.cfg and using the fullname
+                update_es_input(device_idx, new_mapping,fullname);
             }
+            //saving of local store m_custom_mappings in file sdl_controllers.txt
+            write_mappings(m_custom_mappings);
             //to propose to configure or not the new controller
-            emit newController(device_idx, name);
+            emit newController(device_idx, fullname);
         }
 
         //****************************//
         //4) emit signal as connected //
         //****************************//
-        emit connected(device_idx, guid_str, name, JoystickDevicePath, iid); //device_idx = device_id when we connect device
+        emit connected(device_idx, guid_str, fullname, JoystickDevicePath, iid); //device_idx = device_id when we connect device
         }
     catch ( const std::exception & Exp ) 
     { 
