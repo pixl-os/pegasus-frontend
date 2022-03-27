@@ -34,7 +34,8 @@ Window {
 
     visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
-
+    //Flag to know if we load from start/restart of pegasus or from ending of game session
+    property bool loadingState : false
     //for debug reason on QT creator to know if we are or not on a real recalbox/pixl
     property var hostname: api.internal.system.run("hostname");
     //function to know if we are on standard linux for testing
@@ -426,7 +427,9 @@ Window {
             genericMessage.focus = true;
         }
         function onEventLoadingStarted() {
+            console.log("onEventLoadingStarted()");
             splashScreen.focus = true;
+            loadingState = true;
         }
     }
 
@@ -952,9 +955,9 @@ Window {
     //***********************************************************BEGIN OF BLUETOOTH RESTART*************************************************************
     Timer {//timer to restart bluetooth service and power on
         id:bluetoothRestartTimer
-        interval: 500 //to restart quicker ;-)
+        interval: 2000 //to be sure to restart after initial loading started only...
         repeat: false // no need to repeat
-        running: api.internal.recalbox.getBoolParameter("controllers.bluetooth.startreset")
+        running: api.internal.recalbox.getBoolParameter("controllers.bluetooth.startreset")  && loadingState
         triggeredOnStart: false
         onTriggered: {
             console.log("bluetoothRestartTimer triggered !");
