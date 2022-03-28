@@ -1056,6 +1056,67 @@ void GamepadManagerSDL2::poll()
     }
 }
 
+QString GamepadManagerSDL2::getName_by_path(QString JoystickDevicePath){
+    //Get name from UDEV NAME
+    int fd = open(JoystickDevicePath.toUtf8().constData(), O_RDONLY);
+    if (fd < 0)
+    {
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Can't open device %1").arg(JoystickDevicePath));
+        return "";
+    }
+    unsigned short id[4] = {};
+    ioctl(fd, EVIOCGID, id);
+    char udevname[256] = {};
+    ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
+    QString name = QString::fromStdString(udevname);
+    Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - NAME: '%1'").arg(name));
+    return name;
+}
+
+QString GamepadManagerSDL2::getFullName_by_path(QString JoystickDevicePath){
+    //Get name from UDEV NAME
+    int fd = open(JoystickDevicePath.toUtf8().constData(), O_RDONLY);
+    if (fd < 0)
+    {
+        Log::debug(m_log_tag, LOGMSG("[UDEV] Can't open device %1").arg(JoystickDevicePath));
+        return "";
+    }
+    unsigned short id[4] = {};
+    ioctl(fd, EVIOCGID, id);
+    char udevname[256] = {};
+    ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
+    QString name = QString::fromStdString(udevname);
+    Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - NAME: '%1'").arg(name));
+
+    //Get name from UDEV HID NAME
+    //TIPS to get get all udev info using udevadm
+    Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - JoystickDevicePath: '%1'").arg(JoystickDevicePath));
+    QString hidpath = run("udevadm info -e | grep -B 10 'DEVNAME=" +
+                        JoystickDevicePath +
+                        "' | grep 'P:'" +
+                         " | awk '{print $2}'" +
+                         " | awk -F '/input/' '{print $1}'" +
+                         " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+    Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID PATH: '%1'").arg(hidpath));
+
+    QString hidname = run("udevadm info -e | grep -A 6 'P: " +
+                        hidpath +
+                        "' | grep 'HID_NAME='" +
+                        " | cut -d= -f2" +
+                        " | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+    Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID NAME: '%1'").arg(hidname));
+
+    //Prepare the fullname
+    QString fullname;
+    if ((name.toLower() != hidname.toLower()) && (hidname != "")){
+        fullname = name + " - " + hidname;
+    }
+    else fullname = name;
+    Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - FULL NAME: '%1'").arg(fullname));
+    return fullname;
+}
+
+
 void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 {
     Log::debug(LOGMSG("GamepadManagerSDL2::add_controller_by_idx"));
@@ -1092,45 +1153,9 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx);
         #endif
 
-        //Get name from UDEV NAME
-        int fd = open(JoystickDevicePath.toUtf8().constData(), O_RDONLY);
-        if (fd < 0)
-        {
-            Log::debug(m_log_tag, LOGMSG("[UDEV] Can't open device %1").arg(JoystickDevicePath));
-            return;
-        }
-        unsigned short id[4] = {};
-        ioctl(fd, EVIOCGID, id);
-        char udevname[256] = {};
-        ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
-        QString name = QString::fromStdString(udevname);
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - NAME: '%1'").arg(name));
+        QString name = getFullName_by_path(JoystickDevicePath);
 
-        //Get name from UDEV HID NAME
-        //TIPS to get get all udev info using udevadm
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - JoystickDevicePath: '%1'").arg(JoystickDevicePath));
-        QString hidpath = run("udevadm info -e | grep -B 10 'DEVNAME=" +
-                            JoystickDevicePath +
-                            "' | grep 'P:'" +
-                             " | awk '{print $2}'" +
-                             " | awk -F '/input/' '{print $1}'" +
-                             " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID PATH: '%1'").arg(hidpath));
-
-        QString hidname = run("udevadm info -e | grep -A 6 'P: " +
-                            hidpath +
-                            "' | grep 'HID_NAME='" +
-                            " | cut -d= -f2" +
-                            " | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID NAME: '%1'").arg(hidname));
-
-        //Prepare the fullname
-        QString fullname;
-        if ((name.toLower() != hidname.toLower()) && (hidname != "")){
-            fullname = name + " - " + hidname;
-        }
-        else fullname = name;
-        Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - FULL NAME: '%1'").arg(fullname));
+        QString fullname = getFullName_by_path(JoystickDevicePath);
         
         //Check if the given joystick is supported by the game controller interface.
         if (!SDL_IsGameController(device_idx))
@@ -1195,6 +1220,14 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                     print_sdl_error();
                     continue;
                 }
+                //update found mapping with fullname (if finally, the name of last controller is different especially for HID name included in full name)
+                user_mapping = update_mapping_name(user_mapping, fullname);
+                //udpate mapping in local store m_custom_mappings
+                update_mapping_store(user_mapping);
+                //add/udpate mapping in es_input.cfg
+                update_es_input(device_idx, user_mapping);
+                //saving of local store m_custom_mappings in file sdl_controllers.txt
+                write_mappings(m_custom_mappings);
                 break; //exit for if not empty
             }
         }
@@ -1570,9 +1603,41 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
     //Log::debug(LOGMSG("GamepadManagerSDL2::generate_mapping"));
     try{
         Q_ASSERT(m_iid_to_device.count(m_idx_to_iid.at(device_idx)) == 1);
-        
-        const device_ptr& pad_ptr = m_iid_to_device.at(m_idx_to_iid.at(device_idx));
 
+        //*****************//
+        //0) get all names //
+        //*****************//
+
+        #ifdef WITHOUT_LEGACY_SDL
+        //for QT creator test without SDL 1 compatibility
+        //Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg("/dev/input/bidon because SDL 1 API not supported"));
+        //TIPS to get get all udev joysticks index if needed later without SDL1 & udevlib (and using ID8INPUT_JOYSTICK=1 as in retroarch ;-)
+        QString result = run("udevadm info -e | grep -B 10 'ID_INPUT_JOYSTICK=1' | grep 'DEVNAME=/dev/input/event' | cut -d= -f2");
+        //Log::debug(LOGMSG("result: %1").arg(result));
+        QStringList joysticks = result.split("\n");
+        //take last one not empty
+        int k;
+        for(k=joysticks.count()-1; k >= 0; k--){
+            if(joysticks.at(k).toLower() != "") {
+                break;
+            }
+        }
+        const QString JoystickDevicePath = joysticks.at(k).toLower();
+        #else
+        // SDL_JoystickDevicePathById(device_idx) <- seems not SDL 2.0 compatible
+        //Log::debug(m_log_tag, LOGMSG("From path using device_idx : %1").arg(SDL_JoystickDevicePathById(device_idx)));
+        //Log::debug(m_log_tag, LOGMSG("And instance using device_idx : %1").arg(QString::number(device_idx)));
+        //Log::debug(m_log_tag, LOGMSG("And instance using iid : %1").arg(QString::number(iid)));
+        //we use device_idx storage in recalbox.conf to know initial value of index and to update it/use it later.
+        const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx);
+        #endif
+
+        QString fullname = getFullName_by_path(JoystickDevicePath);
+
+        //************//
+        //1) get guid //
+        //************//
+        const device_ptr& pad_ptr = m_iid_to_device.at(m_idx_to_iid.at(device_idx));
         std::array<char, GUID_LEN> guid_raw_str;
         const SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(device_idx);
         SDL_JoystickGetGUIDString(guid, guid_raw_str.data(), guid_raw_str.size());
@@ -1587,10 +1652,19 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
                 : to_fieldname(m_recording.target_axis)
             : nullptr;
         
+        //************************//
+        //2) get existing mapping //
+        //************************//
         //Get existing mapping to avoid to recalculate all
         std::string existing_mapping = SDL_GameControllerMapping(pad_ptr.get());
+        //update existing mapping with full name
+        existing_mapping = update_mapping_name(existing_mapping,fullname);
         Log::debug(m_log_tag, LOGMSG("SDL2: layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), QString::fromStdString(existing_mapping)));
 
+
+        //***************************************************//
+        //3) update existing mapping with new field recorded //
+        //***************************************************//
         #define GEN(TYPE, MAX) \
             for (int idx = 0; idx < MAX; idx++) { \
                 const auto item = static_cast<SDL_GameController##TYPE>(idx); \

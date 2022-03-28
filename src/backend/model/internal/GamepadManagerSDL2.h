@@ -56,9 +56,9 @@ private:
     //and use iid as index for device and not idx (more used in the future to manage player order/sorting).
     HashMap<int, const SDL_JoystickID> m_idx_to_iid;
     HashMap<SDL_JoystickID, const device_ptr> m_iid_to_device;
-    
-    
 
+    QString getName_by_path(QString);
+    QString getFullName_by_path(QString);
     void add_controller_by_idx(int);
     void remove_pad_by_iid(SDL_JoystickID);
     void fwd_button_event(SDL_JoystickID, Uint8, bool);
