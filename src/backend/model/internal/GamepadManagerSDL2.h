@@ -79,6 +79,7 @@ private:
     void record_joy_axis_maybe(SDL_JoystickID, Uint8, Sint16);
     void record_joy_hat_maybe(SDL_JoystickID, Uint8, Uint8);
     void finish_recording();
+    std::string update_mapping_name(std::string, const QString&);
     void update_mapping_store(std::string);
 
     std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&, std::string mapping);

@@ -1149,7 +1149,6 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             return;
         }
 
-
         //Get GUID
         constexpr size_t GUID_LEN = 33; // 16x2 + null
         std::array<char, GUID_LEN> guid_raw_str;
@@ -1207,6 +1206,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         //if no user mapping defined / else we do nothing because it seems a pad already configured by user
         if (user_mapping == "")
         {
+            std::string new_mapping;
             Log::debug(m_log_tag, LOGMSG("no mapping in sdl_controllers.txt for this controller"));
             //check if any es_input.cfg record exists for this GUID
             providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
@@ -1220,6 +1220,8 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             if (inputConfigEntry.inputConfigAttributs.deviceName == ""){
                 inputConfigEntry = Provider->load_input_data("", guid_str);
             }
+            //get mapping found by SDL DB
+            auto found_mapping = freeable_str(SDL_GameControllerMapping(pad));
             //if nothing is in es_input with this name and this fullname -> we update es_input with the SDL conf
             if (inputConfigEntry.inputConfigAttributs.deviceName == "")
             {
@@ -1227,50 +1229,34 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 //*********************************************************//
                 //3) check sdl db in a second time if not found previously //
                 //*********************************************************//
-                //get mapping found by SDL DB
-                const auto mapping = freeable_str(SDL_GameControllerMapping(pad));
-                //if no mapping, strange ?!
-                if (!mapping){
-                    Log::error(m_log_tag, LOGMSG("SDL2: 'default' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), mapping.get()));
+                //if no mapping from SDL, strange ?!
+                if (!found_mapping){
+                    Log::error(m_log_tag, LOGMSG("SDL2: 'default' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), found_mapping.get()));
                     //tentative to generate mapping by default
                     try_register_default_mapping(device_idx, fullname);
                     //retry to 'force' mapping
-                    const auto second_mapping = freeable_str(SDL_GameControllerMapping(pad));
+                    found_mapping = freeable_str(SDL_GameControllerMapping(pad));
                     //if no mapping, it's a major issue !!!
-                    if (!second_mapping){
-                        Log::error(m_log_tag, LOGMSG("SDL2: 'forced' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), second_mapping.get()));
-
+                    if (!found_mapping){
+                        Log::error(m_log_tag, LOGMSG("SDL2: 'forced' layout for gamepad %1 set to `%2`").arg(pretty_idx(device_idx), found_mapping.get()));
                         //get default mapping from SDL2
-                        std::string existing_mapping = generate_mapping(device_idx).c_str();
-                        Log::debug(LOGMSG("Generated mapping : %1").arg(QString::fromStdString(existing_mapping)));
-
+                        new_mapping = generate_mapping(device_idx).c_str();
+                        Log::debug(LOGMSG("Generated mapping : %1").arg(QString::fromStdString(new_mapping)));
                         Log::debug(m_log_tag, LOGMSG("Save SDL2 generated mapping in sdl local store & es_input.cfg to be able to play right now !"));
-                        //add/udpate mapping in local store m_custom_mappings
-                        update_mapping_store(existing_mapping); //std::move(existing_mapping));
-                        //add/udpate mapping in es_input.cfg
-                        update_es_input(device_idx, existing_mapping,fullname);
                     }
                     else{
                         Log::debug(m_log_tag, LOGMSG("Save 'second' SDL2 mapping in sdl local store & es_input.cfg to be able to play right now !"));
-                        //add/udpate mapping in local store m_custom_mappings
-                        update_mapping_store(second_mapping.get());//std::move(second_mapping.get()));
-                        //add/udpate mapping in es_input.cfg
-                        update_es_input(device_idx, second_mapping.get(),fullname);
                     }
                 }
                 else{
                     Log::debug(m_log_tag, LOGMSG("Save default SDL2 mapping in sdl local store & es_input.cfg to be able to play right now !"));
-                    //add/udpate mapping in local store m_custom_mappings
-                    update_mapping_store(mapping.get()); //std::move(mapping.get()));
-                    //add/udpate mapping in es_input.cfg
-                    update_es_input(device_idx, mapping.get(),fullname);
                 }
             }
             else //if anything is in es_input with this name/fullname or guid -> we update user conf (sdl_controllers.txt) and reload
             {
                 Log::debug(m_log_tag, LOGMSG("mapping with same name/fullname or guid found in es_input.cfg for this controller"));
                 //get default mapping from es_input.cfg to SDL2 format
-                std::string new_mapping = create_mapping_from_es_input(inputConfigEntry, fullname);
+                new_mapping = create_mapping_from_es_input(inputConfigEntry, fullname);
                 //write user SDL2 mapping in es_input.cfg
                 Log::debug(m_log_tag, LOGMSG("save es_input.cfg mapping in sdl_controllers.txt to be able to use this conf in menu !"));
                 //force reload new mapping
@@ -1279,11 +1265,17 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 if (SDL_GameControllerAddMapping(new_mapping.data()) < 0) {
                     print_sdl_error();
                 }
-                //add/udpate mapping in local store m_custom_mappings
-                update_mapping_store(new_mapping);//std::move(new_mapping));
-                //rewrite mapping in es_input.cfg and using the fullname
-                update_es_input(device_idx, new_mapping,fullname);
             }
+            if(new_mapping == "")
+                //update found mapping with fullname
+                new_mapping = update_mapping_name(found_mapping.get(), fullname);
+            else
+                //update generated mapping with fullname
+                new_mapping = update_mapping_name(new_mapping, fullname);
+            //add/udpate mapping in local store m_custom_mappings
+            update_mapping_store(new_mapping);
+            //add/udpate mapping in es_input.cfg
+            update_es_input(device_idx, new_mapping);
             //saving of local store m_custom_mappings in file sdl_controllers.txt
             write_mappings(m_custom_mappings);
             //to propose to configure or not the new controller
@@ -1357,25 +1349,6 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
             }
 
         }
-
-
-		//need to clean also other index now due to removal of one pad
-        /*for(int i = 0; (i <= (int)m_idx_to_iid.size()) && (m_idx_to_iid.size() != 0); i++){ //we check more than hashmap to take into account the one removed
-			if(i > device_idx){ //if index upper
-				if (m_idx_to_iid.count(i) == 1){ //if index exist
-                    //need to redo hasmaps
-                    const SDL_JoystickID iid = m_idx_to_iid.at(i); //keep instance
-                    //remove previous value
-                    m_iid_to_idx.erase(iid);
-                    m_idx_to_iid.erase(i);
-                    //store new value using an index decremented
-                    m_iid_to_idx.emplace(iid,i-1);
-                    m_idx_to_iid.emplace(i-1,iid);
-                    //Request to update indexes in model::gamepad & recalbox.conf
-                    emit indexChanged(i, i-1);
-                }
-			}
-        }*/
     }
     catch ( const std::exception & Exp ) 
     { 
@@ -1650,15 +1623,35 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
     catch ( const std::exception & Exp ) 
     { 
         Log::error(m_log_tag, LOGMSG("Erreur 8: %1.\n").arg(Exp.what()));
+        return "";
     } 
     catch ( const std::bad_alloc & ) 
     { 
-        Log::error(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
+        Log::error(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n"));
+        return "";
     } 
     catch ( const std::out_of_range & ) 
     { 
-        Log::error(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
+        Log::error(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n"));
+        return "";
     }
+}
+
+std::string GamepadManagerSDL2::update_mapping_name(std::string updated_mapping, const QString& new_name)
+{
+    //Convert mapping to QString
+    //Mapping to update
+    QString new_mapping = QString::fromStdString(updated_mapping);
+    //convert parameter in list
+    QStringList ListMappingData = new_mapping.split(",");
+    //update name with new name
+    ListMappingData[1] = new_name;
+    //reconvert in QString
+    QString FullMappingData = ListMappingData.join(",") + ","; // add ',' at the end to be as we saved custom conf from controller settings
+    //replace double "," if needed
+    FullMappingData.replace(",,",",");
+	Log::debug(LOGMSG("Controller full Mapping data updated with new name:`%1`").arg(FullMappingData));
+    return FullMappingData.toUtf8().constData(); // to std::string
 }
 
 void GamepadManagerSDL2::update_mapping_store(std::string new_mapping)
