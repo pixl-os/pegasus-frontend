@@ -724,7 +724,7 @@ FocusScope {
           result = api.internal.recalbox.getStringParameter(parameter + i);
           if (result !== ""){
                 const parameters = result.split("|");
-                let icon = getIcon(parameters[2],parameters[3])
+                let icon = getIcon(parameters[2],"")
                 list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
           }
           i = i + 1;
@@ -747,7 +747,7 @@ FocusScope {
             else result = api.internal.system.run("timeout 0.50 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
             //console.log("result:",result);
             if(result.toLowerCase().includes("yes")){
-              icon = getIcon(parameters[2],parameters[3]);
+              icon = getIcon(parameters[2],"");
               list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
               allmacaddresses = allmacaddresses + parameters[0];
               i = i + 1;

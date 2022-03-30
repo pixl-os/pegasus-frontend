@@ -399,7 +399,8 @@ Window {
             //getIconFont is a global property to get font in same time of icon selected by the getIcon()
             //if empty we search icon from message and title
             if(icon === "") {
-                popup.icon = getIcon(title,message);
+                //certainly popup dedicated to controller will be better finally - to do later
+                popup.icon = getIcon(message,"");
                 popup.iconfont = getIconFont;
             }
             else {
@@ -992,6 +993,10 @@ Window {
         ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"; iconfont: "awesome"}
 
+        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,md/gen,sega genesis"; type:"controller"; iconfont: "awesome"}
+
+
         ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"; iconfont: "awesome"; layout: "snes"}
         ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
@@ -1001,8 +1006,6 @@ Window {
         ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"; iconfont: "awesome"}
 
-        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,sega"; type:"controller"; iconfont: "awesome"}
 
         //27/02/2022 2 controllers added snakebyte idroid:con and 8bitdo sn30 pro+
         ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
@@ -1082,6 +1085,11 @@ Window {
             const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
             for(var k = 0; k < iconKeywords.length;k++)
             {
+                //split name that could contain the name + hid name separated by ' - '
+                const names = name.split(" - ");
+                if(names.length >= 2){
+                    name = names[1]; //to keep only the hid part if exist
+                }
                 if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
                     icon = myDeviceIcons.get(i).icon;
                     if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;

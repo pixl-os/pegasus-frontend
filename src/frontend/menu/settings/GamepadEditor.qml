@@ -688,6 +688,11 @@ FocusScope {
             var layoutQml = "";
             let type = "controller";
             let i = 0;
+            //split name that could contain the name + hid name separated by ' - '
+            const names = controllerName.split(" - ");
+            if(names.length >= 2){
+                controllerName = names[1]; //to keep only the hid part if exist
+            }
             //searchIcon using the good type
             do{
                 const keywords = myDeviceIcons.get(i).keywords.split(",");
