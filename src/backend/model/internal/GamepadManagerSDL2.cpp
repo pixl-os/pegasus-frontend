@@ -1220,14 +1220,34 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                     print_sdl_error();
                     continue;
                 }
-                //update found mapping with fullname (if finally, the name of last controller is different especially for HID name included in full name)
-                user_mapping = update_mapping_name(user_mapping, fullname);
-                //udpate mapping in local store m_custom_mappings
-                update_mapping_store(user_mapping);
-                //add/udpate mapping in es_input.cfg
-                update_es_input(device_idx, user_mapping);
-                //saving of local store m_custom_mappings in file sdl_controllers.txt
-                write_mappings(m_custom_mappings);
+                //Check if it's not the same name/fullname
+                if(QString::fromStdString(user_mapping).split(",").at(1) != fullname){
+                    //check if one exist in ES or not ?!
+                    Log::debug(m_log_tag, LOGMSG("Same mapping/Different Name in sdl_controllers.txt for this controller"));
+                    //check if any es_input.cfg record exists for this GUID
+                    providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
+                    //check if we already saved this configuration (same guid/same fullname)
+                    providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(fullname, guid_str);
+                    //if nothing is in es_input with this fullname
+                    if (inputConfigEntry.inputConfigAttributs.deviceName == ""){
+                        Log::debug(m_log_tag, LOGMSG("No mapping found in es_input.cfg for this controller"));
+                        //update found mapping with fullname (if finally, the name of last controller is different especially for HID name included in full name)
+                        Log::debug(m_log_tag, LOGMSG("Rename SDL2 mapping from sdl local store with new name"));
+                        user_mapping = update_mapping_name(user_mapping, fullname);
+                        //add/udpate mapping in es_input.cfg
+                        Log::debug(m_log_tag, LOGMSG("Save SDL2 mapping from sdl local store to es_input.cfg to be able to play right now !"));
+                        update_es_input(device_idx, user_mapping);
+                    }
+                    else{ // controller mapping found for this full name, we will update the sdl_controller.txt
+                        Log::debug(m_log_tag, LOGMSG("controller mapping found in es_input.cfg for this name, update of sdl_controller.txt in this case."));
+                        //get mapping from es_input.cfg to SDL2 format
+                        user_mapping = create_mapping_from_es_input(inputConfigEntry, fullname);
+                    }
+                    //udpate mapping in local store m_custom_mappings
+                    update_mapping_store(user_mapping);
+                    //saving of local store m_custom_mappings in file sdl_controllers.txt
+                    write_mappings(m_custom_mappings);
+                }
                 break; //exit for if not empty
             }
         }
