@@ -419,6 +419,37 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.joycond.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optXboxOneControllers
+
+                }
+                SectionTitle {
+                    text: qsTr("Xbox One/Series controllers") + api.tr
+                    first: true
+                    symbol:"\uf34c"
+                }
+                ToggleOption {
+                    id: optXboxOneControllers
+                    //controllers.xow.enabled=1
+                    label: qsTr("xow daemon activation") + api.tr
+                    note: qsTr("Stop/Start daemon to help Xbox One/Series wireless dongle usage - no need to restart") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.xow.enabled")
+                    onCheckedChanged: {
+                        var previousState = api.internal.recalbox.getBoolParameter("controllers.xow.enabled");
+                        //start or stop daemon immediately
+                        if (!isDebugEnv() && checked && !previousState){
+                            //start xow
+                            console.log("Start xow daemon");
+                            api.internal.system.run("start-stop-daemon -b -S -q -m -p /var/run/xow.pid --exec /usr/bin/xow");
+                        }
+                        else if (!isDebugEnv() && !checked && previousState){
+                            //stop xow
+                            console.log("Stop xow daemon");
+                            api.internal.system.run("start-stop-daemon -K -q -p /var/run/xow.pid");
+                        }
+                        api.internal.recalbox.setBoolParameter("controllers.xow.enabled",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
