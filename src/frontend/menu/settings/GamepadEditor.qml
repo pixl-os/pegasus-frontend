@@ -707,10 +707,13 @@ FocusScope {
                                 return k;
                             }
                         }
+                        //select default one if no Layout available
+                        layoutName = "default";
+                        break; // to exit for also
                     }
                 }
                 i = i + 1;
-            }while (layoutQml === "" && i < myDeviceIcons.count)
+            }while ((layoutQml === "") && (layoutName !== "default") && (i < myDeviceIcons.count))
             if (layoutQml === ""){
                 //to get default one if empty
                 for(var l = 0; l < myControllerLayout.count;l++)
