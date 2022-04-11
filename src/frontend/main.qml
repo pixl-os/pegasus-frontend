@@ -424,7 +424,7 @@ Window {
 
             //add dialogBox
             genericMessage.setSource("dialogs/GenericContinueDialog.qml",
-                                     { "title": qsTr("New type of controller detected") + " : " + msg, "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
+                                     { "title": qsTr("New controller") + " : " + msg, "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
             genericMessage.focus = true;
         }
         function onEventLoadingStarted() {
