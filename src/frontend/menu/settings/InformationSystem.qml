@@ -36,6 +36,9 @@ mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(
 # glxinfo | grep "OpenGL ES profile version string" | cut -d ':' -f 2 | cut -c 2-
 # glxinfo | grep "OpenGL core profile version string" | cut -d ':' -f 2 | cut -c 2-
 
+# openGL renderer (graphic card name in major of cases)
+glxinfo | grep "OpenGL renderer" | cut -d ':' -f 2 | cut -c 2-
+
 # Vulkan Version :
 # Install vulkan-tools ??
 # vulkaninfo
@@ -103,19 +106,29 @@ FocusScope {
         { name: qsTr("Linux Kernel :"), cmd: api.internal.system.run("echo $(uname -s) $(uname -r)")},
         { name: qsTr("Architecture :"), cmd: api.internal.system.run("uname -m")},
         { name: qsTr("CPU :"), cmd: api.internal.system.run("cat /proc/cpuinfo | grep 'model name' | cut -d ':' -f 2 | cut -c 2- | uniq")},
-        { name: qsTr("CPU Number(s) :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l")},
+        { name: qsTr("CPU Core Number(s) :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l | grep '\\S'")},
         { name: qsTr("CPU Maximum Frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
-        { name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0")},
-        { name: qsTr("GPU Temperature :"), cmd: api.internal.system.run("gpu_temp=$(vcgencmd measure_temp | cut -d '=' -f 2 | cut -d \' -f 1); echo '$gpu_temp'$'\xc2\xb0'C")},
-        { name: qsTr("RAM :"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
+        { name: qsTr("RAM (free/total):"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
+        { name: qsTr("GPU(s) :"), cmd: api.internal.system.run("lspci | grep -i 'vga\\|3d\\|2d' | cut -d ':' -f 3 | grep '\\S'")}, //could be one several lines
+        { name: qsTr("Video RAM :"), cmd: api.internal.system.run("glxinfo -B | grep -i 'video memory' | cut -d ':' -f 2")},
         { name: qsTr("OpenGL ES :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL ES profile version string' | cut -d ':' -f 2 | cut -c 2-")},
         { name: qsTr("OpenGL Core :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL core profile version string' | cut -d ':' -f 2 | cut -c 2-")},
-//        { name: qsTr("System Disk Usage :"), cmd: api.internal.system.run("df -mT | awk \'NR>1 && ($7 == \"/\" || $7 == \"/dev\" || $7 == \"/boot\" || $7 == \"/tmp\" || $7 == \"/var\" || $7 == \"/overlay/lower\")\' | awk \'NF-=2\' | uniq | awk \'{total+=$3;used+=$4;free+=$5}END{if(total>1048576){total_out=total\/1048576;used_out=used\/1048576;unit_out=\"TB\";} else {total_out=total\/1024;used_out=used\/1024;unit_out=\"GB\"};percentage=used*100\/total;printf(\"%.2f\/%.2f %s (%.1f %)\n\",used_out,total_out,unit_out,percentage)}\'") },
+        { name: qsTr("OpenGL Vendor/Driver :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL vendor string' | cut -d ':' -f 2 | cut -c 2-")},
+        { name: qsTr("OpenGL Renderer :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL renderer' | cut -d ':' -f 2 | cut -c 2- | grep '\\S'")},
+    ]
+
+    property var model2: [
+        //        { name: qsTr("System Disk Usage :"), cmd: api.internal.system.run("df -mT | awk \'NR>1 && ($7 == \"/\" || $7 == \"/dev\" || $7 == \"/boot\" || $7 == \"/tmp\" || $7 == \"/var\" || $7 == \"/overlay/lower\")\' | awk \'NF-=2\' | uniq | awk \'{total+=$3;used+=$4;free+=$5}END{if(total>1048576){total_out=total\/1048576;used_out=used\/1048576;unit_out=\"TB\";} else {total_out=total\/1024;used_out=used\/1024;unit_out=\"GB\"};percentage=used*100\/total;printf(\"%.2f\/%.2f %s (%.1f %)\n\",used_out,total_out,unit_out,percentage)}\'") },
         { name: qsTr("Wifi Local IP :"), cmd: api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
         { name: qsTr("Eternet Local IP :"), cmd: api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
         { name: qsTr("External IP :"), cmd: api.internal.system.run("curl -4 'http://icanhazip.com/'") },
-//        { name: qsTr("Renderer :"), cmd: api.internal.system.run("lshw -c display | grep product | cut -d ':' -f 2 | cut -c 2-") },
-//        { name: qsTr("Vendor :"), cmd: api.internal.system.run("lshw -c display | grep vendor | cut -d ':' -f 2 | cut -c 2-") },
+        //{ name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0")},
+        //{ name: qsTr("GPU Temperature :"), cmd: api.internal.system.run("gpu_temp=$(vcgencmd measure_temp | cut -d '=' -f 2 | cut -d \' -f 1); echo '$gpu_temp'$'\xc2\xb0'C")},
+        //New Method using generique way for buildroot and multi-indexes
+        { name: qsTr("All System Temperature(s) :"), cmd: "\n" + api.internal.system.run("paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | sed 's/\\(.\\)..$/.\\1°C/'")},
+        //other methods but not working on all PCs
+        //{ name: qsTr("                       "), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
+        //{ name: qsTr("GPU Temperature(s) :"), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
         { name: qsTr("Numbers of systems :"), cmd: api.collections.count },
         { name: qsTr("Numbers of games :"), cmd: api.allGames.count }
     ]
@@ -160,59 +173,138 @@ FocusScope {
             id: content
             focus: true
             enabled: focus
-            width: contentColumn.width
+            width: root.width * 0.9
             height: contentColumn.height
-
-            Column {
-                id: contentColumn
-                spacing: vpx(5)
-                width: root.width * 0.7
-                height: implicitHeight
-
-                Item {
-                    width: parent.width
-                    height: implicitHeight + vpx(30)
-                }
-                ListView {
-                    width: contentColumn.width
-                    height: vpx(520)
-                    model: root.model
-                    spacing: vpx(15)
-                    focus: true
-                    highlightMoveDuration : 0
-
-                    move: Transition {
-                             NumberAnimation { properties: "x,y"; duration: 1000 }
+            Row{
+                Column {
+                    id: contentColumn
+                    spacing: vpx(5)
+                    width: ((content.width - spaceColumn.width) /3) * 2 // 2/3 of screen
+                    height: implicitHeight
+                    visible: true
+                    Item {
+                        width: parent.width
+                        height: implicitHeight + vpx(30)
                     }
-                    delegate: Rectangle {
+                    ListView {
                         width: contentColumn.width
-                        height: vpx(20)
-                        color: "transparent"
-                        // cross operability with ListModel and plain JS object list
-                        property var item: model.modelData ? model.modelData : model
+                        height: vpx(520)
+                        model: root.model
+                        spacing: vpx(15)
+                        focus: true
+                        highlightMoveDuration : 0
 
-                        Text {
-                            padding: vpx(10)
-                            font.pixelSize: vpx(15)
-                            color: themeColor.textValue
-                            anchors.left: parent.left
-                            verticalAlignment: Text.AlignVCenter
-                            text: item.name
+                        move: Transition {
+                                 NumberAnimation { properties: "x,y"; duration: 1000 }
                         }
-                        Text {
-                            padding: vpx(10)
-                            font.pixelSize: vpx(15)
-                            color: themeColor.textValue
-                            anchors.right: parent.right
-                            verticalAlignment: Text.AlignVCenter
-                            text: item.cmd
-                        }
-                        Rectangle {
+                        delegate: Rectangle {
                             width: contentColumn.width
-                            height: vpx(1)
-                            color: "grey"
-                            opacity: 0.1
-                            radius: vpx(8)
+                            height: (textresult.lineCount) > 1 ? (textresult.lineCount-1) * vpx(20) : vpx(20)
+                            //need to do linecount-1 due to usual crlf at the end of each command result
+
+                            color: "transparent"
+                            // cross operability with ListModel and plain JS object list
+                            property var item: model.modelData ? model.modelData : model
+
+                            //always visible for the moment
+                            //visible: textresult.lineCount-1 > 0 ? true : ((textresult.text != '0' && textresult.text != '') ? true : false)
+
+                            Text {
+                                padding: vpx(10)
+                                font.pixelSize: vpx(15)
+                                color: themeColor.textValue
+                                anchors.left: parent.left
+                                verticalAlignment: Text.AlignVCenter
+                                text: item.name
+                            }
+                            Text {
+                                id: textresult
+                                padding: vpx(10)
+                                font.pixelSize: vpx(15)
+                                color: themeColor.textValue
+                                verticalAlignment: Text.AlignVCenter
+                                anchors.right: parent.right
+                                text: item.cmd
+                            }
+                            Rectangle {
+                                width: contentColumn.width
+                                height: vpx(1)
+                                color: "grey"
+                                opacity: 0.1
+                                radius: vpx(8)
+                            }
+                        }
+                    }
+                }
+                Column {
+                    id: spaceColumn
+                    spacing: vpx(5)
+                    width: root.width * 0.05
+                    height: implicitHeight
+                    visible: true
+                    Item {
+                        width: parent.width
+                        height: implicitHeight + vpx(30)
+                    }
+                }
+
+                Column {
+                    id: contentColumn2
+                    spacing: vpx(5)
+                    width: ((content.width - spaceColumn.width) /3) * 1 // 1/3 of screen
+                    height: implicitHeight
+                    visible: true
+                    Item {
+                        width: parent.width
+                        height: implicitHeight + vpx(30)
+                    }
+                    ListView {
+                        width: contentColumn2.width
+                        height: vpx(520)
+                        model: root.model2
+                        spacing: vpx(15)
+                        focus: true
+                        highlightMoveDuration : 0
+
+                        move: Transition {
+                                 NumberAnimation { properties: "x,y"; duration: 1000 }
+                        }
+                        delegate: Rectangle {
+                            width: contentColumn2.width
+                            height: (textresult2.lineCount) > 1 ? (textresult2.lineCount-1) * vpx(20) : vpx(20)
+                            //need to do linecount-1 due to usual crlf at the end of each command result
+
+                            color: "transparent"
+                            // cross operability with ListModel and plain JS object list
+                            property var item: model.modelData ? model.modelData : model
+
+                            //always visible for the moment
+                            //visible: textresult.lineCount-1 > 0 ? true : ((textresult.text != '0' && textresult.text != '') ? true : false)
+
+                            Text {
+                                padding: vpx(10)
+                                font.pixelSize: vpx(15)
+                                color: themeColor.textValue
+                                anchors.left: parent.left
+                                verticalAlignment: Text.AlignVCenter
+                                text: item.name
+                            }
+                            Text {
+                                id: textresult2
+                                padding: vpx(10)
+                                font.pixelSize: vpx(15)
+                                color: themeColor.textValue
+                                verticalAlignment: Text.AlignVCenter
+                                anchors.right: parent.right
+                                text: item.cmd
+                            }
+                            Rectangle {
+                                width: contentColumn.width
+                                height: vpx(1)
+                                color: "grey"
+                                opacity: 0.1
+                                radius: vpx(8)
+                            }
                         }
                     }
                 }
