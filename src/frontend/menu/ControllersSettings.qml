@@ -31,6 +31,11 @@ FocusScope {
         subscreen.focus = true;
         root.state = "sub";
     }
+    function openScreenWithParameters(url,parameters) {
+        subscreen.setSource(url,parameters);
+        subscreen.focus = true;
+        root.state = "sub";
+    }
     function openModal(url) {
         modal.source = url;
         modal.focus = true;
@@ -50,8 +55,8 @@ FocusScope {
         onClose: root.close()
         onOpenBluetoothDevices: root.openScreen("settings/BluetoothDevices.qml")
         onOpenAdvancedControllersConfiguration: root.openScreen("settings/AdvancedControllersConf.qml")
-        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
-        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
+        onOpenGamepadSettings: root.openScreenWithParameters("settings/GamepadEditor.qml",parameters)
+		onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
         //        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
     }
     Loader {

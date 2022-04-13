@@ -195,6 +195,7 @@ FocusScope {
                         if(result.toLowerCase().includes("yes")){
                             //Add to My Devices list
                             myDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
+                                         iconfont: myDiscoveredDevicesModel.get(actionListIndex).iconfont,
                                          vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
                                          name: myDiscoveredDevicesModel.get(actionListIndex).name,
                                          macaddress: myDiscoveredDevicesModel.get(actionListIndex).macaddress,
@@ -242,6 +243,7 @@ FocusScope {
                     case "Pair": // as "Ignored" in fact for second choice
                         //Add to Ignored devices list
                         myIgnoredDevicesModel.append({icon: myDiscoveredDevicesModel.get(actionListIndex).icon,
+                                     iconfont: myDiscoveredDevicesModel.get(actionListIndex).iconfont,
                                      vendor: myDiscoveredDevicesModel.get(actionListIndex).vendor,
                                      name: myDiscoveredDevicesModel.get(actionListIndex).name,
                                      macaddress: myDiscoveredDevicesModel.get(actionListIndex).macaddress,
@@ -281,20 +283,6 @@ FocusScope {
         function onCancel() {
             //do nothing
             content.focus = true;
-        }
-    }
-
-    //function to know if we are on standard linux for testing
-    function isDebugEnv()
-    {
-        //for the moment, we use the hostname only, to improve later if possible
-        if (hostname.toLowerCase().includes("recalbox")||hostname.toLowerCase().includes("pixl"))
-        {
-            return false;
-        }
-        else
-        {
-            return true;
         }
     }
 
@@ -376,7 +364,7 @@ FocusScope {
                 //add to discovered list
                 //set vendor later from API & mac address
                 //we can't set vendor immediately, it will be done by timer
-                myDiscoveredDevicesModel.append({icon: icon, vendor: "", name: name, macaddress: macaddress, service: service });
+                myDiscoveredDevicesModel.append({icon: icon, iconfont: getIconFont,  vendor: "", name: name, macaddress: macaddress, service: service });
                 //console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
             }
         }
@@ -426,7 +414,7 @@ FocusScope {
         triggeredOnStart: false
         onTriggered: {
             //read file every 5 seconds
-            var result = api.internal.system.run("cat /tmp/btlist");
+            var result = api.internal.system.run("timeout 0.1 cat /tmp/btlist");
             console.log("raw result:",result);
             const results = result.split('\n');
             for(var i=0;i<results.length-1;i++)
@@ -452,8 +440,11 @@ FocusScope {
             var result = "";
             //Get a list for later else stop here.
             for(var i = 0;i < list.count; i++){
-                    macaddress = list.get(i).macaddress;
-                    myDevices.itemAt(i).batteryStatusText = getBatteryStatus(macaddress);
+                    if(myDevices.itemAt(i).batteryStatusText === "" && myDevices.itemAt(i).connected) {
+                        //console.log("myDevices.itemAt(i).batteryStatusText : ",myDevices.itemAt(i).batteryStatusText);
+                        macaddress = list.get(i).macaddress;
+                        myDevices.itemAt(i).batteryStatusText = getBatteryStatus(macaddress);
+                    }
             }
         }
     }
@@ -474,10 +465,10 @@ FocusScope {
                 //console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
                 if (!isDebugEnv()){
                     //timeout of 1s if needed (can't go under 1s else issue with timeout command on buildroot
-                    result = api.internal.system.run("timeout 1 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                    result = api.internal.system.run("timeout 0.5 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
                 }
                 else{
-                    result = api.internal.system.run("timeout 2 echo -e 'info " + macaddress + "' | bluetoothctl | grep -i 'connected' | awk '{print $2}'");
+                    result = api.internal.system.run("timeout 1 echo -e 'info " + macaddress + "' | bluetoothctl | grep -i 'connected' | awk '{print $2}'");
                 }
                 //console.log("result:",result);
                 //check if device is connected
@@ -501,14 +492,19 @@ FocusScope {
     //timer to udpate the vendor value in Discovered Devices
     Timer {
         id: vendorTimer
-        interval: 2000 // every 2 seconds to avoid saturation of server
+        interval: 3000 // every 3 seconds to avoid saturation of server
         repeat: true
         running: true
         triggeredOnStart: true
+        property int indexParameterToSaveLater : -1
         onTriggered: {
+
+            //for My Devices just discovered
             var list = myDiscoveredDevicesModel;
             var oneAPICallDone = false; // to limit to one call every 2 seconds
-            for(var i = 0;i < list.count; i++){
+            var i;
+
+            for(i = 0;i < list.count; i++){
                 if ((list.get(i).vendor === "") && !oneAPICallDone){
                     //search and update vendor from macadress
                     searchVendorAndUpdate(list, i)
@@ -521,6 +517,43 @@ FocusScope {
                     if(list.get(i).macaddress.substring(0,8) === list.get(i-1).macaddress.substring(0,8)){
                         //console.log("Same vendor: ",list.get(i-1).vendor);
                         list.get(i).vendor = list.get(i-1).vendor;
+                    }
+                    else break;
+                }
+            }
+
+
+            //for My Devices
+            list = myDevicesModel;
+            if(indexParameterToSaveLater !== -1){
+                //Update to recalbox.conf in this case also
+                /*console.log("Write of pegasus.bt.my.device",indexParameterToSaveLater,":",
+                            list.get(indexParameterToSaveLater).macaddress + "|"
+                            + list.get(indexParameterToSaveLater).vendor + "|"
+                            + list.get(indexParameterToSaveLater).name + "|"
+                            + list.get(indexParameterToSaveLater).service);*/
+                api.internal.recalbox.setStringParameter("pegasus.bt.my.device" + indexParameterToSaveLater,
+                                                         list.get(indexParameterToSaveLater).macaddress + "|"
+                                                         + list.get(indexParameterToSaveLater).vendor + "|"
+                                                         + list.get(indexParameterToSaveLater).name + "|"
+                                                         + list.get(indexParameterToSaveLater).service);
+                indexParameterToSaveLater = -1;
+            }
+            for(i = 0;i < list.count; i++){
+                if ((list.get(i).vendor === "") && !oneAPICallDone){
+                    //search and update vendor from macadress
+                    searchVendorAndUpdate(list, i)
+                    oneAPICallDone = true;
+                    indexParameterToSaveLater = i;
+                }
+                else if(list.get(i).vendor === "" && indexParameterToSaveLater === -1)
+                {
+                    //search if previous search is for the same device
+                    //console.log("Check vendor mac part: ",list.get(i).macaddress.substring(0,8));
+                    if(list.get(i).macaddress.substring(0,8) === list.get(i-1).macaddress.substring(0,8)){
+                        //console.log("Same vendor: ",list.get(i-1).vendor);
+                        list.get(i).vendor = list.get(i-1).vendor;
+                        indexParameterToSaveLater = i;
                     }
                     else break;
                 }
@@ -576,56 +609,6 @@ FocusScope {
         }
     }
 
-    //list model to manage type of devices
-    ListModel {
-        id: myDeviceTypes
-        ListElement { type: "controller"; keywords: "controller,gamepad,stick"} //as XBOX for the moment, need icon for 360
-        ListElement { type: "audio"; keywords: "audio,av,headset,speaker"} //as XBOX for the moment, need icon for 360
-    }
-
-    //list model to manage icons of devices
-    ListModel {
-        id: myDeviceIcons
-
-        ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360"; type:"controller"} //as XBOX for the moment, need icon for 360
-        ListElement { icon: "\uf2f0"; keywords: "xbox one"; type:"controller"}
-        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"} //as XBOX one for the moment, need icon for series
-        ListElement { icon: "\uf2f0"; keywords: "xbox,microsoft"; type:"controller"} //as XBOX for the moment, need icon for 360
-
-        ListElement { icon: "\uf2ca"; keywords: "ps5,playstation 5,dualsense"; type:"controller"} //as PS4 for the moment, need icon for PS5
-        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; type:"controller"} // add wireless controller as usual PS name used by Sony
-        ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"}
-        ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"}
-        ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"}
-
-        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"}
-        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller"}
-        ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"}
-        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64"; type:"controller"}
-        ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"}
-        ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"}
-        ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"}
-        ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"}
-
-        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"}
-        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,sega"; type:"controller"}
-        //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
-        //04/10/21: add 'plt focus'
-        //06/10/21: add 'qcy50' and 'jbl go'
-        ListElement { icon: "\uf1e2"; keywords: "headset,plt focus,qcy50,jbl go"; type:"audio"}
-        ListElement { icon: "\uf1e1"; keywords: "speaker"; type:"audio"}
-        ListElement { icon: "\uf1b0"; keywords: ""; types:"audio"} //as generic icon for audio
-
-    }
-
-    //little function to faciliate check of value in 2 name and service from a keyword
-    function isKeywordFound(name,service,keyword){
-        if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
-            return true;
-        }
-        else return false;
-    }
-
     //function to dynamically set icon "character" from name and/or service
     function getBatteryStatus(macaddress){
         var result = "";
@@ -669,12 +652,12 @@ FocusScope {
 			if(capacityName !== ""){
                 //check if it's "Status" finally before to check "Capacity/Capacity_Level"
                 //console.log("command : ","cat /sys/class/power_supply/" + batteryName + "/status" + uniqueCleanLineCommand());
-                result = api.internal.system.run("cat /sys/class/power_supply/" + batteryName + "/status" + uniqueCleanLineCommand());
+                result = api.internal.system.run("timeout 0.1 cat /sys/class/power_supply/" + batteryName + "/status" + uniqueCleanLineCommand());
                 if(result.toLowerCase() === "charging"){
                     return "\uf1b3";
                 }
                 //console.log("command : ","cat /sys/class/power_supply/" + batteryName + "/" + capacityName + uniqueCleanLineCommand());
-                result = api.internal.system.run("cat /sys/class/power_supply/" + batteryName + "/" + capacityName + uniqueCleanLineCommand());
+                result = api.internal.system.run("timeout 0.1 cat /sys/class/power_supply/" + batteryName + "/" + capacityName + uniqueCleanLineCommand());
                 //console.log("Battery result:",result);
                 if(isNaN(result)){
                     //console.log("is Not a number");
@@ -716,63 +699,6 @@ FocusScope {
         else return ""; //no battery well detected
     }
 
-    //to change icon size for audio ones especially and keep standard one for others.
-    function getIconRatio(icon){
-        var ratio;
-        switch(icon){
-        case "\uf1e2":
-            ratio = 2;
-            break;
-        case "\uf1e1":
-            ratio = 2;
-            break;
-        case "\uf1b0":
-            ratio = 2;
-            break;
-        case "\uf0c8":
-            ratio = 2.5
-            break;
-        case "\uf0c9":
-            ratio = 2.5
-            break;
-        default:
-            ratio = 3;
-            break;
-        }
-        return ratio;
-    }
-
-    //function to dynamically set icon "character" from name and/or service
-    function getIcon(name,service){
-        let icon = "";
-        let type = "";
-        let i = 0;
-        //search the good type
-         do{
-             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
-             for(var j = 0; j < typeKeywords.length;j++)
-             {
-                 if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
-             }
-             i = i + 1;
-         }while (type === "" && i < myDeviceTypes.count)
-        //reset counter
-         i = 0;
-        //searchIcon using the good type
-        do{
-            const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
-            for(var k = 0; k < iconKeywords.length;k++)
-            {
-                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
-                    icon = myDeviceIcons.get(i).icon;
-                }
-            }
-            i = i + 1;
-        }while (icon === "" && i < myDeviceIcons.count)
-
-        return icon;
-    }
-
     //function to read saved data from recalbox.conf. Could be used for My Devices and Ignored Devices
     function saveDevicesList(list,parameter){
         //to populate list from recalbox.conf
@@ -798,18 +724,77 @@ FocusScope {
           result = api.internal.recalbox.getStringParameter(parameter + i);
           if (result !== ""){
                 const parameters = result.split("|");
-                let icon = getIcon(parameters[2],parameters[3])
-                list.append({icon: icon, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
+                let icon = getIcon(parameters[2],"")
+                list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
           }
           i = i + 1;
         } while (result !== "");
     }
 
+    //As readSavedDevicesList but check also pairing at the same time
+    function readSavedDevicesListAndPairing(list,parameter){
+        let result = "";
+        let i = 0;
+        let icon;
+        let allmacaddresses = "";
+        //First to populate list from recalbox.conf and check if exists as paired
+        do {
+          result = api.internal.recalbox.getStringParameter(parameter + i);
+          if(result !== ""){
+            const parameters = result.split("|");
+            if(!isDebugEnv()) result = api.internal.system.run("timeout 0.50 bluetoothctl info " + parameters[0] + " | grep -i 'paired' | awk '{print $2}'");
+            //with timeout of 50 ms
+            else result = api.internal.system.run("timeout 0.50 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
+            //console.log("result:",result);
+            if(result.toLowerCase().includes("yes")){
+              icon = getIcon(parameters[2],"");
+              list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
+              allmacaddresses = allmacaddresses + parameters[0];
+              i = i + 1;
+            }
+            else{
+              //replace by next one
+              let nextOne = api.internal.recalbox.getStringParameter(parameter + (i+1));
+              api.internal.recalbox.setStringParameter(parameter + i,nextOne);
+            }
+          }
+        } while (result !== "");
+
+        //Check if anyone paired is missing from list
+        //with timeout of 50 ms
+        if(!isDebugEnv()) result = api.internal.system.run("timeout 0.05 bluetoothctl paired-devices | grep -i 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}'");
+        else result = api.internal.system.run("timeout 0.05 echo -e 'paired-devices' | bluetoothctl | grep -I 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}' | grep -v 'NEW'");
+
+        //console.log("***********");
+        //console.log(result);
+        //console.log("***********");
+
+        const devices = result.split('\n');//Split by LF ;-)
+        console.log("Paired devices found:",devices.length - 1);
+        for(var j = 0;j < devices.length;j++){
+            if (devices[j] !== "") {
+                console.log("device:",devices[j]);
+                const details = devices[j].split("|");
+                if(!allmacaddresses.includes(details[0])){//if paired device is missing
+                    //Add to list
+                    icon = getIcon(details[1],"");
+                    list.append({icon: icon, iconfont: getIconFont, vendor:"", name: details[1], macaddress: details[0], service: "" });
+                    //Add to recalbox.conf
+                    api.internal.recalbox.setStringParameter(parameter + i,details[0] + "||" + details[1] + "|");
+                    i = i + 1;
+                }
+            }
+        }
+    }
+
     Component.onCompleted:{
         //delete tmp file
         var result = api.internal.system.run("rm /tmp/btlist");
-        //read devices already known
-        readSavedDevicesList(myDevicesModel,"pegasus.bt.my.device");
+
+        //read devices already known and if paired
+        readSavedDevicesListAndPairing(myDevicesModel,"pegasus.bt.my.device");
+
+        //read devices already known and to ignore
         readSavedDevicesList(myIgnoredDevicesModel,"pegasus.bt.ignored.device");
     }
 
@@ -920,7 +905,7 @@ FocusScope {
                     model: myDevicesModel //for test purpose
                     SimpleButton {
                         property var connected: false;
-                        property var batteryStatusText: getBatteryStatus(macaddress);
+                        property var batteryStatusText: ""
                         width: parent.width - vpx(100)
                         Text {
                             id: batteryStatus
@@ -943,10 +928,12 @@ FocusScope {
 
                             anchors.right: deviceStatus.left
                             anchors.rightMargin: vpx(5)
-                            anchors.verticalCenter: parent.verticalCenter
+                            //anchors.verticalCenter: parent.verticalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: vpx(10)
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
-                            font.family: globalFonts.awesome
+                            font.family: iconfont //globalFonts.awesome
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
@@ -981,6 +968,7 @@ FocusScope {
                                                     { "title": myDevicesModel.get(index).vendor + " " + myDevicesModel.get(index).name + " " + myDevicesModel.get(index).service,
                                                       "message": connected ? (qsTr("Do you want to forget or disconnect this device ?") + api.tr) : (qsTr("Are you sure to forget this device ?") + api.tr),
                                                       "symbol": myDevicesModel.get(index).icon,
+                                                      "symbolfont" : myDevicesModel.get(index).iconfont,
                                                       "firstchoice": connected ? qsTr("Forget") + api.tr : qsTr("Yes") + api.tr,
                                                       "secondchoice": connected ? qsTr("Disconnect") + api.tr : "",
                                                       "thirdchoice": connected ? qsTr("Cancel") + api.tr : qsTr("No") + api.tr});
@@ -1104,10 +1092,12 @@ FocusScope {
 
                             anchors.right: isPairingIssue ? deviceDiscoveredStatus.left : parent.left
                             anchors.rightMargin: vpx(10)
-                            anchors.verticalCenter: parent.verticalCenter
+                            //anchors.verticalCenter: parent.verticalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: vpx(10)
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
-                            font.family: globalFonts.awesome
+                            font.family: iconfont //globalFonts.awesome
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
@@ -1141,6 +1131,7 @@ FocusScope {
                                                     { "title": myDiscoveredDevicesModel.get(index).vendor + " " + myDiscoveredDevicesModel.get(index).name + " " + myDiscoveredDevicesModel.get(index).service,
                                                       "message": qsTr("Do you want to pair or ignored this device ?") + api.tr,
                                                       "symbol": myDiscoveredDevicesModel.get(index).icon,
+                                                      "symbolfont" : myDiscoveredDevicesModel.get(index).iconfont,
                                                       "firstchoice": qsTr("Pair") + api.tr,
                                                       "secondchoice": qsTr("Ignored") + api.tr,
                                                       "thirdchoice": qsTr("Cancel") + api.tr});
@@ -1227,10 +1218,12 @@ FocusScope {
 
                             anchors.right: parent.left
                             anchors.rightMargin: vpx(10)
-                            anchors.verticalCenter: parent.verticalCenter
+                            //anchors.verticalCenter: parent.verticalCenter
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: vpx(10)
                             color: themeColor.textLabel
                             font.pixelSize: (parent.fontSize)*getIconRatio(icon)
-                            font.family: globalFonts.awesome
+                            font.family: iconfont //globalFonts.awesome
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
@@ -1250,6 +1243,7 @@ FocusScope {
                                                     { "title": myIgnoredDevicesModel.get(index).vendor + " " + myIgnoredDevicesModel.get(index).name + " " + myIgnoredDevicesModel.get(index).service,
                                                       "message": qsTr("Are you sure to unblock this device ?") + api.tr,
                                                       "symbol": myIgnoredDevicesModel.get(index).icon,
+                                                      "symbolfont" : myIgnoredDevicesModel.get(index).iconfont,
                                                       "firstchoice": qsTr("Yes") + api.tr,
                                                       "secondchoice": "",
                                                       "thirdchoice": qsTr("No") + api.tr});

@@ -24,6 +24,9 @@ FocusScope {
     property alias label: label.text
     property alias note: sublabel.text
     property alias pointerIcon: pointerConfigs.visible
+    property var showUnderline: true
+    property var selectButton: false
+
 
     readonly property int fontSize: vpx(22)
     readonly property int horizontalPadding: vpx(30)
@@ -50,9 +53,19 @@ FocusScope {
         anchors.bottom: parent.bottom
 
         color: themeColor.underline
-        visible: parent.focus || mouseArea.containsMouse
+        visible: (parent.focus || mouseArea.containsMouse) && showUnderline
     }
+    Rectangle {
+        id: buttonSelection
 
+        anchors.fill: parent
+
+        color: themeColor.secondary
+        opacity: 0.5
+        radius: vpx(10)
+
+        visible: selectButton
+    }
     Column {
         id: labelContainer
 

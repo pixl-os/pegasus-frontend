@@ -61,13 +61,14 @@ FocusScope {
 
             Text {
                 id: titleText
-
+                elide: Text.ElideRight
                 anchors {
                     verticalCenter: parent.verticalCenter
                     left: parent.left
                     leftMargin: root.titleTextSize * 0.75
+                    right: parent.right
+                    rightMargin: root.titleTextSize * 0.75
                 }
-
                 color: themeColor.textTitle
                 font {
                     bold: true

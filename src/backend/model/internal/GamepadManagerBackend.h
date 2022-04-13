@@ -38,12 +38,16 @@ public:
     virtual void start_recording(int, GamepadButton) {}
     virtual void start_recording(int, GamepadAxis) {}
     virtual void cancel_recording() {}
+    virtual void reset(int, GamepadButton) {}
+    virtual void reset(int, GamepadAxis) {}
+	
 
 signals:
-    void connected(int, QString);
+    void connected(int, QString, QString, QString, int);
     void disconnected(int);
 	void newController(int, QString);
     void nameChanged(int, QString);
+    void indexChanged(int, int);
     void removed(int);
     
     void buttonChanged(int, GamepadButton, bool);

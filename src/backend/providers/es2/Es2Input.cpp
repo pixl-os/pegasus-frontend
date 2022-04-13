@@ -89,7 +89,7 @@ providers::es2::inputConfigEntry find_input_entry(const QString& log_tag, QXmlSt
         QString deviceName = xml.attributes().value("deviceName").toString();
         QString deviceGUID = xml.attributes().value("deviceGUID").toString();
         
-        if ((deviceName == Name) && (deviceGUID == GUID)){
+        if (((deviceName == Name) || (Name == "")) && (deviceGUID == GUID)){
             
                 inputConfigEntry.inputConfigAttributs.type = xml.attributes().value("type").toString();
                 inputConfigEntry.inputConfigAttributs.deviceName = deviceName;
@@ -435,13 +435,13 @@ inputConfigEntry find_input(const QString& log_tag, const std::vector<QString>& 
         Log::error(log_tag, xml.errorString());
     xml_file.close();
     
-    if (inputentry.inputConfigAttributs.deviceName != DeviceName)
+    if (inputentry.inputConfigAttributs.deviceGUID != DeviceGUID)
     {
-        Log::error(log_tag, LOGMSG("%1 input configuration not found from es_input.cfg").arg(DeviceName));
+        Log::error(log_tag, LOGMSG("%1/'%2' input configuration not found from es_input.cfg").arg(DeviceGUID,DeviceName));
     }
     else
     {
-        Log::info(log_tag, LOGMSG("%1 input configuration found from es_input.cfg").arg(DeviceName));
+        Log::info(log_tag, LOGMSG("%1/'%2' input configuration found from es_input.cfg").arg(inputentry.inputConfigAttributs.deviceGUID,inputentry.inputConfigAttributs.deviceName));
     }
 
     return inputentry;

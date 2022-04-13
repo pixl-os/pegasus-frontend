@@ -36,9 +36,28 @@
 
 #include <QDir>
 #include <QRegularExpression>
+#include <string>
 
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
+
+
+QString run(const QString& Command)
+{
+  const std::string& command = Command.toUtf8().constData();
+  std::string output;
+  char buffer[4096];
+  FILE* pipe = popen(command.data(), "r");
+  if (pipe != nullptr)
+  {
+    while (feof(pipe) == 0)
+      if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        output.append(buffer);
+    pclose(pipe);
+  }
+  return QString::fromStdString(output);
+}
+
 
 void replace_env_vars(QString& param)
 {
@@ -174,31 +193,53 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     if(param == "{controllers.config}")
     {
         // Fill from ES/Recalbox configuration methods
-        std::string uuid, name, path;
+        std::string uuid, name, path, sdlidx, udevidx, index;
         std::string command = "";
-        
-        int MaxInputDevices = 10;
         //to access ES provider
         providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
-                      
-        for(int player = 0; player < MaxInputDevices; ++player)
+
+        //TIPS to get get all udev joysticks index if needed later without udevlib (and using ID8INPUT_JOYSTICK=1 as in retroarch ;-)
+        QString result = run("udevadm info -e | grep -B 10 'ID_INPUT_JOYSTICK=1' | grep 'DEVNAME=/dev/input/event' | cut -d= -f2");
+        //Log::debug(LOGMSG("result: %1").arg(result));
+        QStringList joysticks = result.split("\n");
+
+        for(int player = 0; player < RecalboxConf::iMaxInputDevices; ++player)
         {
             path = "";
             uuid = "";
             name = "";
+            sdlidx = "";
+            udevidx = "";
+            index = "";
 
-            if (Strings::SplitInThree(RecalboxConf::Instance().GetPadPegasus(player), '|', uuid, name, path, true))
+            if (Strings::SplitInFour(RecalboxConf::Instance().GetPadPegasus(player), '|', uuid, name, path, sdlidx, true))
             {
               //example of example : -p1index 0 -p1guid 030000005e040000a102000000010000 -p1name \"Xbox 360 Wireless Receiver\" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event3
               //                       -p1index 0 -p1guid 030000005e040000a102000000010000 -p1name "X360 Wireless Controller" -p1nbaxes 4 -p1nbhats 1 -p1nbbuttons 17 -p1devicepath /dev/input/event19 -p2index 1 -p2guid 030000005e040000a102000000010000 -p2name "X360 Wireless Controller" -p2nbaxes 4 -p2nbhats 1 -p2nbbuttons 17 -p2devicepath /dev/input/event20 -system 64dd -rom /recalbox/share/roms/64dd/Super\ Mario\ 64\ -\ Disk\ Version\ \(Japan\)\ \(Proto\).ndd -emulator libretro -core parallel_n64 -ratio custom 
-              //const InputDevice& device = mIdToDevices[pad.Identifier];
-
               const providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(QString::fromStdString(name), QString::fromStdString(uuid));
-              
-              if (inputConfigEntry.inputConfigAttributs.deviceName == QString::fromStdString(name))
+
+              //## Set retroarch input driver (auto, udev, sdl2)
+              //## If you don't have issues with your controllers, let auto
+              //global.inputdriver=auto
+              if(QString::fromStdString(RecalboxConf::Instance().AsString("global.inputdriver")) == "sdl2"){ //if sdl2 driver requested -> not tested / requested for few controllers
+                index = sdlidx;
+              }
+              else{ //if auto or udev
+                //get udev index using path and get it from the list of events done previously
+                //search if event is in the joysticks list
+                for(int k=0; k < joysticks.count(); k++){
+                    if(joysticks.at(k).toLower() == QString::fromStdString(path).toLower()) {
+                        index = std::to_string(k);
+                    }
+                }
+                //Log::debug(LOGMSG("Udev index of %1 : %2").arg(QString::fromStdString(path),QString::fromStdString(index)));
+              }
+
+              if (inputConfigEntry.inputConfigAttributs.deviceName == QString::fromStdString(name)
+                  && index != "")
               {//Device found 
                   std::string p(" -p"); p.append(Strings::ToString(player + 1)); 
-                  command.append(p).append("index ").append(Strings::ToString(player)) //TO DO: see how to manage order between connection order/player order.
+                  command.append(p).append("index ").append(index)
                          .append(p).append("guid ").append(uuid)
                          .append(p).append("name \"").append(name + "\"")
                          .append(p).append("nbaxes ").append(inputConfigEntry.inputConfigAttributs.deviceNbAxes.toUtf8().constData())
@@ -206,8 +247,7 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
                          .append(p).append("nbbuttons ").append(inputConfigEntry.inputConfigAttributs.deviceNbButtons.toUtf8().constData())
                          .append(p).append("devicepath ").append(path);
               }
-            }
-
+           }
         }
         param.replace(QLatin1String("{controllers.config}"),QString::fromStdString(command));
     }
