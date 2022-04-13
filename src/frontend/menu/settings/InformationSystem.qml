@@ -106,7 +106,7 @@ FocusScope {
         { name: qsTr("Linux Kernel :"), cmd: api.internal.system.run("echo $(uname -s) $(uname -r)")},
         { name: qsTr("Architecture :"), cmd: api.internal.system.run("uname -m")},
         { name: qsTr("CPU :"), cmd: api.internal.system.run("cat /proc/cpuinfo | grep 'model name' | cut -d ':' -f 2 | cut -c 2- | uniq")},
-        { name: qsTr("CPU Core Number(s) :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l | grep '\\S'")},
+        { name: qsTr("CPU Core Number :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l | grep '\\S'")},
         { name: qsTr("CPU Maximum Frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
         { name: qsTr("RAM (free/total):"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
         { name: qsTr("GPU(s) :"), cmd: api.internal.system.run("lspci | grep -i 'vga\\|3d\\|2d' | cut -d ':' -f 3 | grep '\\S'")}, //could be one several lines
@@ -129,8 +129,8 @@ FocusScope {
         //other methods but not working on all PCs
         //{ name: qsTr("                       "), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
         //{ name: qsTr("GPU Temperature(s) :"), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
-        { name: qsTr("Numbers of systems :"), cmd: api.collections.count },
-        { name: qsTr("Numbers of games :"), cmd: api.allGames.count }
+        { name: qsTr("Number of system(s) :"), cmd: api.collections.count },
+        { name: qsTr("Number of game(s) :"), cmd: api.allGames.count }
     ]
 
     PegasusUtils.HorizontalSwipeArea {
