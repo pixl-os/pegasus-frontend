@@ -109,7 +109,7 @@ FocusScope {
         { name: qsTr("CPU Core Number :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l | grep '\\S'")},
         { name: qsTr("CPU Maximum Frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
         { name: qsTr("RAM (free/total):"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
-        { name: qsTr("GPU(s) :"), cmd: api.internal.system.run("lspci | grep -i 'vga\\|3d\\|2d' | cut -d ':' -f 3 | grep '\\S'")}, //could be one several lines
+        { name: qsTr("GPU(s) :"), cmd: "\n" + api.internal.system.run("lspci | grep -i 'vga\\|3d\\|2d' | cut -d ':' -f 3 | grep '\\S'")}, //could be one several lines
         { name: qsTr("Video RAM :"), cmd: api.internal.system.run("glxinfo -B | grep -i 'video memory' | cut -d ':' -f 2")},
         { name: qsTr("OpenGL ES :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL ES profile version string' | cut -d ':' -f 2 | cut -c 2-")},
         { name: qsTr("OpenGL Core :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL core profile version string' | cut -d ':' -f 2 | cut -c 2-")},
@@ -125,9 +125,11 @@ FocusScope {
         //{ name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0")},
         //{ name: qsTr("GPU Temperature :"), cmd: api.internal.system.run("gpu_temp=$(vcgencmd measure_temp | cut -d '=' -f 2 | cut -d \' -f 1); echo '$gpu_temp'$'\xc2\xb0'C")},
         //New Method using generique way for buildroot and multi-indexes
-        { name: qsTr("All System Temperature(s) :"), cmd: "\n" + api.internal.system.run("paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | sed 's/\\(.\\)..$/.\\1°C/'")},
+        { name: qsTr("All System Temperature(s) :"), cmd: "\n"
+         + api.internal.system.run("(((paste <(cat /sys/class/thermal/thermal_zone*/temp | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/thermal/thermal_zone*/type | tr -s [:space:])) | awk '{print $1 \" - \" $2}') && ((p=\"_input\";l=\"_label\";s=\"0 1 2 3 4 5 6 7\";t=\"0 1 2 3 4\"; for i in $s; do for j in $t; do paste <(cat /sys/class/hwmon/hwmon$i/temp$j$p | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon$i/name | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon$i/temp$j$l | tr -s [:space:]); echo \" \"; done; done )| grep -i \"°C\" | awk -F ' ' '$1 ~ /°C/  {print $1 \" - \" $2 \" \" $3 \" \" $4 \" \" $5}')) | grep -e ' - ' | sort -u -k1,5")},
+       //+ api.internal.system.run("(((paste <(cat /sys/class/thermal/thermal_zone*/temp | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/thermal/thermal_zone*/type | tr -s [:space:])) | awk '{print $1 \" - \" $2}') && ((paste <(cat /sys/class/hwmon/hwmon*/temp*_input | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon*/name | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon*/temp*_label | tr -s [:space:])) | awk -F ' ' 'length($2)>0 {print $1 \" - \" $2 $3}')) | sort -u -k1,4")},
         //other methods but not working on all PCs
-        //{ name: qsTr("                       "), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
+        //{ name: qsTr("                           "), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
         //{ name: qsTr("GPU Temperature(s) :"), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
         { name: qsTr("Number of system(s) :"), cmd: api.collections.count },
         { name: qsTr("Number of game(s) :"), cmd: api.allGames.count }
@@ -199,7 +201,7 @@ FocusScope {
                         }
                         delegate: Rectangle {
                             width: contentColumn.width
-                            height: (textresult.lineCount) > 1 ? (textresult.lineCount-1) * vpx(20) : vpx(20)
+                            height: (textresult.lineCount) > 1 ? (textresult.lineCount) * vpx(20) : vpx(20)
                             //need to do linecount-1 due to usual crlf at the end of each command result
 
                             color: "transparent"
@@ -210,7 +212,8 @@ FocusScope {
                             //visible: textresult.lineCount-1 > 0 ? true : ((textresult.text != '0' && textresult.text != '') ? true : false)
 
                             Text {
-                                padding: vpx(10)
+                                id: title
+                                padding: vpx(5)
                                 font.pixelSize: vpx(15)
                                 color: themeColor.textValue
                                 anchors.left: parent.left
@@ -219,12 +222,18 @@ FocusScope {
                             }
                             Text {
                                 id: textresult
-                                padding: vpx(10)
+                                padding: vpx(5)
                                 font.pixelSize: vpx(15)
                                 color: themeColor.textValue
                                 verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignRight
                                 anchors.right: parent.right
-                                text: item.cmd
+                                anchors.left: item.cmd.startsWith("\n") ? parent.left : title.right
+                                text: item.cmd.startsWith("\n") ? ("\n" + item.cmd.trim()) : item.cmd.trim()
+                                elide: Text.ElideRight
+
+
+
                             }
                             Rectangle {
                                 width: contentColumn.width
@@ -282,7 +291,7 @@ FocusScope {
                             //visible: textresult.lineCount-1 > 0 ? true : ((textresult.text != '0' && textresult.text != '') ? true : false)
 
                             Text {
-                                padding: vpx(10)
+                                padding: vpx(5)
                                 font.pixelSize: vpx(15)
                                 color: themeColor.textValue
                                 anchors.left: parent.left
@@ -291,7 +300,7 @@ FocusScope {
                             }
                             Text {
                                 id: textresult2
-                                padding: vpx(10)
+                                padding: vpx(5)
                                 font.pixelSize: vpx(15)
                                 color: themeColor.textValue
                                 verticalAlignment: Text.AlignVCenter
