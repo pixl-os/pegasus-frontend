@@ -1070,6 +1070,8 @@ QString GamepadManagerSDL2::getName_by_path(QString JoystickDevicePath){
     ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
     QString name = QString::fromStdString(udevname);
     Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - NAME: '%1'").arg(name));
+    //fix to remove "," from name that could generate issue with SDL2 mapping format :-(
+    name.replace(","," ");
     return name;
 }
 
@@ -1087,7 +1089,8 @@ QString GamepadManagerSDL2::getFullName_by_path(QString JoystickDevicePath){
     ioctl(fd, EVIOCGNAME(sizeof(udevname)), udevname);
     QString name = QString::fromStdString(udevname);
     Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - NAME: '%1'").arg(name));
-
+    //fix to remove "," from name that could generate issue with SDL2 mapping format :-(
+    name.replace(","," ");
     //Get name from UDEV HID NAME
     //TIPS to get get all udev info using udevadm
     Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - JoystickDevicePath: '%1'").arg(JoystickDevicePath));
@@ -1105,7 +1108,8 @@ QString GamepadManagerSDL2::getFullName_by_path(QString JoystickDevicePath){
                         " | cut -d= -f2" +
                         " | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
     Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID NAME: '%1'").arg(hidname));
-
+    //fix to remove "," from hid name that could generate issue with SDL2 mapping format :-(
+    hidname.replace(","," ");	
     //Prepare the fullname
     QString fullname;
     if ((name.toLower() != hidname.toLower()) && (hidname != "")){
@@ -1153,7 +1157,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         const QString JoystickDevicePath = SDL_JoystickDevicePathById(device_idx);
         #endif
 
-        QString name = getFullName_by_path(JoystickDevicePath);
+        QString name = getName_by_path(JoystickDevicePath);
 
         QString fullname = getFullName_by_path(JoystickDevicePath);
         
@@ -1664,7 +1668,7 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
 
         std::vector<std::string> list;
             list.emplace_back(utils::trimmed(guid_raw_str.data()));
-            list.emplace_back(SDL_GameControllerName(pad_ptr.get()));
+            list.emplace_back(fullname.toUtf8().constData());
 
         const char* const recording_field = m_recording.is_active()
             ? (m_recording.target_button != GamepadButton::INVALID)
