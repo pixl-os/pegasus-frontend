@@ -234,11 +234,8 @@ FocusScope {
 
                 ToggleOption {
                     id: optPs3Controllers
-                    //controllers.ps3.enabled=1
-                    // label: qsTr("Enable Sony Playstation bluetooth controllers") + api.tr
-                    // note: qsTr("Sony Playstation 3,4,5 controllers supported") + api.tr
                     SectionTitle {
-                        text: qsTr("Sony controllers") + api.tr
+                        text: qsTr("Sony PS3 bluetooth controllers") + api.tr
                         first: true
                         visible: optBluetoothControllers.checked
                     }
@@ -256,9 +253,8 @@ FocusScope {
                     id: optDriversPs3Controllers
                     property string parameterName :"controllers.ps3.driver"
                     // ## Choose a driver between bluez, official and shanwan
-                    // controllers.ps3.driver=bluez
-                    label: qsTr("Sony controllers drivers bluetooth") + api.tr
-                    note: qsTr("Choose a driver between bluez, official and shanwan") + api.tr
+                    label: qsTr("Sony PS3 Sixaxis drivers") + api.tr
+                    note: qsTr("Choose a driver between bluez, official and shanwan for Sisaxis") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
