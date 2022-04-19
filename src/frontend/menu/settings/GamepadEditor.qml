@@ -19,7 +19,7 @@
 import "gamepad"
 import "qrc:/qmlutils" as PegasusUtils
 import Pegasus.Model 0.12
-import QtQuick 2.12
+import QtQuick 2.15
 import QtQuick.Window 2.12
 
 
@@ -230,24 +230,76 @@ FocusScope {
 
                 GamepadName {
                     id:gamepadname
+                    TextMetrics {
+                        id: endOfLineMetrics
+                        font: gamepadname.font
+                        text: {
+                            // to add info to notice that one or several controllers  is/are available !
+                            var endOfLine = "";
+                            if (modelData) {
+                                endOfLine = "... (" + api.internal.gamepad.devices.get(newControllerIndex).deviceInstance + ")";
+                                if ((gamepadList.count > 1) && !isNewController)
+                                {
+                                    if (gamepadList.currentIndex !== (gamepadList.count-1)) endOfLine = endOfLine + "  \uf3d1"; // < from ionicons
+                                }
+                            }
+                            return endOfLine;
+                        }
+                    }
+                    TextMetrics {
+                        id: textMetrics
+                        font: gamepadname.font
+                        elide: Text.ElideRight
+                        elideWidth: root.width - ((gamepadname.anchors.leftMargin * 2) + endOfLineMetrics.boundingRect.width)
+                        text: {
+                            //console.log("root.width:",root.width);
+                            // to add info to notice that one or several controllers  is/are available !
+                            if (modelData) {
+                                var previous = "";
+                                if ((gamepadList.count > 1) && !isNewController)
+                                {
+                                    if (gamepadList.currentIndex !== 0) previous = "\uf3cf  "; // < from ionicons
+                                }
+                                if (isNewController){
+                                    return  api.internal.gamepad.devices.get(newControllerIndex).name;
+
+                                }
+                                else
+                                {
+                                    return previous + "#" + (gamepadList.currentIndex + 1) + ": " + api.internal.gamepad.devices.get(gamepadList.currentIndex).name;
+                                }
+                            }
+                            else return "";
+                        }
+                    }
                     text: {
-						// to add info to notice that one or several controllers  is/are available !
+                        // to add info to notice that one or several controllers  is/are available !
                         if (modelData) {
-                            var previous = "";
                             var next = "";
 							if ((gamepadList.count > 1) && !isNewController)
 							{								
-                                if (gamepadList.currentIndex !== 0) previous = "\uf3cf  "; // < from ionicons
-                                if (gamepadList.currentIndex !== (gamepadList.count-1)) next = "  \uf3d1"; // > from ionicons
+                                if (gamepadList.currentIndex !== (gamepadList.count-1)) next = "  \uf3d1"; // < from ionicons
 							}
+
+                            var elidePadding = ""
+                            if(textMetrics.elidedText.length < textMetrics.text.length){
+                                elidePadding = "..."
+                            }
+
                             //console.log("GamepadName index : ",index);
-                            if (isNewController) return api.internal.gamepad.devices.get(newControllerIndex).name + " (" + api.internal.gamepad.devices.get(newControllerIndex).deviceInstance + ")";
-                            //else return (previous + "#" + (index + 1) + ": " + modelData.name + " (" + modelData.deviceInstance + ")" + next);
-                            else return (previous + "#" + (gamepadList.currentIndex + 1) + ": " + api.internal.gamepad.devices.get(gamepadList.currentIndex).name + " (" + api.internal.gamepad.devices.get(gamepadList.currentIndex).deviceInstance + ")" + next);
+                            //console.log("textMetrics.elidedText: ",textMetrics.elidedText);
+                            //console.log("textMetrics.Text: ",textMetrics.text);
+                            if (isNewController){
+                                return textMetrics.elidedText + elidePadding + " (" + api.internal.gamepad.devices.get(newControllerIndex).deviceInstance + ")";
+                            }
+                            else
+                            {
+                                return textMetrics.elidedText + elidePadding + " (" + api.internal.gamepad.devices.get(gamepadList.currentIndex).deviceInstance + ")" + next;
+                            }
                         }
                         else return "";
 					}
-					highlighted: deviceSelect.focus
+                    highlighted: deviceSelect.focus
                 }
             }
         }
