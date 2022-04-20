@@ -1,6 +1,102 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2022-04-21 - v0.0.3
+- menu: refact menu advanced controller
+- menu: remove focus on toogle option 
+- icon: fix aligned icon on text 
+- icon: fix file format for the 3 new icons
+- menu: enable first true on ps3 controller drivers
+- controllers improvements:
+	- change way to find mapping (es_input -> sdl2)
+	- fix asynchronous disconnection using bluetooth
+	- set way to manage order  of player/device
+	- fix bluetooth to remove not well paired device or not identified as paired.
+	- fix bluetooth to add devices already paired in recalbox.conf
+	- fix on icon used when name/service is not defined
+	- add vendor search and save when restore of paired devices
+	- bluetooth : improve verification/timing for devices already paired
+	- add icon for Snakebyte idroid:con
+	- Introduce parameter and menu to be able to reset bluetooth at each start of Pegasus
+	- fix on battery reading/refresh from bluetooth menu
+	- add icon for 8BitDo SN30pro+
+	- best icon management to use globally and from main.qml
+	- add management of SDL instance id to see change/move
+	- icon: change positionning in bluetooth device and controllers list
+	- icon: to add arcade sticks (8 buttons) black & white
+	- game controller database: updated to accept SDL 2.0.16 format from SDL 2.0.14 
+	- game controller database: add last version from https://github.com/gabomdq/SDL_GameControllerDB
+	- add matching for drangonrise and xinmo using arcade panel icon
+	- icon: add vertical double directions icon
+	- simplebutton: hide/show underline and capacity to select
+	- controllers: add selection, move icon and improve helps display
+	- gamepad:  add more ids in gamepad object and to have more info
+	- sdl2: rework introduced but still to move code in gamepadmanager
+	- gamepadmanager: add more ids in gamepad creation
+	- gamepad: first draft of rework on gamepad indexation (id, iid, index)
+	- gamepad: add setting of device id for gamepad model
+	- gamepad: clean recalbox.conf for gamepad(s) already disconnected
+	- gampadeditor: fix to avoid bad effect when we remove device here
+	- gamepad: to use index and not id now in some functions in qml/c++
+	- sdl2: fix for build using SDL_JoystickDevicePathById
+	- index: fix to update of index for all controllers during disconnect
+	- udev: add code to integrate indexation from udev
+	- gamepadlist: to edit directly the configuration from list
+	- maxinputdevices: fix for best management of max input devices as global conf
+	- icons: add detection of ultimarc j-pac as arcade panel device
+	- controller: fix for better way to manage index for joystick 
+	- custom pad tests:
+		- snes: test gamepad images and way to have something customizable and generic
+		- button: update to improve display of buttons on SNES
+		- padbutton: definitive version managing recording/selection colors
+		- layout: dpad snes highlight management as initial version
+		- layout: dpad snes highlight management as improved version
+		- gamepad_layout: dynamic loading of game controller layout
+		- snes_layout: adding select, guide and start + parameters/cleaning
+		- snes_layout: adding of L1/R1 & L2/R2 as shoulder/trigger
+		- snes_layout: mapping management integration to avoid unused touch
+		- nes_layout: adding switch online nes controller pictures 
+		- nes_layout: first draft using ContainerCustom but still work ;-)
+		- nes_layout: tested version using parameters and customizable layout
+		- layouts: nes & snes layout using same QML codes by parameters
+		- xbox360_layout: resources and first parameters added 
+		- stick: completed management of sticks in "custom" layout set
+		- xbox360: finalization of xbox360 use case
+		- chore(cleaning): remove images not used finally
+		- icons: use icon of sn30 pro+ for pro 2 from 8bitdo
+		- pad: manage pad buttons as xbox vs snes/nes to switch a/b and x/y
+		- icons: to well distinguish 8bitdo sn30 pro+/pro plus & pro 2
+		- sticks: add red color during edition + some code cleanings
+		- help: change details during edition of axis to precise up/left direction
+		- hotkey: add info of "hotkey" near "guide" one
+		- ps4_layout: add resources and parameters for ps4 ctrl layout
+		- layout: change order of definition of L1/L2 or R1/R2 to avoid bad superposition
+		- ps4_layout: support of dpad using independent buttons
+		- layout: improve management of display and brightness/contrast
+	- gamepadeditor: to be able to reset assignement of axis/button
+	- hidname: test to get hidname more liable than name finally
+	- sdl2: rework of maner to detect/manage mapping at controller connection
+	- gamepadmanagersdl2: add way to get joystick path during debug on linux for dev
+	- gamepadmanager: change process and way to well manage sdl2/esinput/custom mapping
+	- sdl2manager: cleaning and optimization to well manage new naming
+	- sdl2manager: optimization mapping affectation from name/guid 
+	- icon-layout: to well manage icon/layout selection depending hidname
+	- add xow daemon management for xbox one/series controllers
+	- layout: force to default layout if doesn't exist for any controller
+	- lang: new bump and all files are updated systematically on lupdate
+- sysinfo:
+	- more info added as temp and gpu in 2 columns
+	- merged methods to have all ways to get temps
+	- fix to have best temperature display to ignore some cases and doubloon
+	- last updates on gpus display and temperature parsing
+	- lang : add last fr translation
+- gamepad_manager_sdl2: some fixes of names management in mappings
+- gamepadeditor: add custom way to elide long controller name due to adding of hid name now
+- lang: add last fr translation
+- confirm in title/comments that Sony part is only for PS3 sixasis
+- bluetooth: some 'dev' logs deactivated and 'debug' ones improved
+- bluetoohth: fix to restart bluetooth only during starting and not reloading after game session
+
 ## [recalbox-integration] - 2022-02-12 - v0.0.2
 - versionning: add version from git release and OS version in Pegasus
 - localization: fix "american english" multiple menu display in buildroot
