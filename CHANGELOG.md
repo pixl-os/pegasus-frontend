@@ -83,7 +83,6 @@ All notable changes to this project will be documented in this file (focus on ch
 	- icon-layout: to well manage icon/layout selection depending hidname
 	- add xow daemon management for xbox one/series controllers
 	- layout: force to default layout if doesn't exist for any controller
-	- lang: new bump and all files are updated systematically on lupdate
 - sysinfo:
 	- more info added as temp and gpu in 2 columns
 	- merged methods to have all ways to get temps
@@ -96,6 +95,11 @@ All notable changes to this project will be documented in this file (focus on ch
 - confirm in title/comments that Sony part is only for PS3 sixasis
 - bluetooth: some 'dev' logs deactivated and 'debug' ones improved
 - bluetoohth: fix to restart bluetooth only during starting and not reloading after game session
+- lang: new bump and all files are updated systematically on lupdate
+- accountmain: add fix on SectionTitle to set font indendently
+- gamepadeditor: add custom way to elide long controller name due to adding of hid name now
+- controllersmenu: confirm in title/comments that Sony part is only for PS3 sixasis
+- controllersmain: reduce controller icon of 10% and centralize verticaly
 
 ## [recalbox-integration] - 2022-02-12 - v0.0.2
 - versionning: add version from git release and OS version in Pegasus
