@@ -22,6 +22,7 @@ import QtQuick 2.12
 Text {
     property bool first: false
     property alias symbol: symbolTitle.text
+    property alias symbolFontFamily: symbolTitle.font.family
     property int fontSize: vpx(22)
 
     color: themeColor.textSectionTitle

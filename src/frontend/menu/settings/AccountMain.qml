@@ -262,6 +262,7 @@ FocusScope {
                     first: true
                     visible: optNetplayActivate.checked
                     symbol: "\uf071"
+                    symbolFontFamily: global.fonts.awesome //global.fonts.ion is used by default
                 }
                 ToggleOption {
                     id: optNetplayPswdClientActivate
