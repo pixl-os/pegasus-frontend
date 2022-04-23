@@ -26,6 +26,22 @@ const std::string eol("\r\n");
 const Path ScriptManager::sStatusFilePath("/tmp/es_state.inf");
 rHashMap<std::string, pid_t> ScriptManager::sPermanentScriptsPID;
 
+//simple command to run script using result
+std::string run(const std::string& command)
+{
+  std::string output;
+  char buffer[4096];
+  FILE* pipe = popen(command.data(), "r");
+  if (pipe != nullptr)
+  {
+    while (feof(pipe) == 0)
+      if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        output.append(buffer);
+    pclose(pipe);
+  }
+  return output;
+}
+
 ScriptManager::ScriptManager(char** environment)
   : StaticLifeCycleControler<ScriptManager>("ScriptManager"),
     mEnvironment(environment)
@@ -391,6 +407,34 @@ void ScriptManager::RunProcess(const Path& target, const Strings::Vector& argume
   if (permanent)
     sPermanentScriptsPID.insert(target.ToString(), pid);
 }
+
+std::string ScriptManager::RunProcessWithReturn(const Path& target, const Strings::Vector& arguments)
+{
+  QString QCommand;
+  // Extract extension
+  std::string ext = Strings::ToLowerASCII(target.Extension());
+
+  if      (ext == ".sh")  { QCommand = "/bin/sh"; }
+  else if (ext == ".ash") { QCommand = "/bin/ash"; }
+  else if (ext == ".py")  { QCommand = "/usr/bin/python"; }
+  else if (ext == ".py2") { QCommand = "/usr/bin/python2"; }
+  else if (ext == ".py3") { QCommand = "/usr/bin/python3"; }
+  else { QCommand = QString::fromStdString(target.ToString()); } //for extension not yet compatible or to launch binary directly
+
+  if(QCommand != QString::fromStdString(target.ToString())){
+      QCommand = QCommand + " " + QString::fromStdString(target.MakeEscaped());
+  }
+
+  for (const std::string& argument : arguments) QCommand = QCommand + " " + QString::fromStdString(argument);
+
+  { LOG(LogDebug) << "[Script] Run UserScript with return: " << QCommand.toStdString(); }
+
+  std::string result = run(QCommand.toStdString());
+  { LOG(LogDebug) << "[Script] UserScript return: " << result; }
+  return result;
+}
+
+
 
 bool ScriptManager::HasValidExtension(const Path& path)
 {

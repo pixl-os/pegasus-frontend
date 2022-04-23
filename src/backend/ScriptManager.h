@@ -114,7 +114,17 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param arguments arguments passed to the target
      */
     void RunProcess(const Path& target, const Strings::Vector& arguments, bool synchronous, bool permanent);
-    
+
+    /*!
+     * @brief Run the target using the given arguments. (run immediatelly in the same thread, should be a quicker one)
+     * The target is run aither natively or using python or sh regarding the target extension
+     * @param target executable/script to run
+     * @param arguments arguments passed to the target
+     * @return string content is the result of the script
+     */
+
+    std::string RunProcessWithReturn(const Path& target, const Strings::Vector& arguments);
+
   private:
 
     //! Shortcut :)
