@@ -26,6 +26,22 @@ const std::string eol("\r\n");
 const Path ScriptManager::sStatusFilePath("/tmp/es_state.inf");
 rHashMap<std::string, pid_t> ScriptManager::sPermanentScriptsPID;
 
+//simple command to run script using result
+std::string run(const std::string& command)
+{
+  std::string output;
+  char buffer[4096];
+  FILE* pipe = popen(command.data(), "r");
+  if (pipe != nullptr)
+  {
+    while (feof(pipe) == 0)
+      if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        output.append(buffer);
+    pclose(pipe);
+  }
+  return output;
+}
+
 ScriptManager::ScriptManager(char** environment)
   : StaticLifeCycleControler<ScriptManager>("ScriptManager"),
     mEnvironment(environment)
@@ -390,6 +406,37 @@ void ScriptManager::RunProcess(const Path& target, const Strings::Vector& argume
   // Permanent?
   if (permanent)
     sPermanentScriptsPID.insert(target.ToString(), pid);
+}
+
+std::string ScriptManager::RunProcessWithReturn(const Path& target, const Strings::Vector& arguments)
+{
+  // final argument array
+  std::vector<const char*> args;
+
+  std::string command;
+
+  // Extract extension
+  std::string ext = Strings::ToLowerASCII(target.Extension());
+  if      (ext == ".sh")  { command = "/bin/sh";          args.push_back(command.data()); }
+  else if (ext == ".ash") { command = "/bin/ash";         args.push_back(command.data()); }
+  else if (ext == ".py")  { command = "/usr/bin/python";  args.push_back(command.data()); }
+  else if (ext == ".py2") { command = "/usr/bin/python2"; args.push_back(command.data()); }
+  else if (ext == ".py3") { command = "/usr/bin/python3"; args.push_back(command.data()); }
+  else { command = target.ToString(); }
+
+  args.push_back(target.ToChars());
+  for (const std::string& argument : arguments) args.push_back(argument.c_str());
+
+  { LOG(LogDebug) << "[Script] Run UserScript: " << Strings::Join(args, ' '); }
+  { LOG(LogDebug) << "[Script] Run UserScript (command): " << command.data(); }
+  { LOG(LogDebug) << "[Script] Run UserScript (args): " << args.data(); }
+
+  std::string result = run(Strings::Join(args, ' '));
+  { LOG(LogDebug) << "[Script] UserScript return: " << result; }
+  // Push final null
+  args.push_back(nullptr);
+  return result;
+
 }
 
 bool ScriptManager::HasValidExtension(const Path& path)

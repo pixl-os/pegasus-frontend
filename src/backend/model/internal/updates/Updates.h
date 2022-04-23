@@ -87,28 +87,28 @@ class Updates : public QObject {
 public:
     explicit Updates(QObject* parent = nullptr);
     //Asynchronous function to get last version in background tasts from repo and store it in /tmp
-    Q_INVOKABLE void getRepoInfo(const QString componentName, const QString repoUrl);
+    Q_INVOKABLE void getRepoInfo(QString componentName, const QString repoUrl);
     //function to check if any updates is available using /tmp
     Q_INVOKABLE bool hasAnyUpdate();
     //function to check information about updates of any componants and confirm quickly if update using /tmp
-    Q_INVOKABLE bool hasUpdate(const QString componentName, const bool betaIncluded, const QString filter = "");
+    Q_INVOKABLE bool hasUpdate(QString componentName, const bool betaIncluded, const QString filter = "");
     //function to get details from last "available" update (and only if available)
-    Q_INVOKABLE UpdateEntry updateDetails(const QString componentName, const bool betaIncluded);
+    Q_INVOKABLE UpdateEntry updateDetails(QString componentName, const bool betaIncluded);
     //function to return the number of version available
-    Q_INVOKABLE int componentVersionsCount(const QString componentName);
+    Q_INVOKABLE int componentVersionsCount(QString componentName);
     //function to get any version details using index
-    Q_INVOKABLE UpdateEntry componentVersionDetails(const QString componentName, const int index);
+    Q_INVOKABLE UpdateEntry componentVersionDetails(QString componentName, const int index);
     //Asynchronous function to install a component
-    Q_INVOKABLE void launchComponentInstallation(const QString componentName, const QString version);
+    Q_INVOKABLE void launchComponentInstallation(QString componentName, const QString version);
     //Function to know status - as "Download", "Installation", "Completed" or "error"
-    Q_INVOKABLE QString getInstallationStatus(const QString componentName);
+    Q_INVOKABLE QString getInstallationStatus(QString componentName);
     //Fucntion to know progress of each installation steps
-    Q_INVOKABLE float getInstallationProgress(const QString componentName); //provide pourcentage of downlaod and installation
+    Q_INVOKABLE float getInstallationProgress(QString componentName); //provide pourcentage of downlaod and installation
     //Function to know if error during installation step
-    Q_INVOKABLE int getInstallationError(const QString componentName); //provide code from -2 to 3 / 0 : no error / >0: errors/need retry / -1: need restart / -2: need reboot
+    Q_INVOKABLE int getInstallationError(QString componentName); //provide code from -2 to 3 / 0 : no error / >0: errors/need retry / -1: need restart / -2: need reboot
 
 private:
-    QList <UpdateEntry> parseJsonComponentFile(const QString componentName);
+    QList <UpdateEntry> parseJsonComponentFile(QString componentName);
     int selectVersionIndex(QList <UpdateEntry> m_versions, const bool betaIncluded);
 
 signals:
@@ -117,7 +117,7 @@ private slots:
     //to have thread to download JSON file from repo
     void getRepoInfo_slot(QString componentName, QString repoUrl);
     //to have thread to download ZIP file/Script and to install the new component
-    void launchComponentInstallation_slot(const QString componentName, const QString version);
+    void launchComponentInstallation_slot(QString componentName, const QString version);
 
 public:
 

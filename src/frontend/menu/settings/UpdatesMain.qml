@@ -229,7 +229,7 @@ FocusScope {
                         }
 
                         // label used with default color
-                        label: entry !== null ? (entry.componentName + " / " + entry.tagName) + (entry.isPreRelease ? " / " + qsTr("Pre-released") + api.tr : "") : ""
+                        label: entry !== null ? (item.componentName + " / " + entry.tagName) + (entry.isPreRelease ? " / " + qsTr("Pre-released") + api.tr : "") : ""
 
                         note: {
                             if(entry !== null){
@@ -259,7 +259,7 @@ FocusScope {
                         picture: item.picture !== "" ? item.picture : entry.picture
                         //first column - if empty that is not used
                         detailed_description: entry.releaseNote;
-                        focus: index === 0 ? true : false
+                        focus: entry !== null ? true : false
                         onActivate: {
                             if(updateButton.visible && (errorCode >= 0)){
                                 //to display logo of this room
