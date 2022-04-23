@@ -226,7 +226,10 @@ Updates::Updates(QObject* parent)
 }
 
 //Asynchronous function to get last version in background tasts from repo and store it in /tmp
-void Updates::getRepoInfo(const QString componentName, const QString repoUrl){
+void Updates::getRepoInfo(QString componentName, const QString repoUrl){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     //Just Download JSON file from repo and save it from componentName
     //example of url: https://api.github.com/repos/bozothegeek/pegasus-frontend/releases
     QMetaObject::invokeMethod(this,"getRepoInfo_slot", Qt::QueuedConnection,
@@ -234,6 +237,9 @@ void Updates::getRepoInfo(const QString componentName, const QString repoUrl){
 }
 
 void Updates::getRepoInfo_slot(QString componentName, QString url_str){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     //Log::debug(LOGMSG("void Rooms::refresh_slot()"));
     QJsonDocument json;
     //bool result = false;
@@ -279,7 +285,10 @@ bool Updates::hasAnyUpdate(){
 }
 
 //function to check information about updates of any componants and confirm quickly if update using /tmp
-bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, const QString filter){
+bool Updates::hasUpdate(QString componentName, const bool betaIncluded, const QString filter){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     QList <UpdateEntry> m_versions;
     //get data of update/versions and store in QList<UpdateEntry>
     m_versions = parseJsonComponentFile(componentName);
@@ -332,7 +341,10 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, co
 }
 
 //function to get details from last "available" update (and only if available)
-UpdateEntry Updates::updateDetails(const QString componentName, const bool betaIncluded){
+UpdateEntry Updates::updateDetails(QString componentName, const bool betaIncluded){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     UpdateEntry Empty;
     QList <UpdateEntry> m_versions;
     //get data of update/versions and store in QList<UpdateEntry>
@@ -361,16 +373,24 @@ UpdateEntry Updates::updateDetails(const QString componentName, const bool betaI
 }
 
 //function to return the number of version available
-int Updates::componentVersionsCount(const QString componentName){
+int Updates::componentVersionsCount(QString componentName){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+    //RFU
 }
 
 //function to get any version details using index
-UpdateEntry Updates::componentVersionDetails(const QString componentName, const int index){
-
+UpdateEntry Updates::componentVersionDetails(QString componentName, const int index){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+    //RFU
 }
 
 //Asynchronous function to install a component
-void Updates::launchComponentInstallation(const QString componentName, const QString version){
+void Updates::launchComponentInstallation(QString componentName, const QString version){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     Log::debug(log_tag, LOGMSG("launchComponentInstallation for: %1 in version: %2\n").arg(componentName,version));
     //launch installation
     QMetaObject::invokeMethod(this,"launchComponentInstallation_slot", Qt::QueuedConnection,
@@ -378,7 +398,10 @@ void Updates::launchComponentInstallation(const QString componentName, const QSt
 }
 
 //void Updates::launchComponentInstallation_slot(const QString componentName, const QString zipUrl, const QString installationScriptUrl){
-void Updates::launchComponentInstallation_slot(const QString componentName, const QString version){
+void Updates::launchComponentInstallation_slot(QString componentName, const QString version){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     QList <UpdateEntry> m_versions;
     //get data of update/versions and store in QList<UpdateEntry>
     m_versions = parseJsonComponentFile(componentName);
@@ -513,7 +536,10 @@ void Updates::launchComponentInstallation_slot(const QString componentName, cons
 }
 
 //Function to know status - as "Download", "Installation", "Completed" or "error"
-QString Updates::getInstallationStatus(const QString componentName){
+QString Updates::getInstallationStatus(QString componentName){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     for(int i = 0;i < m_updates.count();i++){
         if(m_updates[i].m_componentName == componentName){
             if(m_updates[i].m_installationStep == 1){//if we are downloading...
@@ -539,7 +565,10 @@ QString Updates::getInstallationStatus(const QString componentName){
 }
 
 //Fucntion to know progress of each installation steps
-float Updates::getInstallationProgress(const QString componentName){
+float Updates::getInstallationProgress(QString componentName){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     for(int i = 0;i < m_updates.count();i++){
         if(m_updates[i].m_componentName == componentName){
             if(m_updates[i].m_installationStep == 1){//if we are downloading...
@@ -560,7 +589,10 @@ float Updates::getInstallationProgress(const QString componentName){
     return 0.0;
 }
 
-int Updates::getInstallationError(const QString componentName){
+int Updates::getInstallationError(QString componentName){
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     for(int i = 0;i < m_updates.count();i++){
         if(m_updates[i].m_componentName == componentName){
             if(m_updates[i].m_installationStep == 1){
@@ -580,8 +612,11 @@ int Updates::getInstallationError(const QString componentName){
     return 0;
 }
 
-QList <UpdateEntry> Updates::parseJsonComponentFile(const QString componentName)
+QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
 {
+    //to avoid issue with spaces in directories and scripts
+    componentName = componentName.replace(" ","");
+
     QList <UpdateEntry> m_versions;
     //parse json file if exist
     if(QFileInfo::exists("/tmp/" + componentName + ".json")){
@@ -619,6 +654,7 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(const QString componentName)
             m_versions[i].m_created_at = array_entry[QL1("created_at")].toString();
             m_versions[i].m_published_at = array_entry[QL1("published_at")].toString();
             m_versions[i].m_body = array_entry[QL1("body")].toString().replace("\r","");
+            //Log::debug(log_tag, LOGMSG("array_entry[QL1('body')].toString(): %1").arg(array_entry[QL1("body")].toString().replace("\r","")));
 
             //reading of assets
             const auto assets = array_entry[QL1("assets")].toArray();
