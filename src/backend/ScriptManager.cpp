@@ -410,31 +410,34 @@ void ScriptManager::RunProcess(const Path& target, const Strings::Vector& argume
 
 std::string ScriptManager::RunProcessWithReturn(const Path& target, const Strings::Vector& arguments)
 {
-  QString QCommand;
+  // final argument array
+  std::vector<const char*> args;
+
+  std::string command;
+
   // Extract extension
   std::string ext = Strings::ToLowerASCII(target.Extension());
+  if      (ext == ".sh")  { command = "/bin/sh";          args.push_back(command.data()); }
+  else if (ext == ".ash") { command = "/bin/ash";         args.push_back(command.data()); }
+  else if (ext == ".py")  { command = "/usr/bin/python";  args.push_back(command.data()); }
+  else if (ext == ".py2") { command = "/usr/bin/python2"; args.push_back(command.data()); }
+  else if (ext == ".py3") { command = "/usr/bin/python3"; args.push_back(command.data()); }
+  else { command = target.ToString(); }
 
-  if      (ext == ".sh")  { QCommand = "/bin/sh"; }
-  else if (ext == ".ash") { QCommand = "/bin/ash"; }
-  else if (ext == ".py")  { QCommand = "/usr/bin/python"; }
-  else if (ext == ".py2") { QCommand = "/usr/bin/python2"; }
-  else if (ext == ".py3") { QCommand = "/usr/bin/python3"; }
-  else { QCommand = QString::fromStdString(target.ToString()); } //for extension not yet compatible or to launch binary directly
+  args.push_back(target.ToChars());
+  for (const std::string& argument : arguments) args.push_back(argument.c_str());
 
-  if(QCommand != QString::fromStdString(target.ToString())){
-      QCommand = QCommand + " " + QString::fromStdString(target.MakeEscaped());
-  }
+  { LOG(LogDebug) << "[Script] Run UserScript: " << Strings::Join(args, ' '); }
+  { LOG(LogDebug) << "[Script] Run UserScript (command): " << command.data(); }
+  { LOG(LogDebug) << "[Script] Run UserScript (args): " << args.data(); }
 
-  for (const std::string& argument : arguments) QCommand = QCommand + " " + QString::fromStdString(argument);
-
-  { LOG(LogDebug) << "[Script] Run UserScript with return: " << QCommand.toStdString(); }
-
-  std::string result = run(QCommand.toStdString());
+  std::string result = run(Strings::Join(args, ' '));
   { LOG(LogDebug) << "[Script] UserScript return: " << result; }
+  // Push final null
+  args.push_back(nullptr);
   return result;
+
 }
-
-
 
 bool ScriptManager::HasValidExtension(const Path& path)
 {
