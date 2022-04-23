@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2022-04-23 - v0.0.4
+- lang: bump last translation fr (update on bios, restart and controller menu)
+- introduction of online update for cores
+- first updatable core: libretro fbneo
+
 ## [recalbox-integration] - 2022-04-21 - v0.0.3
 - menu: refact menu advanced controller
 - menu: remove focus on toogle option 
