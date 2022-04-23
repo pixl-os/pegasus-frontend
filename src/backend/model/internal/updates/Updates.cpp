@@ -58,10 +58,15 @@ QString getExistingRawVersion(const QString componentName, const QString version
         //get internal version of Pegasus
         existingVersion = QStringLiteral(GIT_REVISION);
     }
-    else
-    {
+    else if(versionScript != "") {
         //for other case, the getting of the version could be different and using a script
-        //read assets to find the script for that
+        //run the script to read the existing version
+        // Build parameters
+        Strings::Vector args;
+        //prepare script to run
+        const Path path = Path(QString(versionScript).toStdString());
+        const ScriptManager::ScriptData script = { path, Notification::None , true };
+        existingVersion = QString::fromStdString(ScriptManager::Instance().RunProcessWithReturn(script.mPath,args));
     }
     return existingVersion;
 }
@@ -141,7 +146,7 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
     if (json.isNull()) {
         Log::warning(log_tag, LOGMSG(
                "Failed to parse the response of the server, "
-               "either it's no longer available from https://retroachievements.org/ or the API has changed"));
+               "either it's no longer available from repo API"));
         return QJsonDocument();
     }
     return json;
@@ -158,6 +163,55 @@ void saveJson(QJsonDocument document, QString fileName) {
     jsonFile.open(QFile::WriteOnly);
     jsonFile.write(document.toJson());
 }
+
+QString get_script_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
+{
+    QNetworkAccessManager* const manager_ptr = &manager;
+    const QUrl url(url_str, QUrl::StrictMode);
+    Q_ASSERT(url.isValid());
+    if (Q_UNLIKELY(!url.isValid()))
+    {
+        Log::debug(log_tag, LOGMSG("Q_UNLIKELY(!url.isValid())"));
+        return "";
+    }
+
+    //Set request
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+        request.setTransferTimeout(10000);
+    #endif
+
+    //Get request
+    QNetworkReply* const reply = manager_ptr->get(request);
+
+    //do loop on connect to wait donwload in this case
+    QEventLoop loop;
+    QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    if (reply->error()) {
+        Log::warning(log_tag, LOGMSG("Downloading metadata failed: %1").arg(reply->errorString()));
+        return "";
+    }
+    QString script = reply->readAll();
+    Log::debug(log_tag, LOGMSG("Script Raw data: %1").arg(script));
+
+    if (script.isNull()) {
+        Log::warning(log_tag, LOGMSG(
+                         "Failed to parse the response of the server, "
+                         "either it's no longer available from repo API"));
+        return "";
+    }
+    return script;
+}
+
+void saveScript(QString scriptContent, QString fileName) {
+    QFile scriptFile(fileName);
+    scriptFile.open(QFile::WriteOnly);
+    scriptFile.write(scriptContent.toStdString().c_str());
+}
+
 
 } // namespace
 
@@ -231,15 +285,42 @@ bool Updates::hasUpdate(const QString componentName, const bool betaIncluded, co
     m_versions = parseJsonComponentFile(componentName);
     if(m_versions.count() != 0)
     {
-        //search index of version selected depeding of betaIncluded or not.
+        //search index of version selected depending of betaIncluded or not.
         int versionIndex = selectVersionIndex(m_versions,betaIncluded);
         if(versionIndex == -1){
             //no release version found
             return false;
         }
-
+        //get version.? from selected version (if exists)
+        UpdateAssets versionScriptAsset;
+        versionScriptAsset.m_name_asset = "";
+        for(int j = 0;j < m_versions[versionIndex].m_assets.count();j++){
+            if(m_versions[versionIndex].m_assets[j].m_name_asset.startsWith("version.",Qt::CaseInsensitive)){
+                versionScriptAsset = m_versions[versionIndex].m_assets[j];
+            }
+        }
+        //download version.? script
+        //check and create directory if needed
+        QString directoryPath = "/tmp/" + componentName;
+        if(!QDir(directoryPath).exists()) {
+            //create it
+            QDir().mkdir(directoryPath);
+        }
+        //check if any script version already exists
+        if(!QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).exists()) {
+            //Create Network Access
+            QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+            //get script content from url
+            QString scriptContent = get_script_from_url(versionScriptAsset.m_download_url, log_tag, *manager);
+            //save script content in a file in /tmp/'Componenet Name' directory
+            saveScript(scriptContent, directoryPath + "/" + versionScriptAsset.m_name_asset);
+        }
         //compare with version install
-        QString existingVersion = getExistingRawVersion(componentName,""); //no usage of script for the moment
+        QString existingVersion = getExistingRawVersion(componentName,directoryPath + "/" + versionScriptAsset.m_name_asset);
+        //if version empty, we have an issue, we can't continue
+        if(existingVersion == ""){
+            return false;
+        }
         QList<int> existingVersionNumbers = getVersionNumbers(existingVersion);
         QList<int> newVersionNumbers = getVersionNumbers(m_versions[versionIndex].m_tag_name);
         if(isNewVersion(existingVersionNumbers, newVersionNumbers)){
@@ -334,8 +415,23 @@ void Updates::launchComponentInstallation_slot(const QString componentName, cons
                 }
 
             }
+            //download version.? script
+            //check and create directory if needed
+            QString directoryPath = "/tmp/" + componentName;
+            if(!QDir(directoryPath).exists()) {
+                //create it
+                QDir().mkdir(directoryPath);
+            }
+            //Redownload in all cases because we are in a slot
+            //Create Network Access
+            QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+            //get script content from url
+            QString scriptContent = get_script_from_url(versionScriptAsset.m_download_url, log_tag, *manager);
+            //save script content in a file in /tmp/'Componenet Name' directory
+            saveScript(scriptContent, directoryPath + "/" + versionScriptAsset.m_name_asset);
+
             //prepare version also
-            QString rawVersion = getExistingRawVersion(componentName,versionScriptAsset.m_name_asset); //no usage of script for the moment
+            QString rawVersion = getExistingRawVersion(componentName,directoryPath + "/" + versionScriptAsset.m_name_asset);
             QString existingVersion = getVersionString(rawVersion);
             QString newVersion = getVersionString(version);
 
