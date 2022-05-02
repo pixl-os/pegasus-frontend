@@ -109,6 +109,26 @@ QList<int> getVersionNumbers(const QString rawVersion){
     return versionNumbers; // return each number of version in QList<int> or empty one if no version found
 }
 
+QJsonDocument get_json_from_path(QString path_str, QString log_tag)
+{
+    //read file content
+    QFile f(path_str);
+    QString raw_data;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        raw_data = in.readAll();
+    }
+    Log::debug(log_tag, LOGMSG("Raw data: %1").arg(QString(raw_data)));
+    QJsonDocument json = QJsonDocument::fromVariant(raw_data);
+    if (json.isNull()) {
+        Log::warning(log_tag, LOGMSG(
+               "Failed to parse the local json file, "
+               "either it's no longer available"));
+        return QJsonDocument();
+    }
+    return json;
+}
+
 QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
 {
     QNetworkAccessManager* const manager_ptr = &manager;
@@ -163,6 +183,20 @@ void saveJson(QJsonDocument document, QString fileName) {
     jsonFile.open(QFile::WriteOnly);
     jsonFile.write(document.toJson());
 }
+
+/*QString get_script_from_path(QString path_str, QString log_tag)
+{
+    QString script = reply->readAll();
+    Log::debug(log_tag, LOGMSG("Script Raw data: %1").arg(script));
+
+    if (script.isNull()) {
+        Log::warning(log_tag, LOGMSG(
+                         "Failed to parse the response of the server, "
+                         "either it's no longer available from repo API"));
+        return "";
+    }
+    return script;
+}*/
 
 QString get_script_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
 {
@@ -244,15 +278,28 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
     QJsonDocument json;
     //bool result = false;
     try{
-        //Create Network Access
-        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-        //get json url
-        json = get_json_from_url(url_str, log_tag, *manager);
-        //save json in a file in /tmp directory
-        saveJson(json, "/tmp/" + componentName + ".json");
-        //kill manager to avoid memory leaks
-        delete manager;
-
+        Log::debug(LOGMSG("url_str: %1").arg(url_str));
+        const QUrl url(url_str, QUrl::StrictMode);
+        if(url.isValid()){ //to check that is a remote repo using url
+            //Create Network Access
+            QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+            //get json url
+            json = get_json_from_url(url_str, log_tag, *manager);
+            //save json in a file in /tmp directory
+            saveJson(json, "/tmp/" + componentName + ".json");
+            //kill manager to avoid memory leaks
+            delete manager;
+        }
+        else if(url_str.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
+        {
+            //read file
+            json = get_json_from_path(url_str, log_tag);
+            //save json in a file in /tmp directory
+            saveJson(json, "/tmp/" + componentName + ".json");
+        }
+        else{
+            Log::error(log_tag, LOGMSG("Error: %2's repo is not identified as local or remote repo : %1\n").arg(url_str,componentName));
+        }
     }
     catch ( const std::exception & Exp )
     {
