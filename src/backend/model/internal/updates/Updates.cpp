@@ -109,26 +109,6 @@ QList<int> getVersionNumbers(const QString rawVersion){
     return versionNumbers; // return each number of version in QList<int> or empty one if no version found
 }
 
-QJsonDocument get_json_from_path(QString path_str, QString log_tag)
-{
-    //read file content
-    QFile f(path_str);
-    QString raw_data;
-    if (f.open(QFile::ReadOnly | QFile::Text)){
-        QTextStream in(&f);
-        raw_data = in.readAll();
-    }
-    Log::debug(log_tag, LOGMSG("Raw data: %1").arg(QString(raw_data)));
-    QJsonDocument json = QJsonDocument::fromVariant(raw_data);
-    if (json.isNull()) {
-        Log::warning(log_tag, LOGMSG(
-               "Failed to parse the local json file, "
-               "either it's no longer available"));
-        return QJsonDocument();
-    }
-    return json;
-}
-
 QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
 {
     QNetworkAccessManager* const manager_ptr = &manager;
@@ -174,8 +154,12 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 
 QJsonDocument loadJson(QString fileName) {
     QFile jsonFile(fileName);
-    jsonFile.open(QFile::ReadOnly);
-    return QJsonDocument().fromJson(jsonFile.readAll());
+    //Log::debug(LOGMSG("Json fileName: %1").arg(fileName));
+    if(jsonFile.open(QFile::ReadOnly)){
+        //Log::debug(LOGMSG("Json Raw data: %1").arg(QString::fromLatin1(jsonFile.readAll())));jsonFile.reset();
+        return QJsonDocument().fromJson(jsonFile.readAll());
+    }
+    else return QJsonDocument().fromVariant(""); //empty json
 }
 
 void saveJson(QJsonDocument document, QString fileName) {
@@ -274,13 +258,13 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
     //to avoid issue with spaces in directories and scripts
     componentName = componentName.replace(" ","");
 
-    //Log::debug(LOGMSG("void Rooms::refresh_slot()"));
+    Log::debug(LOGMSG("void Updates::getRepoInfo_slot()"));
     QJsonDocument json;
     //bool result = false;
     try{
         Log::debug(LOGMSG("url_str: %1").arg(url_str));
-        const QUrl url(url_str, QUrl::StrictMode);
-        if(url.isValid()){ //to check that is a remote repo using url
+        if(url_str.startsWith("http",Qt::CaseInsensitive)){ //to check that is a remote repo using url
+            Log::debug(LOGMSG("url valid: %1").arg(url_str));
             //Create Network Access
             QNetworkAccessManager *manager = new QNetworkAccessManager(this);
             //get json url
@@ -292,8 +276,9 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
         }
         else if(url_str.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
         {
+            Log::debug(LOGMSG("path valid: %1").arg(url_str));
             //read file
-            json = get_json_from_path(url_str, log_tag);
+            json = loadJson(url_str);
             //save json in a file in /tmp directory
             saveJson(json, "/tmp/" + componentName + ".json");
         }
@@ -666,6 +651,7 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
 
     QList <UpdateEntry> m_versions;
     //parse json file if exist
+    Log::debug(log_tag, LOGMSG("/tmp/%1.json").arg(componentName));
     if(QFileInfo::exists("/tmp/" + componentName + ".json")){
         //load json from file in /tmp directory
         QJsonDocument json = loadJson("/tmp/" + componentName + ".json");
@@ -674,7 +660,7 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
 
         if (json.isNull())
         {
-            Log::debug(log_tag, LOGMSG("json.isNull()"));
+            Log::debug(log_tag, LOGMSG("%1 : json.isNull()").arg(componentName));
             return m_versions;
         }
         const auto json_root = json.array();
