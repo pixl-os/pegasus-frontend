@@ -446,6 +446,7 @@ FocusScope {
 
                  SequentialAnimation on animatedWidth {
                      loops: Animation.Infinite
+                     paused: (root.progress === 1.0) ? true : false
                      PropertyAnimation { duration: 500; to: vpx(68) }
                      PropertyAnimation { duration: 0; to: 0 }
                  }
@@ -475,10 +476,11 @@ FocusScope {
             visible: root.progress > 0.0 ? true : false
 
             text: progressStatus
-            color: themeColor.textSublabel
+            color: ((root.errorCode <= 0) && (root.progress === 1.0)) ?  "green" : ((root.errorCode > 0) ? "red" : themeColor.textSublabel)
             font.pixelSize: fontSize * 0.7
             font.family: global.fonts.sans
             font.italic: true
+            font.bold: ((root.errorCode <= 0) && (root.progress === 1.0)) ?  true : ((root.errorCode > 0) ? true : false)
 
             anchors.top: progressRoot.bottom
             anchors.topMargin: vpx(8)

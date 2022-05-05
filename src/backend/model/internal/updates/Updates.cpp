@@ -141,8 +141,10 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
     }
     const QByteArray raw_data = reply->readAll();
     //Log::debug(log_tag, LOGMSG("Raw data: %1").arg(QString(raw_data)));
-
     QJsonDocument json = QJsonDocument::fromJson(raw_data);
+    //to avoid memory leacks
+    reply->deleteLater();
+
     if (json.isNull()) {
         Log::warning(log_tag, LOGMSG(
                "Failed to parse the response of the server, "
@@ -154,14 +156,40 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 
 QJsonDocument loadJson(QString fileName) {
     QFile jsonFile(fileName);
-    jsonFile.open(QFile::ReadOnly);
-    return QJsonDocument().fromJson(jsonFile.readAll());
+    //Log::debug(LOGMSG("Json fileName: %1").arg(fileName));
+    if(jsonFile.open(QFile::ReadOnly)){
+        //Log::debug(LOGMSG("Json Raw data: %1").arg(QString::fromLatin1(jsonFile.readAll())));jsonFile.reset();
+        return QJsonDocument().fromJson(jsonFile.readAll());
+    }
+    else return QJsonDocument().fromVariant(""); //empty json
 }
 
 void saveJson(QJsonDocument document, QString fileName) {
     QFile jsonFile(fileName);
     jsonFile.open(QFile::WriteOnly);
     jsonFile.write(document.toJson());
+}
+
+QString get_script_from_path(QString path_str, QString log_tag)
+{
+    //read file content
+    Log::debug(log_tag, LOGMSG("Script path_str: %1").arg(path_str));
+    QFile f(path_str);
+    QString raw_data;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        raw_data = in.readAll();
+    }
+    QString script = QString(raw_data);
+    Log::debug(log_tag, LOGMSG("Script Raw data: %1").arg(script));
+
+    if (script.isNull()) {
+        Log::warning(log_tag, LOGMSG(
+                         "Failed to parse the local file, "
+                         "either it's no longer available"));
+        return "";
+    }
+    return script;
 }
 
 QString get_script_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
@@ -196,6 +224,9 @@ QString get_script_from_url(QString url_str, QString log_tag, QNetworkAccessMana
     }
     QString script = reply->readAll();
     Log::debug(log_tag, LOGMSG("Script Raw data: %1").arg(script));
+
+    //to avoid memory leacks
+    reply->deleteLater();
 
     if (script.isNull()) {
         Log::warning(log_tag, LOGMSG(
@@ -240,19 +271,33 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
     //to avoid issue with spaces in directories and scripts
     componentName = componentName.replace(" ","");
 
-    //Log::debug(LOGMSG("void Rooms::refresh_slot()"));
+    Log::debug(LOGMSG("void Updates::getRepoInfo_slot()"));
     QJsonDocument json;
     //bool result = false;
     try{
-        //Create Network Access
-        QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-        //get json url
-        json = get_json_from_url(url_str, log_tag, *manager);
-        //save json in a file in /tmp directory
-        saveJson(json, "/tmp/" + componentName + ".json");
-        //kill manager to avoid memory leaks
-        delete manager;
-
+        Log::debug(LOGMSG("url_str: %1").arg(url_str));
+        if(url_str.startsWith("http",Qt::CaseInsensitive)){ //to check that is a remote repo using url
+            Log::debug(LOGMSG("url valid: %1").arg(url_str));
+            //Create Network Access
+            QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+            //get json url
+            json = get_json_from_url(url_str, log_tag, *manager);
+            //save json in a file in /tmp directory
+            saveJson(json, "/tmp/" + componentName + ".json");
+            //kill manager to avoid memory leaks
+            delete manager;
+        }
+        else if(url_str.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
+        {
+            Log::debug(LOGMSG("path valid: %1").arg(url_str));
+            //read file
+            json = loadJson(url_str);
+            //save json in a file in /tmp directory
+            saveJson(json, "/tmp/" + componentName + ".json");
+        }
+        else{
+            Log::error(log_tag, LOGMSG("Error: %2's repo is not identified as local or remote repo : %1\n").arg(url_str,componentName));
+        }
     }
     catch ( const std::exception & Exp )
     {
@@ -315,14 +360,24 @@ bool Updates::hasUpdate(QString componentName, const bool betaIncluded, const QS
             //create it
             QDir().mkdir(directoryPath);
         }
+        Log::debug(LOGMSG("versionScriptAsset.m_download_url: %1").arg(versionScriptAsset.m_download_url));
         //check if any script version already exists
-        if(!QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).exists()) {
+        if(!QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).exists() ||  (QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).size() == 0)) {
             //Create Network Access
             QNetworkAccessManager *manager = new QNetworkAccessManager(this);
             //get script content from url
-            QString scriptContent = get_script_from_url(versionScriptAsset.m_download_url, log_tag, *manager);
+            QString scriptContent;
+            if(versionScriptAsset.m_download_url.startsWith("http",Qt::CaseInsensitive)) //to check that is a remote repo using url
+            {
+                scriptContent = get_script_from_url(versionScriptAsset.m_download_url, log_tag, *manager);
+            }
+            else if(versionScriptAsset.m_download_url.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
+            {
+                scriptContent = get_script_from_path(versionScriptAsset.m_download_url, log_tag);
+            }
             //save script content in a file in /tmp/'Componenet Name' directory
             saveScript(scriptContent, directoryPath + "/" + versionScriptAsset.m_name_asset);
+            delete manager; //to avoid memory leaks also
         }
         //compare with version install
         QString existingVersion = getExistingRawVersion(componentName,directoryPath + "/" + versionScriptAsset.m_name_asset);
@@ -436,7 +491,6 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                 else if(m_versions[versionIndex].m_assets[j].m_name_asset.startsWith("version.",Qt::CaseInsensitive)){
                     versionScriptAsset = m_versions[versionIndex].m_assets[j];
                 }
-
             }
             //download version.? script
             //check and create directory if needed
@@ -449,9 +503,18 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
             //Create Network Access
             QNetworkAccessManager *manager = new QNetworkAccessManager(this);
             //get script content from url
-            QString scriptContent = get_script_from_url(versionScriptAsset.m_download_url, log_tag, *manager);
+            QString scriptContent;
+            if(versionScriptAsset.m_download_url.startsWith("http",Qt::CaseInsensitive)) //to check that is a remote repo using url
+            {
+                scriptContent = get_script_from_url(versionScriptAsset.m_download_url, log_tag, *manager);
+            }
+            else if(versionScriptAsset.m_download_url.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
+            {
+                scriptContent = get_script_from_path(versionScriptAsset.m_download_url, log_tag);
+            }
             //save script content in a file in /tmp/'Componenet Name' directory
             saveScript(scriptContent, directoryPath + "/" + versionScriptAsset.m_name_asset);
+            delete manager; //to avoid memory leaks also
 
             //prepare version also
             QString rawVersion = getExistingRawVersion(componentName,directoryPath + "/" + versionScriptAsset.m_name_asset);
@@ -459,7 +522,7 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
             QString newVersion = getVersionString(version);
 
             //check if valid (at minimum to have a package and an installation script and with an existing version)
-            if((zipAsset.m_name_asset != "") && (installationScriptAsset.m_name_asset != "") && (existingVersion != "")){
+            if((installationScriptAsset.m_name_asset != "") && (existingVersion != "")){
 
                 //check and create directory if needed
                 QString diretoryPath = "/tmp/" + componentName;
@@ -477,7 +540,7 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     }
                 }
 
-                //folloxing this rules
+                //following this rules
                 //set update to for follow-up
                 if(foundIndex == -1){
                     m_updates.append({componentName,0.01,"",downloaderIndex,0});
@@ -494,17 +557,30 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     m_updates[foundIndex].m_installationStep = 0;
                 }
 
-                //first download zip & script file + clear before to use or reuse the slot
-                downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
-                downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
-                downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
+                if(installationScriptAsset.m_download_url.startsWith("http",Qt::CaseInsensitive)) //to check that is a remote repo using url
+                {
+                    //first download zip & script file + clear before to use or reuse the slot
+                    downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
+                    downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
+                    downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
 
-                //do loop on connect to wait download in this case
-                m_updates[foundIndex].m_installationStep = 1;
-                QEventLoop loop;
-                QObject::connect(&downloadManager[0], &DownloadManager::finished, &loop, &QEventLoop::quit);
-                loop.exec();
-                Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
+                    //do loop on connect to wait download in this case
+                    m_updates[foundIndex].m_installationStep = 1;
+                    QEventLoop loop;
+                    QObject::connect(&downloadManager[0], &DownloadManager::finished, &loop, &QEventLoop::quit);
+                    loop.exec();
+                    Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
+                }
+                else if(installationScriptAsset.m_download_url.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
+                {
+                    //no loop or wait, but step 1 ...
+                    m_updates[foundIndex].m_installationStep = 1;
+                    QString installationScriptContent = get_script_from_path(installationScriptAsset.m_download_url, log_tag);
+                    //save script content in a file in /tmp/'Componenet Name' directory
+                    saveScript(installationScriptContent, directoryPath + "/" + installationScriptAsset.m_name_asset);
+                    //no package downloaded in this case for the moment.
+                }
+
 
                 //launch installation after download
                 m_updates[foundIndex].m_installationStep = 2;
@@ -619,6 +695,7 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
 
     QList <UpdateEntry> m_versions;
     //parse json file if exist
+    Log::debug(log_tag, LOGMSG("/tmp/%1.json").arg(componentName));
     if(QFileInfo::exists("/tmp/" + componentName + ".json")){
         //load json from file in /tmp directory
         QJsonDocument json = loadJson("/tmp/" + componentName + ".json");
@@ -627,7 +704,7 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
 
         if (json.isNull())
         {
-            Log::debug(log_tag, LOGMSG("json.isNull()"));
+            Log::debug(log_tag, LOGMSG("%1 : json.isNull()").arg(componentName));
             return m_versions;
         }
         const auto json_root = json.array();

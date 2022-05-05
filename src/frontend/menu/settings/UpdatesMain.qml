@@ -279,7 +279,7 @@ FocusScope {
                                 powerDialog.focus = true;
                             }
                             else if(updateButton.visible && (errorCode === -2)){ //reboot
-                                powerDialog.source = "dialogs/RebootDialog.qml"
+                                powerDialog.source = "../../dialogs/RebootDialog.qml"
                                 powerDialog.focus = true;
                             }
                         }

@@ -178,5 +178,6 @@
         <file>assets/gamepad/rstick_ps4.png</file>
         <file>assets/gamepad/lstick_ps4.png</file>
         <file>assets/gamepad/guide_ps4.png</file>
+        <file>assets/logonvidia.png</file>
     </qresource>
 </RCC>
