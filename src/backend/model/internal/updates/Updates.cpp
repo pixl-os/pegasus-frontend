@@ -522,7 +522,7 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
             QString newVersion = getVersionString(version);
 
             //check if valid (at minimum to have a package and an installation script and with an existing version)
-            if((zipAsset.m_name_asset != "") && (installationScriptAsset.m_name_asset != "") && (existingVersion != "")){
+            if((installationScriptAsset.m_name_asset != "") && (existingVersion != "")){
 
                 //check and create directory if needed
                 QString diretoryPath = "/tmp/" + componentName;
