@@ -203,7 +203,7 @@ FocusScope {
                             console.log("item.hasUpdate : ", item.hasUpdate);
                             if(typeof(item.hasUpdate) !== "undefined"){
                                 if(item.hasUpdate === true){
-                                    return api.internal.updates.updateDetails(item.componentName,true);
+                                    return api.internal.updates.updateDetails(item.componentName,item.UpdateVersionIndex);
                                 }
                             }
                             return null;
@@ -255,8 +255,8 @@ FocusScope {
                         icon: ""
                         icon2: item.icon !== "" ? item.icon : entry.icon
                         //will be displayed when selected and not selected
-                        icon2_forced_display: picture === "" ? true : false
                         picture: item.picture !== "" ? item.picture : entry.picture
+                        icon2_forced_display: item.picture !== "" ? false : (entry.picture !== "" ? false : true)
                         //first column - if empty that is not used
                         detailed_description: entry.releaseNote;
                         focus: entry !== null ? true : false

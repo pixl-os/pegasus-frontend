@@ -66,8 +66,8 @@ public:
       QString m_published_at;
       QString m_body;
       //if available from repo
-      QString m_icon;
-      QString m_picture;
+      QString m_icon = "";
+      QString m_picture = "";
       int m_size; //to have the total size
 
       //for asset
@@ -91,13 +91,14 @@ public:
     //function to check if any updates is available using /tmp
     Q_INVOKABLE bool hasAnyUpdate();
     //function to check information about updates of any componants and confirm quickly if update using /tmp
-    Q_INVOKABLE bool hasUpdate(QString componentName, const bool betaIncluded = false, const bool multiversions = false, const QString filter = "");
+    //and return index of update found
+    Q_INVOKABLE int hasUpdate(QString componentName, const bool betaIncluded = false, const bool multiversions = false, const QString filter = "");
     //function to get details from last "available" update (and only if available)
-    Q_INVOKABLE UpdateEntry updateDetails(QString componentName, const bool betaIncluded);
+    Q_INVOKABLE UpdateEntry updateDetails(QString componentName, const int versionIndex);
     //function to return the number of version available
     Q_INVOKABLE int componentVersionsCount(QString componentName);
     //function to get any version details using index
-    Q_INVOKABLE UpdateEntry componentVersionDetails(QString componentName, const int index);
+    Q_INVOKABLE UpdateEntry componentVersionDetails(QString componentName, const int versionIndex);
     //Asynchronous function to install a component
     Q_INVOKABLE void launchComponentInstallation(QString componentName, const QString version);
     //Function to know status - as "Download", "Installation", "Completed" or "error"

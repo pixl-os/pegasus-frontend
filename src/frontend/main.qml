@@ -937,9 +937,11 @@ Window {
                 //check all components (including pre-release for the moment and without filter)
                 numberOfUpdates = 0;
                 listOfUpdates = "";
-                if(api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , true, (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false )){
+                var updateVersionIndexFound = api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , true, (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false );
+                if(updateVersionIndexFound !== -1){
                     numberOfUpdates = numberOfUpdates + 1;
                     componentsListModel.setProperty(i,"hasUpdate", true);
+                    componentsListModel.setProperty(i,"UpdateVersionIndex", updateVersionIndexFound);
                     //contruct string about all udpates
                     listOfUpdates = listOfUpdates + (listOfUpdates !== "" ? " / " : "") + componentsListModel.get(i).componentName;
                 }

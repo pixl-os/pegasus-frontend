@@ -311,7 +311,8 @@ bool Updates::hasAnyUpdate(){
 }
 
 //function to check information about updates of any componants and confirm quickly if update using /tmp
-bool Updates::hasUpdate(QString componentName, const bool betaIncluded, const bool multiVersions, const QString filter){
+//and return index of update found
+int Updates::hasUpdate(QString componentName, const bool betaIncluded, const bool multiVersions, const QString filter){
     //to avoid issue with spaces in directories and scripts
     componentName = componentName.replace(" ","");
 
@@ -345,6 +346,8 @@ bool Updates::hasUpdate(QString componentName, const bool betaIncluded, const bo
             QDir().mkdir(directoryPath);
         }
         Log::debug(LOGMSG("versionScriptAsset.m_download_url: %1").arg(versionScriptAsset.m_download_url));
+        //In case of multiVersions, finally delete script systematically to avoid problem With a previous one
+        if(multiVersions) QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).remove();
         //check if any script version already exists
         if(!QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).exists() ||  (QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).size() == 0)) {
             //Create Network Access
@@ -378,45 +381,24 @@ bool Updates::hasUpdate(QString componentName, const bool betaIncluded, const bo
         QList<int> newVersionNumbers = getVersionNumbers(m_versions[versionIndex].m_tag_name);
         if(isNewVersion(existingVersionNumbers, newVersionNumbers)){
             m_hasanyupdate = true;
-            return true;
+            return versionIndex;
         }
         else if(multiVersions){
             continue;
         }
     }
-    return false;//no file or issue or no update ;-)
+    return -1;//no file or issue or no update ;-)
 }
 
 //function to get details from last "available" update (and only if available)
-UpdateEntry Updates::updateDetails(QString componentName, const bool betaIncluded){
+UpdateEntry Updates::updateDetails(QString componentName, const int versionIndex){
     //to avoid issue with spaces in directories and scripts
     componentName = componentName.replace(" ","");
-
     UpdateEntry Empty;
     QList <UpdateEntry> m_versions;
     //get data of update/versions and store in QList<UpdateEntry>
     m_versions = parseJsonComponentFile(componentName);
-    if(m_versions.count() != 0)
-    {
-        //search index of version selected depeding of betaIncluded or not.
-        int versionIndex = -1;
-        //in case that we want to keep only release version
-        if(!betaIncluded){
-            for(int i = 0;i < m_versions.count();i++){
-                if(!m_versions[i].m_prerealease){
-                   versionIndex = i;
-                   break;// to stop search
-                }
-            }
-            if(versionIndex == -1){
-                //no release version found
-                return Empty;
-            }
-        }
-        else versionIndex = 0;
-        return m_versions[versionIndex]; //just the last version found that for the moment
-    }
-    return Empty;//no file or issue or no update ;-)
+    return m_versions[versionIndex];
 }
 
 //function to return the number of version available
@@ -427,7 +409,7 @@ int Updates::componentVersionsCount(QString componentName){
 }
 
 //function to get any version details using index
-UpdateEntry Updates::componentVersionDetails(QString componentName, const int index){
+UpdateEntry Updates::componentVersionDetails(QString componentName, const int versionIndex){
     //to avoid issue with spaces in directories and scripts
     componentName = componentName.replace(" ","");
     //RFU
@@ -496,6 +478,10 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
             QNetworkAccessManager *manager = new QNetworkAccessManager(this);
             //get script content from url
             QString scriptContent;
+
+            //delete script to avoid problem of existing or corrupted file
+            QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).remove();
+
             if(versionScriptAsset.m_download_url.startsWith("http",Qt::CaseInsensitive)) //to check that is a remote repo using url
             {
                 scriptContent = get_script_from_url(versionScriptAsset.m_download_url, log_tag, *manager);
@@ -548,6 +534,9 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     m_updates[foundIndex].m_installationStatus = "";
                     m_updates[foundIndex].m_installationStep = 0;
                 }
+
+                //delete script to avoid problem of existing or corrupted file
+                QFile(directoryPath + "/" + installationScriptAsset.m_name_asset).remove();
 
                 if(installationScriptAsset.m_download_url.startsWith("http",Qt::CaseInsensitive)) //to check that is a remote repo using url
                 {
