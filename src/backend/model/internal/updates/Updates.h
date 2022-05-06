@@ -91,7 +91,7 @@ public:
     //function to check if any updates is available using /tmp
     Q_INVOKABLE bool hasAnyUpdate();
     //function to check information about updates of any componants and confirm quickly if update using /tmp
-    Q_INVOKABLE bool hasUpdate(QString componentName, const bool betaIncluded, const QString filter = "");
+    Q_INVOKABLE bool hasUpdate(QString componentName, const bool betaIncluded = false, const bool multiversions = false, const QString filter = "");
     //function to get details from last "available" update (and only if available)
     Q_INVOKABLE UpdateEntry updateDetails(QString componentName, const bool betaIncluded);
     //function to return the number of version available
@@ -109,7 +109,6 @@ public:
 
 private:
     QList <UpdateEntry> parseJsonComponentFile(QString componentName);
-    int selectVersionIndex(QList <UpdateEntry> m_versions, const bool betaIncluded);
 
 signals:
 

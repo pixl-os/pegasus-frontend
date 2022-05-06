@@ -305,45 +305,29 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
     }
 }
 
-//function to select version depending "Beta flag"
-int Updates::selectVersionIndex(QList <UpdateEntry> m_versions, const bool betaIncluded){
-    //search index of version selected depeding of betaIncluded or not.
-    int versionIndex = -1;
-    //in case that we want to keep only release version
-    if(!betaIncluded){
-        for(int i = 0;i < m_versions.count();i++){
-            if(!m_versions[i].m_prerealease){
-               versionIndex = i;
-               break;// to stop search
-            }
-        }
-    }
-    else{
-        versionIndex = 0;
-    }
-    return versionIndex;
-}
-
 //function to check if any updates is available using /tmp
 bool Updates::hasAnyUpdate(){
     return m_hasanyupdate;
 }
 
 //function to check information about updates of any componants and confirm quickly if update using /tmp
-bool Updates::hasUpdate(QString componentName, const bool betaIncluded, const QString filter){
+bool Updates::hasUpdate(QString componentName, const bool betaIncluded, const bool multiVersions, const QString filter){
     //to avoid issue with spaces in directories and scripts
     componentName = componentName.replace(" ","");
 
     QList <UpdateEntry> m_versions;
+    QString existingVersion;
     //get data of update/versions and store in QList<UpdateEntry>
     m_versions = parseJsonComponentFile(componentName);
-    if(m_versions.count() != 0)
+
+
+    for(int versionIndex = 0;versionIndex < m_versions.count();versionIndex++)
     {
-        //search index of version selected depending of betaIncluded or not.
-        int versionIndex = selectVersionIndex(m_versions,betaIncluded);
-        if(versionIndex == -1){
-            //no release version found
-            return false;
+        //in case that we want to keep only release version
+        if(!betaIncluded){
+            if(m_versions[versionIndex].m_prerealease){ // if pre-release identified
+                continue; //jump to next index
+            }
         }
         //get version.? from selected version (if exists)
         UpdateAssets versionScriptAsset;
@@ -380,16 +364,24 @@ bool Updates::hasUpdate(QString componentName, const bool betaIncluded, const QS
             delete manager; //to avoid memory leaks also
         }
         //compare with version install
-        QString existingVersion = getExistingRawVersion(componentName,directoryPath + "/" + versionScriptAsset.m_name_asset);
+        existingVersion = "";
+        existingVersion = getExistingRawVersion(componentName,directoryPath + "/" + versionScriptAsset.m_name_asset);
         //if version empty, we have an issue, we can't continue
-        if(existingVersion == ""){
-            return false;
+        if((existingVersion == "") && !multiVersions){
+            break;
         }
+        else if((existingVersion == "") && multiVersions){// if multiversion, we check next version
+            continue;
+        }
+
         QList<int> existingVersionNumbers = getVersionNumbers(existingVersion);
         QList<int> newVersionNumbers = getVersionNumbers(m_versions[versionIndex].m_tag_name);
         if(isNewVersion(existingVersionNumbers, newVersionNumbers)){
             m_hasanyupdate = true;
             return true;
+        }
+        else if(multiVersions){
+            continue;
         }
     }
     return false;//no file or issue or no update ;-)
