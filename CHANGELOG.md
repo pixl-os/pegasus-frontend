@@ -1,12 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - 2022-06-05 - v0.0.5
+## [recalbox-integration] - 2022-05-06 - v0.0.5
 - new feature including nvidia drivers installation as udpate proposed by Pegasus (need reboot)
 - improvement and fix to well manage updates remotly but also local.
 - fix to clarify the progress bar animation and using colors on results (green for ok, red for not ok)
 - fix on lang: update for controller helps/views [Thanks Sebio]
 - manage multiversions by updates repo to manage compatibility and several versions installable (as for nvidia drivers)
+- fix to clean files in /tmp for updates
+- fix on icon management of udpates
+- index of selected version for udpates introduced to avoid mistmatch for display and during installation
 
 ## [recalbox-integration] - 2022-04-23 - v0.0.4
 - lang: bump last translation fr (update on bios, restart and controller menu)
