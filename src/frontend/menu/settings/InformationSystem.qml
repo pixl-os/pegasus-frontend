@@ -120,7 +120,7 @@ FocusScope {
     property var model2: [
         //        { name: qsTr("System Disk Usage :"), cmd: api.internal.system.run("df -mT | awk \'NR>1 && ($7 == \"/\" || $7 == \"/dev\" || $7 == \"/boot\" || $7 == \"/tmp\" || $7 == \"/var\" || $7 == \"/overlay/lower\")\' | awk \'NF-=2\' | uniq | awk \'{total+=$3;used+=$4;free+=$5}END{if(total>1048576){total_out=total\/1048576;used_out=used\/1048576;unit_out=\"TB\";} else {total_out=total\/1024;used_out=used\/1024;unit_out=\"GB\"};percentage=used*100\/total;printf(\"%.2f\/%.2f %s (%.1f %)\n\",used_out,total_out,unit_out,percentage)}\'") },
         { name: qsTr("Wifi Local IP :"), cmd: api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
-        { name: qsTr("Eternet Local IP :"), cmd: api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
+        { name: qsTr("Ethernet Local IP :"), cmd: api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
         { name: qsTr("External IP :"), cmd: api.internal.system.run("curl -4 'http://icanhazip.com/'") },
         //{ name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0")},
         //{ name: qsTr("GPU Temperature :"), cmd: api.internal.system.run("gpu_temp=$(vcgencmd measure_temp | cut -d '=' -f 2 | cut -d \' -f 1); echo '$gpu_temp'$'\xc2\xb0'C")},

@@ -27,6 +27,7 @@ FocusScope {
     signal close
     signal openVideoSettings
     signal openInformationSystem
+    signal openWifiNetworks
     /*signal openKeySettings
         signal openGamepadSettings
         signal openGameDirSettings
@@ -278,8 +279,60 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.down: optStorageCapacity
+                    KeyNavigation.down: optEthernet
+                }
+                SectionTitle {
+                    text: qsTr("Networks") + api.tr
+                    first: true
+                    symbol: "\uf26d"
+                }
+                SimpleButton {
+                    id: optEthernet
+
+                    label: qsTr("Ethernet network") + api.tr
+                    note: {
+                        var ethIP = ""
+                        ethIP = api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                        if(ethIP !== ""){
+                            return qsTr("Ethernet Local IP :") + api.tr + " " + ethIP;
+                        }
+                        else
+                            return qsTr("Plug your cable to have network") + api.tr;
+                    }
+                    pointerIcon: false
+
+                    onActivate: {
+                        focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWifi
+                }
+                SimpleButton {
+                    id: optWifi
+
+                    // set focus only on first item
+                    focus: visible
+
+                    label: qsTr("Wifi networks") + api.tr
+                    note: {
+                        var wifiIP = ""
+                        wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                        if(wifiIP !== ""){
+                            return qsTr("Wifi Local IP :") + api.tr + " " + wifiIP;
+                        }
+                        else
+                            return qsTr("Connect your PC to any network") + api.tr;
+                    }
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openWifiNetworks();
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optLanguage
                 }
+
                 /*
                 SimpleButton {
                     id: optStorageCapacity

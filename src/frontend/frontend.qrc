@@ -179,5 +179,6 @@
         <file>assets/gamepad/lstick_ps4.png</file>
         <file>assets/gamepad/guide_ps4.png</file>
         <file>assets/logonvidia.png</file>
+        <file>menu/settings/WifiNetworks.qml</file>
     </qresource>
 </RCC>
