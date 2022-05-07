@@ -229,25 +229,6 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optBiosChecking
-                    KeyNavigation.down: optInformationSystem
-                }
-                SectionTitle {
-                    text: qsTr("Systems") + api.tr
-                    first: true
-                    symbol: "\uf412"
-                }
-                SimpleButton {
-                    id: optInformationSystem
-
-                    label: qsTr("System information") + api.tr
-                    note: qsTr("More information Ip, Cpu, OpenGL ...") + api.tr
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openInformationSystem();
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optStorageDevices
                 }
                 /*
@@ -360,12 +341,26 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this);
-                    KeyNavigation.down: optDebugMode
+                    KeyNavigation.down: optInformationSystem
                 }
                 SectionTitle {
                     text: qsTr("System") + api.tr
                     first: true
-                    symbol: "\uf221"
+                    symbol: "\uf412"
+                }
+                SimpleButton {
+                    id: optInformationSystem
+
+                    label: qsTr("System information") + api.tr
+                    note: qsTr("More information Ip, Cpu, OpenGL ...") + api.tr
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openInformationSystem();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDebugMode
                 }
                 ToggleOption {
                     id: optDebugMode
