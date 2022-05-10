@@ -305,14 +305,66 @@ FocusScope {
                         focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWifi
+                    KeyNavigation.down: optWifiToggle
+                }
+                ToggleOption {
+                    id: optWifiToggle
+//                    # ------------ B - Network ------------ #
+//                    ## Set system hostname
+//                    system.hostname=RECALBOX
+//                    ## Activate wifi (0,1)
+//                    wifi.enabled=0
+//                    ## Set wifi region
+//                    ## More info here: https://github.com/recalbox/recalbox-os/wiki/Wifi-country-code-(EN)
+//                    wifi.region=JP
+//                    ## Wifi SSID (string)
+//                    ;wifi.ssid=new ssid
+//                    ## Wifi KEY (string)
+//                    ## after rebooting the recalbox, the "new key" is replace by a hidden value "enc:xxxxx"
+//                    ## you can edit the "enc:xxxxx" value to replace by a clear value, it will be updated again at the following reboot
+//                    ## Escape your special chars (# ; $) with a backslash : $ => \$
+//                    ;wifi.key=new key
+
+//                    ## Wifi - static IP
+//                    ## if you want a static IP address, you must set all 3 values (ip, gateway, and netmask)
+//                    ## if any value is missing or all lines are commented out, it will fall back to the
+//                    ## default of DHCP
+//                    ;wifi.ip=manual ip address
+//                    ;wifi.gateway=new gateway
+//                    ;wifi.netmask=new netmask
+
+//                    # secondary wifi (not configurable via the user interface)
+//                    ;wifi2.ssid=new ssid
+//                    ;wifi2.key=new key
+
+//                    # third wifi (not configurable via the user interface)
+//                    ;wifi3.ssid=new ssid
+//                    ;wifi3.key=new key
+
+
+
+
+                    label: qsTr("Wifi activation") + api.tr
+                    note: qsTr("Enable or disable Wifi") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("wifi.enabled")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("wifi.enabled",checked);
+                        if(checked){
+                            //activate wifi
+                            api.internal.system.runAsync("/etc/init.d/S09wifi restart");
+                        }
+                        else
+                        {//deactivate wifi
+                            api.internal.system.runAsync("/etc/init.d/S09wifi stop");
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: checked ? optWifiNetwork : optLanguage
                 }
                 SimpleButton {
-                    id: optWifi
-
-                    // set focus only on first item
-                    focus: visible
-
+                    id: optWifiNetwork
+                    visible: optWifiToggle.checked
                     label: qsTr("Wifi networks") + api.tr
                     note: {
                         var wifiIP = ""
