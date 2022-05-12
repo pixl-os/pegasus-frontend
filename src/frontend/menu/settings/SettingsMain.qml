@@ -341,8 +341,19 @@ FocusScope {
 //                    ;wifi3.ssid=new ssid
 //                    ;wifi3.key=new key
 
-
-
+// command lines
+// To launch scan:
+//                        #  wpa_cli -i wlan0 scan
+//                        OK
+// To have scan results:
+//                        # wpa_cli -i wlan0 scan_results
+//                        bssid / frequency / signal level / flags / ssid
+//                        9c:c9:eb:15:cd:80       5220    -55     [WPA2-PSK-CCMP][WPS][ESS]       lesv2-5G-3
+//                        9c:c9:eb:15:cd:7e       2472    -51     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_2G
+//                        ec:6c:9a:0b:1c:79       5540    -79     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_livebox
+//                        2c:30:33:da:84:93       5640    -79     [WPA2-PSK-CCMP+TKIP][ESS]       lesv2-5G-1
+//                        2c:30:33:da:84:a4       2462    -71     [WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][ESS]    lesv2
+//                        ec:6c:9a:0b:1c:74       2412    -74     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_livebox
 
                     label: qsTr("Wifi activation") + api.tr
                     note: qsTr("Enable or disable Wifi") + api.tr

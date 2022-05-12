@@ -2,6 +2,19 @@
 //
 // Created by BozoTheGeek 07/05/2022
 //
+// command lines:
+// To launch scan:
+//                        #  wpa_cli -i wlan0 scan
+//                        OK
+// To have scan results:
+//                        # wpa_cli -i wlan0 scan_results
+//                        bssid / frequency / signal level / flags / ssid
+//                        9c:c9:eb:15:cd:80       5220    -55     [WPA2-PSK-CCMP][WPS][ESS]       lesv2-5G-3
+//                        9c:c9:eb:15:cd:7e       2472    -51     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_2G
+//                        ec:6c:9a:0b:1c:79       5540    -79     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_livebox
+//                        2c:30:33:da:84:93       5640    -79     [WPA2-PSK-CCMP+TKIP][ESS]       lesv2-5G-1
+//                        2c:30:33:da:84:a4       2462    -71     [WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][ESS]    lesv2
+//                        ec:6c:9a:0b:1c:74       2412    -74     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_livebox
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
@@ -85,6 +98,47 @@ FocusScope {
             }
         }
     }
+
+
+    //As readSavedDevicesList but check also pairing at the same time
+    function readWifiNetworksList(list){
+        let result = "";
+        //let i = 0;
+        let icon;
+        let allmacaddresses = "";
+        if(!isDebugEnv()){
+            //command to read scan, need to lauch scan before with command: 'wpa_cli -i wlan0 scan'
+            result = api.internal.system.run("timeout 0.50 wpa_cli -i wlan0 scan_results | sed \"1 d\" | awk '{printf $1\"|\"$2\"|\"$3\"|\"$4\"|\"$5\"\\n}'");
+        }
+        else{
+            // bssid / frequency / signal level / flags / ssid
+            result = "9c:c9:eb:15:cd:80|5220|-54|[WPA2-PSK-CCMP][WPS][ESS]|lesv2-5G-3
+9c:c9:eb:15:cd:7e|2472|-50|[WPA2-PSK-CCMP][WPS][ESS]|lesv2_2G
+2c:30:33:da:84:93|5640|-79|[WPA2-PSK-CCMP+TKIP][ESS]|lesv2-5G-1
+2c:30:33:da:84:a4|2462|-75|[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][ESS]|lesv2
+"
+        }
+
+        console.log("***********");
+        console.log(result);
+        console.log("***********");
+        const devices = result.split('\n');//Split by LF ;-)
+        console.log("Wifi networks found:",devices.length - 1);
+        for(var j = 0;j < devices.length;j++){
+            if (devices[j] !== "") {
+                console.log("device:",devices[j]);
+                const details = devices[j].split("|");
+                /*if(!allmacaddresses.includes(details[0])){//if paired device is missing
+                    //Add to list
+                    icon = getIcon(details[1],"");
+                    list.append({icon: icon, iconfont: getIconFont, vendor:"", name: details[1], macaddress: details[0], service: "" });
+                    i = i + 1;
+                }*/
+            }
+        }
+    }
+
+
 
     //timer to relaunch bluetooth regularly for QT methods for the moment
     property int counter: 0
