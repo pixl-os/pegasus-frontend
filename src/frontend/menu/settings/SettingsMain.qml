@@ -363,11 +363,11 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("wifi.enabled",checked);
                         if(checked){
                             //activate wifi
-                            api.internal.system.runAsync("/etc/init.d/S09wifi restart");
+                            api.internal.system.run("/etc/init.d/S09wifi restart");
                         }
                         else
                         {//deactivate wifi
-                            api.internal.system.runAsync("/etc/init.d/S09wifi stop");
+                            api.internal.system.run("/etc/init.d/S09wifi stop");
                         }
                     }
                     onFocusChanged: container.onFocus(this)

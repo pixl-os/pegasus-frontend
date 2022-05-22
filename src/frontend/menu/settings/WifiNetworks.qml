@@ -160,11 +160,10 @@ FocusScope {
     //function to read and add new discovered wifi
     function readWifiNetworksList(list){
         let result = "";
-        //let i = 0;
-        let icon;
+        let icon = "";
         if(!isDebugEnv()){
             //command to read scan, need to lauch scan before with command: 'wpa_cli -i wlan0 scan'
-            result = api.internal.system.run("timeout 0.50 wpa_cli -i wlan0 scan_results | sed \"1 d\" | awk '{printf $1\"|\"$2\"|\"$3\"|\"$4\"|\"$5\"\\n}'");
+            result = api.internal.system.run("timeout 0.50 wpa_cli -i wlan0 scan_results | sed \"1 d\" | awk '{print $1\"|\"$2\"|\"$3\"|\"$4\"|\"$5}'");
         }
         else{
             // bssid / frequency / signal level / flags / ssid
@@ -194,7 +193,7 @@ FocusScope {
                     }
 
                     //Add to list
-                    list.append({icon: "", iconfont: globalFonts.awesome, frequency: details[1], signal: details[2], vendor:"", name: details[4], macaddress: details[0], flags: details[3]});
+                    list.append({icon: icon, iconfont: globalFonts.awesome, frequency: details[1], signal: details[2], vendor:"", name: details[4], macaddress: details[0], flags: details[3]});
                   //ListElement { icon: ""; iconfont:""; frequency: "5220"; signal: "-54"; vendor: "" ; name: "lesv2-5G-3"; macaddress: "9c:c9:eb:15:cd:80"; flags:"[WPA2-PSK-CCMP][WPS][ESS]" }
                     allmacaddresses = allmacaddresses + details[0];
                 }
@@ -218,9 +217,9 @@ FocusScope {
         triggeredOnStart: true
         onTriggered: {
             if ((interval/1000)*counter === 2){ // wait 2 seconds before to scan wifi for the first time
-                api.internal.system.runAsync("wpa_cli -i wlan0 scan");
+                api.internal.system.run("wpa_cli -i wlan0 scan");
             }
-            if ((interval/1000)*counter === 5){ // wait 2 seconds before to scan wifi for the first time
+            if ((interval/1000)*counter === 7){ // wait 7 seconds before to result of the scan wifi
                 readWifiNetworksList(wifiNetworksModel);
             }
             // restart every 10 seconds
@@ -313,10 +312,10 @@ FocusScope {
                 width: root.width * 0.7
                 height: implicitHeight
 
-                Item {
+/*                Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
-                }
+                }*/
 
                 SectionTitle {
                     text: qsTr("Wifi networks") + api.tr
@@ -377,17 +376,16 @@ FocusScope {
                         Text {
                             id: wifiNetworkIcon
 
-                            anchors.right: isPairingIssue ? wifiNetworkStatus.left : parent.left
+                            anchors.right: wifiNetworkStatus.left
                             anchors.rightMargin: vpx(10)
-                            //anchors.verticalCenter: parent.verticalCenter
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: vpx(10)
+                            anchors.top: parent.top
+                            anchors.topMargin: vpx(15)
                             color: themeColor.textLabel
                             font.pixelSize: parent.fontSize
                             font.family: iconfont
                             height: parent.height
                             text : icon
-                            visible: true  //parent.focus
+                            visible: true
                         }
                         Text {
                             id: wifiNetworkStatus
@@ -406,7 +404,7 @@ FocusScope {
                                 else return "red"; //no enough signal
                             }
                             font.pixelSize: (parent.fontSize)*2
-                            font.family: globalFonts.ion
+                            font.family: globalFonts.awesome
                             height: parent.height
                             text : {
                                 var resultNumber = Number(signal);
@@ -451,16 +449,10 @@ FocusScope {
                             //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
                                 if (index !== 0) KeyNavigation.up = myDiscoveredDevices.itemAt(index-1);
-                                else if (myDevices.count !== 0){
-                                    KeyNavigation.up = myDevices.itemAt(myDevices.count-1);
-                                }
                                 else KeyNavigation.up = myDiscoveredDevices.itemAt(0);
                             }
                             if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
                                 if (index < myDiscoveredDevices.count-1) KeyNavigation.down = myDiscoveredDevices.itemAt(index+1);
-                                else if (myIgnoredDevices.count !== 0){
-                                    KeyNavigation.down = myIgnoredDevices.itemAt(0);
-                                }
                                 else KeyNavigation.down = myDiscoveredDevices.itemAt(myDiscoveredDevices.count-1);                            }
                         }
 
