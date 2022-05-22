@@ -77,35 +77,91 @@ FocusScope {
         }
     }
 
-    //function to add new discovered device using 'known' devices as My Devices or Ignored ones
-    function updateDiscoveredDevicesLists(name, macaddress, service){
-        var found = false;
-        //check device already in "Devices ignored"
-        found = searchDeviceInList(myIgnoredDevicesModel, name, macaddress, service);
-        //check device already in "My Devices"
-        if(!found) found = searchDeviceInList(myDevicesModel, name, macaddress, service);
-        //check device already in "Discovered Devices"
-        if(!found) found = searchDeviceInList(wifiNetworksModel, name, macaddress, service);
-        if (!found){
-            //set icon from service name
-            let icon = getIcon(name,service);
-            if(macaddress !== name.replace(/-/g, ':') || !api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.no.name")){
-                //add to discovered list
-                //set vendor later from API & mac address
-                //we can't set vendor immediately, it will be done by timer
-                wifiNetworksModel.append({icon: icon, iconfont: getIconFont,  vendor: "", name: name, macaddress: macaddress, service: service });
-                //console.log("At " + (bluetoothTimer.interval/1000)*counter + "s" + " - Found new service " + macaddress + " - Name: " + name + " - Service: " + service);
+    property string allmacaddresses: ""
+
+    //function to update vendor in any list using index
+    function searchVendorAndUpdate(list, index){
+
+        var xmlHttp = new XMLHttpRequest();
+        var vendor = "";
+        xmlHttp.open( "GET", "https://api.macvendors.com/" + list.get(index).macaddress, true ); // true for asynchronous request
+
+        xmlHttp.timeout = 1900; // time in milliseconds
+
+        xmlHttp.onload = function () {
+            // Request finished.
+            vendor = xmlHttp.responseText;
+            console.log("return of https://api.macvendors.com for ",list.get(index).macaddress," : ", vendor);
+            if(vendor.includes("Not Found")) {
+                if(!api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor")){
+                    list.get(index).vendor = "Unknown vendor";
+                }
+                else{
+                    //Remove from Discovered devices list
+                    myDiscoveredDevicesModel.remove(index);
+                    //calculate focus depending available devices in each lists / to keep always a line with focus at minimum
+                    if(myDiscoveredDevices.count !== 0){
+                        if(myDiscoveredDevices.itemAt(index)) myDiscoveredDevices.itemAt(index).focus = true;
+                        else if(myDiscoveredDevices.itemAt(index-1)) myDiscoveredDevices.itemAt(index-1).focus = true;
+                    }
+                    else{
+                        if(myDevices.count !== 0) myDevices.itemAt(myDevices.count-1).focus = true;
+                        else if(myIgnoredDevices.count !== 0) myIgnoredDevices.itemAt(0).focus = true;
+                    }
+                }
+            }
+            else if(vendor.includes("errors")) list.get(index).vendor = "";
+            else list.get(index).vendor = vendor;
+        };
+        xmlHttp.ontimeout = function (e) {
+          // XMLHttpRequest timed out
+          console.log("Timeout of https://api.macvendors.com for ",list.get(index).macaddress);
+        };
+        xmlHttp.send( null );
+    }
+
+
+    //timer to udpate the vendor value in Discovered Devices
+    Timer {
+        id: vendorTimer
+        interval: 3000 // every 3 seconds to avoid saturation of server
+        repeat: true
+        running: true
+        triggeredOnStart: true
+        property int indexParameterToSaveLater : -1
+        onTriggered: {
+
+            //for My Devices just discovered
+            var list = wifiNetworksModel;
+            var oneAPICallDone = false; // to limit to one call every 2 seconds
+            var i;
+
+            for(i = 0;i < list.count; i++){
+                if ((list.get(i).vendor === "") && !oneAPICallDone){
+                    //search and update vendor from macadress
+                    searchVendorAndUpdate(list, i)
+                    oneAPICallDone = true;
+                }
+                else if(list.get(i).vendor === "")
+                {
+                    //search if previous search is for the same device
+                    //console.log("Check vendor mac part: ",list.get(i).macaddress.substring(0,8));
+                    if(list.get(i).macaddress.substring(0,8) === list.get(i-1).macaddress.substring(0,8)){
+                        //console.log("Same vendor: ",list.get(i-1).vendor);
+                        list.get(i).vendor = list.get(i-1).vendor;
+                    }
+                    else break;
+                }
             }
         }
     }
 
 
-    //As readSavedDevicesList but check also pairing at the same time
+    //function to read and add new discovered wifi
     function readWifiNetworksList(list){
         let result = "";
         //let i = 0;
         let icon;
-        let allmacaddresses = "";
         if(!isDebugEnv()){
             //command to read scan, need to lauch scan before with command: 'wpa_cli -i wlan0 scan'
             result = api.internal.system.run("timeout 0.50 wpa_cli -i wlan0 scan_results | sed \"1 d\" | awk '{printf $1\"|\"$2\"|\"$3\"|\"$4\"|\"$5\"\\n}'");
@@ -126,21 +182,33 @@ FocusScope {
         console.log("Wifi networks found:",devices.length - 1);
         for(var j = 0;j < devices.length;j++){
             if (devices[j] !== "") {
-                console.log("device:",devices[j]);
+                console.log("wifi details:",devices[j]);
                 const details = devices[j].split("|");
-                /*if(!allmacaddresses.includes(details[0])){//if paired device is missing
+                if(!allmacaddresses.includes(details[0])){//if wifi device not yet listed
+                    //Calculate type of wifi
+                    if (details[1].startsWith("2")) {
+                        icon = "\uf090";
+                    }
+                    else if(details[1].startsWith("5")) {
+                        icon = "\uf091";
+                    }
+
                     //Add to list
-                    icon = getIcon(details[1],"");
-                    list.append({icon: icon, iconfont: getIconFont, vendor:"", name: details[1], macaddress: details[0], service: "" });
-                    i = i + 1;
-                }*/
+                    list.append({icon: "", iconfont: globalFonts.awesome, frequency: details[1], signal: details[2], vendor:"", name: details[4], macaddress: details[0], flags: details[3]});
+                  //ListElement { icon: ""; iconfont:""; frequency: "5220"; signal: "-54"; vendor: "" ; name: "lesv2-5G-3"; macaddress: "9c:c9:eb:15:cd:80"; flags:"[WPA2-PSK-CCMP][WPS][ESS]" }
+                    allmacaddresses = allmacaddresses + details[0];
+                }
+                else{
+                    //search and udpate values
+                    //TO DO
+                }
             }
         }
     }
 
 
 
-    //timer to relaunch bluetooth regularly for QT methods for the moment
+    //timer to relaunch wifi scan regularly
     property int counter: 0
     Timer {
         id: wifiTimer
@@ -152,8 +220,11 @@ FocusScope {
             if ((interval/1000)*counter === 2){ // wait 2 seconds before to scan wifi for the first time
                 api.internal.system.runAsync("wpa_cli -i wlan0 scan");
             }
-            // restart every 20 seconds
-            if ((interval/1000)*counter >= 20){
+            if ((interval/1000)*counter === 5){ // wait 2 seconds before to scan wifi for the first time
+                readWifiNetworksList(wifiNetworksModel);
+            }
+            // restart every 10 seconds
+            if ((interval/1000)*counter >= 10){
                 counter = 0;
             }
             else counter = counter + 1;
@@ -285,11 +356,16 @@ FocusScope {
                         }
                     }
                 }
-
-                //for test purpose only
                 ListModel {
                     id: wifiNetworksModel
-                    ListElement { icon: ""; vendor: "Nintendo" ; name: "Switch Pro controller"; macaddress: "45:12:64:33:FF:EE" }
+                    //for test purpose only
+                    //ListElement { icon: ""; iconfont:""; frequency: "5220"; signal: "-54"; vendor: "" ; name: "lesv2-5G-3"; macaddress: "9c:c9:eb:15:cd:80"; flags:"[WPA2-PSK-CCMP][WPS][ESS]" }
+
+                    //bssid     / frequency / signal level / flags / ssid
+                    //9c:c9:eb:15:cd:80|5220|-54|[WPA2-PSK-CCMP][WPS][ESS]|lesv2-5G-3
+                    //9c:c9:eb:15:cd:7e|2472|-50|[WPA2-PSK-CCMP][WPS][ESS]|lesv2_2G
+                    //2c:30:33:da:84:93|5640|-79|[WPA2-PSK-CCMP+TKIP][ESS]|lesv2-5G-1
+                    //2c:30:33:da:84:a4|2462|-75|[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][ESS]|lesv2
                 }
 
                 Repeater {
@@ -307,8 +383,8 @@ FocusScope {
                             anchors.bottom: parent.bottom
                             anchors.bottomMargin: vpx(10)
                             color: themeColor.textLabel
-                            font.pixelSize: (parent.fontSize)*getIconRatio(icon)
-                            font.family: iconfont //globalFonts.awesome
+                            font.pixelSize: parent.fontSize
+                            font.family: iconfont
                             height: parent.height
                             text : icon
                             visible: true  //parent.focus
@@ -321,16 +397,30 @@ FocusScope {
                             anchors.top: parent.top
                             anchors.topMargin: vpx(5)
 
-                            color: "red"
+                            color: {
+                                var resultNumber = Number(signal);
+                                if (resultNumber >= -45) return "green"; //font awesome as "perfect"
+                                if (resultNumber >= -55) return "green"; //font awesome as "excellent"
+                                if (resultNumber >= -65) return "orange"; //font awesome as "good"
+                                if (resultNumber >= -80) return "red"; //font awesome as "minimum"
+                                else return "red"; //no enough signal
+                            }
                             font.pixelSize: (parent.fontSize)*2
                             font.family: globalFonts.ion
                             height: parent.height
-                            text : "\uf22a"
-                            visible: isPairingIssue
+                            text : {
+                                var resultNumber = Number(signal);
+                                if (resultNumber >= -45) return "\uf098"; //font awesome as "perfect"
+                                if (resultNumber >= -55) return "\uf097"; //font awesome as "excellent"
+                                if (resultNumber >= -65) return "\uf096"; //font awesome as "good"
+                                if (resultNumber >= -80) return "\uf095"; //font awesome as "minimum"
+                                else return "?"; //no enough signal
+                            }
+                            visible: true
                         }
 
                         label: {
-                            return (macaddress + " / " + vendor + " / " + name + " " + service)
+                            return (name+ " / " +  flags + " / " + macaddress  + " / " + vendor)
                         }
                         // set focus only on first item
                         focus: index == 0 ? true : false
@@ -339,7 +429,7 @@ FocusScope {
                             //to force change of focus
                             confirmDialog.focus = false;
                             confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                    { "title": wifiNetworksModel.get(index).vendor + " " + wifiNetworksModel.get(index).name + " " + wifiNetworksModel.get(index).service,
+                                                    { "title": wifiNetworksModel.get(index).vendor + " " + wifiNetworksModel.get(index).name, //+ " " + wifiNetworksModel.get(index).service,
                                                       "message": qsTr("Do you want to pair or ignored this device ?") + api.tr,
                                                       "symbol": wifiNetworksModel.get(index).icon,
                                                       "symbolfont" : wifiNetworksModel.get(index).iconfont,
@@ -378,7 +468,7 @@ FocusScope {
                             id: pairButton
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
-                            text: qsTr("Pair/Ignore ?") + api.tr
+                            text: qsTr("Connect ?") + api.tr
                             visible: parent.focus
                             anchors.left: parent.right
                             anchors.leftMargin: vpx(20)
