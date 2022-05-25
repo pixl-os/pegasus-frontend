@@ -17,6 +17,7 @@
 //                        ec:6c:9a:0b:1c:74       2412    -74     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_livebox
 
 import "common"
+import "../../dialogs"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -34,24 +35,54 @@ FocusScope {
         id: confirmDialog
         anchors.fill: parent
         z:10
+        sourceComponent: myDialog
+        active: false
+        asynchronous: true
+        //to set value via loader
+        property string wifi_name: ""
+        property string wifi_action: ""
+        property string wifi_logo: ""
+        property font wifi_logofont
+        property bool has_password: true
     }
 
+    Component {
+        id: myDialog
+        WifiDialog {
+            title: confirmDialog.wifi_action
+            message: confirmDialog.wifi_name
+            symbol: confirmDialog.wifi_logo
+            symbolfont : confirmDialog.wifi_logofont
+            firstchoice: actionState === "Connect" ? qsTr("Connect") + api.tr : qsTr("Disconnect") + api.tr
+            secondchoice: actionState === "Disconnect" ? qsTr("Forget") + api.tr : qsTr("Save") + api.tr
+            thirdchoice: qsTr("Cancel") + api.tr
+
+            //Specific to Wifi
+            has_password: confirmDialog.has_password
+            ssid : confirmDialog.wifi_name
+            actionState: root.actionState
+        }
+    }
+
+    //loader to load confirm dialog
     Connections {
         target: confirmDialog.item
         function onAccept() {
             switch (actionState) {
                     case "Connect":
                         wifiTimer.running = false;
-						var result = "";
-						console.log("result:",result);
+                        var result = "";
+                        //console.log("result:",result);
+                        //restart wifi to connect
+
                         //relaunch scanning
                         wifiTimer.running = true; // no need to restart btModel because timer will manage
                     break;
                     case "Disconnect":
                         //stop scanning/checking during pairing
-                        wifiTimer.running = true;
-						var result = "";
-                        console.log("result:",result);
+                        wifiTimer.running = false;
+                        var result = "";
+                        //console.log("result:",result);
                         //relaunch scanning
                         wifiTimer.running = true; // no need to restart btModel because timer will manage
                     break;
@@ -60,11 +91,17 @@ FocusScope {
         }
         function onSecondChoice() {
             switch (actionState) {
-                    case "Forget": // as "Disconnect" in fact for second choice
-                        //just a simple tentative to disconnect the device "sofwarely" ;-)
-                        //stop scanning during disconnect
+                    case "Connect":
+                        //no second choice for the moment
                         wifiTimer.running = false;
-                        console.log("result:",result);
+                        //console.log("result:",result);
+                        //relaunch scanning
+                        wifiTimer.running = true; // no need to restart btModel because timer will manage
+                    break;
+                    case "Disconnect":
+                        //no second choice for the moment
+                        wifiTimer.running = false;
+                        //console.log("result:",result);
                         //relaunch scanning
                         wifiTimer.running = true; // no need to restart btModel because timer will manage
                     break;
@@ -73,9 +110,14 @@ FocusScope {
         }
         function onCancel() {
             //do nothing
+            confirmDialog.active = false;
             content.focus = true;
+            wifiTimer.running = true;
+            //restart spinner
+            spinnerloader.active = true;
         }
     }
+
 
     property string allmacaddresses: ""
 
@@ -156,7 +198,6 @@ FocusScope {
         }
     }
 
-
     //function to read and add new discovered wifi
     function readWifiNetworksList(list){
         let result = "";
@@ -194,12 +235,28 @@ FocusScope {
 
                     //Add to list
                     list.append({icon: icon, iconfont: globalFonts.awesome, frequency: details[1], signal: details[2], vendor:"", name: details[4], macaddress: details[0], flags: details[3]});
-                  //ListElement { icon: ""; iconfont:""; frequency: "5220"; signal: "-54"; vendor: "" ; name: "lesv2-5G-3"; macaddress: "9c:c9:eb:15:cd:80"; flags:"[WPA2-PSK-CCMP][WPS][ESS]" }
+                    //ListElement { icon: ""; iconfont:""; frequency: "5220"; signal: "-54"; vendor: "" ; name: "lesv2-5G-3"; macaddress: "9c:c9:eb:15:cd:80"; flags:"[WPA2-PSK-CCMP][WPS][ESS]" }
                     allmacaddresses = allmacaddresses + details[0];
                 }
                 else{
                     //search and udpate values
-                    //TO DO
+                    for(var i = 0;i < list.count; i++){
+                        //check all components (including pre-release for the moment and without filter)
+                        if(list.macaddress === details[0]){
+                            list.setProperty(i,"signal", details[2]);
+                            list.setProperty(i,"flags", details[3]);
+                            list.setProperty(i,"name", details[4]);
+                            list.setProperty(i,"frequency", details[1]);
+                            //Calculate type of wifi
+                            if (details[1].startsWith("2")) {
+                                list.setProperty(i,"icon","\uf090");
+                            }
+                            else if(details[1].startsWith("5")) {
+                                list.setProperty(i,"icon","\uf091");
+                            }
+                            break; //to exit from for
+                        }
+                    }
                 }
             }
         }
@@ -308,7 +365,6 @@ FocusScope {
             Column {
                 id: contentColumn
                 spacing: vpx(5)
-
                 width: root.width * 0.7
                 height: implicitHeight
 
@@ -387,6 +443,7 @@ FocusScope {
                             text : icon
                             visible: true
                         }
+
                         Text {
                             id: wifiNetworkStatus
 
@@ -418,29 +475,40 @@ FocusScope {
                         }
 
                         label: {
-                            return (name+ " / " +  flags + " / " + macaddress  + " / " + vendor)
+                            if(vendor !== "") return (name+ " / " +  flags + " / " + macaddress  + " / " + vendor);
+                            else return (name+ " / " +  flags + " / " + macaddress);
                         }
                         // set focus only on first item
                         focus: index == 0 ? true : false
 
                         onActivate: {
-                            //to force change of focus
-                            confirmDialog.focus = false;
-                            confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                    { "title": wifiNetworksModel.get(index).vendor + " " + wifiNetworksModel.get(index).name, //+ " " + wifiNetworksModel.get(index).service,
-                                                      "message": qsTr("Do you want to pair or ignored this device ?") + api.tr,
-                                                      "symbol": wifiNetworksModel.get(index).icon,
-                                                      "symbolfont" : wifiNetworksModel.get(index).iconfont,
-                                                      "firstchoice": qsTr("Pair") + api.tr,
-                                                      "secondchoice": qsTr("Ignored") + api.tr,
-                                                      "thirdchoice": qsTr("Cancel") + api.tr});
-                            //Save action states for later
-                            actionState = "Pair";
-                            actionListIndex = index;
-                            //to force change of focus
-                            confirmDialog.focus = true;
-                            //focus = true;
+                                //stop spinner
+                                spinnerloader.active = false;
+                                //set data linked to this wifi that we want to connect
+                                //to display logo of wifi (2g or 5g)
+                                confirmDialog.wifi_logo = icon;
+                                confirmDialog.wifi_logofont = iconfont;
+                                //to display wifi name selected
+                                confirmDialog.wifi_name = name;
+                                //check if wifi need to be connected or disconnected
+                                //TO DO
+                                confirmDialog.wifi_action = qsTr("Do you want to be connected to this wifi ?") + api.tr;
+                                //check if wifi need password
+                                //TO DO
+                                confirmDialog.has_password = true;
 
+                                //to stop scan
+                                wifiTimer.running = false;
+                                //to force change of focus
+                                confirmDialog.focus = false;
+                                confirmDialog.active = true;
+                                //Save action states for later
+                                //check if connected
+                                //TO DO
+                                actionState = "Connect";
+                                actionListIndex = index;
+                                //to force change of focus
+                                confirmDialog.focus = true;
                         }
 
                         onFocusChanged: container.onFocus(this)
@@ -457,17 +525,17 @@ FocusScope {
                         }
 
                         Button {
-                            id: pairButton
+                            id: connectButton
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
                             text: qsTr("Connect ?") + api.tr
                             visible: parent.focus
                             anchors.left: parent.right
-                            anchors.leftMargin: vpx(20)
+                            anchors.leftMargin: horizontalPadding * 2
                             anchors.verticalCenter: parent.verticalCenter
                             
 							contentItem: Text {
-                                text: pairButton.text
+                                text: connectButton.text
                                 font.pixelSize: fontSize
                                 font.family: globalFonts.sans
                                 opacity: 1.0

@@ -1,6 +1,6 @@
 // Pegasus Frontend
 //
-// Created by BozoTheGeek - 2021
+// Created by BozoTheGeek - 24/05/2022
 //
 
 import QtQuick 2.12
@@ -13,19 +13,21 @@ FocusScope {
     property alias title: titleText.text
     property alias message: messageText.text
     property alias symbol: symbolText.text
+    property alias symbolfont : symbolText.font.family
     property alias firstchoice: okButtonText.text
     property alias secondchoice: secondButtonText.text
     property alias thirdchoice: cancelButtonText.text
 
-    property alias game_logo: picture.source
-    property var player_name: ""
     property bool has_password: false
-    property bool has_spectate_password: false
-    property bool is_to_create_room: false
+    property string ssid :  ""
+    property string actionState
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
-    property var lastchoice: ""
+    property string lastchoice: ""
+
+    property int horizontalPadding: vpx(30)
+    property int verticalPadding: vpx(30)
 
     signal accept()
     signal secondChoice()
@@ -55,6 +57,22 @@ FocusScope {
         onCancel: root.cancel()
     }
 
+    //save wifi conf function
+    function saveWifiConf(){
+        //calculate index from wifiPriority
+        var index;
+        if(optWifiPriority.value === "1"){
+            index = ""; //first one is "wifi."
+        }
+        else
+        {
+            index = optWifiPriority.value;
+        }
+        api.internal.recalbox.setStringParameter("wifi" + index + ".ssid",ssidfield.text);
+        api.internal.recalbox.setStringParameter("wifi" + index + ".key",keyfield.text);
+        api.internal.recalbox.saveParameters();
+    }
+
     // actual dialog
     MouseArea {
         anchors.centerIn: parent
@@ -65,7 +83,11 @@ FocusScope {
         id: dialogBox
 
         width: parent.height * (1.4) //0.8
-        anchors.centerIn: parent
+
+        anchors.horizontalCenter:  parent.horizontalCenter
+        anchors.top:  parent.top
+        anchors.topMargin: (Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) ? verticalPadding : ((parent.height/2) - (height/2))
+
         scale: 0.5
 
         Behavior on scale { NumberAnimation { duration: 125 } }
@@ -106,14 +128,14 @@ FocusScope {
                 id: messageText
 
                 anchors.centerIn: parent
-                width: parent.width - 2 * root.textSize
+                width: contentWidth // parent.width - 2 * root.textSize
 
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
 
                 color: themeColor.textTitle
                 font {
-                    pixelSize: root.textSize
+                    pixelSize: root.textSize * 2
                     family: globalFonts.sans
                 }
             }
@@ -122,9 +144,9 @@ FocusScope {
                 id: symbolText
 
                 anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: parent.left
-                    leftMargin: root.titleTextSize * 0.75
+                    verticalCenter: messageText.verticalCenter
+                    //left: parent.left
+                    //leftMargin: root.titleTextSize * 0.75
                     right: messageText.left
                     rightMargin: root.titleTextSize * 0.75
                 }
@@ -132,149 +154,237 @@ FocusScope {
                 color: themeColor.textTitle
                 font {
                     bold: true
-                    pixelSize: root.titleTextSize * 4
-                    family: globalFonts.sans
+                    pixelSize: root.titleTextSize * 2
+                    family: globalFonts.awesome
                 }
             }
         }
+        /*# ------------ B - Network ------------ #
+        ## Set system hostname
+        system.hostname=RECALBOX
+        ## Activate wifi (0,1)
+        wifi.enabled=1
+        ## Set wifi region
+        ## More info here: https://github.com/recalbox/recalbox-os/wiki/Wifi-country-code-(EN)
+        wifi.region=JP
+        ## Wifi SSID (string)
+        ;wifi.ssid=new ssid
+        ## Wifi KEY (string)
+        ## after rebooting the recalbox, the "new key" is replace by a hidden value "enc:xxxxx"
+        ## you can edit the "enc:xxxxx" value to replace by a clear value, it will be updated again at the following reboot
+        ## Escape your special chars (# ; $) with a backslash : $ => \$
+        ;wifi.key=new key
 
-        Rectangle {
-            width: parent.width
-            height: vpx(100)
-            color: themeColor.secondary
-            visible: (game_logo !== "") ? true : false
-            Image {
-                id: picture
+        ## Wifi - static IP
+        ## if you want a static IP address, you must set all 3 values (ip, gateway, and netmask)
+        ## if any value is missing or all lines are commented out, it will fall back to the
+        ## default of DHCP
+        ;wifi.ip=manual ip address
+        ;wifi.gateway=new gateway
+        ;wifi.netmask=new netmask
 
-                asynchronous: true
+        # secondary wifi (not configurable via the user interface)
+        ;wifi2.ssid=new ssid
+        ;wifi2.key=new key
 
-                height: parent.height
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
+        # third wifi (not configurable via the user interface)
+        ;wifi3.ssid=new ssid
+        ;wifi3.key=new key*/
+
+        SimpleButton {
+            id: optWifiSSID
+            Rectangle {
                 width: parent.width
-                fillMode: Image.PreserveAspectFit
-                smooth: true
-                visible: true
+                height: parent.height
+                color: themeColor.secondary
+                z:-1
             }
+            label: qsTr("Wifi SSID") + api.tr
+            note: qsTr("Thanks to enter your hidden SSID here") + api.tr
+
+            TextFieldOption {
+                id: ssidfield
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                horizontalAlignment: TextInput.AlignRight
+                placeholderText: qsTr("your hidden ssid") + api.tr
+                text: ""
+                echoMode: TextInput.Normal
+                inputMethodHints: Qt.ImhNoPredictiveText
+                onEditingFinished: {
+                    //do nothing save by "save" or "connect" button
+                }
+            }
+            onFocusChanged: container.onFocus(this)
+            KeyNavigation.down: optWifiKey
+            visible: ((ssid === "") || (ssidfield.text !== "")) ? true : false
         }
 
-        ToggleOption {
-            id: optNetplayFriend
+        SimpleButton {
+            id: optWifiKey
             Rectangle {
-                        width: parent.width
-                        height: parent.height
-                        color: themeColor.secondary
-                        z:-1
-                      }
-            label: player_name + qsTr(" is your friend ?") + api.tr
-            note: qsTr("Set it to keep or not in your list of friends !") + api.tr
-
-            checked: api.internal.recalbox.getBoolParameter("netplay.friend." + player_name)
-            onCheckedChanged: {
-                api.internal.recalbox.setBoolParameter("netplay.friend." + player_name,checked);
+                width: parent.width
+                height: parent.height
+                color: themeColor.secondary
+                z:-1
             }
-            KeyNavigation.down: optNetplayPswdClient
-            visible: player_name !== "" ? true : false
+            label: qsTr("Wifi Network security key") + api.tr
+            note: qsTr("Thanks to enter your security key here") + api.tr
+
+            TextFieldOption {
+                id: keyfield
+                anchors.right: parent.right
+                anchors.rightMargin: horizontalPadding
+                anchors.verticalCenter: parent.verticalCenter
+                horizontalAlignment: TextInput.AlignRight
+                placeholderText: qsTr("your key") + api.tr
+                text: {
+                    //find if a parameter has already this SSID to take and know if a key exists
+                    for(var i = 0; i < 3; i++){
+                        var index;
+                        if(i === 0){
+                            index = ""; //first one is "wifi."
+                        }
+                        else
+                        {
+                            index = i+1; //other one is from "wifi2."
+                        }
+                        if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
+                        {
+                            return api.internal.recalbox.getStringParameter("wifi" + index + ".key");
+                        }
+                    }
+                    //if no existing SSID found in parameters
+                    return "";
+                }
+                echoMode: TextInput.PasswordEchoOnEdit
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+                onEditingFinished: {
+                    //do nothing save by "save" or "connect" button
+                }
+            }
+            onFocusChanged: container.onFocus(this)
+            KeyNavigation.down: optWifiPriority
+            visible: has_password
         }
 
-        ToggleOption {
-            id: optNetplayPswdClientActivate
-            Rectangle {
-                        width: parent.width
-                        height: parent.height
-                        color: themeColor.secondary
-                        z:-1
-                      }
-            label: qsTr("Activate password for netplay player") + api.tr
-            note: qsTr("Set password for other players join your game") + api.tr
-
-            checked: api.internal.recalbox.getBoolParameter("netplay.password.useforplayer")
-            onCheckedChanged: {
-                api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
-            }
-            KeyNavigation.up: optNetplayFriend
-            KeyNavigation.down: optNetplayPswdClient
-            visible: is_to_create_room
+        //ListModel to manage priority list and parameters associated
+        ListModel{
+            id: wifiPriorityList
+            ListElement{ name: "1"}
+            ListElement{ name: "2"}
+            ListElement{ name: "3"}
         }
 
         MultivalueOption {
-            id: optNetplayPswdClient
+            id: optWifiPriority
             Rectangle {
-                        width: parent.width
-                        height: parent.height
-                        color: themeColor.secondary
-                        z:-1
-                      }
-            //property to manage parameter name
-            property string parameterName : "netplay.password.client"
-
-            label: qsTr("Netplay player password") + api.tr
-            note: qsTr("Choose password for join session") + api.tr
-            value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                width: parent.width
+                height: parent.height
+                color: themeColor.secondary
+                z:-1
+            }
+            label: qsTr("Priority") + api.tr
+            note: qsTr("From 1 to 3 to match with the 3 conf that we could save") + api.tr
+            value: {
+                //find if a parameter has already this SSID to take teh good priority
+                for(var i = 0; i < 3; i++){
+                    var index;
+                    if(i === 0){
+                        index = ""; //first one is "wifi."
+                    }
+                    else
+                    {
+                        index = i+1; //other one is from "wifi2."
+                    }
+                    if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
+                    {
+                        if(index === "") index = 1;
+                        return index.toString();
+                    }
+                }
+                //if no existing SSID found in parameters
+                return "1";
+            }
+            //priority 1 will be save in wifi.ssid/key paremeters
+            //priority 2 will be save in wifi2.ssid/key paremeters
+            //priority 3 will be save in wifi3.ssid/key paremeters
             onActivate: {
-                //for callback by parameterslistBox
-                parameterslistBox.parameterName = parameterName;
-                parameterslistBox.callerid = optNetplayPswdClient;
+                //for callback
+                wifiPriorityBox.callerid = optWifiPriority;
                 //to force update of list of parameters
-                api.internal.recalbox.parameterslist.currentName(parameterName);
-                parameterslistBox.model = api.internal.recalbox.parameterslist;
-                parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                //to transfer focus to parameterslistBox
-                parameterslistBox.focus = true;
+                wifiPriorityBox.model = wifiPriorityList;
+                wifiPriorityBox.index = parseInt(value) - 1;
+                //to transfer focus to wifiPriorityBox
+                wifiPriorityBox.focus = true;
             }
-            KeyNavigation.up: is_to_create_room ? optNetplayPswdClientActivate : optNetplayFriend
-            KeyNavigation.down: is_to_create_room ? optNetplayPswdViewerActivate : optNetplayPswdViewer
-            visible: has_password || (is_to_create_room && optNetplayPswdClientActivate.checked)
-
-        }
-        ToggleOption {
-            id: optNetplayPswdViewerActivate
-            Rectangle {
-                        width: parent.width
-                        height: parent.height
-                        color: themeColor.secondary
-                        z:-1
-                      }
-            label: qsTr("Activate password for netplay spectator") + api.tr
-            note: qsTr("Set password for netplay spectator") + api.tr
-
-            checked: api.internal.recalbox.getBoolParameter("netplay.password.useforviewer")
-            onCheckedChanged: {
-                api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
-            }
-            KeyNavigation.up: optNetplayPswdClient
-            KeyNavigation.down: optNetplayPswdViewer
-            visible: is_to_create_room
-        }
-        MultivalueOption {
-            id: optNetplayPswdViewer
-            Rectangle {
-                        width: parent.width
-                        height: parent.height
-                        color: themeColor.secondary
-                        z:-1
-                      }
-            //property to manage parameter name
-            property string parameterName : "netplay.password.viewer"
-
-            label: qsTr("Netplay spectator password") + api.tr
-            note: qsTr("Choose password for netplay spectator") + api.tr
-            value: api.internal.recalbox.parameterslist.currentName(parameterName)
-            onActivate: {
-                //for callback by parameterslistBox
-                parameterslistBox.parameterName = parameterName;
-                parameterslistBox.callerid = optNetplayPswdViewer
-                //to force update of list of parameters
-                api.internal.recalbox.parameterslist.currentName(parameterName);
-                parameterslistBox.model = api.internal.recalbox.parameterslist;
-                parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                //to transfer focus to parameterslistBox
-                parameterslistBox.focus = true;
-            }
-            KeyNavigation.up: is_to_create_room ? optNetplayPswdViewerActivate : optNetplayPswdClient
+            onFocusChanged: container.onFocus(this)
             KeyNavigation.down: okButton
-            visible: has_spectate_password || (is_to_create_room && optNetplayPswdViewerActivate.checked)
         }
+
+
+        //For future use but need to change existing wifi script as /etc/init.d/S09wifi
+        // today we ahve only key/ssid paremeters proposed and for a maximum of 3 wifis register.
+        /*
+        ToggleOption {
+            id: optWifiAutoConnect //recalbox scripts to support this feature (today all wifi will try to be connected)
+            Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        color: themeColor.secondary
+                        z:-1
+                      }
+            label: qsTr(" Connect automatically for next time ?") + api.tr
+            note: qsTr("Activate it to automatically connect to this wifi when it is detected") + api.tr
+
+            checked: {
+                //find next parameter available - until 50 wifi configrurables (but 3 useable for the moment from recalbox scripts ;-)
+                for(var i = 0; i<= 50; i++){
+                    var index;
+                    if(i === 0)
+                    {
+                        index = ""; //first one is "wifi."
+                    }
+                    else
+                    {
+                        index = i+1; //other one is from "wifi2."
+                    }
+                    if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
+                    {
+                        return api.internal.recalbox.getBoolParameter("wifi" + index + ".autoconnect");
+                    }
+                }
+                //if not found
+                return false;
+            }
+            onCheckedChanged: {
+                //find next parameter available - until 50 wifi configrurables (but 3 useable for the moment from recalbox scripts ;-)
+                for(var i = 0; i<= 50; i++){
+                    var index;
+                    if(i === 0)
+                    {
+                        index = ""; //first one is "wifi."
+                    }
+                    else
+                    {
+                        index = i+1; //other one is from "wifi2."
+                    }
+                    if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
+                    {
+                        api.internal.recalbox.setBoolParameter("wifi" + index + ".autoconnect",checked);
+                        return;
+                    }
+                    else if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === "")
+                    {
+                        api.internal.recalbox.setStringParameter("wifi" + index + ".ssid",ssid);
+                        api.internal.recalbox.setBoolParameter("wifi" + index + ".autoconnect",checked);
+                        return;
+                    }
+                }
+            }
+            KeyNavigation.down: okButton
+            visible: true
+        }*/
 
         // button row
         Row {
@@ -302,7 +412,7 @@ FocusScope {
                 width: (secondchoice !== "") ? parent.width * 0.33 : ((thirdchoice !== "") ? parent.width * 0.5 : parent.width)
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
-                KeyNavigation.up: optNetplayPswdViewer
+                KeyNavigation.up: optWifiPriority
                 KeyNavigation.right: (secondchoice !== "") ? secondButton : cancelButton
                 Keys.onPressed: {
                     //console.log("okButton Keys.onPressed");
@@ -316,6 +426,10 @@ FocusScope {
                         //hide other buttons
                         secondButtonText.text = "";
                         cancelButtonText.text = "";
+                        //save conf depending actionState
+                        if(actionState === "Connect"){
+                            saveWifiConf();
+                        }
                         //let 50 ms to update interface
                         lastchoice = "firstchoice";
                         acceptTimer.running = true;
@@ -347,6 +461,10 @@ FocusScope {
                         //hide other buttons
                         secondButtonText.text = "";
                         cancelButtonText.text = "";
+                        //save conf depending actionState
+                        if(actionState === "Connect"){
+                            saveWifiConf();
+                        }
                         //let 50 ms to update interface
                         lastchoice = "firstchoice";
                         acceptTimer.running = true;
@@ -394,7 +512,7 @@ FocusScope {
                 height: root.textSize * 2.25
                 color: (focus || okMouseArea.containsMouse) ? "darkOrange" : themeColor.main //"#222"
                 visible: (secondchoice !== "") ? true : false
-                KeyNavigation.up: optNetplayPswdViewer
+                KeyNavigation.up: optWifiPriority
                 KeyNavigation.right: cancelButton
                 KeyNavigation.left: okButton
                 Keys.onPressed: {
@@ -409,6 +527,10 @@ FocusScope {
                         //hide other buttons
                         secondButtonText.text = "";
                         cancelButtonText.text = "";
+                        //save conf depending actionState
+                        if(actionState === "Connect"){
+                            saveWifiConf();
+                        }
                         //let 50 ms to update interface
                         lastchoice = "secondchoice";
                         acceptTimer.running = true;
@@ -439,6 +561,10 @@ FocusScope {
                         //hide other buttons
                         secondButtonText.text = "";
                         cancelButtonText.text = "";
+                        //save conf depending actionState
+                        if(actionState === "Connect"){
+                            saveWifiConf();
+                        }
                         //let 50 ms to update interface
                         lastchoice = "secondchoice";
                         acceptTimer.running = true;
@@ -454,7 +580,7 @@ FocusScope {
                 width: (secondchoice !== "") ? parent.width * 0.34 : ((thirdchoice !== "") ? parent.width * 0.5 : 0)
                 height: root.textSize * 2.25
                 color: (focus || cancelMouseArea.containsMouse) ? "darkRed" : themeColor.main //"#222"
-                KeyNavigation.up: optNetplayPswdViewer
+                KeyNavigation.up: optWifiPriority
                 KeyNavigation.left: (secondchoice !== "") ? secondButton : okButton
                 Keys.onPressed: {
                     //console.log("cancelButton Keys.onPressed");
@@ -503,12 +629,10 @@ FocusScope {
                         lastchoice = "thirdchoice";
                         acceptTimer.running = true;
                    }
-
                 }
             }
         }
     }
-
     states: [
         State {
             name: "open"
@@ -516,26 +640,27 @@ FocusScope {
             PropertyChanges { target: dialogBox; scale: 1 }
         }
     ]
+
+
+
     MultivalueBox {
-        id: parameterslistBox
+        id: wifiPriorityBox
         z: 3
 
         //properties to manage parameter
-        property string parameterName
+        //property string parameterName
         property MultivalueOption callerid
-
+        //property alias parameterslistModel : model
         //reuse same model
-        model: api.internal.recalbox.parameterslist.model
+        //model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
-        index: api.internal.recalbox.parameterslist.currentIndex
+        //index: api.internal.recalbox.parameterslist.currentIndex
 
         onClose: callerid.focus = true
 
         onSelect: {
-            //to update index of parameterlist QAbstractList
-            api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
+            callerid.value = (index + 1).toString();
         }
     }
 }

@@ -180,5 +180,6 @@
         <file>assets/gamepad/guide_ps4.png</file>
         <file>assets/logonvidia.png</file>
         <file>menu/settings/WifiNetworks.qml</file>
+        <file>dialogs/WifiDialog.qml</file>
     </qresource>
 </RCC>
