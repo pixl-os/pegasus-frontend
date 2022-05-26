@@ -50,7 +50,6 @@ FocusScope {
         id: myDialog
         WifiDialog {
             title: confirmDialog.wifi_action
-            message: confirmDialog.wifi_name
             symbol: confirmDialog.wifi_logo
             symbolfont : confirmDialog.wifi_logofont
             firstchoice: actionState === "Connect" ? qsTr("Connect") + api.tr : qsTr("Disconnect") + api.tr
@@ -69,44 +68,35 @@ FocusScope {
         target: confirmDialog.item
         function onAccept() {
             switch (actionState) {
-                    case "Connect":
-                        wifiTimer.running = false;
-                        var result = "";
-                        //console.log("result:",result);
-                        //restart wifi to connect
-
-                        //relaunch scanning
-                        wifiTimer.running = true; // no need to restart btModel because timer will manage
+                    case "Connect": //as connect
                     break;
-                    case "Disconnect":
-                        //stop scanning/checking during pairing
-                        wifiTimer.running = false;
-                        var result = "";
-                        //console.log("result:",result);
-                        //relaunch scanning
-                        wifiTimer.running = true; // no need to restart btModel because timer will manage
+                    case "Disconnect": // as disconnect
                     break;
             }
+            //deactivate confirmDialog
+            confirmDialog.active = false;
+            //take focus
             content.focus = true;
+            //relaunch scanning
+            wifiTimer.running = true;
+            //restart spinner
+            spinnerloader.active = true;
         }
         function onSecondChoice() {
             switch (actionState) {
-                    case "Connect":
-                        //no second choice for the moment
-                        wifiTimer.running = false;
-                        //console.log("result:",result);
-                        //relaunch scanning
-                        wifiTimer.running = true; // no need to restart btModel because timer will manage
+                    case "Connect": //as save
                     break;
-                    case "Disconnect":
-                        //no second choice for the moment
-                        wifiTimer.running = false;
-                        //console.log("result:",result);
-                        //relaunch scanning
-                        wifiTimer.running = true; // no need to restart btModel because timer will manage
+                    case "Disconnect": //as forget
                     break;
             }
+            //deactivate confirmDialog
+            confirmDialog.active = false;
+            //take focus
             content.focus = true;
+            //relaunch scanning
+            wifiTimer.running = true;
+            //restart spinner
+            spinnerloader.active = true;
         }
         function onCancel() {
             //do nothing

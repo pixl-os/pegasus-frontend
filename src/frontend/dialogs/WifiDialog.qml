@@ -11,7 +11,6 @@ FocusScope {
     id: root
 
     property alias title: titleText.text
-    property alias message: messageText.text
     property alias symbol: symbolText.text
     property alias symbolfont : symbolText.font.family
     property alias firstchoice: okButtonText.text
@@ -120,45 +119,6 @@ FocusScope {
         }
 
         // text area
-        Rectangle {
-            width: parent.width
-            height: messageText.height + 1 * root.textSize
-            color: themeColor.secondary
-            Text {
-                id: messageText
-
-                anchors.centerIn: parent
-                width: contentWidth // parent.width - 2 * root.textSize
-
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-
-                color: themeColor.textTitle
-                font {
-                    pixelSize: root.textSize * 2
-                    family: globalFonts.sans
-                }
-            }
-
-            Text {
-                id: symbolText
-
-                anchors {
-                    verticalCenter: messageText.verticalCenter
-                    //left: parent.left
-                    //leftMargin: root.titleTextSize * 0.75
-                    right: messageText.left
-                    rightMargin: root.titleTextSize * 0.75
-                }
-
-                color: themeColor.textTitle
-                font {
-                    bold: true
-                    pixelSize: root.titleTextSize * 2
-                    family: globalFonts.awesome
-                }
-            }
-        }
         /*# ------------ B - Network ------------ #
         ## Set system hostname
         system.hostname=RECALBOX
@@ -200,24 +160,55 @@ FocusScope {
                 z:-1
             }
             label: qsTr("Wifi SSID") + api.tr
-            note: qsTr("Thanks to enter your hidden SSID here") + api.tr
+            note: ssid === "" ? qsTr("Thanks to enter your hidden SSID here") + api.tr : ""
 
             TextFieldOption {
-                id: ssidfield
+                id: ssidtextfieldoption
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: TextInput.AlignRight
                 placeholderText: qsTr("your hidden ssid") + api.tr
                 text: ""
+                visible: ssid === "" ? true : false
+                active: ssid === "" ? true : false
                 echoMode: TextInput.Normal
                 inputMethodHints: Qt.ImhNoPredictiveText
                 onEditingFinished: {
                     //do nothing save by "save" or "connect" button
                 }
             }
+
+            Text {
+                id: symbolText
+
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    right: ssidtextfield.left
+                    rightMargin: root.titleTextSize * 0.75
+                }
+
+                color: themeColor.textTitle
+                font {
+                    bold: true
+                    pixelSize: root.titleTextSize * 2
+                    family: globalFonts.awesome
+                }
+                visible: ssid !== "" ? true : false
+            }
+
+            TextField {
+                id: ssidtextfield
+                anchors.right: parent.right
+                anchors.rightMargin: horizontalPadding
+                anchors.verticalCenter: parent.verticalCenter
+                horizontalAlignment: TextInput.AlignRight
+                text: ssid
+                visible: ssid !== "" ? true : false
+            }
+
             onFocusChanged: container.onFocus(this)
             KeyNavigation.down: optWifiKey
-            visible: ((ssid === "") || (ssidfield.text !== "")) ? true : false
+            visible: true
         }
 
         SimpleButton {
@@ -240,14 +231,14 @@ FocusScope {
                 placeholderText: qsTr("your key") + api.tr
                 text: {
                     //find if a parameter has already this SSID to take and know if a key exists
-                    for(var i = 0; i < 3; i++){
-                        var index;
-                        if(i === 0){
+                    var index = "";
+                    for(var i = 1; i <= 3; i++){
+                        if(i === 1){
                             index = ""; //first one is "wifi."
                         }
                         else
                         {
-                            index = i+1; //other one is from "wifi2."
+                            index = (i).toString(); //other one is from "wifi2."
                         }
                         if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
                         {
@@ -288,19 +279,19 @@ FocusScope {
             note: qsTr("From 1 to 3 to match with the 3 conf that we could save") + api.tr
             value: {
                 //find if a parameter has already this SSID to take teh good priority
-                for(var i = 0; i < 3; i++){
-                    var index;
-                    if(i === 0){
+                var index = "";
+                for(var i = 1; i <= 3; i++){
+                    if(i === 1){
                         index = ""; //first one is "wifi."
                     }
                     else
                     {
-                        index = i+1; //other one is from "wifi2."
+                        index = (i).toString(); //other one is from "wifi2."
                     }
                     if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
                     {
-                        if(index === "") index = 1;
-                        return index.toString();
+                        if(index === "") index = "1";
+                        return index;
                     }
                 }
                 //if no existing SSID found in parameters
