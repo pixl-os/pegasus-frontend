@@ -20,7 +20,7 @@ TextField {
     }
 
     Keys.onReleased:{
-        event.accepted = virtualKeyboardOnReleased(event);
+        if(visible) event.accepted = virtualKeyboardOnReleased(event);
     }
     property bool active : false //set to false by default
     Keys.onPressed: {
@@ -30,7 +30,7 @@ TextField {
         console.log("control.focus : ", control.focus);
         console.log("control.readOnly : ", control.readOnly);
         console.log("active : ",active);*/
-        event.accepted, control.focus, active = virtualKeyboardOnPressed(event,control,active);
+        if(visible) event.accepted, control.focus, active = virtualKeyboardOnPressed(event,control,active);
         /*console.log("-----After update-----");
         console.log("event.accepted : ", event.accepted);
 		console.log("event.key : ", event.key);
