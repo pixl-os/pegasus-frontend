@@ -67,8 +67,11 @@ FocusScope {
         {
             index = optWifiPriority.value;
         }
-        api.internal.recalbox.setStringParameter("wifi" + index + ".ssid",ssidfield.text);
-        api.internal.recalbox.setStringParameter("wifi" + index + ".key",keyfield.text);
+
+        if(ssid === "") api.internal.recalbox.setStringParameter("wifi" + index + ".ssid", ssidtextfield.text);
+        else api.internal.recalbox.setStringParameter("wifi" + index + ".ssid", ssid);
+
+        api.internal.recalbox.setStringParameter("wifi" + index + ".key", keyfield.text);
         api.internal.recalbox.saveParameters();
     }
 
@@ -173,6 +176,11 @@ FocusScope {
                 active: ssid === "" ? true : false
                 echoMode: TextInput.Normal
                 inputMethodHints: Qt.ImhNoPredictiveText
+
+                activeFocusColor : themeColor.main
+                inactiveColor: themeColor.secondary
+                activeBorderColor: themeColor.screenHeader
+
                 onEditingFinished: {
                     //do nothing save by "save" or "connect" button
                 }
@@ -250,6 +258,11 @@ FocusScope {
                 }
                 echoMode: TextInput.PasswordEchoOnEdit
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+
+                activeFocusColor : themeColor.main
+                inactiveColor: themeColor.secondary
+                activeBorderColor: themeColor.screenHeader
+
                 onEditingFinished: {
                     //do nothing save by "save" or "connect" button
                 }

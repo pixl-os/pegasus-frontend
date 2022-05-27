@@ -13,10 +13,15 @@ TextField {
     font.family: globalFonts.sans
     readOnly: true
 
+    //custom parameter to inverse color
+    property color activeFocusColor : themeColor.secondary
+    property color inactiveColor: themeColor.main
+    property color activeBorderColor: themeColor.screenHeader
+
     background: Rectangle {
         radius: vpx(20)
-        color: control.activeFocus ? themeColor.secondary : themeColor.main
-        border.color: control.activeFocus ? themeColor.screenHeader : themeColor.main
+        color: control.activeFocus ? activeFocusColor : inactiveColor
+        border.color: control.activeFocus ? activeBorderColor : inactiveColor
     }
 
     Keys.onReleased:{
