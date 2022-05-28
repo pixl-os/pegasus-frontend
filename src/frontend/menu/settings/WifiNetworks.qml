@@ -69,6 +69,18 @@ FocusScope {
         function onAccept() {
             switch (actionState) {
                     case "Connect": //as connect
+                        //restart wifi to force to connect to priority 1 wifi
+                        api.internal.system.run("/etc/init.d/S09wifi restart");
+                        var wifiIP = ""
+                        //wait 10s max to have an IP
+                        for(var i=0; i < 10; i++){
+                            wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                            if(wifiIP !== ""){
+                                break; //to exit waiting
+                            }
+                            //sleep 1 second to wait
+                            api.internal.system.run("sleep 1");
+                        }
                     break;
                     case "Disconnect": // as disconnect
                     break;
