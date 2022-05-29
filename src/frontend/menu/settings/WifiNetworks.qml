@@ -105,13 +105,13 @@ FocusScope {
             switch (actionState) {
                     case "Connect": //as connect
                         //restart wifi to force to connect to priority 1 wifi
-                        api.internal.system.run("/etc/init.d/S09wifi restart");
+                        if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi restart");
                         //wait 5s to start
                         api.internal.system.run("sleep 5");
                         var wifiIP = ""
                         //wait 10s max to have an IP
                         for(var i=0; i < 10; i++){
-                            wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
                             if(wifiIP !== ""){
                                 break; //to exit waiting
                             }
@@ -312,7 +312,7 @@ FocusScope {
         triggeredOnStart: true
         onTriggered: {
             if ((interval/1000)*counter === 2){ // wait 2 seconds before to scan wifi for the first time
-                api.internal.system.run("wpa_cli -i wlan0 scan");
+                if(!isDebugEnv()) api.internal.system.run("wpa_cli -i wlan0 scan");
             }
             if ((interval/1000)*counter === 7){ // wait 7 seconds before to result of the scan wifi
                 readWifiNetworksList(wifiNetworksModel);

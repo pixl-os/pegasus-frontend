@@ -392,17 +392,18 @@ FocusScope {
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("wifi.enabled",checked);
                         if(checked){
-                            var wifiIP = api.internal.system.run("timeout 0.2 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            var wifiIP = "";
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 0.2 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
                             console.log("wifiIP : '", wifiIP,"'")
                             //activate wifi by restarting only if a wifi is not already connected
                             if(wifiIP === ""){
                                 console.log("api.internal.system.run('/etc/init.d/S09wifi restart');");
-                                api.internal.system.run("/etc/init.d/S09wifi restart");
+                                if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi restart");
                             }
                         }
                         else
                         {//deactivate wifi
-                            api.internal.system.run("/etc/init.d/S09wifi stop");
+                            if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi stop");
                         }
                     }
                     onFocusChanged: container.onFocus(this)
