@@ -63,6 +63,36 @@ FocusScope {
         }
     }
 
+
+    //timer to update status of wifi connected or not
+    Timer {
+        id: connectedTimer
+        interval: 1000 // every second
+        repeat: true
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            var list = wifiNetworksModel;
+            var macaddress = "";
+            const result = api.internal.system.run("timeout 0.5 wpa_cli status | grep -E 'bssid' | awk -v FS='(=)' '{print $2}'").trim();
+            console.log("result of BSSID: '",result,"'");
+            console.log("lengh of BSSID: '",result.length,"'");
+
+            for(var i = 0;i < list.count; i++){
+                macaddress = list.get(i).macaddress;
+                console.log("macaddress:",macaddress);
+                //check if this wifi is connected
+                if(result.includes(macaddress) && (result.length !== 0)){
+
+                    list.setProperty(i,"connected", true);
+                }
+                else
+                {
+                    list.setProperty(i,"connected", false);
+                }
+            }
+        }
+    }
     //loader to load confirm dialog
     Connections {
         target: confirmDialog.item
@@ -71,6 +101,8 @@ FocusScope {
                     case "Connect": //as connect
                         //restart wifi to force to connect to priority 1 wifi
                         api.internal.system.run("/etc/init.d/S09wifi restart");
+                        //wait 5s to start
+                        api.internal.system.run("sleep 5");
                         var wifiIP = ""
                         //wait 10s max to have an IP
                         for(var i=0; i < 10; i++){
@@ -429,8 +461,22 @@ FocusScope {
                     id: myDiscoveredDevices
                     model: wifiNetworksModel //for test purpose
                     SimpleButton {
-                        property var isPairingIssue: false
                         width: parent.width - vpx(100)
+                        Text {
+                            id: wifiStatus
+
+                            anchors.right: wifiNetworkIcon.left
+                            anchors.rightMargin: vpx(10)
+                            anchors.top: parent.top
+                            anchors.topMargin: vpx(15)
+
+                            color: "green"
+                            font.pixelSize: (parent.fontSize)*2
+                            font.family: globalFonts.ion
+                            height: parent.height
+                            text : "\uf1f9"
+                            visible: model.connected === true ? true : false
+                        }
                         Text {
                             id: wifiNetworkIcon
 
@@ -530,7 +576,7 @@ FocusScope {
                             id: connectButton
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
-                            text: qsTr("Connect ?") + api.tr
+                            text: (model.connected === true) ? qsTr("Connected") + api.tr  : qsTr("Connect ?") + api.tr
                             visible: parent.focus
                             anchors.left: parent.right
                             anchors.leftMargin: horizontalPadding * 2

@@ -286,19 +286,40 @@ FocusScope {
                     first: true
                     symbol: "\uf26d"
                 }
+                //timer to update status of wifi/ethernet
+                Timer {
+                    id: connectedTimer
+                    interval: 2000 // every 2 seconds
+                    repeat: true
+                    running: true
+                    triggeredOnStart: false
+                    onTriggered: {
+                        //get ethernet ip if exists
+                        var ethIP = api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                        if(ethIP !== ""){
+                            optEthernet.note = qsTr("Ethernet Local IP :") + api.tr + " " + ethIP;
+                        }
+                        else{
+                            optEthernet.note = qsTr("Plug your cable to have network") + api.tr;
+                        }
+                        //get wifi ip if exists
+                        var wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                        //get wifi ssid if exists
+                        var ssid = api.internal.system.run("timeout 0.5 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}'");
+
+                        if(wifiIP !== ""){
+                            optWifiNetwork.note = qsTr("Wifi Local IP :") + api.tr + " " + wifiIP + "\n" + qsTr("Wifi used :") + api.tr + " " + ssid;
+                        }
+                        else{
+                            optWifiNetwork.note = qsTr("Connect your PC to any network") + api.tr;
+                        }
+                    }
+                }
                 SimpleButton {
                     id: optEthernet
 
                     label: qsTr("Ethernet network") + api.tr
-                    note: {
-                        var ethIP = ""
-                        ethIP = api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
-                        if(ethIP !== ""){
-                            return qsTr("Ethernet Local IP :") + api.tr + " " + ethIP;
-                        }
-                        else
-                            return qsTr("Plug your cable to have network") + api.tr;
-                    }
+                    note: ""
                     pointerIcon: false
 
                     onActivate: {
@@ -362,8 +383,9 @@ FocusScope {
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("wifi.enabled",checked);
                         if(checked){
-                            //activate wifi
-                            api.internal.system.run("/etc/init.d/S09wifi restart");
+                            var wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            //activate wifi by restarting only if a wifi is not already connected
+                            if(wifiIP === "") api.internal.system.run("/etc/init.d/S09wifi restart");
                         }
                         else
                         {//deactivate wifi
@@ -377,15 +399,7 @@ FocusScope {
                     id: optWifiNetwork
                     visible: optWifiToggle.checked
                     label: qsTr("Wifi networks") + api.tr
-                    note: {
-                        var wifiIP = ""
-                        wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
-                        if(wifiIP !== ""){
-                            return qsTr("Wifi Local IP :") + api.tr + " " + wifiIP;
-                        }
-                        else
-                            return qsTr("Connect your PC to any network") + api.tr;
-                    }
+                    note: ""
                     pointerIcon: true
 
                     onActivate: {
