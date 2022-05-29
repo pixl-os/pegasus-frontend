@@ -295,23 +295,32 @@ FocusScope {
                     triggeredOnStart: false
                     onTriggered: {
                         //get ethernet ip if exists
-                        var ethIP = api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                        var ethIP = ""
+                        if(!isDebugEnv()) ethIP = api.internal.system.run("timeout 0.2 ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                        else ethIP = "192.168.1.255"; //for test purpose
                         if(ethIP !== ""){
                             optEthernet.note = qsTr("Ethernet Local IP :") + api.tr + " " + ethIP;
                         }
                         else{
                             optEthernet.note = qsTr("Plug your cable to have network") + api.tr;
                         }
-                        //get wifi ip if exists
-                        var wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
-                        //get wifi ssid if exists
-                        var ssid = api.internal.system.run("timeout 0.5 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}'");
 
-                        if(wifiIP !== ""){
-                            optWifiNetwork.note = qsTr("Wifi Local IP :") + api.tr + " " + wifiIP + "\n" + qsTr("Wifi used :") + api.tr + " " + ssid;
-                        }
-                        else{
-                            optWifiNetwork.note = qsTr("Connect your PC to any network") + api.tr;
+                        if(optWifiToggle.checked){
+                            //get wifi ip if exists
+                            var wifiIP = "";
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 0.2 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            else wifiIP = "192.168.1.254"; //for test purpose
+                            //get wifi ssid if exists
+                            var ssid = "";
+                            if(!isDebugEnv()) ssid = api.internal.system.run("timeout 0.2 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}'");
+                            else ssid = "lesv2-5G-3"; //for test purpose
+
+                            if(wifiIP !== ""){
+                                optWifiNetwork.note = qsTr("Wifi Local IP :") + api.tr + " " + wifiIP + "\n" + qsTr("Wifi used :") + api.tr + " " + ssid;
+                            }
+                            else{
+                                optWifiNetwork.note = qsTr("Connect your PC to any network") + api.tr;
+                            }
                         }
                     }
                 }
@@ -383,9 +392,13 @@ FocusScope {
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("wifi.enabled",checked);
                         if(checked){
-                            var wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            var wifiIP = api.internal.system.run("timeout 0.2 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            console.log("wifiIP : '", wifiIP,"'")
                             //activate wifi by restarting only if a wifi is not already connected
-                            if(wifiIP === "") api.internal.system.run("/etc/init.d/S09wifi restart");
+                            if(wifiIP === ""){
+                                console.log("api.internal.system.run('/etc/init.d/S09wifi restart');");
+                                api.internal.system.run("/etc/init.d/S09wifi restart");
+                            }
                         }
                         else
                         {//deactivate wifi

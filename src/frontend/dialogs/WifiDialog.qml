@@ -21,6 +21,8 @@ FocusScope {
     property string ssid :  ""
     property string actionState
 
+    property bool keyUpdated: false
+
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
     property string lastchoice: ""
@@ -56,6 +58,47 @@ FocusScope {
         onCancel: root.cancel()
     }
 
+    function escapeRegExp(str) {
+      // Referring to the table here:
+      // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/regexp
+      // these characters should be escaped
+      // \ ^ $ * + ? . ( ) | { } [ ]
+      // These characters only have special meaning inside of brackets
+      // they do not need to be escaped, but they MAY be escaped
+      // without any adverse effects (to the best of my knowledge and casual testing)
+      // : ! , =
+      // my test "~!@#$%^&*(){}[]`/=?+\|-_;:'\",<.>".match(/[\#]/g)
+
+      var specials = [
+            // order matters for these
+              "-"
+            , "["
+            , "]"
+            // order doesn't matter for any of these
+            , "/"
+            , "{"
+            , "}"
+            , "("
+            , ")"
+            , "*"
+            , "+"
+            , "?"
+            , "."
+            , "\\"
+            , "^"
+            , "$"
+            , "|"
+            , "%"
+            , "#"
+            , " "
+          ]
+
+      // I choose to escape every character with '\'
+      // even though only some strictly require it when inside of []
+      var regex = RegExp('[' + specials.join('\\') + ']', 'g')
+      return str.replace(regex, "\\$&");
+    }
+
     //save wifi conf function
     function saveWifiConf(){
         //calculate index from wifiPriority
@@ -68,10 +111,24 @@ FocusScope {
             index = optWifiPriority.value;
         }
 
+        //save wifi ssid
         if(ssid === "") api.internal.recalbox.setStringParameter("wifi" + index + ".ssid", ssidtextfield.text);
         else api.internal.recalbox.setStringParameter("wifi" + index + ".ssid", ssid);
 
-        api.internal.recalbox.setStringParameter("wifi" + index + ".key", keyfield.text);
+        //escape the wifi key before to store it as requested in recalbox.conf
+        var key = keyfield.text;
+        var safekey = "";
+        //escaping deactivated for the moment due to not demonstrate that is really used
+        /*if(keyUpdated){
+            //if udpate need to escape it
+            safekey = escapeRegExp(key);
+        }
+        else*/
+        safekey = key;
+        //console.log("saveWifiConf() - 'escaped' key : ", safekey);
+
+        //save wifi key
+        api.internal.recalbox.setStringParameter("wifi" + index + ".key", safekey);
         api.internal.recalbox.saveParameters();
     }
 
@@ -237,6 +294,7 @@ FocusScope {
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: TextInput.AlignRight
                 placeholderText: qsTr("your key") + api.tr
+                property string initialValue;
                 text: {
                     //find if a parameter has already this SSID to take and know if a key exists
                     var index = "";
@@ -250,7 +308,8 @@ FocusScope {
                         }
                         if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
                         {
-                            return api.internal.recalbox.getStringParameter("wifi" + index + ".key");
+                            initialValue = api.internal.recalbox.getStringParameter("wifi" + index + ".key");
+                            return initialValue;
                         }
                     }
                     //if no existing SSID found in parameters
@@ -265,6 +324,12 @@ FocusScope {
 
                 onEditingFinished: {
                     //do nothing save by "save" or "connect" button
+                    //but just store that key has been udpated
+                    //console.log("onEditingFinished");
+                    if(keyfield.initialValue !==  keyfield.text){
+                        //console.log("keyfield.text updated");
+                        keyUpdated = true;
+                    }
                 }
             }
             onFocusChanged: container.onFocus(this)

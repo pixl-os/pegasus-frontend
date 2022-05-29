@@ -74,7 +74,10 @@ FocusScope {
         onTriggered: {
             var list = wifiNetworksModel;
             var macaddress = "";
-            const result = api.internal.system.run("timeout 0.5 wpa_cli status | grep -E 'bssid' | awk -v FS='(=)' '{print $2}'").trim();
+            var result = "";
+            if(!isDebugEnv()) result = api.internal.system.run("timeout 0.2 wpa_cli status | grep -E 'bssid' | awk -v FS='(=)' '{print $2}'").trim();
+            else result = "9c:c9:eb:15:cd:80"; //to force connection for testing
+
             //console.log("result of BSSID: '",result,"'");
             //console.log("lengh of BSSID: '",result.length,"'");
 
@@ -82,7 +85,7 @@ FocusScope {
                 macaddress = list.get(i).macaddress;
                 //console.log("macaddress:",macaddress);
                 //check if this wifi is connected
-                if(result.includes(macaddress) && (result.length !== 0)){
+                if((result === macaddress) && (result.length !== 0)){
 
                     list.setProperty(i,"connected", true);
                 }
@@ -90,6 +93,8 @@ FocusScope {
                 {
                     list.setProperty(i,"connected", false);
                 }
+                //console.log("connected:",list.get(i).connected);
+                //WifiNetworks.itemAt(i). = list.get(i).connected;
             }
         }
     }
@@ -167,7 +172,7 @@ FocusScope {
         xmlHttp.onload = function () {
             // Request finished.
             vendor = xmlHttp.responseText;
-            console.log("return of https://api.macvendors.com for ",list.get(index).macaddress," : ", vendor);
+            //console.log("return of https://api.macvendors.com for ",list.get(index).macaddress," : ", vendor);
             if(vendor.includes("Not Found")) {
                 if(!api.internal.recalbox.getBoolParameter("controllers.bluetooth.hide.unknown.vendor")){
                     list.get(index).vendor = "Unknown vendor";
@@ -191,7 +196,7 @@ FocusScope {
         };
         xmlHttp.ontimeout = function (e) {
           // XMLHttpRequest timed out
-          console.log("Timeout of https://api.macvendors.com for ",list.get(index).macaddress);
+          //console.log("Timeout of https://api.macvendors.com for ",list.get(index).macaddress);
         };
         xmlHttp.send( null );
     }
@@ -242,21 +247,22 @@ FocusScope {
         }
         else{
             // bssid / frequency / signal level / flags / ssid
-            result = "9c:c9:eb:15:cd:80|5220|-54|[WPA2-PSK-CCMP][WPS][ESS]|lesv2-5G-3
-9c:c9:eb:15:cd:7e|2472|-50|[WPA2-PSK-CCMP][WPS][ESS]|lesv2_2G
-2c:30:33:da:84:93|5640|-79|[WPA2-PSK-CCMP+TKIP][ESS]|lesv2-5G-1
+            result = "9c:c9:eb:15:cd:80|5220|-45|[WPA2-PSK-CCMP][WPS][ESS]|lesv2-5G-3
+9c:c9:eb:15:cd:7e|2472|-55|[WPA2-PSK-CCMP][WPS][ESS]|lesv2_2G
+2c:30:33:da:84:93|5640|-65|[WPA2-PSK-CCMP+TKIP][ESS]|lesv2-5G-1
 2c:30:33:da:84:a4|2462|-75|[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][ESS]|lesv2
+2c:30:33:da:84:a5|2462|-85|[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][ESS]|lesv2-very-bad
 "
         }
 
-        console.log("***********");
-        console.log(result);
-        console.log("***********");
+        //console.log("***********");
+        //console.log(result);
+        //console.log("***********");
         const devices = result.split('\n');//Split by LF ;-)
-        console.log("Wifi networks found:",devices.length - 1);
+        //console.log("Wifi networks found:",devices.length - 1);
         for(var j = 0;j < devices.length;j++){
             if (devices[j] !== "") {
-                console.log("wifi details:",devices[j]);
+                //console.log("wifi details:",devices[j]);
                 const details = devices[j].split("|");
                 if(!allmacaddresses.includes(details[0])){//if wifi device not yet listed
                     //Calculate type of wifi
@@ -268,7 +274,7 @@ FocusScope {
                     }
 
                     //Add to list
-                    list.append({icon: icon, iconfont: globalFonts.awesome, frequency: details[1], signal: details[2], vendor:"", name: details[4], macaddress: details[0], flags: details[3]});
+                    list.append({icon: icon, iconfont: globalFonts.awesome, frequency: details[1], signal: details[2], vendor:"", name: details[4], macaddress: details[0], flags: details[3], connected: false});
                     //ListElement { icon: ""; iconfont:""; frequency: "5220"; signal: "-54"; vendor: "" ; name: "lesv2-5G-3"; macaddress: "9c:c9:eb:15:cd:80"; flags:"[WPA2-PSK-CCMP][WPS][ESS]" }
                     allmacaddresses = allmacaddresses + details[0];
                 }
@@ -295,8 +301,6 @@ FocusScope {
             }
         }
     }
-
-
 
     //timer to relaunch wifi scan regularly
     property int counter: 0
@@ -417,8 +421,6 @@ FocusScope {
                         anchors.leftMargin: vpx(30)
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: vpx(30)
-
-
                         //anchors.topMargin: vpx(80)
                         //anchors.verticalCenter: parent.verticalCenter
                         active: true
@@ -463,20 +465,21 @@ FocusScope {
                     SimpleButton {
                         width: parent.width - vpx(100)
                         Text {
-                            id: wifiStatus
+                            id: wifiConnected
 
                             anchors.right: wifiNetworkIcon.left
                             anchors.rightMargin: vpx(10)
                             anchors.top: parent.top
-                            anchors.topMargin: vpx(15)
+                            anchors.topMargin: vpx(1)
 
                             color: "green"
                             font.pixelSize: (parent.fontSize)*2
                             font.family: globalFonts.ion
                             height: parent.height
                             text : "\uf1f9"
-                            visible: model.connected === true ? true : false
+                            visible: connected
                         }
+
                         Text {
                             id: wifiNetworkIcon
 
@@ -576,7 +579,7 @@ FocusScope {
                             id: connectButton
                             property int fontSize: vpx(22)
                             height: fontSize * 1.5
-                            text: (model.connected === true) ? qsTr("Connected") + api.tr  : qsTr("Connect ?") + api.tr
+                            text: connected ? qsTr("Connected") + api.tr  : qsTr("Connect ?") + api.tr
                             visible: parent.focus
                             anchors.left: parent.right
                             anchors.leftMargin: horizontalPadding * 2
