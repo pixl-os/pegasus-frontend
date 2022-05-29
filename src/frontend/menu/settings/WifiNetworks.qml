@@ -75,12 +75,12 @@ FocusScope {
             var list = wifiNetworksModel;
             var macaddress = "";
             const result = api.internal.system.run("timeout 0.5 wpa_cli status | grep -E 'bssid' | awk -v FS='(=)' '{print $2}'").trim();
-            console.log("result of BSSID: '",result,"'");
-            console.log("lengh of BSSID: '",result.length,"'");
+            //console.log("result of BSSID: '",result,"'");
+            //console.log("lengh of BSSID: '",result.length,"'");
 
             for(var i = 0;i < list.count; i++){
                 macaddress = list.get(i).macaddress;
-                console.log("macaddress:",macaddress);
+                //console.log("macaddress:",macaddress);
                 //check if this wifi is connected
                 if(result.includes(macaddress) && (result.length !== 0)){
 
