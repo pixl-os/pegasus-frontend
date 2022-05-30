@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file (focus on ch
 
 ## [recalbox-integration] - 2022-05-30 - NEXT
 - GameOS-pixL:
+	- fix to use L1/R1 for letter nav & L2/R2 for system nav in platform page
+	- fix on gridview width in platform page
 	- Introduction of overlays & logos options in gameView of this theme
 	- Usage of overlays also in demo mode of this theme
 	- adding logos for new 'triforce' system
