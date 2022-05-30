@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - 2022-05-30 - NEXT
+## [recalbox-integration] - 2022-05-30 - v0.0.6
 - GameOS-pixL:
 	- adding logos for new 'xbox' & 'chihiro' system
 	- fix to update 5 logos for 'odyssey2' system
@@ -21,6 +21,10 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix to display virtual keyboard only for 'visible' edition field
 	- change to have 'connect' button only for 'priority one' wifi
 	- Add check of IP/Wifi connection to well display it in Settings menu
+- Lang:
+	- Add french translation for new wifi feature
+	- Update all lang files to be ready for translation after wifi feature.
+	- fix pixL issue 15
 
 ## [recalbox-integration] - 2022-05-06 - v0.0.5
 - new feature including nvidia drivers installation as udpate proposed by Pegasus (need reboot)
