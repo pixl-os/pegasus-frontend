@@ -13,14 +13,19 @@ TextField {
     font.family: globalFonts.sans
     readOnly: true
 
+    //custom parameter to inverse color
+    property color activeFocusColor : themeColor.secondary
+    property color inactiveColor: themeColor.main
+    property color activeBorderColor: themeColor.screenHeader
+
     background: Rectangle {
         radius: vpx(20)
-        color: control.activeFocus ? themeColor.secondary : themeColor.main
-        border.color: control.activeFocus ? themeColor.screenHeader : themeColor.main
+        color: control.activeFocus ? activeFocusColor : inactiveColor
+        border.color: control.activeFocus ? activeBorderColor : inactiveColor
     }
 
     Keys.onReleased:{
-        event.accepted = virtualKeyboardOnReleased(event);
+        if(visible) event.accepted = virtualKeyboardOnReleased(event);
     }
     property bool active : false //set to false by default
     Keys.onPressed: {
@@ -30,7 +35,7 @@ TextField {
         console.log("control.focus : ", control.focus);
         console.log("control.readOnly : ", control.readOnly);
         console.log("active : ",active);*/
-        event.accepted, control.focus, active = virtualKeyboardOnPressed(event,control,active);
+        if(visible) event.accepted, control.focus, active = virtualKeyboardOnPressed(event,control,active);
         /*console.log("-----After update-----");
         console.log("event.accepted : ", event.accepted);
 		console.log("event.key : ", event.key);

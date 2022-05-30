@@ -49,10 +49,7 @@ FocusScope {
         onClose: root.close()
         onOpenVideoSettings: root.openScreen("settings/VideoSettings.qml")
         onOpenInformationSystem: root.openScreen("settings/InformationSystem.qml")
-        //        onOpenKeySettings: root.openScreen("settings/KeyEditor.qml")
-        //        onOpenGamepadSettings: root.openScreen("settings/GamepadEditor.qml")
-        //        onOpenGameDirSettings: root.openModal("settings/GameDirEditor.qml")
-        //        onOpenProviderSettings: root.openModal("settings/ProviderEditor.qml")
+        onOpenWifiNetworks: root.openScreen("settings/WifiNetworks.qml")
     }
     Loader {
         id: modal

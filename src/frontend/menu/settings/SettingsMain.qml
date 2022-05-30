@@ -27,6 +27,7 @@ FocusScope {
     signal close
     signal openVideoSettings
     signal openInformationSystem
+    signal openWifiNetworks
     /*signal openKeySettings
         signal openGamepadSettings
         signal openGameDirSettings
@@ -229,25 +230,6 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optBiosChecking
-                    KeyNavigation.down: optInformationSystem
-                }
-                SectionTitle {
-                    text: qsTr("Systems") + api.tr
-                    first: true
-                    symbol: "\uf412"
-                }
-                SimpleButton {
-                    id: optInformationSystem
-
-                    label: qsTr("System information") + api.tr
-                    note: qsTr("More information Ip, Cpu, OpenGL ...") + api.tr
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openInformationSystem();
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optStorageDevices
                 }
                 /*
@@ -297,8 +279,151 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.down: optStorageCapacity
+                    KeyNavigation.down: optEthernet
+                }
+                SectionTitle {
+                    text: qsTr("Networks") + api.tr
+                    first: true
+                    symbol: "\uf26d"
+                }
+                //timer to update status of wifi/ethernet
+                Timer {
+                    id: connectedTimer
+                    interval: 2000 // every 2 seconds
+                    repeat: true
+                    running: true
+                    triggeredOnStart: false
+                    onTriggered: {
+                        //get ethernet ip if exists
+                        var ethIP = ""
+                        if(!isDebugEnv()) ethIP = api.internal.system.run("timeout 0.2 ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                        else ethIP = "192.168.1.255"; //for test purpose
+                        if(ethIP !== ""){
+                            optEthernet.note = qsTr("Ethernet Local IP :") + api.tr + " " + ethIP;
+                        }
+                        else{
+                            optEthernet.note = qsTr("Plug your cable to have network") + api.tr;
+                        }
+
+                        if(optWifiToggle.checked){
+                            //get wifi ip if exists
+                            var wifiIP = "";
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 0.2 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            else wifiIP = "192.168.1.254"; //for test purpose
+                            //get wifi ssid if exists
+                            var ssid = "";
+                            if(!isDebugEnv()) ssid = api.internal.system.run("timeout 0.2 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}'");
+                            else ssid = "lesv2-5G-3"; //for test purpose
+
+                            if(wifiIP !== ""){
+                                optWifiNetwork.note = qsTr("Wifi Local IP :") + api.tr + " " + wifiIP + "\n" + qsTr("Wifi used :") + api.tr + " " + ssid;
+                            }
+                            else{
+                                optWifiNetwork.note = qsTr("Connect your PC to any network") + api.tr;
+                            }
+                        }
+                    }
+                }
+                SimpleButton {
+                    id: optEthernet
+
+                    label: qsTr("Ethernet network") + api.tr
+                    note: ""
+                    pointerIcon: false
+
+                    onActivate: {
+                        focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWifiToggle
+                }
+                ToggleOption {
+                    id: optWifiToggle
+//                    # ------------ B - Network ------------ #
+//                    ## Set system hostname
+//                    system.hostname=RECALBOX
+//                    ## Activate wifi (0,1)
+//                    wifi.enabled=0
+//                    ## Set wifi region
+//                    ## More info here: https://github.com/recalbox/recalbox-os/wiki/Wifi-country-code-(EN)
+//                    wifi.region=JP
+//                    ## Wifi SSID (string)
+//                    ;wifi.ssid=new ssid
+//                    ## Wifi KEY (string)
+//                    ## after rebooting the recalbox, the "new key" is replace by a hidden value "enc:xxxxx"
+//                    ## you can edit the "enc:xxxxx" value to replace by a clear value, it will be updated again at the following reboot
+//                    ## Escape your special chars (# ; $) with a backslash : $ => \$
+//                    ;wifi.key=new key
+
+//                    ## Wifi - static IP
+//                    ## if you want a static IP address, you must set all 3 values (ip, gateway, and netmask)
+//                    ## if any value is missing or all lines are commented out, it will fall back to the
+//                    ## default of DHCP
+//                    ;wifi.ip=manual ip address
+//                    ;wifi.gateway=new gateway
+//                    ;wifi.netmask=new netmask
+
+//                    # secondary wifi (not configurable via the user interface)
+//                    ;wifi2.ssid=new ssid
+//                    ;wifi2.key=new key
+
+//                    # third wifi (not configurable via the user interface)
+//                    ;wifi3.ssid=new ssid
+//                    ;wifi3.key=new key
+
+// command lines
+// To launch scan:
+//                        #  wpa_cli -i wlan0 scan
+//                        OK
+// To have scan results:
+//                        # wpa_cli -i wlan0 scan_results
+//                        bssid / frequency / signal level / flags / ssid
+//                        9c:c9:eb:15:cd:80       5220    -55     [WPA2-PSK-CCMP][WPS][ESS]       lesv2-5G-3
+//                        9c:c9:eb:15:cd:7e       2472    -51     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_2G
+//                        ec:6c:9a:0b:1c:79       5540    -79     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_livebox
+//                        2c:30:33:da:84:93       5640    -79     [WPA2-PSK-CCMP+TKIP][ESS]       lesv2-5G-1
+//                        2c:30:33:da:84:a4       2462    -71     [WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][ESS]    lesv2
+//                        ec:6c:9a:0b:1c:74       2412    -74     [WPA2-PSK-CCMP][WPS][ESS]       lesv2_livebox
+
+                    label: qsTr("Wifi activation") + api.tr
+                    note: qsTr("Enable or disable Wifi") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("wifi.enabled")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("wifi.enabled",checked);
+                        if(checked){
+                            var wifiIP = "";
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 0.2 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            console.log("wifiIP : '", wifiIP,"'")
+                            //activate wifi by restarting only if a wifi is not already connected
+                            if(wifiIP === ""){
+                                console.log("api.internal.system.run('/etc/init.d/S09wifi restart');");
+                                if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi restart");
+                            }
+                        }
+                        else
+                        {//deactivate wifi
+                            if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi stop");
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: checked ? optWifiNetwork : optLanguage
+                }
+                SimpleButton {
+                    id: optWifiNetwork
+                    visible: optWifiToggle.checked
+                    label: qsTr("Wifi networks") + api.tr
+                    note: ""
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openWifiNetworks();
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optLanguage
                 }
+
                 /*
                 SimpleButton {
                     id: optStorageCapacity
@@ -360,12 +485,26 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this);
-                    KeyNavigation.down: optDebugMode
+                    KeyNavigation.down: optInformationSystem
                 }
                 SectionTitle {
                     text: qsTr("System") + api.tr
                     first: true
-                    symbol: "\uf221"
+                    symbol: "\uf412"
+                }
+                SimpleButton {
+                    id: optInformationSystem
+
+                    label: qsTr("System information") + api.tr
+                    note: qsTr("More information Ip, Cpu, OpenGL ...") + api.tr
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openInformationSystem();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDebugMode
                 }
                 ToggleOption {
                     id: optDebugMode

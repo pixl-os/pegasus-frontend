@@ -7,6 +7,16 @@ All notable changes to this project will be documented in this file (focus on ch
 	- Usage of overlays also in demo mode of this theme
 	- adding logos for new 'triforce' system
 - fix for controllers to deactivate trim for names with spaces
+- Wifi implementation:
+	- regroup 'networks' parameters in the same section in settings menu (remove duplicate system section in the same time)
+	- add view to read available wifi access points.
+	- add icons in font to manage signal/frequency
+	- add function/button to enable/disable wifi
+	- add dialog box to enter key, select priority
+	- add management of virtual keyboard
+	- fix to display virtual keyboard only for 'visible' edition field
+	- change to have 'connect' button only for 'priority one' wifi
+	- Add check of IP/Wifi connection to well display it in Settings menu
 
 ## [recalbox-integration] - 2022-05-06 - v0.0.5
 - new feature including nvidia drivers installation as udpate proposed by Pegasus (need reboot)
