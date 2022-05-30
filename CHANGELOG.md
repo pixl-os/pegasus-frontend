@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2022-05-30 - NEXT
+- GameOS-pixL:
+	- Introduction of overlays & logos options in gameView of this theme
+	- Usage of overlays also in demo mode of this theme
+- fix for controllers to deactivate trim for names with spaces
+
 ## [recalbox-integration] - 2022-05-06 - v0.0.5
 - new feature including nvidia drivers installation as udpate proposed by Pegasus (need reboot)
 - improvement and fix to well manage updates remotly but also local.
