@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2022-05-30 - NEXT
+- GameOS-pixL:
+	- fix to use L1/R1 for letter nav & L2/R2 for system nav in platform page
+	- fix on gridview width in platform page
+
 ## [recalbox-integration] - 2022-05-06 - v0.0.5
 - new feature including nvidia drivers installation as udpate proposed by Pegasus (need reboot)
 - improvement and fix to well manage updates remotly but also local.
