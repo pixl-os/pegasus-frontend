@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - 2022-05-30 - NEXT
+- GameOS-pixL:
+	- adding logos for new 'xbox' & 'chihiro' system
+	- fix to update 5 logos for 'odyssey2' system
+
 ## [recalbox-integration] - 2022-05-06 - v0.0.5
 - new feature including nvidia drivers installation as udpate proposed by Pegasus (need reboot)
 - improvement and fix to well manage updates remotly but also local.
