@@ -688,5 +688,20 @@
         <file>gameOS/Dialogs/Shade.qml</file>
         <file>gameOS/assets/images/multiplayer.svg</file>
         <file>gameOS/Search/SearchGameByModel.qml</file>
+        <file>gameOS/assets/images/logospng/xbox_steel.png</file>
+        <file>gameOS/assets/images/logospng/xbox_color.png</file>
+        <file>gameOS/assets/images/logospng/xbox_carbon.png</file>
+        <file>gameOS/assets/images/logospng/xbox_black.png</file>
+        <file>gameOS/assets/images/logospng/xbox.png</file>
+        <file>gameOS/assets/images/logospng/chihiro.png</file>
+        <file>gameOS/assets/images/logospng/chihiro_black.png</file>
+        <file>gameOS/assets/images/logospng/chihiro_carbon.png</file>
+        <file>gameOS/assets/images/logospng/chihiro_color.png</file>
+        <file>gameOS/assets/images/logospng/chihiro_steel.png</file>
+        <file>gameOS/assets/images/logospng/triforce.png</file>
+        <file>gameOS/assets/images/logospng/triforce_black.png</file>
+        <file>gameOS/assets/images/logospng/triforce_carbon.png</file>
+        <file>gameOS/assets/images/logospng/triforce_color.png</file>
+        <file>gameOS/assets/images/logospng/triforce_steel.png</file>
     </qresource>
 </RCC>
