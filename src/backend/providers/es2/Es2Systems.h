@@ -31,9 +31,9 @@ struct EmulatorsEntry {
     int netplay;
     QString corelongname; //now available from all .corenames files
     QString coreversion; //now available from all .corenames files
-    QString coreExtensions;
-    QString coreCompatibility;
-    QString coreSpeed;
+    QString coreextensions;
+    QString corecompatibility;
+    QString corespeed;
 };
 
 //! Immutable core information from retroarch only
