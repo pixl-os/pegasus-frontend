@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- Usage of overlays also in demo mode of this theme
 	- adding logos for new 'triforce' system
 - fix for controllers to deactivate trim for names with spaces
+- fix to add new system logos in qrc for embedded GameOS-pixL theme
 - Wifi implementation:
 	- regroup 'networks' parameters in the same section in settings menu (remove duplicate system section in the same time)
 	- add view to read available wifi access points.
