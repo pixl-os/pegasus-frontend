@@ -255,7 +255,7 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
     //read the attributs from <system> and put it in HashMap
     set_by_str(xml_props, "name",xml.attributes().value("name").toString());
     set_by_str(xml_props, "fullname",xml.attributes().value("fullname").toString());
-    set_by_str(xml_props, "platform",xml.attributes().value("platforms").toString());
+    set_by_str(xml_props, "platform",xml.attributes().value("platforms").toString()); // seems depreacted soon from recalbox 8.1.X
 
     //just put default command here for future used
     set_by_str(xml_props, "command",defaultsCommand);

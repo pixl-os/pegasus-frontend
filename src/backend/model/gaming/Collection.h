@@ -35,11 +35,11 @@ struct EmulatorsEntry {
     QString core;
     int priority;
     int netplay;
-    QString corelongname; //optional - only for retroarch for the moment
-    QString coreversion; //optional - only for retroarch for the moment	
-    QString coreExtensions;
-    QString coreCompatibility;
-    QString coreSpeed;
+    QString corelongname; //now available from all .corenames files
+    QString coreversion; //now available from all .corenames files
+    QString coreextensions;
+    QString corecompatibility;
+    QString corespeed;
 };
 
 struct CollectionData {
@@ -122,7 +122,11 @@ public:
 	};
 	Q_INVOKABLE QString getCoreLongNameAt (const int index) {return m_data.common_emulators.at(index).corelongname;};
     Q_INVOKABLE QString getCoreVersionAt (const int index) {return m_data.common_emulators.at(index).coreversion;};
-    
+
+    Q_INVOKABLE QString getCoreExtensionsAt (const int index) {return m_data.common_emulators.at(index).coreextensions;};
+    Q_INVOKABLE QString getCoreCompatibilityAt (const int index) {return m_data.common_emulators.at(index).corecompatibility;};
+    Q_INVOKABLE QString getCoreSpeedAt (const int index) {return m_data.common_emulators.at(index).corespeed;};
+
     Q_INVOKABLE bool isDefaultEmulatorAt (const int index) {
        // do loop to find the first priorioty (minimum number)
        int first_priority = 0;
