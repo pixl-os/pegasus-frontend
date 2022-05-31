@@ -28,9 +28,12 @@ struct EmulatorsEntry {
     QString name;
     QString core;
     int priority;
-	int netplay;
+    int netplay;
     QString corelongname; //optional - only for retroarch for the moment
     QString coreversion; //optional - only for retroarch for the moment
+    QString coreExtensions;
+    QString coreCompatibility;
+    QString coreSpeed;
 };
 
 //! Immutable core information from retroarch only
@@ -71,6 +74,15 @@ struct SystemEntry {
     QString extensions;
     QString platforms;
     QString launch_cmd;
+    QString icon;
+    QString screenscraper;
+    QString type;
+    QString pad;
+    QString keyboard;
+    QString mouse;
+    QString lightgun;
+    QString releasedate;
+    QString retroachievements;
     QList <EmulatorsEntry> emulators;
 };
 
