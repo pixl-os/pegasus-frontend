@@ -23,6 +23,10 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix to display virtual keyboard only for 'visible' edition field
 	- change to have 'connect' button only for 'priority one' wifi
 	- Add check of IP/Wifi connection to well display it in Settings menu
+- global meta data improvements:
+	- add more inputs take from systemlist.xml (keep compatibility with es_systems.cfg)
+	- fix to propose netplay only for 'libretro' core for the moment
+	- confirm some info about some parameters from systemlist.xml and .corenames files
 - Lang:
 	- Add french translation for new wifi feature
 	- Update all lang files to be ready for translation after wifi feature.
