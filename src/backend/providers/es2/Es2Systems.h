@@ -28,9 +28,12 @@ struct EmulatorsEntry {
     QString name;
     QString core;
     int priority;
-	int netplay;
-    QString corelongname; //optional - only for retroarch for the moment
-    QString coreversion; //optional - only for retroarch for the moment
+    int netplay;
+    QString corelongname; //now available from all .corenames files
+    QString coreversion; //now available from all .corenames files
+    QString coreextensions;
+    QString corecompatibility;
+    QString corespeed;
 };
 
 //! Immutable core information from retroarch only
@@ -69,8 +72,17 @@ struct SystemEntry {
     QString shortname;
     QString path;
     QString extensions;
-    QString platforms;
+    QString platforms; // seems depreacted soon from recalbox 8.1.X
     QString launch_cmd;
+    QString icon;
+    QString screenscraper;
+    QString type;
+    QString pad;
+    QString keyboard;
+    QString mouse;
+    QString lightgun;
+    QString releasedate;
+    QString retroachievements;
     QList <EmulatorsEntry> emulators;
 };
 

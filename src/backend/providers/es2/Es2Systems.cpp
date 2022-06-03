@@ -122,8 +122,13 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                                         QString corePriority = xml.attributes().value("priority").toString();
                                         QString coreNetplay = "0";
                                         QString coreName = xml.readElementText();
+                                        QString coreExtensions = ""; //empty with legacy es_systems.cfg
+                                        QString coreCompatibility = ""; //empty with legacy es_systems.cfg
+                                        QString coreSpeed = ""; //empty with legacy es_systems.cfg
                                         QString coreLongName = "";
                                         QString coreVersion = "";
+
+
                                         //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
                                         //For libretro cores only for the moment
                                         if(emulatorName.toLower().contains("libretro")){
@@ -137,7 +142,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                                                 }
                                             }
                                         }
-                                        SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(),coreLongName,coreVersion});
+                                        SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(),coreLongName,coreVersion, coreExtensions, coreCompatibility, coreSpeed});
                                     }
                                 }
                             }
@@ -198,6 +203,15 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                 std::move(xml_props[QLatin1String("extension")]),
                 std::move(xml_props[QLatin1String("platform")]),
                 std::move(launch_cmd), // assumed to be absolute
+                std::move(xml_props[QLatin1String("icon")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("screenscraper")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("type")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("pad")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("keyboard")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("mouse")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("lightgun")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("releasedate")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("retroachievements")]), //NA for legacy es_systems.cfg
                 std::move(SystemEmulators),
     };
 }
@@ -224,6 +238,15 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
         { QLatin1String("path"), QString() },
         { QLatin1String("extension"), QString() },
         { QLatin1String("command"), QString() },
+        { QLatin1String("icon"), QString() },
+        { QLatin1String("screenscraper"), QString() },
+        { QLatin1String("type"), QString() },
+        { QLatin1String("pad"), QString() },
+        { QLatin1String("keyboard"), QString() },
+        { QLatin1String("mouse"), QString() },
+        { QLatin1String("lightgun"), QString() },
+        { QLatin1String("releasedate"), QString() },
+        { QLatin1String("retroachievements"), QString() },
     };
 
     //emulators/emulator attributes
@@ -232,7 +255,7 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
     //read the attributs from <system> and put it in HashMap
     set_by_str(xml_props, "name",xml.attributes().value("name").toString());
     set_by_str(xml_props, "fullname",xml.attributes().value("fullname").toString());
-    set_by_str(xml_props, "platform",xml.attributes().value("platforms").toString());
+    set_by_str(xml_props, "platform",xml.attributes().value("platforms").toString()); // seems depreacted soon from recalbox 8.1.X
 
     //just put default command here for future used
     set_by_str(xml_props, "command",defaultsCommand);
@@ -240,9 +263,23 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
     // read
     while (xml.readNextStartElement()) {
         if (xml.name() == "descriptor"){
-            //const auto
             set_by_str(xml_props, "path",xml.attributes().value("path").toString());
             set_by_str(xml_props, "extension",xml.attributes().value("extensions").toString());
+            set_by_str(xml_props, "icon",xml.attributes().value("icon").toString());
+            xml.skipCurrentElement(); //because not read of element text
+        }
+        else if (xml.name() == "scraper"){
+            set_by_str(xml_props, "screenscraper",xml.attributes().value("screenscraper").toString());
+            xml.skipCurrentElement(); //because not read of element text
+        }
+        else if (xml.name() == "properties"){
+            set_by_str(xml_props, "type",xml.attributes().value("type").toString());
+            set_by_str(xml_props, "pad",xml.attributes().value("pad").toString());
+            set_by_str(xml_props, "keyboard",xml.attributes().value("keyboard").toString());
+            set_by_str(xml_props, "mouse",xml.attributes().value("mouse").toString());
+            set_by_str(xml_props, "lightgun",xml.attributes().value("lightgun").toString());
+            set_by_str(xml_props, "releasedate",xml.attributes().value("releasedate").toString());
+            set_by_str(xml_props, "retroachievements",xml.attributes().value("retroachievements").toString());
             xml.skipCurrentElement(); //because not read of element text
         }
         else if (xml.name() == "emulatorList"){
@@ -255,6 +292,9 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
                             QString corePriority = xml.attributes().value("priority").toString();
                             QString coreNetplay = xml.attributes().value("netplay").toString();
                             QString coreName = xml.attributes().value("name").toString();
+                            QString coreExtensions = xml.attributes().value("extensions").toString();
+                            QString coreCompatibility = xml.attributes().value("compatibility").toString();
+                            QString coreSpeed = xml.attributes().value("speed").toString();
                             QString coreLongName = "";
                             QString coreVersion = "";
                             //Log::debug(log_tag, LOGMSG("Core name/priority: %1/%2").arg(coreName,corePriority));
@@ -288,7 +328,7 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
                                 }
                             }
 
-                            SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(), coreLongName, coreVersion});
+                            SystemEmulators.append({ emulatorName, coreName, corePriority.toInt(), coreNetplay.toInt(), coreLongName, coreVersion, coreExtensions, coreCompatibility, coreSpeed});
                             xml.skipCurrentElement(); //because not read of element text
                         }
                     }
@@ -342,7 +382,16 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
                 std::move(xml_props[QLatin1String("path")]),
                 std::move(xml_props[QLatin1String("extension")]),
                 std::move(xml_props[QLatin1String("platform")]),
-                std::move(launch_cmd), // assumed to be absolute
+                std::move(launch_cmd),
+                std::move(xml_props[QLatin1String("icon")]),
+                std::move(xml_props[QLatin1String("screenscraper")]),
+                std::move(xml_props[QLatin1String("type")]),
+                std::move(xml_props[QLatin1String("pad")]),
+                std::move(xml_props[QLatin1String("keyboard")]),
+                std::move(xml_props[QLatin1String("mouse")]),
+                std::move(xml_props[QLatin1String("lightgun")]),
+                std::move(xml_props[QLatin1String("releasedate")]),
+                std::move(xml_props[QLatin1String("retroachievements")]), // assumed to be absolute
                 std::move(SystemEmulators),
     };
 }

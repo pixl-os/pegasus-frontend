@@ -34,9 +34,12 @@ struct EmulatorsEntry {
     QString name;
     QString core;
     int priority;
-	int netplay;
-    QString corelongname; //optional - only for retroarch for the moment
-    QString coreversion; //optional - only for retroarch for the moment	
+    int netplay;
+    QString corelongname; //now available from all .corenames files
+    QString coreversion; //now available from all .corenames files
+    QString coreextensions;
+    QString corecompatibility;
+    QString corespeed;
 };
 
 struct CollectionData {
@@ -109,16 +112,21 @@ public:
     Q_INVOKABLE QString getNameAt (const int index) {return m_data.common_emulators.at(index).name;};
     Q_INVOKABLE QString getCoreAt (const int index) {return m_data.common_emulators.at(index).core;};
     Q_INVOKABLE QString getPriorityAt (const int index) {return QString::number(m_data.common_emulators.at(index).priority);};
-	Q_INVOKABLE bool hasNetplayAt (const int index) {
+    Q_INVOKABLE bool hasNetplayAt (const int index) {
 		//can't use this method for the moment due to issue in the systemList.xml as for NES where only fbneo is Netplay compatible ?! strange ?!
 		//if(m_data.common_emulators.at(index).netplay != 0) return true; 
 		//else return false;
-		if(m_data.common_emulators.at(index).corelongname != "") return true; //if not empty, this core exists and use today for netplay
+        //only libretro is accepted to have netplay
+        if((m_data.common_emulators.at(index).corelongname != "") && (m_data.common_emulators.at(index).name == "libretro")) return true; //if not empty, this core exists and use today for netplay
 		else return false;
 	};
 	Q_INVOKABLE QString getCoreLongNameAt (const int index) {return m_data.common_emulators.at(index).corelongname;};
     Q_INVOKABLE QString getCoreVersionAt (const int index) {return m_data.common_emulators.at(index).coreversion;};
-    
+
+    Q_INVOKABLE QString getCoreExtensionsAt (const int index) {return m_data.common_emulators.at(index).coreextensions;};
+    Q_INVOKABLE QString getCoreCompatibilityAt (const int index) {return m_data.common_emulators.at(index).corecompatibility;};
+    Q_INVOKABLE QString getCoreSpeedAt (const int index) {return m_data.common_emulators.at(index).corespeed;};
+
     Q_INVOKABLE bool isDefaultEmulatorAt (const int index) {
        // do loop to find the first priorioty (minimum number)
        int first_priority = 0;

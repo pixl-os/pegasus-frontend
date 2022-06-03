@@ -703,5 +703,6 @@
         <file>gameOS/assets/images/logospng/triforce_carbon.png</file>
         <file>gameOS/assets/images/logospng/triforce_color.png</file>
         <file>gameOS/assets/images/logospng/triforce_steel.png</file>
+        <file>gameOS/assets/images/beta.png</file>
     </qresource>
 </RCC>
