@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - 2022-05-30 - v0.0.6
+## [recalbox-integration] - 2022-06-03 - v0.0.6
 - GameOS-pixL:
 	- adding logos for new 'xbox' & 'chihiro' system
 	- fix to update 5 logos for 'odyssey2' system
@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- Introduction of overlays & logos options in gameView of this theme
 	- Usage of overlays also in demo mode of this theme
 	- adding logos for new 'triforce' system
+	- adding "beta" logo on system using an emulator 'low'
 - fix for controllers to deactivate trim for names with spaces
 - fix to add new system logos in qrc for embedded GameOS-pixL theme
 - Wifi implementation:
