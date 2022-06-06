@@ -5,6 +5,7 @@
 #include "storage/StorageDevices.h"
 
 #include <QDir>
+#include <QDirIterator>>
 
 namespace {
 
@@ -112,6 +113,22 @@ QStringList GetParametersList(QString Parameter)
         QString empty = "";
         ListOfInternalValue << empty;
 
+        QDirIterator it("/recalbox/share/shaders/", QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            QDir shadersSubDir(dir);
+            // Sorting by name
+            shadersSubDir.setSorting(QDir::Name);
+            QStringList files = shadersSubDir.entryList(QStringList() << "*.glslp", QDir::Files | QDir::Dirs);
+            for (int i = 0; i < files.count(); i++ )
+            {
+                QString file = files.at(i);
+                // set absolute path and extension for recalbox.conf
+                ListOfInternalValue.append(dir + file);
+                // remove .glslp on menu
+                ListOfValue.append(file.replace(".glslp", ""));
+            }
+        }
         for ( int index = 0; index < files.count(); index++ )
         {
             QString file = files.at(index);
