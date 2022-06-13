@@ -38,6 +38,8 @@
 #include <QRegularExpression>
 #include <string>
 
+#include <QtConcurrent/QtConcurrent>
+
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
 
@@ -391,113 +393,149 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
     Log::info(LOGMSG("Executing command: [`%1`]").arg(serialize_command(command, args)));
-    Log::info(LOGMSG("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir)));
+    Log::info(LOGMSG("Working directory: `%1`").arg(QDir::toNativeSeparators(workdir)));
 
-    Q_ASSERT(!m_process);
-    m_process = new QProcess(this);
-
-    // set up signals and slots
-    connect(m_process, &QProcess::started, this, &ProcessLauncher::onProcessStarted);
-    connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessError);
-    connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            this, &ProcessLauncher::onProcessFinished);
-
-    // run the command
-    m_process->setProcessChannelMode(QProcess::ForwardedChannels);
-    
-    m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
-    
-    m_process->setWorkingDirectory(workdir);
-    
     //init of global Command
     globalCommand = "";
         
     // 2 ways to launch: in case of Python to launch retroarch, we can't use only Qprocess
     if (command.contains("python"))
     {
-        emit processLaunchOk(); // to stop front-end
         // put command and args in global variables to launch when Front-end Tear Down is Completed !
         globalCommand = command;
         globalArgs = args;
+
+        emit processLaunchOk(); // to stop front-end
+        Log::info(LOGMSG("emit processLaunchOk();"));
+
     }
     else
     {
+        if(!m_process){
+            m_process = new QProcess(this);
+        }
+        // set up signals and slots
+        connect(m_process, &QProcess::started, this, &ProcessLauncher::onProcessStarted);
+        connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessError);
+        connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                this, &ProcessLauncher::onProcessFinished);
+
+        // run the command
+        m_process->setProcessChannelMode(QProcess::ForwardedChannels);
+
+        m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
+
+        m_process->setWorkingDirectory(workdir);
         m_process->start(command, args, QProcess::ReadOnly);
         m_process->waitForStarted(-1);
     }
-  
 }
 
 void ProcessLauncher::onTeardownComplete()
 {
-    Q_ASSERT(m_process);
-
+    Log::debug(LOGMSG("void ProcessLauncher::onTeardownComplete()"));
+    Log::debug(LOGMSG("globalCommand: `%1`").arg(globalCommand));
     if(globalCommand.length() != 0)
     {
-        int exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+        int exitcode = 0;
+
+        if(RecalboxConf::Instance().AsBool("pegasus.multiwindows",false)){
+            //launch game in parralel of Pegasus
+            QMetaObject::invokeMethod(this,"launch", Qt::QueuedConnection,
+                                      Q_ARG(QString,globalCommand),Q_ARG(QStringList,globalArgs));
+        }
+        else{
+            exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+        }
+        //To check loading CPU/Memory if no launching
+        //sleep 1s to see animation ;-)
+        //Log::info(LOGMSG("QObject().thread()->sleep(60);"));
+        //QObject().thread()->sleep(60);
+        //int exitcode = 0; //just to avoid to launch emulator
         if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
         else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
-        
     }
     else
     {
+        Q_ASSERT(m_process);
         m_process->waitForFinished(-1);
     }
+    Log::info(LOGMSG("emit processFinished();"));
     emit processFinished();
 }
 
+void ProcessLauncher::launch(QString command, QStringList args){
+    Log::debug(LOGMSG("ProcessLauncher::launch_slot(QString command, QStringList args)"));
+    try{
+        int exitcode = system(qPrintable(QString("%1 &").arg(serialize_command(command, args))));
+
+        //To check loading CPU/Memory if no launching
+        //sleep 1s to see animation ;-)
+        //Log::info(LOGMSG("QObject().thread()->sleep(60);"));
+        //QObject().thread()->sleep(60);
+        //int exitcode = 0; //just to avoid to launch emulator
+
+        if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
+        else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
+
+    }
+    catch ( const std::exception & Exp )
+    {
+        Log::error("ProcessLauncher - launch_slot", LOGMSG("Error: %1.\n").arg(Exp.what()));
+    }
+}
+
+
 void ProcessLauncher::onProcessStarted()
 {
-    Q_ASSERT(m_process);
-
-    Log::debug(LOGMSG("Program: %1").arg(m_process->program()));
-    Log::info(LOGMSG("Process %1 started").arg(m_process->processId()));
-    Log::info(SEPARATOR);
-
+    if(m_process){
+        Log::debug(LOGMSG("Program: %1").arg(m_process->program()));
+        Log::info(LOGMSG("Process %1 started").arg(m_process->processId()));
+        Log::info(SEPARATOR);
+    }
     emit processLaunchOk();
 }
 
 void ProcessLauncher::onProcessError(QProcess::ProcessError error)
 {
-    Q_ASSERT(m_process);
+   if(m_process){
+        const QString message = processerror_to_string(error).arg(m_process->program());
 
-    const QString message = processerror_to_string(error).arg(m_process->program());
+        switch (m_process->state()) {
+            case QProcess::Starting:
+            case QProcess::NotRunning:
+                emit processLaunchError(message);
+                Log::warning(message);
+                afterRun(); // finished() won't run
+                break;
 
-    switch (m_process->state()) {
-        case QProcess::Starting:
-        case QProcess::NotRunning:
-            emit processLaunchError(message);
-            Log::warning(message);
-            afterRun(); // finished() won't run
-            break;
-
-        case QProcess::Running:
-            emit processRuntimeError(message);
-            break;
-    }
+            case QProcess::Running:
+                emit processRuntimeError(message);
+                break;
+        }
+   }
 }
 
 void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exitstatus)
 {
-    Q_ASSERT(m_process);
-    
     Log::info(SEPARATOR);
 
-    switch (exitstatus) {
-        case QProcess::NormalExit:
-            if (exitcode == 0)
-                Log::info(LOGMSG("The external program has finished cleanly"));
-            else
-                Log::warning(LOGMSG("The external program has finished with error code %1").arg(exitcode));
-            break;
-        case QProcess::CrashExit:
-            Log::warning(LOGMSG("The external program has crashed"));
-            break;
+    if(m_process){
+        switch (exitstatus) {
+            case QProcess::NormalExit:
+                if (exitcode == 0)
+                    Log::info(LOGMSG("The external program has finished cleanly"));
+                else
+                    Log::warning(LOGMSG("The external program has finished with error code %1").arg(exitcode));
+                break;
+            case QProcess::CrashExit:
+                Log::warning(LOGMSG("The external program has crashed"));
+                break;
+        }
     }
     
     //notify game finishing for es_states.tmp (from recalbox)
     ScriptManager::Instance().Notify(Notification::EndGame);
-
     afterRun();
 }
 
@@ -509,10 +547,10 @@ void ProcessLauncher::beforeRun(const QString& game_path)
 
 void ProcessLauncher::afterRun()
 {
-    Q_ASSERT(m_process);
-    
-    m_process->deleteLater();
-    m_process = nullptr;
+    if(m_process){
+        m_process->deleteLater();
+        m_process = nullptr;
+    }
     
     ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
     TerminalKbd::disable();

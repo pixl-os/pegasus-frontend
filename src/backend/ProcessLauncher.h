@@ -52,6 +52,7 @@ private slots:
     void onProcessStarted();
     void onProcessError(QProcess::ProcessError);
     void onProcessFinished(int, QProcess::ExitStatus);
+    void launch(QString command, QStringList args);
 
 private:
     QProcess* m_process;
