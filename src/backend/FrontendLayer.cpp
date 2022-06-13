@@ -30,6 +30,11 @@
 
 #include "KeyEmitter.h"
 
+#include <QtConcurrent/QtConcurrent>
+
+//For recalbox
+#include "RecalboxConf.h"
+
 namespace {
 
 class DiskCachedNAMFactory : public QQmlNetworkAccessManagerFactory {
@@ -55,23 +60,23 @@ FrontendLayer::FrontendLayer(QObject* const api, QObject* parent)
 
 void FrontendLayer::rebuild()
 {
-    Q_ASSERT(!m_engine);
+    if(!m_engine){
 
-    m_engine = new QQmlApplicationEngine(this);
-    m_engine->addImportPath(QStringLiteral("lib/qml"));
-    m_engine->addImportPath(QStringLiteral("qml"));
-    m_engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
+        m_engine = new QQmlApplicationEngine(this);
+        m_engine->addImportPath(QStringLiteral("lib/qml"));
+        m_engine->addImportPath(QStringLiteral("qml"));
+        m_engine->setNetworkAccessManagerFactory(new DiskCachedNAMFactory);
 
-    m_engine->addImageProvider(QStringLiteral("blurhash"), new BlurhashProvider);
+        m_engine->addImageProvider(QStringLiteral("blurhash"), new BlurhashProvider);
 #ifdef Q_OS_ANDROID
-    m_engine->addImageProvider(QStringLiteral("androidicons"), new AndroidAppIconProvider);
+        m_engine->addImageProvider(QStringLiteral("androidicons"), new AndroidAppIconProvider);
 #endif
-    //to add keyEmitter to simulate press on some keyboard keys from controller
-    KeyEmitter *keyEmitter = new KeyEmitter(this);
-    m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api);
-    m_engine->rootContext()->setContextProperty(QStringLiteral("keyEmitter"), keyEmitter);
-    m_engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
-
+        //to add keyEmitter to simulate press on some keyboard keys from controller
+        KeyEmitter *keyEmitter = new KeyEmitter(this);
+        m_engine->rootContext()->setContextProperty(QStringLiteral("api"), m_api);
+        m_engine->rootContext()->setContextProperty(QStringLiteral("keyEmitter"), keyEmitter);
+        m_engine->load(QUrl(QStringLiteral("qrc:/frontend/main.qml")));
+    }
     emit rebuildComplete();
 }
 
@@ -79,12 +84,14 @@ void FrontendLayer::teardown()
 {
     Q_ASSERT(m_engine);
 
-    // signal forwarding
-    connect(m_engine, &QQmlApplicationEngine::destroyed,
-            this, &FrontendLayer::teardownComplete);
-
-    m_engine->deleteLater();
-    m_engine = nullptr;
+    if((!RecalboxConf::Instance().AsBool("pegasus.multiwindows",false)) && (!RecalboxConf::Instance().AsBool("pegasus.theme.keeploaded",false))){
+        // signal forwarding
+        connect(m_engine, &QQmlApplicationEngine::destroyed,
+                this, &FrontendLayer::teardownComplete);
+        m_engine->deleteLater();
+        m_engine = nullptr;
+    }
+    else emit teardownComplete(); //just to confirm all task are done
 }
 
 void FrontendLayer::clearCache()
