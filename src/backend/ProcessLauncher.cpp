@@ -434,19 +434,15 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
 
 void ProcessLauncher::onTeardownComplete()
 {
-    //Log::debug(LOGMSG("globalCommand: `%1`").arg(globalCommand));
+    Log::debug(LOGMSG("globalCommand: `%1`").arg(globalCommand));
+    Log::debug(LOGMSG("globalArgs: `%1`").arg(serialize_command("", globalArgs)));
+    Log::debug(LOGMSG("globalWorkDir: `%1`").arg(globalWorkDir));
+
     if(globalCommand.length() != 0)
     {
         int exitcode;
 
         if(RecalboxConf::Instance().AsBool("pegasus.multiwindows",false)){
-            //launch game in parralel of Pegasus
-            //QMetaObject::invokeMethod(this,"launch", Qt::QueuedConnection,
-            //                          Q_ARG(QString,globalCommand),Q_ARG(QStringList,globalArgs),Q_ARG(QString,globalWorkDir));
-
-            //exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
-
-
             //first "unblockable' method but without way to get pid easily
             chdir(globalWorkDir.toStdString().c_str()); // to change workdir for shell command
             exitcode = system(qPrintable(QString("%1 &").arg(serialize_command(globalCommand, globalArgs))));
@@ -456,16 +452,20 @@ void ProcessLauncher::onTeardownComplete()
             m_pid = run("ps -e | grep -E '" + globalCommand + "' | awk '{print $1}'");
             Log::debug(LOGMSG("pid : %1 ").arg(m_pid));
 
-
             //exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
             if (m_pid == ""){
                 ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
-                Log::info(LOGMSG("emit processFinished();"));
+                Log::debug(LOGMSG("emit processFinished() from onTeardownComplete - m_pid is empty"));
                 emit processFinished();
             }
             else{
                 //launch timer to check pid
-                //TO DO
+                //qDebug("pointer of current object = %p", timer);
+                if(timer == nullptr){
+                    timer = new QTimer(this);
+                    connect(timer, &QTimer::timeout, this, QOverload<>::of(&ProcessLauncher::checkPidStatus));
+                }
+                timer->start(250);//check every 250 ms
             }
 
         }
@@ -473,7 +473,7 @@ void ProcessLauncher::onTeardownComplete()
             exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
             if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
             else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
-            Log::info(LOGMSG("emit processFinished();"));
+            Log::debug(LOGMSG("emit processFinished() from onTeardownComplete"));
             emit processFinished();
         }
     }
@@ -481,6 +481,19 @@ void ProcessLauncher::onTeardownComplete()
     {
         Q_ASSERT(m_process);
         m_process->waitForFinished(-1);
+        emit processFinished();
+    }
+}
+
+void ProcessLauncher::checkPidStatus()
+{
+    //if pid disapearred, we send info that process is finish :-(
+    if(!run("ps -e | grep -E '" + globalCommand + "' | awk '{print $1}'").contains(m_pid)) {
+        ProcessLauncher::onProcessFinished(0, QProcess::NormalExit);
+        Log::debug(LOGMSG("emit processFinished() from checkPidStatus()"));
+        timer->stop();
+        //disconnect(timer, &QTimer::timeout, this, QOverload<>::of(&ProcessLauncher::checkPidStatus));
+        //timer->destroyed();
         emit processFinished();
     }
 }

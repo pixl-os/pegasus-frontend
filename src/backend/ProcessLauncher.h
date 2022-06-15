@@ -19,6 +19,7 @@
 
 #include <QObject>
 #include <QProcess>
+#include <QTimer>
 
 namespace model { class GameFile; }
 
@@ -56,6 +57,7 @@ private slots:
 private:
     QString m_pid;
     QProcess* m_process;
+    QTimer* timer = nullptr;
     QString globalCommand;
     QStringList globalArgs;
     QString globalWorkDir;
@@ -64,4 +66,5 @@ private:
 
     void beforeRun(const QString&);
     void afterRun();
+    void checkPidStatus();
 };
