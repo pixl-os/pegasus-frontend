@@ -52,13 +52,13 @@ private slots:
     void onProcessStarted();
     void onProcessError(QProcess::ProcessError);
     void onProcessFinished(int, QProcess::ExitStatus);
-    void launch(QString command, QStringList args);
 
 private:
+    QString m_pid;
     QProcess* m_process;
-
     QString globalCommand;
     QStringList globalArgs;
+    QString globalWorkDir;
   
     void runProcess(const QString&, const QStringList&, const QString&);
 

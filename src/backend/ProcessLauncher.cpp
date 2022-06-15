@@ -33,12 +33,12 @@
 //For recalbox
 #include "RecalboxConf.h"
 
-
 #include <QDir>
 #include <QRegularExpression>
 #include <string>
 
-#include <QtConcurrent/QtConcurrent>
+//for chdir
+#include <unistd.h>
 
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
@@ -404,9 +404,10 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
         // put command and args in global variables to launch when Front-end Tear Down is Completed !
         globalCommand = command;
         globalArgs = args;
+        globalWorkDir = workdir;
 
         emit processLaunchOk(); // to stop front-end
-        Log::info(LOGMSG("emit processLaunchOk();"));
+        //Log::debug(LOGMSG("emit processLaunchOk();"));
 
     }
     else
@@ -433,58 +434,56 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
 
 void ProcessLauncher::onTeardownComplete()
 {
-    Log::debug(LOGMSG("void ProcessLauncher::onTeardownComplete()"));
-    Log::debug(LOGMSG("globalCommand: `%1`").arg(globalCommand));
+    //Log::debug(LOGMSG("globalCommand: `%1`").arg(globalCommand));
     if(globalCommand.length() != 0)
     {
-        int exitcode = 0;
+        int exitcode;
 
         if(RecalboxConf::Instance().AsBool("pegasus.multiwindows",false)){
             //launch game in parralel of Pegasus
-            QMetaObject::invokeMethod(this,"launch", Qt::QueuedConnection,
-                                      Q_ARG(QString,globalCommand),Q_ARG(QStringList,globalArgs));
+            //QMetaObject::invokeMethod(this,"launch", Qt::QueuedConnection,
+            //                          Q_ARG(QString,globalCommand),Q_ARG(QStringList,globalArgs),Q_ARG(QString,globalWorkDir));
+
+            //exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+
+
+            //first "unblockable' method but without way to get pid easily
+            chdir(globalWorkDir.toStdString().c_str()); // to change workdir for shell command
+            exitcode = system(qPrintable(QString("%1 &").arg(serialize_command(globalCommand, globalArgs))));
+            //get the python pid yo know that a game is launch
+            //to check we could run this command for pid: ps -e | grep -E "38967"
+            m_pid = "";
+            m_pid = run("ps -e | grep -E '" + globalCommand + "' | awk '{print $1}'");
+            Log::debug(LOGMSG("pid : %1 ").arg(m_pid));
+
+
+            //exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+            if (m_pid == ""){
+                ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
+                Log::info(LOGMSG("emit processFinished();"));
+                emit processFinished();
+            }
+            else{
+                //launch timer to check pid
+                //TO DO
+            }
+
         }
         else{
             exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+            if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
+            else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
+            Log::info(LOGMSG("emit processFinished();"));
+            emit processFinished();
         }
-        //To check loading CPU/Memory if no launching
-        //sleep 1s to see animation ;-)
-        //Log::info(LOGMSG("QObject().thread()->sleep(60);"));
-        //QObject().thread()->sleep(60);
-        //int exitcode = 0; //just to avoid to launch emulator
-        if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
-        else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
     }
     else
     {
         Q_ASSERT(m_process);
         m_process->waitForFinished(-1);
-    }
-    Log::info(LOGMSG("emit processFinished();"));
-    emit processFinished();
-}
-
-void ProcessLauncher::launch(QString command, QStringList args){
-    Log::debug(LOGMSG("ProcessLauncher::launch_slot(QString command, QStringList args)"));
-    try{
-        int exitcode = system(qPrintable(QString("%1 &").arg(serialize_command(command, args))));
-
-        //To check loading CPU/Memory if no launching
-        //sleep 1s to see animation ;-)
-        //Log::info(LOGMSG("QObject().thread()->sleep(60);"));
-        //QObject().thread()->sleep(60);
-        //int exitcode = 0; //just to avoid to launch emulator
-
-        if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
-        else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
-
-    }
-    catch ( const std::exception & Exp )
-    {
-        Log::error("ProcessLauncher - launch_slot", LOGMSG("Error: %1.\n").arg(Exp.what()));
+        emit processFinished();
     }
 }
-
 
 void ProcessLauncher::onProcessStarted()
 {
