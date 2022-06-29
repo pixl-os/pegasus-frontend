@@ -48,6 +48,9 @@ class ApiObject : public QObject {
     // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
 
+    // read property from m_launch_game_file
+    Q_PROPERTY(model::GameFile* launchedgamefile READ launchedgamefile NOTIFY launchedgamefileChanged)
+
 public:
     explicit ApiObject(const backend::CliArgs& args, QObject* parent = nullptr);
 
@@ -63,6 +66,9 @@ signals:
 
     // triggers translation update
     void localeChanged();
+
+    // triggers  launched game file update
+    void launchedgamefileChanged();
     
     // triggers list of parameters update
     void parameterChanged();
@@ -101,4 +107,8 @@ private:
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
+
+    // read property from m_launch_game_file
+    model::GameFile* launchedgamefile() const { return m_launch_game_file; }
+
 };
