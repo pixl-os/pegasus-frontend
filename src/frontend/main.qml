@@ -85,9 +85,6 @@ Window {
     QtObject {
         id: global
 
-        //global property to know game launched
-        property var gameLaunched
-
         readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
 
         property QtObject fonts: QtObject {
