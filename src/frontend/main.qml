@@ -85,6 +85,9 @@ Window {
     QtObject {
         id: global
 
+        //to know if Guide button still released
+        property bool guideButtonPressed: false
+
         readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
 
         property QtObject fonts: QtObject {
@@ -139,13 +142,32 @@ Window {
             }
             onApiThemePathChanged: source = Qt.binding(getThemeFile)
 
+            // Input releasing
+            Keys.onReleased: {
+                // Guide
+                if (api.keys.isGuide(event) && !event.isAutoRepeat) {
+                    //console.log("Keys.onReleased: api.keys.isGuide(event)");
+                    event.accepted = true;
+                    global.guideButtonPressed = false;
+                }
+            }
+
+            // Input handling
             Keys.onPressed: {
-                if (api.keys.isMenu(event)) {
+                // Guide
+                if (api.keys.isGuide(event) && !event.isAutoRepeat) {
+                    //console.log("Keys.onPressed: api.keys.isGuide(event)");
+                    event.accepted = true;
+                    global.guideButtonPressed = true;
+                }
+                // Menu
+                if (api.keys.isMenu(event) && !event.isAutoRepeat && !global.guideButtonPressed) {
+                    //console.log("Keys.onPressed: api.keys.isMenu(event)");
                     event.accepted = true;
                     mainMenu.focus = true;
                 }
 
-                if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay")){
+                if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay") && !global.guideButtonPressed){
                     event.accepted = true;
                     subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
                     subscreen.focus = true;
