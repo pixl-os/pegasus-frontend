@@ -82,6 +82,7 @@ ConfigEntryMaps::ConfigEntryMaps()
         { QStringLiteral("page-down"), KeyEvent::PAGE_DOWN },
         { QStringLiteral("menu"), KeyEvent::MAIN_MENU },
         { QStringLiteral("netplay"), KeyEvent::NETPLAY },
+        { QStringLiteral("guide"), KeyEvent::GUIDE },
     }
 {}
 
