@@ -403,11 +403,9 @@ void ProcessLauncher::runProcess(const QString& command, const QStringList& args
     {
         // put command and args in global variables to launch when Front-end Tear Down is Completed !
         globalCommand = command;
-#ifdef QT_DEBUG
-        globalArgs  << "-c" << "'import time; time.sleep(10);'"; //to simulate time of running from debug env
-#else
+        //for debug purpose in dev env
+        //globalArgs  << "-c" << "'import time; time.sleep(10);'"; //to simulate time of running from debug env
         globalArgs = args;
-#endif
         globalWorkDir = workdir;
 
         emit processLaunchOk(); // to stop front-end
