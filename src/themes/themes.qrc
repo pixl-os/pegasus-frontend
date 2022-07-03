@@ -704,5 +704,20 @@
         <file>gameOS/assets/images/logospng/triforce_color.png</file>
         <file>gameOS/assets/images/logospng/triforce_steel.png</file>
         <file>gameOS/assets/images/beta.png</file>
+        <file>gameOS/assets/images/logospng/naomi2_black.png</file>
+        <file>gameOS/assets/images/logospng/naomi2_carbon.png</file>
+        <file>gameOS/assets/images/logospng/naomi2_steel.png</file>
+        <file>gameOS/assets/images/logospng/naomi2_color.png</file>
+        <file>gameOS/assets/images/logospng/naomi2_white.png</file>
+        <file>gameOS/assets/images/logospng/ports_black.png</file>
+        <file>gameOS/assets/images/logospng/ports_carbon.png</file>
+        <file>gameOS/assets/images/logospng/ports_color.png</file>
+        <file>gameOS/assets/images/logospng/ports_steel.png</file>
+        <file>gameOS/assets/images/logospng/ports_white.png</file>
+        <file>gameOS/assets/images/logospng/screenshots_color.png</file>
+        <file>gameOS/assets/images/logospng/screenshots_black.png</file>
+        <file>gameOS/assets/images/logospng/screenshots_white.png</file>
+        <file>gameOS/assets/images/logospng/screenshots_steel.png</file>
+        <file>gameOS/assets/images/logospng/screenshots_carbon.png</file>
     </qresource>
 </RCC>
