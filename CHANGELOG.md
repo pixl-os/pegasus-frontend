@@ -2,8 +2,10 @@
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
 ## [recalbox-integration] - yyyy-mm-dd - v0.0.?
+- fix on management of shaders display/selection
 - GameOS-pixL:
 	- adding logos for new 'naomi2' system and also new 5 logos for screenshots 'system' and also ports system
+
 
 ## [recalbox-integration] - 2022-06-03 - v0.0.6
 - GameOS-pixL:
