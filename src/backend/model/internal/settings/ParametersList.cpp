@@ -5,6 +5,7 @@
 #include "storage/StorageDevices.h"
 
 #include <QDir>
+#include <QDirIterator>>
 
 namespace {
 
@@ -100,26 +101,50 @@ QStringList GetParametersList(QString Parameter)
         ## Set gpslp shader for all emulators (prefer shadersets above). Absolute path (string)
         global.shaders=/recalbox/share/shaders/myShaders.glslp
         */
-        // Define shaders path
-        QDir shadersDir("/recalbox/share/shaders/");
-
-        // Sorting by name
-        shadersDir.setSorting(QDir::Name);
-
-        QStringList files = shadersDir.entryList(QStringList() << "*.glslp", QDir::Files | QDir::Dirs);
         // add none in list for disabled option if needed
         ListOfValue << "none";
         QString empty = "";
         ListOfInternalValue << empty;
 
+
+        //read root directory
+        // Define shaders path
+        QDir shadersDir("/recalbox/share/shaders/");
+        // Sorting by name
+        shadersDir.setSorting(QDir::Name);
+        QStringList files = shadersDir.entryList(QStringList() << "*.glslp", QDir::Files);
         for ( int index = 0; index < files.count(); index++ )
         {
             QString file = files.at(index);
+            //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             // set absolute path and extension for recalbox.conf
             ListOfInternalValue.append("/recalbox/share/shaders/" + file);
             // remove .glslp on menu
             ListOfValue.append(file.replace(".glslp", ""));
         }
+
+        //read subdirectories
+        QDirIterator it("/recalbox/share/shaders/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            QString relativedir = dir;
+            relativedir = relativedir.replace("/recalbox/share/shaders/","");
+            //Log::debug(LOGMSG("Subdir : '%1'").arg(dir));
+            QDir shadersSubDir(dir);
+            // Sorting by name
+            shadersSubDir.setSorting(QDir::Name);
+            QStringList subfiles = shadersSubDir.entryList(QStringList() << "*.glslp",QDir::Filter::Files,QDir::SortFlag::Name);
+            for (int i = 0; i < subfiles.count(); i++ )
+            {
+                QString subfile = subfiles.at(i);
+                //Log::debug(LOGMSG("File found in Subdir : '%1'").arg(subfile));
+                // set absolute path and extension for recalbox.conf
+                ListOfInternalValue.append(dir + '/' + subfile);
+                // remove .glslp on menu
+                ListOfValue.append(relativedir + " - " + subfile.replace(".glslp", ""));
+            }
+        }
+
     }
     else if (Parameter == "controllers.ps3.driver")
     {
@@ -246,8 +271,8 @@ QStringList GetParametersList(QString Parameter)
         //not a parameter using list !
         Log::warning(LOGMSG("'%1' parameter is not a parameters list").arg(Parameter));
     }
-    Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
-    Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
+    //Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
+    //Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
     return ListOfValue;
 }
 
