@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file (focus on ch
 
 ## [recalbox-integration] - yyyy-mm-dd - v0.0.?
 - fix on management of shaders display/selection
+- i915 Driver force-probe activation integration (to correct some issues with sound outputs)
 - GameOS-pixL:
 	- adding logos for new 'naomi2' system and also new 5 logos for screenshots 'system' and also ports system
 
