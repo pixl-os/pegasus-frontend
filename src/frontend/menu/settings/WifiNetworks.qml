@@ -75,7 +75,7 @@ FocusScope {
             var list = wifiNetworksModel;
             var macaddress = "";
             var result = "";
-            if(!isDebugEnv()) result = api.internal.system.run("timeout 0.2 wpa_cli status | grep -E 'bssid' | awk -v FS='(=)' '{print $2}'").trim();
+            if(!isDebugEnv()) result = api.internal.system.run("timeout 1 wpa_cli status | grep -E 'bssid' | awk -v FS='(=)' '{print $2}'").trim();
             else result = "9c:c9:eb:15:cd:80"; //to force connection for testing
 
             //console.log("result of BSSID: '",result,"'");
@@ -243,7 +243,7 @@ FocusScope {
         let icon = "";
         if(!isDebugEnv()){
             //command to read scan, need to lauch scan before with command: 'wpa_cli -i wlan0 scan'
-            result = api.internal.system.run("timeout 0.50 wpa_cli -i wlan0 scan_results | sed \"1 d\" | awk '{print $1\"|\"$2\"|\"$3\"|\"$4\"|\"$5}'");
+            result = api.internal.system.run("timeout 1 wpa_cli -i wlan0 scan_results | sed \"1 d\" | awk '{print $1\"|\"$2\"|\"$3\"|\"$4\"|\"$5}'");
         }
         else{
             // bssid / frequency / signal level / flags / ssid

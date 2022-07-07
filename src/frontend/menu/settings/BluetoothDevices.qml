@@ -414,7 +414,7 @@ FocusScope {
         triggeredOnStart: false
         onTriggered: {
             //read file every 5 seconds
-            var result = api.internal.system.run("timeout 0.1 cat /tmp/btlist");
+            var result = api.internal.system.run("timeout 1 cat /tmp/btlist");
             console.log("raw result:",result);
             const results = result.split('\n');
             for(var i=0;i<results.length-1;i++)
@@ -465,7 +465,7 @@ FocusScope {
                 //console.log("command:", "bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
                 if (!isDebugEnv()){
                     //timeout of 1s if needed (can't go under 1s else issue with timeout command on buildroot
-                    result = api.internal.system.run("timeout 0.5 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
+                    result = api.internal.system.run("timeout 1 bluetoothctl info " + macaddress + " | grep -i 'connected' | awk '{print $2}'");
                 }
                 else{
                     result = api.internal.system.run("timeout 1 echo -e 'info " + macaddress + "' | bluetoothctl | grep -i 'connected' | awk '{print $2}'");
@@ -652,12 +652,12 @@ FocusScope {
 			if(capacityName !== ""){
                 //check if it's "Status" finally before to check "Capacity/Capacity_Level"
                 //console.log("command : ","cat /sys/class/power_supply/" + batteryName + "/status" + uniqueCleanLineCommand());
-                result = api.internal.system.run("timeout 0.1 cat /sys/class/power_supply/" + batteryName + "/status" + uniqueCleanLineCommand());
+                result = api.internal.system.run("timeout 1 cat /sys/class/power_supply/" + batteryName + "/status" + uniqueCleanLineCommand());
                 if(result.toLowerCase() === "charging"){
                     return "\uf1b3";
                 }
                 //console.log("command : ","cat /sys/class/power_supply/" + batteryName + "/" + capacityName + uniqueCleanLineCommand());
-                result = api.internal.system.run("timeout 0.1 cat /sys/class/power_supply/" + batteryName + "/" + capacityName + uniqueCleanLineCommand());
+                result = api.internal.system.run("timeout 1 cat /sys/class/power_supply/" + batteryName + "/" + capacityName + uniqueCleanLineCommand());
                 //console.log("Battery result:",result);
                 if(isNaN(result)){
                     //console.log("is Not a number");
@@ -742,9 +742,9 @@ FocusScope {
           result = api.internal.recalbox.getStringParameter(parameter + i);
           if(result !== ""){
             const parameters = result.split("|");
-            if(!isDebugEnv()) result = api.internal.system.run("timeout 0.50 bluetoothctl info " + parameters[0] + " | grep -i 'paired' | awk '{print $2}'");
+            if(!isDebugEnv()) result = api.internal.system.run("timeout 1 bluetoothctl info " + parameters[0] + " | grep -i 'paired' | awk '{print $2}'");
             //with timeout of 50 ms
-            else result = api.internal.system.run("timeout 0.50 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
+            else result = api.internal.system.run("timeout 1 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
             //console.log("result:",result);
             if(result.toLowerCase().includes("yes")){
               icon = getIcon(parameters[2],"");
@@ -762,8 +762,8 @@ FocusScope {
 
         //Check if anyone paired is missing from list
         //with timeout of 50 ms
-        if(!isDebugEnv()) result = api.internal.system.run("timeout 0.05 bluetoothctl paired-devices | grep -i 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}'");
-        else result = api.internal.system.run("timeout 0.05 echo -e 'paired-devices' | bluetoothctl | grep -I 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}' | grep -v 'NEW'");
+        if(!isDebugEnv()) result = api.internal.system.run("timeout 1 bluetoothctl paired-devices | grep -i 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}'");
+        else result = api.internal.system.run("timeout 1 echo -e 'paired-devices' | bluetoothctl | grep -I 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}' | grep -v 'NEW'");
 
         //console.log("***********");
         //console.log(result);

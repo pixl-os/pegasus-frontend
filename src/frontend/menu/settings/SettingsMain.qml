@@ -318,7 +318,7 @@ FocusScope {
                     onTriggered: {
                         //get ethernet ip if exists
                         var ethIP = ""
-                        if(!isDebugEnv()) ethIP = api.internal.system.run("timeout 0.2 ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                        if(!isDebugEnv()) ethIP = api.internal.system.run("timeout 1 ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
                         else ethIP = "192.168.1.255"; //for test purpose
                         if(ethIP !== ""){
                             optEthernet.note = qsTr("Ethernet Local IP :") + api.tr + " " + ethIP;
@@ -330,11 +330,11 @@ FocusScope {
                         if(optWifiToggle.checked){
                             //get wifi ip if exists
                             var wifiIP = "";
-                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 0.2 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
                             else wifiIP = "192.168.1.254"; //for test purpose
                             //get wifi ssid if exists
                             var ssid = "";
-                            if(!isDebugEnv()) ssid = api.internal.system.run("timeout 0.2 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}'");
+                            if(!isDebugEnv()) ssid = api.internal.system.run("timeout 1 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}'");
                             else ssid = "lesv2-5G-3"; //for test purpose
 
                             if(wifiIP !== ""){
@@ -415,17 +415,18 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("wifi.enabled",checked);
                         if(checked){
                             var wifiIP = "";
-                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 0.2 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
                             console.log("wifiIP : '", wifiIP,"'")
                             //activate wifi by restarting only if a wifi is not already connected
                             if(wifiIP === ""){
-                                console.log("api.internal.system.run('/etc/init.d/S09wifi restart');");
-                                if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi restart");
+                                console.log("api.internal.system.runAsync('/etc/init.d/S09wifi restart');");
+                                if(!isDebugEnv()) api.internal.system.runAsync("/etc/init.d/S09wifi restart");
                             }
                         }
                         else
                         {//deactivate wifi
-                            if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi stop");
+                            console.log("api.internal.system.runAsync('/etc/init.d/S09wifi stop');");
+                            if(!isDebugEnv()) api.internal.system.runAsync("/etc/init.d/S09wifi stop");
                         }
                     }
                     onFocusChanged: container.onFocus(this)
