@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - yyyy-mm-dd - v0.0.?
+## [recalbox-integration] - 2022-07-08 - v0.0.7
 - fix on management of shaders display/selection
 - i915 Driver force-probe activation integration (to correct some issues with sound outputs)
 - fix refresh functions for wifi, bluetooth and settings view (due to bad timeout parameter)
