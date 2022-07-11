@@ -181,5 +181,6 @@
         <file>assets/logonvidia.png</file>
         <file>menu/settings/WifiNetworks.qml</file>
         <file>dialogs/WifiDialog.qml</file>
+        <file>assets/navigation.wav</file>
     </qresource>
 </RCC>
