@@ -19,6 +19,7 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
+import QtMultimedia 5.12
 import "dialogs"
 import "global"
 import QtQuick.VirtualKeyboard 2.15
@@ -463,6 +464,18 @@ Window {
             popup.showing = false;
         }
     }
+
+    // SOUND EFFECTS
+    // for use in menu set sfxNav.play()
+    // only used for + / - volume indication
+    // for this moment use the same sound of gameOs default theme
+    SoundEffect {
+        id: sfxNav
+        source: "qrc:/frontend/assets/navigation.wav"
+        volume: 1.0
+    }
+
+
     Popup {
         id: popup
 

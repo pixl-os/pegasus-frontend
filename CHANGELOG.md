@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [recalbox-integration] - yyyy-mm-dd - vx
+- add sound in volume settings
+
 ## [recalbox-integration] - 2022-07-08 - v0.0.7
 - fix on management of shaders display/selection
 - i915 Driver force-probe activation integration (to correct some issues with sound outputs)
@@ -8,7 +11,6 @@ All notable changes to this project will be documented in this file (focus on ch
 - add fr translation for i915 force-probe menu + fixes (wifi notes)
 - GameOS-pixL:
 	- adding logos for new 'naomi2' system and also new 5 logos for screenshots 'system' and also ports system
-
 
 ## [recalbox-integration] - 2022-06-03 - v0.0.6
 - GameOS-pixL:

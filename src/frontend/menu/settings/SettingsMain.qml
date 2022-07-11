@@ -20,7 +20,6 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
 
-
 FocusScope {
     id: root
 
@@ -198,11 +197,13 @@ FocusScope {
                     Keys.onLeftPressed: {
                         api.internal.recalbox.setIntParameter(parameterName,slidervalue);
                         value = slidervalue + "%";
+                        sfxNav.play();
                     }
 
                     Keys.onRightPressed: {
                         api.internal.recalbox.setIntParameter(parameterName,slidervalue);
                         value = slidervalue + "%";
+                        sfxNav.play();
                     }
                     
                     onFocusChanged: container.onFocus(this)
