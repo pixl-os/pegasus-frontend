@@ -93,7 +93,7 @@ FocusScope {
 
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose your output for primary screen.") + api.tr
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 ~ \"connected\"{print $1}'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 == \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList)
                     font: globalFonts.ion
 
                     onActivate: {
@@ -101,7 +101,7 @@ FocusScope {
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplayOutput;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 == \"connected\"{print $1}'",optionsList);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 == \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -213,7 +213,7 @@ FocusScope {
 
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose your output for secondary screen.") + api.tr
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 ~ \"connected\"{print $1}'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 == \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList)
                     font: globalFonts.ion
 
                     onActivate: {
@@ -221,7 +221,7 @@ FocusScope {
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplayMarqueeOutput;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"cat /tmp/xrandr.tmp | awk '$2 == \"connected\"{print $1}'",optionsList);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 == \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
