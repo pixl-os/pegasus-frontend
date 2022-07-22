@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file (focus on ch
 
 ## [recalbox-integration] - yyyy-mm-dd - vx
 - add sound in volume settings
+- add new property on api.collections for themes to be able to call ressources from Screen Scraper using 'ScreenScraperId' 
 
 ## [recalbox-integration] - 2022-07-08 - v0.0.7
 - fix on management of shaders display/selection
