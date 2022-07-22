@@ -69,8 +69,9 @@ size_t create_collection_for(
 
     collection
         .setShortName(sysentry.shortname)
-        .setCommonLaunchCmd(sysentry.launch_cmd); 
-    
+        .setCommonLaunchCmd(sysentry.launch_cmd)
+        .setScreenScraperId(sysentry.screenscraper);
+        
     struct model::EmulatorsEntry Emulator;
     QList<model::EmulatorsEntry> AllEmulators;
     

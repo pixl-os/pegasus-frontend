@@ -50,6 +50,7 @@ struct CollectionData {
 
     QString summary;
     QString description;
+    QString screen_scraper_id;
 
     QString common_launch_cmd;
     QString common_launch_workdir;
@@ -75,6 +76,7 @@ public:
     GETTER(const QString&, shortName, short_name())
     GETTER(const QString&, summary, summary)
     GETTER(const QString&, description, description)
+    GETTER(const QString&, screenScraperId, screen_scraper_id)
     GETTER(const QString&, commonLaunchCmd, common_launch_cmd)
     GETTER(const QString&, commonLaunchWorkdir, common_launch_workdir)
     GETTER(const QString&, commonLaunchCmdBasedir, common_relative_basedir)
@@ -88,6 +90,7 @@ public:
     SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
+    SETTER(QString, ScreenScraperId, screen_scraper_id)
     SETTER(QString, CommonLaunchCmd, common_launch_cmd)
     SETTER(QString, CommonLaunchWorkdir, common_launch_workdir)
     SETTER(QString, CommonLaunchCmdBasedir, common_relative_basedir)
@@ -101,6 +104,7 @@ public:
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
+    Q_PROPERTY(QString screenScraperId READ screenScraperId CONSTANT)
 
     //need specific property and invokable function due to QList<struct> is not supported by QML layer
     Q_PROPERTY(int emulatorsCount READ getEmulatorsCount CONSTANT)
