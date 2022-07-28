@@ -110,24 +110,25 @@ FocusScope {
         { name: qsTr("CPU Maximum Frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
         { name: qsTr("RAM (free/total):"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
         { name: qsTr("GPU(s) :"), cmd: "\n" + api.internal.system.run("lspci | grep -i 'vga\\|3d\\|2d' | cut -d ':' -f 3 | grep '\\S'")}, //could be one several lines
-        { name: qsTr("Video RAM :"), cmd: api.internal.system.run("glxinfo -B | grep -i 'video memory' | cut -d ':' -f 2")},
-        { name: qsTr("OpenGL ES :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL ES profile version string' | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Core :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL core profile version string' | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Vendor/Driver :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL vendor string' | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Renderer :"), cmd: api.internal.system.run("glxinfo | grep 'OpenGL renderer' | cut -d ':' -f 2 | cut -c 2- | grep '\\S'")},
+        { name: qsTr("Video RAM :"), cmd: api.internal.system.run("cat /tmp/glxinfo.txt | grep -i 'video memory' | cut -d ':' -f 2")},
+        { name: qsTr("OpenGL ES :"), cmd: api.internal.system.run("cat /tmp/glxinfo.txt | grep 'OpenGL ES profile version string' | cut -d ':' -f 2 | cut -c 2-")},
+        { name: qsTr("OpenGL Core :"), cmd: api.internal.system.run("cat /tmp/glxinfo.txt | grep 'OpenGL core profile version string' | cut -d ':' -f 2 | cut -c 2-")},
+        { name: qsTr("OpenGL Vendor/Driver :"), cmd: api.internal.system.run("cat /tmp/glxinfo.txt | grep 'OpenGL vendor string' | cut -d ':' -f 2 | cut -c 2-")},
+        { name: qsTr("OpenGL Renderer :"), cmd: api.internal.system.run("cat /tmp/glxinfo.txt | grep 'OpenGL renderer' | cut -d ':' -f 2 | cut -c 2- | grep '\\S'")},
+        { name: qsTr("Vukan Renderer version :"), cmd: api.internal.system.run("cat /tmp/vulkaninfo.txt | grep 'Vulkan Instance Version:' | cut -d ':' -f2")},
     ]
 
     property var model2: [
-        //        { name: qsTr("System Disk Usage :"), cmd: api.internal.system.run("df -mT | awk \'NR>1 && ($7 == \"/\" || $7 == \"/dev\" || $7 == \"/boot\" || $7 == \"/tmp\" || $7 == \"/var\" || $7 == \"/overlay/lower\")\' | awk \'NF-=2\' | uniq | awk \'{total+=$3;used+=$4;free+=$5}END{if(total>1048576){total_out=total\/1048576;used_out=used\/1048576;unit_out=\"TB\";} else {total_out=total\/1024;used_out=used\/1024;unit_out=\"GB\"};percentage=used*100\/total;printf(\"%.2f\/%.2f %s (%.1f %)\n\",used_out,total_out,unit_out,percentage)}\'") },
+        //{ name: qsTr("System Disk Usage :"), cmd: api.internal.system.run("df -mT | awk \'NR>1 && ($7 == \'/\' || $7 == \'/dev\' || $7 == \'/boot\' || $7 == \'/tmp\' || $7 == \'/var\' || $7 == \'/overlay/lower\')\' | awk \'NF-=2\' | uniq | awk \'{total+=$3;used+=$4;free+=$5}END{if(total>1048576){total_out=total\/1048576;used_out=used\/1048576;unit_out=\'TB\';} else {total_out=total\/1024;used_out=used\/1024;unit_out=\'GB\'};percentage=used*100\/total;printf(\'%.2f\/%.2f %s (%.1f %)\n\',used_out,total_out,unit_out,percentage)}\'") },
         { name: qsTr("Wifi Local IP :"), cmd: api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
         { name: qsTr("Ethernet Local IP :"), cmd: api.internal.system.run("ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
         { name: qsTr("External IP :"), cmd: api.internal.system.run("curl -4 'http://icanhazip.com/'") },
-        //{ name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0")},
+        { name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("sensors -A '*-isa-*' | cut -d '(' -f 1")},
         //{ name: qsTr("GPU Temperature :"), cmd: api.internal.system.run("gpu_temp=$(vcgencmd measure_temp | cut -d '=' -f 2 | cut -d \' -f 1); echo '$gpu_temp'$'\xc2\xb0'C")},
         //New Method using generique way for buildroot and multi-indexes
-        { name: qsTr("All System Temperature(s) :"), cmd: "\n"
-         + api.internal.system.run("(((paste <(cat /sys/class/thermal/thermal_zone*/temp | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/thermal/thermal_zone*/type | tr -s [:space:])) | awk '{print $1 \" - \" $2}') && ((p=\"_input\";l=\"_label\";s=\"0 1 2 3 4 5 6 7\";t=\"0 1 2 3 4\"; for i in $s; do for j in $t; do paste <(cat /sys/class/hwmon/hwmon$i/temp$j$p | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon$i/name | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon$i/temp$j$l | tr -s [:space:]); echo \" \"; done; done )| grep -i \"°C\" | awk -F ' ' '$1 ~ /°C/  {print $1 \" - \" $2 \" \" $3 \" \" $4 \" \" $5}')) | grep -e ' - ' | sort -u -k1,5")},
-       //+ api.internal.system.run("(((paste <(cat /sys/class/thermal/thermal_zone*/temp | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/thermal/thermal_zone*/type | tr -s [:space:])) | awk '{print $1 \" - \" $2}') && ((paste <(cat /sys/class/hwmon/hwmon*/temp*_input | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon*/name | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon*/temp*_label | tr -s [:space:])) | awk -F ' ' 'length($2)>0 {print $1 \" - \" $2 $3}')) | sort -u -k1,4")},
+        //{ name: qsTr("All System Temperature(s) :"), cmd: "\n"
+        //+ api.internal.system.run("(((paste <(cat /sys/class/thermal/thermal_zone*/temp | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/thermal/thermal_zone*/type | tr -s [:space:])) | awk '{print $1 \" - \" $2}') && ((p=\"_input\";l=\"_label\";s=\"0 1 2 3 4 5 6 7\";t=\"0 1 2 3 4\"; for i in $s; do for j in $t; do paste <(cat /sys/class/hwmon/hwmon$i/temp$j$p | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon$i/name | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon$i/temp$j$l | tr -s [:space:]); echo \" \"; done; done )| grep -i \"°C\" | awk -F ' ' '$1 ~ /°C/  {print $1 \" - \" $2 \" \" $3 \" \" $4 \" \" $5}')) | grep -e ' - ' | sort -u -k1,5")},
+        //+ api.internal.system.run("(((paste <(cat /sys/class/thermal/thermal_zone*/temp | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/thermal/thermal_zone*/type | tr -s [:space:])) | awk '{print $1 \" - \" $2}') && ((paste <(cat /sys/class/hwmon/hwmon*/temp*_input | sed 's/\\(.\\)..$/.\\1°C/' | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon*/name | tr -s [:space:]) <(cat /sys/class/hwmon/hwmon*/temp*_label | tr -s [:space:])) | awk -F ' ' 'length($2)>0 {print $1 \" - \" $2 $3}')) | sort -u -k1,4")},
         //other methods but not working on all PCs
         //{ name: qsTr("                           "), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
         //{ name: qsTr("GPU Temperature(s) :"), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
@@ -197,7 +198,7 @@ FocusScope {
                         highlightMoveDuration : 0
 
                         move: Transition {
-                                 NumberAnimation { properties: "x,y"; duration: 1000 }
+                            NumberAnimation { properties: "x,y"; duration: 1000 }
                         }
                         delegate: Rectangle {
                             width: contentColumn.width
@@ -276,7 +277,7 @@ FocusScope {
                         highlightMoveDuration : 0
 
                         move: Transition {
-                                 NumberAnimation { properties: "x,y"; duration: 1000 }
+                            NumberAnimation { properties: "x,y"; duration: 1000 }
                         }
                         delegate: Rectangle {
                             width: contentColumn2.width
