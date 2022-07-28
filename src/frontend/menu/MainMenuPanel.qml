@@ -146,7 +146,7 @@ FocusScope {
             text: qsTr("Settings") + api.tr
             onActivated: {
                 focus = true;
-                api.internal.system.run("glxinfo -B > /tmp/glxinfo.txt | vulkaninfo --summary > /tmp/vulkaninfo.txt");
+                api.internal.system.run("glxinfo -B > /tmp/glxinfo.txt | vulkaninfo --summary 2> /dev/null > /tmp/vulkaninfo.txt ");
                 root.showSystemSettings();
             }
             selected: focus

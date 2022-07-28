@@ -63,7 +63,7 @@ FocusScope {
             text: api.internal.meta.buildName 
 					+ " " + api.internal.meta.gitRevision + "," + api.internal.meta.gitDate
 					+ " BUILD: " + api.internal.meta.buildDate + " " + api.internal.meta.buildVersion  
-					+ " OS: " + api.internal.system.run("cat /recalbox/recalbox.version");
+                    + " OS: " + api.internal.system.run("cat /recalbox/recalbox.version 2> /dev/null");
             color: "#eee"
             font.pixelSize: vpx(12)
             font.family: global.fonts.mono
