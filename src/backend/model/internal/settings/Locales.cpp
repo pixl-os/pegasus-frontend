@@ -75,6 +75,7 @@ Locales::Locales(QObject* parent)
     select_preferred_locale();
     load_selected_locale();
 
+    qApp->installTranslator(&m_theme_translator);
     qApp->installTranslator(&m_translator);
 }
 
@@ -114,10 +115,22 @@ void Locales::load_selected_locale()
 {
     const auto& locale = m_locales.at(m_current_idx);
 
+    Log::info(LOGMSG("Theme Locale file to load if exists : %1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_") + locale.bcp47tag));
+
+    if (QFileInfo::exists(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_") + locale.bcp47tag))) {
+        //load theme one if exists
+        Log::info(LOGMSG("Theme Locale file found !"));
+        m_theme_translator.load(QStringLiteral("theme_") + locale.bcp47tag,
+                          QStringLiteral("%1/lang").arg(AppSettings::general.theme),
+                          QStringLiteral("-"));
+    }
+
     m_translator.load(QStringLiteral("pegasus_") + locale.bcp47tag,
                       QStringLiteral(":/i18n"),
                       QStringLiteral("-"));
+
     Log::info(LOGMSG("Locale set to `%2`").arg(locale.bcp47tag));
+
 }
 
 int Locales::rowCount(const QModelIndex& parent) const

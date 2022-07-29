@@ -63,6 +63,7 @@ private:
 
     size_t m_current_idx;
     QTranslator m_translator;
+    QTranslator m_theme_translator; //added to manage translation independently for any theme
 
     void select_preferred_locale();
     bool select_locale(const QString&);
