@@ -119,10 +119,17 @@ void Locales::load_selected_locale()
 
     if (QFileInfo::exists(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_") + locale.bcp47tag))) {
         //load theme one if exists
-        Log::info(LOGMSG("Theme Locale file found !"));
         m_theme_translator.load(QStringLiteral("theme_") + locale.bcp47tag,
                           QStringLiteral("%1/lang").arg(AppSettings::general.theme),
                           QStringLiteral("-"));
+        Log::info(LOGMSG("Theme Locale loaded : %1").arg(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_") + locale.bcp47tag)));
+    }
+    else if (QFileInfo::exists(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_en")))) {
+        //load en theme one if exists
+        m_theme_translator.load(QStringLiteral("theme_en"),
+                          QStringLiteral("%1/lang").arg(AppSettings::general.theme),
+                          QStringLiteral("-"));
+        Log::info(LOGMSG("Theme Locale loaded : %1").arg(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_en"))));
     }
 
     m_translator.load(QStringLiteral("pegasus_") + locale.bcp47tag,
