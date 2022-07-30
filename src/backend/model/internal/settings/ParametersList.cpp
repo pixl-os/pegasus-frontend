@@ -5,7 +5,7 @@
 #include "storage/StorageDevices.h"
 
 #include <QDir>
-#include <QDirIterator>>
+#include <QDirIterator>
 
 namespace {
 
