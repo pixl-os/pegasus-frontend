@@ -662,7 +662,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: checked ? optWifiNetwork : optLanguage
+                    KeyNavigation.down: checked ? optWifiNetwork : optStorageNetworkShareSmbActivate
                 }
                 SimpleButton {
                     id: optWifiNetwork
@@ -676,9 +676,190 @@ FocusScope {
                         root.openWifiNetworks();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optLanguage
+//                    KeyNavigation.down: optStorageNetworkShare
+                    KeyNavigation.down: optStorageNetworkShareSmbActivate
                 }
+                SectionTitle {
+                    text: qsTr("Network share") + api.tr
+                    first: true
+                    symbol: "\uf26d"
+                }
+                ToggleOption {
+                    id: optStorageNetworkShareSmbActivate
+                    // set focus only on first item
+                    focus: true
+                    label: qsTr("Samba settings showing") + api.tr
 
+                    checked: false
+                    onCheckedChanged: {
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareSmb1Path
+                }
+                SimpleButton {
+                    id: optStorageNetworkShareSmb1Path
+                    label: qsTr("Path Samba number 1") + api.tr
+                    note: qsTr("Set your path") + api.tr
+                    TextFieldOption {
+                        id: networkShareSmb1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.bottom
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Path") + api.tr
+                        text: api.internal.recalbox.getStringParameter("boot.sharenetwork_smb1")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("boot.sharenetwork_smb1", networkShareSmb1.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareSmb2Path
+                    visible: optStorageNetworkShareSmbActivate.checked
+                }
+                SimpleButton {
+                    id: optStorageNetworkShareSmb2Path
+                    label: qsTr("Path Samba number 2") + api.tr
+                    note: qsTr("Set your path") + api.tr
+                    TextFieldOption {
+                        id: networkShareSmb2
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.bottom
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Path") + api.tr
+                        text: api.internal.recalbox.getStringParameter("boot.sharenetwork_smb2")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("boot.sharenetwork_smb2", networkShareSmb2.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareSmb3Path
+                    visible: optStorageNetworkShareSmbActivate.checked
+                }
+                SimpleButton {
+                    id: optStorageNetworkShareSmb3Path
+                    label: qsTr("Path Samba number 3") + api.tr
+                    note: qsTr("Set your path") + api.tr
+                    TextFieldOption {
+                        id: networkShareSmb3
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.bottom
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Path") + api.tr
+                        text: api.internal.recalbox.getStringParameter("boot.sharenetwork_smb3")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("boot.sharenetwork_smb3", networkShareSmb3.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareSmb4Path
+                    visible: optStorageNetworkShareSmbActivate.checked
+                }
+                SimpleButton {
+                    id: optStorageNetworkShareSmb4Path
+                    label: qsTr("Path Samba number 4") + api.tr
+                    note: qsTr("Set your path") + api.tr
+                    TextFieldOption {
+                        id: networkShareSmb4
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.bottom
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Path") + api.tr
+                        text: api.internal.recalbox.getStringParameter("boot.sharenetwork_smb4")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("boot.sharenetwork_smb4", networkShareSmb4.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareNfsActivate
+                    visible: optStorageNetworkShareSmbActivate.checked
+                }
+                ToggleOption {
+                    id: optStorageNetworkShareNfsActivate
+                    // set focus only on first item
+                    focus: false
+                    label: qsTr("NFS settings showing") + api.tr
+
+                    checked: false
+                    onCheckedChanged: {
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareNfs1Path
+                }
+                SimpleButton {
+                    id: optStorageNetworkShareNfs1Path
+                    label: qsTr("Path NFS number 1") + api.tr
+                    note: qsTr("Set your path") + api.tr
+                    TextFieldOption {
+                        id: networkShareNfs1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.bottom
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Path") + api.tr
+                        text: api.internal.recalbox.getStringParameter("boot.sharenetwork_nfs1")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("boot.sharenetwork_nfs1", networkShareNfs1.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareNfs2Path
+                    visible: optStorageNetworkShareNfsActivate.checked
+                }
+                SimpleButton {
+                    id: optStorageNetworkShareNfs2Path
+                    label: qsTr("Path NFS number 2") + api.tr
+                    note: qsTr("Set your path") + api.tr
+                    TextFieldOption {
+                        id: networkShareNfs2
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.bottom
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Path") + api.tr
+                        text: api.internal.recalbox.getStringParameter("boot.sharenetwork_nfs2")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("boot.sharenetwork_nfs2", networkShareNfs2.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareNfs3Path
+                    visible: optStorageNetworkShareNfsActivate.checked
+                }
+                SimpleButton {
+                    id: optStorageNetworkShareNfs3Path
+                    label: qsTr("Path NFS number 3") + api.tr
+                    note: qsTr("Set your path") + api.tr
+                    TextFieldOption {
+                        id: networkShareNfs3
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.bottom
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Path") + api.tr
+                        text: api.internal.recalbox.getStringParameter("boot.sharenetwork_nfs3")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("boot.sharenetwork_nfs3", networkShareNfs3.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optStorageNetworkShareNfs4Path
+                    visible: optStorageNetworkShareNfsActivate.checked
+                }
+                SimpleButton {
+                    id: optStorageNetworkShareNfs4Path
+                    label: qsTr("Path NFS number 4") + api.tr
+                    note: qsTr("Set your path") + api.tr
+                    TextFieldOption {
+                        id: networkShareNfs4
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.bottom
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Path") + api.tr
+                        text: api.internal.recalbox.getStringParameter("boot.sharenetwork_nfs4")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("boot.sharenetwork_nfs4", networkShareNfs4.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optLanguage
+                    visible: optStorageNetworkShareNfsActivate.checked
+                }
                 /*
                 SimpleButton {
                     id: optStorageCapacity
