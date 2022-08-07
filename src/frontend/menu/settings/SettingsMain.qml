@@ -215,14 +215,14 @@ FocusScope {
                     id: opti915patchactivation
                     //command to get/catch reference of card id if issue
                     //check if file exists or error found in dmesg (we will use finally 'cat /var/log/messages' for tests purposes ;-)
-                    visible: api.internal.system.run("cat /var/log/messages 2> /dev/null | grep -e i915.force_probe | awk '{ print $2 }' FS='='") !== "" ? true : (api.internal.system.run("if [ -f '/etc/modprobe.d/i915.conf' ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false) ;
+                    visible: api.internal.system.run("grep -e i915.force_probe /var/log/messages | awk '{ print $2 }' FS='='") !== "" ? true : (api.internal.system.run("if [ -f '/etc/modprobe.d/i915.conf' ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false) ;
                     label: qsTr("i915 driver force-probe activation") + api.tr
                     note: qsTr("Any driver issue detected ! Use this option to discover inputs quickly (need reboot)") + api.tr
                     checked: api.internal.system.run("if [ -f '/etc/modprobe.d/i915.conf' ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
                     onCheckedChanged: {
                         if(checked && visible){
                             //create file but need to catch Device PCI PCI ID first.
-                            api.internal.system.run("PCI_ID=$(cat /var/log/messages 2> /dev/null | grep -e i915.force_probe | awk '{ print $2 }' FS='=') ; mount -o remount,rw / ; echo options i915 force_probe=$PCI_ID > /etc/modprobe.d/i915.conf");
+                            api.internal.system.run("PCI_ID=$(grep -e i915.force_probe /var/log/messages | awk '{ print $2 }' FS='=') ; mount -o remount,rw / ; echo options i915 force_probe=$PCI_ID > /etc/modprobe.d/i915.conf");
                         }
                         else if(visible)
                         {

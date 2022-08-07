@@ -146,7 +146,8 @@ FocusScope {
             text: qsTr("Settings") + api.tr
             onActivated: {
                 focus = true;
-                api.internal.system.run("glxinfo -B > /tmp/glxinfo.txt | vulkaninfo --summary 2> /dev/null > /tmp/vulkaninfo.txt ");
+                // tmp file generate on Xinit start
+                //api.internal.system.run("glxinfo -B > /tmp/glxinfo.txt");
                 root.showSystemSettings();
             }
             selected: focus
