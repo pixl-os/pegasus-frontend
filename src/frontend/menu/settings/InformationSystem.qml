@@ -105,17 +105,17 @@ FocusScope {
     property var model: [
         { name: qsTr("Linux Kernel :"), cmd: api.internal.system.run("echo $(uname -s) $(uname -r)")},
         { name: qsTr("Architecture :"), cmd: api.internal.system.run("uname -m")},
-        { name: qsTr("CPU :"), cmd: api.internal.system.run("cat /proc/cpuinfo | grep 'model name' | cut -d ':' -f 2 | cut -c 2- | uniq")},
+        { name: qsTr("CPU :"), cmd: api.internal.system.run("grep 'model name' /proc/cpuinfo | cut -d ':' -f 2 | cut -c 2- | uniq")},
         { name: qsTr("CPU Thread Number :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l | grep '\\S'")},
         { name: qsTr("CPU Maximum Frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
         { name: qsTr("RAM (free/total):"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
         { name: qsTr("GPU(s) :"), cmd: "\n" + api.internal.system.run("lspci | grep -i 'vga\\|3d\\|2d' | cut -d ':' -f 3 | grep '\\S'")}, //could be one several lines
-        { name: qsTr("Video RAM :"), cmd: api.internal.system.run("cat /tmp/glxinfo.tmp | grep -i 'video memory' | cut -d ':' -f 2")},
-        { name: qsTr("OpenGL ES :"), cmd: api.internal.system.run("cat /tmp/glxinfo.tmp | grep 'OpenGL ES profile version string' | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Core :"), cmd: api.internal.system.run("cat /tmp/glxinfo.tmp | grep 'OpenGL core profile version string' | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Vendor/Driver :"), cmd: api.internal.system.run("cat /tmp/glxinfo.tmp | grep 'OpenGL vendor string' | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Renderer :"), cmd: api.internal.system.run("cat /tmp/glxinfo.tmp | grep 'OpenGL renderer' | cut -d ':' -f 2 | cut -c 2- | grep '\\S'")},
-        { name: qsTr("Vulkan Renderer version :"), cmd: api.internal.system.run("cat /tmp/vulkaninfo.tmp | grep 'Vulkan Instance Version:' | cut -d ':' -f2")},
+        { name: qsTr("Video RAM :"), cmd: api.internal.system.run("grep -i 'video memory' /tmp/glxinfo.tmp | cut -d ':' -f 2")},
+        { name: qsTr("OpenGL ES :"), cmd: api.internal.system.run("grep 'OpenGL ES profile version string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-")},
+        { name: qsTr("OpenGL Core :"), cmd: api.internal.system.run("grep 'OpenGL core profile version string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-")},
+        { name: qsTr("OpenGL Vendor/Driver :"), cmd: api.internal.system.run("grep 'OpenGL vendor string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-")},
+        { name: qsTr("OpenGL Renderer :"), cmd: api.internal.system.run("grep 'OpenGL renderer' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2- | grep '\\S'")},
+        { name: qsTr("Vulkan Renderer version :"), cmd: api.internal.system.run("grep 'Vulkan Instance Version:' /tmp/vulkaninfo.tmp | cut -d ':' -f2")},
     ]
 
     property var model2: [
