@@ -81,8 +81,8 @@ struct SystemEntry {
     QString keyboard;
     QString mouse;
     QString lightgun;
-    QString manufacturer; // added in recalbox 8.1
     QString releasedate;
+    QString manufacturer; // added in recalbox 8.1
     QString retroachievements;
     QList <EmulatorsEntry> emulators;
 };
