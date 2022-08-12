@@ -210,6 +210,7 @@ providers::es2::SystemEntry read_system_entry(const QString& log_tag, QXmlStream
                 std::move(xml_props[QLatin1String("keyboard")]), //NA for legacy es_systems.cfg
                 std::move(xml_props[QLatin1String("mouse")]), //NA for legacy es_systems.cfg
                 std::move(xml_props[QLatin1String("lightgun")]), //NA for legacy es_systems.cfg
+                std::move(xml_props[QLatin1String("manufacturer")]), //NA for legacy es_systems.cfg // added in recalbox 8.1
                 std::move(xml_props[QLatin1String("releasedate")]), //NA for legacy es_systems.cfg
                 std::move(xml_props[QLatin1String("retroachievements")]), //NA for legacy es_systems.cfg
                 std::move(SystemEmulators),
@@ -246,6 +247,7 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
         { QLatin1String("mouse"), QString() },
         { QLatin1String("lightgun"), QString() },
         { QLatin1String("releasedate"), QString() },
+        { QLatin1String("manufacturer"), QString() }, // added in recalbox 8.1
         { QLatin1String("retroachievements"), QString() },
     };
 
@@ -279,6 +281,7 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
             set_by_str(xml_props, "mouse",xml.attributes().value("mouse").toString());
             set_by_str(xml_props, "lightgun",xml.attributes().value("lightgun").toString());
             set_by_str(xml_props, "releasedate",xml.attributes().value("releasedate").toString());
+            set_by_str(xml_props, "manufacturer",xml.attributes().value("manufacturer").toString()); // added in recalbox 8.1
             set_by_str(xml_props, "retroachievements",xml.attributes().value("retroachievements").toString());
             xml.skipCurrentElement(); //because not read of element text
         }
@@ -391,6 +394,7 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
                 std::move(xml_props[QLatin1String("mouse")]),
                 std::move(xml_props[QLatin1String("lightgun")]),
                 std::move(xml_props[QLatin1String("releasedate")]),
+                std::move(xml_props[QLatin1String("manufacturer")]), // added in recalbox 8.1
                 std::move(xml_props[QLatin1String("retroachievements")]), // assumed to be absolute
                 std::move(SystemEmulators),
     };

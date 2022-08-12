@@ -50,6 +50,9 @@ struct CollectionData {
 
     QString summary;
     QString description;
+    QString type;
+    QString manufacturer;
+    QString releasedate;
     QString screen_scraper_id;
 
     QString common_launch_cmd;
@@ -76,6 +79,9 @@ public:
     GETTER(const QString&, shortName, short_name())
     GETTER(const QString&, summary, summary)
     GETTER(const QString&, description, description)
+    GETTER(const QString&, type, type)
+    GETTER(const QString&, manufacturer, manufacturer)
+    GETTER(const QString&, releasedate, releasedate)
     GETTER(const QString&, screenScraperId, screen_scraper_id)
     GETTER(const QString&, commonLaunchCmd, common_launch_cmd)
     GETTER(const QString&, commonLaunchWorkdir, common_launch_workdir)
@@ -90,6 +96,9 @@ public:
     SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
+    SETTER(QString, Type, type)
+    SETTER(QString, Manufacturer, manufacturer)
+    SETTER(QString, ReleaseDate, releasedate)
     SETTER(QString, ScreenScraperId, screen_scraper_id)
     SETTER(QString, CommonLaunchCmd, common_launch_cmd)
     SETTER(QString, CommonLaunchWorkdir, common_launch_workdir)
@@ -104,6 +113,9 @@ public:
     Q_PROPERTY(QString shortName READ shortName CONSTANT)
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
+    Q_PROPERTY(QString type READ type CONSTANT)
+    Q_PROPERTY(QString manufacturer READ manufacturer CONSTANT)
+    Q_PROPERTY(QString releasedate READ releasedate CONSTANT)
     Q_PROPERTY(QString screenScraperId READ screenScraperId CONSTANT)
 
     //need specific property and invokable function due to QList<struct> is not supported by QML layer
