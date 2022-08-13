@@ -24,9 +24,9 @@ FocusScope {
     visible: 0 < (x + width) && x < Window.window.width
 
     //to be able to follow action done on Bluetooth Devices Lists
-    property var actionState : ""
-    property var actionListIndex : 0
-    property var actionVersionToInstall: ""
+    property string actionState : ""
+    property int actionListIndex : 0
+    property string actionVersionToInstall: ""
 
     //loader to load confirm dialog
     Loader {
@@ -37,8 +37,8 @@ FocusScope {
         active: false
         asynchronous: true
         //to set value via loader
-        property var componentLogo: ""
-        property var componentText: ""
+        property string componentLogo: ""
+        property string componentText: ""
     }
 
     Component {
@@ -185,8 +185,8 @@ FocusScope {
                 Repeater {
                     id: availableUpdates
                     model: componentsListModel
-                    property var selectedButtonIndex : 0
-                    property var hidden : 0
+                    property int selectedButtonIndex : 0
+                    property int hidden : 0
                     onItemRemoved:{
                         //RFU
                         //console.log("onItemRemoved: ", index)

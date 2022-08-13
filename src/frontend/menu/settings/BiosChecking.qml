@@ -261,8 +261,8 @@ FocusScope {
                                 }
                                 // mandatory or optional bios
                                 Text {
-                                    text: bios_Mandatory == false ? qsTr("Optional") : qsTr("Mandatory");
-                                    color: bios_Mandatory == false ? themeColor.textSublabel : "green";
+                                    text: bios_Mandatory === false ? qsTr("Optional") : qsTr("Mandatory");
+                                    color: bios_Mandatory === false ? themeColor.textSublabel : "green";
                                     font.pixelSize: vpx(12)
                                 }
                                 // file name

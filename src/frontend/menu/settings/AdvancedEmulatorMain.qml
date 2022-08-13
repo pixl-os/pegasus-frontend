@@ -92,7 +92,7 @@ FocusScope {
                         label: qsTr(modelData.name) + api.tr
 
                         // set focus only on first item
-                        focus: index == 0 ? true : false
+                        focus: index === 0 ? true : false
 
                         onActivate: {
                             //console.log("root.openEmulatorConfiguration()");
@@ -102,7 +102,7 @@ FocusScope {
                         }
                         
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index != 0) ?  systemButtons.itemAt(index-1) : systemButtons.itemAt(systemButtons.count-1)
+                        KeyNavigation.up: (index !== 0) ?  systemButtons.itemAt(index-1) : systemButtons.itemAt(systemButtons.count-1)
                         KeyNavigation.down: (index < systemButtons.count) ? systemButtons.itemAt(index+1) : systemButtons.itemAt(0)
                         //pointer moved in SimpleButton desactived on default
                         pointerIcon: true
