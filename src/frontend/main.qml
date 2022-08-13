@@ -782,9 +782,9 @@ Window {
 
     //to manage event/input/focus/status during edition with virtual Keyboard
 
-    property var counter: 0 //counter use for debug
-    property var previousVirtualKeyboardVisibility: false
-    property var forcedSelectAll: false;
+    property int counter: 0 //counter use for debug
+    property bool previousVirtualKeyboardVisibility: false
+    property bool forcedSelectAll: false;
     property var activeInput;
 
     function virtualKeyboardOnReleased(ev){
@@ -937,8 +937,8 @@ Window {
         }
     }
 
-    property var numberOfUpdates: 0
-    property var listOfUpdates : ""
+    property int numberOfUpdates: 0
+    property string listOfUpdates : ""
     Timer {//timer to check json after download (1 minute later)
         id: jsonStatusRefreshTimer
         interval: 5000 //60000 // check after 1 minute / 5 seconds for test ;-)
@@ -1089,7 +1089,7 @@ Window {
         }
         return ratio;
     }
-    property var getIconFont : globalFonts.sans //default value
+    property string getIconFont : globalFonts.sans //default value
     //function to dynamically set icon "character" from name and/or service
     function getIcon(name,service){
         var icon = "";
