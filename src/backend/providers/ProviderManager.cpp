@@ -104,7 +104,7 @@ void ProviderManager::run(
                 m_progress_finished += m_progress_step;
         }
         m_progress_finished += m_progress_step;
-        emit progressChanged(m_progress_finished, "Checking pending downloads...");
+        emit progressChanged(m_progress_finished, tr("Checking pending downloads..."));
         if (sctx.has_pending_downloads()) {
             QElapsedTimer network_timer;
             network_timer.start();
@@ -118,7 +118,7 @@ void ProviderManager::run(
             Log::info(LOGMSG("Download online sources took %1ms").arg(network_timer.elapsed()));
         }
         m_progress_finished += m_progress_step;
-        emit progressChanged(m_progress_finished, "Game lists post-processing...");
+        emit progressChanged(m_progress_finished, tr("Game lists post-processing..."));
         QElapsedTimer finalize_timer;
         finalize_timer.start();
 
@@ -138,7 +138,7 @@ void ProviderManager::run(
 
         Log::info(LOGMSG("Stats - Game list post-processing took %1 ms").arg(finalize_timer.elapsed()));
         m_progress_finished = 1.f;
-        emit progressChanged(m_progress_finished, "Loading theme now...");
+        emit progressChanged(m_progress_finished, tr("Loading theme now..."));
         //sleep 1s to see animation ;-)
         QObject().thread()->sleep(1);
 

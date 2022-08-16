@@ -2,15 +2,28 @@
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
 ## [recalbox-integration] - yyyy-mm-dd - vx
-- add sound in volume settings
-- add new property on api.collections for themes to be able to call ressources from Screen Scraper using 'ScreenScraperId'
-- system-information: use tmp file for reading and add vulkan information
-- fix log error in cmd to silent errors
-- fix typo on informationSystem for 'thread' and 'vulkan'
-- fix "Information System" to improve performance on display (and for vulkan info)
-- add System 'type', 'releasedate' & 'manufacturer' as new info from systemlist.xml and accessible from api.colletions
-- change favorites.txt path in the share to saves/usersettings/
-- several fixes on QML source codes (var to other type, etc..)
+
+- New API features:
+	- add System 'type', 'releasedate' & 'manufacturer' as new info from systemlist.xml and accessible from api.colletions
+	- add new property on api.collections for themes to be able to call ressources from Screen Scraper using 'ScreenScraperId'
+
+- Theme translation feature support:
+	- add translator and .qm loading for theme from /lang theme directory
+	- use en language by default if no file other language available (to force reload)
+
+- Other features:
+	- add sound in volume settings
+	- change favorites.txt path in the share to saves/usersettings/
+	- system-information: use tmp file for reading and add vulkan information
+	- add translation in Pegasus loading phase (in cpp code)
+	- add translation in Pegasus parameterlists (in cpp code)
+	- New "qmlutils" component to manage horizontal scrolling
+
+- Fixes:
+	- several fixes on QML source codes (var to other type, etc..)
+	- fix log error in cmd to silent errors
+	- fix typo on informationSystem for 'thread' and 'vulkan'
+	- fix "Information System" to improve performance on display (and for vulkan info)
 
 ## [recalbox-integration] - 2022-07-08 - v0.0.7
 - fix on management of shaders display/selection
