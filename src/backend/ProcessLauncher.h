@@ -19,6 +19,7 @@
 
 #include <QObject>
 #include <QProcess>
+#include <QTimer>
 
 namespace model { class GameFile; }
 
@@ -54,13 +55,16 @@ private slots:
     void onProcessFinished(int, QProcess::ExitStatus);
 
 private:
+    QString m_pid;
     QProcess* m_process;
-
+    QTimer* timer = nullptr;
     QString globalCommand;
     QStringList globalArgs;
+    QString globalWorkDir;
   
     void runProcess(const QString&, const QStringList&, const QString&);
 
     void beforeRun(const QString&);
     void afterRun();
+    void checkPidStatus();
 };

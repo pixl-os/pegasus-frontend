@@ -33,10 +33,12 @@
 //For recalbox
 #include "RecalboxConf.h"
 
-
 #include <QDir>
 #include <QRegularExpression>
 #include <string>
+
+//for chdir
+#include <unistd.h>
 
 namespace {
 static constexpr auto SEPARATOR = "----------------------------------------";
@@ -391,113 +393,163 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 void ProcessLauncher::runProcess(const QString& command, const QStringList& args, const QString& workdir)
 {
     Log::info(LOGMSG("Executing command: [`%1`]").arg(serialize_command(command, args)));
-    Log::info(LOGMSG("Working directory: `%3`").arg(QDir::toNativeSeparators(workdir)));
+    Log::info(LOGMSG("Working directory: `%1`").arg(QDir::toNativeSeparators(workdir)));
 
-    Q_ASSERT(!m_process);
-    m_process = new QProcess(this);
-
-    // set up signals and slots
-    connect(m_process, &QProcess::started, this, &ProcessLauncher::onProcessStarted);
-    connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessError);
-    connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            this, &ProcessLauncher::onProcessFinished);
-
-    // run the command
-    m_process->setProcessChannelMode(QProcess::ForwardedChannels);
-    
-    m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
-    
-    m_process->setWorkingDirectory(workdir);
-    
     //init of global Command
     globalCommand = "";
         
     // 2 ways to launch: in case of Python to launch retroarch, we can't use only Qprocess
     if (command.contains("python"))
     {
-        emit processLaunchOk(); // to stop front-end
         // put command and args in global variables to launch when Front-end Tear Down is Completed !
         globalCommand = command;
+        //for debug purpose in dev env
+        //globalArgs  << "-c" << "'import time; time.sleep(10);'"; //to simulate time of running from debug env
         globalArgs = args;
+        globalWorkDir = workdir;
+
+        emit processLaunchOk(); // to stop front-end
+        //Log::debug(LOGMSG("emit processLaunchOk();"));
+
     }
     else
     {
+        if(!m_process){
+            m_process = new QProcess(this);
+        }
+        // set up signals and slots
+        connect(m_process, &QProcess::started, this, &ProcessLauncher::onProcessStarted);
+        connect(m_process, &QProcess::errorOccurred, this, &ProcessLauncher::onProcessError);
+        connect(m_process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                this, &ProcessLauncher::onProcessFinished);
+
+        // run the command
+        m_process->setProcessChannelMode(QProcess::ForwardedChannels);
+
+        m_process->setInputChannelMode(QProcess::ForwardedInputChannel);
+
+        m_process->setWorkingDirectory(workdir);
         m_process->start(command, args, QProcess::ReadOnly);
         m_process->waitForStarted(-1);
     }
-  
 }
 
 void ProcessLauncher::onTeardownComplete()
 {
-    Q_ASSERT(m_process);
+    Log::debug(LOGMSG("globalCommand: `%1`").arg(globalCommand));
+    Log::debug(LOGMSG("globalArgs: `%1`").arg(serialize_command("", globalArgs)));
+    Log::debug(LOGMSG("globalWorkDir: `%1`").arg(globalWorkDir));
 
     if(globalCommand.length() != 0)
     {
-        int exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
-        if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
-        else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
-        
+        int exitcode;
+
+        if(RecalboxConf::Instance().AsBool("pegasus.multiwindows",false)){
+            //first "unblockable' method but without way to get pid easily
+            chdir(globalWorkDir.toStdString().c_str()); // to change workdir for shell command
+            exitcode = system(qPrintable(QString("%1 &").arg(serialize_command(globalCommand, globalArgs))));
+            //get the python pid yo know that a game is launch
+            //to check we could run this command for pid: ps -e | grep -E "38967"
+            m_pid = "";
+            m_pid = run("ps -e | grep -E '" + globalCommand + "' | awk '{print $1}'");
+            Log::debug(LOGMSG("pid : %1 ").arg(m_pid));
+
+            //exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+            if (m_pid == ""){
+                ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
+                Log::debug(LOGMSG("emit processFinished() from onTeardownComplete - m_pid is empty"));
+                emit processFinished();
+            }
+            else{
+                //launch timer to check pid
+                //qDebug("pointer of current object = %p", timer);
+                if(timer == nullptr){
+                    timer = new QTimer(this);
+                    connect(timer, &QTimer::timeout, this, QOverload<>::of(&ProcessLauncher::checkPidStatus));
+                }
+                timer->start(250);//check every 250 ms
+            }
+
+        }
+        else{
+            exitcode = system(qPrintable(serialize_command(globalCommand, globalArgs)));
+            if (exitcode == 0) ProcessLauncher::onProcessFinished(exitcode, QProcess::NormalExit);
+            else ProcessLauncher::onProcessFinished(exitcode, QProcess::CrashExit);
+            Log::debug(LOGMSG("emit processFinished() from onTeardownComplete"));
+            emit processFinished();
+        }
     }
     else
     {
+        Q_ASSERT(m_process);
         m_process->waitForFinished(-1);
+        emit processFinished();
     }
-    emit processFinished();
+}
+
+void ProcessLauncher::checkPidStatus()
+{
+    //if pid disapearred, we send info that process is finish :-(
+    if(!run("ps -e | grep -E '" + globalCommand + "' | awk '{print $1}'").contains(m_pid)) {
+        ProcessLauncher::onProcessFinished(0, QProcess::NormalExit);
+        Log::debug(LOGMSG("emit processFinished() from checkPidStatus()"));
+        timer->stop();
+        //disconnect(timer, &QTimer::timeout, this, QOverload<>::of(&ProcessLauncher::checkPidStatus));
+        //timer->destroyed();
+        emit processFinished();
+    }
 }
 
 void ProcessLauncher::onProcessStarted()
 {
-    Q_ASSERT(m_process);
-
-    Log::debug(LOGMSG("Program: %1").arg(m_process->program()));
-    Log::info(LOGMSG("Process %1 started").arg(m_process->processId()));
-    Log::info(SEPARATOR);
-
+    if(m_process){
+        Log::debug(LOGMSG("Program: %1").arg(m_process->program()));
+        Log::info(LOGMSG("Process %1 started").arg(m_process->processId()));
+        Log::info(SEPARATOR);
+    }
     emit processLaunchOk();
 }
 
 void ProcessLauncher::onProcessError(QProcess::ProcessError error)
 {
-    Q_ASSERT(m_process);
+   if(m_process){
+        const QString message = processerror_to_string(error).arg(m_process->program());
 
-    const QString message = processerror_to_string(error).arg(m_process->program());
+        switch (m_process->state()) {
+            case QProcess::Starting:
+            case QProcess::NotRunning:
+                emit processLaunchError(message);
+                Log::warning(message);
+                afterRun(); // finished() won't run
+                break;
 
-    switch (m_process->state()) {
-        case QProcess::Starting:
-        case QProcess::NotRunning:
-            emit processLaunchError(message);
-            Log::warning(message);
-            afterRun(); // finished() won't run
-            break;
-
-        case QProcess::Running:
-            emit processRuntimeError(message);
-            break;
-    }
+            case QProcess::Running:
+                emit processRuntimeError(message);
+                break;
+        }
+   }
 }
 
 void ProcessLauncher::onProcessFinished(int exitcode, QProcess::ExitStatus exitstatus)
 {
-    Q_ASSERT(m_process);
-    
     Log::info(SEPARATOR);
 
-    switch (exitstatus) {
-        case QProcess::NormalExit:
-            if (exitcode == 0)
-                Log::info(LOGMSG("The external program has finished cleanly"));
-            else
-                Log::warning(LOGMSG("The external program has finished with error code %1").arg(exitcode));
-            break;
-        case QProcess::CrashExit:
-            Log::warning(LOGMSG("The external program has crashed"));
-            break;
+    if(m_process){
+        switch (exitstatus) {
+            case QProcess::NormalExit:
+                if (exitcode == 0)
+                    Log::info(LOGMSG("The external program has finished cleanly"));
+                else
+                    Log::warning(LOGMSG("The external program has finished with error code %1").arg(exitcode));
+                break;
+            case QProcess::CrashExit:
+                Log::warning(LOGMSG("The external program has crashed"));
+                break;
+        }
     }
     
     //notify game finishing for es_states.tmp (from recalbox)
     ScriptManager::Instance().Notify(Notification::EndGame);
-
     afterRun();
 }
 
@@ -509,10 +561,10 @@ void ProcessLauncher::beforeRun(const QString& game_path)
 
 void ProcessLauncher::afterRun()
 {
-    Q_ASSERT(m_process);
-    
-    m_process->deleteLater();
-    m_process = nullptr;
+    if(m_process){
+        m_process->deleteLater();
+        m_process = nullptr;
+    }
     
     ScriptRunner::run(ScriptEvent::PROCESS_FINISHED);
     TerminalKbd::disable();

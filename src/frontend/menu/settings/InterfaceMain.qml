@@ -156,7 +156,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
 //                    KeyNavigation.up: optScreenHelp
 //                    KeyNavigation.down: optPopupSettings
-                    KeyNavigation.down: optTheme
+                    KeyNavigation.down: optMultiWindows
 
                 }
 //                SimpleButton {
@@ -172,6 +172,19 @@ FocusScope {
 //                    KeyNavigation.up: optMenuControlsConfig
 //                    KeyNavigation.down: optTheme
 //                }
+                ToggleOption {
+                    id: optMultiWindows
+
+                    label: qsTr("Multi-Windows") + api.tr
+                    note: qsTr("Once enabled, you can run emulators in separate windows and keep pegasus/theme activated") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.multiwindows")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.multiwindows",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTheme
+                }
                 MultivalueOption {
                     id: optTheme
 
@@ -182,6 +195,19 @@ FocusScope {
                     onActivate: {
                         focus = true;
                         themeBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optThemeKeepLoaded
+                }
+                ToggleOption {
+                    id: optThemeKeepLoaded
+
+                    label: qsTr("Keep Theme Loaded") + api.tr
+                    note: qsTr("Themes could stay loaded during gaming to avoid reloading after(Theme should be compatible)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.theme.keeploaded")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.theme.keeploaded",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamelistsOnly

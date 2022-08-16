@@ -117,13 +117,14 @@ void ApiObject::onGameLaunchOk()
 {
     Q_ASSERT(m_launch_game_file);
     m_providerman.onGameLaunched(m_launch_game_file);
+    emit launchedgameChanged();
 }
 
 void ApiObject::onGameLaunchError(QString msg)
 {
     Q_ASSERT(m_launch_game_file);
     m_launch_game_file = nullptr;
-
+    emit launchedgameChanged();
     emit eventLaunchError(msg);
 }
 
@@ -150,6 +151,7 @@ void ApiObject::onGameFinished()
 
     m_providerman.onGameFinished(m_launch_game_file);
     m_launch_game_file = nullptr;
+    emit launchedgameChanged();
 }
 
 void ApiObject::onGameFavoriteChanged()
