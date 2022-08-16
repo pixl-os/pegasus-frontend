@@ -260,7 +260,7 @@ FocusScope {
                         }
                         
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index != 0) ?  emulatorButtons.itemAt(index-1) : optSystemAutoSave
+                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : optSystemAutoSave
                         KeyNavigation.down: (index < emulatorButtons.count) ? emulatorButtons.itemAt(index+1) : emulatorButtons.itemAt(emulatorButtons.count - 1)
                         
                         RadioButton {

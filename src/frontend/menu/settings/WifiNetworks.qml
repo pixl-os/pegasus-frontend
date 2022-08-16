@@ -530,7 +530,7 @@ FocusScope {
                             else return (name+ " / " +  flags + " / " + macaddress);
                         }
                         // set focus only on first item
-                        focus: index == 0 ? true : false
+                        focus: index === 0 ? true : false
 
                         onActivate: {
                                 //stop spinner

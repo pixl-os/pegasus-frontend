@@ -26,7 +26,7 @@ import QtQuick.Window 2.12
 FocusScope {
     id: root
 
-    property var selectedGamepadIndex: 0
+    property int selectedGamepadIndex: 0
 
     property var padPreview
 
@@ -79,7 +79,7 @@ FocusScope {
         //if (recordingField !== null) console.log("recordingField.recording : ",recordingField.recording);
         
         // turn off the previously recording field
-        if (recordingField !== null && configField !== recordingField)
+        if (recordingField != null && configField !== recordingField)
            {
             recordingField.recording = false;
             //console.log("recordingField.recording = false");
@@ -87,7 +87,7 @@ FocusScope {
         
         // turn on the currently recording one
         recordingField = configField
-        if (recordingField !== null)
+        if (recordingField != null)
            {
             recordingField.recording = true;
             //console.log("recordingField.recording = true");
@@ -952,7 +952,7 @@ FocusScope {
                 }
                 else if (loaderPadPreview.status === Loader.Ready) {
                     //console.log("Loader.Ready");
-                    if(loaderPadPreview.item !== null){
+                    if(loaderPadPreview.item != null){
                         root.padPreview = loaderPadPreview.item
                         //set dynamically the layoutIndex
                         parent.setParameters(layoutIndex);
@@ -1388,7 +1388,7 @@ FocusScope {
             property real progress: escapeProgress
             onProgressChanged: requestPaint()
 			visible: {
-				if(recordingField !== null){
+                if(recordingField != null){
 					if (recordingField.recording) return false; 
 				}
 				return true;
@@ -1417,7 +1417,7 @@ FocusScope {
             border { color: "#777"; width: vpx(1) }
             color: "transparent"
 			visible: {
-				if(recordingField !== null){
+                if(recordingField != null){
 					if (recordingField.recording) return false; 
 				}
                 return true;
@@ -1448,7 +1448,7 @@ FocusScope {
             text: qsTr("hold down to quit") + api.tr
             verticalAlignment: Text.AlignTop
 			visible: {
-				if(recordingField !== null){
+                if(recordingField != null){
                     if (recordingField.recording) return false;
                 }
                 return true;
@@ -1473,7 +1473,7 @@ FocusScope {
             height: width
             anchors.centerIn: validButtonIcon
 			visible: {
-				if(recordingField !== null){
+                if(recordingField != null){
 					if (recordingField.recording) return false; 
 				}
 				return true;
@@ -1506,7 +1506,7 @@ FocusScope {
             color: "transparent"
 			visible: {
 				if (deviceSelect.focus) return false;
-				if(recordingField !== null){
+                if(recordingField != null){
 					if (recordingField.recording) return false; 
 				}
 				return true;
@@ -1538,7 +1538,7 @@ FocusScope {
             color: "#777"
 			visible: {
 				if (deviceSelect.focus) return false;
-				if(recordingField !== null){
+                if(recordingField != null){
 					if (recordingField.recording) return false; 
 				}
 				return true;
@@ -1562,7 +1562,7 @@ FocusScope {
             height: width
             anchors.centerIn: detailsButtonIcon
             visible: {
-                if(recordingField !== null){
+                if(recordingField != null){
                     if (recordingField.recording) return false;
                 }
                 return true;
@@ -1595,7 +1595,7 @@ FocusScope {
             color: "transparent"
             visible: {
                 if (deviceSelect.focus) return false;
-                if(recordingField !== null){
+                if(recordingField != null){
                     if (recordingField.recording) return false;
                 }
                 return true;
@@ -1627,7 +1627,7 @@ FocusScope {
             color: "#777"
             visible: {
                 if (deviceSelect.focus) return false;
-                if(recordingField !== null){
+                if(recordingField != null){
                     if (recordingField.recording) return false;
                 }
                 return true;
@@ -1654,7 +1654,7 @@ FocusScope {
             radius: width * 0.5
             border { color: "#777"; width: vpx(1) }
             color: "transparent"
-			visible: (recordingField !== null) //18-08-21: change to hide this icon for the moment in case of wizard/stepbystep
+            visible: (recordingField != null) //18-08-21: change to hide this icon for the moment in case of wizard/stepbystep
 			
             anchors {
                 left: parent.left;
@@ -1675,7 +1675,7 @@ FocusScope {
         Text {
             id: labelWizard
             text: {
-				if(recordingField !== null)	if (recordingField.recording) return (qsTr("press button") + "/" + qsTr("move axis") + api.tr);		
+                if(recordingField != null)	if (recordingField.recording) return (qsTr("press button") + "/" + qsTr("move axis") + api.tr);
 				//return (qsTr("press 3 times for 'step by step' conf") + api.tr);
 				//18-08-21: replaced by empty string for the moment to avoid display and traduction in french.
 				return (qsTr("") + api.tr);
@@ -1703,7 +1703,7 @@ FocusScope {
             border { color: "#777"; width: vpx(1) }
             color: "transparent"
 			visible: {
-				if(recordingField !== null){
+                if(recordingField != null){
 					if (recordingField.recording) return false; 
 				}
 				return true;
@@ -1730,7 +1730,7 @@ FocusScope {
             verticalAlignment: Text.AlignTop
             color: "#777"
 			visible: {
-				if(recordingField !== null){
+                if(recordingField != null){
 					if (recordingField.recording) return false; 
 				}
 				return true;

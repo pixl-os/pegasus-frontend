@@ -95,8 +95,8 @@ FocusScope {
     id: root
 
     //to be able to follow action done on Bluetooth Devices Lists
-    property var actionState : ""
-    property var actionListIndex : 0
+    property string actionState : ""
+    property int actionListIndex : 0
 
     //loader to load confirm dialog
     Loader {
@@ -371,7 +371,7 @@ FocusScope {
     }
 
     //timer to relaunch bluetooth regularly for QT methods for the moment
-    property var counter: 0
+    property int counter: 0
     Timer {
         id: bluetoothTimer
         interval: 1000 // Run the timer every second
@@ -904,8 +904,8 @@ FocusScope {
                     id: myDevices
                     model: myDevicesModel //for test purpose
                     SimpleButton {
-                        property var connected: false;
-                        property var batteryStatusText: ""
+                        property bool connected: false;
+                        property string batteryStatusText: ""
                         width: parent.width - vpx(100)
                         Text {
                             id: batteryStatus
@@ -959,7 +959,7 @@ FocusScope {
                         }
 
                         // set focus only on first item
-                        focus: index == 0 ? true : false
+                        focus: index === 0 ? true : false
 
                         onActivate: {
                             //to force change of focus
@@ -1085,7 +1085,7 @@ FocusScope {
                     id: myDiscoveredDevices
                     model: myDiscoveredDevicesModel //for test purpose
                     SimpleButton {
-                        property var isPairingIssue: false
+                        property bool isPairingIssue: false
                         width: parent.width - vpx(100)
                         Text {
                             id: deviceDiscoveredIcon
@@ -1122,7 +1122,7 @@ FocusScope {
                             return (macaddress + " / " + vendor + " / " + name + " " + service)
                         }
                         // set focus only on first item
-                        focus: index == 0 ? true : false
+                        focus: index === 0 ? true : false
 
                         onActivate: {
                             //to force change of focus
@@ -1234,7 +1234,7 @@ FocusScope {
                         }
 
                         // set focus only on first item
-                        focus: index == 0 ? true : false
+                        focus: index === 0 ? true : false
 
                         onActivate: {
                             //to force change of focus

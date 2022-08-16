@@ -17,134 +17,134 @@ Item {
     property string name: "" //used to find file named as "x_name.jpg" : x_nes.png or x_snes.png for example
 
     //layout availability features list
-    property var hasSelect : true
-    property var hasStart : true
-    property var hasDedicatedGuide: true; //if false, the select is usually reused
-    property var hasDpad : true
-    property var hasButtonsForDpad : false
-    property var hasNintendoPad : false
-    property var hasA : true
-    property var hasB : true
-    property var hasX : true
-    property var hasY : true
-    property var hasL1 : true
-    property var hasR1 : true
-    property var hasL2 : true
-    property var hasR2 : true
-    property var hasLeftStick : true
-    property var hasRightStick : true
-    property var hasL3 : true //included in left stick usually
-    property var hasR3 : true //included in left stick usually
-    property var hasScreenshotButton : false
+    property bool hasSelect : true
+    property bool hasStart : true
+    property bool hasDedicatedGuide: true; //if false, the select is usually reused
+    property bool hasDpad : true
+    property bool hasButtonsForDpad : false
+    property bool hasNintendoPad : false
+    property bool hasA : true
+    property bool hasB : true
+    property bool hasX : true
+    property bool hasY : true
+    property bool hasL1 : true
+    property bool hasR1 : true
+    property bool hasL2 : true
+    property bool hasR2 : true
+    property bool hasLeftStick : true
+    property bool hasRightStick : true
+    property bool hasL3 : true //included in left stick usually
+    property bool hasR3 : true //included in left stick usually
+    property bool hasScreenshotButton : false
 
     //parameters for base
-    property var ratio: 80/100 //at 80% of the size
-    property var padBaseSourceSizeWidth : 906
-    property var padBaseSourceSizeHeight : 398
+    property int ratio: 80/100 //at 80% of the size
+    property int padBaseSourceSizeWidth : 906
+    property int padBaseSourceSizeHeight : 398
 
     //parameters for select
-    property var padSelectWidth : 69
-    property var padSelectHeight : 59
-    property var padSelectTopY: 205
-    property var padSelectLeftX: 334
+    property int padSelectWidth : 69
+    property int padSelectHeight : 59
+    property int padSelectTopY: 205
+    property int padSelectLeftX: 334
 
     //parameters for start
-    property var padStartWidth : 69
-    property var padStartHeight : 59
-    property var padStartTopY: 205
-    property var padStartLeftX: 432
+    property int padStartWidth : 69
+    property int padStartHeight : 59
+    property int padStartTopY: 205
+    property int padStartLeftX: 432
 
     //parameters for guide/hotkey
-    property var padGuideWidth : 0
-    property var padGuideHeight : 0
-    property var padGuideTopY: 0
-    property var padGuideLeftX: 0
+    property int padGuideWidth : 0
+    property int padGuideHeight : 0
+    property int padGuideTopY: 0
+    property int padGuideLeftX: 0
 
     //parameters for A/B/X/Y
-    property var padAWidth : 71
-    property var padAHeight : 70
-    property var padATopY: -1
-    property var padALeftX: -1
+    property int padAWidth : 71
+    property int padAHeight : 70
+    property int padATopY: -1
+    property int padALeftX: -1
 
-    property var padBWidth : 71
-    property var padBHeight : 71
-    property var padBTopY: -1
-    property var padBLeftX: -1
+    property int padBWidth : 71
+    property int padBHeight : 71
+    property int padBTopY: -1
+    property int padBLeftX: -1
 
-    property var padXWidth : 71
-    property var padXHeight : 71
-    property var padXTopY: -1
-    property var padXLeftX: -1
+    property int padXWidth : 71
+    property int padXHeight : 71
+    property int padXTopY: -1
+    property int padXLeftX: -1
 
-    property var padYWidth : 73
-    property var padYHeight : 72
-    property var padYTopY: -1
-    property var padYLeftX: -1
+    property int padYWidth : 73
+    property int padYHeight : 72
+    property int padYTopY: -1
+    property int padYLeftX: -1
 
     //parameter for Dpad
-    property var dpadAreaTopY: -1
-    property var dpadAreaBottomY: -1
-    property var dpadAreaLeftX: -1
-    property var dpadAreaRightX: -1
+    property int dpadAreaTopY: -1
+    property int dpadAreaBottomY: -1
+    property int dpadAreaLeftX: -1
+    property int dpadAreaRightX: -1
 
     //parameter for Dpad with dedicated buttons and separated
-    property var dpadUpWidth : 69
-    property var dpadUpHeight : 89
-    property var dpadUpTopY: -1
-    property var dpadUpLeftX: -1
+    property int dpadUpWidth : 69
+    property int dpadUpHeight : 89
+    property int dpadUpTopY: -1
+    property int dpadUpLeftX: -1
 
-    property var dpadDownWidth : 67
-    property var dpadDownHeight : 89
-    property var dpadDownTopY: -1
-    property var dpadDownLeftX: -1
+    property int dpadDownWidth : 67
+    property int dpadDownHeight : 89
+    property int dpadDownTopY: -1
+    property int dpadDownLeftX: -1
 
-    property var dpadLeftWidth : 89
-    property var dpadLeftHeight : 70
-    property var dpadLeftTopY: -1
-    property var dpadLeftLeftX: -1
+    property int dpadLeftWidth : 89
+    property int dpadLeftHeight : 70
+    property int dpadLeftTopY: -1
+    property int dpadLeftLeftX: -1
 
-    property var dpadRightWidth : 88
-    property var dpadRightHeight : 70
-    property var dpadRightTopY: -1
-    property var dpadRightLeftX: -1
+    property int dpadRightWidth : 88
+    property int dpadRightHeight : 70
+    property int dpadRightTopY: -1
+    property int dpadRightLeftX: -1
 
     //parameter for L1
-    property var padL1Width : 198
-    property var padL1Height : 37
-    property var padL1TopY: 0
-    property var padL1LeftX: 97
+    property int padL1Width : 198
+    property int padL1Height : 37
+    property int padL1TopY: 0
+    property int padL1LeftX: 97
     //parameter for R1
-    property var padR1Width : 198
-    property var padR1Height : 36
-    property var padR1TopY: 1
-    property var padR1LeftX: 612
+    property int padR1Width : 198
+    property int padR1Height : 36
+    property int padR1TopY: 1
+    property int padR1LeftX: 612
 
     //parameter for L2
-    property var padL2Width : 48
-    property var padL2Height : 5
-    property var padL2TopY: 4
-    property var padL2LeftX: 350
+    property int padL2Width : 48
+    property int padL2Height : 5
+    property int padL2TopY: 4
+    property int padL2LeftX: 350
     //parameter for R2
-    property var padR2Width : 54
-    property var padR2Height: 6
-    property var padR2TopY: 4
-    property var padR2LeftX: 509
+    property int padR2Width : 54
+    property int padR2Height: 6
+    property int padR2TopY: 4
+    property int padR2LeftX: 509
 
     //parameter for lStrick
-    property var lStickWidth : 0
-    property var lStickHeight: 0
-    property var lStickTopY: 0
-    property var lStickLeftX: 0
+    property int lStickWidth : 0
+    property int lStickHeight: 0
+    property int lStickTopY: 0
+    property int lStickLeftX: 0
 
     //parameter for rStrick
-    property var rStickWidth : 0
-    property var rStickHeight: 0
-    property var rStickTopY: 0
-    property var rStickLeftX: 0
+    property int rStickWidth : 0
+    property int rStickHeight: 0
+    property int rStickTopY: 0
+    property int rStickLeftX: 0
 
     //to manage contrast/brightness for button effects
-    property var contrast: 0.5
-    property var brightness: 0.5
+    property int contrast: 0.5
+    property int brightness: 0.5
 
     Image {
         id: padBase

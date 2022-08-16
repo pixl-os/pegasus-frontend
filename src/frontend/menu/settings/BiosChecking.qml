@@ -39,36 +39,14 @@ FocusScope {
         }
     }
 
-    XmlListModel {
-        id: xmlModelSystems
-        // file:// need for read file system local
-        source: biosFilePath
-        query: "/biosList/system"
-
-        XmlRole { name: "systems_Shortname"; query: "@platform/string()" }
-        XmlRole { name: "systems_Fullname"; query: "@fullname/string()" }
-    }
-    XmlListModel {
-        id: xmlModelBios
-        // file:// need for read file system local
-        // get current index in xmlModelSystems
-
-        property string system : xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
-        source: biosFilePath
-        query:"/biosList/system[@platform='" + system + "']/bios"
-        XmlRole { name: "bios_Path"; query: "@path/string()"}
-        XmlRole { name: "bios_Md5"; query: "@md5/string()" }
-        XmlRole { name: "bios_Core"; query: "@core/string()" }
-        XmlRole { name: "bios_Note"; query: "@note/string()" }
-        XmlRole { name: "bios_Mandatory"; query: "boolean(@mandatory)"}
-        XmlRole { name: "bios_HashMatchMandatory"; query: "boolean(@hashMatchMandatory)";}
-    }
-
+    property string systems_Shortname: ""
     property string biosPath: ""
     property string biosMd5: ""
     property string biosNote: ""
     property string hashCalc: ""
     property bool hashMatch: hashCalc == "" ? true : false;
+    property var system : xmlModelSystems.get(systemsList.currentIndex).systems_Shortname;
+
 
     PegasusUtils.HorizontalSwipeArea {
         anchors.fill: parent
@@ -138,6 +116,17 @@ FocusScope {
                     highlightMoveDuration : 10
                     highlightResizeDuration : 1
                     highlightRangeMode: ListView.StrictlyEnforceRange
+
+                    XmlListModel {
+                        id: xmlModelSystems
+                        // file:// need for read file system local
+                        source: biosFilePath
+                        query: "/biosList/system"
+
+                        XmlRole { name: "systems_Shortname"; query: "@platform/string()" }
+                        XmlRole { name: "systems_Fullname"; query: "@fullname/string()" }
+                    }
+
                     Rectangle {
                         id: wrapper
                         Component {
@@ -185,6 +174,21 @@ FocusScope {
                         headerPositioning: ListView.PullBackHeader
                         spacing: vpx(20)
 
+                        XmlListModel {
+                            id: xmlModelBios
+                            // file:// need for read file system local
+                            // get current index in xmlModelSystems
+
+                            source: biosFilePath
+                            query:"/biosList/system[@platform='" + system + "']/bios"
+                            XmlRole { name: "bios_Path"; query: "@path/string()"}
+                            XmlRole { name: "bios_Md5"; query: "@md5/string()" }
+                            XmlRole { name: "bios_Mandatory"; query: "@mandatory/string()" }
+                            XmlRole { name: "bios_HashMatchMandatory"; query: "@hashMatchMandatory/string()" }
+                            XmlRole { name: "bios_Core"; query: "@core/string()" }
+                            XmlRole { name: "bios_Note"; query: "@note/string()" }
+                        }
+
                         highlight: Rectangle {
                             color: "transparent"
                             border.color: themeColor.underline
@@ -209,6 +213,7 @@ FocusScope {
                             if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                                 event.accepted = true;
                                 hashCalc;
+                                xmlModelBios.reload();
                                 console.log("Check Md5 File ")
                             }
                             if (api.keys.isFilters(event) && !event.isAutoRepeat) {
@@ -217,62 +222,64 @@ FocusScope {
                                 console.log("filter mandatory ")
                             }
                         }
-                    }
-                    Component {
-                        id: xmlInfoDelegate
-                        Rectangle {
-                            id: biosButton
-                            height: containerButton.height ; width: biosList.width
-                            color: themeColor.main
-                            property bool selected: ListView.isCurrentItem
-                            Behavior on scale { NumberAnimation { duration: 350 } }
-                            border.color: themeColor.secondary
-                            border.width: vpx(3)
-                            radius: 5
-                            property string md5String: api.internal.bios.md5(xmlModelBios.get(index).bios_Path)
-                            Grid {
-                                id: containerButton
-                                columns: 4
-                                horizontalItemAlignment: Grid.AlignHCenter
-                                verticalItemAlignment: Grid.AlignVCenter
-                                width: biosButton.width
-                                height: implicitHeight
-                                //spacing: vpx(10)
-                                padding: vpx(8)
-                                columnSpacing: vpx(20)
-                                //icon state md5 validate
-                                Text {
-                                    text: md5String === "" ? "\uf2bf" /*Nok*/ :"\uf2bb"; /*ok*/
-                                    color: md5String === "" ? "red" : "green";
-                                    horizontalAlignment: Text.AlignHCenter
-                                    width: Text.width
-                                    font {
-                                        family: global.fonts.ion
-                                        pixelSize: vpx(35)
+                        //                    }
+
+                        Component {
+                            id: xmlInfoDelegate
+                            Rectangle {
+                                id: biosButton
+                                height: containerButton.height ; width: biosList.width
+                                color: themeColor.main
+                                property bool selected: ListView.isCurrentItem
+                                property string md5String: api.internal.bios.md5( xmlModelBios.get(index).bios_Path )
+                                Behavior on scale { NumberAnimation { duration: 350 } }
+                                border.color: themeColor.secondary
+                                border.width: vpx(3)
+                                radius: 5
+                                Grid {
+                                    id: containerButton
+                                    columns: 4
+                                    horizontalItemAlignment: Grid.AlignHCenter
+                                    verticalItemAlignment: Grid.AlignVCenter
+                                    width: biosButton.width
+                                    height: implicitHeight
+                                    //spacing: vpx(10)
+                                    padding: vpx(8)
+                                    columnSpacing: vpx(20)
+                                    //icon state md5 validate
+                                    Text {
+                                        text: md5String === "" ? "\uf2bf" /*Nok*/ :"\uf2bb"; /*ok*/
+                                        color: md5String === "" ? "red" : "green";
+                                        horizontalAlignment: Text.AlignHCenter
+                                        width: Text.width
+                                        font {
+                                            family: global.fonts.ion
+                                            pixelSize: vpx(35)
+                                        }
                                     }
-                                }
-                                // Core
-                                Text {
-                                    // replace all ',' element with underline
-                                    text: bios_Core.replace(/,/gi, "\n")
-                                    horizontalAlignment: Text.AlignHCenter
-                                    font.pixelSize: vpx(15)
-                                    color: themeColor.textLabel
-                                }
-                                // mandatory or optional bios
-                                Text {
-                                    text: bios_Mandatory == false ? qsTr("Optional") : qsTr("Mandatory");
-                                    color: bios_Mandatory == false ? themeColor.textSublabel : "green";
-                                    font.pixelSize: vpx(12)
-                                }
-                                // file name
-                                Text {
-                                    // split to get only last element with pop()
-                                    property var path: bios_Path
-                                    property variant fileName: path.split('/').pop()
-                                    text: fileName
-                                    font.pixelSize: vpx(12)
-                                    color: themeColor.textLabel
+                                    // Core
+                                    Text {
+                                        // replace all ',' element with underline
+                                        text: bios_Core.replace(/,/gi, "\n")
+                                        horizontalAlignment: Text.AlignHCenter
+                                        font.pixelSize: vpx(15)
+                                        color: themeColor.textLabel
+                                    }
+                                    // mandatory or optional bios
+                                    Text {
+                                        text: bios_Mandatory === "false" ? qsTr("Optional") : qsTr("Mandatory");
+                                        color: bios_Mandatory === "false" ? themeColor.textSublabel : "green";
+                                        font.pixelSize: vpx(12)
+                                    }
+                                    // file name
+                                    Text {
+                                        // split to get only last element with pop()
+                                        property var path: bios_Path
+                                        property variant fileName: path.split('/').pop()
+                                        text: fileName
+                                        font.pixelSize: vpx(12)
+                                        color: themeColor.textLabel
+                                    }
                                 }
                             }
                         }
