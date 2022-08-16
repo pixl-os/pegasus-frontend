@@ -34,7 +34,7 @@
 namespace {
 QString default_db_path()
 {
-    return paths::writableConfigDir() + QStringLiteral("/favorites.txt");
+    return QStringLiteral("/recalbox/share/saves/usersettings/favorites.txt");
 }
 } // namespace
 
@@ -83,7 +83,7 @@ Provider& Favorites::run(SearchContext& sctx)
 void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
 {
     const QMutexLocker lock(&m_task_guard);
-    const QDir config_dir(paths::writableConfigDir());
+    const QDir config_dir("/recalbox/share/saves/usersettings/");
 
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
