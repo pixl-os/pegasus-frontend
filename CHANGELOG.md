@@ -7,7 +7,8 @@ All notable changes to this project will be documented in this file (focus on ch
 - system-information: use tmp file for reading and add vulkan information
 - fix log error in cmd to silent errors
 - fix typo on informationSystem for 'thread' and 'vulkan'
-
+- fix "Information System" to improve performance on display (and for vulkan info)
+- Add System 'type', 'releasedate' & 'manufacturer' as new info from systemlist.xml and accessible from api.colletions
 
 ## [recalbox-integration] - 2022-07-08 - v0.0.7
 - fix on management of shaders display/selection
