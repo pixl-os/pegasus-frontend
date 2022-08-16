@@ -11,6 +11,17 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add translator and .qm loading for theme from /lang theme directory
 	- use en language by default if no file other language available (to force reload)
 
+- Multi-windows support:
+	- add capacity to keep theme loaded in pegasus or not
+	- add any new way to launch game in multi-windows mode
+	- add options for multi-windows and theme keep loaded 
+	- add best workdir management and pid check in a simple way to launch in background
+	- add time to well check the pid
+	- add launchedgamefile property to manage state of launch from api now
+	- add api.launchedgame to know which game is running
+	- add guide key in pegasus to be take into account
+	- add global variable for guide button pressed for frontend & theme
+	
 - Other features:
 	- add sound in volume settings
 	- change favorites.txt path in the share to saves/usersettings/
