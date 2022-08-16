@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file (focus on ch
 - fix "Information System" to improve performance on display (and for vulkan info)
 - add System 'type', 'releasedate' & 'manufacturer' as new info from systemlist.xml and accessible from api.colletions
 - change favorites.txt path in the share to saves/usersettings/
+- several fixes on QML source codes (var to other type, etc..)
 
 ## [recalbox-integration] - 2022-07-08 - v0.0.7
 - fix on management of shaders display/selection
