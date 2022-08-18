@@ -21,7 +21,12 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add api.launchedgame to know which game is running
 	- add guide key in pegasus to be take into account
 	- add global variable for guide button pressed for frontend & theme
-	
+
+- GameOS-pixL Theme:
+	- new design management : include a designer for main view + vertical List feature
+	- emulator loading improvements : add api usage to be compatible with Pegasus multi-windows feature
+	- Multi-languages-support : introduce translation capacity in theme using linquist tools
+
 - Other features:
 	- add sound in volume settings
 	- change favorites.txt path in the share to saves/usersettings/
