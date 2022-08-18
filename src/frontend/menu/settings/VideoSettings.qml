@@ -187,7 +187,8 @@ FocusScope {
                     KeyNavigation.up: optDisplayFrequency
                     KeyNavigation.down: optMarqueeScreenActivate
                 }
-                // second screen marque or else
+
+                // second screen marquee or else
                 ToggleOption {
                     id: optMarqueeScreenActivate
                     SectionTitle {
@@ -205,6 +206,7 @@ FocusScope {
                     KeyNavigation.up: optDisplayRotation
                     KeyNavigation.down: optDisplayMarqueeOutput
                 }
+
                 MultivalueOption {
                     id: optDisplayMarqueeOutput
                     //property to manage parameter name
@@ -343,7 +345,8 @@ FocusScope {
                     // only show if video marquee option as enabled
                     visible: optMarqueeScreenActivate.checked
                 }
-                // second screen marque or else
+
+                // to validate first and second screen
                 SimpleButton {
                     id: optValidateChange
                     Rectangle {
@@ -364,7 +367,23 @@ FocusScope {
                         }
                     }
                     onActivate: {
+                        //add to set parameters selected before to save ItemSelectionModel
+                        //for first screen
+                        api.internal.recalbox.setStringParameter(optDisplayOutput.parameterName, optDisplayOutput.value)
+                        api.internal.recalbox.setStringParameter(optDisplayResolution.parameterName, optDisplayResolution.value)
+                        api.internal.recalbox.setStringParameter(optDisplayFrequency.parameterName, optDisplayFrequency.value)
+                        api.internal.recalbox.setStringParameter(optDisplayRotation.parameterName, optDisplayRotation.value)
+                        //for second screen (if activated)
+                        if(optMarqueeScreenActivate.checked){
+                            api.internal.recalbox.setStringParameter(optDisplayMarqueeOutput.parameterName, optDisplayMarqueeOutput.value)
+                            api.internal.recalbox.setStringParameter(optDisplayMarqueeResolution.parameterName, optDisplayMarqueeResolution.value)
+                            api.internal.recalbox.setStringParameter(optDisplayMarqueeFrequency.parameterName, optDisplayMarqueeFrequency.value)
+                            api.internal.recalbox.setStringParameter(optDisplayMarqueeRotation.parameterName, optDisplayMarqueeRotation.value)
+                            api.internal.recalbox.setStringParameter(optDisplayMarqueePosition.parameterName, optDisplayMarqueePosition.value)
+                        }
+                        //force save in recalbox.conf file before to execute script
                         api.internal.recalbox.saveParameters();
+                        //Execute script to udpate screen settinsg in real-time
                         api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
                     }
                     onFocusChanged: container.onFocus(this)
