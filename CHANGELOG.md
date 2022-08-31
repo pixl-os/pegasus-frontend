@@ -39,6 +39,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add translation in Pegasus loading phase (in cpp code)
 	- add translation in Pegasus parameterlists (in cpp code)
 	- New "qmlutils" component to manage horizontal scrolling
+	- add icons displayed for generix x-box pad for xbox 360/One/Series
 
 - Fixes:
 	- several fixes on QML source codes (var to other type, etc..)
