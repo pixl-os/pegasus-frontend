@@ -708,12 +708,12 @@
         <file>gameOS/assets/images/logospng/naomi2_carbon.png</file>
         <file>gameOS/assets/images/logospng/naomi2_steel.png</file>
         <file>gameOS/assets/images/logospng/naomi2_color.png</file>
-        <file>gameOS/assets/images/logospng/naomi2_white.png</file>
+        <file>gameOS/assets/images/logospng/naomi2.png</file>
         <file>gameOS/assets/images/logospng/ports_black.png</file>
         <file>gameOS/assets/images/logospng/ports_carbon.png</file>
         <file>gameOS/assets/images/logospng/ports_color.png</file>
         <file>gameOS/assets/images/logospng/ports_steel.png</file>
-        <file>gameOS/assets/images/logospng/ports_white.png</file>
+        <file>gameOS/assets/images/logospng/ports.png</file>
         <file>gameOS/assets/images/beta-round.png</file>
         <file>gameOS/assets/images/icon_manual.png</file>
         <file>gameOS/assets/images/logo.png</file>
@@ -722,7 +722,7 @@
         <file>gameOS/assets/images/logospng/imageviewer_carbon.png</file>
         <file>gameOS/assets/images/logospng/imageviewer_color.png</file>
         <file>gameOS/assets/images/logospng/imageviewer_steel.png</file>
-        <file>gameOS/assets/images/logospng/imageviewer_white.png</file>
+        <file>gameOS/assets/images/logospng/imageviewer.png</file>
         <file>gameOS/lang/theme_en-GB.qm</file>
         <file>gameOS/lang/theme_en.qm</file>
         <file>gameOS/lang/theme_fr.qm</file>
