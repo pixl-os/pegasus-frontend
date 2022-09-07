@@ -253,6 +253,18 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optBiosChecking
+                    KeyNavigation.down: optVideoDriver
+                }
+                ToggleOption {
+                    id: optVideoDriver
+
+                    label: qsTr("Video Driver") + api.tr
+                    note: qsTr("Force video driver to Vulkan") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("system.video.driver.vulkan")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("system.video.driver.vulkan",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optStorageDevices
                 }
                 /*
@@ -272,7 +284,6 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optInformationSystem
                     KeyNavigation.down: optStorageDevices
                 }
                 */
@@ -301,7 +312,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    //                    KeyNavigation.down: optStorageCapacity
+                    // KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optEthernet
                 }
                 SectionTitle {

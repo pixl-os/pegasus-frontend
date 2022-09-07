@@ -31,7 +31,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- change cmd awk: remove all cat xrandr.tmp to read in awk cmd
 	- remove multivaluebox not used from qml file
 	- force write parameters before save in recalbox.conf and to launch script
-	
+
 - Other features:
 	- add sound in volume settings
 	- change favorites.txt path in the share to saves/usersettings/
@@ -40,6 +40,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add translation in Pegasus parameterlists (in cpp code)
 	- New "qmlutils" component to manage horizontal scrolling
 	- add icons displayed for generix x-box pad for xbox 360/One/Series
+	- add option to force vulkan video driver
 
 - Fixes:
 	- several fixes on QML source codes (var to other type, etc..)
