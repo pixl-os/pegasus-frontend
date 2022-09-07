@@ -27,6 +27,11 @@ All notable changes to this project will be documented in this file (focus on ch
 	- emulator loading improvements : add api usage to be compatible with Pegasus multi-windows feature
 	- Multi-languages-support : introduce translation capacity in theme using linquist tools
 
+- rework video settings:
+	- change cmd awk: remove all cat xrandr.tmp to read in awk cmd
+	- remove multivaluebox not used from qml file
+	- force write parameters before save in recalbox.conf and to launch script
+	
 - Other features:
 	- add sound in volume settings
 	- change favorites.txt path in the share to saves/usersettings/
