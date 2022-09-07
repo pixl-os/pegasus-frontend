@@ -41,6 +41,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- New "qmlutils" component to manage horizontal scrolling
 	- add icons displayed for generix x-box pad for xbox 360/One/Series
 	- add option to force vulkan video driver
+	- add translation for vulkan video driver menu
 
 - Fixes:
 	- several fixes on QML source codes (var to other type, etc..)
