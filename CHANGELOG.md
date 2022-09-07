@@ -26,6 +26,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- new design management : include a designer for main view + vertical List feature
 	- emulator loading improvements : add api usage to be compatible with Pegasus multi-windows feature
 	- Multi-languages-support : introduce translation capacity in theme using linquist tools
+	- select random game in games list with R1+L1 (from Grid or VerticalList)
 
 - rework video settings:
 	- change cmd awk: remove all cat xrandr.tmp to read in awk cmd
