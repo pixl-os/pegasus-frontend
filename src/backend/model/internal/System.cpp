@@ -16,6 +16,7 @@
 
 
 #include "System.h"
+#include <QProcess>
 
 
 namespace model {
@@ -35,9 +36,64 @@ void System::reboot()
     emit appCloseRequested(AppCloseType::REBOOT);
 }
 
+void System::restart()
+{
+    emit appCloseRequested(AppCloseType::RESTART);
+}
+
 void System::shutdown()
 {
     emit appCloseRequested(AppCloseType::SHUTDOWN);
+}
+
+QString System::run(const QString& Command)
+{
+  const std::string& command = Command.toUtf8().constData();
+  std::string output;
+  char buffer[4096];
+  FILE* pipe = popen(command.data(), "r");
+  if (pipe != nullptr)
+  {
+    while (feof(pipe) == 0)
+      if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        output.append(buffer);
+    pclose(pipe);
+  }
+  return QString::fromStdString(output);
+}
+
+void System::runAsync(const QString& Command)
+{
+    //Log::debug(LOGMSG("System::runAsync_slot() put in Qt::QueuedConnection"));
+    m_Command = Command;
+    QMetaObject::invokeMethod(this,"runAsync_slot", Qt::QueuedConnection);
+}
+
+void System::runAsync_slot()
+{
+    QProcess *myProcess = new QProcess(parent());
+    myProcess->startDetached(m_Command);
+    m_Result = ""; //TO DO
+    myProcess->destroyed();
+}
+
+QString System::getRunAsyncResult()
+{
+    return m_Result;
+}
+
+bool System::runBoolResult(const QString& Command, bool escaped)
+{
+  std::string escapedCommand(Command.toUtf8().constData());
+  if(escaped){
+      Strings::ReplaceAllIn(escapedCommand, "(", "\\(");
+      Strings::ReplaceAllIn(escapedCommand, ")", "\\)");
+      Strings::ReplaceAllIn(escapedCommand, "*", "\\*");
+      Strings::ReplaceAllIn(escapedCommand, "'", "\\'");
+      Strings::ReplaceAllIn(escapedCommand, "\"", "\\\"");
+  }
+  int exitcode = system(escapedCommand.c_str());
+  return exitcode == 0;
 }
 
 } // namespace model

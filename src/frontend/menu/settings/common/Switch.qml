@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.7
+import QtQuick 2.12
 
 
 Item {
@@ -37,6 +37,18 @@ Item {
         }
     }
 
+    Rectangle {
+        id: track
+
+        width: parent.width - (parent.height - height)
+        height: parent.height * 0.5
+        radius: height * 0.5
+
+        color: "#dd0c0c" //red unselected
+        opacity: 0.3
+
+        anchors.centerIn: parent
+    }
 
     MouseArea {
         id: mouseArea
@@ -52,30 +64,16 @@ Item {
         height: parent.height
         radius: height * 0.5
 
-        color: "#bbb"
+        color: themeColor.textLabel
 
         anchors.left: parent.left
     }
 
-    Rectangle {
-        id: track
-
-        width: parent.width - (parent.height - height)
-        height: parent.height * 0.5
-        radius: height * 0.5
-
-        color: "#bbb"
-        opacity: 0.3
-
-        anchors.centerIn: parent
-    }
-
-
     states: State {
         name: "checked"; when: checked
-        PropertyChanges { target: thumb; color: "#3aa" }
-        PropertyChanges { target: track; color: "#3aa" }
-        PropertyChanges { target: track; opacity: 0.5 }
+        PropertyChanges { target: thumb; color: themeColor.textLabel }
+        PropertyChanges { target: track; color: "#15e20b" } // green selected
+        PropertyChanges { target: track; opacity: 0.3 }
         AnchorChanges {
             target: thumb
             anchors.left: undefined

@@ -16,7 +16,7 @@
 
 
 import "common"
-import QtQuick 2.6
+import QtQuick 2.12
 
 
 FocusScope {
@@ -46,8 +46,6 @@ FocusScope {
             root.closeMaybe();
         }
     }
-
-
     Rectangle {
         id: shade
 
@@ -61,22 +59,18 @@ FocusScope {
             onClicked: root.closeMaybe()
         }
     }
-
-
     Rectangle {
         height: parent.height * 0.7
         width: height
-        color: "#444"
+        color: themeColor.secondary
 
         radius: vpx(8)
 
         anchors.centerIn: parent
 
-
         MouseArea {
             anchors.fill: parent
         }
-
         Text {
             id: info
 
@@ -95,13 +89,12 @@ FocusScope {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
         }
-
         Rectangle {
             anchors.top: info.bottom
             anchors.bottom: footer.top
             width: parent.width - vpx(30)
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#333"
+            color: themeColor.main
 
             Text {
                 text: qsTr("(nothing on this platform)") + api.tr
@@ -116,7 +109,6 @@ FocusScope {
 
                 visible: api.internal.settings.providers.count === 0
             }
-
             ListView {
                 id: list
                 anchors.fill: parent
@@ -132,7 +124,6 @@ FocusScope {
                 highlightMoveDuration: 0
             }
         }
-
         Item {
             id: footer
 
@@ -141,7 +132,6 @@ FocusScope {
             anchors.bottom: parent.bottom
         }
     }
-
     Component {
         id: listEntry
 
@@ -155,17 +145,16 @@ FocusScope {
 
             Rectangle {
                 anchors.fill: parent
-                color: "#555"
+                color: themeColor.main
                 visible: parent.highlighted
             }
-
             Text {
                 id: label
                 text: model.name
                 verticalAlignment: Text.AlignVCenter
                 lineHeight: 2.5
 
-                color: "#eee"
+                color: themeColor.textTilte
                 font.family: globalFonts.sans
                 font.pixelSize: vpx(18)
 
@@ -174,7 +163,6 @@ FocusScope {
                 rightPadding: leftPadding
                 elide: Text.ElideRight
             }
-
             Switch {
                 id: onoff
                 anchors.right: parent.right
@@ -190,11 +178,9 @@ FocusScope {
                     if (isComplete)
                         root.mSettingsChanged = true;
                 }
-
                 property bool isComplete: false
                 Component.onCompleted: isComplete = true
             }
-
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
@@ -207,7 +193,6 @@ FocusScope {
             }
         }
     }
-
     ReloadQuestion {
         id: reloadDialog
         onAccept: {

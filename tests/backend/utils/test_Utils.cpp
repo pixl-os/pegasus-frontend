@@ -18,7 +18,7 @@
 #include <QtTest/QtTest>
 
 #include "utils/CommandTokenizer.h"
-#include "utils/PathCheck.h"
+#include "utils/PathTools.h"
 #include "utils/StdStringHelpers.h"
 
 
@@ -27,9 +27,6 @@ class test_Utils : public QObject
     Q_OBJECT
 
 private slots:
-    void validExtPath_data();
-    void validExtPath();
-
     void tokenize_command();
     void tokenize_command_data();
 
@@ -38,27 +35,10 @@ private slots:
 
     void trimmed_str();
     void trimmed_str_data();
+
+    void abspath();
+    void abspath_data();
 };
-
-void test_Utils::validExtPath_data()
-{
-    QTest::addColumn<QString>("path");
-    QTest::addColumn<bool>("result");
-
-    QTest::newRow("null path") << QString() << false;
-    QTest::newRow("empty path") << "" << false;
-    QTest::newRow("app path") << QCoreApplication::applicationFilePath() << true;
-    QTest::newRow("app dir path") << QCoreApplication::applicationDirPath() << true;
-    QTest::newRow("not existing path") << "nonexistent" << false;
-}
-
-void test_Utils::validExtPath()
-{
-    QFETCH(QString, path);
-    QFETCH(bool, result);
-
-    QCOMPARE(::validExtPath(path), result);
-}
 
 void test_Utils::tokenize_command()
 {
@@ -125,6 +105,36 @@ void test_Utils::trimmed_str_data()
     QTest::newRow("right") << "test   " << "test";
     QTest::newRow("both") << "   test   " << "test";
     QTest::newRow("none") << "test" << "test";
+}
+
+void test_Utils::abspath_data()
+{
+#ifdef Q_OS_WINDOWS
+    const QString root = "C:/";
+#else
+    const QString root = "/";
+#endif
+
+    QTest::addColumn<QString>("path");
+    QTest::addColumn<QString>("expected_dir");
+    QTest::addColumn<QString>("expected_path");
+
+    QTest::newRow("null path") << QString() << QString() << QString();
+    QTest::newRow("empty path") << "" << "" << "";
+    QTest::newRow("same") << (root + "some/path/here") << (root + "some/path") << (root + "some/path/here");
+    QTest::newRow("dotdot") << (root + "some/../here")<< root << (root + "here");
+    QTest::newRow("dot") << (root + "some/./here") << (root + "some") << (root + "some/here");
+    QTest::newRow("mixed") << (root + "some/.././here") << root << (root + "here");
+}
+
+void test_Utils::abspath()
+{
+    QFETCH(QString, path);
+    QFETCH(QString, expected_dir);
+    QFETCH(QString, expected_path);
+
+    QCOMPARE(::clean_abs_dir(QFileInfo(path)), expected_dir);
+    QCOMPARE(::clean_abs_path(QFileInfo(path)), expected_path);
 }
 
 

@@ -22,7 +22,7 @@
 #include "Paths.h"
 #include "parsers/MetaFile.h"
 #include "utils/HashMap.h"
-#include "utils/PathCheck.h"
+#include "utils/PathTools.h"
 
 #include <QDirIterator>
 #include <QStringBuilder>
@@ -88,11 +88,11 @@ std::vector<model::ThemeEntry> find_available_themes()
             const QString meta_path = basedir % META_FILENAME;
             QString qml_path = basedir % QML_FILENAME;
 
-            if (!::validFile(meta_path)) {
+            if (!QFileInfo::exists(meta_path)) {
                 Log::warning(E_FILE_MISSING.arg(META_FILENAME, basedir));
                 continue;
             }
-            if (!::validFile(qml_path)) {
+            if (!QFileInfo::exists(qml_path)) {
                 Log::warning(E_FILE_MISSING.arg(QML_FILENAME, basedir));
                 continue;
             }
@@ -189,8 +189,7 @@ bool Themes::select_theme(const QString& root_dir)
         }
     }
 
-    Log::warning(LOGMSG("Requested theme `%1` not found, falling back to default")
-        .arg(root_finfo.absoluteFilePath()));
+    Log::warning(LOGMSG("Requested theme `%1` not found, falling back to default").arg(::pretty_path(root_finfo)));
     return false;
 }
 

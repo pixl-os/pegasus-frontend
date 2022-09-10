@@ -40,6 +40,8 @@ ApiObject::ApiObject(const backend::CliArgs& args, QObject* parent)
             this, &ApiObject::onThemeChanged);
     connect(&m_internal.settings(), &model::Settings::providerReloadingRequested,
             this, &ApiObject::startScanning);
+    connect(&m_internal.recalbox().parameterslist(), &model::ParametersList::parameterChanged,
+            this, &ApiObject::parameterChanged);
 
     connect(&m_providerman, &ProviderManager::progressChanged,
             &m_internal.meta(), &model::Meta::onSearchProgressChanged);
@@ -85,7 +87,15 @@ void ApiObject::onSearchFinished()
     m_collections->append(std::move(coll_vec));
 
     m_internal.meta().onUiReady();
-    Log::info(LOGMSG("%1 games found").arg(m_allGames->count()));
+    Log::info(LOGMSG("Stats - %1 games found").arg(m_allGames->count()));
+}
+
+void ApiObject::connectGameFiles(model::Game* game)
+{
+    for (model::GameFile* const gamefile : game->filesConst()) {
+        connect(gamefile, &model::GameFile::launchRequested,
+                this, &ApiObject::onGameFileLaunchRequested);
+    }
 }
 
 void ApiObject::onGameFileSelectorRequested()
@@ -107,14 +117,32 @@ void ApiObject::onGameLaunchOk()
 {
     Q_ASSERT(m_launch_game_file);
     m_providerman.onGameLaunched(m_launch_game_file);
+    emit launchedgameChanged();
 }
 
 void ApiObject::onGameLaunchError(QString msg)
 {
     Q_ASSERT(m_launch_game_file);
     m_launch_game_file = nullptr;
-
+    emit launchedgameChanged();
     emit eventLaunchError(msg);
+}
+
+void ApiObject::onShowPopup(QString title, QString message, QString icon, int delay)
+{
+	//TO DO
+	//Add here delay management depending of recalbox.conf
+    //Log::debug(LOGMSG("void ApiObject::onShowPopup(QString message, int delay)"));
+	
+	//TO DO
+	//Add here a buffer to manage queue of notification requests
+	
+    emit showPopup(title, message, icon, delay);
+}
+
+void ApiObject::onNewController(int device_idx, QString message)
+{	
+    emit newController(device_idx, message);
 }
 
 void ApiObject::onGameFinished()
@@ -123,6 +151,7 @@ void ApiObject::onGameFinished()
 
     m_providerman.onGameFinished(m_launch_game_file);
     m_launch_game_file = nullptr;
+    emit launchedgameChanged();
 }
 
 void ApiObject::onGameFavoriteChanged()

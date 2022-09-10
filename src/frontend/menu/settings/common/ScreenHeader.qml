@@ -15,39 +15,40 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import QtQuick 2.12
 
 
 Item {
     property alias text: title.text
 
     width: parent.width
-    height: vpx(74)
+    height: vpx(70)
 
     Rectangle {
         anchors.fill: parent
-        color: "#222"
+        color: themeColor.screenHeader
         opacity: 0.75
     }
 
     Text {
         id: title
 
-        color: "#eee"
+        color: themeColor.textTitle
         font.pixelSize: vpx(36)
         font.family: globalFonts.sans
+		elide: Text.ElideRight
 
         anchors.left: parent.horizontalCenter
         anchors.leftMargin: parent.width * -0.4
         anchors.bottom: parent.bottom
         anchors.bottomMargin: vpx(10)
+		anchors.right: parent.right
     }
 
     Rectangle {
         width: parent.width * 0.97
         height: vpx(1)
-        color: "#555"
-
+        color: themeColor.screenUnderline
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
     }

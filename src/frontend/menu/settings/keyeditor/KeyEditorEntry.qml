@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.6
+import QtQuick 2.12
 
 
 FocusScope {
@@ -57,6 +57,12 @@ FocusScope {
         }, {
             name: qsTr("Main menu") + api.tr,
             keys: api.keys.menu,
+        }, {
+            name: qsTr("Netplay") + api.tr,
+            keys: api.keys.netplay,
+        }, {
+            name: qsTr("Guide") + api.tr,
+            keys: api.keys.guide,
         }]
 
     width: ListView.view.width
@@ -78,7 +84,7 @@ FocusScope {
 
         Rectangle {
             anchors.fill: parent
-            color: "#444"
+            color: themeColor.main
             opacity: (root.focus && root.parentFocus) ? 0.75 : 0.25
         }
 
@@ -86,7 +92,7 @@ FocusScope {
             id: nameLabel
 
             text: entries[eventId].name
-            color: "#eee"
+            color: themeColor.textLabel
             font.pixelSize: root.textSize
             font.family: globalFonts.sans
             font.bold: (root.focus && root.parentFocus)

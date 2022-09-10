@@ -4,7 +4,7 @@ HEADERS += \
     $$PWD/GamepadManagerBackend.h \
     $$PWD/Internal.h \
     $$PWD/Meta.h \
-    $$PWD/System.h \
+    $$PWD/System.h
 
 SOURCES += \
     $$PWD/Gamepad.cpp \
@@ -12,7 +12,7 @@ SOURCES += \
     $$PWD/GamepadManagerBackend.cpp \
     $$PWD/Internal.cpp \
     $$PWD/Meta.cpp \
-    $$PWD/System.cpp \
+    $$PWD/System.cpp
 
 !isEmpty(USE_SDL_GAMEPAD) {
     HEADERS += $$PWD/GamepadManagerSDL2.h
@@ -23,3 +23,9 @@ SOURCES += \
 }
 
 include(settings/settings.pri)
+include(netplay/netplay.pri)
+include(singleplay/singleplay.pri)
+include(updates/updates.pri)
+include(bios/bios.pri)
+
+

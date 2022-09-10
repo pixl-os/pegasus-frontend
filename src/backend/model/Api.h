@@ -21,6 +21,7 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/Game.h"
 #include "model/internal/Internal.h"
+#include "model/device/DeviceInfo.h"
 #include "model/keys/Keys.h"
 #include "model/memory/Memory.h"
 #include "providers/ProviderManager.h"
@@ -38,6 +39,7 @@ class ApiObject : public QObject {
     Q_OBJECT
 
     QML_CONST_PROPERTY(model::Internal, internal)
+    QML_CONST_PROPERTY(model::DeviceInfo, device)
     QML_CONST_PROPERTY(model::Keys, keys)
     QML_READONLY_PROPERTY(model::Memory, memory)
     QML_OBJMODEL_PROPERTY(model::Collection, collections)
@@ -46,11 +48,16 @@ class ApiObject : public QObject {
     // retranslate on locale change
     Q_PROPERTY(QString tr READ emptyString NOTIFY localeChanged)
 
+    // get game from m_launch_game_file
+    Q_PROPERTY(model::Game* launchedgame READ launchedgame NOTIFY launchedgameChanged)
+
 public:
     explicit ApiObject(const backend::CliArgs& args, QObject* parent = nullptr);
 
     // scanning
     void startScanning();
+	
+    Q_INVOKABLE void connectGameFiles(model::Game* game);
 
 signals:
     void launchGameFile(const model::GameFile*);
@@ -60,16 +67,26 @@ signals:
     // triggers translation update
     void localeChanged();
 
+    // triggers  launched game file update
+    void launchedgameChanged();
+    
+    // triggers list of parameters update
+    void parameterChanged();
+
     // Api events for QML -- no const here
     void eventLoadingStarted();
     void eventSelectGameFile(model::Game* game);
     void eventLaunchError(QString msg);
+    void showPopup(QString title, QString message, QString icon, int delay);
+    void newController(int device_idx, QString message);
 
 public slots:
     // game launch communication
     void onGameFinished();
     void onGameLaunchOk();
     void onGameLaunchError(QString);
+    void onShowPopup(QString, QString, QString, int);
+    void onNewController(int, QString);
 
 private slots:
     // internal communication
@@ -90,4 +107,12 @@ private:
 
     // used to trigger re-rendering of texts on locale change
     QString emptyString() const { return QString(); }
+
+    // return m_launch_game_file path in a string
+    model::Game* launchedgame() const {
+        if(m_launch_game_file != nullptr){
+            return m_launch_game_file->parentGame();
+        }
+        else return nullptr;
+    }
 };

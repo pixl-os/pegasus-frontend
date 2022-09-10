@@ -48,33 +48,40 @@ Assets::Assets(QString log_tag, QString lb_root_path)
     : m_log_tag(std::move(log_tag))
     , m_lb_root_path(std::move(lb_root_path))
     , m_dir_list {
+        { QStringLiteral("Advertisement Flyer - Front"), AssetType::POSTER },
+        { QStringLiteral("Advertisement Flyer - Back"), AssetType::POSTER },
+
         { QStringLiteral("Box - Front"), AssetType::BOX_FRONT },
         { QStringLiteral("Box - Front - Reconstructed"), AssetType::BOX_FRONT },
-        { QStringLiteral("Fanart - Box - Front"), AssetType::BOX_FRONT },
-
         { QStringLiteral("Box - Back"), AssetType::BOX_BACK },
         { QStringLiteral("Box - Back - Reconstructed"), AssetType::BOX_BACK },
-        { QStringLiteral("Fanart - Box - Back"), AssetType::BOX_BACK },
 
         { QStringLiteral("Arcade - Marquee"), AssetType::ARCADE_MARQUEE },
+        { QStringLiteral("Arcade - Control Panel"), AssetType::ARCADE_PANEL },
+
         { QStringLiteral("Banner"), AssetType::ARCADE_MARQUEE },
+        { QStringLiteral("Disc"), AssetType::CARTRIDGE },
 
         { QStringLiteral("Cart - Front"), AssetType::CARTRIDGE },
-        { QStringLiteral("Disc"), AssetType::CARTRIDGE },
-        { QStringLiteral("Fanart - Cart - Front"), AssetType::CARTRIDGE },
-        { QStringLiteral("Fanart - Disc"), AssetType::CARTRIDGE },
+        { QStringLiteral("Cart - Back"), AssetType::CARTRIDGE },
+        { QStringLiteral("Clear Logo"), AssetType::LOGO },
 
         { QStringLiteral("Screenshot - Gameplay"), AssetType::SCREENSHOT },
         { QStringLiteral("Screenshot - Game Select"), AssetType::SCREENSHOT },
-        { QStringLiteral("Screenshot - Game Title"), AssetType::SCREENSHOT },
+        { QStringLiteral("Screenshot - Game Title"), AssetType::TITLESCREEN },
         { QStringLiteral("Screenshot - Game Over"), AssetType::SCREENSHOT },
         { QStringLiteral("Screenshot - High Scores"), AssetType::SCREENSHOT },
 
-        { QStringLiteral("Advertisement Flyer - Front"), AssetType::POSTER },
-        { QStringLiteral("Arcade - Control Panel"), AssetType::ARCADE_PANEL },
-        { QStringLiteral("Clear Logo"), AssetType::LOGO },
         { QStringLiteral("Fanart - Background"), AssetType::BACKGROUND },
+        { QStringLiteral("Fanart - Box - Front"), AssetType::BOX_FRONT },
+        { QStringLiteral("Fanart - Box - Back"), AssetType::BOX_BACK },
+        { QStringLiteral("Fanart - Cart - Front"), AssetType::CARTRIDGE },
+        { QStringLiteral("Fanart - Cart - Back"), AssetType::CARTRIDGE },
+        { QStringLiteral("Fanart - Disc"), AssetType::CARTRIDGE },
+
         { QStringLiteral("Steam Banner"), AssetType::UI_STEAMGRID },
+        { QStringLiteral("Steam Poster"), AssetType::POSTER },
+        { QStringLiteral("Steam Screenshot"), AssetType::SCREENSHOT },
     }
     , rx_number_suffix(QStringLiteral(R"(-[0-9]{2}$)"))
 {}
@@ -116,10 +123,9 @@ void Assets::find_assets_in(
             it->second->assetsMut().add_file(asset_type, path);
 
         const bool has_number_suffix = rx_number_suffix.match(basename).hasMatch();
-        if (!has_number_suffix)
-            continue;
-
-        const QString game_title = basename.left(basename.length() - 3); // gamename "-xx" .ext
+        const QString game_title = has_number_suffix
+            ? basename.left(basename.length() - 3) // gamename "-xx" .ext
+            : basename;
         it = title_to_game_map.find(game_title);
         if (it != title_to_game_map.cend())
             it->second->assetsMut().add_file(asset_type, std::move(path));

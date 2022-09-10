@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.8
+import QtQuick 2.12
 
 Rectangle {
     property color activeColor
@@ -44,7 +44,7 @@ Rectangle {
             right: parent.right; rightMargin: vpx(32)
             verticalCenter: parent.verticalCenter
         }
-        color: "#eee"
+        color: themeColor.textTitle
         font {
             bold: true
             pixelSize: textSizePx

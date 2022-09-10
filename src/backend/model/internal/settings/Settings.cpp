@@ -20,6 +20,7 @@
 #include "AppSettings.h"
 #include "Log.h"
 #include "Paths.h"
+#include "utils/PathTools.h"
 
 #include <QCursor>
 #include <QDir>
@@ -27,6 +28,8 @@
 #include <QGuiApplication>
 #include <QSet>
 #include <QTextStream>
+
+#include <unistd.h>
 
 
 namespace {
@@ -51,8 +54,20 @@ void change_mouse_support(bool enabled)
     if (enabled)
         QGuiApplication::restoreOverrideCursor();
     else
+    {   
         QGuiApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
+        QCursor::setPos(100, 100);
+        usleep(500);
+        QCursor::setPos(0, 0);
+    }
 }
+
+void change_virtualkeyboard_support(bool enabled)
+{
+		//do nothing for the moment
+}
+
+
 
 } // namespace
 
@@ -63,6 +78,7 @@ Settings::Settings(QObject* parent)
     : QObject(parent)
 {
     change_mouse_support(AppSettings::general.mouse_support);
+    change_virtualkeyboard_support(AppSettings::general.virtualkeyboard_support);
 }
 
 void Settings::setFullscreen(bool new_val)
@@ -87,6 +103,19 @@ void Settings::setMouseSupport(bool new_val)
     change_mouse_support(AppSettings::general.mouse_support);
 
     emit mouseSupportChanged();
+}
+
+void Settings::setVirtualKeyboardSupport(bool new_val)
+{
+    if (new_val == AppSettings::general.virtualkeyboard_support)
+        return;
+
+    AppSettings::general.virtualkeyboard_support = new_val;
+    AppSettings::save_config();
+
+    change_virtualkeyboard_support(AppSettings::general.virtualkeyboard_support);
+
+    emit virtualKeyboardSupportChanged();
 }
 
 QStringList Settings::gameDirs() const
@@ -119,7 +148,7 @@ void Settings::addGameDir(const QString& path)
 
 
     const auto count_before = dirset.count();
-    dirset << QDir::toNativeSeparators(finfo.canonicalFilePath());
+    dirset << ::pretty_path(finfo);
     const auto count_after = dirset.count();
 
     if (count_before == count_after) {

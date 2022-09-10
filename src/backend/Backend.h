@@ -21,17 +21,25 @@
 
 #include <memory>
 
+//for recalbox ES components
+#include <utils/rLog.h>
+#include "RecalboxConf.h"
+#include "ScriptManager.h"
+#include "hardware/Board.h"
+#include "audio/AudioController.h"
+
 class ApiObject;
 class FrontendLayer;
 class ProcessLauncher;
 
-
 namespace backend {
 
-class Backend {
-public:
-    explicit Backend();
-    explicit Backend(const CliArgs&);
+class Backend
+{
+ public:
+
+    explicit Backend(const CliArgs&, char**);
+    
     ~Backend();
 
     Backend(const Backend&) = delete;
@@ -42,6 +50,19 @@ public:
 private:
     // frontend <-> api <-> launcher
     // NOTE: unique_ptr had forward declaration issues
+
+    //! Recalbox configuration
+    RecalboxConf mRecalboxConf;
+    
+    //! Script management
+    ScriptManager mScriptManager;
+    
+    //! Board management
+    Board mBoard;
+    
+    //! Audio controller
+    AudioController mAudioController;
+
     ApiObject* m_api;
     FrontendLayer* m_frontend;
     ProcessLauncher* m_launcher;

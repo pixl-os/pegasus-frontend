@@ -25,11 +25,15 @@ namespace model {
 
 const QString Meta::m_git_revision(QStringLiteral(GIT_REVISION));
 const QString Meta::m_git_date(QStringLiteral(GIT_DATE));
+const QString Meta::m_build_name(QStringLiteral("PEGASUS Frontend"));
+const QString Meta::m_build_version(QStringLiteral("")); //RFU
+const QString Meta::m_build_date(QStringLiteral(__DATE__ " " __TIME__));
 
 Meta::Meta(const backend::CliArgs& args, QObject* parent)
     : QObject(parent)
     , m_log_path(paths::writableConfigDir() + QStringLiteral("/lastrun.log"))
     , m_enable_menu_reboot(args.enable_menu_reboot)
+    , m_enable_menu_restart(args.enable_menu_restart)
     , m_enable_menu_shutdown(args.enable_menu_shutdown)
     , m_enable_menu_appclose(args.enable_menu_appclose)
     , m_enable_menu_settings(args.enable_menu_settings)
@@ -59,7 +63,9 @@ void Meta::clearQMLCache()
 
 void Meta::onSearchProgressChanged(float value, QString stage)
 {
-    Q_ASSERT(value <= 1.f);
+    //Q_ASSERT(value <= 1.f);
+    //replace Q_ASSERT by IF to avoid crash in some cases.
+    if(value > 1.f) value = 1.f;
     m_loading_progress = value;
     m_loading_stage = std::move(stage);
     emit loadingProgressChanged();

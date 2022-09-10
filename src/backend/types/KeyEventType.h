@@ -27,6 +27,8 @@ enum class KeyEvent : unsigned char {
     PAGE_UP,
     PAGE_DOWN,
     MAIN_MENU,
+    NETPLAY,
+    GUIDE,
     // internal only:
     LEFT = 64,
     RIGHT,

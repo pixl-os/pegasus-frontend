@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.6
+import QtQuick 2.12
 
 
 FocusScope {
@@ -36,7 +36,6 @@ FocusScope {
         root.close();
     }
 
-
     anchors.fill: parent
     enabled: focus
     visible: focus || animClosing.running
@@ -55,13 +54,10 @@ FocusScope {
             triggerClose();
         }
     }
-
     Component.onCompleted: {
         if (list.currentIndex > 0)
             list.positionViewAtIndex(list.currentIndex, ListView.Center);
     }
-
-
     Rectangle {
         id: shade
 
@@ -77,81 +73,78 @@ FocusScope {
             onClicked: root.triggerClose()
         }
     }
-
-
-    Rectangle {
+    Item {
         id: box
+        height: list.count >= 10 ? (10 * itemHeight) : (list.count * itemHeight)
+        width: vpx(700)
+        anchors.centerIn: parent
 
-        width: vpx(280)
-        height: parent.height * 0.84
-        anchors.verticalCenter: parent.verticalCenter
 
-        anchors.left: parent.right
-        anchors.rightMargin: height * 0.04
-        visible: x < parent.width
-
-        color: "#eee"
-        radius: vpx(8)
-
-        MouseArea {
-            anchors.fill: parent
+        Rectangle {
+            id: borderBox
+            height: box.height + vpx(15)
+            width: box.width + vpx(15)
+            color: themeColor.secondary
+            radius: vpx(8)
+            anchors.centerIn: parent
         }
+        Rectangle {
+            color: themeColor.main
+            radius: vpx(8)
+            anchors.fill: box
 
-        Item {
-            anchors.fill: parent
-            anchors.topMargin: parent.radius
-            anchors.bottomMargin: parent.radius
-            clip: true
+            MouseArea {
+                id: mouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                clip: true
 
-            ListView {
-                id: list
-                focus: true
+                ListView {
+                    id: list
+                    focus: true
 
-                width: parent.width
-                height: Math.min(count * itemHeight, parent.height)
-                anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width
+                    height: Math.min(count * itemHeight, parent.height)
+                    anchors.verticalCenter: parent.verticalCenter
+                    delegate: listItem
+                    snapMode: ListView.SnapOneItem
+                    highlightMoveDuration: 150
 
-                delegate: listItem
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
+                            if (new_idx < 0)
+                                return;
 
-                snapMode: ListView.SnapOneItem
-                highlightMoveDuration: 150
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
-                        if (new_idx < 0)
-                            return;
-
-                        list.currentIndex = new_idx;
-                        root.select(new_idx);
+                            list.currentIndex = new_idx;
+                            root.select(new_idx);
+                        }
+                        cursorShape: Qt.PointingHandCursor
                     }
-                    cursorShape: Qt.PointingHandCursor
                 }
             }
         }
-
     }
-
     Component {
         id: listItem
-
         Rectangle {
             readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
 
             width: ListView.view.width
             height: root.itemHeight
-            color: highlighted ? "#dedede" : "#eee"
+            radius: vpx(8)
+            color: highlighted ? themeColor.secondary : themeColor.main
+            border.color: highlighted ? themeColor.underline : themeColor.main
 
             Text {
                 id: label
 
-                anchors.right: parent.right
-                anchors.rightMargin: vpx(24)
                 anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
 
                 text: model.name
-                color: "#444"
+                color: themeColor.textValue
                 font.pixelSize: root.textSize
                 font.family: globalFonts.sans
             }
@@ -163,8 +156,6 @@ FocusScope {
             }
         }
     }
-
-
     states: State {
         name: "open"
         AnchorChanges {
@@ -173,7 +164,6 @@ FocusScope {
             anchors.right: root.right
         }
     }
-
     readonly property var bezierDecelerate: [ 0,0, 0.2,1, 1,1 ]
     readonly property var bezierSharp: [ 0.4,0, 0.6,1, 1,1 ]
 

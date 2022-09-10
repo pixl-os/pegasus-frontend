@@ -16,7 +16,7 @@
 
 
 import "menu"
-import QtQuick 2.0
+import QtQuick 2.12
 
 
 FocusScope {
@@ -25,6 +25,7 @@ FocusScope {
     signal close()
     signal requestShutdown()
     signal requestReboot()
+	signal requestRestart()
     signal requestQuit()
 
     function triggerClose() {
@@ -51,7 +52,7 @@ FocusScope {
         anchors.bottom: parent.bottom
         anchors.right: menuPanel.left
 
-        color: "black"
+        color: "#000"
         opacity: root.focus ? 0.75 : 0
         visible: opacity > 0.001 && width > 0
         Behavior on opacity { NumberAnimation { duration: 300 } }
@@ -59,7 +60,10 @@ FocusScope {
         Text {
             id: revision
 
-            text: api.internal.meta.gitRevision + ", " + api.internal.meta.gitDate
+            text: api.internal.meta.buildName 
+					+ " " + api.internal.meta.gitRevision + "," + api.internal.meta.gitDate
+					+ " BUILD: " + api.internal.meta.buildDate + " " + api.internal.meta.buildVersion  
+                    + " OS: " + api.internal.system.run("cat /recalbox/recalbox.version 2> /dev/null");
             color: "#eee"
             font.pixelSize: vpx(12)
             font.family: global.fonts.mono
@@ -82,12 +86,21 @@ FocusScope {
 
         focus: true
 
-        onShowSettingsScreen: root.openScreen("menu/SettingsScreen.qml")
-        onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")
+        // add recalbox menu
+        onShowUpdates: root.openScreen("menu/Updates.qml")
+        onShowAccountSettings: root.openScreen("menu/AccountSettings.qml")
+        onShowControllersSettings: root.openScreen("menu/ControllersSettings.qml")
+        onShowGamesSettings: root.openScreen("menu/GamesSettings.qml")
+        onShowInterfaceSettings: root.openScreen("menu/InterfaceSettings.qml")
+        onShowSystemSettings: root.openScreen("menu/SystemSettings.qml")
+
+        // onShowSettingsScreen: root.openScreen("menu/SettingsScreen.qml")
+        // onShowHelpScreen: root.openScreen("menu/HelpScreen.qml")
 
         onClose: root.triggerClose()
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
+		onRequestRestart: root.requestRestart()
         onRequestQuit: root.requestQuit()
     }
 
@@ -105,7 +118,7 @@ FocusScope {
 
         Rectangle {
             anchors.fill: parent
-            color: "#222"
+            color: themeColor.main
             z: -1
         }
     }

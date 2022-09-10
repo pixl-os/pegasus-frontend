@@ -33,10 +33,11 @@ public:
     ~GamepadManagerSDL2();
 
     void start(const backend::CliArgs&) final;
-
     void start_recording(int, GamepadButton) final;
     void start_recording(int, GamepadAxis) final;
     void cancel_recording() final;
+    void reset(int, GamepadButton) final;
+    void reset(int, GamepadAxis) final;
 
 private slots:
     void poll();
@@ -45,11 +46,19 @@ private:
     const uint16_t m_sdl_version;
     QTimer m_poll_timer;
 
+    const QString m_log_tag;
+
     using device_deleter = void(*)(SDL_GameController*);
     using device_ptr = std::unique_ptr<SDL_GameController, device_deleter>;
-    HashMap<int, const device_ptr> m_idx_to_device;
     HashMap<SDL_JoystickID, const int> m_iid_to_idx;
 
+    //added to manage better multiple devices connection/deconnection 
+    //and use iid as index for device and not idx (more used in the future to manage player order/sorting).
+    HashMap<int, const SDL_JoystickID> m_idx_to_iid;
+    HashMap<SDL_JoystickID, const device_ptr> m_iid_to_device;
+
+    QString getName_by_path(QString);
+    QString getFullName_by_path(QString);
     void add_controller_by_idx(int);
     void remove_pad_by_iid(SDL_JoystickID);
     void fwd_button_event(SDL_JoystickID, Uint8, bool);
@@ -60,6 +69,7 @@ private:
         GamepadButton target_button = GamepadButton::INVALID;
         GamepadAxis target_axis = GamepadAxis::INVALID;
         std::string value;
+        std::string sign;
 
         bool is_active() const;
         void reset();
@@ -69,12 +79,16 @@ private:
     void record_joy_axis_maybe(SDL_JoystickID, Uint8, Sint16);
     void record_joy_hat_maybe(SDL_JoystickID, Uint8, Uint8);
     void finish_recording();
+    std::string update_mapping_name(std::string, const QString&);
     void update_mapping_store(std::string);
 
-    std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&);
+    std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&, std::string mapping);
     std::string generate_mapping(int);
     std::vector<std::string> m_custom_mappings;
     void load_user_gamepaddb(const QString&);
+    std::string get_user_gamepaddb_mapping(const QString&, const QString&);
+	std::string get_user_gamepaddb_mapping_with_name(const QString&, const QString&, const QString&);
+	
 };
 
 } // namespace model

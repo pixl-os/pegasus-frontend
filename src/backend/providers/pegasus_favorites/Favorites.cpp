@@ -23,6 +23,7 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
+#include "utils/PathTools.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -33,7 +34,7 @@
 namespace {
 QString default_db_path()
 {
-    return paths::writableConfigDir() + QStringLiteral("/favorites.txt");
+    return QStringLiteral("/recalbox/share/saves/usersettings/favorites.txt");
 }
 } // namespace
 
@@ -46,7 +47,7 @@ Favorites::Favorites(QObject* parent)
 {}
 
 Favorites::Favorites(QString db_path, QObject* parent)
-    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), PROVIDER_FLAG_INTERNAL, parent)
+    : Provider(QLatin1String("pegasus_favorites"), QStringLiteral("Favorites"), PROVIDER_FLAG_INTERNAL | PROVIDER_FLAG_HIDE_PROGRESS, parent)
     , m_db_path(std::move(db_path))
 {}
 
@@ -69,10 +70,11 @@ Provider& Favorites::run(SearchContext& sctx)
         if (line.startsWith('#'))
             continue;
 
-        const QString path = QFileInfo(base_dir, line).canonicalFilePath();
+        const QString path = ::clean_abs_path(QFileInfo(base_dir, line));
         model::Game* const game_ptr = sctx.game_by_filepath(path);
         if (game_ptr)
             game_ptr->setFavorite(true);
+
     }
 
     return *this;
@@ -81,19 +83,25 @@ Provider& Favorites::run(SearchContext& sctx)
 void Favorites::onGameFavoriteChanged(const QVector<model::Game*>& game_list)
 {
     const QMutexLocker lock(&m_task_guard);
-    const QDir config_dir(paths::writableConfigDir());
+    const QDir config_dir("/recalbox/share/saves/usersettings/");
 
     m_pending_task.clear();
     m_pending_task << QStringLiteral("# List of favorites, one path per line");
     for (const model::Game* const game : game_list) {
         if (game->isFavorite()) {
             for (const model::GameFile* const file : game->filesConst()) {
-                const QString full_path = file->fileinfo().canonicalFilePath();
-                const QString written_path = AppSettings::general.portable
-                    ? config_dir.relativeFilePath(full_path)
-                    : full_path;
+                QString written_path;
+                if (!file->fileinfo().exists()) {
+                    written_path = file->path();
+                } else {
+                    const QString full_path = ::clean_abs_path(file->fileinfo());
+                    written_path = AppSettings::general.portable
+                         ? config_dir.relativeFilePath(full_path)
+                         : full_path;
+                }
                 if (Q_LIKELY(!written_path.isEmpty()))
                     m_pending_task << written_path;
+
             }
         }
     }

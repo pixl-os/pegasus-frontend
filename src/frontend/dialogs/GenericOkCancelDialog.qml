@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import QtQuick 2.12
 
 
 FocusScope {
@@ -23,7 +23,7 @@ FocusScope {
 
     property alias title: titleText.text
     property alias message: messageText.text
-    property alias symbol: symbolText.text
+    //property alias symbol: symbolText.text
 
     property int textSize: vpx(20)
     property int titleTextSize: vpx(22)
@@ -47,8 +47,6 @@ FocusScope {
         }
     }
 
-
-
     Shade {
         id: shade
         onCancel: root.cancel()
@@ -60,32 +58,43 @@ FocusScope {
         width: dialogBox.width
         height: dialogBox.height
     }
+
+    //    Rectangle {
+    //        anchors.centerIn: dialogBox
+    //        width: dialogBox.width
+    //        height: dialogBox.height
+    //        radius: vpx(8)
+    //        color: "#484"
+    //    }
+
     Column {
         id: dialogBox
 
         width: parent.height * 0.66
         anchors.centerIn: parent
-        scale: 0.5
+        //            scale: 0.5
 
-        Behavior on scale { NumberAnimation { duration: 125 } }
+        Behavior on opacity { NumberAnimation { duration: 125 } }
 
         // title bar
         Rectangle {
             id: titleBar
             width: parent.width
             height: root.titleTextSize * 2.25
-            color: "#333"
+            color: themeColor.main //"#222"
+//            radius: vpx(8)
 
             Text {
                 id: titleText
-
+                elide: Text.ElideRight
                 anchors {
                     verticalCenter: parent.verticalCenter
                     left: parent.left
                     leftMargin: root.titleTextSize * 0.75
+                    right: parent.right
+                    rightMargin: root.titleTextSize * 0.75
                 }
-
-                color: "#eee"
+                color: themeColor.textLabel //"#999"
                 font {
                     bold: true
                     pixelSize: root.titleTextSize
@@ -102,7 +111,7 @@ FocusScope {
                     rightMargin: root.titleTextSize * 0.75
                 }
 
-                color: "#6ff"
+                color: themeColor.textLabel //"#6ff"
                 font {
                     bold: true
                     pixelSize: root.titleTextSize
@@ -111,12 +120,12 @@ FocusScope {
             }
         }
 
-
         // text area
         Rectangle {
             width: parent.width
             height: messageText.height + 3 * root.textSize
-            color: "#555"
+            color: themeColor.secondary //"#222"
+            //                radius: vpx(8)
 
             Text {
                 id: messageText
@@ -127,7 +136,7 @@ FocusScope {
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
 
-                color: "#eee"
+                color: themeColor.textLabel //"#999"
                 font {
                     pixelSize: root.textSize
                     family: globalFonts.sans
@@ -145,7 +154,8 @@ FocusScope {
 
                 width: parent.width * 0.5
                 height: root.textSize * 2.25
-                color: (focus || okMouseArea.containsMouse) ? "#3c4" : "#666"
+                color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main //"#222"
+//                radius: vpx(8)
 
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
@@ -158,7 +168,7 @@ FocusScope {
                     anchors.centerIn: parent
 
                     text: qsTr("Ok") + api.tr
-                    color: "#eee"
+                    color: themeColor.textLabel //"#999"
                     font {
                         pixelSize: root.textSize
                         family: globalFonts.sans
@@ -180,7 +190,8 @@ FocusScope {
 
                 width: parent.width * 0.5
                 height: root.textSize * 2.25
-                color: (focus || cancelMouseArea.containsMouse) ? "#f43" : "#666"
+                color: (focus || cancelMouseArea.containsMouse) ? "darkRed" : themeColor.main //"#222"
+//                radius: vpx(8)
 
                 KeyNavigation.left: okButton
                 Keys.onPressed: {
@@ -194,7 +205,7 @@ FocusScope {
                     anchors.centerIn: parent
 
                     text: qsTr("Cancel") + api.tr
-                    color: "#eee"
+                    color: themeColor.textLabel //"#999"
                     font {
                         pixelSize: root.textSize
                         family: globalFonts.sans

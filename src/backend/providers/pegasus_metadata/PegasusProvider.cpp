@@ -22,6 +22,7 @@
 #include "providers/SearchContext.h"
 #include "providers/pegasus_metadata/PegasusMetadata.h"
 #include "providers/pegasus_metadata/PegasusFilter.h"
+#include "utils/PathTools.h"
 #include "utils/StdHelpers.h"
 
 #include <QDirIterator>
@@ -46,7 +47,7 @@ std::vector<QString> find_metafiles_in(const QString& dir_path)
     QDirIterator dir_it(dir_path, dir_filters, dir_flags);
     while (dir_it.hasNext()) {
         dir_it.next();
-        QString path = dir_it.fileInfo().canonicalFilePath();
+        QString path = ::clean_abs_path(dir_it.fileInfo());
         if (is_metadata_file(dir_it.fileName()))
             result.emplace_back(std::move(path));
     }
@@ -91,13 +92,19 @@ Provider& PegasusProvider::run(SearchContext& sctx)
     const Metadata metahelper(display_name());
     std::vector<FileFilter> all_filters;
 
+    const float progress_step = 1.f / metafile_paths.size();
+    float progress = 0.f;
+
     for (const QString& path : metafile_paths) {
-        Log::info(display_name(), LOGMSG("Found `%1`").arg(QDir::toNativeSeparators(path)));
+        Log::info(display_name(), LOGMSG("Found `%1`").arg(::pretty_path(path)));
 
         std::vector<FileFilter> filters = metahelper.apply_metafile(path, sctx);
         all_filters.insert(all_filters.end(),
             std::make_move_iterator(filters.begin()),
             std::make_move_iterator(filters.end()));
+
+        progress += progress_step;
+        emit progressChanged(progress);
     }
 
     for (FileFilter& filter : all_filters) {

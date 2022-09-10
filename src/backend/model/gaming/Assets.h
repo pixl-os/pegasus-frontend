@@ -63,6 +63,8 @@ public:
     GEN(screenshot, SCREENSHOT)
     GEN(titlescreen, TITLESCREEN)
     GEN(video, VIDEO)
+    
+    GEN(manual,MANUAL)
 #undef GEN
 
     // deprecated fallacks

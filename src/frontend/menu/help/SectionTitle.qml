@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.6
+import QtQuick 2.12
 
 Column {
     readonly property int fontSize: vpx(30)
@@ -28,7 +28,7 @@ Column {
     Text {
         id: title
 
-        color: "#eee"
+        color: themeColor.textTitle
         font.pixelSize: fontSize
         font.family: globalFonts.sans
         font.bold: true

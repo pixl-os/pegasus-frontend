@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import QtQuick 2.12
 
 
 GenericOkCancelDialog
@@ -24,7 +24,7 @@ GenericOkCancelDialog
 
     title: qsTr("Reboot") + api.tr
     message: qsTr("The system will reboot. Are you sure?") + api.tr
-    symbol: "\u21BB"
+//    symbol: "\u21BB"
 
     onAccept: api.internal.system.reboot()
 }

@@ -15,13 +15,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
+import QtQuick 2.12
 
 
 FocusScope {
     id: root
 
     property alias label: label.text
+    property alias note: sublabel.text
+    property alias pointerIcon: pointerConfigs.visible
+    property var showUnderline: true
+    property var selectButton: false
+
 
     readonly property int fontSize: vpx(22)
     readonly property int horizontalPadding: vpx(30)
@@ -30,7 +35,8 @@ FocusScope {
 
 
     width: parent.width
-    height: fontSize * 2.5
+    //    height: fontSize * 2.5
+    height: labelContainer.height + fontSize * 1.25
 
     Keys.onPressed: {
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
@@ -39,7 +45,6 @@ FocusScope {
         }
     }
 
-
     Rectangle {
         id: underline
 
@@ -47,22 +52,66 @@ FocusScope {
         height: vpx(3)
         anchors.bottom: parent.bottom
 
-        color: "#3aa"
-        visible: parent.focus || mouseArea.containsMouse
+        color: themeColor.underline
+        visible: (parent.focus || mouseArea.containsMouse) && showUnderline
     }
+    Rectangle {
+        id: buttonSelection
 
+        anchors.fill: parent
+
+        color: themeColor.secondary
+        opacity: 0.5
+        radius: vpx(10)
+
+        visible: selectButton
+    }
+    Column {
+        id: labelContainer
+
+        anchors {
+            left: parent.left; leftMargin: horizontalPadding
+            right: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+        }
+
+        spacing: fontSize * 0.25
+        height: label.height + (sublabel.text ? spacing + sublabel.height : 0)
+
+
+        Text {
+            id: label
+            color: themeColor.textLabel
+            font.pixelSize: fontSize
+            font.family: globalFonts.sans
+            width: underline.width
+            wrapMode: Text.WordWrap
+        }
+
+        Text {
+            id: sublabel
+
+            color: themeColor.textSublabel
+            font.pixelSize: fontSize * 0.8
+            font.family: globalFonts.sans
+            font.italic: true
+            width: underline.width
+            wrapMode: Text.WordWrap
+        }
+    }
     Text {
-        id: label
-
-        anchors.left: parent.left
-        anchors.leftMargin: horizontalPadding
-        anchors.verticalCenter: parent.verticalCenter
-
-        color: "#eee"
-        font.pixelSize: fontSize
-        font.family: globalFonts.sans
+        id: pointerConfigs
+        visible: false
+        anchors {
+            rightMargin: vpx(20)
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+        }
+        color: themeColor.underline
+        font.pixelSize: vpx(30)
+        font.family: globalFonts.ion
+        text : "\uf3d1"
     }
-
     MouseArea {
         id: mouseArea
         anchors.fill: parent

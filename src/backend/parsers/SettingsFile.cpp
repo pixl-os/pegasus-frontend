@@ -22,6 +22,7 @@
 #include "MetaFile.h"
 #include "Paths.h"
 #include "providers/Provider.h"
+#include "utils/PathTools.h"
 
 #include <QDir>
 #include <QFile>
@@ -66,7 +67,8 @@ ConfigEntryMaps::ConfigEntryMaps()
     , str_to_general_opt {
         { QStringLiteral("fullscreen"), GeneralOption::FULLSCREEN },
         { QStringLiteral("input-mouse-support"), GeneralOption::MOUSE_SUPPORT },
-        { QStringLiteral("locale"), GeneralOption::LOCALE },
+		{ QStringLiteral("input-virtualkeyboard-support"), GeneralOption::VIRTUALKEYBOARD_SUPPORT },
+		{ QStringLiteral("locale"), GeneralOption::LOCALE },
         { QStringLiteral("theme"), GeneralOption::THEME },
     }
     , str_to_key_opt {
@@ -79,6 +81,8 @@ ConfigEntryMaps::ConfigEntryMaps()
         { QStringLiteral("page-up"), KeyEvent::PAGE_UP },
         { QStringLiteral("page-down"), KeyEvent::PAGE_DOWN },
         { QStringLiteral("menu"), KeyEvent::MAIN_MENU },
+        { QStringLiteral("netplay"), KeyEvent::NETPLAY },
+        { QStringLiteral("guide"), KeyEvent::GUIDE },
     }
 {}
 
@@ -168,11 +172,15 @@ void LoadContext::handle_general_attrib(const size_t lineno, const QString& key,
             if (!store_bool_maybe(strconv, val, AppSettings::general.mouse_support))
                 log_needs_bool(lineno, key);
             break;
+        case ConfigEntryGeneralOption::VIRTUALKEYBOARD_SUPPORT:
+            if (!store_bool_maybe(strconv, val, AppSettings::general.virtualkeyboard_support))
+                log_needs_bool(lineno, key);
+            break;
         case ConfigEntryGeneralOption::LOCALE:
             AppSettings::general.locale = val;
             break;
         case ConfigEntryGeneralOption::THEME:
-            AppSettings::general.theme = QFileInfo(paths::writableConfigDir(), val).absoluteFilePath();
+            AppSettings::general.theme = ::clean_abs_path(QFileInfo(paths::writableConfigDir(), val));
             break;
     }
 }
@@ -297,7 +305,8 @@ void SaveContext::print_general(QTextStream& stream) const
     GeneralStrMap option_values {
         { GeneralOption::FULLSCREEN, AppSettings::general.fullscreen ? STR_TRUE : STR_FALSE },
         { GeneralOption::MOUSE_SUPPORT, AppSettings::general.mouse_support ? STR_TRUE : STR_FALSE },
-        { GeneralOption::LOCALE, AppSettings::general.locale },
+		{ GeneralOption::VIRTUALKEYBOARD_SUPPORT, AppSettings::general.virtualkeyboard_support ? STR_TRUE : STR_FALSE },
+		{ GeneralOption::LOCALE, AppSettings::general.locale },
         { GeneralOption::THEME, theme_path },
     };
 

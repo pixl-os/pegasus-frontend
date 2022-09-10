@@ -20,6 +20,7 @@
 #include "utils/HashMap.h"
 
 #include <QDir>
+#include <QRegularExpression>
 #include <QString>
 
 namespace model { class Collection; }
@@ -34,18 +35,20 @@ namespace launchbox {
 enum class GameField : unsigned char;
 enum class AppField : unsigned char;
 struct Emulator;
+struct Platform;
 
 class GamelistXml {
 public:
     explicit GamelistXml(QString, QDir);
 
-    std::vector<model::Game*> find_games_for(const QString&, const HashMap<QString, Emulator>&, SearchContext&) const;
+    std::vector<model::Game*> find_games_for(const Platform&, const HashMap<QString, Emulator>&, SearchContext&) const;
 
 private:
     const QString m_log_tag;
     const QDir m_lb_root;
     const HashMap<QString, GameField> m_game_keys;
     const HashMap<QString, AppField> m_app_keys;
+    const QRegularExpression m_rx_steam_uri;
 
     void log_xml_warning(const QString&, const size_t, const QString&) const;
     HashMap<GameField, QString> read_game_node(QXmlStreamReader&) const;

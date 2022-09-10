@@ -14,13 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
 #pragma once
 
 #include "CliArgs.h"
 #include "GamepadManager.h"
 #include "Meta.h"
 #include "System.h"
+#include "settings/Recalbox.h"
+#include "netplay/Netplay.h"
+#include "singleplay/Singleplay.h"
+#include "updates/Updates.h"
+#include "bios/Bios.h"
 #include "settings/Settings.h"
 #include "utils/QmlHelpers.h"
 
@@ -35,7 +39,12 @@ class Internal : public QObject {
     QML_CONST_PROPERTY(model::Settings, settings)
     QML_CONST_PROPERTY(model::System, system)
     QML_CONST_PROPERTY(model::GamepadManager, gamepad)
-
+    QML_CONST_PROPERTY(model::Recalbox, recalbox)
+    QML_CONST_PROPERTY(model::Netplay, netplay)
+	QML_CONST_PROPERTY(model::Singleplay, singleplay)
+	QML_CONST_PROPERTY(model::Updates, updates)
+	QML_CONST_PROPERTY(model::Bios, bios)
+    
 public:
     explicit Internal(const backend::CliArgs& args, QObject* parent = nullptr);
 };

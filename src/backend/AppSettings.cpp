@@ -62,7 +62,7 @@ HashMap<KeyEvent, QVector<QKeySequence>, EnumHash> default_keymap()
         { KeyEvent::UP, { Qt::Key_Up }},
         { KeyEvent::DOWN, { Qt::Key_Down }},
         { KeyEvent::ACCEPT, { Qt::Key_Return, Qt::Key_Enter, GamepadKeyId::A }},
-        { KeyEvent::CANCEL, { Qt::Key_Escape, Qt::Key_Backspace, GamepadKeyId::B }},
+        { KeyEvent::CANCEL, { Qt::Key_Escape, GamepadKeyId::B }},
         { KeyEvent::DETAILS, { Qt::Key_I, GamepadKeyId::X }},
         { KeyEvent::FILTERS, { Qt::Key_F, GamepadKeyId::Y }},
         { KeyEvent::NEXT_PAGE, { Qt::Key_E, Qt::Key_D, GamepadKeyId::R1 }},
@@ -70,6 +70,8 @@ HashMap<KeyEvent, QVector<QKeySequence>, EnumHash> default_keymap()
         { KeyEvent::PAGE_UP, { Qt::Key_PageUp, GamepadKeyId::L2 }},
         { KeyEvent::PAGE_DOWN, { Qt::Key_PageDown, GamepadKeyId::R2 }},
         { KeyEvent::MAIN_MENU, { Qt::Key_F1, GamepadKeyId::START }},
+        { KeyEvent::NETPLAY, { Qt::Key_F2, GamepadKeyId::SELECT }},
+        { KeyEvent::GUIDE, { Qt::Key_F3, GamepadKeyId::GUIDE }},
     };
 }
 
@@ -99,8 +101,6 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
     std::vector<std::unique_ptr<providers::Provider>> out;
         MKENTRY(pegasus::PegasusProvider)
         MKENTRY(media::MediaProvider)
-        MKENTRY(favorites::Favorites)
-        MKENTRY(playtime::PlaytimeStats)
 #ifdef WITH_COMPAT_STEAM
         MKENTRY(steam::SteamProvider)
 #endif
@@ -113,9 +113,6 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #ifdef WITH_COMPAT_ANDROIDAPPS
         MKENTRY(android::AndroidAppsProvider)
 #endif
-#ifdef WITH_COMPAT_SKRAPER
-        MKENTRY(skraper::SkraperAssetsProvider)
-#endif
 #ifdef WITH_COMPAT_LAUNCHBOX
         MKENTRY(launchbox::LaunchboxProvider)
 #endif
@@ -125,6 +122,13 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #ifdef WITH_COMPAT_LUTRIS
         MKENTRY(lutris::LutrisProvider)
 #endif
+
+        // Make sure these come last as they never add new games
+#ifdef WITH_COMPAT_SKRAPER
+        MKENTRY(skraper::SkraperAssetsProvider)
+#endif
+        MKENTRY(favorites::Favorites)
+        MKENTRY(playtime::PlaytimeStats)
     out.shrink_to_fit();
     return out;
 
@@ -138,10 +142,11 @@ namespace appsettings {
 
 General::General()
     : DEFAULT_LOCALE(QStringLiteral("en"))
-    , DEFAULT_THEME(QStringLiteral(":/themes/pegasus-theme-grid/"))
+    , DEFAULT_THEME(QStringLiteral(":/themes/gameOS/"))
     , portable(false)
     , fullscreen(true)
-    , mouse_support(true)
+    , mouse_support(false)
+	, virtualkeyboard_support(false)
     , locale() // intentionally blank
     , theme(DEFAULT_THEME)
 {}

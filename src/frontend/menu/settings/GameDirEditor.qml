@@ -17,7 +17,7 @@
 
 import "common"
 import "gamedireditor"
-import QtQuick 2.6
+import QtQuick 2.12
 
 
 FocusScope {
@@ -40,15 +40,12 @@ FocusScope {
         else
             root.close();
     }
-
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.closeMaybe();
         }
     }
-
-
     property var selectedIndices: [] // we don't have Set yet
     function isSelected(index) {
         return selectedIndices.indexOf(index) >= 0;
@@ -62,8 +59,6 @@ FocusScope {
 
         selectedIndicesChanged();
     }
-
-
     Timer {
         readonly property real step: interval / 1000
 
@@ -90,8 +85,6 @@ FocusScope {
         api.internal.settings.removeGameDirs(selectedIndices);
         selectedIndices = [];
     }
-
-
     Rectangle {
         id: shade
 
@@ -105,12 +98,10 @@ FocusScope {
             onClicked: root.closeMaybe()
         }
     }
-
-
     Rectangle {
         height: parent.height * 0.8
         width: height * 1.5
-        color: "#444"
+        color: themeColor.main
 
         radius: vpx(8)
 
@@ -146,18 +137,15 @@ FocusScope {
             event.accepted = true;
             root.stopDeletion();
         }
-
-
         MouseArea {
             anchors.fill: parent
         }
-
         Text {
             id: info
 
             text: qsTr("Pegasus will look for collection files (metadata.pegasus.txt or "
-                     + "metadata.txt)\nin the following directories:") + api.tr
-            color: "#eee"
+                       + "metadata.txt)\nin the following directories:") + api.tr
+            color: themeColor.textLabel
             font.family: globalFonts.sans
             font.pixelSize: vpx(18)
             lineHeight: 1.15
@@ -170,13 +158,12 @@ FocusScope {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
         }
-
         Rectangle {
             anchors.top: info.bottom
             anchors.bottom: footer.top
             width: parent.width - vpx(40)
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "#333"
+            color: themeColor.main
 
             ListView {
                 id: list
@@ -198,10 +185,8 @@ FocusScope {
                     if (isComplete)
                         root.mSettingsChanged = true;
                 }
-
                 property bool isComplete: false
                 Component.onCompleted: isComplete = true
-
 
                 MouseArea {
                     anchors.fill: parent
@@ -216,7 +201,6 @@ FocusScope {
                 }
             }
         }
-
         Item {
             id: footer
 
@@ -256,7 +240,6 @@ FocusScope {
             }
         }
     }
-
     Component {
         id: listEntry
 
@@ -275,8 +258,6 @@ FocusScope {
                     root.toggleIndex(index);
                 }
             }
-
-
             Rectangle {
                 anchors.fill: parent
                 color: "#d55"
@@ -289,14 +270,13 @@ FocusScope {
                 color: "#924"
                 visible: parent.selected && deleteTimer.running && width > 0
             }
-
             Text {
                 id: label
                 text: modelData
                 verticalAlignment: Text.AlignVCenter
                 lineHeight: 2
 
-                color: "#eee"
+                color: themeColor.textLabel
                 font.family: globalFonts.sans
                 font.pixelSize: vpx(18)
 
@@ -305,7 +285,6 @@ FocusScope {
                 rightPadding: leftPadding
                 elide: Text.ElideRight
             }
-
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
@@ -313,8 +292,6 @@ FocusScope {
             }
         }
     }
-
-
     ReloadQuestion {
         id: reloadDialog
         onAccept: {
@@ -328,8 +305,6 @@ FocusScope {
             root.close();
         }
     }
-
-
     FilePicker {
         id: filePicker
 

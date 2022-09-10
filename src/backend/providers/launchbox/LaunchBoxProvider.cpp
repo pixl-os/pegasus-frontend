@@ -19,22 +19,17 @@
 
 #include "Log.h"
 #include "Paths.h"
-#include "providers/SearchContext.h"
 #include "providers/launchbox/LaunchBoxAssets.h"
-#include "providers/launchbox/LaunchBoxEmulator.h"
 #include "providers/launchbox/LaunchBoxEmulatorsXml.h"
 #include "providers/launchbox/LaunchBoxGamelistXml.h"
 #include "providers/launchbox/LaunchBoxPlatformsXml.h"
+#include "providers/launchbox/LaunchBoxXml.h"
 
 
 namespace {
-QString find_installation()
+QString default_installation()
 {
-    const QString possible_path = paths::homePath() + QStringLiteral("/LaunchBox/");
-    if (QFileInfo::exists(possible_path))
-        return possible_path;
-
-    return {};
+    return paths::homePath() + QStringLiteral("/LaunchBox/");
 }
 } // namespace
 
@@ -52,9 +47,9 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
         const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
             ? QDir::cleanPath(option_it->second.front()) + QLatin1Char('/')
-            : find_installation();
+            : default_installation();
     }();
-    if (lb_dir_path.isEmpty()) {
+    if (lb_dir_path.isEmpty() || !QFileInfo::exists(lb_dir_path)) {
         Log::info(display_name(), LOGMSG("No installation found"));
         return *this;
     }
@@ -62,26 +57,23 @@ Provider& LaunchboxProvider::run(providers::SearchContext& sctx)
     Log::info(display_name(), LOGMSG("Looking for installation at `%1`").arg(QDir::toNativeSeparators(lb_dir_path)));
     const QDir lb_dir(lb_dir_path);
 
-    const std::vector<QString> platform_names = find_platforms(display_name(), lb_dir);
-    if (platform_names.empty()) {
+    const std::vector<Platform> platforms = find_platforms(display_name(), lb_dir);
+    if (platforms.empty()) {
         Log::warning(display_name(), LOGMSG("No platforms found"));
         return *this;
     }
 
     const HashMap<QString, Emulator> emulators = EmulatorsXml(display_name(), lb_dir).find();
-    if (emulators.empty()) {
-        Log::warning(display_name(), LOGMSG("No emulator settings found"));
-        return *this;
-    }
+    // NOTE: It's okay to not have any emulators
 
-    const float progress_step = 1.f / platform_names.size();
+    const float progress_step = 1.f / platforms.size();
     float progress = 0.f;
 
     const GamelistXml metahelper(display_name(), lb_dir);
     const Assets assethelper(display_name(), lb_dir_path);
-    for (const QString& platform_name : platform_names) {
-        const std::vector<model::Game*> games = metahelper.find_games_for(platform_name, emulators, sctx);
-        assethelper.find_assets_for(platform_name, games);
+    for (const Platform& platform : platforms) {
+        const std::vector<model::Game*> games = metahelper.find_games_for(platform, emulators, sctx);
+        assethelper.find_assets_for(platform.name, games);
 
         progress += progress_step;
         emit progressChanged(progress);

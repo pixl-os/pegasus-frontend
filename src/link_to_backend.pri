@@ -1,6 +1,6 @@
 # Link the project that includes this file to the Backend
 
-QT *= qml quick multimedia svg sql
+QT *= qml quick multimedia svg sql xml
 
 win32: LIBS += -luser32 -ladvapi32
 macx: LIBS += -framework Cocoa
@@ -28,9 +28,17 @@ else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += "$${TOP_BU
 else:unix: PRE_TARGETDEPS += "$${TOP_BUILDDIR}/src/backend/libbackend.a"
 
 
+# SDL2
+!isEmpty(USE_SDL_GAMEPAD)|!isEmpty(USE_SDL_POWER): include($${TOP_SRCDIR}/thirdparty/link_to_sdl.pri)
+
+# PULSE AUDIO
+include($${TOP_SRCDIR}/thirdparty/link_to_pulse.pri)
+
+# ZIP
+include($${TOP_SRCDIR}/thirdparty/link_to_zip.pri)
+
 # Gamepad backend
-!isEmpty(USE_SDL_GAMEPAD): include($${TOP_SRCDIR}/thirdparty/link_to_sdl.pri)
-else: QT *= gamepad
+isEmpty(USE_SDL_GAMEPAD): QT *= gamepad
 
 
 # Plugins

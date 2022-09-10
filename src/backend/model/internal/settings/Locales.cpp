@@ -32,7 +32,11 @@ std::vector<model::LocaleEntry> find_available_locales()
     constexpr int QM_SUFFIX_LEN = 3; // length of ".qm"
 
     QStringList qm_files = QDir(QStringLiteral(":/i18n")).entryList(QStringList(QStringLiteral("*.qm")));
-    qm_files.append(QStringLiteral("pegasus_en.qm"));
+	//Log::debug(LOGMSG("The list of available locales is '%1'.").arg(qm_files.join(",")));
+    if(!qm_files.contains("pegasus_en.qm")){
+		qm_files.append(QStringLiteral("pegasus_en.qm"));
+		//Log::debug(LOGMSG("Adding locale file pegasus_en.qm")); // but I don't know why ?!
+    }
     qm_files.sort();
 
     std::vector<model::LocaleEntry> locales;
@@ -71,6 +75,7 @@ Locales::Locales(QObject* parent)
     select_preferred_locale();
     load_selected_locale();
 
+    qApp->installTranslator(&m_theme_translator);
     qApp->installTranslator(&m_translator);
 }
 
@@ -110,10 +115,29 @@ void Locales::load_selected_locale()
 {
     const auto& locale = m_locales.at(m_current_idx);
 
+    Log::info(LOGMSG("Theme Locale file to load if exists : %1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_") + locale.bcp47tag));
+
+    if (QFileInfo::exists(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_") + locale.bcp47tag))) {
+        //load theme one if exists
+        m_theme_translator.load(QStringLiteral("theme_") + locale.bcp47tag,
+                          QStringLiteral("%1/lang").arg(AppSettings::general.theme),
+                          QStringLiteral("-"));
+        Log::info(LOGMSG("Theme Locale loaded : %1").arg(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_") + locale.bcp47tag)));
+    }
+    else if (QFileInfo::exists(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_en")))) {
+        //load en theme one if exists
+        m_theme_translator.load(QStringLiteral("theme_en"),
+                          QStringLiteral("%1/lang").arg(AppSettings::general.theme),
+                          QStringLiteral("-"));
+        Log::info(LOGMSG("Theme Locale loaded : %1").arg(QStringLiteral("%1/lang/%2.qm").arg(AppSettings::general.theme,QStringLiteral("theme_en"))));
+    }
+
     m_translator.load(QStringLiteral("pegasus_") + locale.bcp47tag,
                       QStringLiteral(":/i18n"),
                       QStringLiteral("-"));
+
     Log::info(LOGMSG("Locale set to `%2`").arg(locale.bcp47tag));
+
 }
 
 int Locales::rowCount(const QModelIndex& parent) const

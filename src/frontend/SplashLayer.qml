@@ -15,12 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.0
-
+import QtQuick 2.12
 
 Rectangle {
     id: root
-    color: "#222"
+    color: "#000"
     anchors.fill: parent
 
     property real progress: api.internal.meta.loadingProgress
@@ -28,19 +27,43 @@ Rectangle {
 
     Behavior on progress { NumberAnimation {} }
 
-
-    Image {
+    AnimatedImage {
         id: logo
-        source: "assets/logo.png"
+        source: "assets/pixLAnime.gif"
         width: Math.min(parent.width, parent.height)
+        speed: 1.6
+        anchors.horizontalCenterOffset: 0
+        anchors.topMargin: 100
         fillMode: Image.PreserveAspectFit
         verticalAlignment: Image.AlignBottom
-
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.bottom: parent.verticalCenter
-        anchors.bottomMargin: vpx(-45)
     }
+
+    Image {
+        id: logoPegasus
+        width: 150
+        height: 50
+        source: "assets/logopegasus.png"
+        anchors.bottomMargin: 20
+        anchors.bottom: parent.bottom
+        fillMode: Image.PreserveAspectFit
+        verticalAlignment: Image.AlignBottom
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+    //    Image {
+    //        id: logoRecalbox
+    //        width: 100
+    //        height: 35
+    //        source: "assets/recalbox-next.svg"
+    //        anchors.bottomMargin: 10
+    //        anchors.bottom: parent.bottom
+    //        anchors.left: logoPegasus.right
+    //        fillMode: Image.PreserveAspectFit
+    //        verticalAlignment: Image.AlignBottom
+    //        anchors.horizontalCenter: parent.horizontalCenter
+    //    }
 
     Rectangle {
         id: progressRoot
@@ -50,7 +73,7 @@ Rectangle {
         width: logo.width * 0.94
         height: vpx(30)
         radius: vpx(10)
-        color: "#181818"
+        color: "#000000"
 
         anchors.top: logo.bottom
         anchors.topMargin: height * 1.0

@@ -15,18 +15,37 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.6
+import QtQuick 2.12
+
 
 
 Text {
     property bool first: false
+    property alias symbol: symbolTitle.text
+    property alias symbolFontFamily: symbolTitle.font.family
+    property int fontSize: vpx(22)
 
-    color: "#bbb"
-
-    font.pixelSize: vpx(22)
-    font.family: globalFonts.sans
-    font.capitalization: Font.AllUppercase
-    font.italic: true
-
+    color: themeColor.textSectionTitle
+    font {
+        pixelSize: fontSize
+        family: globalFonts.sans
+//        capitalization: Font.AllUppercase
+        italic: true
+    }
     topPadding: font.pixelSize * (first ? 0.25 : 2.25)
+
+    Text {
+        id: symbolTitle
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+            leftMargin: - fontSize * 2
+        }
+        color: themeColor.textTitle
+        font {
+            bold: false
+            pixelSize: fontSize * 1.25
+            family: global.fonts.ion
+        }
+    }
 }

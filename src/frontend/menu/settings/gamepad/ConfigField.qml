@@ -15,20 +15,21 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.8
+import QtQuick 2.12
 
 Rectangle {
     property alias text: label.text
     property bool pressed: false
     property bool recording: false
+	property var input;
+	property string inputType: ""
 
     width: vpx(140)
     height: label.font.pixelSize * 1.5
     color: {
         if (recording) return "#c33";
-        if (pressed) return "#353";
-        if (activeFocus) return "#3aa"
-        return "#333";
+        if (activeFocus) return themeColor.underline
+        return themeColor.secondary;
     }
 
     anchors {
@@ -39,7 +40,7 @@ Rectangle {
 
     Text {
         id: label
-        color: "#eee"
+        color: pressed ? "blue" : themeColor.textLabel
         font {
             family: globalFonts.sans
             pixelSize: vpx(18)
@@ -52,4 +53,51 @@ Rectangle {
             margins: vpx(5)
         }
     }
+	Keys.onPressed: {
+		if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+			event.accepted = true;
+			validStartTime = new Date().getTime();
+			validTimer.start();
+			root.fieldUnderConfiguration = this;
+		}
+		else if (api.keys.isDetails(event) && !event.isAutoRepeat) {
+			event.accepted = true;
+			resetStartTime = new Date().getTime();
+			resetTimer.start();
+			root.fieldUnderConfiguration = this;
+		}
+	}
+	Keys.onReleased: {
+        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+			event.accepted = true;
+			if ((validProgress > 1.0) && gamepad) {
+				if(inputType === "button")
+				{
+					api.internal.gamepad.configureButton(gamepad.deviceIndex, input);
+				}
+				else if(inputType === "axis")
+				{
+					api.internal.gamepad.configureAxis(gamepad.deviceIndex, input);
+				}
+            }
+            root.stopValidTimer();
+        }
+        else if (api.keys.isDetails(event) && !event.isAutoRepeat) {
+			event.accepted = true;
+			if ((resetProgress > 1.0) && gamepad) {
+                if(inputType === "button")
+				{
+                    api.internal.gamepad.resetButton(gamepad.deviceIndex, input);
+				}
+				else if(inputType === "axis")
+				{
+                    api.internal.gamepad.resetAxis(gamepad.deviceIndex, input);
+				}
+                root.stopResetTimer();
+                root.resetConfig(inputType,text);
+            }
+            else root.stopResetTimer();
+
+		}
+	}	
 }

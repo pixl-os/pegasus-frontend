@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.8
+import QtQuick 2.12
 
 /// This item provides an infinitely looping, autoscrolling view into
 /// a taller content.
@@ -25,8 +25,8 @@ import QtQuick 2.8
 Flickable {
     id: container
 
-    property int scrollWaitDuration: 3000
-    property int pixelsPerSecond: 26
+    property int scrollWaitDuration: 1500
+    property int pixelsPerSecond: 10
 
     function stopScroll() {
         scrollAnimGroup.complete();

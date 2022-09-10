@@ -2,5 +2,6 @@
     <qresource prefix="/qmlutils">
         <file>AutoScroll.qml</file>
         <file>HorizontalSwipeArea.qml</file>
+        <file>HorizontalAutoScroll.qml</file>
     </qresource>
 </RCC>

@@ -19,6 +19,7 @@
 
 #include "AppSettings.h"
 #include "Log.h"
+
 #include "FrontendLayer.h"
 #include "ProcessLauncher.h"
 #include "ScriptRunner.h"
@@ -36,9 +37,14 @@
 #include "SortFilterProxyModel/filters/filtersqmltypes.h"
 #include "SortFilterProxyModel/proxyroles/proxyrolesqmltypes.h"
 #include "SortFilterProxyModel/sorters/sortersqmltypes.h"
-
 #include <QGuiApplication>
 #include <QQmlEngine>
+
+#if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
+#include <SDL.h>
+#endif
+
+
 
 namespace model { class Key; }
 namespace model { class Keys; }
@@ -48,7 +54,7 @@ class FolderListModel;
 namespace {
 void print_metainfo()
 {
-    Log::info(LOGMSG("Pegasus " GIT_REVISION " (" GIT_DATE ")"));
+    Log::info(LOGMSG("Pegasus for recal - BUILD: " __DATE__ " " __TIME__ " GIT: " GIT_REVISION " (" GIT_DATE ")"));
     Log::info(LOGMSG("Running on %1 (%2, %3)").arg(
         QSysInfo::prettyProductName(),
         QSysInfo::currentCpuArchitecture(),
@@ -74,6 +80,7 @@ void register_api_classes()
     qmlRegisterUncreatableType<model::Key>(API_URI, 0, 10, "Key", error_msg);
     qmlRegisterUncreatableType<model::Keys>(API_URI, 0, 10, "Keys", error_msg);
     qmlRegisterUncreatableType<model::GamepadManager>(API_URI, 0, 12, "GamepadManager", error_msg);
+    qmlRegisterUncreatableType<model::DeviceInfo>(API_URI, 0, 13, "Device", error_msg);
 
     // QML utilities
     qmlRegisterType<FolderListModel>("Pegasus.FolderListModel", 1, 0, "FolderListModel");
@@ -89,22 +96,35 @@ void register_api_classes()
 
 void on_app_close(AppCloseType type)
 {
+    QString AppCloseTypeName;
     ScriptRunner::run(ScriptEvent::QUIT);
     switch (type) {
+        case AppCloseType::RESTART:
+            AppCloseTypeName = "Restart";
+            ScriptManager::Instance().Notify(Notification::Relaunch,"normal");
+            ScriptRunner::run(ScriptEvent::RESTART);
+            break;
         case AppCloseType::REBOOT:
+            AppCloseTypeName = "Reboot";
+            ScriptManager::Instance().Notify(Notification::Reboot,"normal");
             ScriptRunner::run(ScriptEvent::REBOOT);
             break;
         case AppCloseType::SHUTDOWN:
+            AppCloseTypeName = "Shutdown";
+            ScriptManager::Instance().Notify(Notification::Shutdown,"normal");
             ScriptRunner::run(ScriptEvent::SHUTDOWN);
             break;
         default: break;
     }
-
-    Log::info(LOGMSG("Closing Pegasus, goodbye!"));
+    
+    Log::info(LOGMSG("Closing Pegasus, goodbye! %1...").arg(AppCloseTypeName));
     Log::close();
-
+    
     QCoreApplication::quit();
     switch (type) {
+        case AppCloseType::RESTART:
+            platform::power::restart();
+            break;
         case AppCloseType::REBOOT:
             platform::power::reboot();
             break;
@@ -116,26 +136,28 @@ void on_app_close(AppCloseType type)
 }
 } // namespace
 
-
 namespace backend {
-
-Backend::Backend()
-    : Backend(CliArgs {})
-{}
 
 Backend::~Backend()
 {
     delete m_launcher;
     delete m_frontend;
     delete m_api;
+
+#if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
+    SDL_Quit();
+#endif
 }
 
-Backend::Backend(const CliArgs& args)
+Backend::Backend(const CliArgs& args, char** environment)
+  : mScriptManager(environment)
 {
     // Make sure this comes before any file related operations
     AppSettings::general.portable = args.portable;
 
+    //pegasus logs
     Log::init(args.silent);
+        
     print_metainfo();
     register_api_classes();
 
@@ -162,6 +184,14 @@ Backend::Backend(const CliArgs& args)
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchError,
                      m_api, &ApiObject::onGameLaunchError);
 
+    //event to show popup to frontend
+    QObject::connect(&m_api->internal().gamepad(), &model::GamepadManager::showPopup,
+                     m_api, &ApiObject::onShowPopup);
+
+    //event to configure new controller from frontend
+    QObject::connect(&m_api->internal().gamepad(), &model::GamepadManager::newController,
+                     m_api, &ApiObject::onNewController);
+
     QObject::connect(m_launcher, &ProcessLauncher::processLaunchOk,
                      m_frontend, &FrontendLayer::teardown);
 
@@ -180,12 +210,29 @@ Backend::Backend(const CliArgs& args)
     QObject::connect(&m_api->internal().meta(), &model::Meta::qmlClearCacheRequested,
                      m_frontend, &FrontendLayer::clearCache);
 
-    // quit/reboot/shutdown request
+    // quit/reboot/restart/shutdown request
     QObject::connect(&m_api->internal().system(), &model::System::appCloseRequested, on_app_close);
 }
 
 void Backend::start()
 {
+    // Save power for battery-powered devices
+    mBoard.SetCPUGovernance(IBoardInterface::CPUGovernance::PowerSave);
+
+    // Audio controller initialisation
+    if(mRecalboxConf.AsString("audio.mode") != "none") mAudioController.SetVolume(mAudioController.GetVolume());
+    else mAudioController.SetVolume(0); // to mute in all cases
+    std::string originalAudioDevice = mRecalboxConf.GetAudioOuput();
+    std::string fixedAudioDevice = mAudioController.SetDefaultPlayback(originalAudioDevice);
+    if (fixedAudioDevice != originalAudioDevice)
+    {
+      mRecalboxConf.SetAudioOuput(fixedAudioDevice);
+      mRecalboxConf.Save();
+    }
+    
+    // Script Manager start launch
+    mScriptManager.Notify(Notification::Start, Strings::ToString(0));
+    
     m_frontend->rebuild();
     m_api->startScanning(); // TODO: Separate scanner
 }

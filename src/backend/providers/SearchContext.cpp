@@ -23,6 +23,7 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 #include "utils/DiskCachedNAM.h"
+#include "utils/PathTools.h"
 #include "utils/StdHelpers.h"
 
 #include <QFileInfo>
@@ -31,6 +32,9 @@
 #include <QNetworkRequest>
 #include <QSslSocket>
 
+#include <QElapsedTimer>
+
+#include <QtConcurrent/QtConcurrent>
 
 namespace {
 QStringList read_game_dirs()
@@ -40,7 +44,7 @@ QStringList read_game_dirs()
     AppSettings::parse_gamedirs([&game_dirs](const QString& line){
         const QFileInfo finfo(line);
         if (finfo.isDir())
-            game_dirs.append(finfo.canonicalFilePath());
+            game_dirs.append(::clean_abs_path(finfo));
     });
 
     game_dirs.removeDuplicates();
@@ -82,12 +86,37 @@ model::Collection* SearchContext::get_or_create_collection(const QString& name)
 model::Game* SearchContext::create_game_for(model::Collection& collection)
 {
     auto* const game_ptr = new model::Game();
+
+    //set collection during creation now
+    //(*game_ptr).setCollection(&collection);
+
     (*game_ptr)
         .setLaunchCmd(collection.commonLaunchCmd())
         .setLaunchWorkdir(collection.commonLaunchWorkdir())
-        .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
+        .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir())
+        .setSystemShortname(collection.shortName());
+
+
+    //for to take into account priority=1 (or lower value) as default emulator and core
+    int first_priority = 0;
+    for (int n = 0;n < collection.commonEmulators().count(); n++)
+    {
+        //if only one or to initialize with one value
+        if (n == 0)
+        {   first_priority = collection.commonEmulators()[n].priority; 
+            (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
+            (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core); 
+        }
+        else if(first_priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower (but number is higher ;-)
+        {
+            first_priority = collection.commonEmulators()[n].priority;
+            (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
+            (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core);
+        }
+    }
 
     m_collection_games[&collection].emplace_back(game_ptr);
+
     return game_ptr;
 }
 
@@ -171,7 +200,30 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
         game.setLaunchWorkdir(collection.commonLaunchWorkdir());
     if (game.launchCmdBasedir().isEmpty())
         game.setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
-
+    if (game.systemShortName().isEmpty())
+        game.setSystemShortname(collection.shortName());
+    if (game.emulatorName().isEmpty() || game.emulatorCore().isEmpty())
+    {
+        //for to take into account priority=1 as default emulator and core
+        int first_priority = 0;
+        for (int n = 0;n < collection.commonEmulators().count(); n++)
+        {
+            //if only one or to initialize with one value
+            if (n == 0)
+            {   
+                first_priority = collection.commonEmulators()[n].priority;  
+                game.setEmulatorName(collection.commonEmulators()[n].name);
+                game.setEmulatorCore(collection.commonEmulators()[n].core); 
+            }
+            else if(first_priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower (but number is higher ;-)
+            {
+                first_priority = collection.commonEmulators()[n].priority; 
+                game.setEmulatorName(collection.commonEmulators()[n].name);
+                game.setEmulatorCore(collection.commonEmulators()[n].core);
+            }
+        }
+    }
+        
     return *this;
 }
 
@@ -226,35 +278,55 @@ void SearchContext::finalize_cleanup_collections()
 
 void SearchContext::finalize_apply_lists()
 {
-    // Apply game entries
+    //QElapsedTimer finalize_apply_lists_timer;
+    //finalize_apply_lists_timer.start();
+	
+    // Apply game entries (set files to game)
+	// using this global one: HashMap<model::Game*, std::vector<model::GameFile*>> m_game_entries;
     for (auto& pair : m_game_entries) {
         Q_ASSERT(!pair.second.empty());
         pair.first->setFiles(std::move(pair.second));
     }
+    //Log::info(LOGMSG("Game list post-processing took %1ms (+ including pair.first->setFiles(std::move(pair.second));)").arg(finalize_apply_lists_timer.elapsed()));
 
-    // Apply collections to games
+
+    // Apply collections to games using the following HashMap
     HashMap<model::Game*, std::vector<model::Collection*>> game_collections;
     for (const auto& pair : m_collection_games) {
         for (model::Game* const game_ptr : pair.second)
             game_collections[game_ptr].emplace_back(pair.first);
     }
-    for (auto& pair : game_collections)
+    //Log::info(LOGMSG("Game list post-processing took %1ms (+ including game_collections[game_ptr].emplace_back(pair.first);)").arg(finalize_apply_lists_timer.elapsed()));
+
+    for (auto& pair : game_collections) {
+        VEC_REMOVE_DUPLICATES(pair.second);
         pair.first->setCollections(std::move(pair.second));
+    }
+    //Log::info(LOGMSG("Game list post-processing took %1ms (+ including pair.first->setCollections(std::move(pair.second));)").arg(finalize_apply_lists_timer.elapsed()));
 
     // Apply games to collections
     for (auto& pair : m_collection_games) {
         VEC_REMOVE_DUPLICATES(pair.second);
         pair.first->setGames(std::move(pair.second));
     }
+    //Log::info(LOGMSG("Game list post-processing took %1ms (+ including pair.first->setGames(std::move(pair.second));)").arg(finalize_apply_lists_timer.elapsed()));
+
 }
 
 std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::finalize(QObject* const qparent)
 {
     // TODO: C++17
+    //QElapsedTimer internal_finalize_timer;
+    //internal_finalize_timer.start();
 
     finalize_cleanup_games();
+    //Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including finalize_cleanup_games())").arg(internal_finalize_timer.elapsed()));
+
     finalize_cleanup_collections();
+    //Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including finalize_cleanup_collections())").arg(internal_finalize_timer.elapsed()));
+
     finalize_apply_lists();
+    //Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including finalize_apply_lists())").arg(internal_finalize_timer.elapsed()));
 
 
     QVector<model::Game*> games;
@@ -273,6 +345,8 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
 
         games.append(pair.first);
     }
+    //Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including for (const auto& pair : m_game_entries) )").arg(internal_finalize_timer.elapsed()));
+
 
 
     QVector<model::Collection*> collections;
@@ -286,10 +360,15 @@ std::pair<QVector<model::Collection*>, QVector<model::Game*>> SearchContext::fin
 
         collections.append(pair.second);
     }
+    //Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including for (auto& pair : m_collections) )").arg(internal_finalize_timer.elapsed()));
 
 
     std::sort(collections.begin(), collections.end(), model::sort_collections);
+    //Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including collections sorting)").arg(internal_finalize_timer.elapsed()));
+
     std::sort(games.begin(), games.end(), model::sort_games);
+    //Log::info(LOGMSG("Stats - Game list post-processing took %1ms (+ including games sorting)").arg(internal_finalize_timer.elapsed()));
+
 
     return std::make_pair(std::move(collections), std::move(games));
 }
@@ -335,15 +414,35 @@ SearchContext& SearchContext::schedule_download(
 #endif
 
     QNetworkReply* const reply = m_netman->get(request);
-    emit downloadScheduled();
+	Log::debug(LOGMSG("emit downloadScheduled();"));
+    //emit downloadScheduled();
 
-    QObject::connect(reply, &QNetworkReply::finished,
-        this, [this, reply, on_finish_callback]{
-            on_finish_callback(reply);
-            m_pending_downloads--;
-            emit downloadCompleted();
-        });
+	QObject::connect(reply, &QNetworkReply::finished, [=]() {
+		if(reply->error() == QNetworkReply::NoError)
+		{
+			QByteArray response = reply->readAll();
+			// do something with the data...
+			Log::debug(LOGMSG("response searchcontext = %1").arg(QString::fromStdString(response.toStdString())));
+		}
+		else // handle error
+		{
+	      Log::debug(LOGMSG("ERROR"));
+		}
+		//emit downloadCompleted();
+	});
 
+
+
+    // QObject::connect(reply, &QNetworkReply::finished,
+        // this, [this, reply, on_finish_callback]{
+ 			// Log::debug(LOGMSG("on_finish_callback(reply);"));
+			// on_finish_callback(reply);
+            // m_pending_downloads--;
+			// Log::debug(LOGMSG("emit downloadCompleted();"));
+            // emit downloadCompleted();
+        // });
+		
+	Log::debug(LOGMSG("return *this;"));
     return *this;
 }
 } // namespace providers

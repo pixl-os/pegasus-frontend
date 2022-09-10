@@ -56,6 +56,32 @@ model::Game* GameFile::parentGame() const
 
 void GameFile::launch()
 {
+	//reset netplay data in all cases to avoid issue
+	m_data.netplay.mode = 0;
+    m_data.netplay.emulator = "";
+    m_data.netplay.core = "";
+    m_data.netplay.port = "";
+    m_data.netplay.ip = "";
+    m_data.netplay.playerpassword = "";
+    m_data.netplay.viewerpassword = "";
+    m_data.netplay.vieweronly = false;
+    m_data.netplay.hash = "";
+	
+    emit launchRequested();
+}
+
+void GameFile::launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash, const QString& emulator, const QString& core)
+{
+    m_data.netplay.mode = mode;
+    m_data.netplay.emulator = emulator;
+    m_data.netplay.core = core;
+    m_data.netplay.port = port;
+    m_data.netplay.ip = ip;
+    m_data.netplay.playerpassword = playerpassword;
+    m_data.netplay.viewerpassword = viewerpassword;
+    m_data.netplay.vieweronly = vieweronly;
+    m_data.netplay.hash = hash;
+	
     emit launchRequested();
 }
 

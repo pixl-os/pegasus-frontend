@@ -13,8 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-
+//
+// Updated and integrated for recalbox by BozoTheGeek 03/05/2021
+//
 #include "Es2Games.h"
 
 #include "Log.h"
@@ -22,6 +23,7 @@
 #include "model/gaming/Collection.h"
 #include "providers/SearchContext.h"
 #include "providers/es2/Es2Systems.h"
+#include "utils/PathTools.h"
 #include "utils/StdHelpers.h"
 
 #include <QDirIterator>
@@ -57,56 +59,49 @@ QStringList parse_filters(const QString& filters_raw) {
 namespace providers {
 namespace es2 {
 
-std::vector<QString> read_mame_blacklists(const QString& log_tag, const std::vector<QString>& possible_config_dirs)
+size_t create_collection_for(
+    const SystemEntry& sysentry,
+    SearchContext& sctx)
+    
 {
-    using L1Str = QLatin1String;
+    size_t found_cores = 0;
+    model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
 
-    const QString resources_path = possible_config_dirs.front() % L1Str("/resources/");
-    const std::vector<std::pair<L1Str, L1Str>> blacklists {
-        { L1Str("mamebioses.xml"), L1Str("bios") },
-        { L1Str("mamedevices.xml"), L1Str("device") },
-    };
-
-    std::vector<QString> out;
-
-    // TODO: C++17
-    for (const auto& blacklist_entry : blacklists) {
-        const QString file_path = resources_path % blacklist_entry.first;
-        QFile file(file_path);
-        if (!file.open(QFile::ReadOnly | QFile::Text))
-            continue;
-
-        const QString line_head = QStringLiteral("<%1>").arg(blacklist_entry.second);
-        const QString line_tail = QStringLiteral("</%1>").arg(blacklist_entry.second);
-
-        QTextStream stream(&file);
-        QString line;
-        int hit_count = 0;
-        while (stream.readLineInto(&line, 128)) {
-            const bool is_valid = line.startsWith(line_head) && line.endsWith(line_tail);
-            if (!is_valid)
-                continue;
-
-            const int len = line.length() - line_head.length() - line_tail.length();
-            out.emplace_back(line.mid(line_head.length(), len));
-            hit_count++;
-        }
-
-        Log::info(log_tag, LOGMSG("Found `%1`, %2 entries loaded").arg(file_path, QString::number(hit_count)));
+    collection
+        .setShortName(sysentry.shortname)
+        .setCommonLaunchCmd(sysentry.launch_cmd)
+        .setScreenScraperId(sysentry.screenscraper)
+        .setManufacturer(sysentry.manufacturer)
+        .setType(sysentry.type)
+        .setReleaseDate(sysentry.releasedate);
+        
+    struct model::EmulatorsEntry Emulator;
+    QList<model::EmulatorsEntry> AllEmulators;
+    
+    for (int n = 0; n < sysentry.emulators.count(); n++)
+    {
+        Emulator.name = sysentry.emulators[n].name;
+        Emulator.core = sysentry.emulators[n].core;
+        Emulator.priority = sysentry.emulators[n].priority;
+		Emulator.netplay = sysentry.emulators[n].netplay;
+		Emulator.corelongname = sysentry.emulators[n].corelongname;
+        Emulator.coreversion = sysentry.emulators[n].coreversion;
+        Emulator.coreextensions = sysentry.emulators[n].coreextensions;
+        Emulator.corecompatibility = sysentry.emulators[n].corecompatibility;
+        Emulator.corespeed = sysentry.emulators[n].corespeed;
+        AllEmulators.append(Emulator);
+        found_cores++;
     }
-
-    return out;
+    collection.setCommonEmulators(AllEmulators);
+    
+    return found_cores;
 }
 
 size_t find_games_for(
     const SystemEntry& sysentry,
-    SearchContext& sctx,
-    const std::vector<QString>& filename_blacklist)
+    SearchContext& sctx)
 {
     model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
-    collection
-        .setShortName(sysentry.shortname)
-        .setCommonLaunchCmd(sysentry.launch_cmd);
 
     // find all (sub-)directories, but ignore 'media'
     const QStringList dirs = [&sysentry]{
@@ -123,14 +118,7 @@ size_t find_games_for(
         return result;
     }();
 
-    // use the blacklist maybe
-    const QVector<QStringRef> platforms = split_list(sysentry.platforms);
-    const bool use_blacklist = VEC_CONTAINS(platforms, QLatin1String("arcade"))
-                            || VEC_CONTAINS(platforms, QLatin1String("neogeo"));
-
-
-    // scan for game files
-
+    // scan for game files 
     constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto entry_flags = QDirIterator::FollowSymlinks;
     const QStringList name_filters = parse_filters(sysentry.extensions);
@@ -143,13 +131,12 @@ size_t find_games_for(
             QFileInfo fileinfo = files_it.fileInfo();
 
             const QString filename = fileinfo.completeBaseName();
-            if (use_blacklist && VEC_CONTAINS(filename_blacklist, filename))
-                continue;
 
-            model::Game* game_ptr = sctx.game_by_filepath(fileinfo.canonicalFilePath());
+            QString path = ::clean_abs_path(fileinfo);
+            model::Game* game_ptr = sctx.game_by_filepath(path);
             if (!game_ptr) {
                 game_ptr = sctx.create_game_for(collection);
-                sctx.game_add_filepath(*game_ptr, fileinfo.canonicalFilePath());
+                sctx.game_add_filepath(*game_ptr, std::move(path));
             }
             sctx.game_add_to(*game_ptr, collection);
             found_games++;

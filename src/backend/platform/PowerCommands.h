@@ -20,10 +20,11 @@
 
 namespace platform {
 /// Contains the implementation of platform-specific system calls,
-/// such as reboot or shutdown
+/// such as reboot, restart or shutdown
 namespace power {
 
 void reboot();
+void restart();
 void shutdown();
 
 } // namespace power

@@ -13,7 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+//
+// Updated and integrated for recalbox by BozoTheGeek 03/05/2021
+//
 
 #pragma once
 
@@ -23,8 +25,9 @@
 #include <QString>
 #include <QRegularExpression>
 
-namespace providers { class SearchContext; }
+namespace model { class Game; }
 namespace model { class GameFile; }
+namespace providers { class SearchContext; }
 class QDir;
 class QXmlStreamReader;
 
@@ -39,7 +42,7 @@ class Metadata {
 
 public:
     explicit Metadata(QString, std::vector<QString>);
-    void find_metadata_for(const SystemEntry&, const SearchContext&) const;
+    void find_metadata_for(const SystemEntry&, providers::SearchContext&) const;
 
 private:
     const QString m_log_tag;
@@ -49,9 +52,10 @@ private:
     const QRegularExpression m_players_regex;
     const std::vector<std::pair<MetaType, AssetType>> m_asset_type_map;
 
-    void process_gamelist_xml(const QDir&, QXmlStreamReader&, const SearchContext&) const;
+    void process_gamelist_xml(const QDir&, QXmlStreamReader&, providers::SearchContext&, const QString&) const;
     HashMap<MetaType, QString, EnumHash> parse_gamelist_game_node(QXmlStreamReader&) const;
     void apply_metadata(model::GameFile&, const QDir&, HashMap<MetaType, QString, EnumHash>&) const;
+    void add_skraper_media_metadata(const QDir&, providers::SearchContext&) const;
 };
 
 } // namespace es2

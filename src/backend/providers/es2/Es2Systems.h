@@ -18,23 +18,77 @@
 #pragma once
 
 #include <QString>
+#include <QList>
 #include <vector>
-
 
 namespace providers {
 namespace es2 {
+
+struct EmulatorsEntry {
+    QString name;
+    QString core;
+    int priority;
+    int netplay;
+    QString corelongname; //now available from all .corenames files
+    QString coreversion; //now available from all .corenames files
+    QString coreextensions;
+    QString corecompatibility;
+    QString corespeed;
+};
+
+//! Immutable core information from retroarch only
+struct CoreInfo
+{
+  private:
+    //! Long name (i.e. "MAME 2003-Plus")
+    std::string mLongName;
+    //! Short name (i.e. "mame2003+")
+    std::string mShortName;
+    //! Version
+    std::string mVersion;
+
+  public:
+    CoreInfo(const std::string& longName, const std::string& shortName, const std::string& version)
+      : mLongName(longName)
+      , mShortName(shortName)
+      , mVersion(version)
+    {
+    }
+
+    CoreInfo() = default;
+
+    //! Long name
+    const std::string& LongName() const { return mLongName; }
+    //! Short name
+    const std::string& ShortName() const { return mShortName; }
+    //! Version
+    const std::string& Version() const { return mVersion; }
+    //! Empty?
+    bool Empty() const { return mLongName.empty(); }
+};
 
 struct SystemEntry {
     QString name;
     QString shortname;
     QString path;
     QString extensions;
-    QString platforms;
+    QString platforms; // seems depreacted soon from recalbox 8.1.X
     QString launch_cmd;
+    QString icon;
+    QString screenscraper;
+    QString type;
+    QString pad;
+    QString keyboard;
+    QString mouse;
+    QString lightgun;
+    QString releasedate;
+    QString manufacturer; // added in recalbox 8.1
+    QString retroachievements;
+    QList <EmulatorsEntry> emulators;
 };
 
-
 std::vector<SystemEntry> find_systems(const QString&, const std::vector<QString>&);
+SystemEntry find_system(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const QString shortName);
 
 } // namespace es2
 } // namespace providers

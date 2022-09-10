@@ -25,6 +25,9 @@
 #include <QSettings>
 #include <QtPlugin>
 
+//to initialize the web engine for QML usage
+#include <QtWebEngine>
+
 #ifdef Q_OS_ANDROID
 #include "backend/platform/AndroidHelpers.h"
 #endif
@@ -39,8 +42,11 @@ backend::CliArgs handle_cli_args(QGuiApplication&);
 bool request_runtime_permissions();
 bool portable_txt_present();
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char** env)
 {
+    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+    qputenv("QTWEBENGINE_DISABLE_SANDBOX", QByteArray("1"));
+    
     Q_INIT_RESOURCE(frontend);
     Q_INIT_RESOURCE(themes);
     Q_INIT_RESOURCE(qmlutils);
@@ -50,7 +56,12 @@ int main(int argc, char *argv[])
     QCoreApplication::addLibraryPath(QStringLiteral("lib/plugins"));
     QCoreApplication::addLibraryPath(QStringLiteral("lib"));
     QSettings::setDefaultFormat(QSettings::IniFormat);
-
+    
+    //to well initialize the web engine for QML usage
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QtWebEngine::initialize();
+    
     QGuiApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("pegasus-frontend"));
     app.setApplicationVersion(QStringLiteral(GIT_REVISION));
@@ -64,7 +75,7 @@ int main(int argc, char *argv[])
     backend::CliArgs cli_args = handle_cli_args(app);
     cli_args.portable |= portable_txt_present();
 
-    backend::Backend backend(cli_args);
+    backend::Backend backend(cli_args, env);
     backend.start();
 
     return app.exec();
@@ -122,13 +133,17 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
         QStringLiteral("disable-menu-reboot"),
         CMDMSG("Hides the system reboot entry in the main menu"));
 
+    const QCommandLineOption arg_menu_restart = add_cli_option(argparser,
+        QStringLiteral("disable-menu-restart"),
+        CMDMSG("Hides Pegasus restart entry in the main menu"));
+
     const QCommandLineOption arg_menu_shutdown = add_cli_option(argparser,
         QStringLiteral("disable-menu-shutdown"),
         CMDMSG("Hides the system shutdown entry in the main menu"));
 
     const QCommandLineOption arg_menu_appclose = add_cli_option(argparser,
-        QStringLiteral("disable-menu-appclose"),
-        CMDMSG("Hides the closing Pegasus entry in the main menu"));
+        QStringLiteral("enable-menu-appclose"),
+        CMDMSG("Show the closing Pegasus entry in the main menu"));
 
     const QCommandLineOption arg_menu_settings = add_cli_option(argparser,
         QStringLiteral("disable-menu-settings"),
@@ -139,7 +154,8 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
         CMDMSG("Alias for:\n"
                "--disable-menu-reboot\n"
                "--disable-menu-shutdown\n"
-               "--disable-menu-appclose\n"
+			   "--disable-menu-restart\n"
+			   "--enable-menu-appclose\n"
                "--disable-menu-settings"));
 
     const QCommandLineOption arg_gamepad_autoconfig = add_cli_option(argparser,
@@ -157,7 +173,7 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
     backend::CliArgs args;
     args.portable = argparser.isSet(arg_portable);
     args.silent = argparser.isSet(arg_silent);
-    args.enable_menu_appclose = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_appclose));
+    args.enable_menu_appclose = !(argparser.isSet(arg_menu_kiosk) || !argparser.isSet(arg_menu_appclose));
     args.enable_menu_settings = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_settings));
     args.enable_gamepad_autoconfig = !argparser.isSet(arg_gamepad_autoconfig);
 #ifdef Q_OS_ANDROID
@@ -166,6 +182,7 @@ backend::CliArgs handle_cli_args(QGuiApplication& app)
 #else
     args.enable_menu_shutdown = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_shutdown));
     args.enable_menu_reboot = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_reboot));
+    args.enable_menu_restart = !(argparser.isSet(arg_menu_kiosk) || argparser.isSet(arg_menu_restart));
 #endif
     return args;
 
