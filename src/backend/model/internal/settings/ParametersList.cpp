@@ -42,15 +42,16 @@ QString GetCommandOutput(const std::string& command)
 QStringList GetParametersList(QString Parameter)
 {
     QStringList ListOfValue;
-    
+
     //clean global internal values if needed
     ListOfInternalValue.clear();
-    
+
     if (Parameter.endsWith(".ratio", Qt::CaseInsensitive) == true) // compatible for 'global.ratio' and '{system].ratio' (example: 'snes.ratio')
     {
+        ListOfValue << QObject::tr("none") << QObject::tr("auto") << "4/3" << "16/9" << "16/10" << "16/15" << "21/9" << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12" << "19/14" << "30/17" << "32/9" << QObject::tr("square pixel") << QObject::tr("config") << QObject::tr("custom") << QObject::tr("core provided");
         /*## Set ratio for all emulators (auto,4/3,16/9,16/10,custom) - default value: auto / index 0
         global.ratio=auto */
-        ListOfValue << "none" << "auto" << "4/3" << "16/9" << "16/10" << "16/15" << "21/9" << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12" << "19/14" << "30/17" << "32/9" << "squarepixel" << "config" << "custom" << "coreprovided";
+        ListOfInternalValue << "none" << "auto" << "4/3" << "16/9" << "16/10" << "16/15" << "21/9" << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12" << "19/14" << "30/17" << "32/9" << "squarepixel" << "config" << "custom" << "coreprovided";
     }
     else if (Parameter == "system.language")
     {
@@ -72,7 +73,8 @@ QStringList GetParametersList(QString Parameter)
     {
         /* for rotation xrandr output :
           --rotate normal,inverted,left,right */
-        ListOfValue << "normal" << "inverted" << "left" << "right";
+        ListOfValue << QObject::tr("normal") << QObject::tr("inverted") << QObject::tr("left") << QObject::tr("right");
+        ListOfInternalValue << "normal" << "inverted" << "left" << "right";
     }
     else if (Parameter == "system.secondary.screen.position")
     {
@@ -83,7 +85,8 @@ QStringList GetParametersList(QString Parameter)
           --above <output>
           --below <output>
     Only set for Marquee screen */
-        ListOfValue << "above" << "below" << "left" << "right";
+        ListOfValue << QObject::tr("above") << QObject::tr("below") << QObject::tr("left") << QObject::tr("right");
+        ListOfInternalValue << "above" << "below" << "left" << "right";
     }
     else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
     {
@@ -93,58 +96,74 @@ QStringList GetParametersList(QString Parameter)
         ## (none, retro, scanlines)
         global.shaderset=none
         */
-        ListOfValue << "none" << "retro" << "scanline";
+        ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanline");
+        ListOfInternalValue << "none" << "retro" << "scanline";
     }
     else if (Parameter.endsWith(".shaders", Qt::CaseInsensitive) == true)
     {
         /*
         ## Set gpslp shader for all emulators (prefer shadersets above). Absolute path (string)
         global.shaders=/recalbox/share/shaders/myShaders.glslp
-        */
+        select only compatible extension shaders in menu opengl(glslp) / vulkan(slangp)*/
+        QString shadersext;
+        QString filterext;
+        QString dirShaders;
+        // check vulkan option in recalbox.conf
+        if (RecalboxConf::Instance().AsBool("system.video.driver.vulkan", false) == true)
+        {
+            shadersext = "*.slangp";
+            filterext = ".slangp";
+            dirShaders = "shaders_slang";
+        }
+        else
+        {
+            shadersext = "*.glslp";
+            filterext = ".glslp";
+            dirShaders = "shaders_glsl";
+        }
+
         // add none in list for disabled option if needed
-        ListOfValue << "none";
+        ListOfValue << QObject::tr("none");
         QString empty = "";
         ListOfInternalValue << empty;
 
-
         //read root directory
         // Define shaders path
-        QDir shadersDir("/recalbox/share/shaders/");
+        QDir shadersDir("/recalbox/share/shaders/" + dirShaders + "/");
         // Sorting by name
         shadersDir.setSorting(QDir::Name);
-        QStringList files = shadersDir.entryList(QStringList() << "*.glslp", QDir::Files);
+        QStringList files = shadersDir.entryList(QStringList(shadersext), QDir::Files);
         for ( int index = 0; index < files.count(); index++ )
         {
             QString file = files.at(index);
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             // set absolute path and extension for recalbox.conf
-            ListOfInternalValue.append("/recalbox/share/shaders/" + file);
-            // remove .glslp on menu
-            ListOfValue.append(file.replace(".glslp", ""));
+            ListOfInternalValue.append("/recalbox/share/shaders/" + dirShaders + "/" + file);
+            // remove file extension on menu
+            ListOfValue.append(file.replace(filterext, ""));
         }
 
         //read subdirectories
-        QDirIterator it("/recalbox/share/shaders/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        QDirIterator it("/recalbox/share/shaders/" + dirShaders + "/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         while (it.hasNext()) {
             QString dir = it.next();
             QString relativedir = dir;
-            relativedir = relativedir.replace("/recalbox/share/shaders/","");
+            relativedir = relativedir.replace("/recalbox/share/shaders/" + dirShaders + "/","");
             //Log::debug(LOGMSG("Subdir : '%1'").arg(dir));
             QDir shadersSubDir(dir);
             // Sorting by name
             shadersSubDir.setSorting(QDir::Name);
-            QStringList subfiles = shadersSubDir.entryList(QStringList() << "*.glslp",QDir::Filter::Files,QDir::SortFlag::Name);
+            QStringList subfiles = shadersSubDir.entryList(QStringList(shadersext),QDir::Filter::Files,QDir::SortFlag::Name);
             for (int i = 0; i < subfiles.count(); i++ )
             {
                 QString subfile = subfiles.at(i);
                 //Log::debug(LOGMSG("File found in Subdir : '%1'").arg(subfile));
                 // set absolute path and extension for recalbox.conf
                 ListOfInternalValue.append(dir + '/' + subfile);
-                // remove .glslp on menu
-                ListOfValue.append(relativedir + " - " + subfile.replace(".glslp", ""));
+                // remove file extension on menu
+                ListOfValue.append(relativedir + " - " + subfile.replace(filterext, ""));
             }
         }
-
     }
     else if (Parameter == "controllers.ps3.driver")
     {
@@ -169,13 +188,13 @@ QStringList GetParametersList(QString Parameter)
         audio.mode = musicandvideosound -> to activate sound for all using the Display value : "video and game"
         or
         audio.mode = none -> to deactivate sound
-        
+
         ##RFU / activated only for menu / bug ignored to activate the sounds
         MusicsOnly,
         VideosSoundOnly,
         MusicsXorVideosSound,
         */
-        
+
         //pegasus sound layer parameters is not as ES.
         ListOfValue << QObject::tr("All sounds on") + " \uf123" <<  QObject::tr("sounds off") +" \uf3a2" << QObject::tr("Not supported: Videos Sound only") << QObject::tr("Not supported: Musics Only") << QObject::tr("Not supported: Musics or Videos Sound");// using ionIcons Font
         //use internal values to match with ES modes
@@ -192,7 +211,7 @@ QStringList GetParametersList(QString Parameter)
         */
 
         IAudioController::DeviceList playbackList = AudioController::Instance().GetPlaybackList();
-        
+
         for(const auto& playback : playbackList)
         {
             Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
@@ -203,7 +222,7 @@ QStringList GetParametersList(QString Parameter)
         }
         if(ListOfValue.isEmpty())
         {
-            ListOfValue.append("no device detected");
+            ListOfValue.append(QObject::tr("no device detected"));
             ListOfInternalValue.append(""); //to empty parameter
         }
     }
@@ -238,7 +257,7 @@ QStringList GetParametersList(QString Parameter)
         QString system_short_name = Parameter.split('.').at(0);
 
         //model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
-        
+
     }
     else if (Parameter.endsWith(".emulator", Qt::CaseInsensitive) == true) // compatible with all systems
     {
@@ -282,7 +301,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
     //clean global internal values if needed
     ListOfInternalValue.clear();
-    
+
     //replace from '%1' to '%i' parameters from SysCommand by SysOptions
     if (!SysOptions.empty())
     {
@@ -314,11 +333,11 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
     ListOfValue.removeAll(QString(""));
 
     Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
-    
+
     //to avoid crash when there is no value return by command/script
     if(ListOfValue.isEmpty())
     {
-        ListOfValue.append("no value");
+        ListOfValue.append(QObject::tr("no value"));
         ListOfInternalValue.append(""); //to empty parameter
     }
 
@@ -342,7 +361,7 @@ std::vector<model::ParameterEntry> find_available_parameterslist(const QString& 
     std::vector<model::ParameterEntry> parameterslist;
 
     //Log::debug(LOGMSG("ListOfValue.count():`%1`").arg(ListOfValue.count()));
-    
+
     parameterslist.reserve(static_cast<size_t>(ListOfValue.count()));
 
     for (const QString& name : qAsConst(ListOfValue)) {
@@ -381,7 +400,7 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
     QString DefaultValue;
     if (ListOfInternalValue.size() == 0) DefaultValue = m_parameterslist.at(0).name;
     else DefaultValue = ListOfInternalValue.at(0);
-    
+
     //Log::debug(LOGMSG("DefaultValue:`%1`").arg(DefaultValue));
 
     if(Parameter.contains("boot.", Qt::CaseInsensitive))
@@ -402,7 +421,7 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
 bool ParametersList::select_parameter(const QString& name)
 {
     //Log::debug(LOGMSG("ParametersList::select_parameter(const QString& name) name:`%1`").arg(name));
-    
+
     for (size_t idx = 0; idx < m_parameterslist.size(); idx++) {
         /*
         Log::debug(LOGMSG("idx:`%1`").arg(idx));
@@ -457,7 +476,7 @@ void ParametersList::save_selected_parameter()
         //or internal value
         else RecalboxConf::Instance().SetString(m_parameter.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
     }
-    
+
     //Check m_parameter to manage specific case with specific management/action
     if(m_parameter == "audio.device")
     {
@@ -528,7 +547,7 @@ void ParametersList::setCurrentIndex(int idx_int)
 }
 
 
-QString ParametersList::currentName(const QString& Parameter) { 
+QString ParametersList::currentName(const QString& Parameter) {
 
     //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
 
@@ -546,7 +565,7 @@ QString ParametersList::currentName(const QString& Parameter) {
     return m_parameterslist.at(m_current_idx).name;
 }
 
-QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) { 
+QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) {
 
     //Log::debug(LOGMSG("QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) - parameter: `%1` - SysCommand: `%2` - SysOptions: TODO ").arg(Parameter,SysCommand));
 
