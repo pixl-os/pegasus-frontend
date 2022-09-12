@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [recalbox-integration] - yyyy-mm-dd - vx
+## [recalbox-integration] - 2022-09-12 - v0.0.8
 
 - New API features:
 	- add System 'type', 'releasedate' & 'manufacturer' as new info from systemlist.xml and accessible from api.colletions
