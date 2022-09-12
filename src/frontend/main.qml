@@ -926,12 +926,9 @@ Window {
     //***********************************************************BEGIN OF UPDATES PARTS*****************************************************************
     ListModel {
         id: componentsListModel
-        ListElement { componentName: "Pegasus-frontend"; repoUrl:"https://api.github.com/repos/bozothegeek/pegasus-frontend/releases";icon: "qrc:/frontend/assets/logopegasus.png"; picture: ""; multiVersions: false}
+        ListElement { componentName: "Pegasus-frontend"; repoUrl:"https://api.github.com/repos/pixl-os/pegasus-frontend/releases";icon: "qrc:/frontend/assets/logopegasus.png"; picture: ""; multiVersions: false}
         ListElement { componentName: "Libretro FBNeo"; repoUrl:"https://api.github.com/repos/pixl-os/FBNeo/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Nvidia driver"; repoLocal:"/recalbox/system/hardware/videocard/releases-nvidia.json";icon:"qrc:/frontend/assets/logonvidia.png"; picture: ""; multiVersions: true}
-        //examples:
-        //ListElement { componentName: "Nvidia driver (remote)"; repoUrl:"https://api.github.com/repos/pixl-os/nvidia-driver/releases";icon:""; picture: ""}
-        //ListElement { componentName: "RetroArch"; repoUrl:"https://api.github.com/repos/bozothegeek/pegasus-frontend/releases";icon: "qrc:/frontend/assets/libretro-retroarch-simple-logo.png"; picture: ""}
         //ADD HERE new ListElement to add new component updatable
     }
 
