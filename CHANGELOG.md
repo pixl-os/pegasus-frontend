@@ -49,6 +49,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix log error in cmd to silent errors
 	- fix typo on informationSystem for 'thread' and 'vulkan'
 	- fix "Information System" to improve performance on display (and for vulkan info)
+	- Fix shaders selection for vulkan and opengl
 
 ## [recalbox-integration] - 2022-07-08 - v0.0.7
 - fix on management of shaders display/selection
