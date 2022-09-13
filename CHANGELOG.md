@@ -43,6 +43,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add icons displayed for generix x-box pad for xbox 360/One/Series
 	- add option to force vulkan video driver (only for nvidia-driver)
 	- add translation for vulkan video driver menu
+	- add online upgrade for libretro-mame 
 
 - Fixes:
 	- several fixes on QML source codes (var to other type, etc..)
