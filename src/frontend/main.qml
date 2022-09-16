@@ -928,6 +928,7 @@ Window {
         id: componentsListModel
         ListElement { componentName: "Pegasus-frontend"; repoUrl:"https://api.github.com/repos/pixl-os/pegasus-frontend/releases";icon: "qrc:/frontend/assets/logopegasus.png"; picture: ""; multiVersions: false}
         ListElement { componentName: "Libretro FBNeo"; repoUrl:"https://api.github.com/repos/pixl-os/FBNeo/releases";icon:""; picture: ""; multiVersions: false}
+        ListElement { componentName: "Libretro Mame"; repoUrl:"https://api.github.com/repos/pixl-os/mame/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Nvidia driver"; repoLocal:"/recalbox/system/hardware/videocard/releases-nvidia.json";icon:"qrc:/frontend/assets/logonvidia.png"; picture: ""; multiVersions: true}
         //ADD HERE new ListElement to add new component updatable
     }
