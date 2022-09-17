@@ -38,7 +38,7 @@ Item {
     property bool hasScreenshotButton : false
 
     //parameters for base
-    property int ratio: 80/100 //at 80% of the size
+    property real ratio: 80/100 //at 80% of the size
     property int padBaseSourceSizeWidth : 906
     property int padBaseSourceSizeHeight : 398
 
@@ -143,8 +143,8 @@ Item {
     property int rStickLeftX: 0
 
     //to manage contrast/brightness for button effects
-    property int contrast: 0.5
-    property int brightness: 0.5
+    property real contrast: 0.5
+    property real brightness: 0.5
 
     Image {
         id: padBase
