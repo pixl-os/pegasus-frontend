@@ -924,13 +924,17 @@ Window {
     //***********************************************************END OF VIRTUAL KEYBOARD PARTS**********************************************************
 
     //***********************************************************BEGIN OF UPDATES PARTS*****************************************************************
+    //ADD HERE new ListElement to add new component updatable
     ListModel {
         id: componentsListModel
         ListElement { componentName: "Pegasus-frontend"; repoUrl:"https://api.github.com/repos/pixl-os/pegasus-frontend/releases";icon: "qrc:/frontend/assets/logopegasus.png"; picture: ""; multiVersions: false}
         ListElement { componentName: "Libretro FBNeo"; repoUrl:"https://api.github.com/repos/pixl-os/FBNeo/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Libretro Mame"; repoUrl:"https://api.github.com/repos/pixl-os/mame/releases";icon:""; picture: ""; multiVersions: false}
+        ListElement { componentName: "Xemu"; repoUrl:"https://api.github.com/repos/pixl-os/xemu/releases";icon:""; picture: ""; multiVersions: false}
+        ListElement { componentName: "Supermodel"; repoUrl:"https://api.github.com/repos/pixl-os/Supermodel/releases";icon:""; picture: ""; multiVersions: false}
+        ListElement { componentName: "Dolphin-emu"; repoUrl:"https://api.github.com/repos/pixl-os/dolphin/releases";icon:""; picture: ""; multiVersions: false}
+        ListElement { componentName: "Pcsx2"; repoUrl:"https://api.github.com/repos/pixl-os/pcsx2/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Nvidia driver"; repoLocal:"/recalbox/system/hardware/videocard/releases-nvidia.json";icon:"qrc:/frontend/assets/logonvidia.png"; picture: ""; multiVersions: true}
-        //ADD HERE new ListElement to add new component updatable
     }
 
     Timer {//timer to download last versions
