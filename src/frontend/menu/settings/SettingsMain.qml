@@ -426,6 +426,7 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("wifi.enabled")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("wifi.enabled",checked);
+                        api.internal.recalbox.saveParameters();
                         if(checked){
                             var wifiIP = "";
                             if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
