@@ -740,9 +740,9 @@ FocusScope {
 
                             hasA: true;
                             hasB: true;
-                            hasX: false;
-                            hasY: false;
-                            hasNintendoPad : true;
+                            hasX: true;
+                            hasY: true;
+                            hasNintendoPad : false;
 
                             hasL1 : true; hasR1 : true;
                             hasL2 : true; hasR2 : true;
@@ -755,88 +755,88 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.6; padBaseSourceSizeWidth : 958 ; padBaseSourceSizeHeight : 751;
+                            ratio: 0.6; padBaseSourceSizeWidth : 858 ; padBaseSourceSizeHeight : 752;
 
-                            //parameters for select
-                            padSelectWidth : 50;
-                            padSelectHeight : 43;
-                            padSelectTopY: 252;
-                            padSelectLeftX: 352;
+                            //parameters for select (Screenshot button on Nintendo Switch one)
+                            padSelectWidth : 34;
+                            padSelectHeight : 24;
+                            padSelectTopY: 58;
+                            padSelectLeftX: 300;
 
                             //parameters for start
-                            padStartWidth : 50;
-                            padStartHeight : 43;
-                            padStartTopY: 252;
-                            padStartLeftX: 558;
+                            padStartWidth : 63;
+                            padStartHeight : 56;
+                            padStartTopY: 333;
+                            padStartLeftX: 399;
 
-                            //parameters for guide/hotkey
-                            padGuideWidth : 94;
-                            padGuideHeight : 94;
-                            padGuideTopY: 227;
-                            padGuideLeftX: 434;
+                            //parameters for guide/hotkey (Home of Nintendo Switch N64 controller or Home button of Mayflash N64 Adapter V2 - only on player 1)
+                            padGuideWidth : 36;
+                            padGuideHeight : 17;
+                            padGuideTopY: 61;
+                            padGuideLeftX: 527;
 
-                            //parameters for A/B/X/Y
-                            padAWidth : 65;
-                            padAHeight : 67;
-                            padATopY: 308;
-                            padALeftX: 730;
+                            //parameters for A/B (X/Y not used for the moment)
+                            padAWidth : 66;
+                            padAHeight : 61;
+                            padATopY: 375;
+                            padALeftX: 620;
 
-                            padBWidth : 65;
-                            padBHeight : 66;
-                            padBTopY: 233;
-                            padBLeftX: 806;
+                            padBWidth : 69;
+                            padBHeight : 64;
+                            padBTopY: 325;
+                            padBLeftX: 559;
 
-                            padXWidth : 66;
-                            padXHeight : 67;
-                            padXTopY: 233;
-                            padXLeftX: 655;
+                            padXWidth : 0;
+                            padXHeight : 0;
+                            padXTopY: 0;
+                            padXLeftX: 0;
 
-                            padYWidth : 66;
-                            padYHeight : 67;
-                            padYTopY: 158;
-                            padYLeftX: 730;
+                            padYWidth : 0;
+                            padYHeight : 0;
+                            padYTopY: 0;
+                            padYLeftX: 0;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 357;
-                            dpadAreaBottomY: 516;
-                            dpadAreaLeftX: 253;
-                            dpadAreaRightX: 411;
+                            dpadAreaTopY: 267;
+                            dpadAreaBottomY: 391;
+                            dpadAreaLeftX: 97;
+                            dpadAreaRightX: 227;
 
-                            //parameter for L1
-                            padL1Width : 171;
-                            padL1Height : 74;
-                            padL1TopY: 77;
-                            padL1LeftX: 113;
+                            //parameter for L1 (L)
+                            padL1Width : 187;
+                            padL1Height : 89;
+                            padL1TopY: 91;
+                            padL1LeftX: 73;
 
-                            //parameter for R1
-                            padR1Width : 173;
-                            padR1Height : 72;
-                            padR1TopY: 76;
-                            padR1LeftX: 673;
+                            //parameter for R1 (R)
+                            padR1Width : 186;
+                            padR1Height : 89;
+                            padR1TopY: 91;
+                            padR1LeftX: 603;
 
-                            //parameter for L2
-                            padL2Width : 64;
-                            padL2Height : 79;
-                            padL2TopY: 0;
-                            padL2LeftX: 194;
+                            //parameter for L2 (Z)
+                            padL2Width : 73;
+                            padL2Height : 86;
+                            padL2TopY: 605;
+                            padL2LeftX: 178;
 
-                            //parameter for R2
-                            padR2Width : 62;
-                            padR2Height : 77;
-                            padR2TopY: 1;
-                            padR2LeftX: 701;
+                            //parameter for R2 (ZR on nintendo switch N64 controller)
+                            padR2Width : 49;
+                            padR2Height : 21;
+                            padR2TopY: 82;
+                            padR2LeftX: 522;
 
                             //parameter for Left stick
-                            lStickWidth : 127;
-                            lStickHeight : 128;
-                            lStickTopY: 202;
-                            lStickLeftX: 131;
+                            lStickWidth : 81;
+                            lStickHeight : 71;
+                            lStickTopY: 477;
+                            lStickLeftX: 390;
 
                             //parameter for Right stick
-                            rStickWidth : 129;
-                            rStickHeight : 129;
-                            rStickTopY: 374;
-                            rStickLeftX: 553;
+                            rStickWidth : 0;
+                            rStickHeight : 0;
+                            rStickTopY: 0;
+                            rStickLeftX: 0;
 
                             //to adapt contrast/brightness
                             contrast : 0.1
