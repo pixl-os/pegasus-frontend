@@ -182,5 +182,21 @@
         <file>menu/settings/WifiNetworks.qml</file>
         <file>dialogs/WifiDialog.qml</file>
         <file>assets/navigation.wav</file>
+        <file>assets/gamepad/l2_n64.png</file>
+        <file>assets/gamepad/base_n64.png</file>
+        <file>assets/gamepad/r1_n64.png</file>
+        <file>assets/gamepad/l1_n64.png</file>
+        <file>assets/gamepad/lstick_n64.png</file>
+        <file>assets/gamepad/dpad_n64.png</file>
+        <file>assets/gamepad/select_n64.png</file>
+        <file>assets/gamepad/r2_n64.png</file>
+        <file>assets/gamepad/guide_n64.png</file>
+        <file>assets/gamepad/rstickup_n64.png</file>
+        <file>assets/gamepad/rstickright_n64.png</file>
+        <file>assets/gamepad/rstickdown_n64.png</file>
+        <file>assets/gamepad/rstickleft_n64.png</file>
+        <file>assets/gamepad/a_n64.png</file>
+        <file>assets/gamepad/b_n64.png</file>
+        <file>assets/gamepad/start_n64.png</file>
     </qresource>
 </RCC>
