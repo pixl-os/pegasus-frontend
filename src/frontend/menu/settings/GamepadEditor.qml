@@ -732,6 +732,118 @@ FocusScope {
                             brightness: 0.6
             } //As Sony PS4 pad
 
+            ListElement {   name: "n64"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: true;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: false;
+                            hasY: false;
+                            hasNintendoPad : true;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : true; hasRightStick : true;
+                            hasL3 : false; hasR3 : false;
+
+                            hadDpad : true;
+                            hasButtonsForDpad : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.6; padBaseSourceSizeWidth : 958 ; padBaseSourceSizeHeight : 751;
+
+                            //parameters for select
+                            padSelectWidth : 50;
+                            padSelectHeight : 43;
+                            padSelectTopY: 252;
+                            padSelectLeftX: 352;
+
+                            //parameters for start
+                            padStartWidth : 50;
+                            padStartHeight : 43;
+                            padStartTopY: 252;
+                            padStartLeftX: 558;
+
+                            //parameters for guide/hotkey
+                            padGuideWidth : 94;
+                            padGuideHeight : 94;
+                            padGuideTopY: 227;
+                            padGuideLeftX: 434;
+
+                            //parameters for A/B/X/Y
+                            padAWidth : 65;
+                            padAHeight : 67;
+                            padATopY: 308;
+                            padALeftX: 730;
+
+                            padBWidth : 65;
+                            padBHeight : 66;
+                            padBTopY: 233;
+                            padBLeftX: 806;
+
+                            padXWidth : 66;
+                            padXHeight : 67;
+                            padXTopY: 233;
+                            padXLeftX: 655;
+
+                            padYWidth : 66;
+                            padYHeight : 67;
+                            padYTopY: 158;
+                            padYLeftX: 730;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 357;
+                            dpadAreaBottomY: 516;
+                            dpadAreaLeftX: 253;
+                            dpadAreaRightX: 411;
+
+                            //parameter for L1
+                            padL1Width : 171;
+                            padL1Height : 74;
+                            padL1TopY: 77;
+                            padL1LeftX: 113;
+
+                            //parameter for R1
+                            padR1Width : 173;
+                            padR1Height : 72;
+                            padR1TopY: 76;
+                            padR1LeftX: 673;
+
+                            //parameter for L2
+                            padL2Width : 64;
+                            padL2Height : 79;
+                            padL2TopY: 0;
+                            padL2LeftX: 194;
+
+                            //parameter for R2
+                            padR2Width : 62;
+                            padR2Height : 77;
+                            padR2TopY: 1;
+                            padR2LeftX: 701;
+
+                            //parameter for Left stick
+                            lStickWidth : 127;
+                            lStickHeight : 128;
+                            lStickTopY: 202;
+                            lStickLeftX: 131;
+
+                            //parameter for Right stick
+                            rStickWidth : 129;
+                            rStickHeight : 129;
+                            rStickTopY: 374;
+                            rStickLeftX: 553;
+
+                            //to adapt contrast/brightness
+                            contrast : 0.1
+                            brightness: 0.2
+
+            } //As Nintendo 64 pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
+
         }
 
         //function to dynamically set container layout from gamepad name
