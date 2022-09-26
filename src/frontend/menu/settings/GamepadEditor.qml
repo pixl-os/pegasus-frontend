@@ -1219,6 +1219,7 @@ FocusScope {
             }
             ConfigField {
                 id: configL3
+                visible: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasL3) !== 'undefined') ? root.padPreview.hasL3 : true) : false
                 text: qsTr("press") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "l3"
@@ -1406,6 +1407,7 @@ FocusScope {
             }
             ConfigField {
                 id: configR3
+                visible: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasR3) !== 'undefined') ? root.padPreview.hasR3 : true) : false
                 text: qsTr("press") + api.tr
                 onActiveFocusChanged:
                     if (activeFocus) padPreview.currentButton = "r3"
