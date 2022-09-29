@@ -33,6 +33,7 @@ Item {
     property bool hasR2 : true
     property bool hasLeftStick : true
     property bool hasRightStick : true
+    property bool hasButtonsForRightStick : false
     property bool hasL3 : true //included in left stick usually
     property bool hasR3 : true //included in left stick usually
     property bool hasScreenshotButton : false
@@ -141,6 +142,27 @@ Item {
     property int rStickHeight: 0
     property int rStickTopY: 0
     property int rStickLeftX: 0
+
+    //parameter for rStick Buttons
+    property int rStickUpWidth : 0
+    property int rStickUpHeight : 0
+    property int rStickUpTopY: 0
+    property int  rStickUpLeftX: 0
+
+    property int rStickDownWidth : 0
+    property int rStickDownHeight : 0
+    property int rStickDownTopY: 0
+    property int  rStickDownLeftX: 0
+
+    property int rStickLeftWidth : 0
+    property int rStickLeftHeight : 0
+    property int rStickLeftTopY: 0
+    property int  rStickLeftLeftX: 0
+
+    property int rStickRightWidth : 0
+    property int rStickRightHeight : 0
+    property int rStickRightTopY: 0
+    property int  rStickRightLeftX: 0
 
     //to manage contrast/brightness for button effects
     property real contrast: 0.5
@@ -473,6 +495,88 @@ Item {
         yPercent: (gamepad && gamepad.axisLeftY) || 0.0
     }
 
+
+    PadButtonCustom {
+        id: padRightStickUp
+
+        width: vpx(rStickUpWidth * ratio)
+        height: vpx(rStickUpHeight * ratio)
+
+        anchors {
+            horizontalCenter: padBase.horizontalCenter;
+            verticalCenter: padBase.verticalCenter;
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (rStickUpTopY + (rStickUpHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (rStickUpLeftX + (rStickUpWidth/2))) * ratio);
+        }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
+        shortName: "rstickup"
+        name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
+        pressed: (gamepad && gamepad.axisRightY < 0.0) ? true : false
+    }
+
+    PadButtonCustom {
+        id: padRightStickDown
+
+        width: vpx(rStickDownWidth * ratio)
+        height: vpx(rStickDownHeight * ratio)
+
+        anchors {
+            horizontalCenter: padBase.horizontalCenter;
+            verticalCenter: padBase.verticalCenter;
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (rStickDownTopY + (rStickDownHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (rStickDownLeftX + (rStickDownWidth/2))) * ratio);
+        }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
+        shortName: "rstickdown"
+        name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
+        pressed: (gamepad && gamepad.axisRightY > 0.0) ? true : false
+    }
+
+    PadButtonCustom {
+        id: padRightStickLeft
+
+        width: vpx(rStickLeftWidth * ratio)
+        height: vpx(rStickLeftHeight * ratio)
+
+        anchors {
+            horizontalCenter: padBase.horizontalCenter;
+            verticalCenter: padBase.verticalCenter;
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (rStickLeftTopY + (rStickLeftHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (rStickLeftLeftX + (rStickLeftWidth/2))) * ratio);
+        }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
+        shortName: "rstickleft"
+        name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
+        pressed: (gamepad && gamepad.axisRightX < 0.0) ? true : false
+    }
+
+
+    PadButtonCustom {
+        id: padRightStickRight
+
+        width: vpx(rStickRightWidth * ratio)
+        height: vpx(rStickRightHeight * ratio)
+
+        anchors {
+            horizontalCenter: padBase.horizontalCenter;
+            verticalCenter: padBase.verticalCenter;
+            verticalCenterOffset: vpx(-((padBaseSourceSizeHeight/2) - (rStickRightTopY + (rStickRightHeight/2))) * ratio);
+            horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (rStickRightLeftX + (rStickRightWidth/2))) * ratio);
+        }
+
+        contrast: padContainer.contrast
+        brightness:  padContainer.brightness
+        shortName: "rstickright"
+        name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
+        pressed: (gamepad && gamepad.axisRightX > 0.0) ? true : false
+    }
+
     StickCustom {
         id: padRightStick
         width: vpx(rStickWidth * ratio)
@@ -491,4 +595,5 @@ Item {
         xPercent: (gamepad && gamepad.axisRightX) || 0.0
         yPercent: (gamepad && gamepad.axisRightY) || 0.0
     }
+
 }
