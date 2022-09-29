@@ -740,14 +740,14 @@ FocusScope {
 
                             hasA: true;
                             hasB: true;
-                            hasX: true;
-                            hasY: true;
+                            hasX: false;
+                            hasY: false;
                             hasNintendoPad : false;
 
                             hasL1 : true; hasR1 : true;
                             hasL2 : true; hasR2 : true;
 
-                            hasLeftStick : true; hasRightStick : true;
+                            hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : true;
                             hasL3 : false; hasR3 : false;
 
                             hadDpad : true;
@@ -833,10 +833,32 @@ FocusScope {
                             lStickLeftX: 390;
 
                             //parameter for Right stick
-                            rStickWidth : 0;
-                            rStickHeight : 0;
-                            rStickTopY: 0;
-                            rStickLeftX: 0;
+                            //need to set the area as when we have a stick to display green lines
+                            rStickWidth : 157;
+                            rStickHeight : 146;
+                            rStickTopY: 230;
+                            rStickLeftX: 643;
+
+                            //parameters to manage C buttons
+                            rStickUpWidth : 52;
+                            rStickUpHeight : 56;
+                            rStickUpTopY: 232;
+                            rStickUpLeftX: 698;
+
+                            rStickDownWidth : 51;
+                            rStickDownHeight : 50;
+                            rStickDownTopY: 327;
+                            rStickDownLeftX: 696;
+
+                            rStickLeftWidth : 53;
+                            rStickLeftHeight : 55;
+                            rStickLeftTopY: 281;
+                            rStickLeftLeftX: 643;
+
+                            rStickRightWidth : 52;
+                            rStickRightHeight : 55;
+                            rStickRightTopY: 273;
+                            rStickRightLeftX: 748;
 
                             //to adapt contrast/brightness
                             contrast : 0.1
@@ -919,6 +941,8 @@ FocusScope {
 
                 if(typeof(myControllerLayout.get(index).hasLeftStick) !== 'undefined') root.padPreview.hasLeftStick = myControllerLayout.get(index).hasLeftStick;
                 if(typeof(myControllerLayout.get(index).hasRightStick) !== 'undefined') root.padPreview.hasRightStick = myControllerLayout.get(index).hasRightStick;
+                if(typeof(myControllerLayout.get(index).hasButtonsForRightStick) !== 'undefined') root.padPreview.hasButtonsForRightStick = myControllerLayout.get(index).hasButtonsForRightStick;
+
                 //L3/R3 included in left/right sticks
                 if(typeof(myControllerLayout.get(index).hasL3) !== 'undefined') root.padPreview.hasL3 = myControllerLayout.get(index).hasL3;
                 if(typeof(myControllerLayout.get(index).hasR3) !== 'undefined') root.padPreview.hasR3 = myControllerLayout.get(index).hasR3;
@@ -1034,6 +1058,27 @@ FocusScope {
                 if(typeof(myControllerLayout.get(index).rStickHeight) !== 'undefined') root.padPreview.rStickHeight = myControllerLayout.get(index).rStickHeight;
                 if(typeof(myControllerLayout.get(index).rStickTopY) !== 'undefined') root.padPreview.rStickTopY = myControllerLayout.get(index).rStickTopY;
                 if(typeof(myControllerLayout.get(index).rStickLeftX) !== 'undefined') root.padPreview.rStickLeftX = myControllerLayout.get(index).rStickLeftX;
+
+                //Settings of parameter for rStick Buttons
+                if(typeof(myControllerLayout.get(index).rStickUpWidth) !== 'undefined') root.padPreview.rStickUpWidth = myControllerLayout.get(index).rStickUpWidth;
+                if(typeof(myControllerLayout.get(index).rStickUpHeight) !== 'undefined') root.padPreview.rStickUpHeight = myControllerLayout.get(index).rStickUpHeight;
+                if(typeof(myControllerLayout.get(index).rStickUpTopY) !== 'undefined') root.padPreview.rStickUpTopY = myControllerLayout.get(index).rStickUpTopY;
+                if(typeof(myControllerLayout.get(index).rStickUpLeftX) !== 'undefined') root.padPreview.rStickUpLeftX = myControllerLayout.get(index).rStickUpLeftX;
+
+                if(typeof(myControllerLayout.get(index).rStickDownWidth) !== 'undefined') root.padPreview.rStickDownWidth = myControllerLayout.get(index).rStickDownWidth;
+                if(typeof(myControllerLayout.get(index).rStickDownHeight) !== 'undefined') root.padPreview.rStickDownHeight = myControllerLayout.get(index).rStickDownHeight;
+                if(typeof(myControllerLayout.get(index).rStickDownTopY) !== 'undefined') root.padPreview.rStickDownTopY = myControllerLayout.get(index).rStickDownTopY;
+                if(typeof(myControllerLayout.get(index).rStickDownLeftX) !== 'undefined') root.padPreview.rStickDownLeftX = myControllerLayout.get(index).rStickDownLeftX;
+
+                if(typeof(myControllerLayout.get(index).rStickLeftWidth) !== 'undefined') root.padPreview.rStickLeftWidth = myControllerLayout.get(index).rStickLeftWidth;
+                if(typeof(myControllerLayout.get(index).rStickLeftHeight) !== 'undefined') root.padPreview.rStickLeftHeight = myControllerLayout.get(index).rStickLeftHeight;
+                if(typeof(myControllerLayout.get(index).rStickLeftTopY) !== 'undefined') root.padPreview.rStickLeftTopY = myControllerLayout.get(index).rStickLeftTopY;
+                if(typeof(myControllerLayout.get(index).rStickLeftLeftX) !== 'undefined') root.padPreview.rStickLeftLeftX = myControllerLayout.get(index).rStickLeftLeftX;
+
+                if(typeof(myControllerLayout.get(index).rStickRightWidth) !== 'undefined') root.padPreview.rStickRightWidth = myControllerLayout.get(index).rStickRightWidth;
+                if(typeof(myControllerLayout.get(index).rStickRightHeight) !== 'undefined') root.padPreview.rStickRightHeight = myControllerLayout.get(index).rStickRightHeight;
+                if(typeof(myControllerLayout.get(index).rStickRightTopY) !== 'undefined') root.padPreview.rStickRightTopY = myControllerLayout.get(index).rStickRightTopY;
+                if(typeof(myControllerLayout.get(index).rStickRightLeftX) !== 'undefined') root.padPreview.rStickRightLeftX = myControllerLayout.get(index).rStickRightLeftX;
 
                 //Settings of contrast/brightness
                 //console.log("typeof(myControllerLayout.get(index).brightness) : ",typeof(myControllerLayout.get(index).brightness));
