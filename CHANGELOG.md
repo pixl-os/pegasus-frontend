@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - xxxx-xx-xx - vx.x.x
+
+- Fixes:
+	- wifi-first-activation-not-list-proposed #[13]
+
 ## [recalbox-integration] - 2022-09-12 - v0.0.8
 
 - New API features:
