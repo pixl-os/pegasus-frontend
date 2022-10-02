@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file (focus on ch
 - Fixes:
 	- wifi-first-activation-not-list-proposed #[13]
 
+- News:
+	- Add update online for supermodel, citra-emu, pcsx2, dolphin-emu, libretro-mame, xemu
+
 ## [recalbox-integration] - 2022-09-12 - v0.0.8
 
 - New API features:
