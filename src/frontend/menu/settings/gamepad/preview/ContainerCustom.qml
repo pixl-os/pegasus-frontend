@@ -590,7 +590,7 @@ Item {
         contrast: padContainer.contrast
         brightness:  padContainer.brightness
         side: "r"
-        name: hasRightStick ? padContainer.name : ""
+        name: (hasRightStick && !hasButtonsForRightStick) ? padContainer.name : ""
         pressed: hasR3 && gamepad ? gamepad.buttonR3 : false
         xPercent: (gamepad && gamepad.axisRightX) || 0.0
         yPercent: (gamepad && gamepad.axisRightY) || 0.0
