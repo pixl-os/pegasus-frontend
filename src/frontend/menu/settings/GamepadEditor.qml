@@ -1246,7 +1246,7 @@ FocusScope {
 				input: GamepadManager.GMAxis.LeftX
 				inputType: "axis"
  
-                KeyNavigation.right: configRightStickX
+                KeyNavigation.right: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? configRightStickPlusX : configRightStickX) : configRightStickX
                 KeyNavigation.down: configLeftStickY
             }
             ConfigField {
@@ -1259,7 +1259,7 @@ FocusScope {
  				input: GamepadManager.GMAxis.LeftY
 				inputType: "axis"
  
-                KeyNavigation.right: configRightStickY
+                KeyNavigation.right: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? configRightStickPlusY : configRightStickY) : configRightStickY
                 KeyNavigation.down: configL3
             }
             ConfigField {
@@ -1368,7 +1368,12 @@ FocusScope {
                           : GamepadManager.GMButton.East );
                 inputType: "button"
 
-                KeyNavigation.down: configX
+                KeyNavigation.down: ((typeof(root.padPreview) !== 'undefined') ?
+                                         (typeof(root.padPreview.hasX) !== 'undefined' ?
+                                              (root.padPreview.hasX ?
+                                                   configX : (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? (root.padPreview.hasButtonsForRightStick ? configRightStickPlusX : configRightStickX) : configRightStickX) : configRightStickX )
+                                              : configRightStickX )
+                                      : configX)
             }
             ConfigField {
                 id: configX
@@ -1413,7 +1418,7 @@ FocusScope {
                           : GamepadManager.GMButton.North );
 				inputType: "button"
 
-                KeyNavigation.down: configRightStickX
+                KeyNavigation.down: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? (root.padPreview.hasButtonsForRightStick ? configRightPlusStickX : configRightStickX) : configRightStickX) : configRightStickX
             }
         }
         ConfigGroup {
@@ -1427,6 +1432,7 @@ FocusScope {
                 verticalCenterOffset: parent.verticalSpacing
             }
             ConfigField {
+                visible : (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? !root.padPreview.hasButtonsForRightStick : true) : false
                 id: configRightStickX
                 text: recording ? qsTr("go x axis to left") + api.tr  : qsTr("x axis") + api.tr
                 onActiveFocusChanged:
@@ -1439,6 +1445,7 @@ FocusScope {
                 KeyNavigation.down: configRightStickY
             }
             ConfigField {
+                visible : (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? !root.padPreview.hasButtonsForRightStick : true) : false
                 id: configRightStickY
                 text: recording ? qsTr("go y axis to up") + api.tr  : qsTr("y axis") + api.tr
                 onActiveFocusChanged:
@@ -1450,6 +1457,63 @@ FocusScope {
 
                 KeyNavigation.down: configR3
             }
+
+            ConfigField {
+                visible : (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? root.padPreview.hasButtonsForRightStick : false) : false
+                id: configRightStickPlusX
+                text: recording ? qsTr("press button at left") + api.tr  : qsTr("+x axis") + api.tr
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "rx"
+
+                pressed: gamepad && Math.abs(gamepad.axisRightX) > 0.05
+                input: GamepadManager.GMAxis.RightPlusX
+                inputType: "axis"
+                KeyNavigation.left: configLeftStickX
+                KeyNavigation.down: configRightStickMinusX
+            }
+
+            ConfigField {
+                visible : (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? root.padPreview.hasButtonsForRightStick : false) : false
+                id: configRightStickMinusX
+                text: recording ? qsTr("press button at right") + api.tr  : qsTr("-x axis") + api.tr
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "rx"
+
+                pressed: gamepad && Math.abs(gamepad.axisRightX) < -0.05
+                input: GamepadManager.GMAxis.RightMinusX
+                inputType: "axis"
+                KeyNavigation.left: configLeftStickY
+                KeyNavigation.down: configRightStickPlusY
+            }
+
+            ConfigField {
+                visible : (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? root.padPreview.hasButtonsForRightStick : false) : false
+                id: configRightStickPlusY
+                text: recording ? qsTr("press button to up") + api.tr  : qsTr("+y axis") + api.tr
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "ry"
+
+                pressed: gamepad && Math.abs(gamepad.axisRightY) > 0.05
+                input: GamepadManager.GMAxis.RightPlusY
+                inputType: "axis"
+                KeyNavigation.left: configLeftStickX
+                KeyNavigation.down: configRightStickMinusY
+            }
+
+            ConfigField {
+                visible : (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? root.padPreview.hasButtonsForRightStick : false) : false
+                id: configRightStickMinusY
+                text: recording ? qsTr("press button to down") + api.tr  : qsTr("-y axis") + api.tr
+                onActiveFocusChanged:
+                    if (activeFocus) padPreview.currentButton = "ry"
+
+                pressed: gamepad && Math.abs(gamepad.axisRightY) < -0.05
+                input: GamepadManager.GMAxis.RightMinusY
+                inputType: "axis"
+                KeyNavigation.left: configLeftStickY
+                KeyNavigation.down: configR3
+            }
+
             ConfigField {
                 id: configR3
                 visible: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasR3) !== 'undefined') ? root.padPreview.hasR3 : true) : false
