@@ -934,7 +934,7 @@ Window {
         ListElement { componentName: "Supermodel"; repoUrl:"https://api.github.com/repos/pixl-os/Supermodel/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Dolphin-emu"; repoUrl:"https://api.github.com/repos/pixl-os/dolphin/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Pcsx2"; repoUrl:"https://api.github.com/repos/pixl-os/pcsx2/releases";icon:""; picture: ""; multiVersions: false}
-        ListElement { componentName: "Citra-emu"; repoUrl:"https://api.github.com/repos/pixl-os/citra-emu/citra-nightly/releases";icon:""; picture: ""; multiVersions: false}
+        ListElement { componentName: "Citra-emu"; repoUrl:"https://api.github.com/repos/pixl-os/citra-nightly/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Nvidia driver"; repoLocal:"/recalbox/system/hardware/videocard/releases-nvidia.json";icon:"qrc:/frontend/assets/logonvidia.png"; picture: ""; multiVersions: true}
     }
 
