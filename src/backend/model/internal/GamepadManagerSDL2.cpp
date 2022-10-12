@@ -757,6 +757,7 @@ void GamepadManagerSDL2::RecordingState::reset()
     device = -1;
     target_button = GamepadButton::INVALID;
     target_axis = GamepadAxis::INVALID;
+	target_sign = "";
     value.clear();
 }
 
@@ -954,12 +955,14 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadButton button)
     m_recording.target_button = button;
 }
 
-void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis)
+void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis, QString sign)
 {
     m_recording.reset();
     m_recording.device = device_idx;
     m_recording.target_axis = axis;
+    m_recording.target_sign = QString(sign).toStdString();
 }
+
 void GamepadManagerSDL2::cancel_recording()
 {
     if (m_recording.is_active())
@@ -983,6 +986,7 @@ void GamepadManagerSDL2::reset(int device_idx, GamepadAxis axis)
     m_recording.reset();
     m_recording.device = device_idx;
     m_recording.target_axis = axis;
+    m_recording.target_sign = "";
     m_recording.sign = "";
     m_recording.value = "";
     finish_recording();
@@ -1014,7 +1018,7 @@ void GamepadManagerSDL2::poll()
                 // ignored in favor of SDL_CONTROLLERDEVICEREMOVED
                 break;
             case SDL_CONTROLLERBUTTONUP:
-                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONUP - button: %1 - state: %2").arg(QString::number(event.cbutton.button),QString::number(event.cbutton.state)));
+                Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONUP - button: %1 - state: %2").arg(QString::number(event.cbutton.button),QString::number(event.cbutton.state)));
                 // also ignore input from other (non-recording) gamepads
                 if (!m_recording.is_active()) {
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
@@ -1022,7 +1026,7 @@ void GamepadManagerSDL2::poll()
                 }
                 break;
             case SDL_CONTROLLERBUTTONDOWN:
-                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONDOWN - instance_id: %1 - button: %2 - state: %3").arg(QString::number(event.cbutton.which),QString::number(event.cbutton.button),QString::number(event.cbutton.state)));
+                Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONDOWN - instance_id: %1 - button: %2 - state: %3").arg(QString::number(event.cbutton.which),QString::number(event.cbutton.button),QString::number(event.cbutton.state)));
                 // also ignore input from other (non-recording) gamepads
                 if (!m_recording.is_active()) {
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
@@ -1030,7 +1034,7 @@ void GamepadManagerSDL2::poll()
                 }
                 break;
             case SDL_CONTROLLERAXISMOTION:
-                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.caxis.which),QString::number(event.caxis.axis),QString::number(event.caxis.value)));
+                Log::debug(LOGMSG("SDL: SDL_CONTROLLERAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.caxis.which),QString::number(event.caxis.axis),QString::number(event.caxis.value)));
                 if (!m_recording.is_active())
                     fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
                 break;
@@ -1039,15 +1043,15 @@ void GamepadManagerSDL2::poll()
                 // ignored
                 break;
             case SDL_JOYBUTTONDOWN:
-                //Log::debug(LOGMSG("SDL: SDL_JOYBUTTONDOWN"));
+                Log::debug(LOGMSG("SDL: SDL_JOYBUTTONDOWN - instance_id: %1 - button: %2 - state: %3").arg(QString::number(event.jbutton.which),QString::number(event.jbutton.button),QString::number(event.jbutton.state)));
                 record_joy_button_maybe(event.jbutton.which, event.jbutton.button);
                 break;
             case SDL_JOYHATMOTION:
-                //Log::debug(LOGMSG("SDL: SDL_JOYHATMOTION"));
+                Log::debug(LOGMSG("SDL: SDL_JOYHATMOTION"));
                 record_joy_hat_maybe(event.jhat.which, event.jhat.hat, event.jhat.value);
                 break;
             case SDL_JOYAXISMOTION:
-                //Log::debug(LOGMSG("SDL: SDL_JOYAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.jaxis.which),QString::number(event.jaxis.axis),QString::number(event.jaxis.value)));
+                Log::debug(LOGMSG("SDL: SDL_JOYAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.jaxis.which),QString::number(event.jaxis.axis),QString::number(event.jaxis.value)));
                 record_joy_axis_maybe(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
                 break;
             default:
@@ -1529,10 +1533,11 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
         // }
 
         //no sign necessary if stick left or right
-        if ((m_recording.target_axis != GamepadAxis::LEFTX) \
+        if (((m_recording.target_axis != GamepadAxis::LEFTX) \
         && (m_recording.target_axis != GamepadAxis::LEFTY) \
         && (m_recording.target_axis != GamepadAxis::RIGHTX) \
-        && (m_recording.target_axis != GamepadAxis::RIGHTY))
+        && (m_recording.target_axis != GamepadAxis::RIGHTY)) \
+        || (m_recording.target_sign != "")) // if sign is finally requested as +/- right/left x/y (ex: "-rightx" need "sign and value" but "rightx" just need "value")
         {
             m_recording.sign = axis_value > 0 ? '+' : '-';
         }
@@ -1542,10 +1547,10 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
         
         finish_recording();
         }
-    catch ( const std::exception & Exp ) 
+    catch ( const std::exception & Exp )
     { 
         Log::error(m_log_tag, LOGMSG("Erreur 6: %1.\n").arg(Exp.what()));
-    } 
+    }
     catch ( const std::bad_alloc & ) 
     { 
         Log::error(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n")); 
@@ -1588,12 +1593,17 @@ void GamepadManagerSDL2::record_joy_hat_maybe(SDL_JoystickID instance_id, Uint8 
 }
 
 
-std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const field, const char* const recording_field,
+std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const sign, const char* const field,
+                                                           const char* const recording_field,
+                                                           const char* const recording_sign,
                                                            const SDL_GameControllerButtonBind& current_bind,
                                                            std::string mapping){
+    //Log::debug(m_log_tag, LOGMSG("field to find: %1%2 - recording  field: %3%4").arg(QString::fromStdString(std::string(sign)),QString::fromStdString(std::string(field)),QString::fromStdString(std::string(recording_sign)),QString::fromStdString(std::string(recording_field))));
     // new mapping
-    if (field == recording_field)
-        return std::string(field) + ':' + m_recording.sign + m_recording.value;
+    if ((std::string(field) == std::string(recording_field)) && (std::string(sign) == std::string(recording_sign))){
+        //Log::debug(m_log_tag, LOGMSG("matching done !!!"));
+        return std::string(sign) + std::string(field) + ':' + m_recording.sign + m_recording.value;
+    }
 
     // old mapping
     // const std::string value = generate_binding_str(current_bind);
@@ -1605,14 +1615,14 @@ std::string GamepadManagerSDL2::generate_mapping_for_field(const char* const fie
     for(int i = 0; i < fields.size(); i++)
     {
         Strings::Vector field_details = Strings::Split(fields[i],':');
-        if(field_details.size() == 2) /// good cut confirmed
+        if((field_details.size() == 2)) /// good cut confirmed 
         {        
-            if (std::string(field) == field_details[0])
+            if ((std::string(sign) + std::string(field)) == std::string(field_details[0]))
             {
                 //found and sure to have all (sign + binding)
-                return std::string(field) + ':' + std::string(field_details[1]);
+                return std::string(field_details[0]) + ':' + std::string(field_details[1]);
             }
-        }             
+		}
     }
     // unaffected mapping
     return {};
@@ -1675,6 +1685,13 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
                 ? to_fieldname(m_recording.target_button)
                 : to_fieldname(m_recording.target_axis)
             : nullptr;
+
+        const char* const recording_sign = m_recording.is_active()
+            ? (m_recording.target_button != GamepadButton::INVALID)
+                ? nullptr
+                : m_recording.target_sign.c_str()
+            : nullptr;
+
         
         //************************//
         //2) get existing mapping //
@@ -1689,20 +1706,52 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
         //***************************************************//
         //3) update existing mapping with new field recorded //
         //***************************************************//
-        #define GEN(TYPE, MAX) \
+        #define GENBUTTON(TYPE, MAX) \
             for (int idx = 0; idx < MAX; idx++) { \
                 const auto item = static_cast<SDL_GameController##TYPE>(idx); \
                 const char* const field = SDL_GameControllerGetStringFor##TYPE(item); \
                 const auto current_bind = SDL_GameControllerGetBindFor##TYPE(pad_ptr.get(), item); \
-                std::string new_mapping_field = generate_mapping_for_field(field, recording_field, current_bind, existing_mapping); \
-                Log::debug(m_log_tag, LOGMSG("new_mapping_field: %1").arg(QString::fromStdString(new_mapping_field))); \
+                const char* const sign = ""; \
+                std::string new_mapping_field = generate_mapping_for_field(sign, field, recording_field, recording_sign, current_bind, existing_mapping); \
+                Log::debug(m_log_tag, LOGMSG("mapping button field: %1").arg(QString::fromStdString(new_mapping_field))); \
                 if (!new_mapping_field.empty()) \
                     list.emplace_back(std::move(new_mapping_field)); \
             } 
-            GEN(Button, SDL_CONTROLLER_BUTTON_MAX)
-            GEN(Axis, SDL_CONTROLLER_AXIS_MAX)
-        #undef GEN
-
+            GENBUTTON(Button, SDL_CONTROLLER_BUTTON_MAX)
+        #undef GENBUTTON
+        #define GENAXIS(TYPE, MAX) \
+            for (int idx = 0; idx < MAX; idx++) { \
+                const auto item = static_cast<SDL_GameController##TYPE>(idx); \
+                const char* const field = SDL_GameControllerGetStringFor##TYPE(item); \
+                const auto current_bind = SDL_GameControllerGetBindFor##TYPE(pad_ptr.get(), item); \
+                const char* const sign = ""; \
+                std::string new_mapping_field = generate_mapping_for_field(sign, field, recording_field, recording_sign, current_bind, existing_mapping); \
+                Log::debug(m_log_tag, LOGMSG("mapping axis field: %1").arg(QString::fromStdString(new_mapping_field))); \
+                if (!new_mapping_field.empty()) \
+                    list.emplace_back(std::move(new_mapping_field)); \
+            } \
+            for (int idx = 0; idx < MAX; idx++) { \
+                const auto item = static_cast<SDL_GameController##TYPE>(idx); \
+                const char* const field = SDL_GameControllerGetStringFor##TYPE(item); \
+                const char* const sign = "-"; \
+                const auto current_bind = SDL_GameControllerGetBindFor##TYPE(pad_ptr.get(), item); \
+                std::string new_mapping_field = generate_mapping_for_field(sign, field, recording_field, recording_sign, current_bind, existing_mapping); \
+                Log::debug(m_log_tag, LOGMSG("mapping -axis field: %1").arg(QString::fromStdString(new_mapping_field))); \
+                if (!new_mapping_field.empty()) \
+                    list.emplace_back(std::move(new_mapping_field)); \
+            } \
+            for (int idx = 0; idx < MAX; idx++) { \
+                const auto item = static_cast<SDL_GameController##TYPE>(idx); \
+                const char* const field = SDL_GameControllerGetStringFor##TYPE(item); \
+                const char* const sign = "+"; \
+                const auto current_bind = SDL_GameControllerGetBindFor##TYPE(pad_ptr.get(), item); \
+                std::string new_mapping_field = generate_mapping_for_field(sign, field, recording_field, recording_sign, current_bind, existing_mapping); \
+                Log::debug(m_log_tag, LOGMSG("mapping +axis field: %1").arg(QString::fromStdString(new_mapping_field))); \
+                if (!new_mapping_field.empty()) \
+                    list.emplace_back(std::move(new_mapping_field)); \
+            }			
+            GENAXIS(Axis, SDL_CONTROLLER_AXIS_MAX)
+        #undef GENAXIS
         std::sort(list.begin() + 2, list.end());
         if (version(2, 0, 5) <= m_sdl_version)
             list.emplace_back(std::string("platform:") + SDL_GetPlatform());

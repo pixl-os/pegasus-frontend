@@ -64,7 +64,7 @@ public:
     Q_ENUM(GMAxis)
 
     Q_INVOKABLE void configureButton(int deviceId, model::GamepadManager::GMButton button);
-    Q_INVOKABLE void configureAxis(int deviceId, model::GamepadManager::GMAxis axis);
+    Q_INVOKABLE void configureAxis(int deviceId, model::GamepadManager::GMAxis axis, QString sign);
     Q_INVOKABLE void resetButton(int deviceId, model::GamepadManager::GMButton button);
     Q_INVOKABLE void resetAxis(int deviceId, model::GamepadManager::GMAxis axis);
     Q_INVOKABLE void cancelConfiguration();

@@ -1466,7 +1466,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "rx"
 
                 pressed: gamepad && gamepad.axisRightX < -0.05
-                input: GamepadManager.GMAxis.RightMinusX
+                input: GamepadManager.GMAxis.RightX
+                sign: "-"
                 inputType: "axis"
                 KeyNavigation.left: configLeftStickX
                 KeyNavigation.down: configRightStickPlusX
@@ -1480,7 +1481,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "rx"
 
                 pressed: gamepad && gamepad.axisRightX > 0.05
-                input: GamepadManager.GMAxis.RightPlusX
+                input: GamepadManager.GMAxis.RightX
+                sign: "+"
                 inputType: "axis"
                 KeyNavigation.left: configLeftStickX
                 KeyNavigation.down: configRightStickMinusY
@@ -1494,7 +1496,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "ry"
 
                 pressed: gamepad && gamepad.axisRightY < -0.05
-                input: GamepadManager.GMAxis.RightMinusY
+                input: GamepadManager.GMAxis.RightY
+                sign: "-"
                 inputType: "axis"
                 KeyNavigation.left: configLeftStickY
                 KeyNavigation.down: configRightStickPlusY
@@ -1508,7 +1511,8 @@ FocusScope {
                     if (activeFocus) padPreview.currentButton = "ry"
 
                 pressed: gamepad && gamepad.axisRightY > 0.05
-                input: GamepadManager.GMAxis.RightPlusY
+                input: GamepadManager.GMAxis.RightY
+                sign: "+"
                 inputType: "axis"
                 KeyNavigation.left: configLeftStickY
                 KeyNavigation.down: configR3
