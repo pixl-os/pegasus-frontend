@@ -22,6 +22,7 @@ Rectangle {
     property bool pressed: false
     property bool recording: false
 	property var input;
+    property string sign: ""
 	property string inputType: ""
 
     width: vpx(140)
@@ -77,7 +78,7 @@ Rectangle {
 				}
 				else if(inputType === "axis")
 				{
-					api.internal.gamepad.configureAxis(gamepad.deviceIndex, input);
+                    api.internal.gamepad.configureAxis(gamepad.deviceIndex, input, sign);
 				}
             }
             root.stopValidTimer();

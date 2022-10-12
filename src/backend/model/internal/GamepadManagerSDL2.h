@@ -34,7 +34,7 @@ public:
 
     void start(const backend::CliArgs&) final;
     void start_recording(int, GamepadButton) final;
-    void start_recording(int, GamepadAxis) final;
+    void start_recording(int, GamepadAxis, QString) final;
     void cancel_recording() final;
     void reset(int, GamepadButton) final;
     void reset(int, GamepadAxis) final;
@@ -68,6 +68,7 @@ private:
         int device = -1;
         GamepadButton target_button = GamepadButton::INVALID;
         GamepadAxis target_axis = GamepadAxis::INVALID;
+		std::string target_sign = "";
         std::string value;
         std::string sign;
 
@@ -82,7 +83,7 @@ private:
     std::string update_mapping_name(std::string, const QString&);
     void update_mapping_store(std::string);
 
-    std::string generate_mapping_for_field(const char* const, const char* const, const SDL_GameControllerButtonBind&, std::string mapping);
+    std::string generate_mapping_for_field(const char* const, const char* const, const char* const, const char* const, const SDL_GameControllerButtonBind&, std::string mapping);
     std::string generate_mapping(int);
     std::vector<std::string> m_custom_mappings;
     void load_user_gamepaddb(const QString&);

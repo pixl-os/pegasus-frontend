@@ -129,10 +129,10 @@ void GamepadManager::configureButton(int deviceId, GMButton button)
     Q_ASSERT(button != GMButton::Invalid);
     m_backend->start_recording(deviceId, static_cast<GamepadButton>(button));
 }
-void GamepadManager::configureAxis(int deviceId, GMAxis axis)
+void GamepadManager::configureAxis(int deviceId, GMAxis axis, QString sign = "")
 {
     Q_ASSERT(axis != GMAxis::Invalid);
-    m_backend->start_recording(deviceId, static_cast<GamepadAxis>(axis));
+    m_backend->start_recording(deviceId, static_cast<GamepadAxis>(axis), sign);
 }
 void GamepadManager::cancelConfiguration()
 {

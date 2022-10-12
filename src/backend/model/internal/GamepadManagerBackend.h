@@ -36,7 +36,7 @@ public:
     virtual void start(const backend::CliArgs&) {}
 
     virtual void start_recording(int, GamepadButton) {}
-    virtual void start_recording(int, GamepadAxis) {}
+    virtual void start_recording(int, GamepadAxis, QString) {}
     virtual void cancel_recording() {}
     virtual void reset(int, GamepadButton) {}
     virtual void reset(int, GamepadAxis) {}
