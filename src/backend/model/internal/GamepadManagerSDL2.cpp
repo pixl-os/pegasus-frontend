@@ -303,10 +303,8 @@ std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry&
     //a:b0,b:b1,back:b8,dpdown:b16,dpleft:b13,dpright:b14,dpup:b15,guide:b10,
     //leftshoulder:b4,leftstick:b11,lefttrigger:b6,leftx:a0,lefty:a1,rightshoulder:b5,
     //rightstick:b12,righttrigger:b7,rightx:a2,righty:a3,start:b9,x:b2,y:b3,platform:Linux,
-    
-    //QString FullMappingData = QString::fromStdString(new_mapping);
-        
-    QStringList ListMappingData; // = FullMappingData.split(",");
+            
+    QStringList ListMappingData;
     
     //GET GUID
     ListMappingData.append(inputConfigEntry.inputConfigAttributs.deviceGUID);
@@ -318,21 +316,37 @@ std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry&
         //GET Device NAME from fullName provided
         ListMappingData.append(fullName);
     
+	//first check to know if we should consider to have axes using sign or not
+    bool hasJoystick1down = false;
+    bool hasJoystick1right = false;
+	bool hasJoystick2down = false;
+	bool hasJoystick2right = false;
+
+	for (int idx = 0; idx < inputConfigEntry.inputElements.size(); idx++) {
+		// name ?
+        QString InputName = inputConfigEntry.inputElements.at(idx).name;
+        switch(const_hash(InputName.toStdString().c_str())) // to get name of input as "a", "b", "hotkey", etc...
+        {
+            case const_hash("joystick1down"):
+                hasJoystick1down = true;
+            break;
+            case const_hash("joystick1right"):
+                hasJoystick1right = true;
+            break;
+            case const_hash("joystick2down"):
+                hasJoystick2down = true;
+            break;
+            case const_hash("joystick2right"):
+                hasJoystick2right = true;
+            break;
+		}
+    }
+	
+	
     //SET TYPE
     //inputConfigEntry.inputConfigAttributs.type = "joystick"; //TO DO: or keyboard ???
-    
-    //SET INPUTS
-    // int NbAxis = 0;
-    // int NbHats = 0;
-    // int NbButtons = 0;
-    // int NbKeys = 0;
-    // for (int i = 2; i < ListMappingData.size(); i++)
-    // {
     for (int idx = 0; idx < inputConfigEntry.inputElements.size(); idx++) {
             
-        //QStringList InputData = ListMappingData.at(i).split(":");
-        //Log::info(LOGMSG("InputData size = %1").arg(QString::number(InputData.size())));
-
         //with default value
         QString name;
         QString value = "";
@@ -418,21 +432,61 @@ std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry&
                 name = "rightstick";
             break;               
             case const_hash("joystick2up"):
-                name = "righty";
-                sign = ""; //cancel sign for this control
+				if(hasJoystick2down)
+				{
+					name = "-righty";
+				}
+				else
+				{
+					name = "righty";
+					sign = ""; //cancel sign for this control
+				}
+            break;
+            case const_hash("joystick2down"):
+                name = "+righty";
             break;
             case const_hash("joystick2left"):
-                name = "rightx";
-                sign = ""; //cancel sign for this control
+				if(hasJoystick2down)
+				{
+					name = "-rightx";
+				}
+				else
+				{
+					name = "rightx";
+					sign = ""; //cancel sign for this control
+				}				
             break;           
-             case const_hash("joystick1up"):
-                name = "lefty";
-                sign = ""; //cancel sign for this control
+            case const_hash("joystick2right"):
+                name = "+rightx";
+            break;           
+            case const_hash("joystick1up"):
+				if(hasJoystick1down)
+				{
+					name = "-lefty";
+				}
+				else
+				{
+					name = "lefty";
+					sign = ""; //cancel sign for this control
+				}			
             break;
+            case const_hash("joystick1down"):
+                name = "+lefty";
+            break;			
             case const_hash("joystick1left"):
-                name = "leftx";
-                sign = ""; //cancel sign for this control
-            break;             
+				if(hasJoystick1right)
+				{
+					name = "-leftx";
+				}
+				else
+				{
+					name = "leftx";
+					sign = ""; //cancel sign for this control
+				}
+            break;
+            case const_hash("joystick1right"):
+                name = "+leftx";
+            break;           			
         }
         
         // type ?
@@ -589,17 +643,33 @@ void update_es_input(int device_idx, std::string new_mapping, const QString full
                 name = "r3";
             break;               
             case const_hash("righty"):
-                name = "joystick2up";
+			case const_hash("-righty"):
+				name = "joystick2up";
             break;
             case const_hash("rightx"):
-                name = "joystick2left";
+			case const_hash("-rightx"):
+				name = "joystick2left";
             break;           
-             case const_hash("lefty"):
+            case const_hash("+righty"):
+                name = "joystick2down";
+            break;
+            case const_hash("+rightx"):
+                name = "joystick2right";
+            break;           
+            case const_hash("lefty"):
+            case const_hash("-lefty"):
                 name = "joystick1up";
             break;
             case const_hash("leftx"):
-                name = "joystick1left";
-            break;             
+            case const_hash("-leftx"):
+				name = "joystick1left";
+            break;
+            case const_hash("+lefty"):
+                name = "joystick1down";
+            break;
+            case const_hash("+leftx"):
+                name = "joystick1right";
+            break;                       
         }
 
         if (InputData.size() != 2){
@@ -1018,7 +1088,7 @@ void GamepadManagerSDL2::poll()
                 // ignored in favor of SDL_CONTROLLERDEVICEREMOVED
                 break;
             case SDL_CONTROLLERBUTTONUP:
-                Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONUP - button: %1 - state: %2").arg(QString::number(event.cbutton.button),QString::number(event.cbutton.state)));
+                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONUP - button: %1 - state: %2").arg(QString::number(event.cbutton.button),QString::number(event.cbutton.state)));
                 // also ignore input from other (non-recording) gamepads
                 if (!m_recording.is_active()) {
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
@@ -1026,7 +1096,7 @@ void GamepadManagerSDL2::poll()
                 }
                 break;
             case SDL_CONTROLLERBUTTONDOWN:
-                Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONDOWN - instance_id: %1 - button: %2 - state: %3").arg(QString::number(event.cbutton.which),QString::number(event.cbutton.button),QString::number(event.cbutton.state)));
+                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERBUTTONDOWN - instance_id: %1 - button: %2 - state: %3").arg(QString::number(event.cbutton.which),QString::number(event.cbutton.button),QString::number(event.cbutton.state)));
                 // also ignore input from other (non-recording) gamepads
                 if (!m_recording.is_active()) {
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
@@ -1034,7 +1104,7 @@ void GamepadManagerSDL2::poll()
                 }
                 break;
             case SDL_CONTROLLERAXISMOTION:
-                Log::debug(LOGMSG("SDL: SDL_CONTROLLERAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.caxis.which),QString::number(event.caxis.axis),QString::number(event.caxis.value)));
+                //Log::debug(LOGMSG("SDL: SDL_CONTROLLERAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.caxis.which),QString::number(event.caxis.axis),QString::number(event.caxis.value)));
                 if (!m_recording.is_active())
                     fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
                 break;
@@ -1043,15 +1113,15 @@ void GamepadManagerSDL2::poll()
                 // ignored
                 break;
             case SDL_JOYBUTTONDOWN:
-                Log::debug(LOGMSG("SDL: SDL_JOYBUTTONDOWN - instance_id: %1 - button: %2 - state: %3").arg(QString::number(event.jbutton.which),QString::number(event.jbutton.button),QString::number(event.jbutton.state)));
+                //Log::debug(LOGMSG("SDL: SDL_JOYBUTTONDOWN - instance_id: %1 - button: %2 - state: %3").arg(QString::number(event.jbutton.which),QString::number(event.jbutton.button),QString::number(event.jbutton.state)));
                 record_joy_button_maybe(event.jbutton.which, event.jbutton.button);
                 break;
             case SDL_JOYHATMOTION:
-                Log::debug(LOGMSG("SDL: SDL_JOYHATMOTION"));
+                //Log::debug(LOGMSG("SDL: SDL_JOYHATMOTION"));
                 record_joy_hat_maybe(event.jhat.which, event.jhat.hat, event.jhat.value);
                 break;
             case SDL_JOYAXISMOTION:
-                Log::debug(LOGMSG("SDL: SDL_JOYAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.jaxis.which),QString::number(event.jaxis.axis),QString::number(event.jaxis.value)));
+                //Log::debug(LOGMSG("SDL: SDL_JOYAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.jaxis.which),QString::number(event.jaxis.axis),QString::number(event.jaxis.value)));
                 record_joy_axis_maybe(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
                 break;
             default:
@@ -1688,7 +1758,7 @@ std::string GamepadManagerSDL2::generate_mapping(int device_idx)
 
         const char* const recording_sign = m_recording.is_active()
             ? (m_recording.target_button != GamepadButton::INVALID)
-                ? nullptr
+                ? ""
                 : m_recording.target_sign.c_str()
             : nullptr;
 
