@@ -1418,7 +1418,7 @@ FocusScope {
                           : GamepadManager.GMButton.North );
 				inputType: "button"
 
-                KeyNavigation.down: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? (root.padPreview.hasButtonsForRightStick ? configRightPlusStickX : configRightStickX) : configRightStickX) : configRightStickX
+                KeyNavigation.down: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? (root.padPreview.hasButtonsForRightStick ? configRightStickPlusX : configRightStickX) : configRightStickX) : configRightStickX
             }
         }
         ConfigGroup {
@@ -1485,6 +1485,7 @@ FocusScope {
                 sign: "+"
                 inputType: "axis"
                 KeyNavigation.left: configLeftStickX
+                KeyNavigation.up: configRightStickMinusX
                 KeyNavigation.down: configRightStickMinusY
             }
 
