@@ -513,7 +513,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "rstickup"
         name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
-        pressed: (gamepad && gamepad.axisRightY < 0.0) ? true : false
+        pressed: (gamepad && gamepad.axisRightY < -0.5) ? true : false
     }
 
     PadButtonCustom {
@@ -533,7 +533,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "rstickdown"
         name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
-        pressed: (gamepad && gamepad.axisRightY > 0.0) ? true : false
+        pressed: (gamepad && gamepad.axisRightY > 0.5) ? true : false
     }
 
     PadButtonCustom {
@@ -553,7 +553,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "rstickleft"
         name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
-        pressed: (gamepad && gamepad.axisRightX < 0.0) ? true : false
+        pressed: (gamepad && gamepad.axisRightX < -0.5) ? true : false
     }
 
 
@@ -574,7 +574,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "rstickright"
         name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
-        pressed: (gamepad && gamepad.axisRightX > 0.0) ? true : false
+        pressed: (gamepad && gamepad.axisRightX > 0.5) ? true : false
     }
 
     StickCustom {
