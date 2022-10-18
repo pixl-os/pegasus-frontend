@@ -226,6 +226,28 @@ QStringList GetParametersList(QString Parameter)
             ListOfInternalValue.append(""); //to empty parameter
         }
     }
+    else if (Parameter == "boot.audio.device")
+    {
+        /*
+        audio.volume=70
+        */
+
+        IAudioController::DeviceList playbackList = AudioController::Instance().GetPlaybackList();
+
+        for(const auto& playback : playbackList)
+        {
+            Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+            ListOfValue.append(QString::fromStdString(playback.DisplayableName)); // using Awesome Web Font
+
+            Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+            ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
+        }
+        if(ListOfValue.isEmpty())
+        {
+            ListOfValue.append(QObject::tr("no device detected"));
+            ListOfInternalValue.append(""); //to empty parameter
+        }
+    }
     else if (Parameter == "boot.sharedevice")
     {
         /*
