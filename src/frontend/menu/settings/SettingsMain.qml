@@ -181,8 +181,8 @@ FocusScope {
                     property string parameterName : "boot.audio.volume"
 
                     //property of SliderOption to set
-                    label: qsTr("Video boot volume") + api.tr
-                    note: qsTr("Set audio volume only for video boot") + api.tr
+                    label: qsTr("Boot video volume") + api.tr
+                    note: qsTr("Set audio volume only for boot video") + api.tr
                     // in slider object
                     max : 100
                     min : 0
