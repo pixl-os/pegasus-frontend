@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file (focus on ch
 	- wifi-first-activation-not-list-proposed #[13]
 	- fix up to option WifiNetwork not work in setting menu if wifi enabled
 
+- Features:
+    - Add volume only for video boot
+
 - News:
 	- Add update online for supermodel, citra-emu, pcsx2, dolphin-emu, libretro-mame, xemu
 

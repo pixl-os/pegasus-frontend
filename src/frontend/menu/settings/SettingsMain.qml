@@ -172,6 +172,42 @@ FocusScope {
                     }
                     */
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optOutputBootVolume
+                }
+                SliderOption {
+                    id: optOutputBootVolume
+
+                    //property to manage parameter name
+                    property string parameterName : "boot.audio.volume"
+
+                    //property of SliderOption to set
+                    label: qsTr("Boot video volume") + api.tr
+                    note: qsTr("Set audio volume only for boot video") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName) + "%"
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+
                     KeyNavigation.down: optOutputVolume
                 }
                 SliderOption {
