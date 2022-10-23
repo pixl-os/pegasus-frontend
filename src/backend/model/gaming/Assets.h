@@ -45,6 +45,7 @@ public:
     GEN(boxSpine, BOX_SPINE)
     GEN(boxFull, BOX_FULL)
     GEN(cartridge, CARTRIDGE)
+    GEN(cartridgetexture, CARTRIDGETEXTURE)
     GEN(logo, LOGO)
     GEN(poster, POSTER)
 
@@ -65,6 +66,8 @@ public:
     GEN(video, VIDEO)
     
     GEN(manual,MANUAL)
+
+    GEN(maps,MAPS)
 #undef GEN
 
     // deprecated fallacks

@@ -58,19 +58,26 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
     // NOTE: The entries are ordered by priority
     const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
         { AssetType::ARCADE_MARQUEE, {
+            QStringLiteral("marquee"),
             QStringLiteral("screenmarquee"),
             QStringLiteral("screenmarqueesmall"),
+            QStringLiteral("steamgrid"),
+        }},
+        { AssetType::ARCADE_BEZEL, {
+            QStringLiteral("bezel"),
         }},
         { AssetType::BACKGROUND, {
             QStringLiteral("fanart"),
+            QStringLiteral("screenshot"),
         }},
         { AssetType::BOX_BACK, {
             QStringLiteral("box2dback"),
         }},
         { AssetType::BOX_FRONT, {
+            QStringLiteral("box3d"),
+            QStringLiteral("support"),
             QStringLiteral("box2dfront"),
             QStringLiteral("supporttexture"),
-            QStringLiteral("box3d"),
         }},
         { AssetType::BOX_FULL, {
             QStringLiteral("boxtexture"),
@@ -81,6 +88,9 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         { AssetType::CARTRIDGE, {
             QStringLiteral("support"),
         }},
+        { AssetType::CARTRIDGETEXTURE, {
+            QStringLiteral("supporttexture"),
+        }},
         { AssetType::LOGO, {
             QStringLiteral("wheel"),
             QStringLiteral("wheelcarbon"),
@@ -88,6 +98,7 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         }},
         { AssetType::SCREENSHOT, {
             QStringLiteral("screenshot"),
+            QStringLiteral("screenshottitle"),
         }},
         { AssetType::TITLESCREEN, {
             QStringLiteral("screenshottitle"),
@@ -97,6 +108,15 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         }},
         { AssetType::VIDEO, {
             QStringLiteral("videos"),
+        }},
+        { AssetType::MANUAL, {
+            QStringLiteral("manuals"),
+        }},
+        { AssetType::MAPS, {
+            QStringLiteral("maps"),
+        }},
+        { AssetType::MUSIC, {
+            QStringLiteral("music"),
         }},
     };
 

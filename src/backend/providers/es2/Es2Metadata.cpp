@@ -301,20 +301,26 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::Sea
     // NOTE: The entries are ordered by priority
     const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
         { AssetType::ARCADE_MARQUEE, {
+            QStringLiteral("marquee"),
             QStringLiteral("screenmarquee"),
             QStringLiteral("screenmarqueesmall"),
-            QStringLiteral("marquee"),
+            QStringLiteral("steamgrid"),
+        }},
+        { AssetType::ARCADE_BEZEL, {
+            QStringLiteral("bezel"),
         }},
         { AssetType::BACKGROUND, {
             QStringLiteral("fanart"),
+            QStringLiteral("screenshot"),
         }},
         { AssetType::BOX_BACK, {
             QStringLiteral("box2dback"),
         }},
         { AssetType::BOX_FRONT, {
+            QStringLiteral("box3d"),
+            QStringLiteral("support"),
             QStringLiteral("box2dfront"),
             QStringLiteral("supporttexture"),
-            QStringLiteral("box3d"),
         }},
         { AssetType::BOX_FULL, {
             QStringLiteral("boxtexture"),
@@ -325,6 +331,9 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::Sea
         { AssetType::CARTRIDGE, {
             QStringLiteral("support"),
         }},
+        { AssetType::CARTRIDGETEXTURE, {
+            QStringLiteral("supporttexture"),
+        }},
         { AssetType::LOGO, {
             QStringLiteral("wheel"),
             QStringLiteral("wheelcarbon"),
@@ -332,6 +341,7 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::Sea
         }},
         { AssetType::SCREENSHOT, {
             QStringLiteral("screenshot"),
+            QStringLiteral("screenshottitle"),
         }},
         { AssetType::TITLESCREEN, {
             QStringLiteral("screenshottitle"),
@@ -344,6 +354,12 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::Sea
         }},
         { AssetType::MANUAL, {
             QStringLiteral("manuals"),
+        }},
+        { AssetType::MAPS, {
+            QStringLiteral("maps"),
+        }},
+        { AssetType::MUSIC, {
+            QStringLiteral("music"),
         }},
     };
 
@@ -421,7 +437,7 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
 		.setGenreId(xml_props[MetaType::GENREID]);
     game.developerList().append(xml_props[MetaType::DEVELOPER]);
     game.publisherList().append(xml_props[MetaType::PUBLISHER]);
-    game.genreList().append(xml_props[MetaType::GENRE]);    
+    game.genreList().append(xml_props[MetaType::GENRE]);
 
     // then the numbers
     const int play_count = xml_props[MetaType::PLAYCOUNT].toInt();

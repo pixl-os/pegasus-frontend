@@ -1,8 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - xxxx-xx-xx - vx.x.x
-
+## [pixL] - yyyy-mm-dd - vx.x.x
+- GameOS-pixL Theme:
+	- optimize scan folder for load all media download by scraper
 - Fixes:
 	- wifi-first-activation-not-list-proposed #[13]
 	- fix up to option WifiNetwork not work in setting menu if wifi enabled
@@ -12,6 +13,9 @@ All notable changes to this project will be documented in this file (focus on ch
 
 - News:
 	- Add update online for supermodel, citra-emu, pcsx2, dolphin-emu, libretro-mame, xemu
+
+- GameOS-pixL Theme:
+	- optimize scan folder for load all media download by scraper
 
 ## [recalbox-integration] - 2022-09-12 - v0.0.8
 
