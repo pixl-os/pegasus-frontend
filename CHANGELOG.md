@@ -1,15 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - xxxx-xx-xx - vx.x.x
-
+## [pixL] - yyyy-mm-dd - vx.x.x
+- GameOS-pixL Theme:
+	- optimize scan folder for load all media download by scraper
 - Fixes:
 	- wifi-first-activation-not-list-proposed #[13]
 	- fix up to option WifiNetwork not work in setting menu if wifi enabled
-
 - Features:
-    - Add volume only for video boot
-
+	- add system videos from 'share/videos' directory in collections (to be used with Shinretro theme)
+	- Add volume only for video boot
 - News:
 	- Add update online for supermodel, citra-emu, pcsx2, dolphin-emu, libretro-mame, xemu
 

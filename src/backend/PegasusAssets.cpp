@@ -86,6 +86,10 @@ AssetType str_to_type(const QString& str)
         { QStringLiteral("video"), AssetType::VIDEO },
         { QStringLiteral("videos"), AssetType::VIDEO },
         { QStringLiteral("titlescreen"), AssetType::TITLESCREEN },
+
+        { QStringLiteral("manuals"), AssetType::MANUAL },
+
+        { QStringLiteral("maps"), AssetType::MAPS },
     };
 
     const auto it = map.find(str);
@@ -110,6 +114,7 @@ AssetType ext_to_type(const QString& ext)
         { QStringLiteral("webm"), AssetType::VIDEO },
         { QStringLiteral("mp4"), AssetType::VIDEO },
         { QStringLiteral("avi"), AssetType::VIDEO },
+        { QStringLiteral("mkv"), AssetType::VIDEO },
         { QStringLiteral("mp3"), AssetType::MUSIC },
         { QStringLiteral("ogg"), AssetType::MUSIC },
         { QStringLiteral("wav"), AssetType::MUSIC },
@@ -126,7 +131,7 @@ const QStringList& allowed_asset_exts(AssetType type)
 {
     static const QStringList empty_list({});
     static const QStringList image_exts { "png", "jpg", "webp", "apng" };
-    static const QStringList video_exts { "webm", "mp4", "avi" };
+    static const QStringList video_exts { "webm", "mp4", "avi", "mkv" };
     static const QStringList audio_exts { "mp3", "ogg", "wav" };
 
     switch (type) {

@@ -25,6 +25,7 @@ enum class AssetType : unsigned char {
     BOX_SPINE,
     BOX_FULL,
     CARTRIDGE,
+    CARTRIDGETEXTURE,
     LOGO,
     POSTER,
 
@@ -45,4 +46,6 @@ enum class AssetType : unsigned char {
     VIDEO,
     
     MANUAL,
+
+    MAPS,
 };
