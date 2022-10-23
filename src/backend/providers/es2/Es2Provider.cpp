@@ -90,6 +90,12 @@ Provider& Es2Provider::run(SearchContext& sctx)
             Log::info(display_name(), LOGMSG("System `%1` has %2 emulator/cores")
                 .arg(sysentry.name, QString::number(found_cores)));
             emit progressStage(sysentry.name);
+
+            // Find system videos
+            const size_t found_videos = find_system_videos_for(sysentry, sctx);
+            Log::debug(display_name(), LOGMSG("System `%1` provided %2 system videos")
+            .arg(sysentry.name, QString::number(found_videos)));
+
             // Find games if not Gamelist Only activated
             if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
             {

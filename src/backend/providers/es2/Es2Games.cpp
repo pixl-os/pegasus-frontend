@@ -20,6 +20,8 @@
 
 #include "Log.h"
 #include "Paths.h"
+#include "RootFolders.h"
+#include "model/gaming/Assets.h"
 #include "model/gaming/Collection.h"
 #include "providers/SearchContext.h"
 #include "providers/es2/Es2Systems.h"
@@ -144,6 +146,26 @@ size_t find_games_for(
     }
 
     return found_games;
+}
+
+size_t find_system_videos_for(
+        const SystemEntry& sysentry,
+        SearchContext& sctx)
+{
+    //get collection from name
+    model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
+    size_t found_videos = 0;
+
+    //check the share_init also
+    QString fileNameFromShare(QString::fromStdString(RootFolders::DataRootFolder.ToString()) + "/videos/" + sysentry.shortname + "/" +  sysentry.shortname + QStringLiteral(".mp4"));
+    //Log::debug("video system search",LOGMSG("filepath from 'videos' share folder: '%1' ").arg(fileNameFromShare));
+    if(QFileInfo::exists(fileNameFromShare)){
+        Log::debug("video system search",LOGMSG("file found: '%1' ").arg(fileNameFromShare));
+        //Add video found in collection assets
+        collection.assetsMut().add_file(AssetType::VIDEO, fileNameFromShare);
+        found_videos++;
+    }
+    return found_videos;
 }
 
 } // namespace es2
