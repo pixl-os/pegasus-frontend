@@ -48,7 +48,6 @@ int main(int argc, char *argv[], char** env)
     qputenv("QTWEBENGINE_DISABLE_SANDBOX", QByteArray("1"));
     
     Q_INIT_RESOURCE(frontend);
-    Q_INIT_RESOURCE(themes);
     Q_INIT_RESOURCE(qmlutils);
 
     TerminalKbd::on_startup();
