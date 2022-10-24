@@ -6,5 +6,4 @@ DEFINES *= $${COMMON_DEFINES}
 
 RESOURCES += \
     ./frontend.qrc \
-    ../qmlutils/qmlutils.qrc \
-    ../themes/themes.qrc
+    ../qmlutils/qmlutils.qrc
