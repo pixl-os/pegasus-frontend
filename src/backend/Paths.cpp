@@ -123,6 +123,28 @@ QStringList configDirs()
     return config_dir_paths;
 }
 
+QStringList themesDirs()
+{
+    static const QStringList themes_dir_paths = [](){
+        QStringList paths(QLatin1String(""));
+        const QString local_themes_dir = QCoreApplication::applicationDirPath()
+                                       + QStringLiteral("/themes");
+        if (QFileInfo::exists(local_themes_dir))
+            paths << local_themes_dir;
+
+        //add recalbox share root in themsDirs
+        paths.append("/recalbox/share/themes");
+
+        //add recalbox share init root in themsDirs
+        paths.append("/recalbox/share_init/themes");
+
+        paths.removeDuplicates();
+        return paths;
+    }();
+
+    return themes_dir_paths;
+}
+
 QString writableConfigDir()
 {
     static const QString config_dir = get_appconfig_dir();

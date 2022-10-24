@@ -30,6 +30,9 @@ QString homePath();
 /// Returns the directory paths where config files may be located
 QStringList configDirs();
 
+/// Returns the directory paths where themes may be located
+QStringList themesDirs();
+
 /// Returns a directory path where persistent data could be stored
 QString writableConfigDir();
 
