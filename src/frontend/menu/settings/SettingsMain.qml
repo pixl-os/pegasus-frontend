@@ -534,7 +534,7 @@ FocusScope {
                         localeBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: checked ? optWifiNetwork : optWifiToggle
+                    KeyNavigation.up: optWifiToggle.checked ? optWifiNetwork : optWifiToggle
                     KeyNavigation.down: optKbLayout
                 }
                 MultivalueOption {
