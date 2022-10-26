@@ -142,7 +142,7 @@ namespace appsettings {
 
 General::General()
     : DEFAULT_LOCALE(QStringLiteral("en"))
-    , DEFAULT_THEME(QStringLiteral(":/themes/gameOS/"))
+    , DEFAULT_THEME(QStringLiteral("/recalbox/share_init/themes/gameOS/"))
     , portable(false)
     , fullscreen(true)
     , mouse_support(false)

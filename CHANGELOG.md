@@ -4,12 +4,17 @@ All notable changes to this project will be documented in this file (focus on ch
 ## [pixL] - yyyy-mm-dd - vx.x.x
 - GameOS-pixL Theme:
 	- optimize scan folder for load all media download by scraper
+	- extraction of this theme from Pegasus (Default themes will be avilable from share_init/themes now)
+
 - Fixes:
 	- wifi-first-activation-not-list-proposed #[13]
 	- fix up to option WifiNetwork not work in setting menu if wifi enabled
+
 - Features:
 	- add system videos from 'share/videos' directory in collections (to be used with Shinretro theme)
 	- Add volume only for video boot
+	- Translation about: parameter lists, vulkan driver, boot video volume
+
 - News:
 	- Add update online for supermodel, citra-emu, pcsx2, dolphin-emu, libretro-mame, xemu
 

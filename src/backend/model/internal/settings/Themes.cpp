@@ -32,10 +32,7 @@
 namespace {
 QStringList theme_directories()
 {
-    QStringList theme_dirs = paths::configDirs();
-    for (QString& path : theme_dirs)
-        path += QLatin1String("/themes/");
-
+    QStringList theme_dirs = paths::themesDirs();
     return theme_dirs;
 }
 
