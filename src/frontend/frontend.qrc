@@ -115,88 +115,88 @@
         <file>assets/pbar-red.png</file>
         <file>assets/pbar-green.png</file>
         <file>dialogs/RestartDialog.qml</file>
-        <file>assets/gamepad/base_snes.png</file>
-        <file>assets/gamepad/x_snes.png</file>
-        <file>assets/gamepad/y_snes.png</file>
-        <file>assets/gamepad/a_snes.png</file>
-        <file>assets/gamepad/b_snes.png</file>
-        <file>assets/gamepad/dpad_snes.png</file>
-        <file>assets/gamepad/select_snes.png</file>
-        <file>assets/gamepad/start_snes.png</file>
+        <file>assets/gamepad/snes/base_snes.png</file>
+        <file>assets/gamepad/snes/x_snes.png</file>
+        <file>assets/gamepad/snes/y_snes.png</file>
+        <file>assets/gamepad/snes/a_snes.png</file>
+        <file>assets/gamepad/snes/b_snes.png</file>
+        <file>assets/gamepad/snes/dpad_snes.png</file>
+        <file>assets/gamepad/snes/select_snes.png</file>
+        <file>assets/gamepad/snes/start_snes.png</file>
         <file>global/CustomBorder.qml</file>
-        <file>assets/gamepad/guide_snes.png</file>
-        <file>assets/gamepad/l1_snes.png</file>
-        <file>assets/gamepad/r1_snes.png</file>
-        <file>assets/gamepad/l2_snes.png</file>
-        <file>assets/gamepad/r2_snes.png</file>
-        <file>assets/gamepad/base_nes.png</file>
-        <file>assets/gamepad/dpad_nes.png</file>
-        <file>assets/gamepad/r1_nes.png</file>
-        <file>assets/gamepad/l1_nes.png</file>
-        <file>assets/gamepad/start_nes.png</file>
-        <file>assets/gamepad/select_nes.png</file>
-        <file>assets/gamepad/a_nes.png</file>
-        <file>assets/gamepad/b_nes.png</file>
+        <file>assets/gamepad/snes/guide_snes.png</file>
+        <file>assets/gamepad/snes/l1_snes.png</file>
+        <file>assets/gamepad/snes/r1_snes.png</file>
+        <file>assets/gamepad/snes/l2_snes.png</file>
+        <file>assets/gamepad/snes/r2_snes.png</file>
+        <file>assets/gamepad/nes/base_nes.png</file>
+        <file>assets/gamepad/nes/dpad_nes.png</file>
+        <file>assets/gamepad/nes/r1_nes.png</file>
+        <file>assets/gamepad/nes/l1_nes.png</file>
+        <file>assets/gamepad/nes/start_nes.png</file>
+        <file>assets/gamepad/nes/select_nes.png</file>
+        <file>assets/gamepad/nes/a_nes.png</file>
+        <file>assets/gamepad/nes/b_nes.png</file>
         <file>menu/settings/gamepad/preview/ContainerCustom.qml</file>
         <file>menu/settings/gamepad/preview/DpadHighlightCustom.qml</file>
         <file>menu/settings/gamepad/preview/DpadCustom.qml</file>
         <file>menu/settings/gamepad/preview/PadButtonCustom.qml</file>
         <file>menu/settings/gamepad/preview/PadShoulderCustom.qml</file>
         <file>menu/settings/gamepad/preview/PadTriggerCustom.qml</file>
-        <file>assets/gamepad/guide_nes.png</file>
-        <file>assets/gamepad/r2_xbox360.png</file>
-        <file>assets/gamepad/l2_xbox360.png</file>
-        <file>assets/gamepad/r1_xbox360.png</file>
-        <file>assets/gamepad/l1_xbox360.png</file>
-        <file>assets/gamepad/base_xbox360.png</file>
-        <file>assets/gamepad/a_xbox360.png</file>
-        <file>assets/gamepad/b_xbox360.png</file>
-        <file>assets/gamepad/y_xbox360.png</file>
-        <file>assets/gamepad/x_xbox360.png</file>
-        <file>assets/gamepad/lstick_xbox360.png</file>
-        <file>assets/gamepad/rstick_xbox360.png</file>
-        <file>assets/gamepad/dpad_xbox360.png</file>
-        <file>assets/gamepad/start_xbox360.png</file>
-        <file>assets/gamepad/select_xbox360.png</file>
-        <file>assets/gamepad/guide_xbox360.png</file>
+        <file>assets/gamepad/nes/guide_nes.png</file>
+        <file>assets/gamepad/xbox360/r2_xbox360.png</file>
+        <file>assets/gamepad/xbox360/l2_xbox360.png</file>
+        <file>assets/gamepad/xbox360/r1_xbox360.png</file>
+        <file>assets/gamepad/xbox360/l1_xbox360.png</file>
+        <file>assets/gamepad/xbox360/base_xbox360.png</file>
+        <file>assets/gamepad/xbox360/a_xbox360.png</file>
+        <file>assets/gamepad/xbox360/b_xbox360.png</file>
+        <file>assets/gamepad/xbox360/y_xbox360.png</file>
+        <file>assets/gamepad/xbox360/x_xbox360.png</file>
+        <file>assets/gamepad/xbox360/lstick_xbox360.png</file>
+        <file>assets/gamepad/xbox360/rstick_xbox360.png</file>
+        <file>assets/gamepad/xbox360/dpad_xbox360.png</file>
+        <file>assets/gamepad/xbox360/start_xbox360.png</file>
+        <file>assets/gamepad/xbox360/select_xbox360.png</file>
+        <file>assets/gamepad/xbox360/guide_xbox360.png</file>
         <file>menu/settings/gamepad/preview/StickCustom.qml</file>
-        <file>assets/gamepad/base_ps4.png</file>
-        <file>assets/gamepad/r2_ps4.png</file>
-        <file>assets/gamepad/l2_ps4.png</file>
-        <file>assets/gamepad/r1_ps4.png</file>
-        <file>assets/gamepad/l1_ps4.png</file>
-        <file>assets/gamepad/start_ps4.png</file>
-        <file>assets/gamepad/select_ps4.png</file>
-        <file>assets/gamepad/dpdown_ps4.png</file>
-        <file>assets/gamepad/dpleft_ps4.png</file>
-        <file>assets/gamepad/dpright_ps4.png</file>
-        <file>assets/gamepad/dpup_ps4.png</file>
-        <file>assets/gamepad/x_ps4.png</file>
-        <file>assets/gamepad/y_ps4.png</file>
-        <file>assets/gamepad/b_ps4.png</file>
-        <file>assets/gamepad/a_ps4.png</file>
-        <file>assets/gamepad/rstick_ps4.png</file>
-        <file>assets/gamepad/lstick_ps4.png</file>
-        <file>assets/gamepad/guide_ps4.png</file>
+        <file>assets/gamepad/ps4/base_ps4.png</file>
+        <file>assets/gamepad/ps4/r2_ps4.png</file>
+        <file>assets/gamepad/ps4/l2_ps4.png</file>
+        <file>assets/gamepad/ps4/r1_ps4.png</file>
+        <file>assets/gamepad/ps4/l1_ps4.png</file>
+        <file>assets/gamepad/ps4/start_ps4.png</file>
+        <file>assets/gamepad/ps4/select_ps4.png</file>
+        <file>assets/gamepad/ps4/dpdown_ps4.png</file>
+        <file>assets/gamepad/ps4/dpleft_ps4.png</file>
+        <file>assets/gamepad/ps4/dpright_ps4.png</file>
+        <file>assets/gamepad/ps4/dpup_ps4.png</file>
+        <file>assets/gamepad/ps4/x_ps4.png</file>
+        <file>assets/gamepad/ps4/y_ps4.png</file>
+        <file>assets/gamepad/ps4/b_ps4.png</file>
+        <file>assets/gamepad/ps4/a_ps4.png</file>
+        <file>assets/gamepad/ps4/rstick_ps4.png</file>
+        <file>assets/gamepad/ps4/lstick_ps4.png</file>
+        <file>assets/gamepad/ps4/guide_ps4.png</file>
         <file>assets/logonvidia.png</file>
         <file>menu/settings/WifiNetworks.qml</file>
         <file>dialogs/WifiDialog.qml</file>
         <file>assets/navigation.wav</file>
-        <file>assets/gamepad/l2_n64.png</file>
-        <file>assets/gamepad/base_n64.png</file>
-        <file>assets/gamepad/r1_n64.png</file>
-        <file>assets/gamepad/l1_n64.png</file>
-        <file>assets/gamepad/lstick_n64.png</file>
-        <file>assets/gamepad/dpad_n64.png</file>
-        <file>assets/gamepad/select_n64.png</file>
-        <file>assets/gamepad/r2_n64.png</file>
-        <file>assets/gamepad/guide_n64.png</file>
-        <file>assets/gamepad/rstickup_n64.png</file>
-        <file>assets/gamepad/rstickright_n64.png</file>
-        <file>assets/gamepad/rstickdown_n64.png</file>
-        <file>assets/gamepad/rstickleft_n64.png</file>
-        <file>assets/gamepad/a_n64.png</file>
-        <file>assets/gamepad/b_n64.png</file>
-        <file>assets/gamepad/start_n64.png</file>
+        <file>assets/gamepad/n64/l2_n64.png</file>
+        <file>assets/gamepad/n64/base_n64.png</file>
+        <file>assets/gamepad/n64/r1_n64.png</file>
+        <file>assets/gamepad/n64/l1_n64.png</file>
+        <file>assets/gamepad/n64/lstick_n64.png</file>
+        <file>assets/gamepad/n64/dpad_n64.png</file>
+        <file>assets/gamepad/n64/select_n64.png</file>
+        <file>assets/gamepad/n64/r2_n64.png</file>
+        <file>assets/gamepad/n64/guide_n64.png</file>
+        <file>assets/gamepad/n64/rstickup_n64.png</file>
+        <file>assets/gamepad/n64/rstickright_n64.png</file>
+        <file>assets/gamepad/n64/rstickdown_n64.png</file>
+        <file>assets/gamepad/n64/rstickleft_n64.png</file>
+        <file>assets/gamepad/n64/a_n64.png</file>
+        <file>assets/gamepad/n64/b_n64.png</file>
+        <file>assets/gamepad/n64/start_n64.png</file>
     </qresource>
 </RCC>

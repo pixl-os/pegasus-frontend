@@ -20,7 +20,7 @@ Item {
         height: parent.height
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        source: name ? "qrc:/frontend/assets/gamepad/dpad_" + name + ".png" : ""
+        source: name ? "qrc:/frontend/assets/gamepad/" + name + "/dpad_" + name + ".png" : ""
         visible: gamepad ? (!gamepad.buttonLeft && !gamepad.buttonRight && !gamepad.buttonUp && !gamepad.buttonDown) : true
     }
 

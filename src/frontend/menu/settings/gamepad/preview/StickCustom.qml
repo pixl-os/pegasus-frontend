@@ -28,7 +28,7 @@ Item {
         }
 
         fillMode: Image.PreserveAspectFit
-        source: name != "" ? "qrc:/frontend/assets/gamepad/" + side + "stick_" + name +".png" : ""
+        source: name != "" ? "qrc:/frontend/assets/gamepad/" + name + "/" + side + "stick_" + name +".png" : ""
         sourceSize {
             width: 128
             height: 128
