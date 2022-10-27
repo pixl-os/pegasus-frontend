@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- translation about: parameter lists, vulkan driver, boot video volume
 	- gamepad editor custom view for N64 Controllers (switch one, 8bitdo one, original ones using adapter)
 	- support of +r/-r and -y/+y axis management for buttons of right stick as for N64 controllers
+	- optimization folder for all pad
 
 - News:
 	- Add update online for supermodel, citra-emu, pcsx2, dolphin-emu, libretro-mame, xemu
