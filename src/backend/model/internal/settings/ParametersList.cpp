@@ -165,6 +165,12 @@ QStringList GetParametersList(QString Parameter)
             }
         }
     }
+    else if (Parameter.endsWith(".color"))
+    {
+        /* "Original,Black,Gray,Blue,Green,Red" */
+        ListOfValue << QObject::tr("Original") << QObject::tr("Black") << QObject::tr("White") << QObject::tr("Gray") << QObject::tr("Blue") << QObject::tr("Green") << QObject::tr("Red");
+        ListOfInternalValue << "Original" << "Black" << "White" << "Gray" << "Blue" << "Green" << "Red";
+    }
     else if (Parameter == "controllers.ps3.driver")
     {
         /*

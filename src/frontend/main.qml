@@ -59,20 +59,138 @@ Window {
     }*/
 
     // Color palette set with 'themeColor.main' or else
+    property string backgroundThemeColor : api.internal.recalbox.getStringParameter("system.menu.color")
+    property string selelectThemeColor : api.internal.recalbox.getStringParameter("system.selected.color")
+    property string textThemeColor : api.internal.recalbox.getStringParameter("system.text.color")
     property var themeColor: {
-        return {
-            main:               "#404040",
-            secondary:          "#606060",
-            screenHeader:       "#606060",
-            screenUnderline:    "#32CD32",
-            underline:          "#32CD32",
-            textTitle:          "#B0E0E6",
-            textLabel:          "#eee",
-            textSublabel:       "#999",
-            textSectionTitle:   "#32CD32",
-            textValue:          "#eee",
+
+        var background = "#404040"
+        var _secondary = "#606060"
+
+        var _textTitle = "#B0E0E6"
+        var _textLabel = "#eeeeee"
+        var _textSublabel = "#999999"
+
+        var accent = "#32CD32"
+
+        if (backgroundThemeColor === "Original") {
+            background = "#404040"
+            _secondary = "#606060"
         }
+        else if (backgroundThemeColor === "Black") {
+            background = "#1a1a1a"
+            _secondary = "#202020"
+        }
+        else if (backgroundThemeColor === "White") {
+            background = "#f8f8f8"
+            _secondary = "#dfdfdf"
+        }
+        else if (backgroundThemeColor === "Gray") {
+            background = "#404040"
+            _secondary = "#606060"
+        }
+        else if (backgroundThemeColor === "Blue") {
+            background = "#45b3e7"
+            _secondary = "#72c6ed"
+        }
+        else if (backgroundThemeColor === "Green") {
+            background = "#404040"
+            _secondary = "#606060"
+        }
+        else if (backgroundThemeColor === "Red") {
+            background = "#404040"
+            _secondary = "#606060"
+        }
+
+        if (textThemeColor === "Original") {
+            _textTitle = "#B0E0E6"
+            _textLabel = "#eeeeee"
+            _textSublabel = "#999999"
+        }
+        else if (textThemeColor === "Black") {
+            _textTitle = "#B0E0E6"
+            _textLabel = "#eeeeee"
+            _textSublabel = "#999999"
+        }
+        else if (textThemeColor === "White") {
+            _textTitle = "#1a1a1a"
+            _textLabel = "#343434"
+            _textSublabel = "#414141"
+        }
+        else if (textThemeColor === "Gray") {
+            _textTitle = "#B0E0E6"
+            _textLabel = "#eeeeee"
+            _textSublabel = "#999999"
+        }
+        else if (textThemeColor === "Blue") {
+            _textTitle = "#0b3d55"
+            _textLabel = "#0e4d6c"
+            _textSublabel = "#115d82"
+        }
+        else if (textThemeColor === "Green") {
+            _textTitle = "#B0E0E6"
+            _textLabel = "#eeeeee"
+            _textSublabel = "#999999"
+        }
+        else if (textThemeColor === "Red") {
+            _textTitle = "#B0E0E6"
+            _textLabel = "#eeeeee"
+            _textSublabel = "#999999"
+        }
+
+        if (selelectThemeColor === "Original") {
+            accent = "#32CD32"
+        }
+        else if (selelectThemeColor === "Black") {
+            accent = "#cd3232"
+        }
+        else if (selelectThemeColor === "White") {
+            accent = "#008282"
+        }
+        else if (selelectThemeColor === "Gray") {
+            accent = "#32CD32"
+        }
+        else if (selelectThemeColor === "Blue") {
+            accent = "#82115d"
+        }
+        else if (selelectThemeColor === "Green") {
+            accent = "#32CD32"
+        }
+        else if (selelectThemeColor === "Red") {
+            accent = "#32CD32"
+        }
+
+        return {
+            main:               background,
+            secondary:          _secondary,
+            screenHeader:       _secondary,
+            screenUnderline:    accent,
+            underline:          accent,
+            textTitle:          _textTitle,
+            textLabel:          _textLabel,
+            textSublabel:       _textSublabel,
+            textSectionTitle:   accent,
+            textValue:          _textLabel,
+        }
+
     }
+
+    //    // Color palette set with 'themeColor.main' or else
+    //    property var themeColor: {
+    //        return {
+    //            main:               "#404040",
+    //            secondary:          "#606060",
+    //            screenHeader:       "#606060",
+    //            screenUnderline:    "#32CD32",
+    //            underline:          "#32CD32",
+    //            textTitle:          "#B0E0E6",
+    //            textLabel:          "#eee",
+    //            textSublabel:       "#999",
+    //            textSectionTitle:   "#32CD32",
+    //            textValue:          "#eee",
+    //        }
+    //    }
+
     FontLoader { id: sansFont; source: "/fonts/Roboto-Regular.ttf" }
     FontLoader { id: sansBoldFont; source: "/fonts/Roboto-Bold.ttf" }
     FontLoader { id: monoFont; source: "/fonts/RobotoMono-Regular.ttf" }
@@ -388,7 +506,7 @@ Window {
         running: splashScreen.focus ? false : true
         onTriggered: {
             gameCdRom = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf");
-//console.log(gameCdRom)
+            //console.log(gameCdRom)
             if(gameCdRom.includes("system =")) {
                 cdRomPopupLoader.focus = true;
                 //just set "cdrom" as title of this game (optional)
@@ -826,7 +944,7 @@ Window {
         //console.log("Qt.Key_Return : ",Qt.Key_Return);
         //console.log("Qt.Key_Enter : ",Qt.Key_Enter);
         //console.log("Qt.Key_Backspace : ",Qt.Key_Backspace);
-		// Accept
+        // Accept
         if (api.keys.isAccept(ev) && !ev.isAutoRepeat) {
             //console.log("isAccept");
             ev.accepted = true;
@@ -861,13 +979,13 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
 
             }
             //for virtual keyboard
             else if ((ev.key !== Qt.Key_Return) && (ev.key !== Qt.Key_Enter)){
                 //console.log("# Use case 4 : if virtual keyboard visible and PRESS A");
-				if(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
+                if(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
                     //console.log("# Use case 4 bis : if virtual keyboard visible and PRESS A");
                     keyEmitter.keyPressed(appWindow, Qt.Key_Return);
                     keyEmitter.keyReleased(appWindow, Qt.Key_Return);
@@ -877,7 +995,7 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
             }
 
             //for virtual keyboard only
@@ -894,7 +1012,7 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
             }
             //for virtual keyboard
             else if (editionActive && !Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) {
@@ -903,7 +1021,7 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
             }
             //for standard keyboard
             else if (editionActive && Qt.inputMethod.visible && !api.internal.settings.virtualKeyboardSupport){
@@ -911,7 +1029,7 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
             }
             else if(editionActive === false && input.readOnly === true) //if already in readonly and not active, we have to let control to parents
             {
@@ -1123,16 +1241,16 @@ Window {
         let type = "";
         let i = 0;
         //search the good type
-         do{
-             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
-             for(var j = 0; j < typeKeywords.length;j++)
-             {
-                 if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
-             }
-             i = i + 1;
-         }while (type === "" && i < myDeviceTypes.count)
+        do{
+            const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
+            for(var j = 0; j < typeKeywords.length;j++)
+            {
+                if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
+            }
+            i = i + 1;
+        }while (type === "" && i < myDeviceTypes.count)
         //reset counter
-         i = 0;
+        i = 0;
         //searchIcon using the good type
         do{
             const iconKeywords = myDeviceIcons.get(i).keywords.split(",");

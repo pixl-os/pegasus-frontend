@@ -139,10 +139,99 @@ FocusScope {
                     first: true
                     symbol: "\uf132"
                 }
-                SimpleButton {
-                    id: optMenuControlsConfig
+                MultivalueOption {
+                    id: optBackgroungColorConfig
                     //set focus only on firt item
                     focus: true
+
+                    //property to manage parameter name
+                    property string parameterName : "system.menu.color"
+
+                    label: qsTr("choose background color interface") + api.tr
+                    note: qsTr("Change background color only in interface") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optBackgroungColorConfig;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                        api.internal.recalbox.saveParameters();
+                    }
+                    onValueChanged: {
+                        backgroundThemeColor = value
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTextColorConfig
+
+                }
+                MultivalueOption {
+                    id: optTextColorConfig
+
+                    //property to manage parameter name
+                    property string parameterName : "system.text.color"
+
+                    label: qsTr("choose text color interface") + api.tr
+                    note: qsTr("Change text color only in interface") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+//                    font: globalFonts.awesome
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optTextColorConfig;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                        api.internal.recalbox.saveParameters();
+                    }
+                    onValueChanged: {
+                        textThemeColor = value
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSelectedColorConfig
+
+                }
+                MultivalueOption {
+                    id: optSelectedColorConfig
+
+                    //property to manage parameter name
+                    property string parameterName : "system.selected.color"
+
+                    label: qsTr("choose selected color interface") + api.tr
+                    note: qsTr("Change selected color only in interface") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+//                    font: globalFonts.awesome
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optSelectedColorConfig;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                        api.internal.recalbox.saveParameters();
+                    }
+                    onValueChanged: {
+                        selelectThemeColor = value
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optMenuControlsConfig
+
+                }
+                SimpleButton {
+                    id: optMenuControlsConfig
 
                     label: qsTr("Change menu controls") + api.tr
                     note: qsTr("Change control assignation only in menu") + api.tr
@@ -243,6 +332,27 @@ FocusScope {
                     height: vpx(30)
                 }
             }
+        }
+    }
+    MultivalueBox {
+        id: parameterslistBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
+
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+
+        onClose: content.focus = true
+        onSelect: {
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
         }
     }
     MultivalueBox {
