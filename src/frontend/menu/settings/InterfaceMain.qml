@@ -224,7 +224,7 @@ FocusScope {
                         api.internal.recalbox.saveParameters();
                     }
                     onValueChanged: {
-                        selelectThemeColor = value
+                        selectedThemeColor = value
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optMenuControlsConfig

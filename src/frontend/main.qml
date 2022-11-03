@@ -60,12 +60,12 @@ Window {
 
     // Color palette set with 'themeColor.main' or else
     property string backgroundThemeColor : api.internal.recalbox.getStringParameter("system.menu.color")
-    property string selelectThemeColor : api.internal.recalbox.getStringParameter("system.selected.color")
+    property string selectedThemeColor : api.internal.recalbox.getStringParameter("system.selected.color")
     property string textThemeColor : api.internal.recalbox.getStringParameter("system.text.color")
     property var themeColor: {
 
         var background = "#404040"
-        var _secondary = "#606060"
+        var _secondary = "#535353"
 
         var _textTitle = "#B0E0E6"
         var _textLabel = "#eeeeee"
@@ -75,31 +75,31 @@ Window {
 
         if (backgroundThemeColor === "Original") {
             background = "#404040"
-            _secondary = "#606060"
+            _secondary = "#535353"
         }
         else if (backgroundThemeColor === "Black") {
             background = "#1a1a1a"
-            _secondary = "#202020"
+            _secondary = "#303030"
         }
         else if (backgroundThemeColor === "White") {
-            background = "#f8f8f8"
+            background = "#ebebeb"
             _secondary = "#dfdfdf"
         }
         else if (backgroundThemeColor === "Gray") {
-            background = "#404040"
-            _secondary = "#606060"
+            background = "#808080"
+            _secondary = "#8C8C8C"
         }
         else if (backgroundThemeColor === "Blue") {
-            background = "#45b3e7"
-            _secondary = "#72c6ed"
+            background = "#1d253d"
+            _secondary = "#333A50"
         }
         else if (backgroundThemeColor === "Green") {
-            background = "#404040"
-            _secondary = "#606060"
+            background = "#054b16"
+            _secondary = "#1D5D2D"
         }
         else if (backgroundThemeColor === "Red") {
-            background = "#404040"
-            _secondary = "#606060"
+            background = "#520000"
+            _secondary = "#631919"
         }
 
         if (textThemeColor === "Original") {
@@ -138,26 +138,65 @@ Window {
             _textSublabel = "#999999"
         }
 
-        if (selelectThemeColor === "Original") {
-            accent = "#32CD32"
+        if (selectedThemeColor === "Dark Green") {
+            accent = "#288928";
         }
-        else if (selelectThemeColor === "Black") {
-            accent = "#cd3232"
+        else if (selectedThemeColor === "Light Green") {
+            accent = "#65b032";
         }
-        else if (selelectThemeColor === "White") {
-            accent = "#008282"
+        else if (selectedThemeColor === "Turquoise") {
+            accent = "#288e80";
         }
-        else if (selelectThemeColor === "Gray") {
-            accent = "#32CD32"
+        else if (selectedThemeColor === "Dark Red") {
+            accent = "#ab283b";
         }
-        else if (selelectThemeColor === "Blue") {
-            accent = "#82115d"
+        else if (selectedThemeColor === "Light Red") {
+            accent = "#e52939";
         }
-        else if (selelectThemeColor === "Green") {
-            accent = "#32CD32"
+        else if (selectedThemeColor === "Dark Pink") {
+            accent = "#c52884";
         }
-        else if (selelectThemeColor === "Red") {
-            accent = "#32CD32"
+        else if (selectedThemeColor === "Light Pink") {
+            accent = "#ee6694";
+        }
+        else if (selectedThemeColor === "Dark Blue") {
+            accent = "#30519c";
+        }
+        else if (selectedThemeColor === "Light Blue") {
+            accent = "#288dcf";
+        }
+        else if (selectedThemeColor === "Orange") {
+            accent = "#ed5b28";
+        }
+        else if (selectedThemeColor === "Yellow") {
+            accent = "#ed9728";
+        }
+        else if (selectedThemeColor === "Magenta") {
+            accent = "#b857c6";
+        }
+        else if (selectedThemeColor === "Purple") {
+            accent = "#825fb1";
+        }
+        else if (selectedThemeColor === "Dark Gray") {
+            accent = "#5e5c5d";
+        }
+        else if (selectedThemeColor === "Light Gray") {
+            accent = "#818181";
+        }
+        else if (selectedThemeColor === "Dark Gray") {
+            accent = "#5e5c5d";
+        }
+        else if (selectedThemeColor === "Steel") {
+            accent = "#768294";
+        }
+        else if (selectedThemeColor === "Stone") {
+            accent = "#658780";
+        }
+        else if (selectedThemeColor === "Dark Brown") {
+            accent = "#806044";
+        }
+        else if (selectedThemeColor === "Light Brown") {
+            accent = "#7e715c";
         }
 
         return {
@@ -174,22 +213,6 @@ Window {
         }
 
     }
-
-    //    // Color palette set with 'themeColor.main' or else
-    //    property var themeColor: {
-    //        return {
-    //            main:               "#404040",
-    //            secondary:          "#606060",
-    //            screenHeader:       "#606060",
-    //            screenUnderline:    "#32CD32",
-    //            underline:          "#32CD32",
-    //            textTitle:          "#B0E0E6",
-    //            textLabel:          "#eee",
-    //            textSublabel:       "#999",
-    //            textSectionTitle:   "#32CD32",
-    //            textValue:          "#eee",
-    //        }
-    //    }
 
     FontLoader { id: sansFont; source: "/fonts/Roboto-Regular.ttf" }
     FontLoader { id: sansBoldFont; source: "/fonts/Roboto-Bold.ttf" }
