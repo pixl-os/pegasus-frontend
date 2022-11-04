@@ -175,7 +175,7 @@ Item {
         anchors.centerIn: parent
 
         fillMode: Image.PreserveAspectFit
-        source: name ? "qrc:/frontend/assets/gamepad/base_" + name + ".png" : ""
+        source: name ? "qrc:/frontend/assets/gamepad/" + name + "/base_" + name + ".png" : ""
         sourceSize {
             width: padBaseSourceSizeWidth
             height: padBaseSourceSizeHeight
