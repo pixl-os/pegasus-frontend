@@ -1051,7 +1051,9 @@ Window {
         ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"; iconfont: "awesome"; layout: "snes"}
         ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64"; type:"controller" ; iconfont: "awesome"; layout: "n64"}
+        //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
+        //other hujia devices exists for NES, SNES and gamecube, but will be detected upper if needed.
+        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; type:"controller" ; iconfont: "awesome"; layout: "n64"}
         ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
