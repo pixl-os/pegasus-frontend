@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- gamepad editor custom view for N64 Controllers (switch one, 8bitdo one, original ones using adapter)
 	- support of +r/-r and -y/+y axis management for buttons of right stick as for N64 controllers
 	- optimization folder for all pad
+	- add detection of Mayflash N64 controler adapter V1 as N64 controller for gamepad editor
 
 - News:
 	- Add update online for supermodel, citra-emu, pcsx2, dolphin-emu, libretro-mame, xemu
