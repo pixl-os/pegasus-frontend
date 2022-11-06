@@ -48,20 +48,28 @@ QStringList GetParametersList(QString Parameter)
 
     if (Parameter.endsWith(".ratio", Qt::CaseInsensitive) == true) // compatible for 'global.ratio' and '{system].ratio' (example: 'snes.ratio')
     {
-        ListOfValue << QObject::tr("none") << QObject::tr("auto") << "4/3" << "16/9" << "16/10" << "16/15" << "21/9" << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12" << "19/14" << "30/17" << "32/9" << QObject::tr("square pixel") << QObject::tr("config") << QObject::tr("custom") << QObject::tr("core provided");
+        ListOfValue << QObject::tr("none") << QObject::tr("auto") << QObject::tr("square pixel") << QObject::tr("config")
+                    << QObject::tr("custom") << QObject::tr("core provided")<< "4/3" << "16/9" << "16/10" << "16/15" << "21/9"
+                    << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12"
+                    << "19/14" << "30/17" << "32/9";
         /*## Set ratio for all emulators (auto,4/3,16/9,16/10,custom) - default value: auto / index 0
         global.ratio=auto */
-        ListOfInternalValue << "none" << "auto" << "4/3" << "16/9" << "16/10" << "16/15" << "21/9" << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12" << "19/14" << "30/17" << "32/9" << "squarepixel" << "config" << "custom" << "coreprovided";
+        ListOfInternalValue << "none" << "auto" << "squarepixel" << "config"
+                            << "custom" << "coreprovided" << "4/3" << "16/9" << "16/10" << "16/15" << "21/9"
+                            << "1/1" << "2/1" << "3/2" << "3/4" << "4/1" << "9/16" << "5/4" << "6/5" << "7/9" << "8/3" << "8/7" << "19/12"
+                            << "19/14" << "30/17" << "32/9";
     }
     else if (Parameter == "system.language")
     {
         /* pegasus language format :
         ar ,bs, de, en-GB, en, es, fr, hu, ko, nl, pt-BR, ru, zh, zh-TW */
-        ListOfValue << "ar" << "bs" << "de" << "en-GB" << "en" << "es" << "fr" << "hu" << "ko" << "nl" << "pt-BR" << "ru" << "zh" << "zh-TW";
+        ListOfValue << "ar" << "bs" << "de" << "en-GB" << "en" << "es" << "fr"
+                    << "hu" << "ko" << "nl" << "pt-BR" << "ru" << "zh" << "zh-TW";
         /*recalbox language format :
         ## Set the language of the system (fr_FR,en_US,en_GB,de_DE,pt_BR,es_ES,it_IT,eu_ES,tr_TR,zh_CN)
         system.language=en_US */
-        ListOfInternalValue << "en_US" << "en_US" << "de_DE" << "en_GB" << "en_US" << "es_ES" << "fr_FR" << "en_US" << "en_US" << "en_US" << "pt_BR" << "en_US" << "zh_CN" << "en_US";
+        ListOfInternalValue << "en_US" << "en_US" << "de_DE" << "en_GB" << "en_US" << "es_ES" << "fr_FR"
+                            << "en_US" << "en_US" << "en_US" << "pt_BR" << "en_US" << "zh_CN" << "en_US";
     }
     else if (Parameter == "system.kblayout")
     {
@@ -165,6 +173,28 @@ QStringList GetParametersList(QString Parameter)
             }
         }
     }
+    else if (Parameter == "system.selected.color")
+    {
+        /* "Original,Black,Gray,Blue,Green,Red" */
+        ListOfValue << QObject::tr("Original") << QObject::tr("Dark Green") << QObject::tr("Light Green") << QObject::tr("Dark Gray")
+                    << QObject::tr("Light Gray") << QObject::tr("Dark Red") << QObject::tr("Light Red") << QObject::tr("Dark Pink")
+                    << QObject::tr("Light Pink") << QObject::tr("Dark Brown") << QObject::tr("Light Brown") << QObject::tr("Dark Blue")
+                    << QObject::tr("Light Blue") << QObject::tr("Orange") << QObject::tr("Yellow") << QObject::tr("Turquoise")
+                    << QObject::tr("Magenta") << QObject::tr("Purple") << QObject::tr("Steel") << QObject::tr("Stone");
+        ListOfInternalValue << "Original" << "Dark Green" << "Light Green" << "Dark Gray"
+                            << "Light Gray" << "Dark Red" << "Light Red" << "Dark Pink"
+                            << "Light Pink" << "Dark Brown" << "Light Brown" << "Dark Blue"
+                            << "Light Blue" << "Orange" << "Yellow" << "Turquoise"
+                            << "Magenta" << "Purple" << "Steel" << "Stone";
+    }
+    else if (Parameter.endsWith(".color"))
+    {
+        /* "Original,Black,Gray,Blue,Green,Red" */
+        ListOfValue << QObject::tr("Original") << QObject::tr("Black") << QObject::tr("White") << QObject::tr("Gray")
+                    << QObject::tr("Blue") << QObject::tr("Green") << QObject::tr("Red") << QObject::tr("Purple");
+        ListOfInternalValue << "Original" << "Black" << "White" << "Gray"
+                            << "Blue" << "Green" << "Red" << "Purple";
+    }
     else if (Parameter == "controllers.ps3.driver")
     {
         /*
@@ -179,7 +209,9 @@ QStringList GetParametersList(QString Parameter)
     else if ((Parameter == "netplay.password.client") || (Parameter == "netplay.password.viewer"))
     {
         //global.netplay.nickname= ?
-        ListOfValue << "|P/4/C-M/4/N|" << "[SpAcE.iNvAdErS]" << ">sUpEr.MaRi0.bRoSs<" << "{SoNiC.tHe.HeDgEhOg}" << "(Q/B/E/R/T-@;&?@#)" << "~AnOtHeR.wOrLd!~" << "(/T\\E/T\\R/I\\S)" << "$m00n.p4tR0I$" << "*M.E.T.A.L.S.L.U.G*" << "OuTruN-hAn60uT" << "[L*E*M*M*I*N*G*S]" << "@-G|a|U|n|L|e|T-@" << "%.BuBBLe.B00Ble.%" << "!.CaStLeVaNiA.!" << "=B@mBeR.J4cK=";
+        ListOfValue << "|P/4/C-M/4/N|" << "[SpAcE.iNvAdErS]" << ">sUpEr.MaRi0.bRoSs<" << "{SoNiC.tHe.HeDgEhOg}" << "(Q/B/E/R/T-@;&?@#)"
+                    << "~AnOtHeR.wOrLd!~" << "(/T\\E/T\\R/I\\S)" << "$m00n.p4tR0I$" << "*M.E.T.A.L.S.L.U.G*" << "OuTruN-hAn60uT"
+                    << "[L*E*M*M*I*N*G*S]" << "@-G|a|U|n|L|e|T-@" << "%.BuBBLe.B00Ble.%" << "!.CaStLeVaNiA.!" << "=B@mBeR.J4cK=";
     }
     else if (Parameter == "audio.mode")
     {
@@ -196,9 +228,13 @@ QStringList GetParametersList(QString Parameter)
         */
 
         //pegasus sound layer parameters is not as ES.
-        ListOfValue << QObject::tr("All sounds on") + " \uf123" <<  QObject::tr("sounds off") +" \uf3a2" << QObject::tr("Not supported: Videos Sound only") << QObject::tr("Not supported: Musics Only") << QObject::tr("Not supported: Musics or Videos Sound");// using ionIcons Font
+        ListOfValue << QObject::tr("All sounds on") + " \uf123" <<  QObject::tr("sounds off") +" \uf3a2"
+                    << QObject::tr("Not supported: Videos Sound only") << QObject::tr("Not supported: Musics Only")
+                    << QObject::tr("Not supported: Musics or Videos Sound");// using ionIcons Font
         //use internal values to match with ES modes
-        ListOfInternalValue << "musicandvideosound" <<  "none" << "videossoundonly" << "musicsonly" << "musicsxorvideossound";
+        ListOfInternalValue << "musicandvideosound" <<  "none"
+                            << "videossoundonly" << "musicsonly"
+                            << "musicsxorvideossound";
     }
     else if (Parameter == "audio.device")
     {

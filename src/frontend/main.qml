@@ -59,20 +59,170 @@ Window {
     }*/
 
     // Color palette set with 'themeColor.main' or else
+    property string backgroundThemeColor : api.internal.recalbox.getStringParameter("system.menu.color")
+    property string selectedThemeColor : api.internal.recalbox.getStringParameter("system.selected.color")
+    property string textThemeColor : api.internal.recalbox.getStringParameter("system.text.color")
     property var themeColor: {
-        return {
-            main:               "#404040",
-            secondary:          "#606060",
-            screenHeader:       "#606060",
-            screenUnderline:    "#32CD32",
-            underline:          "#32CD32",
-            textTitle:          "#B0E0E6",
-            textLabel:          "#eee",
-            textSublabel:       "#999",
-            textSectionTitle:   "#32CD32",
-            textValue:          "#eee",
+
+        var background = "#404040"
+        var _secondary = "#535353"
+
+        var _textTitle = "#B0E0E6"
+        var _textLabel = "#eeeeee"
+        var _textSublabel = "#999999"
+
+        var accent = "#32CD32"
+
+        if (backgroundThemeColor === "Original") {
+            background = "#404040"
+            _secondary = "#535353"
         }
+        else if (backgroundThemeColor === "Black") {
+            background = "#1a1a1a"
+            _secondary = "#303030"
+        }
+        else if (backgroundThemeColor === "White") {
+            background = "#ebebeb"
+            _secondary = "#dfdfdf"
+        }
+        else if (backgroundThemeColor === "Gray") {
+            background = "#666666"
+            _secondary = "#757575"
+        }
+        else if (backgroundThemeColor === "Blue") {
+            background = "#1d253d"
+            _secondary = "#333A50"
+        }
+        else if (backgroundThemeColor === "Green") {
+            background = "#054b16"
+            _secondary = "#1D5D2D"
+        }
+        else if (backgroundThemeColor === "Red") {
+            background = "#520000"
+            _secondary = "#631919"
+        }
+        else if (backgroundThemeColor === "Purple") {
+            background = "#684791"
+            _secondary = "#77599C"
+        }
+
+        if (textThemeColor === "Original") {
+            _textTitle = "#bfe6eb"
+            _textLabel = "#b7e3e8"
+            _textSublabel = "#B0E0E6"
+        }
+        else if (textThemeColor === "Black") {
+            _textTitle = "#000000"
+            _textLabel = "#000000"
+            _textSublabel = "#000000"
+        }
+        else if (textThemeColor === "White") {
+            _textTitle = "#e5e5e5"
+            _textLabel = "#f2f2f2"
+            _textSublabel = "#ffffff"
+        }
+        else if (textThemeColor === "Gray") {
+            _textTitle = "#9a9a9a"
+            _textLabel = "#8d8d8d"
+            _textSublabel = "#818181"
+        }
+        else if (textThemeColor === "Blue") {
+            _textTitle = "#52a3d8"
+            _textLabel = "#3d98d3"
+            _textSublabel = "#288dcf"
+        }
+        else if (textThemeColor === "Green") {
+            _textTitle = "#83bf5a"
+            _textLabel = "#74b746"
+            _textSublabel = "#65b032"
+        }
+        else if (textThemeColor === "Red") {
+            _textTitle = "#ea5360"
+            _textLabel = "#e73e4c"
+            _textSublabel = "#e52939"
+        }
+        else if (textThemeColor === "Purple") {
+            _textTitle = "#9b7ec0"
+            _textLabel = "#8e6fb8"
+            _textSublabel = "#825fb1"
+        }
+
+        if (selectedThemeColor === "Dark Green") {
+            accent = "#288928";
+        }
+        else if (selectedThemeColor === "Light Green") {
+            accent = "#65b032";
+        }
+        else if (selectedThemeColor === "Turquoise") {
+            accent = "#288e80";
+        }
+        else if (selectedThemeColor === "Dark Red") {
+            accent = "#ab283b";
+        }
+        else if (selectedThemeColor === "Light Red") {
+            accent = "#e52939";
+        }
+        else if (selectedThemeColor === "Dark Pink") {
+            accent = "#c52884";
+        }
+        else if (selectedThemeColor === "Light Pink") {
+            accent = "#ee6694";
+        }
+        else if (selectedThemeColor === "Dark Blue") {
+            accent = "#30519c";
+        }
+        else if (selectedThemeColor === "Light Blue") {
+            accent = "#288dcf";
+        }
+        else if (selectedThemeColor === "Orange") {
+            accent = "#ed5b28";
+        }
+        else if (selectedThemeColor === "Yellow") {
+            accent = "#ed9728";
+        }
+        else if (selectedThemeColor === "Magenta") {
+            accent = "#b857c6";
+        }
+        else if (selectedThemeColor === "Purple") {
+            accent = "#825fb1";
+        }
+        else if (selectedThemeColor === "Dark Gray") {
+            accent = "#5e5c5d";
+        }
+        else if (selectedThemeColor === "Light Gray") {
+            accent = "#818181";
+        }
+        else if (selectedThemeColor === "Dark Gray") {
+            accent = "#5e5c5d";
+        }
+        else if (selectedThemeColor === "Steel") {
+            accent = "#768294";
+        }
+        else if (selectedThemeColor === "Stone") {
+            accent = "#658780";
+        }
+        else if (selectedThemeColor === "Dark Brown") {
+            accent = "#806044";
+        }
+        else if (selectedThemeColor === "Light Brown") {
+            accent = "#7e715c";
+        }
+
+        return {
+            main:               background,
+            secondary:          _secondary,
+            screenHeader:       _secondary,
+            screenUnderline:    accent,
+            underline:          accent,
+            textTitle:          _textTitle,
+            textLabel:          _textLabel,
+            textSublabel:       _textSublabel,
+            textSectionTitle:   accent,
+            textValue:          _textLabel,
+        }
+
     }
+
     FontLoader { id: sansFont; source: "/fonts/Roboto-Regular.ttf" }
     FontLoader { id: sansBoldFont; source: "/fonts/Roboto-Bold.ttf" }
     FontLoader { id: monoFont; source: "/fonts/RobotoMono-Regular.ttf" }
@@ -388,7 +538,7 @@ Window {
         running: splashScreen.focus ? false : true
         onTriggered: {
             gameCdRom = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf");
-//console.log(gameCdRom)
+            //console.log(gameCdRom)
             if(gameCdRom.includes("system =")) {
                 cdRomPopupLoader.focus = true;
                 //just set "cdrom" as title of this game (optional)
@@ -826,7 +976,7 @@ Window {
         //console.log("Qt.Key_Return : ",Qt.Key_Return);
         //console.log("Qt.Key_Enter : ",Qt.Key_Enter);
         //console.log("Qt.Key_Backspace : ",Qt.Key_Backspace);
-		// Accept
+        // Accept
         if (api.keys.isAccept(ev) && !ev.isAutoRepeat) {
             //console.log("isAccept");
             ev.accepted = true;
@@ -861,13 +1011,13 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
 
             }
             //for virtual keyboard
             else if ((ev.key !== Qt.Key_Return) && (ev.key !== Qt.Key_Enter)){
                 //console.log("# Use case 4 : if virtual keyboard visible and PRESS A");
-				if(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
+                if(Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport){
                     //console.log("# Use case 4 bis : if virtual keyboard visible and PRESS A");
                     keyEmitter.keyPressed(appWindow, Qt.Key_Return);
                     keyEmitter.keyReleased(appWindow, Qt.Key_Return);
@@ -877,7 +1027,7 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
             }
 
             //for virtual keyboard only
@@ -894,7 +1044,7 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
             }
             //for virtual keyboard
             else if (editionActive && !Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport) {
@@ -903,7 +1053,7 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
             }
             //for standard keyboard
             else if (editionActive && Qt.inputMethod.visible && !api.internal.settings.virtualKeyboardSupport){
@@ -911,7 +1061,7 @@ Window {
                 editionActive = false;
                 input.cursorVisible = false;
                 input.readOnly = true;
-				input.cursorPosition = 0;
+                input.cursorPosition = 0;
             }
             else if(editionActive === false && input.readOnly === true) //if already in readonly and not active, we have to let control to parents
             {
@@ -1123,16 +1273,16 @@ Window {
         let type = "";
         let i = 0;
         //search the good type
-         do{
-             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
-             for(var j = 0; j < typeKeywords.length;j++)
-             {
-                 if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
-             }
-             i = i + 1;
-         }while (type === "" && i < myDeviceTypes.count)
+        do{
+            const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
+            for(var j = 0; j < typeKeywords.length;j++)
+            {
+                if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
+            }
+            i = i + 1;
+        }while (type === "" && i < myDeviceTypes.count)
         //reset counter
-         i = 0;
+        i = 0;
         //searchIcon using the good type
         do{
             const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
