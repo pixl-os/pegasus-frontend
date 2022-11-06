@@ -86,8 +86,8 @@ Window {
             _secondary = "#dfdfdf"
         }
         else if (backgroundThemeColor === "Gray") {
-            background = "#808080"
-            _secondary = "#8C8C8C"
+            background = "#666666"
+            _secondary = "#757575"
         }
         else if (backgroundThemeColor === "Blue") {
             background = "#1d253d"
@@ -101,41 +101,50 @@ Window {
             background = "#520000"
             _secondary = "#631919"
         }
+        else if (backgroundThemeColor === "Purple") {
+            background = "#684791"
+            _secondary = "#77599C"
+        }
 
         if (textThemeColor === "Original") {
-            _textTitle = "#B0E0E6"
-            _textLabel = "#eeeeee"
-            _textSublabel = "#999999"
+            _textTitle = "#bfe6eb"
+            _textLabel = "#b7e3e8"
+            _textSublabel = "#B0E0E6"
         }
         else if (textThemeColor === "Black") {
-            _textTitle = "#B0E0E6"
-            _textLabel = "#eeeeee"
-            _textSublabel = "#999999"
+            _textTitle = "#000000"
+            _textLabel = "#000000"
+            _textSublabel = "#000000"
         }
         else if (textThemeColor === "White") {
-            _textTitle = "#1a1a1a"
-            _textLabel = "#343434"
-            _textSublabel = "#414141"
+            _textTitle = "#e5e5e5"
+            _textLabel = "#f2f2f2"
+            _textSublabel = "#ffffff"
         }
         else if (textThemeColor === "Gray") {
-            _textTitle = "#B0E0E6"
-            _textLabel = "#eeeeee"
-            _textSublabel = "#999999"
+            _textTitle = "#9a9a9a"
+            _textLabel = "#8d8d8d"
+            _textSublabel = "#818181"
         }
         else if (textThemeColor === "Blue") {
-            _textTitle = "#0b3d55"
-            _textLabel = "#0e4d6c"
-            _textSublabel = "#115d82"
+            _textTitle = "#52a3d8"
+            _textLabel = "#3d98d3"
+            _textSublabel = "#288dcf"
         }
         else if (textThemeColor === "Green") {
-            _textTitle = "#B0E0E6"
-            _textLabel = "#eeeeee"
-            _textSublabel = "#999999"
+            _textTitle = "#83bf5a"
+            _textLabel = "#74b746"
+            _textSublabel = "#65b032"
         }
         else if (textThemeColor === "Red") {
-            _textTitle = "#B0E0E6"
-            _textLabel = "#eeeeee"
-            _textSublabel = "#999999"
+            _textTitle = "#ea5360"
+            _textLabel = "#e73e4c"
+            _textSublabel = "#e52939"
+        }
+        else if (textThemeColor === "Purple") {
+            _textTitle = "#9b7ec0"
+            _textLabel = "#8e6fb8"
+            _textSublabel = "#825fb1"
         }
 
         if (selectedThemeColor === "Dark Green") {

@@ -161,7 +161,6 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
-                        api.internal.recalbox.saveParameters();
                     }
                     onValueChanged: {
                         backgroundThemeColor = value
@@ -179,7 +178,6 @@ FocusScope {
                     label: qsTr("choose text color interface") + api.tr
                     note: qsTr("Change text color only in interface") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
-//                    font: globalFonts.awesome
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -191,7 +189,6 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
-                        api.internal.recalbox.saveParameters();
                     }
                     onValueChanged: {
                         textThemeColor = value
@@ -209,7 +206,6 @@ FocusScope {
                     label: qsTr("choose selected color interface") + api.tr
                     note: qsTr("Change selected color only in interface") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
-//                    font: globalFonts.awesome
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -221,7 +217,6 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
-                        api.internal.recalbox.saveParameters();
                     }
                     onValueChanged: {
                         selectedThemeColor = value
