@@ -732,6 +732,137 @@ FocusScope {
                             brightness: 0.6
             } //As Sony PS4 pad
 
+            ListElement {   name: "ps5"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: true;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: true;
+                            hasY: true;
+                            hasNintendoPad : false;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : true; hasRightStick : true;
+                            hasL3 : true; hasR3 : true;
+
+                            hadDpad : true;
+                            hasButtonsForDpad : true;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.39; padBaseSourceSizeWidth : 1496 ; padBaseSourceSizeHeight : 1201;
+
+                            //parameters for select
+                            padSelectWidth : 44;
+                            padSelectHeight : 70;
+                            padSelectTopY: 295;
+                            padSelectLeftX: 378;
+
+                            //parameters for start
+                            padStartWidth : 44;
+                            padStartHeight : 70;
+                            padStartTopY: 298;
+                            padStartLeftX: 1075;
+
+                            //parameters for guide/hotkey
+                            padGuideWidth : 94;
+                            padGuideHeight : 71;
+                            padGuideTopY: 653;
+                            padGuideLeftX: 702;
+
+                            //parameters for A/B/X/Y
+
+                            //As cross/A
+                            padAWidth : 98;
+                            padAHeight : 99;
+                            padATopY: 555;
+                            padALeftX: 1163;
+
+                            //As cycle/B
+                            padBWidth : 100;
+                            padBHeight : 98;
+                            padBTopY: 445;
+                            padBLeftX: 1275;
+
+                            //As square/X
+                            padXWidth : 99;
+                            padXHeight : 101;
+                            padXTopY: 445;
+                            padXLeftX: 1055;
+
+                            //As Triangle/Y
+                            padYWidth : 99;
+                            padYHeight : 97;
+                            padYTopY: 335;
+                            padYLeftX: 1164;
+
+                            //parameter for Dpad with dedicated buttons and separated
+                            dpadUpWidth : 91;
+                            dpadUpHeight : 113;
+                            dpadUpTopY: 368;
+                            dpadUpLeftX: 237;
+
+                            dpadDownWidth : 92;
+                            dpadDownHeight : 112;
+                            dpadDownTopY: 512;
+                            dpadDownLeftX: 236;
+
+                            dpadLeftWidth : 112;
+                            dpadLeftHeight : 92;
+                            dpadLeftTopY: 451;
+                            dpadLeftLeftX: 153;
+
+                            dpadRightWidth : 112;
+                            dpadRightHeight : 91;
+                            dpadRightTopY: 449;
+                            dpadRightLeftX: 298;
+
+                            //parameter for L1
+                            padL1Width : 198;
+                            padL1Height : 68;
+                            padL1TopY: 211;
+                            padL1LeftX: 182;
+
+                            //parameter for R1
+                            padR1Width : 199;
+                            padR1Height : 68;
+                            padR1TopY: 211;
+                            padR1LeftX: 1113;
+
+                            //parameter for L2
+                            padL2Width : 184;
+                            padL2Height : 175;
+                            padL2TopY: 0;
+                            padL2LeftX: 187;
+
+                            //parameter for R2
+                            padR2Width : 184;
+                            padR2Height : 176;
+                            padR2TopY: 0;
+                            padR2LeftX: 1117;
+
+                            //parameter for Left stick
+                            lStickWidth : 174;
+                            lStickHeight : 170;
+                            lStickTopY: 617;
+                            lStickLeftX: 423;
+
+                            //parameter for Right stick
+                            rStickWidth : 172;
+                            rStickHeight : 172;
+                            rStickTopY: 617;
+                            rStickLeftX: 902;
+							
+                            //to adapt contrast/brightness
+                            contrast : 0.4
+                            brightness: 0.6
+            } //As Sony PS5 pad
+
             ListElement {   name: "n64"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
