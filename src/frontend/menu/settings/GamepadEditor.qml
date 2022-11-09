@@ -601,6 +601,124 @@ FocusScope {
 
             } //As Microsoft XBOX 360 pad
 
+            ListElement {   name: "xboxone"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: true;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: true;
+                            hasY: true;
+                            hasNintendoPad : false;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : true; hasRightStick : true;
+                            hasL3 : true; hasR3 : true;
+
+                            hadDpad : true;
+                            hasButtonsForDpad : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.36; padBaseSourceSizeWidth : 1447 ; padBaseSourceSizeHeight : 1264;
+
+                            //parameters for select
+                            padSelectWidth : 63;
+                            padSelectHeight : 64;
+                            padSelectTopY: 504;
+                            padSelectLeftX: 584;
+
+                            //parameters for start
+                            padStartWidth : 65;
+                            padStartHeight : 66;
+                            padStartTopY: 504;
+                            padStartLeftX: 795;
+
+                            //parameters for guide/hotkey
+                            padGuideWidth : 113;
+                            padGuideHeight : 113;
+                            padGuideTopY: 333;
+                            padGuideLeftX: 664;
+
+                            //parameters for share //RFU
+                            /*padSelectWidth : 78;
+                            padSelectHeight : 48;
+                            padSelectTopY: 592;
+                            padSelectLeftX: 684;*/
+
+                            //parameters for A/B/X/Y
+                            padAWidth : 97;
+                            padAHeight : 96;
+                            padATopY: 589;
+                            padALeftX: 1046;
+
+                            padBWidth : 96;
+                            padBHeight : 97;
+                            padBTopY: 495;
+                            padBLeftX: 1144;
+
+                            padXWidth : 100;
+                            padXHeight : 100;
+                            padXTopY: 489;
+                            padXLeftX: 947;
+
+                            padYWidth : 97;
+                            padYHeight : 96;
+                            padYTopY: 394;
+                            padYLeftX: 1046;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 665;
+                            dpadAreaBottomY: 887;
+                            dpadAreaLeftX: 421;
+                            dpadAreaRightX: 641;
+
+                            //parameter for L1
+                            padL1Width : 289;
+                            padL1Height : 111;
+                            padL1TopY: 260;
+                            padL1LeftX: 215;
+
+                            //parameter for R1
+                            padR1Width : 289;
+                            padR1Height : 115;
+                            padR1TopY: 260;
+                            padR1LeftX: 939;
+
+                            //parameter for L2
+                            padL2Width : 185;
+                            padL2Height : 237;
+                            padL2TopY: 0;
+                            padL2LeftX: 279;
+
+                            //parameter for R2
+                            padR2Width : 189;
+                            padR2Height : 240;
+                            padR2TopY: 0;
+                            padR2LeftX: 985;
+
+                            //parameter for Left stick
+                            lStickWidth : 166;
+                            lStickHeight : 166;
+                            lStickTopY: 455;
+                            lStickLeftX: 269;
+
+                            //parameter for Right stick
+                            rStickWidth : 166;
+                            rStickHeight : 172;
+                            rStickTopY: 671;
+                            rStickLeftX: 832;
+
+                            //to adapt contrast/brightness
+                            contrast : 0.1
+                            brightness: 0.2
+
+            } //As Microsoft XBOX ONE SERIE pad
+
             ListElement {   name: "ps4"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
@@ -786,14 +904,14 @@ FocusScope {
                             //As cycle/B
                             padBWidth : 100;
                             padBHeight : 98;
-                            padBTopY: 445;
-                            padBLeftX: 1275;
+                            padBTopY: 446;
+                            padBLeftX: 1273;
 
                             //As square/X
                             padXWidth : 99;
                             padXHeight : 101;
                             padXTopY: 445;
-                            padXLeftX: 1055;
+                            padXLeftX: 1054;
 
                             //As Triangle/Y
                             padYWidth : 99;

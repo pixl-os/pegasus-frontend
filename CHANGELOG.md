@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- Change color of background, text, and selected in settings menu 
 	- add layout controller PS5
 	- add shinretro update online
+	- add xboxone controller layout
 
 - News:
 	- Add update online for supermodel, citra-emu, pcsx2, dolphin-emu, libretro-mame, xemu
