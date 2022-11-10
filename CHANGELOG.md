@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL] - yyyy-mm-dd - vx.x.x
+## [pixL] - 2022-11-11 - v0.0.9
 - GameOS-pixL Theme:
 	- optimize scan folder for load all media download by scraper
 	- extraction of this theme from Pegasus (Default themes will be avilable from share_init/themes now)
@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file (focus on ch
 - Fixes:
 	- wifi-first-activation-not-list-proposed #[13]
 	- fix up to option WifiNetwork not work in setting menu if wifi enabled
+	- update translation fr for color setting and axis controller
 
 - Features:
 	- add system videos from 'share/videos' directory in collections (to be used with Shinretro theme)
