@@ -1184,10 +1184,10 @@ Window {
         id: myDeviceIcons //now include also layout definition
 
         //CONTROLLERS PART
-        ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one, Xbox One S Controller,Xbox One Controller,Microsoft Xbox One,Microsoft Xbox One S,Microsoft Xbox Series Controller,Xbox Series X Controller,Xbox Wireless Controller"; type:"controller"; iconfont: "awesome"; layout: "xboxone"}
-        ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360,x-box 360,Xbox 360 Controller,Xbox 360 Wireless Receiver,Xbox Adaptive Controller,Microsoft Xbox 360"; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
-        ListElement { icon: "\uf2f0"; keywords: "xbox series,x-box,Xbox Series Controller"; type:"controller"; iconfont: "awesome"} //as XBOX one for the moment, need icon for series
-        ListElement { icon: "\uf2f0"; keywords: "xbox,microsoft,Xbox Controller,Microsoft Xbox"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment
+        ListElement { icon: "\uf2f0"; keywords: "x360,xbox360,xbox 360,x-box 360"; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
+        ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one"; type:"controller"; iconfont: "awesome"; layout: "xboxone"}
+        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"; iconfont: "awesome"} //as XBOX one for the moment, need icon for series
+        ListElement { icon: "\uf2f0"; keywords: "xbox,microsoft"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment
 
         ListElement { icon: "\uf2ca"; keywords: "ps5,playstation 5,dualsense,wireless controller,Sony Interactive Entertainment Wireless Controller,PS5 Controller"; type:"controller"; iconfont: "awesome"; layout: "ps5"} // add wireless controller as usual PS name used by Sony
         ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller,PS4 Controller"; type:"controller"; iconfont: "awesome"; layout: "ps4"} // add wireless controller as usual PS name used by Sony
