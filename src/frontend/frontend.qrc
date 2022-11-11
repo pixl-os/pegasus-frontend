@@ -216,5 +216,20 @@
         <file>assets/gamepad/ps5/start_ps5.png</file>
         <file>assets/gamepad/ps5/x_ps5.png</file>
         <file>assets/gamepad/ps5/y_ps5.png</file> 
+        <file>assets/gamepad/xboxone/a_xboxone.png</file>
+        <file>assets/gamepad/xboxone/b_xboxone.png</file>
+        <file>assets/gamepad/xboxone/base_xboxone.png</file>
+        <file>assets/gamepad/xboxone/dpad_xboxone.png</file>
+        <file>assets/gamepad/xboxone/guide_xboxone.png</file>
+        <file>assets/gamepad/xboxone/l1_xboxone.png</file>
+        <file>assets/gamepad/xboxone/l2_xboxone.png</file>
+        <file>assets/gamepad/xboxone/lstick_xboxone.png</file>
+        <file>assets/gamepad/xboxone/r1_xboxone.png</file>
+        <file>assets/gamepad/xboxone/r2_xboxone.png</file>
+        <file>assets/gamepad/xboxone/rstick_xboxone.png</file>
+        <file>assets/gamepad/xboxone/select_xboxone.png</file>
+        <file>assets/gamepad/xboxone/start_xboxone.png</file>
+        <file>assets/gamepad/xboxone/x_xboxone.png</file>
+        <file>assets/gamepad/xboxone/y_xboxone.png</file>
     </qresource>
 </RCC>
