@@ -30,7 +30,7 @@ FocusScope {
     property alias note: sublabel.text
     property alias icon: icon.source
     property alias icon2: icon2.source
-    property var icon2_forced_display: false;
+    property bool icon2_forced_display: false;
 
     property real firstColumnRatio: 3/4
 

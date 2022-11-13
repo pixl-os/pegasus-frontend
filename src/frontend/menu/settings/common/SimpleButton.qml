@@ -24,8 +24,8 @@ FocusScope {
     property alias label: label.text
     property alias note: sublabel.text
     property alias pointerIcon: pointerConfigs.visible
-    property var showUnderline: true
-    property var selectButton: false
+    property bool showUnderline: true
+    property bool selectButton: false
 
 
     readonly property int fontSize: vpx(22)

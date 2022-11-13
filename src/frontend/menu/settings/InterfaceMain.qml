@@ -163,7 +163,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onValueChanged: {
-                        backgroundThemeColor = value
+                        backgroundThemeColor = api.internal.recalbox.getStringParameter(parameterName);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTextColorConfig
@@ -191,7 +191,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onValueChanged: {
-                        textThemeColor = value
+                        textThemeColor = api.internal.recalbox.getStringParameter(parameterName);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSelectedColorConfig
@@ -219,7 +219,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onValueChanged: {
-                        selectedThemeColor = value
+                            selectedThemeColor = api.internal.recalbox.getStringParameter(parameterName);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optMenuControlsConfig
