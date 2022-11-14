@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- wifi-first-activation-not-list-proposed #[13]
 	- fix up to option WifiNetwork not work in setting menu if wifi enabled
 	- update translation fr for color setting and axis controller
+	- virtualkeyboard activate by default #[33]
 
 - Features:
 	- add system videos from 'share/videos' directory in collections (to be used with Shinretro theme)
