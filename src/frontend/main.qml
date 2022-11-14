@@ -28,8 +28,8 @@ import QtQuick.VirtualKeyboard.Settings 2.15
 Window {
     id: appWindow
     visible: true
-    width: 1280
-    height: 720
+    width: screen.width
+    height: screen.height
     title: "Pegasus"
     color: "#000"
 
@@ -241,7 +241,7 @@ Window {
         //to know if Guide button still released
         property bool guideButtonPressed: false
 
-        readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
+        readonly property real winScale: Math.min(width / screen.width, height / screen.height)
 
         property QtObject fonts: QtObject {
             readonly property string sans: sansFont.name
