@@ -146,7 +146,7 @@ General::General()
     , portable(false)
     , fullscreen(true)
     , mouse_support(false)
-	, virtualkeyboard_support(false)
+	, virtualkeyboard_support(true)
     , locale() // intentionally blank
     , theme(DEFAULT_THEME)
 {}
