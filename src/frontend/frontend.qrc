@@ -231,5 +231,20 @@
         <file>assets/gamepad/xboxone/start_xboxone.png</file>
         <file>assets/gamepad/xboxone/x_xboxone.png</file>
         <file>assets/gamepad/xboxone/y_xboxone.png</file>
+        <file>assets/gamepad/switchpro/a_switchpro.png</file>
+        <file>assets/gamepad/switchpro/b_switchpro.png</file>
+        <file>assets/gamepad/switchpro/base_switchpro.png</file>
+        <file>assets/gamepad/switchpro/dpad_switchpro.png</file>
+        <file>assets/gamepad/switchpro/guide_switchpro.png</file>
+        <file>assets/gamepad/switchpro/l1_switchpro.png</file>
+        <file>assets/gamepad/switchpro/lstick_switchpro.png</file>
+        <file>assets/gamepad/switchpro/r1_switchpro.png</file>
+        <file>assets/gamepad/switchpro/rstick_switchpro.png</file>
+        <file>assets/gamepad/switchpro/select_switchpro.png</file>
+        <file>assets/gamepad/switchpro/start_switchpro.png</file>
+        <file>assets/gamepad/switchpro/x_switchpro.png</file>
+        <file>assets/gamepad/switchpro/y_switchpro.png</file>
+        <file>assets/gamepad/switchpro/l2_switchpro.png</file>
+        <file>assets/gamepad/switchpro/r2_switchpro.png</file>        
     </qresource>
 </RCC>
