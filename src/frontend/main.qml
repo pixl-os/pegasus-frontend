@@ -1206,7 +1206,7 @@ Window {
         //other hujia devices exists for NES, SNES and gamecube, but will be detected upper if needed.
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; type:"controller" ; iconfont: "awesome"; layout: "n64"}
         ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0ca"; keywords: "Nintendo Switch Pro Controller,Switch Controller,Pro Controller,Nintendo Switch Controller"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"; iconfont: "awesome"}
 

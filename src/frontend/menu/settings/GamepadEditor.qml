@@ -374,6 +374,7 @@ FocusScope {
                             hasScreenshotButton : false;
 
                             ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
+                            
                             //parameters for select
                             padSelectWidth : 69;
                             padSelectHeight : 59;
@@ -387,21 +388,25 @@ FocusScope {
                             padStartLeftX: 432;
 
                             //parameters for A/B/X/Y
+                            //As B -> A
                             padAWidth : 71;
                             padAHeight : 70;
                             padATopY: 170;
                             padALeftX: 763;
 
+                            //As A -> B
                             padBWidth : 71;
                             padBHeight : 71;
                             padBTopY: 237;
                             padBLeftX: 677;
 
+                            //As Y -> X
                             padXWidth : 71;
                             padXHeight : 71;
                             padXTopY: 103;
                             padXLeftX: 677;
 
+                            //As X -> Y
                             padYWidth : 73;
                             padYHeight : 72;
                             padYTopY: 170;
@@ -463,6 +468,7 @@ FocusScope {
                             hasScreenshotButton : false;
 
                             ratio: 0.8; padBaseSourceSizeWidth : 778 ; padBaseSourceSizeHeight : 347;
+                            
                             //parameters for select
                             padSelectWidth : 62;
                             padSelectHeight : 25;
@@ -477,11 +483,13 @@ FocusScope {
 
                             //parameters for A/B (no X/Y in this case)
 
+                            //As B -> A
                             padAWidth : 69;
                             padAHeight : 68;
                             padATopY: 228;
                             padALeftX: 612;
 
+                            //As A -> B
                             padBWidth : 69;
                             padBHeight : 67;
                             padBTopY: 228;
@@ -785,25 +793,25 @@ FocusScope {
 
                             //parameters for A/B/X/Y
 
-                            //As cross
+                            //As cross -> A
                             padAWidth : 95;
                             padAHeight : 96;
                             padATopY: 342;
                             padALeftX: 975;
 
-                            //As cycle
+                            //As cycle -> B
                             padBWidth : 96;
                             padBHeight : 94;
                             padBTopY: 251;
                             padBLeftX: 1066;
 
-                            //As square
+                            //As square -> X
                             padXWidth : 95;
                             padXHeight : 94;
                             padXTopY: 250;
                             padXLeftX: 885;
 
-                            //As Triangle
+                            //As Triangle -> Y
                             padYWidth : 94;
                             padYHeight : 96;
                             padYTopY: 160;
@@ -916,25 +924,25 @@ FocusScope {
 
                             //parameters for A/B/X/Y
 
-                            //As cross/A
+                            //As cross -> A
                             padAWidth : 98;
                             padAHeight : 99;
                             padATopY: 555;
                             padALeftX: 1163;
 
-                            //As cycle/B
+                            //As cycle -> B
                             padBWidth : 100;
                             padBHeight : 98;
                             padBTopY: 446;
                             padBLeftX: 1273;
 
-                            //As square/X
+                            //As square -> X
                             padXWidth : 99;
                             padXHeight : 101;
                             padXTopY: 445;
                             padXLeftX: 1054;
 
-                            //As Triangle/Y
+                            //As Triangle -> Y
                             padYWidth : 99;
                             padYHeight : 97;
                             padYTopY: 335;
@@ -1135,6 +1143,124 @@ FocusScope {
                             brightness: 0.2
 
             } //As Nintendo 64 pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
+
+            ListElement {   name: "switchpro"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: true;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: false;
+                            hasY: false;
+                            hasNintendoPad : false;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : true;
+                            hasL3 : false; hasR3 : false;
+
+                            hadDpad : true;
+                            hasButtonsForDpad : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.5; padBaseSourceSizeWidth : 875 ; padBaseSourceSizeHeight : 699;
+                            
+                            //parameters for select
+                            padSelectWidth : 37;
+                            padSelectHeight : 38;
+                            padSelectTopY: 190;
+                            padSelectLeftX: 310;
+
+                            //parameters for start
+                            padStartWidth : 38;
+                            padStartHeight : 38;
+                            padStartTopY: 190;
+                            padStartLeftX: 527;
+
+                            //parameters for guide/hotkey
+                            padGuideWidth : 37;
+                            padGuideHeight : 38;
+                            padGuideTopY: 256;
+                            padGuideLeftX: 481;
+							
+							//parameters for screenshot -> share //RFU
+                            /*padShareWidth : 36;
+                            padShareHeight : 35;
+                            padShareTopY: 257;
+                            padShareLeftX: 357;*/
+
+                            //parameters for A/B/X/Y
+                            padAWidth : 64;
+                            padAHeight : 64;
+                            padATopY: 243;
+                            padALeftX: 705;
+
+                            padBWidth : 66;
+                            padBHeight : 62;
+                            padBTopY: 302;
+                            padBLeftX: 636;
+
+                            padXWidth : 66;
+                            padXHeight : 64;
+                            padXTopY: 183;
+                            padXLeftX: 6336;
+
+                            padYWidth : 64;
+                            padYHeight : 64;
+                            padYTopY: 243;
+                            padYLeftX: 568;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 332;
+                            dpadAreaBottomY: 127;
+                            dpadAreaLeftX: 239;
+                            dpadAreaRightX: 366;
+
+                            //parameter for L1
+                            padL1Width : 209;
+                            padL1Height : 70;
+                            padL1TopY: 92;
+                            padL1LeftX: 98;
+
+                            //parameter for R1
+                            padR1Width : 206;
+                            padR1Height : 69;
+                            padR1TopY: 92;
+                            padR1LeftX: 571;
+
+                            //parameter for L2
+                            padL2Width : 158;
+                            padL2Height : 70;
+                            padL2TopY: 0;
+                            padL2LeftX: 102;
+
+                            //parameter for R2
+                            padR2Width : 153;
+                            padR2Height : 72;
+                            padR2TopY: 0;
+                            padR2LeftX: 603;
+
+                            //parameter for Left stick
+                            lStickWidth : 100;
+                            lStickHeight : 98;
+                            lStickTopY: 226;
+                            lStickLeftX: 146;
+
+                            //parameter for Right stick
+                            rStickWidth : 100;
+                            rStickHeight : 99;
+                            rStickTopY: 345;
+                            rStickLeftX: 503;
+
+                            //to adapt contrast/brightness
+                            contrast : 0.1
+                            brightness: 0.2
+
+            } //As switchpro pad
 
         }
 

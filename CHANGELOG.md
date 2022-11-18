@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file (focus on ch
 
 - Features:
 	- add version display in theme selection
+	- add switch pro controller layout
 
 ## [pixL-master] - 2022-11-18 - v0.0.9
 - GameOS-pixL Theme:
