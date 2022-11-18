@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL] - 2022-11-11 - v0.0.9
+## [pixL-master] - 2022-11-18 - v0.0.9
 - GameOS-pixL Theme:
 	- optimize scan folder for load all media download by scraper
 	- extraction of this theme from Pegasus (Default themes will be avilable from share_init/themes now)
