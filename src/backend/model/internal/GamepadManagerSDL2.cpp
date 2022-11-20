@@ -107,10 +107,12 @@ QLatin1String gamepaddb_file_suffix(uint16_t linked_ver)
 
 bool load_internal_gamepaddb(uint16_t linked_ver)
 {
-    //Log::debug(LOGMSG("bool load_internal_gamepaddb(uint16_t linked_ver)"));
     const QString path = QLatin1String(":/sdl2/gamecontrollerdb_")
         % gamepaddb_file_suffix(linked_ver)
         % QLatin1String(".txt");
+
+    //Log::debug(LOGMSG("SDL: load_internal_gamepaddb from %1").arg(path));
+
     QFile dbfile(path);
     dbfile.open(QFile::ReadOnly);
     Q_ASSERT(dbfile.isOpen()); // it's embedded
@@ -846,9 +848,10 @@ void GamepadManagerSDL2::start(const backend::CliArgs& args)
     }
 
     //Load existing user configuration in a local store but don't load the mapping in SDL for the moment.
-    for (const QString& dir : paths::configDirs())
+    for (const QString& dir : paths::configDirs()){
+        //Log::debug(LOGMSG("SDL: load_user_gamepaddb from '%1'").arg(dir));
         load_user_gamepaddb(dir);
-
+    }
     m_poll_timer.start(16);
 }
 
@@ -875,7 +878,7 @@ std::string GamepadManagerSDL2::get_user_gamepaddb_mapping(const QString& dir, c
         Log::warning(LOGMSG("SDL: could not open `%1`, ignored").arg(path));
         return "";
     }
-    Log::info(LOGMSG("SDL: loading controller mappings from `%1`").arg(path));
+    Log::info(LOGMSG("SDL: loading controller mappings from `%1` ...").arg(path));
 
     QTextStream db_stream(&db_file);
     QString line;
@@ -905,9 +908,14 @@ std::string GamepadManagerSDL2::get_user_gamepaddb_mapping(const QString& dir, c
 
         if(guid_to_find.toUtf8().constData() == guid_str)
         {
+            Log::info(LOGMSG("SDL: mapping found for `%1`").arg(guid_to_find));
+            //Log::info(LOGMSG("SDL: new_mapping: %1").arg(QString::fromStdString(new_mapping)));
             return new_mapping; //found
         }
+        else Log::error(LOGMSG("SDL: mapping not found for `%1`").arg(guid_to_find));
+
     }
+    Log::debug(LOGMSG("SDL: no mapping found finally ?!"));
     return ""; // not found
 }
 
@@ -926,7 +934,7 @@ std::string GamepadManagerSDL2::get_user_gamepaddb_mapping_with_name(const QStri
         Log::warning(LOGMSG("SDL: could not open `%1`, ignored").arg(path));
         return "";
     }
-    Log::info(LOGMSG("SDL: loading controller mappings from `%1`").arg(path));
+    Log::info(LOGMSG("SDL: loading controller mappings from `%1`...").arg(path));
 
     QTextStream db_stream(&db_file);
     QString line;
@@ -963,6 +971,8 @@ std::string GamepadManagerSDL2::get_user_gamepaddb_mapping_with_name(const QStri
             std::string existing_mapping = line.toStdString();
             return existing_mapping; //found
         }
+        else Log::debug(LOGMSG("SDL: user gamepad db mapping not found for `%1`/'%2'")
+                        .arg(guid_to_find, name_to_find));
     }
     return ""; // not found
 }
@@ -983,7 +993,7 @@ void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
         Log::warning(LOGMSG("SDL: could not open `%1`, ignored").arg(path));
         return;
     }
-    Log::info(LOGMSG("SDL: loading controller mappings from `%1`").arg(path));
+    Log::info(LOGMSG("SDL: loading all controllers mappings from `%1`...").arg(path));
 
     QTextStream db_stream(&db_file);
     QString line;
@@ -1014,7 +1024,12 @@ void GamepadManagerSDL2::load_user_gamepaddb(const QString& dir)
 
         std::string new_mapping = line.toStdString();
 
-        update_mapping_store(std::move(new_mapping));
+        //add user mapping during loading as for SDL one to avoid unloaded configuration for the first time
+        if (SDL_GameControllerAddMapping(new_mapping.data()) < 0) {
+            print_sdl_error();
+            continue;
+        }
+        else update_mapping_store(std::move(new_mapping));
     }
 }
 
@@ -1292,9 +1307,11 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             user_mapping = get_user_gamepaddb_mapping(dir, guid_str);
             //or using name ? to test/activate if method change...
             //user_mapping = get_user_gamepaddb_mapping_with_name(dir, guid_str, fullname);
+            Log::debug(m_log_tag, LOGMSG("user mapping found: %1").arg(QString::fromStdString(user_mapping)));
             if(user_mapping != "") {
                 //And add this mapping in SDL to be take into account
                 if (SDL_GameControllerAddMapping(user_mapping.data()) < 0) {
+                    Log::error(m_log_tag, LOGMSG("failed to set the user mapping for gamepad %1").arg(pretty_idx(device_idx)));
                     print_sdl_error();
                     continue;
                 }

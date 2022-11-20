@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix up to option WifiNetwork not work in setting menu if wifi enabled
 	- update translation fr for color setting and axis controller
 	- virtualkeyboard activate by default #[33]
+	- fix loading of SDL user mappings during start #[39]
 
 - Features:
 	- add system videos from 'share/videos' directory in collections (to be used with Shinretro theme)
