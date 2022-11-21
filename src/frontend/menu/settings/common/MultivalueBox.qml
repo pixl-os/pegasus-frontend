@@ -143,7 +143,7 @@ FocusScope {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                text: model.name
+                text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
                 color: themeColor.textValue
                 font.pixelSize: root.textSize
                 font.family: globalFonts.sans

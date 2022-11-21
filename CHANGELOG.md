@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix to ignore updates without entries to well manage navigation in list
 	- fix to put every seconds for refresh to avoid error at launch of the update list also 
 
+- Features:
+	- add version display in theme selection
+
 ## [pixL-master] - 2022-11-18 - v0.0.9
 - GameOS-pixL Theme:
 	- optimize scan folder for load all media download by scraper
