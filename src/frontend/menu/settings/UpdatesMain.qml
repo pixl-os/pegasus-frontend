@@ -166,7 +166,7 @@ FocusScope {
 
                 Timer {
                     id: statusRefresh
-                    interval: 100 // Run the timer every 100 seconds
+                    interval: 1000 // Run the timer every seconds
                     repeat: true
                     running: true
                     triggeredOnStart: false
@@ -253,12 +253,12 @@ FocusScope {
                             }
                         }
                         icon: ""
-                        icon2: item.icon !== "" ? item.icon : entry.icon
+                        icon2: item.hasUpdate ? (item.icon !== "" ? item.icon : entry.icon) : ""
                         //will be displayed when selected and not selected
-                        picture: item.picture !== "" ? item.picture : entry.picture
-                        icon2_forced_display: item.picture !== "" ? false : (entry.picture !== "" ? false : true)
+                        picture: item.hasUpdate ? (item.picture !== "" ? item.picture : entry.picture) : ""
+                        icon2_forced_display: item.hasUpdate ? (item.picture !== "" ? false : (entry.picture !== "" ? false : true)) : ""
                         //first column - if empty that is not used
-                        detailed_description: entry.releaseNote;
+                        detailed_description: item.hasUpdate ? entry.releaseNote : "";
                         focus: entry !== null ? true : false
                         onActivate: {
                             if(updateButton.visible && (errorCode >= 0)){
