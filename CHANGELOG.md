@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file (focus on ch
 ## [pixL-master] - 202a-mm-dd - v0.0.xx
 - Fixes:
 	- fix x/y config field selection for default controller layout in gamepad editor 
+	- fix to ignore updates without entries to well manage navigation in list
+	- fix to put every seconds for refresh to avoid error at launch of the update list also 
 
 ## [pixL-master] - 2022-11-18 - v0.0.9
 - GameOS-pixL Theme:
