@@ -290,8 +290,13 @@ FocusScope {
                         Keys.onPressed: {
                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
                                 if (index !== 0) {
-                                    availableUpdates.selectedButtonIndex = index-1;
-                                    KeyNavigation.up = availableUpdates.itemAt(index-1);
+                                    for(var i = index;i > 0 ;i--){
+                                        if(availableUpdates.itemAt(i-1).entry !== null){
+                                            availableUpdates.selectedButtonIndex = i-1;
+                                            KeyNavigation.up = availableUpdates.itemAt(i-1);
+                                            break;
+                                        }
+                                    }
                                 }
                                 else {
                                     KeyNavigation.up = availableUpdates.itemAt(0);
@@ -300,8 +305,13 @@ FocusScope {
                             }
                             if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
                                 if (index < availableUpdates.count-1) {
-                                    KeyNavigation.down = availableUpdates.itemAt(index+1);
-                                    availableUpdates.selectedButtonIndex = index+1;
+                                    for(var i = index;i < availableUpdates.count-1;i++){
+                                        if(availableUpdates.itemAt(i+1).entry !== null){
+                                            KeyNavigation.down = availableUpdates.itemAt(i+1);
+                                            availableUpdates.selectedButtonIndex = i+1;
+                                            break;
+                                        }
+                                    }
                                 }
                                 else {
                                     KeyNavigation.down = availableUpdates.itemAt(availableUpdates.count-1);
