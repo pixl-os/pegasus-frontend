@@ -327,7 +327,28 @@ FocusScope {
         ListModel {
             id: myControllerLayout
             //CONTROLLERS LAYOUT TO DISPLAY IN EDITOR depending of layout name
-            ListElement { name: "default"; qml: "gamepad/preview/Container.qml"} // By default
+            ListElement { name: "default"; qml: "gamepad/preview/Container.qml"
+                hasDedicatedGuide: true;
+                hasSelect: true;
+                hasStart: true;
+
+                hasA: true;
+                hasB: true;
+                hasX: true;
+                hasY: true;
+                hasNintendoPad : false;
+
+                hasL1 : true; hasR1 : true;
+                hasL2 : true; hasR2 : true;
+
+                hasLeftStick : true; hasRightStick : true;
+                hasL3 : true; hasR3 : true;
+
+                hadDpad : true;
+                hasButtonsForDpad : false;
+                hasScreenshotButton : false;
+
+            } // By default
 
             ListElement {   name: "snes"; qml: "gamepad/preview/ContainerCustom.qml";
 
@@ -1620,8 +1641,12 @@ FocusScope {
                 KeyNavigation.down: ((typeof(root.padPreview) !== 'undefined') ?
                                          (typeof(root.padPreview.hasX) !== 'undefined' ?
                                               (root.padPreview.hasX ?
-                                                   configX : (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? (root.padPreview.hasButtonsForRightStick ? configRightStickMinusX : configRightStickX) : configRightStickX) : configRightStickX )
-                                              : configRightStickX )
+                                                   configX : (typeof(root.padPreview) !== 'undefined') ?
+                                                       ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ?
+                                                            (root.padPreview.hasButtonsForRightStick ? configRightStickMinusX : configRightStickX)
+                                                       : configRightStickX)
+                                                   : configRightStickX )
+                                              : configX )
                                       : configX)
             }
             ConfigField {

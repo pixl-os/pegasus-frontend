@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 202a-mm-dd - v0.0.xx
+- Fixes:
+	- fix x/y config field selection for default controller layout in gamepad editor 
+
 ## [pixL-master] - 2022-11-18 - v0.0.9
 - GameOS-pixL Theme:
 	- optimize scan folder for load all media download by scraper
