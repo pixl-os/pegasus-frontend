@@ -1207,7 +1207,7 @@ FocusScope {
                             padXWidth : 66;
                             padXHeight : 64;
                             padXTopY: 183;
-                            padXLeftX: 6336;
+                            padXLeftX: 636;
 
                             padYWidth : 64;
                             padYHeight : 64;
