@@ -1215,10 +1215,10 @@ FocusScope {
                             padYLeftX: 568;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 332;
-                            dpadAreaBottomY: 127;
-                            dpadAreaLeftX: 239;
-                            dpadAreaRightX: 366;
+                            dpadAreaTopY: 328;
+                            dpadAreaBottomY: 462;
+                            dpadAreaLeftX: 235;
+                            dpadAreaRightX: 369;
 
                             //parameter for L1
                             padL1Width : 209;
