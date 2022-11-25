@@ -1152,15 +1152,15 @@ FocusScope {
 
                             hasA: true;
                             hasB: true;
-                            hasX: false;
-                            hasY: false;
-                            hasNintendoPad : false;
+                            hasX: true;
+                            hasY: true;
+                            hasNintendoPad : true;
 
                             hasL1 : true; hasR1 : true;
                             hasL2 : true; hasR2 : true;
 
-                            hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : true;
-                            hasL3 : false; hasR3 : false;
+                            hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : false;
+                            hasL3 : true; hasR3 : true;
 
                             hadDpad : true;
                             hasButtonsForDpad : false;
