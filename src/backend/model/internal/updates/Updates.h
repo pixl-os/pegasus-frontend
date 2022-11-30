@@ -74,7 +74,7 @@ public:
       QList <UpdateAssets> m_assets;
 
       //flag if update detected
-      bool m_hasanyupdate = false;
+      bool m_hasanyupdate = false; //deprecated
 
 };
 Q_DECLARE_METATYPE(UpdateEntry)
@@ -89,7 +89,7 @@ public:
     //Asynchronous function to get last version in background tasts from repo and store it in /tmp
     Q_INVOKABLE void getRepoInfo(QString componentName, const QString repoUrl);
     //function to check if any updates is available using /tmp
-    Q_INVOKABLE bool hasAnyUpdate();
+    Q_INVOKABLE bool hasAnyUpdate(); //deprecated
     //function to check information about updates of any componants and confirm quickly if update using /tmp
     //and return index of update found
     Q_INVOKABLE int hasUpdate(QString componentName, const bool betaIncluded = false, const bool multiversions = false, const QString filter = "");
@@ -126,7 +126,7 @@ private:
     QList <UpdateStatus> m_updates;
     DownloadManager downloadManager[MAX_DOWNLOADER];
     int downloaderIndex = 0;
-    bool m_hasanyupdate = false;
+    bool m_hasanyupdate = false; //deprecated
     QString log_tag = "Updates";
 };
 } // namespace model

@@ -271,13 +271,13 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
     //to avoid issue with spaces in directories and scripts
     componentName = componentName.replace(" ","");
 
-    Log::debug(LOGMSG("void Updates::getRepoInfo_slot()"));
+    Log::debug(log_tag, LOGMSG("void Updates::getRepoInfo_slot()"));
     QJsonDocument json;
     //bool result = false;
     try{
-        Log::debug(LOGMSG("url_str: %1").arg(url_str));
+        Log::debug(log_tag, LOGMSG("url_str: %1").arg(url_str));
         if(url_str.startsWith("http",Qt::CaseInsensitive)){ //to check that is a remote repo using url
-            Log::debug(LOGMSG("url valid: %1").arg(url_str));
+            Log::debug(log_tag, LOGMSG("url valid: %1").arg(url_str));
             //Create Network Access
             QNetworkAccessManager *manager = new QNetworkAccessManager(this);
             //get json url
@@ -289,7 +289,7 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
         }
         else if(url_str.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
         {
-            Log::debug(LOGMSG("path valid: %1").arg(url_str));
+            Log::debug(log_tag, LOGMSG("path valid: %1").arg(url_str));
             //read file
             json = loadJson(url_str);
             //save json in a file in /tmp directory
@@ -307,7 +307,7 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
 
 //function to check if any updates is available using /tmp
 bool Updates::hasAnyUpdate(){
-    return m_hasanyupdate;
+    return m_hasanyupdate; //deprecated
 }
 
 //function to check information about updates of any componants and confirm quickly if update using /tmp
@@ -380,7 +380,7 @@ int Updates::hasUpdate(QString componentName, const bool betaIncluded, const boo
         QList<int> existingVersionNumbers = getVersionNumbers(existingVersion);
         QList<int> newVersionNumbers = getVersionNumbers(m_versions[versionIndex].m_tag_name);
         if(isNewVersion(existingVersionNumbers, newVersionNumbers)){
-            m_hasanyupdate = true;
+            m_hasanyupdate = true; //deprecated
             return versionIndex;
         }
         else if(multiVersions){
