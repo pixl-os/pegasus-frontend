@@ -1117,7 +1117,7 @@ Window {
     property string listOfUpdates : ""
     Timer {//timer to check json after download (1 minute later)
         id: jsonStatusRefreshTimer
-        interval: 5000 //60000 // check after 1 minute / 5 seconds for test ;-)
+        interval: 5000 // check after 5 seconds ;-)
         repeat: false // no need to repeat
         running: false
         triggeredOnStart: false
@@ -1130,6 +1130,7 @@ Window {
                 if(updateVersionIndexFound !== -1){
                     numberOfUpdates = numberOfUpdates + 1;
                     componentsListModel.setProperty(i,"hasUpdate", true);
+                    componentsListModel.setProperty(i,"hasInstallNotified", false);
                     componentsListModel.setProperty(i,"UpdateVersionIndex", updateVersionIndexFound);
                     //contruct string about all udpates
                     listOfUpdates = listOfUpdates + (listOfUpdates !== "" ? " / " : "") + componentsListModel.get(i).componentName;
@@ -1153,6 +1154,65 @@ Window {
             }
         }
     }
+
+
+    Timer{ //timer to check status of updates (installed or not) and popup message if needed
+        id: updatePopupTimer
+        interval: 10000 // check every 10 seconds - one by one popup
+        repeat: true // repeat to check regularly
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            if(api.internal.updates.hasAnyUpdate()){
+                //search if any udpate is not install or installed with additional actions as restart/reboot/retry
+                for(var i=0; i < componentsListModel.count ;i++){
+                    var item = componentsListModel.get(i);
+                    if(typeof(item.hasUpdate) !== "undefined"){
+                        if(item.hasUpdate === true){
+                            if(item.hasInstallNotified === false){
+                                var installError = api.internal.updates.getInstallationError(item.componentName);
+                                var installProgress = api.internal.updates.getInstallationProgress(item.componentName);
+                                //check if installed or error detected
+                                if((installProgress === 1.0) || (installError > 0)){
+                                    //to popup to alert about this udpate
+                                    //init parameters
+                                    popup.title = item.componentName;
+                                    if(installError === 0){
+                                        popup.message = qsTr("Update done !");
+                                        //installed without next action, we could remove flag of updates
+                                        componentsListModel.setProperty(i,"hasUpdate", false);
+                                    }
+                                    else if(installError === -1){
+                                        popup.message = qsTr("Update done, need restart !");
+                                    }
+                                    else if(installError === -2){
+                                        popup.message = qsTr("Update done, need reboot !");
+                                    }
+                                    else if(installError > 0){
+                                        popup.message = qsTr("Update failed !");
+                                    }
+                                    //icon is optional but should be set to empty string if not use
+                                    popup.icon = "\uf2c6";
+                                    popup.iconfont = global.fonts.ion;
+                                    //delay provided in second and interval is in ms
+                                    popupDelay.interval = 5 * 1000;
+                                    //Open popup and set it as showable to have animation
+                                    popup.open();
+                                    popup.showing = true;
+                                    //start timer to close popup automatically
+                                    popupDelay.restart();
+                                    //deactivate update to confirm that's one is install and without operation to do
+                                    componentsListModel.setProperty(i,"hasInstallNotified", true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     //***********************************************************END OF UPDATES PARTS*******************************************************************
 
     //***********************************************************BEGIN OF BLUETOOTH RESTART*************************************************************
