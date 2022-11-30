@@ -29,7 +29,19 @@ FocusScope {
     enabled: focus
     onFocusChanged: {
         //console.log("MainMenuPanel::onFocusChanged");
-        mbUpdates.enabled = api.internal.updates.hasAnyUpdate();
+        if(api.internal.updates.hasAnyUpdate()){
+            //search if any udpate is not install or installed with additional actions as restart/reboot/retry
+            for(var i=0; i < componentsListModel.count ;i++){
+                var item = componentsListModel.get(i);
+                if(typeof(item.hasUpdate) !== "undefined"){
+                    if(item.hasUpdate === true){
+                            mbUpdates.enabled = true;
+                            break; //to exit from 'for'
+                    }
+                }
+            }
+        }
+        else mbUpdates.enabled = false;
     }
 
     signal close
@@ -79,7 +91,7 @@ FocusScope {
             }
             selected: focus
 
-            enabled: api.internal.updates.hasAnyUpdate();
+            enabled: false
             visible: enabled
             symbol:"\uf2c6"
             animated: true
@@ -97,6 +109,7 @@ FocusScope {
             enabled: api.internal.meta.allowSettings
             visible: enabled
             symbol:"\uf41a"
+            KeyNavigation.up: mbUpdates.enabled ? mbUpdates : scopeQuit
             KeyNavigation.down: mbControllersSettings
         }
         PrimaryMenuItem {
@@ -222,7 +235,7 @@ FocusScope {
                     KeyNavigation.down: mbQuitShutdown
                 }
             ]
-            KeyNavigation.down: api.internal.updates.hasAnyUpdate() ? mbUpdates : mbAccountSettings
+            KeyNavigation.down: mbUpdates.enabled ? mbUpdates : mbAccountSettings
         }
     }
     PegasusUtils.HorizontalSwipeArea {
