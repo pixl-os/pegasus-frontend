@@ -203,7 +203,10 @@ FocusScope {
                             console.log("item.hasUpdate : ", item.hasUpdate);
                             if(typeof(item.hasUpdate) !== "undefined"){
                                 if(item.hasUpdate === true){
-                                    return api.internal.updates.updateDetails(item.componentName,item.UpdateVersionIndex);
+                                    if(api.internal.updates.getInstallationProgress(item.componentName) !== 1.0 ||
+                                       api.internal.updates.getInstallationError(item.componentName) !== 0){
+                                        return api.internal.updates.updateDetails(item.componentName,item.UpdateVersionIndex);
+                                    }
                                 }
                             }
                             return null;
