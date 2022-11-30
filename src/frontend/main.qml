@@ -1179,8 +1179,6 @@ Window {
                                     popup.title = item.componentName;
                                     if(installError === 0){
                                         popup.message = qsTr("Update done !");
-                                        //installed without next action, we could remove flag of updates
-                                        componentsListModel.setProperty(i,"hasUpdate", false);
                                     }
                                     else if(installError === -1){
                                         popup.message = qsTr("Update done, need restart !");
