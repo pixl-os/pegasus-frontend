@@ -35,8 +35,17 @@ FocusScope {
                 var item = componentsListModel.get(i);
                 if(typeof(item.hasUpdate) !== "undefined"){
                     if(item.hasUpdate === true){
+                        var installError = api.internal.updates.getInstallationError(item.componentName);
+                        var installProgress = api.internal.updates.getInstallationProgress(item.componentName);
+                        //check if installed or error detected
+                        if((installProgress === 1.0) && (installError === 0)){
+                            //installed without next action, we could remove flag of updates
+                            componentsListModel.setProperty(i,"hasUpdate", false);
+                        }
+                        else{
                             mbUpdates.enabled = true;
                             break; //to exit from 'for'
+                        }
                     }
                 }
             }
