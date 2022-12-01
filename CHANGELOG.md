@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file (focus on ch
 - Features:
 	- add version display in theme selection
 	- add switch pro controller layout
+	- add popup when 'update' installation is failed or succeed
+	- remove update from 'updates' list is installed with success with additional actions as reboot/restart
+	- remove 'updates' menu immediatelly if all updates are installed without additional actions
 
 ## [pixL-master] - 2022-11-18 - v0.0.9
 - GameOS-pixL Theme:
