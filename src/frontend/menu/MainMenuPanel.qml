@@ -28,7 +28,9 @@ FocusScope {
     visible: x < parent.width && 0 < x + width
     enabled: focus
     onFocusChanged: {
-        //console.log("MainMenuPanel::onFocusChanged");
+        //console.log("MainMenuPanel onFocusChanged");
+        //deactivate first the menu
+        mbUpdates.enabled = false;
         if(api.internal.updates.hasAnyUpdate()){
             //search if any udpate is not install or installed with additional actions as restart/reboot/retry
             for(var i=0; i < componentsListModel.count ;i++){
@@ -50,7 +52,6 @@ FocusScope {
                 }
             }
         }
-        else mbUpdates.enabled = false;
     }
 
     signal close
