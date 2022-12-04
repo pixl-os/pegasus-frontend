@@ -215,7 +215,7 @@
         <file>assets/gamepad/ps5/select_ps5.png</file>
         <file>assets/gamepad/ps5/start_ps5.png</file>
         <file>assets/gamepad/ps5/x_ps5.png</file>
-        <file>assets/gamepad/ps5/y_ps5.png</file> 
+        <file>assets/gamepad/ps5/y_ps5.png</file>
         <file>assets/gamepad/xboxone/a_xboxone.png</file>
         <file>assets/gamepad/xboxone/b_xboxone.png</file>
         <file>assets/gamepad/xboxone/base_xboxone.png</file>
@@ -245,6 +245,7 @@
         <file>assets/gamepad/switchpro/x_switchpro.png</file>
         <file>assets/gamepad/switchpro/y_switchpro.png</file>
         <file>assets/gamepad/switchpro/l2_switchpro.png</file>
-        <file>assets/gamepad/switchpro/r2_switchpro.png</file>        
+        <file>assets/gamepad/switchpro/r2_switchpro.png</file>
+        <file>assets/backgroundpixl.png</file>
     </qresource>
 </RCC>
