@@ -453,6 +453,12 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
             installationScriptAsset.m_name_asset = "";
             UpdateAssets versionScriptAsset;
             versionScriptAsset.m_name_asset = "";
+            //add new type of assets to add support of image downlaod
+            UpdateAssets imgAsset;
+            imgAsset.m_name_asset = "";
+            UpdateAssets sha1Asset;
+            sha1Asset.m_name_asset = "";
+
 
             for(int j = 0;j < m_versions[versionIndex].m_assets.count();j++){
                 //if it's a zip file, we consider that's the package to download
@@ -464,9 +470,14 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                 }//if it's a file with "version.", we consider that it will be the script for checking of existing version
                 else if(m_versions[versionIndex].m_assets[j].m_name_asset.startsWith("version.",Qt::CaseInsensitive)){
                     versionScriptAsset = m_versions[versionIndex].m_assets[j];
+                }//if it's a .img.xz file, we consider that it will be any image to install
+                else if(m_versions[versionIndex].m_assets[j].m_name_asset.endsWith(".img.xz",Qt::CaseInsensitive)){
+                    imgAsset = m_versions[versionIndex].m_assets[j];
+                }//if it's a .img.xz.sha1 file, we consider that it will be any sha1 of image to install
+                else if(m_versions[versionIndex].m_assets[j].m_name_asset.endsWith(".img.xz.sha1",Qt::CaseInsensitive)){
+                    sha1Asset = m_versions[versionIndex].m_assets[j];
                 }
             }
-            //download version.? script
             //check and create directory if needed
             QString directoryPath = "/tmp/" + componentName;
             if(!QDir(directoryPath).exists()) {
@@ -540,7 +551,7 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
 
                 if(installationScriptAsset.m_download_url.startsWith("http",Qt::CaseInsensitive)) //to check that is a remote repo using url
                 {
-                    //first download zip & script file + clear before to use or reuse the slot
+                    //first download zip, script and other asset files + clear before to use or reuse the slot
                     downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
                     downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
                     downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
