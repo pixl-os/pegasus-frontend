@@ -561,15 +561,16 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                 {
                     //first download zip, script and other asset files + clear before to use or reuse the slot
                     downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
-                    if (zipAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
                     if (installationScriptAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
+                    if (zipAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
+                    //additional ones only when we ahve to update OS
                     if (sha1Asset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(sha1Asset.m_download_url),diretoryPath + "/" + sha1Asset.m_name_asset);
                     if (imgAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(imgAsset.m_download_url),diretoryPath + "/" + imgAsset.m_name_asset);
 
                     //do loop on connect to wait download in this case
                     m_updates[foundIndex].m_installationStep = 1;
                     QEventLoop loop;
-                    QObject::connect(&downloadManager[0], &DownloadManager::finished, &loop, &QEventLoop::quit);
+                    QObject::connect(&downloadManager[m_updates[foundIndex].m_downloaderIndex], &DownloadManager::finished, &loop, &QEventLoop::quit);
                     loop.exec();
                     Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
                 }

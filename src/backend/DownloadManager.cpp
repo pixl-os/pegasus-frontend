@@ -113,13 +113,18 @@ void DownloadManager::append(const QUrl &url, const QString &filename)
 {
     //Log::debug("DownloadManager", LOGMSG("append('%1','%2')").arg(url.toString(),filename));
     if (downloadQueue.isEmpty()){
+        downloadQueue.enqueue(url);
+        filenameQueue.enqueue(filename);
+        ++totalCount;
         //Log::debug("DownloadManager", LOGMSG("downloadQueue.isEmpty()"));
-        QTimer::singleShot(0, this, &DownloadManager::startNextDownload);
+        //wait 1s to late add list of files in queue before to start to avoid issues
+        QTimer::singleShot(1000, this, &DownloadManager::startNextDownload);
     }
-
-    downloadQueue.enqueue(url);
-    filenameQueue.enqueue(filename);
-    ++totalCount;
+    else{
+        downloadQueue.enqueue(url);
+        filenameQueue.enqueue(filename);
+        ++totalCount;
+    }
 }
 
 QString DownloadManager::saveFileName(const QUrl &url)
@@ -150,8 +155,8 @@ void DownloadManager::startNextDownload()
     //Log::debug("DownloadManager", LOGMSG("startNextDownload()"));
 
     if (downloadQueue.isEmpty()) {
-        //Log::debug("DownloadManager", LOGMSG(" %1 / %2 files downloaded successfully\n").arg(QString::number(downloadedCount),QString::number(totalCount)));
         setMessage(QString(" %1/%2 files downloaded successfully").arg(QString::number(downloadedCount),QString::number(totalCount)));
+        Log::debug("DownloadManager", LOGMSG(" %1 / %2 files downloaded successfully\n").arg(QString::number(downloadedCount),QString::number(totalCount)));
         setSpeed(""); //stop speed
         emit finished();
         return;
@@ -165,11 +170,14 @@ void DownloadManager::startNextDownload()
     }
     output.setFileName(filename);
     setMessage(QString("Download of %1 started...").arg(output.fileName()));
+    Log::debug("DownloadManager", LOGMSG("Download of %1 started...").arg(output.fileName()));
 
     if (!output.open(QIODevice::WriteOnly)) {
         setMessage(QString("Problem to save %1 : %2").arg(qPrintable(filename),
                                                           qPrintable(output.errorString())));
 
+        Log::error("DownloadManager", LOGMSG("Problem to save %1 : %2").arg(qPrintable(filename),
+                                                          qPrintable(output.errorString())));
         startNextDownload();
         return;                 // skip this download
     }
@@ -224,6 +232,7 @@ void DownloadManager::downloadFinished()
     if (currentDownload->error()) {
         // download failed
         setMessage(QString("Failed: %1").arg(qPrintable(currentDownload->errorString())));
+        Log::error("DownloadManager", LOGMSG("Failed: %1").arg(qPrintable(currentDownload->errorString())));
         output.remove();
     } else {
         // let's check if it was actually a redirect
@@ -235,6 +244,7 @@ void DownloadManager::downloadFinished()
             append(redirectUrl,output.fileName());
         } else {
             setMessage(QString("%1 downloaded").arg(output.fileName()));
+            Log::debug("DownloadManager", LOGMSG("%1 downloaded").arg(output.fileName()));
             ++downloadedCount;
         }
     }
