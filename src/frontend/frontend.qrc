@@ -247,5 +247,6 @@
         <file>assets/gamepad/switchpro/l2_switchpro.png</file>
         <file>assets/gamepad/switchpro/r2_switchpro.png</file>
         <file>assets/backgroundpixl.png</file>
+        <file>assets/logobeta.png</file>
     </qresource>
 </RCC>
