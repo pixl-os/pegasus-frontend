@@ -1089,6 +1089,10 @@ Window {
         ListElement { componentName: "Nvidia driver"; repoLocal:"/recalbox/system/hardware/videocard/releases-nvidia.json";icon:"qrc:/frontend/assets/logonvidia.png"; picture: ""; multiVersions: true}
     }
 
+    //to store and know if we are running in a pixL OS in Beta (For beta testing only) or Release version (Release include pre-release/public beta)
+    property bool isBeta: false
+    property bool isRelease: false
+
     Timer{ //timer to add pixL-OS Beta or Release component
         id: addUpdateTimer
         repeat: false
@@ -1096,13 +1100,14 @@ Window {
         triggeredOnStart: true
         onTriggered: {
             //check version via recalbox.version
-            //if "beta" term not found
-            var isBeta = (api.internal.system.run("grep -i 'beta' /recalbox/recalbox.version") === "") ? false : true
-            if(isBeta === false){
+            //if "beta"/"release" terms are found
+            isBeta = (api.internal.system.run("grep -i 'beta' /recalbox/recalbox.version") === "") ? false : true
+            isRelease = (api.internal.system.run("grep -i 'release' /recalbox/recalbox.version") === "") ? false : true
+            if(isRelease === true){// to propose release or pre-release in priority
                 componentsListModel.append({ componentName: "pixL-OS", repoUrl:"https://updates.pixl-os.com/release-pixl-os.json",icon: "qrc:/frontend/assets/logo.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
             }
-            else{
-                componentsListModel.append({ componentName: "pixL-OS", repoUrl:"https://updates.pixl-os.com/beta-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+            else if(isBeta === true){ // to propose beta only if we have already a beta version installed
+                componentsListModel.append({ componentName: "pixL-OS (Beta)", repoUrl:"https://updates.pixl-os.com/beta-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
             }
             //stop timer
             addUpdateTimer.stop();
@@ -1149,7 +1154,7 @@ Window {
                 //check all components (including pre-release for the moment and without filter)
                 numberOfUpdates = 0;
                 listOfUpdates = "";
-                var updateVersionIndexFound = api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , true, (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false );
+                var updateVersionIndexFound = api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , isBeta, (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false );
                 if(updateVersionIndexFound !== -1){
                     numberOfUpdates = numberOfUpdates + 1;
                     componentsListModel.setProperty(i,"hasUpdate", true);

@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add popup when 'update' installation is failed or succeed
 	- remove update from 'updates' list is installed with success with additional actions as reboot/restart
 	- remove 'updates' menu immediatelly if all updates are installed without additional actions
+	- manage beta and release independently and from version of build as "pixL-Beta-29.1" or "pixL-Release-1.0"
+	- manage pixL-OS online update for beta and release (include OS pre-release from build)
 
 ## [pixL-master] - 2022-11-18 - v0.0.9
 - GameOS-pixL Theme:
