@@ -1089,11 +1089,34 @@ Window {
         ListElement { componentName: "Nvidia driver"; repoLocal:"/recalbox/system/hardware/videocard/releases-nvidia.json";icon:"qrc:/frontend/assets/logonvidia.png"; picture: ""; multiVersions: true}
     }
 
+    Timer{ //timer to add pixL-OS Beta or Release component
+        id: addUpdateTimer
+        repeat: false
+        running: true
+        triggeredOnStart: true
+        onTriggered: {
+            //check version via recalbox.version
+            //if "beta" term not found
+            var isBeta = (api.internal.system.run("grep -i 'beta' /recalbox/recalbox.version") === "") ? false : true
+            if(isBeta === false){
+                componentsListModel.append({ componentName: "pixL-OS", repoUrl:"https://updates.pixl-os.com/release-pixl-os.json",icon: "qrc:/frontend/assets/logo.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+            }
+            else{
+                componentsListModel.append({ componentName: "pixL-OS", repoUrl:"https://updates.pixl-os.com/beta-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+            }
+            //stop timer
+            addUpdateTimer.stop();
+            //start other timers
+            repoStatusRefreshTimer.start();
+            updatePopupTimer.start();
+        }
+    }
+
     Timer {//timer to download last versions
         id: repoStatusRefreshTimer
         interval: 60000 * 30 // Check every 30 minutes and at start
         repeat: true
-        running: true
+        running: false
         triggeredOnStart: true
         onTriggered: {
             //loop to launch download of all json repository files
@@ -1160,7 +1183,7 @@ Window {
         id: updatePopupTimer
         interval: 10000 // check every 10 seconds - one by one popup
         repeat: true // repeat to check regularly
-        running: true
+        running: false
         triggeredOnStart: false
         onTriggered: {
             if(api.internal.updates.hasAnyUpdate()){
