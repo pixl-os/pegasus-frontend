@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 202a-mm-dd - v0.0.xx
+## [pixL-master] - 2022-12-09 - v0.1.0
 - Fixes:
 	- fix x/y config field selection for default controller layout in gamepad editor 
 	- fix to ignore updates without entries to well manage navigation in list
