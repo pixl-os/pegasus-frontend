@@ -273,24 +273,16 @@ Window {
 
         signal onClose
 
+        property alias source: theme.source
+        readonly property url apiThemePath: api.internal.settings.themes.currentQmlPath
+        onApiThemePathChanged: theme.source = Qt.binding(getThemeFile)
+
         Loader {
             id: theme
             anchors.fill: parent
 
             focus: true
             enabled: focus
-
-            readonly property url apiThemePath: api.internal.settings.themes.currentQmlPath
-
-            function getThemeFile() {
-                if (api.internal.meta.isLoading)
-                    return "";
-                if (api.collections.count === 0)
-                    return "messages/NoGamesError.qml";
-
-                return apiThemePath;
-            }
-            onApiThemePathChanged: source = Qt.binding(getThemeFile)
 
             // Input releasing
             Keys.onReleased: {
@@ -327,10 +319,7 @@ Window {
 
                 if (event.key === Qt.Key_F5) {
                     event.accepted = true;
-
-                    theme.source = "";
-                    api.internal.meta.clearQMLCache();
-                    theme.source = Qt.binding(getThemeFile);
+                    pegasusReloadTheme();
                 }
             }
 
@@ -1397,5 +1386,20 @@ Window {
 
     //***********************************************************END OF DATA MODELS*********************************************************************
 
+    //***********************************************************BEGIN OF GENERIC FUNCTIONS ACCESSIBLE ALSO FOR THEMES*************************************************************
+    function getThemeFile() {
+        if (api.internal.meta.isLoading)
+            return "";
+        if (api.collections.count === 0)
+            return "messages/NoGamesError.qml";
+        return content.apiThemePath;
+    }
+
+    function pegasusReloadTheme(){
+        content.source = "";
+        api.internal.meta.clearQMLCache();
+        content.source = Qt.binding(getThemeFile);
+    }
+    //***********************************************************END OF GENERIC FUNCTIONS ACCESSIBLE ALSO FOR THEMES***************************************************************
 
 }
