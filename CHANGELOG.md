@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2023-01-XX - v0.1.1
+- Features:
+	- add generic functions to be able to manage theme reloading itself
+
 ## [pixL-master] - 2022-12-09 - v0.1.0
 - Fixes:
 	- fix x/y config field selection for default controller layout in gamepad editor 
