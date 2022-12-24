@@ -70,6 +70,9 @@ Provider& Es2Provider::run(SearchContext& sctx)
         Log::info(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
     }
 
+    //Create metadata helper
+    const Metadata metahelper(display_name(), possible_config_dirs);
+
     // Find systems
     QElapsedTimer systems_timer;
     systems_timer.start();
@@ -96,8 +99,19 @@ Provider& Es2Provider::run(SearchContext& sctx)
             Log::debug(display_name(), LOGMSG("System `%1` provided %2 system videos")
             .arg(sysentry.name, QString::number(found_videos)));
 
+            //if gamelistfist activated we propose to search games if no gamelist in this system
+            if(RecalboxConf::Instance().AsBool("emulationstation.gamelistfirst"))
+            {
+                //check if no gamelist exists
+                const QDir xml_dir(sysentry.path);
+                if(metahelper.find_gamelist_xml(possible_config_dirs, xml_dir,sysentry.name).isEmpty()){
+                    const size_t found_games = find_games_for(sysentry, sctx);
+                    Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
+                    .arg(sysentry.name, QString::number(found_games)));
+                }
+            }
             // Find games if not Gamelist Only activated
-            if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
+            else if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
             {
 				const size_t found_games = find_games_for(sysentry, sctx);
                 Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
@@ -110,7 +124,6 @@ Provider& Es2Provider::run(SearchContext& sctx)
     // Find assets and games in case of gamelist only
     QElapsedTimer assets_timer;
     assets_timer.start(); 
-    const Metadata metahelper(display_name(), std::move(possible_config_dirs));
     for (const SystemEntry& sysentry : systems) {
         emit progressStage(sysentry.name);
         progress += progress_step;
