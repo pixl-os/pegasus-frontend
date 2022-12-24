@@ -43,6 +43,7 @@ class Metadata {
 public:
     explicit Metadata(QString, std::vector<QString>);
     void find_metadata_for(const SystemEntry&, providers::SearchContext&) const;
+    QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name) const;
 
 private:
     const QString m_log_tag;

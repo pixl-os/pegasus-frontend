@@ -316,6 +316,20 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("emulationstation.gamelistonly",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGamelistsFirst
+
+                }
+                ToggleOption {
+                    id: optGamelistsFirst
+
+                    label: qsTr("Gamelist first") + api.tr
+                    note: qsTr("Once enabled, system gamelist will be seach in priority else game files will be search. \n(Intermediate game file loading)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistfirst")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("emulationstation.gamelistfirst",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDeactivateSkraperMedia
 
                 }

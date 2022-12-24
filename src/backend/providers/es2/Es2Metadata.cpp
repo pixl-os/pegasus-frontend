@@ -56,29 +56,6 @@ HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::G
     return map;
 }
 
-QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name)
-{
-    const QString GAMELISTFILE = QStringLiteral("/gamelist.xml");
-
-    std::vector<QString> possible_files { system_dir.path() % GAMELISTFILE };
-
-    if (!system_name.isEmpty()) {
-        for (const QString& dir_path : possible_config_dirs) {
-            possible_files.emplace_back(dir_path
-                % QStringLiteral("/gamelists/")
-                % system_name
-                % GAMELISTFILE);
-        }
-    }
-
-    for (const auto& path : possible_files) {
-        if (QFileInfo::exists(path))
-            return path;
-    }
-
-    return {};
-}
-
 QFileInfo shell_to_finfo(const QDir& base_dir, const QString& shell_filepath)
 {
     if (shell_filepath.isEmpty())
@@ -173,6 +150,29 @@ HashMap<MetaType, QString, EnumHash> Metadata::parse_gamelist_game_node(QXmlStre
     return xml_props;
 }
 
+QString Metadata::find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name) const
+{
+    const QString GAMELISTFILE = QStringLiteral("/gamelist.xml");
+
+    std::vector<QString> possible_files { system_dir.path() % GAMELISTFILE };
+
+    if (!system_name.isEmpty()) {
+        for (const QString& dir_path : possible_config_dirs) {
+            possible_files.emplace_back(dir_path
+                % QStringLiteral("/gamelists/")
+                % system_name
+                % GAMELISTFILE);
+        }
+    }
+
+    for (const auto& path : possible_files) {
+        if (QFileInfo::exists(path))
+            return path;
+    }
+
+    return {};
+}
+
 void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, providers::SearchContext& sctx, const QString& system_name) const
 {
     // find the root <gameList> element
@@ -215,7 +215,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         const QFileInfo finfo = shell_to_finfo(xml_dir, shell_filepath);
         const QString path = ::clean_abs_path(finfo);
         
-        if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
+        if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly") || RecalboxConf::Instance().AsBool("emulationstation.gamelistfirst"))
         {
             // create game now in this case (don't care if exist or not on file system to go quicker)
             model::Game* game_ptr = sctx.game_by_filepath(path);
@@ -238,8 +238,8 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         apply_metadata(*entry_ptr, xml_dir, xml_props);
     }
 
-    if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
-    {    
+    if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly") || RecalboxConf::Instance().AsBool("emulationstation.gamelistfirst"))
+    {
         Log::info(m_log_tag, LOGMSG("System `%1` gamelist provided %2 games")
         .arg(system_name, QString::number(found_games)));     
     }
