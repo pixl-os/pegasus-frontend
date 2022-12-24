@@ -240,8 +240,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
 //                    KeyNavigation.up: optScreenHelp
 //                    KeyNavigation.down: optPopupSettings
-                    KeyNavigation.down: optMultiWindows
-
+                    KeyNavigation.down: optTheme
                 }
 //                SimpleButton {
 //                    id: optPopupSettings
@@ -256,18 +255,10 @@ FocusScope {
 //                    KeyNavigation.up: optMenuControlsConfig
 //                    KeyNavigation.down: optTheme
 //                }
-                ToggleOption {
-                    id: optMultiWindows
-
-                    label: qsTr("Multi-Windows") + api.tr
-                    note: qsTr("Once enabled, you can run emulators in separate windows and keep pegasus/theme activated") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("pegasus.multiwindows")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pegasus.multiwindows",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTheme
+                SectionTitle {
+                    text: qsTr("Theme management") + api.tr
+                    first: true
+                    symbol: "\uf17f"
                 }
                 MultivalueOption {
                     id: optTheme
@@ -294,7 +285,25 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("pegasus.theme.keeploaded",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optMultiWindows
+                }
+                ToggleOption {
+                    id: optMultiWindows
+
+                    label: qsTr("Multi-Windows") + api.tr
+                    note: qsTr("Once enabled, you can run emulators in separate windows and keep pegasus/theme activated") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.multiwindows")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.multiwindows",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamelistsOnly
+                }
+                SectionTitle {
+                    text: qsTr("Game loading") + api.tr
+                    first: true
+                    symbol: "\uf1d9"
                 }
                 ToggleOption {
                     id: optGamelistsOnly
