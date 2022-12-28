@@ -42,8 +42,10 @@ class Metadata {
 
 public:
     explicit Metadata(QString, std::vector<QString>);
-    void find_metadata_for(const SystemEntry&, providers::SearchContext&) const;
+    void find_metadata_for_system(const SystemEntry&, providers::SearchContext&) const;
+    void find_metadata_for_game(model::GameFile& gamefile, const QDir& xml_dir) const;
     QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name) const;
+    QString find_media_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name) const;
 
 private:
     const QString m_log_tag;
@@ -56,7 +58,8 @@ private:
     void process_gamelist_xml(const QDir&, QXmlStreamReader&, providers::SearchContext&, const QString&) const;
     HashMap<MetaType, QString, EnumHash> parse_gamelist_game_node(QXmlStreamReader&) const;
     void apply_metadata(model::GameFile&, const QDir&, HashMap<MetaType, QString, EnumHash>&) const;
-    void add_skraper_media_metadata(const QDir&, providers::SearchContext&) const;
+    void add_skraper_media_metadata(const QDir&, providers::SearchContext&, bool generateMediaXML = false) const;
+    void import_media_from_xml(const QDir&, providers::SearchContext&) const;
 };
 
 } // namespace es2
