@@ -130,7 +130,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
         emit progressChanged(progress);
 		//Process event in the queue
         QCoreApplication::processEvents();
-        metahelper.find_metadata_for(sysentry, sctx);
+        metahelper.find_metadata_for_system(sysentry, sctx);
     }
     Log::info(LOGMSG("Stats - Global Timing: Gamelists/Assets parsing/searching took %1ms").arg(assets_timer.elapsed()));
     return *this;
