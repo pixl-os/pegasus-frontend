@@ -16,9 +16,11 @@
 
 
 #include "Assets.h"
+#include "Log.h"
+
+#include "model/gaming/Game.h"
 
 #include <QUrl>
-
 
 namespace model {
 
@@ -38,7 +40,7 @@ const QStringList& Assets::get(AssetType key) const {
 
 const QString& Assets::getFirst(AssetType key) const {
     static const QString empty;
-
+    //if(m_game) Log::warning(m_log_tag, LOGMSG("Asset of Game: %1").arg(m_game->path()));
     const QStringList& list = get(key);
     if (!list.isEmpty())
         return list.constFirst();
@@ -62,4 +64,12 @@ Assets& Assets::add_uri(AssetType key, QString url)
     return *this;
 }
 
+Assets& Assets::setGame(model::Game* game)
+{
+    //finally, only one is set to go quicker
+    m_game = std::move(game);
+    return *this;
+}
+
 } // namespace model
+

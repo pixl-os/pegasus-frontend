@@ -52,6 +52,8 @@ Game::Game(QString name, QObject* parent)
     , m_data(std::move(name))
     , m_assets(new model::Assets(this))
 {
+    //set Game link in case of assets for game
+    m_assets->setGame(this);
 }
 
 Game::Game(QObject* parent)

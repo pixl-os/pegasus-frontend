@@ -24,6 +24,12 @@
 #include <QStringList>
 #include <QObject>
 
+#ifdef Q_CC_MSVC
+// MSVC has troubles with forward declared QML model types
+#include "model/gaming/Game.h"
+#endif
+
+namespace model { class Game; }
 
 namespace model {
 class Assets : public QObject {
@@ -80,12 +86,24 @@ public:
 
     Assets& add_file(AssetType, QString);
     Assets& add_uri(AssetType, QString);
+    //new fonction to add link between assets and game
+    void set_game_path(QString);
+
+    const Game& game() const { return *m_game; }
+    Game* gameMut() { return m_game; }
+    Q_PROPERTY(model::Game* game READ gamePtr CONSTANT)
+
+    Assets& setGame(model::Game*);
 
 private:
     const QStringList& get(AssetType) const;
     const QString& getFirst(AssetType) const;
-
+    const QString m_log_tag = "Assets";
     HashMap<AssetType, QStringList, EnumHash> m_asset_lists;
+
+    Game* m_game;
+    Game* gamePtr() const { return m_game; }
+
 };
 
 } // namespace model
