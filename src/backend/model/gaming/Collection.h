@@ -166,7 +166,7 @@ public:
     QVariantMap& extraMapMut() { return m_extra; }
 
 
-    const Assets& assets() const { return *m_assets; }
+    Assets& assets() { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
