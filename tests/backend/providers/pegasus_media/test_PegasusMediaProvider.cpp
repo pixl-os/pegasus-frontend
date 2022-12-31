@@ -100,7 +100,7 @@ void test_PegasusMediaProvider::asset_search()
     {
         const auto path = QStringLiteral(":/asset_search/mygame1.ext");
         QVERIFY(has_game_file(games, path));
-        const model::Game& game = get_game_by_file_path(games, path);
+        model::Game& game = const_cast<model::Game&>(get_game_by_file_path(games, path));
 
         QCOMPARE(game.assets().boxFront(), QStringLiteral("file::/asset_search/media/mygame1/box_front.png"));
         QCOMPARE(game.assets().videoList(), { QStringLiteral("file::/asset_search/media/mygame1/video.mp4") });
@@ -108,7 +108,7 @@ void test_PegasusMediaProvider::asset_search()
     {
         const auto path = QStringLiteral(":/asset_search/mygame3.ext");
         QVERIFY(has_game_file(games, path));
-        const model::Game& game = get_game_by_file_path(games, path);
+        model::Game& game = const_cast<model::Game&>(get_game_by_file_path(games, path));
 
         QCOMPARE(game.assets().screenshotList(),
             { QStringLiteral("file::/asset_search/media/mygame3/screenshot.jpg") });
@@ -118,7 +118,7 @@ void test_PegasusMediaProvider::asset_search()
     {
         const auto path = QStringLiteral(":/asset_search/subdir/mygame4.ext");
         QVERIFY(has_game_file(games, path));
-        const model::Game& game = get_game_by_file_path(games, path);
+        model::Game& game = const_cast<model::Game&>(get_game_by_file_path(games, path));
 
         QCOMPARE(game.assets().background(),
             QStringLiteral("file::/asset_search/media/subdir/mygame4/background.png"));
@@ -142,7 +142,7 @@ void test_PegasusMediaProvider::asset_search_by_title()
 
     const QString path = QStringLiteral(":/asset_search_by_title/mygame.ext");
     QVERIFY(has_game_file(games, path));
-    const model::Game& game = get_game_by_file_path(games, path);
+    model::Game& game = const_cast<model::Game&>(get_game_by_file_path(games, path));
 
     QCOMPARE(game.assets().boxFront(),
         QStringLiteral("file::/asset_search_by_title/media/My Precious Game/box_front.png"));
@@ -167,7 +167,7 @@ void test_PegasusMediaProvider::asset_search_multifile()
 
     auto path = QStringLiteral(":/asset_search_multifile/mygame.ext");
     QVERIFY(has_game_file(games, path));
-    const model::Game& game = get_game_by_file_path(games, path);
+    model::Game& game = const_cast<model::Game&>(get_game_by_file_path(games, path));
 
     const QStringList actual = [&game]{
         QStringList list = game.assets().screenshotList();

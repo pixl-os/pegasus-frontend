@@ -41,8 +41,8 @@ public:
     // TODO: these could be optimized, see
     //       https://doc.qt.io/qt-5/qtqml-cppintegration-data.html (Sequence Type to JavaScript Array)
 #define GEN(qmlname, enumname) \
-    const QString& qmlname() const { return getFirst(AssetType::enumname); } \
-    const QStringList& qmlname##List() const { return get(AssetType::enumname); } \
+    const QString& qmlname() { return getFirst(AssetType::enumname); } \
+    const QStringList& qmlname##List() { return get(AssetType::enumname); } \
     Q_PROPERTY(QString qmlname READ qmlname CONSTANT) \
     Q_PROPERTY(QStringList qmlname##List READ qmlname##List CONSTANT) \
 
@@ -86,24 +86,23 @@ public:
 
     Assets& add_file(AssetType, QString);
     Assets& add_uri(AssetType, QString);
-    //new fonction to add link between assets and game
-    void set_game_path(QString);
 
     const Game& game() const { return *m_game; }
-    Game* gameMut() { return m_game; }
+    Game* gameMut() const { return m_game; }
     Q_PROPERTY(model::Game* game READ gamePtr CONSTANT)
 
+    //new fonction to add link between assets and game
     Assets& setGame(model::Game*);
 
 private:
-    const QStringList& get(AssetType) const;
-    const QString& getFirst(AssetType) const;
+    const QStringList& get(AssetType);
+    const QString& getFirst(AssetType);
     const QString m_log_tag = "Assets";
     HashMap<AssetType, QStringList, EnumHash> m_asset_lists;
 
     Game* m_game;
     Game* gamePtr() const { return m_game; }
-
+    bool find_asset_for_game(AssetType key);
 };
 
 } // namespace model

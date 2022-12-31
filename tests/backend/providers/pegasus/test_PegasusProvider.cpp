@@ -337,11 +337,11 @@ void test_PegasusProvider::custom_assets()
     const auto [collections, games] = sctx.finalize(this);
 
     QCOMPARE(collections.size(), 1);
-    const model::Collection& coll = *collections.first();
+    model::Collection& coll = *collections.first();
     QCOMPARE(coll.assets().cartridge(), QStringLiteral("file::/custom_assets/my_collection_assets/cartridge.png"));
 
     QCOMPARE(games.size(), 1);
-    const model::Game& game = *games.first();
+    model::Game& game = *games.first();
     QCOMPARE(game.assets().boxFront(), QStringLiteral("file::/custom_assets/different_dir/whatever.png"));
 }
 
@@ -359,14 +359,14 @@ void test_PegasusProvider::custom_assets_multi()
     {
         const auto path = QStringLiteral(":/custom_assets_multi/game1.ext");
         QVERIFY(has_game_file(games, path));
-        const model::Game& game = get_game_by_file_path(games, path);
+        model::Game& game = const_cast<model::Game&>(get_game_by_file_path(games, path));
         QCOMPARE(game.assets().videoList(),
             QStringList(QStringLiteral("file::/custom_assets_multi/videos/a.mp4")));
     }
     {
         const auto path = QStringLiteral(":/custom_assets_multi/game2.ext");
         QVERIFY(has_game_file(games, path));
-        const model::Game& game = get_game_by_file_path(games, path);
+        model::Game& game = const_cast<model::Game&>(get_game_by_file_path(games, path));
         QCOMPARE(game.assets().videoList(), QStringList({
             QStringLiteral("file::/custom_assets_multi/videos/a.mp4"),
             QStringLiteral("file::/custom_assets_multi/videos/b.mp4"),
@@ -440,7 +440,7 @@ void test_PegasusProvider::multicoll()
     QCOMPARE(games.size(), 1);
     QCOMPARE(collections.first()->gamesConst().first(), collections.last()->gamesConst().first());
 
-    const model::Game& game = *games.first();
+    model::Game& game = *games.first();
     QCOMPARE(game.title(), QStringLiteral("My Game"));
     QCOMPARE(game.summary(), QStringLiteral("Some Summary"));
     QCOMPARE(game.description(), QStringLiteral("Some Description"));

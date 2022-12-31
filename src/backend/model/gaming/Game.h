@@ -223,7 +223,7 @@ public:
 	Q_INVOKABLE bool isRaHardcoreAt (const int index)  {if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).HardcoreMode;
 														else return false;};
 	
-    const Assets& assets() const { return *m_assets; }
+    Assets& assets() { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
