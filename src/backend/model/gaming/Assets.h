@@ -36,6 +36,75 @@ class Assets : public QObject {
     Q_OBJECT
 
 public:
+    const std::array<QString, 1> MEDIA_DIRS {
+        QStringLiteral("/media/"),
+    };
+
+    // NOTE: The entries are ordered by priority
+    const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
+        { AssetType::ARCADE_MARQUEE, {
+            QStringLiteral("marquee"),
+            QStringLiteral("screenmarquee"),
+            QStringLiteral("screenmarqueesmall"),
+            QStringLiteral("steamgrid"),
+        }},
+        { AssetType::ARCADE_BEZEL, {
+            QStringLiteral("bezel"),
+        }},
+        { AssetType::BACKGROUND, {
+            QStringLiteral("fanart"),
+            QStringLiteral("screenshot"),
+        }},
+        { AssetType::BOX_BACK, {
+            QStringLiteral("box2dback"),
+        }},
+        { AssetType::BOX_FRONT, {
+            QStringLiteral("box3d"),
+            QStringLiteral("support"),
+            QStringLiteral("box2dfront"),
+            QStringLiteral("supporttexture"),
+        }},
+        { AssetType::BOX_FULL, {
+            QStringLiteral("boxtexture"),
+        }},
+        { AssetType::BOX_SPINE, {
+            QStringLiteral("box2dside"),
+        }},
+        { AssetType::CARTRIDGE, {
+            QStringLiteral("support"),
+        }},
+        { AssetType::CARTRIDGETEXTURE, {
+            QStringLiteral("supporttexture"),
+        }},
+        { AssetType::LOGO, {
+            QStringLiteral("wheel"),
+            QStringLiteral("wheelcarbon"),
+            QStringLiteral("wheelsteel"),
+        }},
+        { AssetType::SCREENSHOT, {
+            QStringLiteral("screenshot"),
+            QStringLiteral("screenshottitle"),
+        }},
+        { AssetType::TITLESCREEN, {
+            QStringLiteral("screenshottitle"),
+        }},
+        { AssetType::UI_STEAMGRID, {
+            QStringLiteral("steamgrid"),
+        }},
+        { AssetType::VIDEO, {
+            QStringLiteral("videos"),
+        }},
+        { AssetType::MANUAL, {
+            QStringLiteral("manuals"),
+        }},
+        { AssetType::MAPS, {
+            QStringLiteral("maps"),
+        }},
+        { AssetType::MUSIC, {
+            QStringLiteral("music"),
+        }},
+    };
+
     // NOTE: by manually listing the properties (instead of eg. a Map),
     //       it is also possible to refer the same data by a different name
     // TODO: these could be optimized, see
@@ -95,14 +164,14 @@ public:
     Assets& setGame(model::Game*);
 
 private:
-    const QStringList& get(AssetType);
+    const QStringList& get(AssetType, bool searchFirstOnly = false);
     const QString& getFirst(AssetType);
     const QString m_log_tag = "Assets";
     HashMap<AssetType, QStringList, EnumHash> m_asset_lists;
 
     Game* m_game;
     Game* gamePtr() const { return m_game; }
-    bool find_asset_for_game(AssetType key);
+    size_t find_asset_for_game(AssetType key, bool searchFirstOnly = false);
 };
 
 } // namespace model
