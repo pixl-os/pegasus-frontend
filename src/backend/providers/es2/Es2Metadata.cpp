@@ -319,13 +319,22 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
         QElapsedTimer skraper_media_timer;
         skraper_media_timer.start();
         //Log::info(LOGMSG("media.xml path: %1").arg(xml_dir.path() + "/media.xml"));
-        if (!QFileInfo::exists(xml_dir.path() + "/media.xml")){
-            Log::info(LOGMSG("media.xml not found: %1").arg(xml_dir.path() + "/media.xml"));
-            add_skraper_media_metadata(xml_dir, sctx, false);
+        //use media.xml or not
+        if(RecalboxConf::Instance().AsBool("pegasus.usemedialist",false)){
+            if (!QFileInfo::exists(xml_dir.path() + "/media.xml")){
+                Log::info(LOGMSG("media.xml not found (to generate for  this  time): %1").arg(xml_dir.path() + "/media.xml"));
+                //set last parameter to activate or not the media.xml generation during parsing of media
+                add_skraper_media_metadata(xml_dir, sctx, true);
+            }
+            else{
+                Log::info(LOGMSG("media.xml used: %1").arg(xml_dir.path() + "/media.xml"));
+                //add media from xml (to see if it's quicker or not  ?!)
+                import_media_from_xml(xml_dir, sctx);
+            }
         }
         else{
-            //add media from xml (to see if it's quicker or not  ?!)
-            import_media_from_xml(xml_dir, sctx);
+            //set last parameter to activate deactivate the media.xml generation during parsing of media
+            add_skraper_media_metadata(xml_dir, sctx, false);
         }
         //*****************************************************
         Log::info(LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
