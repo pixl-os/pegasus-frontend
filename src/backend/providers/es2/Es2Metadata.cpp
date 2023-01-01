@@ -313,14 +313,14 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
     process_gamelist_xml(xml_dir, xml, sctx, sysentry.name);
     Log::info(LOGMSG("Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));    
     
-    if(!RecalboxConf::Instance().AsBool("pegasus.deactivateskrapermedia"))
+    if(!RecalboxConf::Instance().AsBool("pegasus.deactivateskrapermedia", false))
     {
         //to add images stored by skraper and linked to gamelist/system of ES
         QElapsedTimer skraper_media_timer;
         skraper_media_timer.start();
         //Log::info(LOGMSG("media.xml path: %1").arg(xml_dir.path() + "/media.xml"));
         //use media.xml or not
-        if(RecalboxConf::Instance().AsBool("pegasus.usemedialist",false)){
+        if(RecalboxConf::Instance().AsBool("pegasus.usemedialist", true)){
             if (!QFileInfo::exists(xml_dir.path() + "/media.xml")){
                 Log::info(LOGMSG("media.xml not found (to generate for  this  time): %1").arg(xml_dir.path() + "/media.xml"));
                 //set last parameter to activate or not the media.xml generation during parsing of media

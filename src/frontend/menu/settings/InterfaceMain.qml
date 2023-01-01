@@ -311,7 +311,7 @@ FocusScope {
                     label: qsTr("Gamelist only") + api.tr
                     note: qsTr("Once enabled, only files from gamelist will be take into account. \n(Best game file loading ;-)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistonly")
+                    checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistonly",false)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("emulationstation.gamelistonly",checked);
                     }
@@ -322,10 +322,10 @@ FocusScope {
                 ToggleOption {
                     id: optGamelistsFirst
 
-                    label: qsTr("Gamelist first") + api.tr
+                    label: qsTr("Gamelist first (Beta)") + api.tr
                     note: qsTr("Once enabled, system gamelist will be seach in priority else game files will be search. \n(Intermediate game file loading)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistfirst")
+                    checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistfirst",true)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("emulationstation.gamelistfirst",checked);
                     }
@@ -339,9 +339,23 @@ FocusScope {
                     label: qsTr("Deactivate Skraper media") + api.tr
                     note: qsTr("Once enabled, only media from gamelist will be take into account. \n ( Best loading ;-) / Less Media :-( )") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pegasus.deactivateskrapermedia")
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.deactivateskrapermedia",false)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("pegasus.deactivateskrapermedia",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optMediaList
+
+                }
+                ToggleOption {
+                    id: optMediaList
+
+                    label: qsTr("Use Medialist (Beta)") + api.tr
+                    note: qsTr("Once enabled, during Skraper media scan a media.xml is generated. \n ( Best loading ;-) / All Media :-) )") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.usemedialist",true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.usemedialist",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                 }

@@ -36,12 +36,18 @@ Assets::Assets(QObject* parent)
 
 const QStringList& Assets::get(AssetType key, bool searchFirstOnly) {
 
-    //*******for test purpose only*******
-    //const auto it_log = ASSET_DIRS.find(key);
-    //Log::info(m_log_tag, LOGMSG("get - it_log->second : %1").arg(it_log->second.join(",")));
-    //***********************************
+    static const QStringList empty_list({});
 
-    static const QStringList empty_list({});;
+    //***for test asap if this "AssetType" exists***
+    /*const auto it_log = ASSET_DIRS.find(key);
+    if (it_log != ASSET_DIRS.cend()){
+            if (!it_log->second.isEmpty()){
+                Log::info(m_log_tag, LOGMSG("get - it_log->second : %1").arg(it_log->second.join(",")));
+            }
+            else return empty_list;
+    }
+    else return empty_list;*/
+    //*****************************************
     const auto it = m_asset_lists.find(key);
     //check first to know if empty or not found
     if ((it == m_asset_lists.cend()) || it->second.isEmpty()){
