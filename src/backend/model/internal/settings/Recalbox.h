@@ -24,7 +24,7 @@ public:
     Q_INVOKABLE QString getStringParameter(const QString& Parameter);
     Q_INVOKABLE void setStringParameter(const QString& Parameter, const QString& Value);
     
-    Q_INVOKABLE bool getBoolParameter(const QString& Parameter);
+    Q_INVOKABLE bool getBoolParameter(const QString& Parameter, const bool& defaultValue = false);
     Q_INVOKABLE void setBoolParameter(const QString& Parameter, const bool& Value);
 
     Q_INVOKABLE int getIntParameter(const QString& Parameter);
