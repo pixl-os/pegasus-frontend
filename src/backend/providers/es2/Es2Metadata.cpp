@@ -513,32 +513,30 @@ void Metadata::import_media_from_xml(const QDir& system_dir, providers::SearchCo
 {
     Log::info(m_log_tag, LOGMSG("Start to add Assets from media.xml in addition of ES Gamelist"));
 
-    QHash<QString, AssetType> ASSET_REFS {
-        { QStringLiteral("marquee"),AssetType::ARCADE_MARQUEE },
-        { QStringLiteral("screenmarquee"), AssetType::ARCADE_MARQUEE },
-        { QStringLiteral("screenmarqueesmall"), AssetType::ARCADE_MARQUEE },
-        { QStringLiteral("steamgrid"), AssetType::ARCADE_MARQUEE },
-        { QStringLiteral("bezel"), AssetType::ARCADE_BEZEL },
-        { QStringLiteral("fanart"), AssetType::BACKGROUND },
-        { QStringLiteral("box2dback"), AssetType::BOX_BACK },
-        { QStringLiteral("box3d"), AssetType::BOX_FRONT },
-        { QStringLiteral("support"), AssetType::BOX_FRONT },
-        { QStringLiteral("box2dfront"), AssetType::BOX_FRONT },
-        { QStringLiteral("supporttexture"), AssetType::BOX_FRONT },
-        { QStringLiteral("boxtexture"), AssetType::BOX_FULL },
-        { QStringLiteral("box2dside"), AssetType::BOX_SPINE },
-        { QStringLiteral("support"), AssetType::CARTRIDGE },
-        { QStringLiteral("supporttexture"), AssetType::CARTRIDGETEXTURE },
-        { QStringLiteral("wheel"), AssetType::LOGO },
-        { QStringLiteral("wheelcarbon"), AssetType::LOGO },
-        { QStringLiteral("wheelsteel"), AssetType::LOGO },
-        { QStringLiteral("screenshot"), AssetType::SCREENSHOT },
-        { QStringLiteral("screenshottitle"), AssetType::TITLESCREEN },
-        { QStringLiteral("steamgrid"), AssetType::UI_STEAMGRID },
-        { QStringLiteral("videos"), AssetType::VIDEO },
-        { QStringLiteral("manuals"), AssetType::MANUAL },
-        { QStringLiteral("maps"), AssetType::MAPS },
-        { QStringLiteral("music"), AssetType::MUSIC}
+    QHash<QString, QList<AssetType>> ASSET_REFS {
+        { QStringLiteral("marquee"), {AssetType::ARCADE_MARQUEE}},
+        { QStringLiteral("screenmarquee"), {AssetType::ARCADE_MARQUEE}},
+        { QStringLiteral("screenmarqueesmall"), {AssetType::ARCADE_MARQUEE}},
+        { QStringLiteral("bezel"), {AssetType::ARCADE_BEZEL}},
+        { QStringLiteral("fanart"), {AssetType::BACKGROUND}},
+        { QStringLiteral("box2dback"), {AssetType::BOX_BACK}},
+        { QStringLiteral("box3d"), {AssetType::BOX_FRONT}},
+        { QStringLiteral("support"), {AssetType::BOX_FRONT, AssetType::CARTRIDGE}},
+        { QStringLiteral("box2dfront"), {AssetType::BOX_FRONT}},
+        { QStringLiteral("supporttexture"), {AssetType::BOX_FRONT}},
+        { QStringLiteral("boxtexture"), {AssetType::BOX_FULL}},
+        { QStringLiteral("box2dside"), {AssetType::BOX_SPINE}},
+        { QStringLiteral("supporttexture"), {AssetType::CARTRIDGETEXTURE,AssetType::BOX_FRONT}},
+        { QStringLiteral("wheel"), {AssetType::LOGO}},
+        { QStringLiteral("wheelcarbon"), {AssetType::LOGO}},
+        { QStringLiteral("wheelsteel"), {AssetType::LOGO}},
+        { QStringLiteral("screenshot"), {AssetType::SCREENSHOT, AssetType::BACKGROUND}},
+        { QStringLiteral("screenshottitle"), {AssetType::TITLESCREEN, AssetType::SCREENSHOT}},
+        { QStringLiteral("steamgrid"), {AssetType::UI_STEAMGRID, AssetType::ARCADE_MARQUEE}},
+        { QStringLiteral("videos"), {AssetType::VIDEO}},
+        { QStringLiteral("manuals"), {AssetType::MANUAL}},
+        { QStringLiteral("maps"), {AssetType::MAPS}},
+        { QStringLiteral("music"), {AssetType::MUSIC}}
     };
 
     size_t found_assets_cnt = 0;
@@ -562,12 +560,8 @@ void Metadata::import_media_from_xml(const QDir& system_dir, providers::SearchCo
     // Get the first child of the root (Markup COMPONENT is expected)
     QDomElement asset=root.firstChild().toElement();
 
-    //Log::info(m_log_tag, LOGMSG("step 1"));
-
     //build gamepath db for search !!!
     extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map());
-
-    //Log::info(m_log_tag, LOGMSG("step 2"));
 
     // Loop while there is a child
     while(!asset.isNull())
@@ -582,13 +576,12 @@ void Metadata::import_media_from_xml(const QDir& system_dir, providers::SearchCo
         }
         //check if this game node already exist
         model::Game& game = *(it->second);
-        const AssetType asset_type = ASSET_REFS[asset.tagName()];
-        //const QStringList& dir_names = asset_dir_entry.second;
-        game.assetsMut().add_file(asset_type, asset.text());
-
-        //Log::debug(m_log_tag, LOGMSG("%1 asset added !").arg(dir_it.filePath()));
-        found_assets_cnt++;
-
+        //search in all AssetType for this media directory
+        const QList<AssetType>& asset_types = ASSET_REFS[asset.tagName()];
+        for (const AssetType& asset_type : asset_types) {
+            game.assetsMut().add_file(asset_type, asset.text());
+            found_assets_cnt++;
+        }
         // Next asset
         asset = asset.nextSibling().toElement();
     }
