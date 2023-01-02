@@ -28,6 +28,9 @@
 #include <QFile>
 #include <QFileInfo>
 
+//For recalbox
+#include "RecalboxConf.h"
+
 namespace model {
 
 Assets::Assets(QObject* parent)
@@ -51,14 +54,16 @@ const QStringList& Assets::get(AssetType key, bool searchFirstOnly) {
     const auto it = m_asset_lists.find(key);
     //check first to know if empty or not found
     if ((it == m_asset_lists.cend()) || it->second.isEmpty()){
-        //search if assets exists in share for games (if not a game, function will exit immediatly with return 0
-        size_t nbAssetFound = find_asset_for_game(key, searchFirstOnly);
-        if(nbAssetFound != 0){
-            const auto it2 = m_asset_lists.find(key);
-            if (it2 != m_asset_lists.cend()){
-                if(!it2->second.isEmpty()){
-                    if(it2->second.constFirst() != "not found"){
-                        return it2->second;
+        if(RecalboxConf::Instance().AsBool("pegasus.mediaondemand", false)){
+            //search if assets exists in share for games (if not a game, function will exit immediatly with return 0
+            size_t nbAssetFound = find_asset_for_game(key, searchFirstOnly);
+            if(nbAssetFound != 0){
+                const auto it2 = m_asset_lists.find(key);
+                if (it2 != m_asset_lists.cend()){
+                    if(!it2->second.isEmpty()){
+                        if(it2->second.constFirst() != "not found"){
+                            return it2->second;
+                        }
                     }
                 }
             }

@@ -337,7 +337,7 @@ FocusScope {
                     id: optDeactivateSkraperMedia
 
                     label: qsTr("Deactivate Skraper media") + api.tr
-                    note: qsTr("Once enabled, only media from gamelist will be take into account. \n ( Best loading ;-) / Less Media :-( )") + api.tr
+                    note: qsTr("Once enabled, only media from gamelist will be take into account. \n (Best loading ;-) / Less Media :-( )") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pegasus.deactivateskrapermedia",false)
                     onCheckedChanged: {
@@ -350,12 +350,25 @@ FocusScope {
                 ToggleOption {
                     id: optMediaList
 
-                    label: qsTr("Use Medialist (Beta)") + api.tr
-                    note: qsTr("Once enabled, during Skraper media scan a media.xml is generated. \n ( Best loading ;-) / All Media :-) )") + api.tr
+                    label: qsTr("Medialist (Beta)") + api.tr
+                    note: qsTr("Once enabled, during Skraper media scan a media.xml is generated. \n (Quick loading ;-) / All Media :-) )") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pegasus.usemedialist",true)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("pegasus.usemedialist",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optOnDemandMedia
+                }
+                ToggleOption {
+                    id: optOnDemandMedia
+
+                    label: qsTr("Media 'On Demand' (Beta)") + api.tr
+                    note: qsTr("Once enabled, media could be loaded dynamically and when it's requested. \n (Less memory used :-) / More impact ;-| )") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.mediaondemand",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.mediaondemand",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                 }
