@@ -108,6 +108,13 @@ Assets& Assets::add_uri(AssetType key, QString url)
 {
     QStringList& target = m_asset_lists[key];
 
+    //**********for test purpose*****************
+    /*if(key == AssetType::VIDEO){
+        if (!url.isEmpty()) Log::info(m_log_tag, LOGMSG("AssetType::VIDEO  new url : %1").arg(url));
+        if (!target.isEmpty()) Log::info(m_log_tag, LOGMSG("AssetType::VIDEO list content targeted : %1").arg(target.join(",")));
+    }*/
+    //*******************************************
+
     if (!url.isEmpty() && !target.contains(url))
         target.append(std::move(url));
 
