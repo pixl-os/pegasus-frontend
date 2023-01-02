@@ -336,7 +336,7 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
         //use media.xml or not
         if(RecalboxConf::Instance().AsBool("pegasus.usemedialist", true)){
             //Log::info(LOGMSG("media.xml to use: %1").arg(xml_dir.path() + "/media.xml"));
-            //add media from xml (to see if it's quicker or not  ?!)
+            //add media from xml (to see if it's quicker or not ?!)
             size_t mediaFound = import_media_from_xml(xml_dir, sctx);
             if (mediaFound == 0){
                 Log::info(LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(xml_dir.path() + "/media.xml"));
@@ -451,7 +451,7 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
     QTextStream xmlContent(&xmlFile);
     if(generateMediaXML){
         //Open media.xml file to write it (we consider that media.xml deson't exist if we call this function
-        //xmlFile.setFileName(xml_dir.path() + "/media.xml");
+        xmlFile.setFileName(xml_dir.path() + "/media.xml");
         if (!xmlFile.open(QFile::WriteOnly | QFile::Text ))
         {
             Log::error(m_log_tag, LOGMSG("%1 already opened or there is another issue").arg(xml_dir.path() + "/media.xml"));
@@ -460,9 +460,9 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
             return;
         }
         //calculate media directory & gamelist size in bytes
-        QString media_dir_size = run("du -sb " + xml_dir.path() + "/media/" +
+        QString media_dir_size = run("du -s " + xml_dir.path() + "/media/" +
                                  " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
-        QString gamelist_size = run("du -sb " + xml_dir.path() + "/gamelist.xml"+
+        QString gamelist_size = run("du -s " + xml_dir.path() + "/gamelist.xml"+
                                  " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
 
         //make the root element
@@ -587,13 +587,13 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
 
     //tentative to detect changes in gamelist/medias
     //calculate media directory & gamelist size in bytes
-    QString media_dir_size = run("du -sb " + xml_dir.path() + "/media/" +
+    QString media_dir_size = run("du -s " + xml_dir.path() + "/media/" +
                              " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
     QString media_dir_size_from_xml = root.attribute("media_dir_size");
     //exit function if difference of size for media directory to request to regenerate media.xml
     if(media_dir_size  != media_dir_size_from_xml) return 0;
 
-    QString gamelist_size = run("du -sb " + xml_dir.path() + "/gamelist.xml"+
+    QString gamelist_size = run("du -s " + xml_dir.path() + "/gamelist.xml"+
                              " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
     QString gamelist_size_from_xml = root.attribute("gamelist_size");
     //exit function if difference of size for gamelist to request to regenerate media.xml
