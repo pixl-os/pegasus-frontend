@@ -58,7 +58,7 @@ private:
     HashMap<MetaType, QString, EnumHash> parse_gamelist_game_node(QXmlStreamReader&) const;
     void apply_metadata(model::GameFile&, const QDir&, HashMap<MetaType, QString, EnumHash>&) const;
     void add_skraper_media_metadata(const QDir&, providers::SearchContext&, bool generateMediaXML = false) const;
-    void import_media_from_xml(const QDir&, providers::SearchContext&) const;
+    size_t import_media_from_xml(const QDir&, providers::SearchContext&) const;
 };
 
 } // namespace es2
