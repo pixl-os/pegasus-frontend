@@ -69,6 +69,22 @@ QFileInfo shell_to_finfo(const QDir& base_dir, const QString& shell_filepath)
     return QFileInfo(base_dir, real_path);
 }
 
+QString run(const QString& Command)
+{
+  const std::string& command = Command.toUtf8().constData();
+  std::string output;
+  char buffer[4096];
+  FILE* pipe = popen(command.data(), "r");
+  if (pipe != nullptr)
+  {
+    while (feof(pipe) == 0)
+      if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        output.append(buffer);
+    pclose(pipe);
+  }
+  return QString::fromStdString(output);
+}
+
 } // namespace
 
 
@@ -319,29 +335,29 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
         //Log::info(LOGMSG("media.xml path: %1").arg(xml_dir.path() + "/media.xml"));
         //use media.xml or not
         if(RecalboxConf::Instance().AsBool("pegasus.usemedialist", true)){
-            if (!QFileInfo::exists(xml_dir.path() + "/media.xml")){
-                Log::info(LOGMSG("media.xml not found (to generate for  this  time): %1").arg(xml_dir.path() + "/media.xml"));
+            //Log::info(LOGMSG("media.xml to use: %1").arg(xml_dir.path() + "/media.xml"));
+            //add media from xml (to see if it's quicker or not  ?!)
+            size_t mediaFound = import_media_from_xml(xml_dir, sctx);
+            if (mediaFound == 0){
+                Log::info(LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(xml_dir.path() + "/media.xml"));
                 //set last parameter to activate or not the media.xml generation during parsing of media
                 add_skraper_media_metadata(xml_dir, sctx, true);
+                Log::info(LOGMSG("Timing: Skraper media searching (with media.xml generation) took %1ms").arg(skraper_media_timer.elapsed()));
             }
-            else{
-                Log::info(LOGMSG("media.xml used: %1").arg(xml_dir.path() + "/media.xml"));
-                //add media from xml (to see if it's quicker or not  ?!)
-                import_media_from_xml(xml_dir, sctx);
-            }
+            else Log::info(LOGMSG("Timing: Skraper media.xml import took %1ms").arg(skraper_media_timer.elapsed()));
         }
         else{
             //set last parameter to activate deactivate the media.xml generation during parsing of media
             add_skraper_media_metadata(xml_dir, sctx, false);
+            Log::info(LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
         }
-        //*****************************************************
-        Log::info(LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
+        //*****************************************************     
     }
 }
 
-void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::SearchContext& sctx, bool generateMediaXML) const
+void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::SearchContext& sctx, bool generateMediaXML) const
 {
-    Log::info(m_log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
+    //Log::info(m_log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
     // NOTE: The entries are ordered by priority
     const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
         { AssetType::ARCADE_MARQUEE, {
@@ -435,21 +451,31 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::Sea
     QTextStream xmlContent(&xmlFile);
     if(generateMediaXML){
         //Open media.xml file to write it (we consider that media.xml deson't exist if we call this function
-        xmlFile.setFileName(system_dir.path() + "/media.xml");
+        //xmlFile.setFileName(xml_dir.path() + "/media.xml");
         if (!xmlFile.open(QFile::WriteOnly | QFile::Text ))
         {
-            Log::error(m_log_tag, LOGMSG("%1 already opened or there is another issue").arg(system_dir.path() + "/media.xml"));
+            Log::error(m_log_tag, LOGMSG("%1 already opened or there is another issue").arg(xml_dir.path() + "/media.xml"));
             xmlFile.close();
+            //exit function due to issue finally
+            return;
         }
+        //calculate media directory & gamelist size in bytes
+        QString media_dir_size = run("du -sb " + xml_dir.path() + "/media/" +
+                                 " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        QString gamelist_size = run("du -sb " + xml_dir.path() + "/gamelist.xml"+
+                                 " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+
         //make the root element
         root = document.createElement("mediaList");
+        root.setAttribute("media_dir_size", media_dir_size);
+        root.setAttribute("gamelist_size", gamelist_size);
         //add it to document
         document.appendChild(root);
     }
 
     //Log::debug(m_log_tag, LOGMSG("Nb elements in MEDIA_DIRS : %1").arg(QString::number(MEDIA_DIRS.size())));
     for (const QString& media_dir_subpath : MEDIA_DIRS) {
-        const QString game_media_dir = system_dir.path() % media_dir_subpath;
+        const QString game_media_dir = xml_dir.path() % media_dir_subpath;
         if (!QFileInfo::exists(game_media_dir)) 
             {
                 //Log::debug(m_log_tag, LOGMSG("%1 directory not found :-(").arg(game_media_dir));
@@ -474,7 +500,7 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::Sea
                 while (dir_it.hasNext()) {
                     dir_it.next();
                     const QFileInfo finfo = dir_it.fileInfo();
-                    const QString game_path = ::clean_abs_dir(finfo).remove(system_dir.path().length(), subpath_len)
+                    const QString game_path = ::clean_abs_dir(finfo).remove(xml_dir.path().length(), subpath_len)
                                             % '/' % finfo.completeBaseName();
                     //Log::debug(m_log_tag, LOGMSG("%1 is the game path !").arg(game_path));
                     const auto it = extless_path_to_game.find(game_path);
@@ -506,12 +532,12 @@ void Metadata::add_skraper_media_metadata(const QDir& system_dir, providers::Sea
         //close xml
         xmlFile.close();
     }
-    Log::info(m_log_tag, LOGMSG("%1 assets found").arg(QString::number(found_assets_cnt)));
+    Log::info(m_log_tag, LOGMSG("%1 assets found from media directory").arg(QString::number(found_assets_cnt)));
 }
 
-void Metadata::import_media_from_xml(const QDir& system_dir, providers::SearchContext& sctx) const
+size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchContext& sctx) const
 {
-    Log::info(m_log_tag, LOGMSG("Start to add Assets from media.xml in addition of ES Gamelist"));
+    //Log::info(m_log_tag, LOGMSG("Start to add Assets from media.xml in addition of ES Gamelist"));
 
     QHash<QString, QList<AssetType>> ASSET_REFS {
         { QStringLiteral("marquee"), {AssetType::ARCADE_MARQUEE}},
@@ -543,20 +569,36 @@ void Metadata::import_media_from_xml(const QDir& system_dir, providers::SearchCo
     HashMap<QString, model::Game*> extless_path_to_game;
 
     //Open media.xml file to write it (we consider that media.xml deson't exist if we call this function
-    QFile xmlFile(system_dir.path() + "/media.xml");
+    QFile xmlFile(xml_dir.path() + "/media.xml");
     if (!xmlFile.open(QFile::ReadOnly | QFile::Text ))
     {
-        Log::error(m_log_tag, LOGMSG("%1 already opened or there is another issue").arg(system_dir.path() + "/media.xml"));
+        Log::error(m_log_tag, LOGMSG("%1 already opened, not found or there is another issue").arg(xml_dir.path() + "/media.xml"));
         xmlFile.close();
-        //exit function
-        return;
+        //exit function due to issue
+        return 0;
     }
+
     QDomDocument document;
     //load content of XML
     document.setContent(&xmlFile);
 
     // Extract the root markup
     QDomElement root=document.documentElement();
+
+    //tentative to detect changes in gamelist/medias
+    //calculate media directory & gamelist size in bytes
+    QString media_dir_size = run("du -sb " + xml_dir.path() + "/media/" +
+                             " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+    QString media_dir_size_from_xml = root.attribute("media_dir_size");
+    //exit function if difference of size for media directory to request to regenerate media.xml
+    if(media_dir_size  != media_dir_size_from_xml) return 0;
+
+    QString gamelist_size = run("du -sb " + xml_dir.path() + "/gamelist.xml"+
+                             " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+    QString gamelist_size_from_xml = root.attribute("gamelist_size");
+    //exit function if difference of size for gamelist to request to regenerate media.xml
+    if(gamelist_size  != gamelist_size_from_xml) return 0;
+
     // Get the first child of the root (Markup COMPONENT is expected)
     QDomElement asset=root.firstChild().toElement();
 
@@ -588,7 +630,8 @@ void Metadata::import_media_from_xml(const QDir& system_dir, providers::SearchCo
 
     //close xml
     xmlFile.close();
-    Log::info(m_log_tag, LOGMSG("%1 assets found").arg(QString::number(found_assets_cnt)));
+    Log::info(m_log_tag, LOGMSG("%1 assets imported from media.xml").arg(QString::number(found_assets_cnt)));
+    return found_assets_cnt;
 }
 
 void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, HashMap<MetaType, QString, EnumHash>& xml_props) const
