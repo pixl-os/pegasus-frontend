@@ -459,16 +459,20 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
             //exit function due to issue finally
             return;
         }
-        //calculate media directory & gamelist size in bytes
-        QString media_dir_size = run("du -s " + xml_dir.path() + "/media/" +
-                                 " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
-        QString gamelist_size = run("du -s " + xml_dir.path() + "/gamelist.xml"+
-                                 " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        //Calculate media directory & gamelist size in bytes
+        //Too slow to calcculate size of directories finaly
+        //QString media_dir_size = run("du -s " + xml_dir.path() + "/media/" +
+        //                         " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        QString gamelist_size = run("ls -l " + xml_dir.path() + "/gamelist.xml"+
+                                 " | head -n 1 | awk '{print $5}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        QString gamelist_date = run("date '+%F-%H-%M-%S' -r " + xml_dir.path() + "/gamelist.xml"+
+                                 " | head -n 1 | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
 
         //make the root element
         root = document.createElement("mediaList");
-        root.setAttribute("media_dir_size", media_dir_size);
+        //root.setAttribute("media_dir_size", media_dir_size);
         root.setAttribute("gamelist_size", gamelist_size);
+        root.setAttribute("gamelist_date", gamelist_date);
         //add it to document
         document.appendChild(root);
     }
@@ -587,17 +591,26 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
 
     //tentative to detect changes in gamelist/medias
     //calculate media directory & gamelist size in bytes
-    QString media_dir_size = run("du -s " + xml_dir.path() + "/media/" +
-                             " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
-    QString media_dir_size_from_xml = root.attribute("media_dir_size");
-    //exit function if difference of size for media directory to request to regenerate media.xml
-    if(media_dir_size  != media_dir_size_from_xml) return 0;
 
-    QString gamelist_size = run("du -s " + xml_dir.path() + "/gamelist.xml"+
-                             " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+    //Too slow to calcculate size of directories  finally
+    //QString media_dir_size = run("du -s " + xml_dir.path() + "/media/" +
+    //                         " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+    //QString media_dir_size_from_xml = root.attribute("media_dir_size");
+    //exit function if difference of size for media directory to request to regenerate media.xml
+    //if(media_dir_size  != media_dir_size_from_xml) return 0;
+
+    QString gamelist_size = run("ls -l " + xml_dir.path() + "/gamelist.xml"+
+                             " | head -n 1 | awk '{print $5}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
     QString gamelist_size_from_xml = root.attribute("gamelist_size");
     //exit function if difference of size for gamelist to request to regenerate media.xml
     if(gamelist_size  != gamelist_size_from_xml) return 0;
+
+    QString gamelist_date = run("date '+%F-%H-%M-%S' -r " + xml_dir.path() + "/gamelist.xml"+
+                             " | head -n 1 | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+    QString gamelist_date_from_xml = root.attribute("gamelist_date");
+    //exit function if difference of size for gamelist to request to regenerate media.xml
+    if(gamelist_date != gamelist_date_from_xml) return 0;
+
 
     // Get the first child of the root (Markup COMPONENT is expected)
     QDomElement asset=root.firstChild().toElement();
