@@ -155,11 +155,6 @@ public:
 
     Assets& add_file(AssetType, QString);
     Assets& add_uri(AssetType, QString);
-
-    const Game& game() const { return *m_game; }
-    Game* gameMut() const { return m_game; }
-    Q_PROPERTY(model::Game* game READ gamePtr CONSTANT)
-
     //new fonction to add link between assets and game
     Assets& setGame(model::Game*);
 
@@ -169,8 +164,9 @@ private:
     const QString m_log_tag = "Assets";
     HashMap<AssetType, QStringList, EnumHash> m_asset_lists;
 
+    const Game& game() const { return *m_game; }
+    Game* gameMut() const { return m_game; }
     Game* m_game;
-    Game* gamePtr() const { return m_game; }
     size_t find_asset_for_game(AssetType key, bool searchFirstOnly = false);
 };
 
