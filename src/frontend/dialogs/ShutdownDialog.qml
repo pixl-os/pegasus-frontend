@@ -25,5 +25,9 @@ GenericOkCancelDialog
     message: qsTr("The system will shut down. Are you sure?") + api.tr
 //    symbol: "\u23FB"
 
-    onAccept: api.internal.system.shutdown()
+    onAccept: {
+        api.memory.unset("repoStatusRefreshTime");
+        api.internal.system.shutdown();
+    }
+
 }

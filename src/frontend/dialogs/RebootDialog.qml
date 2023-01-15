@@ -26,5 +26,8 @@ GenericOkCancelDialog
     message: qsTr("The system will reboot. Are you sure?") + api.tr
 //    symbol: "\u21BB"
 
-    onAccept: api.internal.system.reboot()
+    onAccept: {
+        api.memory.unset("repoStatusRefreshTime");
+        api.internal.system.reboot();
+    }
 }
