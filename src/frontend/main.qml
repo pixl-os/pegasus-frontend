@@ -363,6 +363,7 @@ Window {
             }
             function onRequestQuit() {
                 theme.source = "";
+                api.memory.unset("repoStatusRefreshTime");
                 api.internal.system.quit();
             }
         }
@@ -1113,20 +1114,34 @@ Window {
         running: false
         triggeredOnStart: true
         onTriggered: {
-            //loop to launch download of all json repository files
-            for(var i = 0;i < componentsListModel.count; i++){
-                if((typeof(componentsListModel.get(i).repoUrl) !== "undefined") && (componentsListModel.get(i).repoUrl !== ""))
-                {
-                    api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoUrl);
-                }
-                else if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
-                {
-                    api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoLocal);
-                }
+            var before = api.memory.get("repoStatusRefreshTime");
+            console.log("repoStatusRefreshTime restored : ", before);
+            //check if we restart the front end or not in the last 30 minutes
+            //if before is empty, updates will be checked
+            //if now is upper or equal than before + interval, updates will be checked
+            //if now is less than before + interval, we do nothing
+            if(Date.now() < (parseInt(before) + interval)){
+                //do nothing, no check of updates
             }
-            //start timer to check one minute later the result
-            jsonStatusRefreshTimer.running = false;
-            jsonStatusRefreshTimer.running = true;
+            else {
+                //store info in memory and launch check of updates
+                console.log("repoStatusRefreshTime saved :    ", Date.now());
+                api.memory.set("repoStatusRefreshTime", Date.now());
+                //loop to launch download of all json repository files
+                for(var i = 0;i < componentsListModel.count; i++){
+                    if((typeof(componentsListModel.get(i).repoUrl) !== "undefined") && (componentsListModel.get(i).repoUrl !== ""))
+                    {
+                        api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoUrl);
+                    }
+                    else if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
+                    {
+                        api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoLocal);
+                    }
+                }
+                //start timer to check one minute later the result
+                jsonStatusRefreshTimer.running = false;
+                jsonStatusRefreshTimer.running = true;
+            }
         }
     }
 

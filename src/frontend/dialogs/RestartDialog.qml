@@ -28,5 +28,8 @@ GenericOkCancelDialog
     message: qsTr("Pegasus will restart. Are you sure?") + api.tr
 //    symbol: "\u21BB"
 
-    onAccept: api.internal.system.restart()
+    onAccept: {
+        api.memory.unset("repoStatusRefreshTime");
+        api.internal.system.restart();
+    }
 }
