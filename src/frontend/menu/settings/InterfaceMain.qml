@@ -256,7 +256,7 @@ FocusScope {
                     id: optGamelistsOnly
 
                     label: qsTr("Gamelist only") + api.tr
-                    note: qsTr("Once enabled, only files from gamelist will be take into account. \n(Best game file loading ;-)") + api.tr
+                    note: qsTr("Once enabled, only files from gamelist will be take into account.\n(Best game file loading ;-)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistonly",false)
                     onCheckedChanged: {
@@ -270,7 +270,7 @@ FocusScope {
                     id: optGamelistsFirst
 
                     label: qsTr("Gamelist first (Beta)") + api.tr
-                    note: qsTr("Once enabled, system gamelist will be seach in priority else game files will be search. \n(Intermediate game file loading)") + api.tr
+                    note: qsTr("Once enabled, system gamelist will be seach in priority else game files will be search.\n(Intermediate game file loading)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistfirst",true)
                     onCheckedChanged: {
@@ -284,7 +284,7 @@ FocusScope {
                     id: optDeactivateSkraperMedia
 
                     label: qsTr("Deactivate Skraper media") + api.tr
-                    note: qsTr("Once enabled, only media from gamelist will be take into account. \n (Best loading ;-) / Less Media :-( )") + api.tr
+                    note: qsTr("Once enabled, only media from gamelist will be take into account.\n(Best loading ;-) / Less Media :-( )") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pegasus.deactivateskrapermedia",false)
                     onCheckedChanged: {
@@ -298,7 +298,7 @@ FocusScope {
                     id: optMediaList
 
                     label: qsTr("Medialist (Beta)") + api.tr
-                    note: qsTr("Once enabled, during Skraper media scan a media.xml is generated. \n (Quick loading ;-) / All Media :-) )") + api.tr
+                    note: qsTr("Once enabled, during Skraper media scan a media.xml is generated.\n(Quick loading ;-) / All Media :-) )") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pegasus.usemedialist",true)
                     onCheckedChanged: {
@@ -312,7 +312,7 @@ FocusScope {
                     id: optOnDemandMedia
 
                     label: qsTr("Media 'On Demand' (Beta)") + api.tr
-                    note: qsTr("Once enabled, media could be loaded dynamically and when it's requested. \n (Less memory used :-) / More impact ;-| )") + api.tr
+                    note: qsTr("Once enabled, media could be loaded dynamically and when it's requested.\n(Less memory used :-) / More impact ;-| )") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pegasus.mediaondemand",false)
                     onCheckedChanged: {
