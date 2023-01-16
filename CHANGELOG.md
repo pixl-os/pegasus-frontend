@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file (focus on ch
 ## [pixL-master] - 2023-01-XX - v0.1.1
 - Features:
 	- add generic functions to be able to manage theme reloading itself
+	- reorganize "interface" menu and add section "Games loading"
+	- add annotation "(Beta)" in few menu to clarify state of new menu to test
+		- set 'multi-windows' and 'keep theme loaded' options as 'Beta' paremeters/features for interface
+	- new 'Beta' parameters/features for interface:
+		- "Gamelist First" : to well manage systems with and without gamelist in the same scan.
+		- "Medialist" : to create media.xml and use this list for media not present in gamelists (improve loading after first boot or changes)
+		- "Media 'on Demand'" to load media dynamically when it's requested, to avoid initial Games loading
+	- new link in assets to know game (same tip as done for game with collection)
+	- management of media.xml regenration using gamelists size/date changes
+	- hide media list option if skraper media is deactivated
+	- new FR translation for new parameters/section in menu
+
+- Fixes:
+	- now check updates only at start/reboot/restart and every 30 minutes (no check just after game session as it was done before)
+	- move bluetooth menu to avoid bad behaviors to have optional menu in first position
 
 ## [pixL-master] - 2022-12-09 - v0.1.0
 - Fixes:
