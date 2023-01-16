@@ -301,7 +301,7 @@ FocusScope {
                     KeyNavigation.down: optGamelistsOnly
                 }
                 SectionTitle {
-                    text: qsTr("Game loading") + api.tr
+                    text: qsTr("Games library loading") + api.tr
                     first: true
                     symbol: "\uf1d9"
                 }
