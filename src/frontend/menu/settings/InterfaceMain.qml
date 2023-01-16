@@ -359,6 +359,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optOnDemandMedia
+                    visible: !optDeactivateSkraperMedia.checked
                 }
                 ToggleOption {
                     id: optOnDemandMedia
