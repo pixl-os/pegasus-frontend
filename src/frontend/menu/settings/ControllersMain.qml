@@ -108,28 +108,9 @@ FocusScope {
                     symbol: "\uf181"
                 }
                 SimpleButton {
-                    id: optBluetoothDevices
-
-                    // set focus only on first item
-                    focus: visible
-
-                    label: qsTr("Bluetooth devices") + api.tr
-                    note: qsTr("connect your pads") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-					
-                    onActivate: {
-                        focus = true;
-                        root.openBluetoothDevices();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGamepadConfig
-                    visible: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled")
-                }
-                SimpleButton {
                     id: optGamepadConfig
-                    //take focus if Bluetooth Devices button is not visible
-                    focus: !optBluetoothDevices.focus
+                    //take focus by default
+                    focus: true
                     label: qsTr("Gamepad layout") + api.tr
                     note: qsTr("Show game layout configuration controller") + api.tr
                     //pointer moved in SimpleButton desactived on default
@@ -140,7 +121,23 @@ FocusScope {
                         root.openGamepadSettings({"selectedGamepadIndex":0});
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optBluetoothDevices
+                }
+                SimpleButton {
+                    id: optBluetoothDevices
+
+                    label: qsTr("Bluetooth devices") + api.tr
+                    note: qsTr("connect your pads") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openBluetoothDevices();
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAdvancedControllers
+                    visible: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled")
                 }
                 SimpleButton {
                     id: optAdvancedControllers
@@ -155,7 +152,7 @@ FocusScope {
                         root.openAdvancedControllersConfiguration();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optGamepadConfig
+                    KeyNavigation.up: optBluetoothDevices
                     Keys.onPressed: {
                         //verify if finally other lists are empty or not when we are just before to change list
                         //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
