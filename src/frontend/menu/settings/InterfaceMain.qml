@@ -96,44 +96,6 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
-//                SectionTitle {
-//                    text: qsTr("Screensaver") + api.tr
-//                    first: true
-//                }
-//                SimpleButton {
-//                    id: optScreensaverSettings
-
-//                    // set focus only on firt item
-//                    focus: true
-
-//                    label: qsTr("Screensaver settings") + api.tr
-//                    note: qsTr("set screensaver on dim, demo mode, etc") + api.tr
-
-//                    onActivate: {
-//                        focus = true;
-//                        localeBox.focus = true;
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optScreenHelp
-//                }
-//                SectionTitle {
-//                    text: qsTr("Help Menu") + api.tr
-//                    first: true
-//                }
-//                ToggleOption {
-//                    id: optScreenHelp
-
-//                    label: qsTr("On Screen Help Menu") + api.tr
-//                    note: qsTr("Show Help navigation on bottom screen") + api.tr
-
-//                    onCheckedChanged: {
-//                        //api.internal.settings.fullscreen = checked;
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.up: optScreensaverSettings
-//                    KeyNavigation.down: optMenuControlsConfig
-//                }
                 SectionTitle {
                     text: qsTr("Customize interface") + api.tr
                     first: true
@@ -238,23 +200,8 @@ FocusScope {
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.up: optScreenHelp
-//                    KeyNavigation.down: optPopupSettings
                     KeyNavigation.down: optTheme
                 }
-//                SimpleButton {
-//                    id: optPopupSettings
-
-//                    label: qsTr("Popup settings") + api.tr
-//                    note: qsTr("configure popup animation and more") + api.tr
-//                    onActivate: {
-//                        focus = true;
-//                        localeBox.focus = true;
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.up: optMenuControlsConfig
-//                    KeyNavigation.down: optTheme
-//                }
                 SectionTitle {
                     text: qsTr("Theme management") + api.tr
                     first: true
@@ -277,7 +224,7 @@ FocusScope {
                 ToggleOption {
                     id: optThemeKeepLoaded
 
-                    label: qsTr("Keep Theme Loaded") + api.tr
+                    label: qsTr("Keep Theme Loaded (Beta)") + api.tr
                     note: qsTr("Themes could stay loaded during gaming to avoid reloading after(Theme should be compatible)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pegasus.theme.keeploaded")
@@ -290,7 +237,7 @@ FocusScope {
                 ToggleOption {
                     id: optMultiWindows
 
-                    label: qsTr("Multi-Windows") + api.tr
+                    label: qsTr("Multi-Windows (Beta)") + api.tr
                     note: qsTr("Once enabled, you can run emulators in separate windows and keep pegasus/theme activated") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pegasus.multiwindows")
