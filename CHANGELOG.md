@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- management of media.xml regenration using gamelists size/date changes
 	- hide media list option if skraper media is deactivated
 	- new FR translation for new parameters/section in menu
+	- best display in menu when we return to line in notes and improved translations
 
 - Fixes:
 	- now check updates only at start/reboot/restart and every 30 minutes (no check just after game session as it was done before)
