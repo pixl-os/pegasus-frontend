@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2023-01-XX - v0.1.1
+## [pixL-master] - 2023-01-21 - v0.1.1
 - Features:
 	- add generic functions to be able to manage theme reloading itself
 	- reorganize "interface" menu and add section "Games loading"
@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- hide media list option if skraper media is deactivated
 	- new FR translation for new parameters/section in menu
 	- best display in menu when we return to line in notes and improved translations
+	- add systemShortName as property fro QML usage in collections filtering
 
 - Fixes:
 	- now check updates only at start/reboot/restart and every 30 minutes (no check just after game session as it was done before)
