@@ -199,6 +199,7 @@ public:
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
 
+    Q_PROPERTY(QString systemShortName READ systemShortName CONSTANT)
 	Q_PROPERTY(int RaGameID READ RaGameID CONSTANT)
 	Q_PROPERTY(QString RaHash READ RaHash CONSTANT)
 	
