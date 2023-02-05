@@ -244,9 +244,12 @@ FocusScope {
                                 } else if (size < 1024*1024) {
                                     size /= 1024;
                                     unit = qsTr("KB") + api.tr;
-                                } else {
+                                } else if (size < 1024*1024*1024) {
                                     size /= 1024*1024;
                                     unit = qsTr("MB") + api.tr;
+                                } else {
+                                    size /= 1024*1024*1024;
+                                    unit = qsTr("GB") + api.tr;
                                 }
                                 size = size.toFixed(2);
                                 return qsTr("Size") + " : " + size + " " + unit + " - " + qsTr("Published at") + " : " + entry.publishedAt;
