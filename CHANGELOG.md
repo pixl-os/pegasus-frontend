@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+
+## [pixL-master] - 2023-MM-DD - v0.1.X
+- Fixes:
+	- check more regularly json from temp and change delay from timer (check after 20s)
+- Features:
+	- add display in GB for online update >= than 1024 Mo
+
 ## [pixL-master] - 2023-01-21 - v0.1.1
 - Features:
 	- add generic functions to be able to manage theme reloading itself
