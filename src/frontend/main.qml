@@ -1121,7 +1121,7 @@ Window {
             //if now is upper or equal than before + interval, updates will be checked
             //if now is less than before + interval, we do nothing
             if(Date.now() < (parseInt(before) + interval)){
-                //do nothing, no check of updates
+                //do nothing, no check of repo, use only existing json from /tmp
             }
             else {
                 //store info in memory and launch check of updates
@@ -1138,18 +1138,18 @@ Window {
                         api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoLocal);
                     }
                 }
-                //start timer to check one minute later the result
-                jsonStatusRefreshTimer.running = false;
-                jsonStatusRefreshTimer.running = true;
             }
+            //start timer to check one minute later the result
+            jsonStatusRefreshTimer.running = false;
+            jsonStatusRefreshTimer.running = true;
         }
     }
 
     property int numberOfUpdates: 0
     property string listOfUpdates : ""
-    Timer {//timer to check json after download (1 minute later)
+    Timer {//timer to check json after download
         id: jsonStatusRefreshTimer
-        interval: 5000 // check after 5 seconds ;-)
+        interval: 20000 // check after 20 seconds now
         repeat: false // no need to repeat
         running: false
         triggeredOnStart: false

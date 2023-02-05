@@ -752,6 +752,8 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
                 else if(asset_entry[QL1("browser_download_url")].toString().contains("picture.png")){
                     m_versions[i].m_picture = asset_entry[QL1("browser_download_url")].toString();
                 }
+                //Log::info(log_tag, LOGMSG("asset_entry[QL1('name')].toString(): %1").arg(asset_entry[QL1("name")].toString()));
+                //Log::info(log_tag, LOGMSG("asset_entry[QL1('size')].toString(): %1").arg(asset_entry[QL1("size")].toInt()));
                 m_versions[i].m_size = m_versions[i].m_size + asset_entry[QL1("size")].toInt();
             }
             i++;
