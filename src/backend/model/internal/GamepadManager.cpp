@@ -310,12 +310,13 @@ void GamepadManager::bkOnIndexChanged(int device_idx1, int device_idx2)
 		//change in recalbox.conf also
 		//Get existing line
 		std::string initialPadPegasusValue = RecalboxConf::Instance().GetPadPegasus(device_id);
+        Log::debug(m_log_tag, LOGMSG("initialPadPegasusValue: %1").arg(QString::fromStdString(initialPadPegasusValue)));
 		std::string path = "";
 		std::string uuid = "";
 		std::string name = "";
 		std::string sdlidx = "";
 		//Get info to reconstruct the line
-		Strings::SplitInFour(initialPadPegasusValue, '|', uuid, name, path, sdlidx, true);
+        Strings::SplitInFour(initialPadPegasusValue, '|', uuid, name, path, sdlidx, false);
 		//set to new index
 		sdlidx = std::to_string(device_idx2);
 		std::string newPadPegasusValue = "";

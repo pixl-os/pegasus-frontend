@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file (focus on ch
 ## [pixL-master] - 2023-MM-DD - v0.1.X
 - Fixes:
 	- check more regularly json from temp and change delay from timer (check after 20s)
+	- fix gamepadManager to avoid to trim controller name that generate missmatching
+
 - Features:
 	- add display in GB for online update >= than 1024 Mo
 
