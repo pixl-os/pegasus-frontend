@@ -18,7 +18,6 @@
 #include "Game.h"
 
 #include "model/gaming/Assets.h"
-#include "model/gaming/Collection.h"
 #include "model/gaming/GameFile.h"
 
 #include "providers/SearchContext.h"
