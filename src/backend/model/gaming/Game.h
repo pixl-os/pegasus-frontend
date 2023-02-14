@@ -21,11 +21,8 @@
 #include <QDateTime>
 #include <QStringList>
 
-#ifdef Q_CC_MSVC
-// MSVC has troubles with forward declared QML model types
+//add here to access collections information from c++
 #include "model/gaming/Collection.h"
-#include "model/gaming/GameFile.h"
-#endif
 
 namespace model { class Assets; }
 namespace model { class GameFile; }
@@ -95,44 +92,49 @@ class Game : public QObject {
 
 public:
 #define GETTER(type, name, field) \
-    type name() const { return m_data.field; }
+    type name() const { return field; }
 
-    GETTER(const QString&, title, title)
-    GETTER(const QString&, sortBy, sort_by)
-    GETTER(const QString&, summary, summary)
-    GETTER(const QString&, description, description)
-    GETTER(const QString&, hash, hash)
-	GETTER(const QString&, path, path)
-	GETTER(const QString&, genreid, genreid)
-    GETTER(const QDate&, releaseDate, release_date)
-    GETTER(int, playerCount, player_count)
-    GETTER(float, rating, rating)
+    GETTER(const QString&, title, m_data.title)
+    GETTER(const QString&, sortBy, m_data.sort_by)
+    GETTER(const QString&, summary, m_data.summary)
+    GETTER(const QString&, description, m_data.description)
+    GETTER(const QString&, hash, m_data.hash)
+    GETTER(const QString&, path, m_data.path)
+    GETTER(const QString&, genreid, m_data.genreid)
+    GETTER(const QDate&, releaseDate, m_data.release_date)
+    GETTER(int, playerCount, m_data.player_count)
+    GETTER(float, rating, m_data.rating)
 
-    GETTER(const QStringList&, developerListConst, developers)
-    GETTER(const QStringList&, publisherListConst, publishers)
-    GETTER(const QStringList&, genreListConst, genres)
-    GETTER(const QStringList&, tagListConst, tags)
+    GETTER(const QStringList&, developerListConst, m_data.developers)
+    GETTER(const QStringList&, publisherListConst, m_data.publishers)
+    GETTER(const QStringList&, genreListConst, m_data.genres)
+    GETTER(const QStringList&, tagListConst, m_data.tags)
 
-    GETTER(int, releaseYear, release_date.year())
-    GETTER(int, releaseMonth, release_date.month())
-    GETTER(int, releaseDay, release_date.day())
+    GETTER(int, releaseYear, m_data.release_date.year())
+    GETTER(int, releaseMonth, m_data.release_date.month())
+    GETTER(int, releaseDay, m_data.release_date.day())
 
-    GETTER(int, playCount, playstats.play_count)
-    GETTER(int, playTime, playstats.play_time)
-    GETTER(const QDateTime&, lastPlayed, playstats.last_played)
-    GETTER(bool, isFavorite, is_favorite)
+    GETTER(int, playCount, m_data.playstats.play_count)
+    GETTER(int, playTime, m_data.playstats.play_time)
+    GETTER(const QDateTime&, lastPlayed, m_data.playstats.last_played)
+    GETTER(bool, isFavorite, m_data.is_favorite)
 	
-	GETTER(const QList<RetroAchievement> &, retroAchievements, retro_achievements)
-	GETTER(int, RaGameID, ra_game_id)
-	GETTER(const QString&, RaHash, ra_hash)
+    GETTER(const QList<RetroAchievement> &, retroAchievements, m_data.retro_achievements)
+    GETTER(int, RaGameID, m_data.ra_game_id)
+    GETTER(const QString&, RaHash, m_data.ra_hash)
 	
     
-	GETTER(const QString&, launchCmd, launch_params.launch_cmd)
-    GETTER(const QString&, launchWorkdir, launch_params.launch_workdir)
-    GETTER(const QString&, launchCmdBasedir, launch_params.relative_basedir)
-    GETTER(const QString&, systemShortName, launch_params.system_shortname)
-    GETTER(const QString&, emulatorName, launch_params.emulator_name)
-    GETTER(const QString&, emulatorCore, launch_params.emulator_core)
+    GETTER(const QString&, launchCmd, m_data.launch_params.launch_cmd)
+    GETTER(const QString&, launchWorkdir, m_data.launch_params.launch_workdir)
+    GETTER(const QString&, launchCmdBasedir, m_data.launch_params.relative_basedir)
+    GETTER(const QString&, systemShortName, m_data.launch_params.system_shortname)
+    GETTER(const QString&, emulatorName, m_data.launch_params.emulator_name)
+    GETTER(const QString&, emulatorCore, m_data.launch_params.emulator_core)
+
+    //new way using collection to access information from GETTER
+    GETTER(const QString&, systemManufacturer, m_collections->get(0)->manufacturer())
+
+
 #undef GETTER
 
 
@@ -200,6 +202,8 @@ public:
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
 
     Q_PROPERTY(QString systemShortName READ systemShortName CONSTANT)
+    Q_PROPERTY(QString systemManufacturer READ systemManufacturer CONSTANT)
+
 	Q_PROPERTY(int RaGameID READ RaGameID CONSTANT)
 	Q_PROPERTY(QString RaHash READ RaHash CONSTANT)
 	
