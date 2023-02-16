@@ -8,9 +8,13 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix gamepadManager to avoid to trim controller name that generate missmatching
 	- fix on emulator configuration to well display emulator and core names
 	- fix to accept core/emulator without version and to well display it in menu
+	- remove 'sortfilterproxymodel' submodule as remote one to have it locally and simplify maintenance
+
 
 - Features:
 	- add display in GB for online update >= than 1024 Mo
+	- add new way to have "system manufacturer" from game object (as from collections)
+	- add filtering by array of indexes from 'sortfilterproxymodel' to help filtering/caching for 'MyCollections' from gameOS-pixL
 
 ## [pixL-master] - 2023-01-21 - v0.1.1
 - Features:
