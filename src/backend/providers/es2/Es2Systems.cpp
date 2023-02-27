@@ -444,6 +444,10 @@ std::vector<SystemEntry> find_systems(const QString& log_tag, const std::vector<
             //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
             mCoreList.push_back({ parts[0], parts[1], parts[2] });
         }
+        else if (parts.size() == 2 ){ //if no version finally
+            //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString("")));
+            mCoreList.push_back({ parts[0], parts[1], "" });
+        }
     }
 
 
@@ -518,6 +522,10 @@ SystemEntry find_system(const QString& log_tag, const std::vector<QString>& poss
         if (parts.size() == 3){
             //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString(parts[2])));
             mCoreList.push_back({ parts[0], parts[1], parts[2] });
+        }
+        else if (parts.size() == 2 ){ //if no version finally
+            //Log::debug(log_tag,LOGMSG("Core details: %1;%2;%3").arg(QString::fromStdString(parts[0]),QString::fromStdString(parts[1]),QString::fromStdString("")));
+            mCoreList.push_back({ parts[0], parts[1], "" });
         }
     }
 
