@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- check more regularly json from temp and change delay from timer (check after 20s)
 	- fix gamepadManager to avoid to trim controller name that generate missmatching
 	- fix on emulator configuration to well display emulator and core names
+	- fix to accept core/emulator without version and to well display it in menu
 
 - Features:
 	- add display in GB for online update >= than 1024 Mo
