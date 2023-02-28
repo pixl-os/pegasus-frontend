@@ -19,7 +19,11 @@ Singleplay::Singleplay(QObject* parent)
 
 void Singleplay::setSystem (const QString shortName){
     providers::es2::SystemEntry sysentry = Provider->find_one_system(shortName);
-    if(sysentry.platforms == shortName){ //system found
+	
+	//TO DO
+	//Add way to add a game unitary in a collection
+
+/*     if(sysentry.platforms == shortName){ //system found
        //set entry for this game
         m_game
             .setLaunchCmd(sysentry.launch_cmd)
@@ -44,7 +48,7 @@ void Singleplay::setSystem (const QString shortName){
                     .setEmulatorCore(sysentry.emulators[n].core);
             }
         }
-    }
+    } */
 }
 
 } // namespace model

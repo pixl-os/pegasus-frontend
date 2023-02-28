@@ -17,9 +17,6 @@
 
 #include "Game.h"
 
-#include "model/gaming/Assets.h"
-#include "model/gaming/GameFile.h"
-
 #include "providers/SearchContext.h"
 #include "providers/retroachievements/RetroAchievementsMetadata.h"
 

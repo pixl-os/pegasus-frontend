@@ -90,7 +90,8 @@ model::Game* SearchContext::create_game_for(model::Collection& collection)
     //set collection during creation now
     //(*game_ptr).setCollection(&collection);
 
-    (*game_ptr)
+	//tentative to reduce quantity of data recopied by games to improve performance during loading of games and memory usage
+    /*(*game_ptr)
         .setLaunchCmd(collection.commonLaunchCmd())
         .setLaunchWorkdir(collection.commonLaunchWorkdir())
         .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir())
@@ -113,7 +114,7 @@ model::Game* SearchContext::create_game_for(model::Collection& collection)
             (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
             (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core);
         }
-    }
+    }*/
 
     m_collection_games[&collection].emplace_back(game_ptr);
 

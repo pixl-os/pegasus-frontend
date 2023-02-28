@@ -21,8 +21,10 @@
 #include <QDateTime>
 #include <QStringList>
 
-//add here to access collections information from c++
+//add here to access Assets/Collection/GameFile information from Game class also
+#include "model/gaming/Assets.h"
 #include "model/gaming/Collection.h"
+#include "model/gaming/GameFile.h"
 
 namespace model { class Assets; }
 namespace model { class GameFile; }
@@ -72,18 +74,20 @@ struct GameData {
 
     bool is_favorite = false;
 
-    struct LaunchParams {
+    //depreacted - to clean after test
+    //we want to use ones from collections now
+    /*struct LaunchParams {
         QString launch_cmd;
         QString launch_workdir;
         QString relative_basedir; // TODO: check if needed
         QString system_shortname;
         QString emulator_name;
         QString emulator_core;
-    } launch_params;
-	
-	QList <RetroAchievement> retro_achievements;
-	int ra_game_id = 0;
-	QString ra_hash = 0;
+    } launch_params;*/
+
+    QList <RetroAchievement> retro_achievements;
+    int ra_game_id = 0;
+    QString ra_hash = 0;
 };
 
 
@@ -122,19 +126,15 @@ public:
     GETTER(const QList<RetroAchievement> &, retroAchievements, m_data.retro_achievements)
     GETTER(int, RaGameID, m_data.ra_game_id)
     GETTER(const QString&, RaHash, m_data.ra_hash)
-	
-    
-    GETTER(const QString&, launchCmd, m_data.launch_params.launch_cmd)
-    GETTER(const QString&, launchWorkdir, m_data.launch_params.launch_workdir)
-    GETTER(const QString&, launchCmdBasedir, m_data.launch_params.relative_basedir)
-    GETTER(const QString&, systemShortName, m_data.launch_params.system_shortname)
-    GETTER(const QString&, emulatorName, m_data.launch_params.emulator_name)
-    GETTER(const QString&, emulatorCore, m_data.launch_params.emulator_core)
 
     //new way using collection to access information from GETTER
     GETTER(const QString&, systemManufacturer, m_collections->get(0)->manufacturer())
-
-
+    GETTER(const QString&, systemShortName, m_collections->get(0)->shortName())
+    GETTER(const QString&, launchCmd, m_collections->get(0)->commonLaunchCmd())
+    GETTER(const QString&, launchWorkdir, m_collections->get(0)->commonLaunchWorkdir())
+    GETTER(const QString&, launchCmdBasedir, m_collections->get(0)->commonLaunchCmdBasedir())
+    GETTER(const QString&, emulatorName, "to do")
+    GETTER(const QString&, emulatorCore, "to do")
 #undef GETTER
 
 
@@ -152,12 +152,13 @@ public:
     SETTER(int, PlayerCount, player_count)
     SETTER(float, Rating, rating)
 
-    SETTER(QString, LaunchCmd, launch_params.launch_cmd)
+	//no need setter - depreacated
+    /*SETTER(QString, LaunchCmd, launch_params.launch_cmd)
     SETTER(QString, LaunchWorkdir, launch_params.launch_workdir)
     SETTER(QString, LaunchCmdBasedir, launch_params.relative_basedir)
     SETTER(QString, SystemShortname, launch_params.system_shortname)
     SETTER(QString, EmulatorName, launch_params.emulator_name)
-    SETTER(QString, EmulatorCore, launch_params.emulator_core)
+    SETTER(QString, EmulatorCore, launch_params.emulator_core)*/
 
 	SETTER(int, RaGameID, ra_game_id)
 	SETTER(QString, RaHash, ra_hash)
