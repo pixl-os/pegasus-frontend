@@ -27,6 +27,9 @@
 
 #include <QtConcurrent/QtConcurrent>
 
+//For recalbox
+#include "RecalboxConf.h"
+
 
 namespace {
 QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
@@ -75,6 +78,60 @@ Game& Game::setFavorite(bool new_val)
     m_data.is_favorite = new_val;
     emit favoriteChanged();
     return *this;
+}
+
+const QString Game::getEmulatorName() const
+{
+    QString shortname = m_collections->get(0)->shortName();
+    QString emulator = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".emulator").toUtf8().constData()));
+    //TO DO: add also case when we search emulator if set by game
+    if(emulator == "")
+    {
+        //to take into account priority=1 as default emulator and core
+        int first_priority = 0;
+        for (int n = 0;n < m_collections->commonEmulators().count(); n++)
+        {
+            //if only one or to initialize with one value
+            if (n == 0)
+            {
+                first_priority = m_collections->commonEmulators()[n].priority;
+                emulator = m_collections->commonEmulators()[n].name;
+            }
+            else if(first_priority > m_collections->commonEmulators()[n].priority) //else we check if previous priority is lower (but number is higher ;-)
+            {
+                first_priority = m_collections->commonEmulators()[n].priority;
+                emulator = m_collections->commonEmulators()[n].name;
+            }
+        }
+    }
+    return emulator;
+}
+
+const QString Game::getEmulatorCore() const
+{
+    QString shortname = m_collections->get(0)->shortName();
+    QString core = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".core").toUtf8().constData()));
+    //TO DO: add also case when we search core if set by game
+    if(core == "")
+    {
+        //to take into account priority=1 as default emulator and core
+        int first_priority = 0;
+        for (int n = 0;n < m_collections->commonEmulators().count(); n++)
+        {
+            //if only one or to initialize with one value
+            if (n == 0)
+            {
+                first_priority = m_collections->commonEmulators()[n].priority;
+                core = m_collections->commonEmulators()[n].core;
+            }
+            else if(first_priority > m_collections->commonEmulators()[n].priority) //else we check if previous priority is lower (but number is higher ;-)
+            {
+                first_priority = m_collections->commonEmulators()[n].priority;
+                core = m_collections->commonEmulators()[n].core;
+            }
+        }
+    }
+    return core;
 }
 
 void Game::onEntryPlayStatsChanged()

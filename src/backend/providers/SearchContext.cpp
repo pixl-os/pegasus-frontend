@@ -195,15 +195,16 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
     m_collection_games[&collection].emplace_back(&game);
     VEC_REMOVE_VALUE(m_parentless_games, &game);
 
-    if (game.launchCmd().isEmpty())
+    /*if (game.launchCmd().isEmpty())
         game.setLaunchCmd(collection.commonLaunchCmd());
     if (game.launchWorkdir().isEmpty())
         game.setLaunchWorkdir(collection.commonLaunchWorkdir());
     if (game.launchCmdBasedir().isEmpty())
         game.setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
     if (game.systemShortName().isEmpty())
-        game.setSystemShortname(collection.shortName());
-    if (game.emulatorName().isEmpty() || game.emulatorCore().isEmpty())
+        game.setSystemShortname(collection.shortName());*/
+
+    /*if (game.emulatorName().isEmpty() || game.emulatorCore().isEmpty())
     {
         //for to take into account priority=1 as default emulator and core
         int first_priority = 0;
@@ -223,7 +224,7 @@ SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& 
                 game.setEmulatorCore(collection.commonEmulators()[n].core);
             }
         }
-    }
+    }*/
         
     return *this;
 }

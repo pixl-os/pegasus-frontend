@@ -115,8 +115,9 @@ HashMap<QString, model::Game*> Gamelist::find_in(
 
         (*game_ptr)
             .setTitle(title)
-            .setSortBy(title)
-            .setLaunchCmd(steam_call % QLatin1String(" steam://rungameid/") % appid);
+            .setSortBy(title);
+            //deprecated
+            //.setLaunchCmd(steam_call % QLatin1String(" steam://rungameid/") % appid);
 
         result.emplace(appid, game_ptr);
     }
