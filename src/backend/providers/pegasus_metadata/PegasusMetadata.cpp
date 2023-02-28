@@ -391,13 +391,16 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
             }
             break;
         case GameAttrib::LAUNCH_CMD:
-            ps.cur_game->setLaunchCmd(metafile::merge_lines(entry.values));
+            //deprecated
+            //ps.cur_game->setLaunchCmd(metafile::merge_lines(entry.values));
             break;
         case GameAttrib::LAUNCH_WORKDIR:
-            ps.cur_game->setLaunchWorkdir(first_line_of(ps, entry));
+            //deprecated
+            //ps.cur_game->setLaunchWorkdir(first_line_of(ps, entry));
             break;
         case GameAttrib::SORT_BY:
-            ps.cur_game->setSortBy(first_line_of(ps, entry));
+            //deprecated
+            //ps.cur_game->setSortBy(first_line_of(ps, entry));
             break;
     }
 }
@@ -493,7 +496,8 @@ void Metadata::apply_entry(ParserState& ps, const metafile::Entry& entry, Search
     if (entry.key == m_primary_key_game) {
         ps.cur_game = sctx.create_game();
         ps.cur_game->setTitle(first_line_of(ps, entry));
-        ps.cur_game->setLaunchCmdBasedir(ps.dir.path());
+        //deprecated
+        //ps.cur_game->setLaunchCmdBasedir(ps.dir.path());
 
         // Add to the ones found so far
         for (model::Collection* const coll : ps.all_colls)

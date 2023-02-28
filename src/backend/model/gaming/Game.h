@@ -133,8 +133,8 @@ public:
     GETTER(const QString&, launchCmd, m_collections->get(0)->commonLaunchCmd())
     GETTER(const QString&, launchWorkdir, m_collections->get(0)->commonLaunchWorkdir())
     GETTER(const QString&, launchCmdBasedir, m_collections->get(0)->commonLaunchCmdBasedir())
-    GETTER(const QString&, emulatorName, "to do")
-    GETTER(const QString&, emulatorCore, "to do")
+    GETTER(const QString, emulatorName, getEmulatorName())
+    GETTER(const QString, emulatorCore, getEmulatorCore())
 #undef GETTER
 
 
@@ -152,7 +152,7 @@ public:
     SETTER(int, PlayerCount, player_count)
     SETTER(float, Rating, rating)
 
-	//no need setter - depreacated
+    //no need setter - deprecated
     /*SETTER(QString, LaunchCmd, launch_params.launch_cmd)
     SETTER(QString, LaunchWorkdir, launch_params.launch_workdir)
     SETTER(QString, LaunchCmdBasedir, launch_params.relative_basedir)
@@ -254,6 +254,8 @@ private:
     Assets* assetsPtr() const { return m_assets; }
     Collection* collectionPtr() const { return m_collections; }
 
+    const QString getEmulatorName() const;
+    const QString getEmulatorCore() const;
 
 signals:
     void launchFileSelectorRequested();

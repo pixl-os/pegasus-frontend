@@ -142,8 +142,9 @@ Provider& LutrisProvider::run(SearchContext& sctx)
         }
         model::Game& game = *game_ptr;
 
-        game.setTitle(title)
-            .setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
+        game.setTitle(title);
+            //deprecated
+            //.setLaunchCmd(QLatin1String("lutris rungameid/") + id_str);
 
         find_banner_for(game, slug, base_path_banners);
         find_coverart_for(game, slug, base_path_coverart);

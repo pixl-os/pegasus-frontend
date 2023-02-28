@@ -166,9 +166,10 @@ HashMap<QString, model::Game*> register_game_entries(
         }
 
         (*game_ptr)
-            .setTitle(gogentry.name)
-            .setLaunchCmd(::utils::escape_command(gogentry.launch_cmd))
-            .setLaunchWorkdir(gogentry.workdir);
+            .setTitle(gogentry.name);
+            //depprecated
+            //.setLaunchCmd(::utils::escape_command(gogentry.launch_cmd))
+            //.setLaunchWorkdir(gogentry.workdir);
 
         if (!gogentry.id.isEmpty())
             gogid_map.emplace(gogentry.id, game_ptr);
