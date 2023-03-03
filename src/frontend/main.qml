@@ -1411,8 +1411,14 @@ Window {
     }
 
     function pegasusReloadTheme(){
+        //unload theme
         content.source = "";
+        //clear qml cache
         api.internal.meta.clearQMLCache();
+        //clear javascript garbage collector
+        gc();
+        api.internal.system.run("sleep 1");
+        //reload theme
         content.source = Qt.binding(getThemeFile);
     }
     //***********************************************************END OF GENERIC FUNCTIONS ACCESSIBLE ALSO FOR THEMES***************************************************************

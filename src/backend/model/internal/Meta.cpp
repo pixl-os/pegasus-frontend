@@ -61,6 +61,11 @@ void Meta::clearQMLCache()
     emit qmlClearCacheRequested();
 }
 
+void Meta::trimQMLCache()
+{
+    Log::info(LOGMSG("Optimize the frontend cache..."));
+    emit qmlTrimCacheRequested();
+}
 void Meta::onSearchProgressChanged(float value, QString stage)
 {
     //Q_ASSERT(value <= 1.f);

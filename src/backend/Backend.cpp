@@ -206,9 +206,13 @@ Backend::Backend(const CliArgs& args, char** environment)
                      m_frontend, &FrontendLayer::rebuild);
 
 
-    // partial QML reload
+    // to reset QML cache
     QObject::connect(&m_api->internal().meta(), &model::Meta::qmlClearCacheRequested,
                      m_frontend, &FrontendLayer::clearCache);
+
+    // to optimize QML cache
+    QObject::connect(&m_api->internal().meta(), &model::Meta::qmlTrimCacheRequested,
+                     m_frontend, &FrontendLayer::trimCache);
 
     // quit/reboot/restart/shutdown request
     QObject::connect(&m_api->internal().system(), &model::System::appCloseRequested, on_app_close);

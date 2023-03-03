@@ -54,6 +54,7 @@ public:
 public:
     Q_INVOKABLE void resetLoadingState();
     Q_INVOKABLE void clearQMLCache();
+    Q_INVOKABLE void trimQMLCache();
 
     bool isLoading() const { return m_loading; }
     QString loadingStage() const { return m_loading_stage; }
@@ -69,6 +70,7 @@ signals:
     void loadingProgressChanged();
 
     void qmlClearCacheRequested();
+    void qmlTrimCacheRequested();
 
 private:
     static const QString m_git_revision;
