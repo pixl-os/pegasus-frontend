@@ -40,6 +40,7 @@ public:
     void teardown();
 
     void clearCache();
+    void trimCache();
 
 signals:
     void rebuildComplete();

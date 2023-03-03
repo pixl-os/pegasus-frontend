@@ -99,3 +99,9 @@ void FrontendLayer::clearCache()
     Q_ASSERT(m_engine);
     m_engine->clearComponentCache();
 }
+
+void FrontendLayer::trimCache()
+{
+    Q_ASSERT(m_engine);
+    m_engine->trimComponentCache();
+}
