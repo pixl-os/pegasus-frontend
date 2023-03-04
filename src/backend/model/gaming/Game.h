@@ -74,17 +74,6 @@ struct GameData {
 
     bool is_favorite = false;
 
-    //depreacted - to clean after test
-    //we want to use ones from collections now
-    /*struct LaunchParams {
-        QString launch_cmd;
-        QString launch_workdir;
-        QString relative_basedir; // TODO: check if needed
-        QString system_shortname;
-        QString emulator_name;
-        QString emulator_core;
-    } launch_params;*/
-
     QList <RetroAchievement> retro_achievements;
     int ra_game_id = 0;
     QString ra_hash = 0;
@@ -140,7 +129,6 @@ public:
 
 #define SETTER(type, name, field) \
     Game& set##name(type val) { m_data.field = std::move(val); return *this; }
-
     Game& setTitle(QString);
     SETTER(QString, SortBy, sort_by)
     SETTER(QString, Summary, summary)
@@ -151,19 +139,9 @@ public:
     SETTER(QDate, ReleaseDate, release_date)
     SETTER(int, PlayerCount, player_count)
     SETTER(float, Rating, rating)
-
-    //no need setter - deprecated
-    /*SETTER(QString, LaunchCmd, launch_params.launch_cmd)
-    SETTER(QString, LaunchWorkdir, launch_params.launch_workdir)
-    SETTER(QString, LaunchCmdBasedir, launch_params.relative_basedir)
-    SETTER(QString, SystemShortname, launch_params.system_shortname)
-    SETTER(QString, EmulatorName, launch_params.emulator_name)
-    SETTER(QString, EmulatorCore, launch_params.emulator_core)*/
-
 	SETTER(int, RaGameID, ra_game_id)
 	SETTER(QString, RaHash, ra_hash)
 	SETTER(QList<RetroAchievement>, RetroAchievements, retro_achievements)
-	
     Game& setFavorite(bool val);
 #undef SETTER
 
@@ -173,13 +151,11 @@ public:
     QStringList& singular##List() { return m_data.field; } \
     Q_PROPERTY(QString singular READ singular##Str CONSTANT) \
     Q_PROPERTY(QStringList singular##List READ singular##ListConst CONSTANT)
-
     STRLIST(developer, developers)
     STRLIST(publisher, publishers)
     STRLIST(genre, genres)
     STRLIST(tag, tags)
 #undef GEN
-
 
     Q_PROPERTY(QString title READ title CONSTANT)
     Q_PROPERTY(QString sortTitle READ sortBy CONSTANT)
