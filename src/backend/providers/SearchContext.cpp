@@ -87,35 +87,6 @@ model::Game* SearchContext::create_game_for(model::Collection& collection)
 {
     auto* const game_ptr = new model::Game();
 
-    //set collection during creation now
-    //(*game_ptr).setCollection(&collection);
-
-	//tentative to reduce quantity of data recopied by games to improve performance during loading of games and memory usage
-    /*(*game_ptr)
-        .setLaunchCmd(collection.commonLaunchCmd())
-        .setLaunchWorkdir(collection.commonLaunchWorkdir())
-        .setLaunchCmdBasedir(collection.commonLaunchCmdBasedir())
-        .setSystemShortname(collection.shortName());
-
-
-    //for to take into account priority=1 (or lower value) as default emulator and core
-    int first_priority = 0;
-    for (int n = 0;n < collection.commonEmulators().count(); n++)
-    {
-        //if only one or to initialize with one value
-        if (n == 0)
-        {   first_priority = collection.commonEmulators()[n].priority; 
-            (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
-            (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core); 
-        }
-        else if(first_priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower (but number is higher ;-)
-        {
-            first_priority = collection.commonEmulators()[n].priority;
-            (*game_ptr).setEmulatorName(collection.commonEmulators()[n].name);
-            (*game_ptr).setEmulatorCore(collection.commonEmulators()[n].core);
-        }
-    }*/
-
     m_collection_games[&collection].emplace_back(game_ptr);
 
     return game_ptr;
@@ -193,39 +164,7 @@ model::GameFile* SearchContext::game_add_uri(model::Game& game, QString uri)
 SearchContext& SearchContext::game_add_to(model::Game& game, model::Collection& collection)
 {
     m_collection_games[&collection].emplace_back(&game);
-    VEC_REMOVE_VALUE(m_parentless_games, &game);
-
-    /*if (game.launchCmd().isEmpty())
-        game.setLaunchCmd(collection.commonLaunchCmd());
-    if (game.launchWorkdir().isEmpty())
-        game.setLaunchWorkdir(collection.commonLaunchWorkdir());
-    if (game.launchCmdBasedir().isEmpty())
-        game.setLaunchCmdBasedir(collection.commonLaunchCmdBasedir());
-    if (game.systemShortName().isEmpty())
-        game.setSystemShortname(collection.shortName());*/
-
-    /*if (game.emulatorName().isEmpty() || game.emulatorCore().isEmpty())
-    {
-        //for to take into account priority=1 as default emulator and core
-        int first_priority = 0;
-        for (int n = 0;n < collection.commonEmulators().count(); n++)
-        {
-            //if only one or to initialize with one value
-            if (n == 0)
-            {   
-                first_priority = collection.commonEmulators()[n].priority;  
-                game.setEmulatorName(collection.commonEmulators()[n].name);
-                game.setEmulatorCore(collection.commonEmulators()[n].core); 
-            }
-            else if(first_priority > collection.commonEmulators()[n].priority) //else we check if previous priority is lower (but number is higher ;-)
-            {
-                first_priority = collection.commonEmulators()[n].priority; 
-                game.setEmulatorName(collection.commonEmulators()[n].name);
-                game.setEmulatorCore(collection.commonEmulators()[n].core);
-            }
-        }
-    }*/
-        
+    VEC_REMOVE_VALUE(m_parentless_games, &game);    
     return *this;
 }
 
