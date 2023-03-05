@@ -289,6 +289,19 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optBiosChecking
+                    KeyNavigation.down: optVideoFiltrer
+                }
+                ToggleOption {
+                    id: optVideoFiltrer
+
+                    label: qsTr("Enabled redshift") + api.tr
+                    note: qsTr("Redshift adjusts the color temperature of your screen according to your surroundings.\nThis may help your eyes hurt less if you are working in front of the screen at night.\nPlease reboot after activate") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("system.video.redshift")
+                    onCheckedChanged: {
+                            api.internal.recalbox.setBoolParameter("system.video.redshift",checked);
+                    }
+
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optVideoDriver
                 }
                 ToggleOption {
