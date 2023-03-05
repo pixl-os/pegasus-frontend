@@ -1249,6 +1249,8 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         QString name = getName_by_path(JoystickDevicePath);
 
         QString fullname = getFullName_by_path(JoystickDevicePath);
+
+        QString layout = ""; //empty to start - need to be provided by es_input.cfg
         
         //Check if the given joystick is supported by the game controller interface.
         if (!SDL_IsGameController(device_idx))
@@ -1350,16 +1352,16 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         //*****************************************************************//
         //2) check es_input.cfg first about configuration already known !!!//
         //*****************************************************************//
-
-        //if no user mapping defined / else we do nothing because it seems a pad already configured by user
+        //check if any es_input.cfg record exists for the moment and for this GUID
+        //finally check if we already saved this configuration (same guid/same name)
+        providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
+        Log::debug(LOGMSG("providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(%1,%2)").arg(name, guid_str));
+        providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(name, guid_str);
+        //if no user mapping defined from sdl_controllers.txt / else we do nothing because it seems a pad already configured by user
         if (user_mapping == "")
         {
             std::string new_mapping;
             Log::debug(m_log_tag, LOGMSG("no mapping in sdl_controllers.txt for this controller"));
-            //check if any es_input.cfg record exists for this GUID
-            providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
-            //check if we already saved this configuration (same guid/same name)
-            providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(name, guid_str);
             //if nothing is in es_input with this name -> we search a second time with full name
             if ((inputConfigEntry.inputConfigAttributs.deviceName == "") && (fullname != name)){
                 inputConfigEntry = Provider->load_input_data(fullname, guid_str);
@@ -1429,11 +1431,15 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
             //to propose to configure or not the new controller
             emit newController(device_idx, fullname);
         }
-
+        //in all cases, get layout info from inputConfigEntry if exists, else it will be empty
+        layout = inputConfigEntry.inputConfigAttributs.deviceLayout;
+        Log::debug(LOGMSG("inputConfigEntry.inputConfigAttributs.deviceLayout : %1").arg(inputConfigEntry.inputConfigAttributs.deviceLayout));
+        Log::debug(LOGMSG("inputConfigEntry.inputConfigAttributs.deviceName : %1").arg(inputConfigEntry.inputConfigAttributs.deviceName));
         //****************************//
         //4) emit signal as connected //
         //****************************//
-        emit connected(device_idx, guid_str, fullname, JoystickDevicePath, iid); //device_idx = device_id when we connect device
+        //device_idx = device_id when we connect device
+        emit connected(device_idx, guid_str, fullname, JoystickDevicePath, layout, iid);
         }
     catch ( const std::exception & Exp ) 
     { 

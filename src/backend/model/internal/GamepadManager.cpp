@@ -96,9 +96,10 @@ GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
             this, &GamepadManager::bkOnNameChanged);
     connect(m_backend, &GamepadManagerBackend::indexChanged,
             this, &GamepadManager::bkOnIndexChanged);
+    connect(m_backend, &GamepadManagerBackend::layoutChanged,
+            this, &GamepadManager::bkOnLayoutChanged);
     connect(m_backend, &GamepadManagerBackend::removed,
             this, &GamepadManager::bkOnRemoved);
-
     connect(m_backend, &GamepadManagerBackend::buttonConfigured,
             this, &GamepadManager::bkOnButtonCfg);
     connect(m_backend, &GamepadManagerBackend::axisConfigured,
@@ -211,10 +212,11 @@ void GamepadManager::swap(int device_id1, int device_id2)
     } 
 }
 
-void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString device_name, QString device_path, int device_idd)
+void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString device_name, QString device_path, QString device_layout, int device_idd)
 {
-    if (device_name.isEmpty())
+    if (device_name.isEmpty()){
         device_name = QLatin1String("generic");
+    }
 	
 	//persistence saved in recalbox.conf
 	const QString Parameter = QString("pegasus.pad%1").arg(device_idx);
@@ -231,7 +233,7 @@ void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString 
 	//save in file immediately for test/follow-up purpose
 	RecalboxConf::Instance().Save();	
 
-    m_devices->append(new Gamepad(device_idx, device_name, device_idd, device_idx, m_devices)); //device_id equals to device_idx at connnection
+    m_devices->append(new Gamepad(device_idx, device_name, device_idd, device_idx, device_layout, m_devices)); //device_id equals to device_idx at connnection
 
     Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), device_name));
     
@@ -337,6 +339,22 @@ void GamepadManager::bkOnIndexChanged(int device_idx1, int device_idx2)
     { 
         Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
     } 
+}
+
+void GamepadManager::bkOnLayoutChanged(int device_id, QString layout)
+{
+    //Log::info(m_log_tag, LOGMSG("void GamepadManager::bkOnLayoutChanged(int device_id, QString layout)"));
+    try{
+        const auto it = find_by_deviceid(*m_devices, device_id);
+        if (it != m_devices->constEnd()) {
+            Log::debug(m_log_tag, LOGMSG("Set layout of device %1 to '%2'").arg(pretty_id(device_id), layout));
+            (*it)->setLayout(std::move(layout));
+        }
+    }
+    catch ( const std::exception & Exp )
+    {
+        Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
+    }
 }
 
 void GamepadManager::bkOnRemoved(int device_id)

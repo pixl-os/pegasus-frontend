@@ -54,10 +54,11 @@ FocusScope {
         //console.log("onGamepadChanged");
         //to force reload of Pad Preview when we change gamepad
         if(root.gamepad !== null){
-            //console.log("root.gamepad.name : ", root.gamepad.name);
+            console.log("root.gamepad.name : ", root.gamepad.name);
+            console.log("root.gamepad.deviceLayout : ", root.gamepad.deviceLayout);
             loaderPadPreview.enabled = false;
             loaderPadPreview.source = "";
-            loaderPadPreview.layoutIndex = layoutArea.getControllerLayoutIndex(root.gamepad.name);
+            loaderPadPreview.layoutIndex = layoutArea.getControllerLayoutIndex(root.gamepad.name,root.gamepad.deviceLayout);
             loaderPadPreview.source = myControllerLayout.get(loaderPadPreview.layoutIndex).qml;
             loaderPadPreview.enabled = true;
         }
@@ -1265,11 +1266,22 @@ FocusScope {
         }
 
         //function to dynamically set container layout from gamepad name
-        function getControllerLayoutIndex(controllerName) {
+        function getControllerLayoutIndex(controllerName,deviceLayout) {
             var layoutName = "";
             var layoutQml = "";
             let type = "controller";
             let i = 0;
+            if (deviceLayout !== ""){
+                //to get the one proposed from gamepad es_input.cfg deviceLayout if not empty
+                for(var l = 0; l < myControllerLayout.count;l++)
+                {
+                    if(myControllerLayout.get(l).name === deviceLayout){
+                        layoutQml = myControllerLayout.get(l).qml;
+                        return l;
+                    }
+                }
+                //if nothing found, we will search from name
+            }
             //split name that could contain the name + hid name separated by ' - '
             const names = controllerName.split(" - ");
             if(names.length >= 2){
