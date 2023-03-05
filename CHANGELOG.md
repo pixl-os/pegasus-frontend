@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix on emulator configuration to well display emulator and core names
 	- fix to accept core/emulator without version and to well display it in menu
 	- remove 'sortfilterproxymodel' submodule as remote one to have it locally and simplify maintenance
-
+	- remove recopy of data from collections to games for optimization
+	- improvement of caches for qml and js
 
 - Features:
 	- add display in GB for online update >= than 1024 Mo
