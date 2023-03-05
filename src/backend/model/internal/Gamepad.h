@@ -71,29 +71,33 @@ class Gamepad : public QObject {
     Q_PROPERTY(int deviceId READ deviceId NOTIFY idChanged) //position in Gamepad #?
     Q_PROPERTY(int deviceInstance READ deviceInstance NOTIFY instanceChanged) //SDL instance
     Q_PROPERTY(int deviceIndex READ deviceIndex NOTIFY indexChanged) //SDL index (at connection and could change when any device is disconnected)
+    Q_PROPERTY(QString deviceLayout READ deviceLayout NOTIFY layoutChanged) //Gamepad layout
 
 public:
-    explicit Gamepad(int device_id, QString name, int device_idd, int device_idx, QObject* parent);
+    explicit Gamepad(int device_id, QString name, int device_idd, int device_idx, QString device_layout, QObject* parent);
 
     int deviceId() const { return m_device_id; } // as player id
     int deviceInstance() const { return m_device_iid; } // as sdl instance id
     int deviceIndex() const { return m_device_idx; } // as index of connection and change during deconnection
 
     const QString& name() const { return m_name; }
+    const QString& deviceLayout() const { return m_device_layout; }
 
     void setName(QString);
     void setId(int);
     void setInstance(int);
     void setIndex(int);
+    void setLayout(QString);
     void setButtonState(GamepadButton, bool);
     void setAxisState(GamepadAxis, double);
 
 signals:
     // NOTE: moc can't handle signals in preprocessor code
     void nameChanged(QString);
+    void idChanged(int);
     void instanceChanged(int);
     void indexChanged(int);
-    void idChanged(int);
+    void layoutChanged(QString);
 
     void buttonUpChanged(bool);
     void buttonDownChanged(bool);
@@ -126,5 +130,6 @@ private:
     QString m_name;
     int m_device_iid;
     int m_device_idx;
+    QString m_device_layout;
 };
 } // namespace model
