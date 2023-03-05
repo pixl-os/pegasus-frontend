@@ -50,6 +50,8 @@ struct inputConfigAttribut {
     QString deviceNbAxes;
     QString deviceNbHats;
     QString deviceNbButtons;
+    //to manage layout at input config level
+    QString deviceLayout;
 };
 
 struct inputAttribut {
