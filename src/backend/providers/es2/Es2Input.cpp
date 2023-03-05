@@ -49,6 +49,8 @@ providers::es2::inputConfigEntry find_any_input_entry_by_guid(const QString& log
                 inputConfigEntry.inputConfigAttributs.deviceNbAxes = xml.attributes().value("deviceNbAxes").toString();
                 inputConfigEntry.inputConfigAttributs.deviceNbHats = xml.attributes().value("deviceNbHats").toString();
                 inputConfigEntry.inputConfigAttributs.deviceNbButtons = xml.attributes().value("deviceNbButtons").toString();
+                //device layout (optional)
+                inputConfigEntry.inputConfigAttributs.deviceLayout = xml.attributes().value("deviceLayout").toString();
                 while (xml.readNextStartElement()){
                     if (xml.name() == "input"){
                         inputConfigEntry.inputElements.append({ xml.attributes().value("name").toString()
@@ -97,6 +99,8 @@ providers::es2::inputConfigEntry find_input_entry(const QString& log_tag, QXmlSt
                 inputConfigEntry.inputConfigAttributs.deviceNbAxes = xml.attributes().value("deviceNbAxes").toString();
                 inputConfigEntry.inputConfigAttributs.deviceNbHats = xml.attributes().value("deviceNbHats").toString();
                 inputConfigEntry.inputConfigAttributs.deviceNbButtons = xml.attributes().value("deviceNbButtons").toString();
+                //device layout (optional)
+                inputConfigEntry.inputConfigAttributs.deviceLayout = xml.attributes().value("deviceLayout").toString();
                 while (xml.readNextStartElement()){
                     if (xml.name() == "input"){
                         inputConfigEntry.inputElements.append({ xml.attributes().value("name").toString()
@@ -184,6 +188,11 @@ bool add_input_entry(const QString& log_tag, QFile& xml_file, const providers::e
     deviceNbButtons.setValue(input_to_save.inputConfigAttributs.deviceNbButtons);
     inputConfig.setAttributeNode(deviceNbButtons);
     
+    //device layout (optional)
+    QDomAttr deviceLayout = doc.createAttribute(QString("deviceLayout"));
+    deviceLayout.setValue(input_to_save.inputConfigAttributs.deviceLayout);
+    inputConfig.setAttributeNode(deviceLayout);
+
     for (int idx = 0; idx < input_to_save.inputElements.size(); idx++) {
         QDomElement input = doc.createElement(QString("input"));
         
@@ -306,6 +315,11 @@ bool update_input_entry(const QString& log_tag, QFile& xml_file, const providers
     QDomAttr deviceNbButtons = doc.createAttribute(QString("deviceNbButtons"));
     deviceNbButtons.setValue(input_to_save.inputConfigAttributs.deviceNbButtons);
     inputConfig.setAttributeNode(deviceNbButtons);
+
+    //device layout (optional)
+    QDomAttr deviceLayout = doc.createAttribute(QString("deviceLayout"));
+    deviceLayout.setValue(input_to_save.inputConfigAttributs.deviceLayout);
+    inputConfig.setAttributeNode(deviceLayout);
     
     for (int idx = 0; idx < input_to_save.inputElements.size(); idx++) {
         QDomElement input = doc.createElement(QString("input"));
