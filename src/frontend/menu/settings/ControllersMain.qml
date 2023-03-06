@@ -205,7 +205,7 @@ FocusScope {
                             id: deviceIcon
 
                             color: themeColor.textLabel
-                            text : getIcon(modelData.name,"");
+                            text : modelData.deviceLayout !== "" ? getIcon(modelData.deviceLayout,"") : getIcon(modelData.name,"");
                             font.pixelSize: (parent.fontSize)*getIconRatio(deviceIcon.text)*0.9
                             font.family: getIconFont
 

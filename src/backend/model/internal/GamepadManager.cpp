@@ -238,8 +238,7 @@ void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString 
     Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), device_name));
     
     //showpopup for 4 seconds by default
-    //Depreacated, removing of icon setting at this step: emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
-    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(device_name),QStringLiteral("%1").arg(""), 4);
+    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(device_name),QStringLiteral("%1").arg(device_layout), 4);
 }
 
 void GamepadManager::bkOnDisconnected(int device_iid)
@@ -250,23 +249,24 @@ void GamepadManager::bkOnDisconnected(int device_iid)
         QString name;
         int device_id;
         int device_idx;
+        QString device_layout;
 
-        Log::info(m_log_tag, LOGMSG("Disconnected device from iid: %1").arg(pretty_id(device_iid)));
+        //Log::info(m_log_tag, LOGMSG("Disconnected device from iid: %1").arg(pretty_id(device_iid)));
         const auto it = find_by_deviceiid(*m_devices, device_iid);
 		if (it != m_devices->constEnd()) {
             name = (*it)->name();
 			device_id = (*it)->deviceId();
             device_idx = (*it)->deviceIndex();
-            Log::info(m_log_tag, LOGMSG("Disconnected device from id: %1 (%2)").arg(pretty_id(device_id), name));
-            Log::info(m_log_tag, LOGMSG("Disconnected device from index: %1 (%2)").arg(pretty_id(device_idx), name));
+            device_layout = (*it)->deviceLayout();
+            //Log::info(m_log_tag, LOGMSG("Disconnected device from id: %1 (%2)").arg(pretty_id(device_id), name));
+            //Log::info(m_log_tag, LOGMSG("Disconnected device from index: %1 (%2)").arg(pretty_id(device_idx), name));
 
             //finally, remove device independently in a second time
             //to remove in model::gamepad and in recalbox.conf
             bkOnRemoved(device_id);
 
             //showpopup for 4 seconds by default
-            //Depreacted to set icon here: emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_id)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(getIconByName(name)), 4);
-            emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(""), 4);
+            emit showPopup(QStringLiteral("Device %1 disconnected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(name),QStringLiteral("%1").arg(device_layout), 4);
             }
     }
     catch ( const std::exception & Exp ) 

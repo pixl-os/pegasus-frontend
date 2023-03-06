@@ -555,6 +555,7 @@ Window {
             genericMessage.focus = true;
         }
         function onShowPopup(title,message,icon,delay) {
+            //icon could be empty, with a icon code or with a reference to any layout
             //init parameters
             popup.title = title;
             popup.message = message;
@@ -567,8 +568,16 @@ Window {
                 popup.iconfont = getIconFont;
             }
             else {
-                popup.icon = icon;
-                popup.iconfont = globalFonts.sans; //default font
+                //if hexa code including "\u"
+                if(icon.toLowerCase().includes("\\u")){
+                  popup.icon = icon;
+                  popup.iconfont = globalFonts.sans; //default font
+                }
+                else{
+                    //we have to search icon using sentence or layout keyword as "ps5", "ps4", "nes", etc...
+                    popup.icon = getIcon(icon,"");
+                    popup.iconfont = getIconFont;
+                }
             }
             //delay provided in second and interval is in ms
             popupDelay.interval = delay * 1000;
@@ -1364,6 +1373,21 @@ Window {
         var icon = "";
         let type = "";
         let i = 0;
+        //search icon from name equal to layout value
+        do{
+            const layout = myDeviceIcons.get(i).layout;
+            if(layout === name){
+                icon = myDeviceIcons.get(i).icon;
+                if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
+                else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
+                else getIconFont = globalFonts.sans; //as default one for the moment
+            }
+            i = i + 1;
+        }while (icon === "" && i < myDeviceIcons.count)
+        //check if any icon has been found
+        if(icon !== "") return icon;
+        //reset counter
+        i = 0;
         //search the good type
         do{
             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
