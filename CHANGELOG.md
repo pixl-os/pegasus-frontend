@@ -16,6 +16,9 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add display in GB for online update >= than 1024 Mo
 	- add new way to have "system manufacturer" from game object (as from collections)
 	- add filtering by array of indexes from 'sortfilterproxymodel' to help filtering/caching for 'MyCollections' from gameOS-pixL
+	- manage 'deviceLayout' parameter from es_input.cfg to force layout usage by GUID but also for icons (except in bluetooth interface where it's not yet possible)
+	- add icon for ps5 controllers
+	- refine icons affectation for xbox360, ps5 and xbox
 
 ## [pixL-master] - 2023-01-21 - v0.1.1
 - Features:
