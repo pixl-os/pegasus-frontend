@@ -418,7 +418,8 @@ FocusScope {
                     KeyNavigation.down: optXboxOneControllers
 
                 }
-                SectionTitle {
+                // Section deactivated from removing xow - keep code to easily reactivate if needed
+                /*SectionTitle {
                     text: qsTr("Xbox One/Series controllers") + api.tr
                     first: true
                     symbol:"\uf34c"
@@ -446,7 +447,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.xow.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                }
+                }*/
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
