@@ -67,14 +67,22 @@ FocusScope {
     signal requestShutdown
     signal requestReboot
     signal requestRestart
+    signal requestRebootForSettings
+    signal requestRestartForSettings
     signal requestQuit
 
     Keys.onPressed: {
-        if (event.isAutoRepeat)
-            return;
-
-        if (api.keys.isCancel(event) || api.keys.isMenu(event)) {
+        if ((api.keys.isCancel(event) || api.keys.isMenu(event)) && !event.isAutoRepeat) {
             event.accepted = true;
+            if(needReboot === true){
+                requestRebootForSettings();
+            }
+            else if(needRestart === true){
+                requestRestartForSettings();
+            }
+            //reset flags
+            needReboot = false;
+            needRestart = false;
             root.close();
         }
     }
