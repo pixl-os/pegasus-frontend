@@ -35,6 +35,9 @@ Window {
 
     visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
+    //Flags to know if any parameter needing reboot or restart
+    property bool needReboot : false
+    property bool needRestart : false
     //Flag to know if we load from start/restart of pegasus or from ending of game session
     property bool loadingState : false
     //for debug reason on QT creator to know if we are or not on a real recalbox/pixl
@@ -354,11 +357,23 @@ Window {
                 powerDialog.focus = true;
             }
             function onRequestReboot() {
-                powerDialog.source = "dialogs/RebootDialog.qml"
+                powerDialog.source = "dialogs/RebootDialog.qml";
+                powerDialog.item.message = qsTr("The system will reboot. Are you sure?");
                 powerDialog.focus = true;
             }
             function onRequestRestart() {
-                powerDialog.source = "dialogs/RestartDialog.qml"
+                powerDialog.source = "dialogs/RestartDialog.qml";
+                powerDialog.item.message = qsTr("Pegasus will restart. Are you sure?");
+                powerDialog.focus = true;
+            }
+            function onRequestRebootForSettings() {
+                powerDialog.source = "dialogs/RebootDialog.qml";
+                powerDialog.item.message = qsTr("Parameter(s) changed - the system needs to reboot to take into account.\nAre you sure?");
+                powerDialog.focus = true;
+            }
+            function onRequestRestartForSettings() {
+                powerDialog.source = "dialogs/RestartDialog.qml";
+                powerDialog.item.message = qsTr("Parameter(s) changed - Pegasus needs to restart to take into account.\nAre you sure?");
                 powerDialog.focus = true;
             }
             function onRequestQuit() {

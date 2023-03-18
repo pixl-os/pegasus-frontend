@@ -26,6 +26,8 @@ FocusScope {
     signal requestShutdown()
     signal requestReboot()
 	signal requestRestart()
+    signal requestRebootForSettings()
+    signal requestRestartForSettings()
     signal requestQuit()
 
     function triggerClose() {
@@ -101,6 +103,8 @@ FocusScope {
         onRequestShutdown: root.requestShutdown()
         onRequestReboot: root.requestReboot()
 		onRequestRestart: root.requestRestart()
+        onRequestRebootForSettings: root.requestRebootForSettings()
+        onRequestRestartForSettings: root.requestRestartForSettings()
         onRequestQuit: root.requestQuit()
     }
 
