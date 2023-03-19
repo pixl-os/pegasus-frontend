@@ -613,18 +613,18 @@ FocusScope {
     function getBatteryStatus(macaddress){
         var result = "";
         var batteryName = "";
-		//check if any battery exists for the existing macaddress
-		//first method
+
+        //FIRST METHOD: by battery name including macaddress
+        //check if any battery exists for the existing macaddress
         //console.log("command : ","ls '/sys/class/power_supply/' | grep -i " + macaddress + uniqueCleanLineCommand());
         batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i " + macaddress + uniqueCleanLineCommand());
 
         //Only for test purpose in QT creator
         //if (isDebugEnv()) batteryName = "BAT0";
-
         //console.log("batteryName : ",batteryName,"For",macaddress)
 
+        //SECOND METHOD: for nintendo ones for exemple using hdev
         if((batteryName === "") && !isDebugEnv()){
-            //second method: for nintendo ones for exemple using hdev
             //console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
             var firstPart = api.internal.system.run("bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
             //console.log("command : ","bluetoothctl info " + macaddress + " |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}' | tr -d '\\n' | tr -d '\\r'");
@@ -634,16 +634,36 @@ FocusScope {
                 batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
             }
         }
+        //SECOND METHOD but for Ubuntu case: for nintendo ones for exemple using hdev
         else if((batteryName === "") && isDebugEnv()){
-            //method for Ubuntu: for nintendo ones for exemple using hdev
             var firstPart = api.internal.system.run("timeout 2 echo -e 'info " + macaddress + "' | bluetoothctl |grep -i 'modalias'  | awk -v FS='(v|p)' '{print $2}' | tr -d '\\n' | tr -d '\\r'");
             var secondPart = api.internal.system.run("timeout 2 echo -e 'info " + macaddress + "' | bluetoothctl |grep -i 'modalias'  | awk -v FS='(p|d)' '{print $3}' | tr -d '\\n' | tr -d '\\r'");
             if(firstPart !== "" && secondPart !== ""){
                 //console.log("command : ","ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
                 batteryName = api.internal.system.run("ls '/sys/class/power_supply/' | grep -i '" + firstPart + ":" + secondPart + "'" + uniqueCleanLineCommand());
             }
-
         }
+        //THIRD METHOD: searching device mac reference as for xbox one/series using xone
+        if(batteryName === ""){
+            //list all batteries
+            var batteriesList= api.internal.system.run("ls /sys/class/power_supply/ -a | cat");
+            const batteriesTable = batteriesList.split("\n");
+            //for all batteries
+            for(var i = 0;i < batteriesTable.length ; i++){
+                if (batteriesTable[i] !== "" && batteriesTable[i] !== "." && batteriesTable[i] !== ".."){
+                    //console.log("directories found : ", batteriesTable[i]);
+                    //check if macaddress is there
+                    //1) search mac adress from uevent
+                    var macaddressFound = "";
+                    macaddressFound = api.internal.system.run("cat '/sys/class/power_supply/" + batteriesTable[i] + "/device/uevent' | grep -i " + macaddress + " " + uniqueCleanLineCommand());
+                    if(macaddressFound !== "") {
+                        batteryName = batteriesTable[i];
+                        break; //to exit for
+                    }
+                }
+            }
+        }
+
 
 		if(batteryName !== ""){
 			//search method to know battery capacity
