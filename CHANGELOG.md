@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file (focus on ch
 	- remove 'sortfilterproxymodel' submodule as remote one to have it locally and simplify maintenance
 	- remove recopy of data from collections to games for optimization
 	- improvement of caches for qml and js
+	- menu section deactivated from removing xow
+	- improve methods to check battery capacity since xow/xpadneo integration
+	- fix to display better the icon used for xbox one/series controllers
 
 - Features:
 	- add display in GB for online update >= than 1024 Mo
