@@ -94,8 +94,8 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 	QJsonDocument json = QJsonDocument::fromJson(raw_data);
 	if (json.isNull()) {
 		Log::warning(log_tag, LOGMSG(
-			   "Failed to parse the response of the server, "
-			   "either it's no longer available from https://retroachievements.org/ or the API has changed"));
+                         "Failed to parse the response of the server, "
+                         "either it's no longer available from %1 or the API has changed").arg(url_str));
 		return QJsonDocument();
 	}	
 	return json;
