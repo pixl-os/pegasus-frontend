@@ -21,10 +21,13 @@
 #include "ScriptRunner.h"
 #include "parsers/SettingsFile.h"
 
-#include "providers/pegasus_favorites/Favorites.h"
 #include "providers/pegasus_media/MediaProvider.h"
 #include "providers/pegasus_metadata/PegasusProvider.h"
+
+#include "providers/pegasus_favorites/Favorites.h"
 #include "providers/pegasus_playtime/PlaytimeStats.h"
+#include "providers/retroachievements/RetroAchievementsProvider.h"
+
 #ifdef WITH_COMPAT_ES2
   #include "providers/es2/Es2Provider.h"
 #endif
@@ -127,6 +130,7 @@ std::vector<std::unique_ptr<providers::Provider>> create_providers()
 #ifdef WITH_COMPAT_SKRAPER
         MKENTRY(skraper::SkraperAssetsProvider)
 #endif
+        MKENTRY(retroAchievements::RetroAchievementsProvider)
         MKENTRY(favorites::Favorites)
         MKENTRY(playtime::PlaytimeStats)
     out.shrink_to_fit();
