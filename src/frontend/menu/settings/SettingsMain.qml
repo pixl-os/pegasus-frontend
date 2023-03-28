@@ -295,13 +295,16 @@ FocusScope {
                     id: optVideoFiltrer
 
                     label: qsTr("Enabled redshift") + api.tr
-                    note: qsTr("Redshift adjusts the color temperature of your screen according to your surroundings.\nThis may help your eyes hurt less if you are working in front of the screen at night.\nPlease restart to be take into account") + api.tr
+                    note: qsTr("Redshift adjusts the color temperature of your screen according to your surroundings.\nThis may help your eyes hurt less if you are working in front of the screen at night.") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("system.video.redshift")
                     onCheckedChanged: {
                             if(checked !== api.internal.recalbox.getBoolParameter("system.video.redshift")){
                                 api.internal.recalbox.setBoolParameter("system.video.redshift",checked);
-                                //need to be restart to take change into account !
-                                needRestart = true;
+                                api.internal.recalbox.saveParameters();
+                                if(checked){
+                                    api.internal.system.run("/usr/bin/start_redshift.sh > /tmp/redshift.tmp");
+                                }
+                                else api.internal.system.run("killall redshift");
                             }
                     }
                     onFocusChanged: container.onFocus(this)
