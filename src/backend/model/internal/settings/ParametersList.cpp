@@ -173,7 +173,8 @@ QStringList GetParametersList(QString Parameter)
                 // set absolute path and extension for recalbox.conf
                 ListOfInternalValue.append(dir + '/' + subfile);
                 // remove file extension on menu
-                ListOfValue.append(relativedir + " - " + subfile.replace(filterext, ""));
+                ListOfValue.append(subfile.replace(filterext, ""));
+                //ListOfValue.append(relativedir + " - " + subfile.replace(filterext, ""));
             }
         }
     }
