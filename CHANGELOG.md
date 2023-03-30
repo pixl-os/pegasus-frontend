@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- improve methods to check battery capacity since xone/xpadneo integration
 	- fix to display better the icon used for xbox one/series controllers
 	- fix to change way to detect dualsense ps5 controller using new firmware to have a best display of icon in bluetooth menu
+	- Fix shaders list and retro/scanline option
 
 - Features:
 	- add display in GB for online update >= than 1024 Mo
