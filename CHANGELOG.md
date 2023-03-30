@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- manage 'deviceLayout' parameter from es_input.cfg to force layout usage by GUID but also for icons (except in bluetooth interface where it's not yet possible)
 	- add icon for ps5 controllers
 	- refine icons affectation for xbox360, ps5 and xbox
+	- Add redshift option 
 
 ## [pixL-master] - 2023-01-21 - v0.1.1
 - Features:
