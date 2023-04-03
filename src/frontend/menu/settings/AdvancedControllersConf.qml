@@ -113,7 +113,25 @@ FocusScope {
                     }
                     symbol: "\uf29a"
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optBluetoothAutopair
+                }
+                ToggleOption {
+                    id: optBluetoothAutopair
+                    //controllers.bluetooth.autopair=1 by default
+                    label: qsTr("Enable Auto pairing") + api.tr
+                    note: qsTr("Enable support of autopairing during 5 min after boot for bluetooth controllers.\nPlease reboot to apply change") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.autopair",true);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("controllers.bluetooth.autopair",true)){
+                            api.internal.recalbox.setBoolParameter("controllers.bluetooth.autopair",checked);
+                            //need to reboot to take change into account !
+                            needReboot = true;
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optBluetoothScanMethods
+                    visible: optBluetoothControllers.checked
                 }
                 MultivalueOption {
                     id: optBluetoothScanMethods
@@ -415,7 +433,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.joycond.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optXboxOneControllers
+                    //KeyNavigation.down: optXboxOneControllers
 
                 }
                 // Section deactivated from removing xow - keep code to easily reactivate if needed
