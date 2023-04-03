@@ -107,9 +107,13 @@ FocusScope {
                     // note: qsTr("Enable support for bluetooth controllers") + api.tr
 
 
-                    checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled");
+                    checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled",true);
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("controllers.bluetooth.enabled",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled",true)){
+                            api.internal.recalbox.setBoolParameter("controllers.bluetooth.enabled",checked);
+                            //need to reboot to take change into account !
+                            needReboot = true;
+                        }
                     }
                     symbol: "\uf29a"
                     onFocusChanged: container.onFocus(this)
