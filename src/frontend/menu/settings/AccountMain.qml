@@ -180,9 +180,9 @@ FocusScope {
                     label: qsTr("Auto screenshot") + api.tr
                     note: qsTr("Take an screenshot when an achievement is triggere.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("global.retroachievement.screenshot")
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.screenshot")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.retroachievement.screenshot",checked);
+                        api.internal.recalbox.setBoolParameter("global.retroachievements.screenshot",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optUnlockSoundsAchievementActivate
@@ -194,9 +194,23 @@ FocusScope {
                     label: qsTr("Activate unlock sounds") + api.tr
                     note: qsTr("Play Sounds if you unlock a trophies.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("global.retroachievement.unlock.sound")
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.unlock.sound")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.retroachievement.unlock.sound",checked);
+                        api.internal.recalbox.setBoolParameter("global.retroachievements.unlock.sound",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optChallengeIndicators
+                    visible: optRetroachievementActivate.checked
+
+                }
+                ToggleOption {
+                    id: optChallengeIndicators
+                    label: qsTr("Challenge indicators") + api.tr
+                    note: qsTr("Allow achievements to display an on-screen indicator while the achievement can be earned.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.challenge.indicators")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("global.retroachievements.challenge.indicators",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayActivate
