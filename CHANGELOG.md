@@ -14,7 +14,8 @@ All notable changes to this project will be documented in this file (focus on ch
 	- improve methods to check battery capacity since xone/xpadneo integration
 	- fix to display better the icon used for xbox one/series controllers
 	- fix to change way to detect dualsense ps5 controller using new firmware to have a best display of icon in bluetooth menu
-	- Fix shaders list and retro/scanline option
+	- fix shaders list and retro/scanline option
+	- fix cheevos option auto-screenshot and unlock sound
 
 - Features:
 	- add display in GB for online update >= than 1024 Mo
@@ -26,6 +27,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add redshift option
 	- add autopair option for bluetooth controllers
 	- request reboot if bluetooth/autopair parameters changed
+	- add cheevos option challenge indicators
 
 ## [pixL-master] - 2023-01-21 - v0.1.1
 - Features:
