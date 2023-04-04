@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2023-04-XX - v0.1.X
+## [pixL-master] - 2023-04-05 - v0.1.2
 - Fixes:
 	- check more regularly json from temp and change delay from timer (check after 20s)
 	- fix gamepadManager to avoid to trim controller name that generate missmatching
@@ -18,16 +18,16 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix cheevos option auto-screenshot and unlock sound
 
 - Features:
-	- add display in GB for online update >= than 1024 Mo
+	- add display in GB for online update >= than 1024 Mo + translate in french
 	- add new way to have "system manufacturer" from game object (as from collections)
 	- add filtering by array of indexes from 'sortfilterproxymodel' to help filtering/caching for 'MyCollections' from gameOS-pixL
 	- manage 'deviceLayout' parameter from es_input.cfg to force layout usage by GUID but also for icons (except in bluetooth interface where it's not yet possible)
 	- add icon for ps5 controllers
 	- refine icons affectation for xbox360, ps5 and xbox
-	- add redshift option
-	- add autopair option for bluetooth controllers
-	- request reboot if bluetooth/autopair parameters changed
-	- add cheevos option challenge indicators
+	- add redshift option + translate in french
+	- add autopair option for bluetooth controllers + translate in french
+	- request reboot if bluetooth/autopair parameters changed + translate in french
+	- add cheevos option challenge indicators + translate in french
 
 ## [pixL-master] - 2023-01-21 - v0.1.1
 - Features:
