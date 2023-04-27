@@ -314,8 +314,8 @@ FocusScope {
                     id: optVideoDriver
 
                     label: qsTr("Vulkan video driver") + api.tr
-                    note: qsTr("Force video driver to Vulkan") + api.tr
-                    visible: api.internal.recalbox.getStringParameter("boot.nvidia-driver") === "true" ? true : false // only visible if have Nvidia Gpu activated
+                    note: qsTr("Force video driver to Vulkan.\nBeware some hardware is not compatible with this option used with care !") + api.tr
+//                    visible: api.internal.recalbox.getStringParameter("boot.nvidia-driver") === "true" ? true : false // only visible if have Nvidia Gpu activated
                     checked: api.internal.recalbox.getBoolParameter("system.video.driver.vulkan")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("system.video.driver.vulkan",checked);
