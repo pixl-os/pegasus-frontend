@@ -216,7 +216,7 @@ FocusScope {
                             visible: true
                         }
                         label: (modelData) ? "#" + (index + 1) + ": " + modelData.name +
-                                             (api.internal.recalbox.getBoolParameter("frontend.debuglogs") ?
+                                             (api.internal.recalbox.getBoolParameter("pegasus.debuglogs") ?
                                              " (id:" + modelData.deviceId + "/idx:" + modelData.deviceIndex + "/iid:" + modelData.deviceInstance + ")" :
                                              " (" +modelData.deviceInstance + ")") :
                                              ""

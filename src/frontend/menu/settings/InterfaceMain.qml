@@ -258,9 +258,9 @@ FocusScope {
                     label: qsTr("Gamelist only") + api.tr
                     note: qsTr("Once enabled, only files from gamelist will be take into account.\n(Best game file loading ;-)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistonly",false)
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.gamelistonly",false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("emulationstation.gamelistonly",checked);
+                        api.internal.recalbox.setBoolParameter("pegasus.gamelistonly",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamelistsFirst
@@ -272,9 +272,9 @@ FocusScope {
                     label: qsTr("Gamelist first (Beta)") + api.tr
                     note: qsTr("Once enabled, system gamelist will be seach in priority else game files will be search.\n(Intermediate game file loading)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("emulationstation.gamelistfirst",true)
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.gamelistfirst",true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("emulationstation.gamelistfirst",checked);
+                        api.internal.recalbox.setBoolParameter("pegasus.gamelistfirst",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDeactivateSkraperMedia

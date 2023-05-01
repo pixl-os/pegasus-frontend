@@ -605,9 +605,9 @@ FocusScope {
                     label: qsTr("Debug mode") + api.tr
                     note: qsTr("Give me your log baby !!! ;-)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("frontend.debuglogs")
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.debuglogs")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("frontend.debuglogs",checked);
+                        api.internal.recalbox.setBoolParameter("pegasus.debuglogs",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optHideMouse

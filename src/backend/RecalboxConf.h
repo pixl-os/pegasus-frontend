@@ -364,7 +364,7 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
     static constexpr const char* sRetroAchievementLogin      = "global.retroachievements.username";
     static constexpr const char* sRetroAchievementPassword   = "global.retroachievements.password";
 
-    static constexpr const char* sStartupGamelistOnly        = "emulationstation.gamelistonly";
+    static constexpr const char* sStartupGamelistOnly        = "pegasus.gamelistonly";
     static constexpr const char* sStartupSelectedSystem      = "emulationstation.selectedsystem";
     static constexpr const char* sStartupStartOnGamelist     = "emulationstation.bootongamelist";
     static constexpr const char* sStartupHideSystemView      = "emulationstation.hidesystemview";

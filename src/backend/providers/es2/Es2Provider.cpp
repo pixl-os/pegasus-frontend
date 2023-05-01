@@ -100,7 +100,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
             .arg(sysentry.name, QString::number(found_videos)));
 
             //if gamelistfist activated we propose to search games if no gamelist in this system
-            if(RecalboxConf::Instance().AsBool("emulationstation.gamelistfirst"))
+            if(RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
             {
                 //check if no gamelist exists
                 const QDir xml_dir(sysentry.path);
@@ -111,7 +111,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
                 }
             }
             // Find games if not Gamelist Only activated
-            else if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
+            else if(!RecalboxConf::Instance().AsBool("pegasus.gamelistonly"))
             {
                 const size_t found_games = find_games_for(sysentry, sctx);
                 Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
