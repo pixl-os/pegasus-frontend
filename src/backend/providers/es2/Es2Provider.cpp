@@ -36,13 +36,13 @@
 namespace {
 std::vector<QString> default_config_paths()
 {
-	QString shareInitPath = paths::homePath() % QStringLiteral("/.emulationstation/");
-	shareInitPath.replace("/share/","/share_init/");
-	
+    QString shareInitPath = paths::homePath() % QStringLiteral("/.config/pegasus-frontend/");
+    shareInitPath.replace("/share/","/share_init/");
+
     return {
-        paths::homePath() % QStringLiteral("/.emulationstation/"),
-		shareInitPath,
-        QStringLiteral("/etc/emulationstation/"),
+        paths::homePath() % QStringLiteral("/.config/pegasus-frontend/"),
+        shareInitPath,
+        QStringLiteral("/etc/pegasus-frontend/"),
     };
 }
 
@@ -58,14 +58,14 @@ Es2Provider::Es2Provider(QObject* parent)
 
 Provider& Es2Provider::run(SearchContext& sctx)
 {
-    
+
     std::vector<QString> possible_config_dirs = [this]{
         const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
             ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
             : default_config_paths();
     }();
-    
+
     for (int i = 0; i < possible_config_dirs.size(); ++i) {
         Log::info(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
     }
@@ -84,10 +84,10 @@ Provider& Es2Provider::run(SearchContext& sctx)
     const float progress_step = 1.f / (systems.size() * 2);
     float progress = 0.f;
     Log::info(LOGMSG("Global Timing: Systems searching took %1ms").arg(systems_timer.elapsed()));
-    
+
     // Find games (file by file) - take bios files also or other file hide
     QElapsedTimer games_timer;
-    games_timer.start();    
+    games_timer.start();
     for (const SystemEntry& sysentry : systems) {
             const size_t found_cores = create_collection_for(sysentry, sctx);
             Log::info(display_name(), LOGMSG("System `%1` has %2 emulator/cores")
@@ -113,7 +113,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
             // Find games if not Gamelist Only activated
             else if(!RecalboxConf::Instance().AsBool("emulationstation.gamelistonly"))
             {
-				const size_t found_games = find_games_for(sysentry, sctx);
+                const size_t found_games = find_games_for(sysentry, sctx);
                 Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
                 .arg(sysentry.name, QString::number(found_games)));
             }
@@ -123,12 +123,12 @@ Provider& Es2Provider::run(SearchContext& sctx)
     Log::info(LOGMSG("Global Timing: Game files searching took %1ms").arg(games_timer.elapsed()));
     // Find assets and games in case of gamelist only
     QElapsedTimer assets_timer;
-    assets_timer.start(); 
+    assets_timer.start();
     for (const SystemEntry& sysentry : systems) {
         emit progressStage(sysentry.name);
         progress += progress_step;
         emit progressChanged(progress);
-		//Process event in the queue
+        //Process event in the queue
         QCoreApplication::processEvents();
         metahelper.find_metadata_for_system(sysentry, sctx);
     }
@@ -137,7 +137,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
 }
 
 inputConfigEntry Es2Provider::load_input_data(const QString& DeviceName, const QString& DeviceGUID)
-{   
+{
     std::vector<QString> possible_config_dirs = [this]{
         const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
@@ -151,7 +151,7 @@ inputConfigEntry Es2Provider::load_input_data(const QString& DeviceName, const Q
 }
 
 inputConfigEntry Es2Provider::load_any_input_data_by_guid(const QString& DeviceGUID)
-{   
+{
     std::vector<QString> possible_config_dirs = [this]{
         const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
@@ -165,7 +165,7 @@ inputConfigEntry Es2Provider::load_any_input_data_by_guid(const QString& DeviceG
 }
 
 bool Es2Provider::save_input_data(const inputConfigEntry& input)
-{   
+{
     std::vector<QString> possible_config_dirs = [this]{
         const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
@@ -175,19 +175,19 @@ bool Es2Provider::save_input_data(const inputConfigEntry& input)
     const inputConfigEntry& input_to_save = input;
     // save input
     return save_input(display_name(), possible_config_dirs, input_to_save);
-    
+
 }
 
 SystemEntry Es2Provider::find_one_system(const QString shortName)
 {
-    
+
     std::vector<QString> possible_config_dirs = [this]{
         const auto option_it = options().find(QStringLiteral("installdir"));
         return (option_it != options().cend())
             ? std::vector<QString>{ QDir::cleanPath(option_it->second.front()) + QLatin1Char('/') }
             : default_config_paths();
     }();
-    
+
     for (int i = 0; i < possible_config_dirs.size(); ++i) {
         //Log::debug(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
     }
@@ -198,7 +198,7 @@ SystemEntry Es2Provider::find_one_system(const QString shortName)
     SystemEntry system = find_system(display_name(), possible_config_dirs, shortName);
     Log::debug(display_name(), LOGMSG("Found %1 system").arg(system.name));
     //Log::debug(LOGMSG("System searching took %1ms").arg(systems_timer.elapsed()));
-	return system;
+    return system;
 }
 
 } // namespace es2
