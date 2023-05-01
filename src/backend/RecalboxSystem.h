@@ -15,7 +15,7 @@ struct EmulatorDefaults
 };
 
 /*!
- * @brief Interface between EmulationStation and the Recalbox System
+ * @brief Interface between Pegasus-frontend and the Recalbox System
  */
 class RecalboxSystem
 {
