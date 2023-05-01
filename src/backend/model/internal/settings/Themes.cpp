@@ -103,7 +103,7 @@ std::vector<model::ThemeEntry> find_available_themes()
             // add the qrc/file protocol prefix
             const bool is_builtin = basedir.startsWith(':');
             qml_path = is_builtin
-                ? QLatin1String("qrc://") % qml_path.midRef(1)
+                ? QLatin1String("qrc://") % qml_path.mid(1)
                 : QUrl::fromLocalFile(qml_path).toString();
 
             themes.emplace_back(

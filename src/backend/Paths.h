@@ -18,8 +18,7 @@
 #pragma once
 
 class QString;
-class QStringList;
-
+#include <QStringList>
 
 namespace paths {
 

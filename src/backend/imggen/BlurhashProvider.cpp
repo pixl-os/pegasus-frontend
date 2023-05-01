@@ -140,26 +140,26 @@ QImage BlurhashProvider::requestImage(const QString& hash_url, QSize* out_size, 
         ? QSize(24, 24)
         : requested_size;
 
-    const unsigned components_raw = decode_base83(hash.leftRef(1));
+    const unsigned components_raw = decode_base83(hash.left(1));
     const unsigned components_x = (components_raw % 9) + 1;
     const unsigned components_y = (components_raw / 9) + 1;
     const size_t color_cnt = components_x * components_y;
     if (static_cast<unsigned>(hash.length()) != 4 + 2 * color_cnt) // 2 head + 4 DC + 2 * (nx * ny - 1) AC
         return {};
 
-    const unsigned max_ac_raw = decode_base83(hash.midRef(1, 1));
+    const unsigned max_ac_raw = decode_base83(hash.mid(1, 1));
     const float max_ac = (max_ac_raw + 1) / 166.f;
 
     const std::vector<FpColor> colors = [color_cnt, max_ac, &hash](){
         std::vector<FpColor> out;
         out.reserve(color_cnt);
 
-        const unsigned avg_color_raw = decode_base83(hash.midRef(2, 4));
+        const unsigned avg_color_raw = decode_base83(hash.mid(2, 4));
         out.emplace_back(decode_dc(avg_color_raw));
 
         for (size_t i = 1; i < color_cnt; i++) {
             const int str_start = 4 + i * 2;
-            const unsigned color_raw = decode_base83(hash.midRef(str_start, 2));
+            const unsigned color_raw = decode_base83(hash.mid(str_start, 2));
             out.emplace_back(decode_ac(color_raw, max_ac));
         }
 

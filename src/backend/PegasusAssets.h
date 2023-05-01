@@ -18,7 +18,7 @@
 #pragma once
 
 class QString;
-class QStringList;
+#include <QStringList>
 enum class AssetType : unsigned char;
 
 

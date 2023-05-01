@@ -1,6 +1,6 @@
 include($${TOP_SRCDIR}/src/deployment_vars.pri)
 
-QT += webengine
+QT += webenginequick
 
 !isEmpty(INSTALL_DOCDIR) {
     md.files += \

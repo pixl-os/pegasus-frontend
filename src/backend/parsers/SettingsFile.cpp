@@ -242,8 +242,8 @@ void LoadContext::handle_key_attrib(const size_t lineno, const QString& key, con
 
     QVector<QKeySequence> keyseqs;
 
-    const auto key_strs = val.splitRef(',', Qt::SkipEmptyParts);
-    for (const QStringRef& strref : key_strs) {
+    const auto key_strs = val.split(',', Qt::SkipEmptyParts);
+    for (const QString& strref : key_strs) {
         const QString str = strref
             .trimmed()
             .toString()

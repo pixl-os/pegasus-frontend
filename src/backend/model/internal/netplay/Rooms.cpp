@@ -38,7 +38,7 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 
     //Set request
     QNetworkRequest request(url);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, true);
     #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
         request.setTransferTimeout(10000);
     #endif

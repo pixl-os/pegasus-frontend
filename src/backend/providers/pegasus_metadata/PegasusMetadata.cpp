@@ -331,8 +331,8 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
             {
                 const auto rx_match = rx_count_range.match(first_line_of(ps, entry));
                 if (rx_match.hasMatch()) {
-                    const short a = rx_match.capturedRef(1).toShort();
-                    const short b = rx_match.capturedRef(3).toShort();
+                    const short a = rx_match.captured(1).toShort();
+                    const short b = rx_match.captured(3).toShort();
                     const short count = std::max({ static_cast<short>(1), a, b });
                     ps.cur_game->setPlayerCount(count);
                 }
@@ -378,7 +378,7 @@ void Metadata::apply_game_entry(ParserState& ps, const metafile::Entry& entry, S
 
                 const auto rx_match_a = rx_percent.match(line);
                 if (rx_match_a.hasMatch()) {
-                    ps.cur_game->setRating(qBound(0.f, line.leftRef(line.length() - 1).toFloat() / 100.f, 1.f));
+                    ps.cur_game->setRating(qBound(0.f, line.left(line.length() - 1).toFloat() / 100.f, 1.f));
                     return;
                 }
                 const auto rx_match_b = rx_float.match(line);

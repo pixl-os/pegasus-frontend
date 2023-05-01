@@ -17,8 +17,7 @@
 
 #pragma once
 
-class QStringList;
-
+#include <QStringList>
 
 enum class ScriptEvent : unsigned char {
     QUIT,
