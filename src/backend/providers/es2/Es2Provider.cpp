@@ -36,11 +36,11 @@
 namespace {
 std::vector<QString> default_config_paths()
 {
-    QString shareInitPath = paths::homePath() % QStringLiteral("/.config/pegasus-frontend/");
+    QString shareInitPath = paths::homePath() % QStringLiteral("/.pegasus-frontend/");
     shareInitPath.replace("/share/","/share_init/");
 
     return {
-        paths::homePath() % QStringLiteral("/.config/pegasus-frontend/"),
+        paths::homePath() % QStringLiteral("/.pegasus-frontend/"),
         shareInitPath,
         QStringLiteral("/etc/pegasus-frontend/"),
     };
