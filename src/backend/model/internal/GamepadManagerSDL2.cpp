@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-//to access es_input.cfg
+//to access input.cfg
 #include "providers/es2/Es2Provider.h"
 
 #include "GamepadManagerSDL2.h"
@@ -297,7 +297,7 @@ void write_mappings(const std::vector<std::string>& mappings)
         db_stream << mapping.data() << '\n';
 }
 
-std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry& inputConfigEntry, const QString fullName = "")
+std::string create_mapping_from_input(const providers::es2::inputConfigEntry& inputConfigEntry, const QString fullName = "")
 {
 
     //example of Pegasus Mapping data: 
@@ -448,7 +448,7 @@ std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry&
                 name = "+righty";
             break;
             case const_hash("joystick2left"):
-				if(hasJoystick2down)
+                if(hasJoystick2right)
 				{
 					name = "-rightx";
 				}
@@ -540,7 +540,7 @@ std::string create_mapping_from_es_input(const providers::es2::inputConfigEntry&
     
 }
 
-void update_es_input(int device_idx, std::string new_mapping, const QString fullName = "")
+void update_input(int device_idx, std::string new_mapping, const QString fullName = "")
 {
     Log::debug(LOGMSG("Controller full Mapping data:`%1`").arg(QString::fromStdString(new_mapping)));
     
@@ -776,7 +776,7 @@ void update_es_input(int device_idx, std::string new_mapping, const QString full
     SDL_Joystick* joy = SDL_JoystickOpen(device_idx);
     if (joy == nullptr)
     {
-        Log::warning(LOGMSG("Numbers of Axis/Hats/Buttons are calculated for es_input.cfg update."));
+        Log::warning(LOGMSG("Numbers of Axis/Hats/Buttons are calculated for input.cfg update."));
     }
     else
     {
@@ -784,7 +784,7 @@ void update_es_input(int device_idx, std::string new_mapping, const QString full
         NbHats = SDL_JoystickNumHats(joy);
         NbButtons = SDL_JoystickNumButtons(joy);
         
-        //We could read from SDL to have same name as initial es_input.cfg
+        //We could read from SDL to have same name as initial input.cfg
         //but we keep that for futur used: 
         //inputConfigEntry.inputConfigAttributs.deviceName = QString::fromStdString(SDL_JoystickName(joy));
         //Keep name from SDL file finally
@@ -1255,7 +1255,7 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
 
         QString fullname = getFullName_by_path(JoystickDevicePath);
 
-        QString layout = ""; //empty to start - need to be provided by es_input.cfg
+        QString layout = ""; //empty to start - need to be provided by input.cfg
         
         //Check if the given joystick is supported by the game controller interface.
         if (!SDL_IsGameController(device_idx))
@@ -1326,24 +1326,24 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 if(QString::fromStdString(user_mapping).split(",").at(1) != fullname){
                     //check if one exist in ES or not ?!
                     Log::debug(m_log_tag, LOGMSG("Same mapping/Different Name in sdl_controllers.txt for this controller"));
-                    //check if any es_input.cfg record exists for this GUID
+                    //check if any input.cfg record exists for this GUID
                     providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
                     //check if we already saved this configuration (same guid/same fullname)
                     providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(fullname, guid_str);
-                    //if nothing is in es_input with this fullname
+                    //if nothing is in input with this fullname
                     if (inputConfigEntry.inputConfigAttributs.deviceName == ""){
-                        Log::debug(m_log_tag, LOGMSG("No mapping found in es_input.cfg for this controller"));
+                        Log::debug(m_log_tag, LOGMSG("No mapping found in input.cfg for this controller"));
                         //update found mapping with fullname (if finally, the name of last controller is different especially for HID name included in full name)
                         Log::debug(m_log_tag, LOGMSG("Rename SDL2 mapping from sdl local store with new name"));
                         user_mapping = update_mapping_name(user_mapping, fullname);
-                        //add/udpate mapping in es_input.cfg
-                        Log::debug(m_log_tag, LOGMSG("Save SDL2 mapping from sdl local store to es_input.cfg to be able to play right now !"));
-                        update_es_input(device_idx, user_mapping);
+                        //add/udpate mapping in input.cfg
+                        Log::debug(m_log_tag, LOGMSG("Save SDL2 mapping from sdl local store to input.cfg to be able to play right now !"));
+                        update_input(device_idx, user_mapping);
                     }
                     else{ // controller mapping found for this full name, we will update the sdl_controller.txt
-                        Log::debug(m_log_tag, LOGMSG("controller mapping found in es_input.cfg for this name, update of sdl_controller.txt in this case."));
-                        //get mapping from es_input.cfg to SDL2 format
-                        user_mapping = create_mapping_from_es_input(inputConfigEntry, fullname);
+                        Log::debug(m_log_tag, LOGMSG("controller mapping found in input.cfg for this name, update of sdl_controller.txt in this case."));
+                        //get mapping from input.cfg to SDL2 format
+                        user_mapping = create_mapping_from_input(inputConfigEntry, fullname);
                     }
                     //udpate mapping in local store m_custom_mappings
                     update_mapping_store(user_mapping);
@@ -1355,9 +1355,9 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         }
 
         //*****************************************************************//
-        //2) check es_input.cfg first about configuration already known !!!//
+        //2) check input.cfg first about configuration already known !!!//
         //*****************************************************************//
-        //check if any es_input.cfg record exists for the moment and for this GUID
+        //check if any input.cfg record exists for the moment and for this GUID
         //finally check if we already saved this configuration (same guid/same name)
         providers::es2::Es2Provider *Provider = new providers::es2::Es2Provider();
         //Log::debug(LOGMSG("providers::es2::inputConfigEntry inputConfigEntry = Provider->load_input_data(%1,%2)").arg(name, guid_str));
@@ -1367,20 +1367,20 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
         {
             std::string new_mapping;
             Log::debug(m_log_tag, LOGMSG("no mapping in sdl_controllers.txt for this controller"));
-            //if nothing is in es_input with this name -> we search a second time with full name
+            //if nothing is in input with this name -> we search a second time with full name
             if ((inputConfigEntry.inputConfigAttributs.deviceName == "") && (fullname != name)){
                 inputConfigEntry = Provider->load_input_data(fullname, guid_str);
             }
-            //if nothing is in es_input with this fullname -> we search a second time with empty name to search by id only as default value
+            //if nothing is in input with this fullname -> we search a second time with empty name to search by id only as default value
             if (inputConfigEntry.inputConfigAttributs.deviceName == ""){
                 inputConfigEntry = Provider->load_input_data("", guid_str);
             }
             //get mapping found by SDL DB
             auto found_mapping = freeable_str(SDL_GameControllerMapping(pad));
-            //if nothing is in es_input with this name and this fullname -> we update es_input with the SDL conf
+            //if nothing is in input with this name and this fullname -> we update input with the SDL conf
             if (inputConfigEntry.inputConfigAttributs.deviceName == "")
             {
-                Log::debug(m_log_tag, LOGMSG("no mapping found in es_input.cfg for this controller"));
+                Log::debug(m_log_tag, LOGMSG("no mapping found in input.cfg for this controller"));
                 //*********************************************************//
                 //3) check sdl db in a second time if not found previously //
                 //*********************************************************//
@@ -1397,23 +1397,23 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                         //get default mapping from SDL2
                         new_mapping = generate_mapping(device_idx).c_str();
                         //Log::debug(LOGMSG("Generated mapping : %1").arg(QString::fromStdString(new_mapping)));
-                        Log::debug(m_log_tag, LOGMSG("Save SDL2 generated mapping in sdl local store & es_input.cfg to be able to play right now !"));
+                        Log::debug(m_log_tag, LOGMSG("Save SDL2 generated mapping in sdl local store & input.cfg to be able to play right now !"));
                     }
                     else{
-                        Log::debug(m_log_tag, LOGMSG("Save 'second' SDL2 mapping in sdl local store & es_input.cfg to be able to play right now !"));
+                        Log::debug(m_log_tag, LOGMSG("Save 'second' SDL2 mapping in sdl local store & input.cfg to be able to play right now !"));
                     }
                 }
                 else{
-                    Log::debug(m_log_tag, LOGMSG("Save default SDL2 mapping in sdl local store & es_input.cfg to be able to play right now !"));
+                    Log::debug(m_log_tag, LOGMSG("Save default SDL2 mapping in sdl local store & input.cfg to be able to play right now !"));
                 }
             }
-            else //if anything is in es_input with this name/fullname or guid -> we update user conf (sdl_controllers.txt) and reload
+            else //if anything is in input with this name/fullname or guid -> we update user conf (sdl_controllers.txt) and reload
             {
-                Log::debug(m_log_tag, LOGMSG("mapping with same name/fullname or guid found in es_input.cfg for this controller"));
-                //get default mapping from es_input.cfg to SDL2 format
-                new_mapping = create_mapping_from_es_input(inputConfigEntry, fullname);
-                //write user SDL2 mapping in es_input.cfg
-                Log::debug(m_log_tag, LOGMSG("save es_input.cfg mapping in sdl_controllers.txt to be able to use this conf in menu !"));
+                Log::debug(m_log_tag, LOGMSG("mapping with same name/fullname or guid found in input.cfg for this controller"));
+                //get default mapping from input.cfg to SDL2 format
+                new_mapping = create_mapping_from_input(inputConfigEntry, fullname);
+                //write user SDL2 mapping in input.cfg
+                Log::debug(m_log_tag, LOGMSG("save input.cfg mapping in sdl_controllers.txt to be able to use this conf in menu !"));
                 //force reload new mapping
                 Log::debug(m_log_tag, LOGMSG("Force reload new mapping for menu !"));
                 //And add this mapping in SDL to be take into account
@@ -1429,8 +1429,8 @@ void GamepadManagerSDL2::add_controller_by_idx(int device_idx)
                 new_mapping = update_mapping_name(new_mapping, fullname);
             //add/udpate mapping in local store m_custom_mappings
             update_mapping_store(new_mapping);
-            //add/udpate mapping in es_input.cfg
-            update_es_input(device_idx, new_mapping);
+            //add/udpate mapping in input.cfg
+            update_input(device_idx, new_mapping);
             //saving of local store m_custom_mappings in file sdl_controllers.txt
             write_mappings(m_custom_mappings);
             //to propose to configure or not the new controller
@@ -1924,8 +1924,8 @@ void GamepadManagerSDL2::finish_recording()
         return;
     }
 
-    //added to update es_input.cfg for configgen interface
-    update_es_input(m_recording.device, new_mapping);
+    //added to update input.cfg for configgen interface
+    update_input(m_recording.device, new_mapping);
 
     update_mapping_store(std::move(new_mapping));
     write_mappings(m_custom_mappings);

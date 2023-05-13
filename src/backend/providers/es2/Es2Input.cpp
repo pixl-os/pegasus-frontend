@@ -3,12 +3,6 @@
 #include "Es2Input.h"
 
 #include "Log.h"
-#include "Paths.h"
-
-#include "utils/CommandTokenizer.h"
-#include "utils/StdHelpers.h"
-
-
 #include <QFileInfo>
 #include <QStringBuilder>
 #include <QXmlStreamReader>
@@ -17,10 +11,10 @@
 
 namespace {
 
-QString es_input_xml(const std::vector<QString>& possible_config_dirs)
+QString input_xml(const std::vector<QString>& possible_config_dirs)
 {
     for (const QString& dir_path : possible_config_dirs) {
-        QString xml_path = dir_path + QStringLiteral("es_input.cfg");
+        QString xml_path = dir_path + QStringLiteral("input.cfg");
         if (QFileInfo::exists(xml_path))
             return xml_path;
     }
@@ -74,7 +68,7 @@ providers::es2::inputConfigEntry find_any_input_entry_by_guid(const QString& log
         return {};
 
     return {
-        std::move(inputConfigEntry),
+        inputConfigEntry,
     };
 }
 
@@ -124,7 +118,7 @@ providers::es2::inputConfigEntry find_input_entry(const QString& log_tag, QXmlSt
         return {};
 
     return {
-        std::move(inputConfigEntry),
+        inputConfigEntry,
     };
 }
 
@@ -133,13 +127,13 @@ bool add_input_entry(const QString& log_tag, QFile& xml_file, const providers::e
     //open xml file to read content and create XML DOM object
     if (!xml_file.open(QIODevice::ReadOnly))
     {
-        Log::debug(log_tag, LOGMSG("Problem to open es_input.cfg in readonly"));
+        Log::debug(log_tag, LOGMSG("Problem to open input.cfg in readonly"));
         return false;
     }    
     QDomDocument doc;
     if (!doc.setContent(&xml_file))
     {
-        Log::debug(log_tag, LOGMSG("Problem to set DOM content to add input in es_input.cfg"));
+        Log::debug(log_tag, LOGMSG("Problem to set DOM content to add input in input.cfg"));
         return false;
     }
     xml_file.close();
@@ -221,13 +215,13 @@ bool add_input_entry(const QString& log_tag, QFile& xml_file, const providers::e
 
     if(inputList.appendChild(inputConfig).isNull())
     {
-        Log::error(log_tag, LOGMSG("Problem to add in es_input.cfg using new inputConfig"));
+        Log::error(log_tag, LOGMSG("Problem to add in input.cfg using new inputConfig"));
         return false;
     }
 
     if(!xml_file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        Log::debug(log_tag, LOGMSG("Problem to open es_input.cfg in WriteOnly|Truncate"));
+        Log::debug(log_tag, LOGMSG("Problem to open input.cfg in WriteOnly|Truncate"));
         return false;
     }
     QTextStream out(&xml_file);
@@ -242,13 +236,13 @@ bool update_input_entry(const QString& log_tag, QFile& xml_file, const providers
     //open xml file to read content and create XML DOM object
     if (!xml_file.open(QIODevice::ReadOnly))
     {
-        Log::debug(log_tag, LOGMSG("Problem to open es_input.cfg in readonly"));
+        Log::debug(log_tag, LOGMSG("Problem to open input.cfg in readonly"));
         return false;
     }    
     QDomDocument doc;
     if (!doc.setContent(&xml_file))
     {
-        Log::debug(log_tag, LOGMSG("Problem to set DOM content to add input in es_input.cfg"));
+        Log::debug(log_tag, LOGMSG("Problem to set DOM content to add input in input.cfg"));
         return false;
     }
     xml_file.close();
@@ -349,13 +343,13 @@ bool update_input_entry(const QString& log_tag, QFile& xml_file, const providers
     
     if(inputList.replaceChild(inputConfig,oldInputConfig).isNull())
     {
-        Log::error(log_tag, LOGMSG("Problem to update es_input.cfg using new inputConfig"));
+        Log::error(log_tag, LOGMSG("Problem to update input.cfg using new inputConfig"));
         return false;
     }
 
     if(!xml_file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        Log::error(log_tag, LOGMSG("Problem to open es_input.cfg in WriteOnly|Truncate"));
+        Log::error(log_tag, LOGMSG("Problem to open input.cfg in WriteOnly|Truncate"));
         return false;
     }
     QTextStream out(&xml_file);
@@ -372,7 +366,7 @@ namespace es2 {
 
 inputConfigEntry find_any_input_by_guid(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const QString& DeviceGUID)
 {
-    const QString xml_path = es_input_xml(possible_config_dirs);
+    const QString xml_path = input_xml(possible_config_dirs);
     if (xml_path.isEmpty()) {
         Log::info(log_tag, LOGMSG("No installation found"));
         return {};
@@ -404,11 +398,11 @@ inputConfigEntry find_any_input_by_guid(const QString& log_tag, const std::vecto
     
     if (inputentry.inputConfigAttributs.deviceGUID != DeviceGUID)
     {
-        Log::error(log_tag, LOGMSG("input configuration with GUID:%1 not found from es_input.cfg").arg(inputentry.inputConfigAttributs.deviceGUID));
+        Log::error(log_tag, LOGMSG("input configuration with GUID:%1 not found from input.cfg").arg(inputentry.inputConfigAttributs.deviceGUID));
     }
     else
     {
-        Log::info(log_tag, LOGMSG("%1 input configuration found from es_input.cfg").arg(inputentry.inputConfigAttributs.deviceName));
+        Log::info(log_tag, LOGMSG("%1 input configuration found from input.cfg").arg(inputentry.inputConfigAttributs.deviceName));
     }
 
     return inputentry;
@@ -419,7 +413,7 @@ inputConfigEntry find_any_input_by_guid(const QString& log_tag, const std::vecto
 
 inputConfigEntry find_input(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const QString& DeviceName, const QString& DeviceGUID)
 {
-    const QString xml_path = es_input_xml(possible_config_dirs);
+    const QString xml_path = input_xml(possible_config_dirs);
     if (xml_path.isEmpty()) {
         Log::info(log_tag, LOGMSG("No installation found"));
         return {};
@@ -451,11 +445,11 @@ inputConfigEntry find_input(const QString& log_tag, const std::vector<QString>& 
     
     if (inputentry.inputConfigAttributs.deviceGUID != DeviceGUID)
     {
-        Log::error(log_tag, LOGMSG("%1/'%2' input configuration not found from es_input.cfg").arg(DeviceGUID,DeviceName));
+        Log::error(log_tag, LOGMSG("%1/'%2' input configuration not found from input.cfg").arg(DeviceGUID,DeviceName));
     }
     else
     {
-        Log::info(log_tag, LOGMSG("%1/'%2' input configuration found from es_input.cfg").arg(inputentry.inputConfigAttributs.deviceGUID,inputentry.inputConfigAttributs.deviceName));
+        Log::info(log_tag, LOGMSG("%1/'%2' input configuration found from input.cfg").arg(inputentry.inputConfigAttributs.deviceGUID,inputentry.inputConfigAttributs.deviceName));
     }
 
     return inputentry;
@@ -464,7 +458,7 @@ inputConfigEntry find_input(const QString& log_tag, const std::vector<QString>& 
 
 bool save_input(const QString& log_tag, const std::vector<QString>& possible_config_dirs, const inputConfigEntry& input_to_save)
 {
-    const QString xml_path = es_input_xml(possible_config_dirs);
+    const QString xml_path = input_xml(possible_config_dirs);
     if (xml_path.isEmpty()) {
         Log::info(log_tag, LOGMSG("No installation found"));
         return false;
@@ -495,18 +489,18 @@ bool save_input(const QString& log_tag, const std::vector<QString>& possible_con
     xml_file.close();// close file before to add inputs
         
     if (inputentry.inputConfigAttributs.deviceName != input_to_save.inputConfigAttributs.deviceName)
-    {//to update any entry in es_input.cfg
+    {//to update any entry in input.cfg
         if(!add_input_entry(log_tag, xml_file, input_to_save))
         {
-            Log::error(log_tag, LOGMSG("`%1` can't be added to es_input.cfg").arg(input_to_save.inputConfigAttributs.deviceName)); 
+            Log::error(log_tag, LOGMSG("`%1` can't be added to input.cfg").arg(input_to_save.inputConfigAttributs.deviceName));
             return false;
         }
     }
     else
-    {//to update any entry in es_input.cfg
+    {//to update any entry in input.cfg
         if(!update_input_entry(log_tag, xml_file, input_to_save))
         {
-            Log::error(log_tag, LOGMSG("`%1` can't be updated from es_input.cfg").arg(input_to_save.inputConfigAttributs.deviceName)); 
+            Log::error(log_tag, LOGMSG("`%1` can't be updated from input.cfg").arg(input_to_save.inputConfigAttributs.deviceName));
             return false;
         }
         

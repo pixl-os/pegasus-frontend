@@ -11,7 +11,7 @@
 #include <QDomElement>
 #include <QDomAttr>
 
-/* #example of es_input.cfg
+/* #example of input.cfg
 <?xml version="1.0"?>
 <inputList>
 	<inputConfig type="joystick" deviceName="X360 Wireless Controller" deviceGUID="030000005e040000a102000000010000" deviceNbAxes="4" deviceNbHats="1" deviceNbButtons="17">

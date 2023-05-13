@@ -27,7 +27,7 @@
 #include "utils/Strings.h"
 #include "utils/PathTools.h"
 
-//to access es_input.cfg
+//to access input.cfg
 #include "providers/es2/Es2Provider.h"
 
 //For recalbox
