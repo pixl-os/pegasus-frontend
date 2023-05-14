@@ -104,8 +104,8 @@ QStringList GetParametersList(QString Parameter)
         ## (none, retro, scanlines)
         global.shaderset=none
         */
-        ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanline");
-        ListOfInternalValue << "none" << "retro" << "scanline";
+        ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanlines");
+        ListOfInternalValue << "none" << "retro" << "scanlines";
     }
     else if (Parameter.endsWith(".shaders", Qt::CaseInsensitive) == true)
     {
