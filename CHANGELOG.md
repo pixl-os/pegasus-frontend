@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2023-XX-XX - v0.1.X
+- Fixes:
+	- fix rename hostname RECALBOX to PIXL
+
 ## [pixL-master] - 2023-04-29 - v0.1.2
 - Fixes:
 	- check more regularly json from temp and change delay from timer (check after 20s)

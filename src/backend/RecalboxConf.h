@@ -100,7 +100,7 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
     */
     DefineGetterSetterEnum(AudioMode, AudioMode, sAudioOptions, AudioModeTools::AudioMode)
 
-    DefineGetterSetter(Hostname, std::string, String, sHostname, "RECALBOX")
+    DefineGetterSetter(Hostname, std::string, String, sHostname, "PIXL")
 
     DefineGetterSetter(WifiEnabled, bool, Bool, sWifiEnabled, false)
     DefineGetterSetter(WifiSSID, std::string, String, sWifiSSID, "")
