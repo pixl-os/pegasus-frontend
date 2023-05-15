@@ -24,6 +24,8 @@
 #include <QStringList>
 #include <QObject>
 
+#include <array>
+
 #ifdef Q_CC_MSVC
 // MSVC has troubles with forward declared QML model types
 #include "model/gaming/Game.h"
