@@ -25,7 +25,7 @@ Path rLog::getLogPath(const char* filename)
 void rLog::open(const char* filename)
 {
   // Build log path
-  Path logpath(filename != nullptr ? filename : getLogPath("es_log.txt").ToChars());
+  Path logpath(filename != nullptr ? filename : getLogPath("recalbox.log").ToChars());
 
   // Backup?
   if (logpath.Exists())
