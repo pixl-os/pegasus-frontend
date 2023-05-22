@@ -27,7 +27,7 @@
 #include "utils/Strings.h"
 #include "utils/PathTools.h"
 
-//to access es_input.cfg
+//to access input.cfg
 #include "providers/es2/Es2Provider.h"
 
 //For recalbox
@@ -340,7 +340,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
         replace_variables(arg, &gamefile);
 
     //to add Verbose arg in debug mode
-    if (RecalboxConf::Instance().AsBool("emulationstation.debuglogs")) args.append("-verbose");
+    if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) args.append("-verbose");
 
     QString command = args.isEmpty() ? QString() : args.takeFirst();
     if (command.isEmpty()) {

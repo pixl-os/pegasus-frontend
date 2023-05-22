@@ -256,7 +256,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         const QFileInfo finfo = shell_to_finfo(xml_dir, shell_filepath);
         const QString path = ::clean_abs_path(finfo);
         
-        if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly") || RecalboxConf::Instance().AsBool("emulationstation.gamelistfirst"))
+        if(RecalboxConf::Instance().AsBool("pegasus.gamelistonly") || RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
         {
             // create game now in this case (don't care if exist or not on file system to go quicker)
             model::Game* game_ptr = sctx.game_by_filepath(path);
@@ -279,7 +279,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         apply_metadata(*entry_ptr, xml_dir, xml_props);
     }
 
-    if(RecalboxConf::Instance().AsBool("emulationstation.gamelistonly") || RecalboxConf::Instance().AsBool("emulationstation.gamelistfirst"))
+    if(RecalboxConf::Instance().AsBool("pegasus.gamelistonly") || RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
     {
         Log::info(m_log_tag, LOGMSG("System `%1` gamelist provided %2 games")
         .arg(system_name, QString::number(found_games)));     

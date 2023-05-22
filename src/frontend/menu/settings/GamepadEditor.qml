@@ -1272,7 +1272,7 @@ FocusScope {
             let type = "controller";
             let i = 0;
             if (deviceLayout !== ""){
-                //to get the one proposed from gamepad es_input.cfg deviceLayout if not empty
+                //to get the one proposed from gamepad input.cfg deviceLayout if not empty
                 for(var l = 0; l < myControllerLayout.count;l++)
                 {
                     if(myControllerLayout.get(l).name === deviceLayout){

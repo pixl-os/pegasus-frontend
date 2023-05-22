@@ -21,9 +21,9 @@ RecalboxConf::RecalboxConf()
     LogWarning = 1, //!< Warning messages
     LogInfo    = 2, //!< Information message
     LogDebug   = 3, //!< Debug message */
-    if (AsBool("emulationstation.warnlogs")) rLog::setReportingLevel(LogLevel::LogWarning);
-    if (AsBool("emulationstation.infologs")) rLog::setReportingLevel(LogLevel::LogInfo);
-    if (AsBool("emulationstation.debuglogs")) rLog::setReportingLevel(LogLevel::LogDebug);
+    if (AsBool("pegasus.warnlogs")) rLog::setReportingLevel(LogLevel::LogWarning);
+    if (AsBool("pegasus.infologs")) rLog::setReportingLevel(LogLevel::LogInfo);
+    if (AsBool("pegasus.debuglogs")) rLog::setReportingLevel(LogLevel::LogDebug);
     
     Log::debug(LOGMSG("Recalbox.conf instance created."));
 }

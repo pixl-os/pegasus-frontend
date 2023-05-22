@@ -25,7 +25,7 @@ import QtQuick.XmlListModel 2.0
 FocusScope {
     id: root
 
-    readonly property string biosFilePath: "file://recalbox/share_init/system/.emulationstation/es_bios.xml"
+    readonly property string biosFilePath: "file://recalbox/share_init/system/.pegasus-frontend/bios.xml"
     signal close
 
     anchors.fill: parent
