@@ -1,9 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2023-XX-XX - v0.1.X
+## [pixL-master] - 2023-05-26 - v0.1.3
 - Fixes:
 	- fix rename hostname RECALBOX to PIXL
+
+- Features:
+	- change settings for "share" path from "/.emulationstation/" to "/.config/pegasus-frontend/"
+	- change settings for "dev" path from "/etc/emulationstation" to "/etc/pegasus-frontend"
+	- change name/path from  es_bios.xml to bios.xml
+	- change paremeter for debug logs from "emulationstation.debuglogs" to "frontend.debuglogs" (same for warn and info)
+	- change parameter from "emulationstation.gamelistonly" to "pegasus.gamelistonly" (same for gamelistfirst also)
+	- change name/path from es_input.cfg to input.cfg
+	- replace usage of es_log.txt by recalbox.log now
 
 ## [pixL-master] - 2023-04-29 - v0.1.2
 - Fixes:
