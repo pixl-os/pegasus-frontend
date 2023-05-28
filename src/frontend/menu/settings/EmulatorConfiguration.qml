@@ -24,7 +24,9 @@ FocusScope {
 
     property var system;
     // check if is a libretro emulator for dynamic entry
-    property bool isLibretroCore;
+    property bool isLibretroCore
+    // check if is model2emu for dynamic entry
+    property bool isModel2Emu
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -118,8 +120,10 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSystemSmoothGame
+                    KeyNavigation.down: isModel2Emu ? optModel2emuOption1 : optSystemSmoothGame
                 }
+
+//************************************************ libretro cores options *****************************************************************
                 ToggleOption {
                     id: optSystemSmoothGame
 
@@ -236,6 +240,21 @@ FocusScope {
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
+//************************************************ Model 2 emulator options *****************************************************************
+                ToggleOption {
+                    id: optModel2emuOption1
+                    label: qsTr("fakeGouraud") + api.tr
+                    note: qsTr("Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.fakeGouraud")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.fakeGouraud",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+//************************************************ emulators/cores selections *****************************************************************
                 SectionTitle {
                     text: qsTr("Core options") + api.tr
                     first: true
@@ -254,14 +273,15 @@ FocusScope {
                         note: system.getCoreLongNameAt(index) + ((system.getCoreVersionAt(index) !== "") ? (" - " + system.getCoreVersionAt(index)) : "") ;
 
                         onActivate: {
+                            //console.log("onActivate");
                             focus = true;
-                            radioButton.checked = true;
                             api.internal.recalbox.setStringParameter(system.shortName + ".emulator",system.getNameAt(index));
                             api.internal.recalbox.setStringParameter(system.shortName + ".core",system.getCoreAt(index));
+                            radioButton.checked = true;
                         }
                         
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : optSystemAutoSave
+                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : (isModel2Emu ? optModel2emuOption1 : optSystemAutoSave)
                         KeyNavigation.down: (index < emulatorButtons.count) ? emulatorButtons.itemAt(index+1) : emulatorButtons.itemAt(emulatorButtons.count - 1)
                         
                         RadioButton {
@@ -271,27 +291,44 @@ FocusScope {
                             anchors.rightMargin: horizontalPadding
                             anchors.verticalCenter: parent.verticalCenter
                             
+
+                            onCheckedChanged: {
+                                //console.log("onCheckedChanged");
+                                api.internal.recalbox.setStringParameter(system.shortName + ".emulator",system.getNameAt(index));
+                                api.internal.recalbox.setStringParameter(system.shortName + ".core",system.getCoreAt(index));
+                                // check is libretro for filter menu
+                                if(system.getNameAt(index) === "libretro")
+                                    isLibretroCore = true
+                                else
+                                    isLibretroCore = false
+                                //console.log("isLibretroCore =", isLibretroCore);
+
+                                // check is model2emu for filter menu
+                                if(system.getNameAt(index) === "model2emu")
+                                    isModel2Emu = true
+                                else
+                                    isModel2Emu = false
+                                //console.log("isModel2Emu =", isModel2Emu);
+
+                            }
+
                             checked: {
                                 var emulator = api.internal.recalbox.getStringParameter(system.shortName + ".emulator");
                                 var core = api.internal.recalbox.getStringParameter(system.shortName + ".core");
-                                console.log("index=",index);
-                                console.log("emulator=", emulator);
-                                console.log("core=", core);
-                                console.log("is default=",system.isDefaultEmulatorAt(index));
-                                
-                                if ((emulator === system.getNameAt(index)) && (core === system.getCoreAt(index))){
-                                    // check is libretro for filter menu
-                                    if(emulator === "libretro") isLibretroCore = true
-                                    else isLibretroCore = false
+                                //console.log("index =",index);
+                                //console.log("emulator =", emulator);
+                                //console.log("core =", core);
+                                //console.log("is default =",system.isDefaultEmulatorAt(index));
+                                //console.log("system.getNameAt(index) =", system.getNameAt(index));
+                                //console.log("system.getCoreAt(index) =", system.getCoreAt(index));
+
+                                if (((emulator === system.getNameAt(index)) && (core === system.getCoreAt(index))) ||
+                                   (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === "")))){
                                     return true;
                                 }
-                                else if (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === ""))){
-                                    // check is libretro for filter menu
-                                    if(system.getNameAt(index) === "libretro") isLibretroCore = true
-                                    else isLibretroCore = false
-                                    return true;
+                                else {
+                                    return false;
                                 }
-                                else return false;
                             }
                             ButtonGroup.group: radioGroup
                         }
