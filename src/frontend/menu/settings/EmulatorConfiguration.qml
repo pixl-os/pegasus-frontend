@@ -243,12 +243,110 @@ FocusScope {
 //************************************************ Model 2 emulator options *****************************************************************
                 ToggleOption {
                     id: optModel2emuOption1
-                    label: qsTr("fakeGouraud") + api.tr
+                    label: qsTr("Fake Gouraud") + api.tr
                     note: qsTr("Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.fakeGouraud")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("model2emu.fakeGouraud",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption2
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+                ToggleOption {
+                    id: optModel2emuOption2
+                    label: qsTr("Bilinear Filtering") + api.tr
+                    note: qsTr("Enables bilinear filtering of textures") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.bilinearFiltering")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.bilinearFiltering",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption3
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+                ToggleOption {
+                    id: optModel2emuOption3
+                    label: qsTr("Trilinear Filtering") + api.tr
+                    note: qsTr("Enables mipmap usage and trilinear filtering (doesn’t work with some games, DoA for example)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.trilinearFiltering")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.trilinearFiltering",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption4
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+                ToggleOption {
+                    id: optModel2emuOption4
+                    label: qsTr("Filter Tilemaps") + api.tr
+                    note: qsTr("Enables bilinear filtering on tilemaps (looks good, but can cause some stretch artifacts)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.filterTilemaps")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.filterTilemaps",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption5
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+                ToggleOption {
+                    id: optModel2emuOption5
+                    label: qsTr("Force Managed") + api.tr
+                    note: qsTr("Forces the DX driver to use Managed textures instead of Dynamic") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.forceManaged")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.forceManaged",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption6
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+                ToggleOption {
+                    id: optModel2emuOption6
+                    label: qsTr("Enable MIP") + api.tr
+                    note: qsTr("Enables Direct3D Automipmap generation") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.enableMIP")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.enableMIP",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption7
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+                ToggleOption {
+                    id: optModel2emuOption7
+                    label: qsTr("Mesh Transparency") + api.tr
+                    note: qsTr("Enabled meshed polygons for translucency") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.meshTransparency")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.meshTransparency",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption8
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+                ToggleOption {
+                    id: optModel2emuOption8
+                    label: qsTr("Full screen anti-aliasing") + api.tr
+                    note: qsTr("Enable full screen antialiasing in Direct3D") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.fullscreenAA")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.fullscreenAA",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     // not visible if not model 2 emulator
@@ -281,7 +379,7 @@ FocusScope {
                         }
                         
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : (isModel2Emu ? optModel2emuOption1 : optSystemAutoSave)
+                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : (isModel2Emu ? optModel2emuOption8 : optSystemAutoSave)
                         KeyNavigation.down: (index < emulatorButtons.count) ? emulatorButtons.itemAt(index+1) : emulatorButtons.itemAt(emulatorButtons.count - 1)
                         
                         RadioButton {
