@@ -5,10 +5,10 @@ REQ_QT_MINOR = 15
 QML_IMPORT_MAJOR_VERSION = 5
 QML_IMPORT_MINOR_VERSION = 15
 
-lessThan(QT_MAJOR_VERSION, $${REQ_QT_MAJOR}) | lessThan(QT_MINOR_VERSION, $${REQ_QT_MINOR}) {
-    message("Cannot build this project using Qt $$[QT_VERSION]")
-    error("This project requires at least Qt $${REQ_QT_MAJOR}.$${REQ_QT_MINOR} or newer")
-}
+#lessThan(QT_MAJOR_VERSION, $${REQ_QT_MAJOR}) | lessThan(QT_MINOR_VERSION, $${REQ_QT_MINOR}) {
+#    message("Cannot build this project using Qt $$[QT_VERSION]")
+#    error("This project requires at least Qt $${REQ_QT_MAJOR}.$${REQ_QT_MINOR} or newer")
+#}
 
 
 TEMPLATE = subdirs
