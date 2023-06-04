@@ -1,5 +1,5 @@
-REQ_QT_MAJOR = 5
-REQ_QT_MINOR = 15
+REQ_QT_MAJOR = 6
+REQ_QT_MINOR = 4
 
 #lessThan(QT_MAJOR_VERSION, $${REQ_QT_MAJOR}) | lessThan(QT_MINOR_VERSION, $${REQ_QT_MINOR}) {
 #    message("Cannot build this project using Qt $$[QT_VERSION]")
