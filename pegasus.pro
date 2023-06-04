@@ -1,10 +1,6 @@
 REQ_QT_MAJOR = 5
 REQ_QT_MINOR = 15
 
-# FIXME: pixL have qt6.4.2 but pegasus need qt5.15.8 force version for cohabitation
-QML_IMPORT_MAJOR_VERSION = 5
-QML_IMPORT_MINOR_VERSION = 15
-
 #lessThan(QT_MAJOR_VERSION, $${REQ_QT_MAJOR}) | lessThan(QT_MINOR_VERSION, $${REQ_QT_MINOR}) {
 #    message("Cannot build this project using Qt $$[QT_VERSION]")
 #    error("This project requires at least Qt $${REQ_QT_MAJOR}.$${REQ_QT_MINOR} or newer")
