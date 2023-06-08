@@ -243,12 +243,12 @@ FocusScope {
 //************************************************ Model 2 emulator options *****************************************************************
                 ToggleOption {
                     id: optModel2emuOption1
-                    label: qsTr("Fake Gouraud") + api.tr
-                    note: qsTr("Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat)") + api.tr
+                    label: qsTr("Xinput") + api.tr
+                    note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.fakeGouraud")
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.xinput",true) //activated by default
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.fakeGouraud",checked);
+                        api.internal.recalbox.setBoolParameter("model2emu.xinput",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption2
@@ -257,6 +257,20 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optModel2emuOption2
+                    label: qsTr("Fake Gouraud") + api.tr
+                    note: qsTr("Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.fakeGouraud")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.fakeGouraud",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption21
+                    // not visible if not model 2 emulator
+                    visible : isModel2Emu
+                }
+                ToggleOption {
+                    id: optModel2emuOption21
                     label: qsTr("Bilinear Filtering") + api.tr
                     note: qsTr("Enables bilinear filtering of textures") + api.tr
 
