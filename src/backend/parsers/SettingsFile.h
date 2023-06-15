@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <QTextStream>
 #include <map>
+#include "QKeySequence"
 
 
 namespace appsettings {

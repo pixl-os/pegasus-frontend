@@ -6,6 +6,7 @@
 #include "filters/filtercontainer.h"
 #include "sorters/sortercontainer.h"
 #include "proxyroles/proxyrolecontainer.h"
+#include "QRegExp"
 
 namespace qqsfpm {
 
