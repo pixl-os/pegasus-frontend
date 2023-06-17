@@ -244,11 +244,15 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption1
                     label: qsTr("Xinput") + api.tr
-                    note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used. (on change, need to re-install wine)") + api.tr
+                    note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used. (on change, need reboot)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.xinput",false) //deactivated by default to use Dinput
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.xinput",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter("model2emu.xinput",false)){
+                            api.internal.recalbox.setBoolParameter("model2emu.xinput",checked);
+                            //need to reboot to take change into account !
+                            needReboot = true;
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption2
