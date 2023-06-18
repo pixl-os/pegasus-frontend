@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file (focus on ch
 	- Upgrade c++ to 17 in pegasus-front build
 	- Upgrade gcc on 12.2.0 in pegasus-front build
 
+- Features:
+	- add options for model 2 emulator in sega model2 system
+
 ## [pixL-master] - 2023-05-26 - v0.1.3
 - Fixes:
 	- fix rename hostname RECALBOX to PIXL
