@@ -16,7 +16,7 @@ FocusScope {
 
     width: parent.width
     height: parent.height
-
+    
     anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
@@ -24,9 +24,7 @@ FocusScope {
 
     property var system;
     // check if is a libretro emulator for dynamic entry
-    property bool isLibretroCore
-    // check if is model2emu for dynamic entry
-    property bool isModel2Emu
+    property bool isLibretroCore;
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -45,7 +43,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings per systems > ") + api.tr + system.name
+        text: qsTr("Settings systems > ") + api.tr + system.name
         z: 2
     }
     Flickable {
@@ -120,10 +118,8 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: isModel2Emu ? optModel2emuOption1 : optSystemSmoothGame
+                    KeyNavigation.down: optSystemSmoothGame
                 }
-
-//************************************************ libretro cores options *****************************************************************
                 ToggleOption {
                     id: optSystemSmoothGame
 
@@ -240,145 +236,14 @@ FocusScope {
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
-//************************************************ Model 2 emulator options *****************************************************************
-                ToggleOption {
-                    id: optModel2emuOption1
-                    label: qsTr("Xinput") + api.tr
-                    note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used. (on change, need reboot)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.xinput",false) //deactivated by default to use Dinput
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter("model2emu.xinput",false)){
-                            api.internal.recalbox.setBoolParameter("model2emu.xinput",checked);
-                            //need to reboot to take change into account !
-                            needReboot = true;
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2emuOption2
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-                ToggleOption {
-                    id: optModel2emuOption2
-                    label: qsTr("Fake Gouraud") + api.tr
-                    note: qsTr("Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.fakeGouraud")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.fakeGouraud",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2emuOption21
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-                ToggleOption {
-                    id: optModel2emuOption21
-                    label: qsTr("Bilinear Filtering") + api.tr
-                    note: qsTr("Enables bilinear filtering of textures") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.bilinearFiltering")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.bilinearFiltering",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2emuOption3
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-                ToggleOption {
-                    id: optModel2emuOption3
-                    label: qsTr("Trilinear Filtering") + api.tr
-                    note: qsTr("Enables mipmap usage and trilinear filtering (doesn’t work with some games, DoA for example)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.trilinearFiltering")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.trilinearFiltering",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2emuOption4
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-                ToggleOption {
-                    id: optModel2emuOption4
-                    label: qsTr("Filter Tilemaps") + api.tr
-                    note: qsTr("Enables bilinear filtering on tilemaps (looks good, but can cause some stretch artifacts)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.filterTilemaps")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.filterTilemaps",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2emuOption5
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-                ToggleOption {
-                    id: optModel2emuOption5
-                    label: qsTr("Force Managed") + api.tr
-                    note: qsTr("Forces the DX driver to use Managed textures instead of Dynamic") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.forceManaged")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.forceManaged",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2emuOption6
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-                ToggleOption {
-                    id: optModel2emuOption6
-                    label: qsTr("Enable MIP") + api.tr
-                    note: qsTr("Enables Direct3D Automipmap generation") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.enableMIP")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.enableMIP",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2emuOption7
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-                ToggleOption {
-                    id: optModel2emuOption7
-                    label: qsTr("Mesh Transparency") + api.tr
-                    note: qsTr("Enabled meshed polygons for translucency") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.meshTransparency")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.meshTransparency",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2emuOption8
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-                ToggleOption {
-                    id: optModel2emuOption8
-                    label: qsTr("Full screen anti-aliasing") + api.tr
-                    note: qsTr("Enable full screen antialiasing in Direct3D") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.fullscreenAA")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.fullscreenAA",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    // not visible if not model 2 emulator
-                    visible : isModel2Emu
-                }
-//************************************************ emulators/cores selections *****************************************************************
                 SectionTitle {
                     text: qsTr("Core options") + api.tr
                     first: true
                     symbol: "\uf179"
                 }
-
+                
                 ButtonGroup  { id: radioGroup }
-
+                
                 Repeater {
                     id: emulatorButtons
                     model: system.emulatorsCount
@@ -389,17 +254,16 @@ FocusScope {
                         note: system.getCoreLongNameAt(index) + ((system.getCoreVersionAt(index) !== "") ? (" - " + system.getCoreVersionAt(index)) : "") ;
 
                         onActivate: {
-                            //console.log("onActivate");
                             focus = true;
+                            radioButton.checked = true;
                             api.internal.recalbox.setStringParameter(system.shortName + ".emulator",system.getNameAt(index));
                             api.internal.recalbox.setStringParameter(system.shortName + ".core",system.getCoreAt(index));
-                            radioButton.checked = true;
                         }
-
+                        
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : (isModel2Emu ? optModel2emuOption8 : optSystemAutoSave)
+                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : optSystemAutoSave
                         KeyNavigation.down: (index < emulatorButtons.count) ? emulatorButtons.itemAt(index+1) : emulatorButtons.itemAt(emulatorButtons.count - 1)
-
+                        
                         RadioButton {
                             id: radioButton
 
@@ -407,44 +271,27 @@ FocusScope {
                             anchors.rightMargin: horizontalPadding
                             anchors.verticalCenter: parent.verticalCenter
                             
-
-                            onCheckedChanged: {
-                                //console.log("onCheckedChanged");
-                                api.internal.recalbox.setStringParameter(system.shortName + ".emulator",system.getNameAt(index));
-                                api.internal.recalbox.setStringParameter(system.shortName + ".core",system.getCoreAt(index));
-                                // check is libretro for filter menu
-                                if(system.getNameAt(index) === "libretro")
-                                    isLibretroCore = true
-                                else
-                                    isLibretroCore = false
-                                //console.log("isLibretroCore =", isLibretroCore);
-
-                                // check is model2emu for filter menu
-                                if(system.getNameAt(index) === "model2emu")
-                                    isModel2Emu = true
-                                else
-                                    isModel2Emu = false
-                                //console.log("isModel2Emu =", isModel2Emu);
-
-                            }
-
                             checked: {
                                 var emulator = api.internal.recalbox.getStringParameter(system.shortName + ".emulator");
                                 var core = api.internal.recalbox.getStringParameter(system.shortName + ".core");
-                                //console.log("index =",index);
-                                //console.log("emulator =", emulator);
-                                //console.log("core =", core);
-                                //console.log("is default =",system.isDefaultEmulatorAt(index));
-                                //console.log("system.getNameAt(index) =", system.getNameAt(index));
-                                //console.log("system.getCoreAt(index) =", system.getCoreAt(index));
-
-                                if (((emulator === system.getNameAt(index)) && (core === system.getCoreAt(index))) ||
-                                   (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === "")))){
+                                console.log("index=",index);
+                                console.log("emulator=", emulator);
+                                console.log("core=", core);
+                                console.log("is default=",system.isDefaultEmulatorAt(index));
+                                
+                                if ((emulator === system.getNameAt(index)) && (core === system.getCoreAt(index))){
+                                    // check is libretro for filter menu
+                                    if(emulator === "libretro") isLibretroCore = true
+                                    else isLibretroCore = false
                                     return true;
                                 }
-                                else {
-                                    return false;
+                                else if (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === ""))){
+                                    // check is libretro for filter menu
+                                    if(system.getNameAt(index) === "libretro") isLibretroCore = true
+                                    else isLibretroCore = false
+                                    return true;
                                 }
+                                else return false;
                             }
                             ButtonGroup.group: radioGroup
                         }

@@ -1,7 +1,19 @@
 // Pegasus Frontend
+// Copyright (C) 2017-2018  Mátyás Mustoha
 //
-// Updated by BozoTheGeek 10/05/2021
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
@@ -13,11 +25,10 @@ FocusScope {
     id: root
 
     signal close
-    signal openEmulatorConfiguration(var system)
+    signal openRetroarchSettings
 
     width: parent.width
     height: parent.height
-    
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
@@ -84,34 +95,87 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
+                SimpleButton {
+                    id: optRetroarch
+                    //set focus only on firt item
+                    focus: true
 
-                Repeater {
-                    id: systemButtons
-                    model: api.collections
-                    SimpleButton {
-                        label: qsTr(modelData.name) + api.tr
+                    label: qsTr("Retroarch") + api.tr
+                    note: qsTr("Change Configuration for retroarch/libretro multi emulator !") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
-                        // set focus only on first item
-                        focus: index === 0 ? true : false
-
-                        onActivate: {
-                            //console.log("root.openEmulatorConfiguration()");
-                            focus = true;
-                            root.openEmulatorConfiguration(modelData);
-
-                        }
-                        
-                        onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index !== 0) ?  systemButtons.itemAt(index-1) : systemButtons.itemAt(systemButtons.count-1)
-                        KeyNavigation.down: (index < systemButtons.count) ? systemButtons.itemAt(index+1) : systemButtons.itemAt(0)
-                        //pointer moved in SimpleButton desactived on default
-                        pointerIcon: true
+                    onActivate: {
+                        focus = true;
+                        console.log("openRetroarchSettings");
+                        root.openRetroarchSettings();
                     }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDolphin
+                }
+                SimpleButton {
+                    id: optDolphin
+                    label: qsTr("Dolphin") + api.tr
+                    note: qsTr("Change Configuration for Dolphin emulator for Nintendo GameCube and Wii.") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
+                    onActivate: {
+                        focus = true;
+                        console.log("openDolphinSettings");
+                        root.openDolphinSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optPcsx2
+                }
+                SimpleButton {
+                    id: optPcsx2
+                    label: qsTr("Pcsx2") + api.tr
+                    note: qsTr("Change Configuration for Pcsx2 emulator for Sony Playstation 2") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        console.log("openPcsx2Settings");
+                        root.openPcsx2Settings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optCitra
+                }
+                SimpleButton {
+                    id: optCitra
+                    label: qsTr("Citra-emu") + api.tr
+                    note: qsTr("Change Configuration for Citra-emu emulator for Nintendo 3ds") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        console.log("openCitraSettings");
+                        root.openCitraSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optXemu
+                }
+                SimpleButton {
+                    id: optXemu
+                    label: qsTr("Xemu") + api.tr
+                    note: qsTr("Change Configuration for Xemu emulator for Microsoft Xbox") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        console.log("openXemuSettings");
+                        root.openXemuSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.down: optDolphin
                 }
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: vpx(30)
                 }
             }
         }

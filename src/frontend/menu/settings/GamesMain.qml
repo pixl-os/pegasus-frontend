@@ -26,6 +26,7 @@ FocusScope {
 
     signal close
     signal openBiosCheckingSettings
+    signal openSystemsAdvancedEmulatorSettings
     signal openAdvancedEmulatorSettings
 
     width: parent.width
@@ -127,32 +128,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optPixelPerfect
-                }
-                ToggleOption {
-                    id: optPixelPerfect
-
-                    label: qsTr("Pixel perfect") + api.tr
-                    note: qsTr("Once enabled, your screen will be cropped, and you will have a pixel perfect image") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.integerscale")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.integerscale",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSmoothGame
-                }
-                ToggleOption {
-                    id: optSmoothGame
-
-                    label: qsTr("Smooth games") + api.tr
-                    note: qsTr("Set smooth for all emulators") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.smooth")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.smooth",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGlobalShaderSet
                 }
                 MultivalueOption {
@@ -225,39 +200,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("global.showfps",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGameRewind
-                }
-                SectionTitle {
-                    text: qsTr("Gameplay options") + api.tr
-                    first: true
-                    symbol: "\uf412"
-                }
-                ToggleOption {
-                    id: optGameRewind
-
-                    label: qsTr("Game rewind") + api.tr
-                    note: qsTr("Set rewind for all emulators 'Only work with Retroarch'") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.rewind")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.rewind",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optAutoSave
-                }
-                ToggleOption {
-                    id: optAutoSave
-
-                    label: qsTr("Auto save/load") + api.tr
-                    note: qsTr("Set autosave/load savestate for all emulators") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.autosave")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.autosave",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optBiosChecking
-
                 }
                 SectionTitle {
                     text: qsTr("Other options") + api.tr
@@ -276,13 +219,28 @@ FocusScope {
                         root.openBiosCheckingSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSystemsAdvancedEmulator
+                }
+                SimpleButton {
+                    id: optSystemsAdvancedEmulator
+
+                    label: qsTr("Settings systems") + api.tr
+                    note: qsTr("choose emulators, ratio and more per systems") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openSystemsAdvancedEmulatorSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAdvancedEmulator
                 }
                 SimpleButton {
                     id: optAdvancedEmulator
 
-                    label: qsTr("Advandced emulators settings") + api.tr
-                    note: qsTr("choose emulator, ratio and more by system") + api.tr
+                    label: qsTr("Advanced emulators settings") + api.tr
+                    note: qsTr("Configuration per emulators, resolution, antialiasing, etc...") + api.tr
                     //pointer moved in SimpleButton desactived on default
                     pointerIcon: true
 
@@ -291,7 +249,7 @@ FocusScope {
                         root.openAdvancedEmulatorSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optBiosChecking
+//                    KeyNavigation.down: optSystemsAdvancedEmulator
                 }
                 Item {
                     width: parent.width
