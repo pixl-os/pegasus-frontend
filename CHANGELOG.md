@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- change parameter from "emulationstation.gamelistonly" to "pegasus.gamelistonly" (same for gamelistfirst also)
 	- change name/path from es_input.cfg to input.cfg
 	- replace usage of es_log.txt by recalbox.log now
+	- Upgrade c++ to 17 in pegasus-front build
 
 ## [pixL-master] - 2023-04-29 - v0.1.2
 - Fixes:
