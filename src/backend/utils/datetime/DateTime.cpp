@@ -7,6 +7,7 @@
 
 #include <sys/time.h>
 #include "DateTime.h"
+#include <ctime>
 
 char LoadTimeZone()
 {
