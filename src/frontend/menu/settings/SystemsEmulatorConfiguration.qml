@@ -24,7 +24,7 @@ FocusScope {
 
     property var system;
     // check if is a libretro emulator for dynamic entry
-    property bool isLibretroCore;
+    property bool isLibretroCore
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {

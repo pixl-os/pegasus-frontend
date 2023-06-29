@@ -49,6 +49,7 @@ FocusScope {
 
         onClose: root.close()
         onOpenRetroarchSettings: root.openScreen("emulatorsetting/RetroarchSettings.qml")
+        onOpenModel2Settings: root.openScreen("emulatorsetting/Model2Settings.qml")
     }
     Loader {
         id: modal

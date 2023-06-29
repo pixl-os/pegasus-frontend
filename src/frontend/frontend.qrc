@@ -251,5 +251,6 @@
         <file>menu/settings/AdvancedEmulatorMain.qml</file>
         <file>menu/settings/emulatorsetting/RetroarchSettings.qml</file>
         <file>menu/settings/AdvancedEmulatorSettings.qml</file>
+        <file>menu/settings/emulatorsetting/Model2Settings.qml</file>
     </qresource>
 </RCC>

@@ -26,6 +26,7 @@ FocusScope {
 
     signal close
     signal openRetroarchSettings
+    signal openModel2Settings
 
     width: parent.width
     height: parent.height
@@ -169,6 +170,21 @@ FocusScope {
                         focus = true;
                         console.log("openXemuSettings");
                         root.openXemuSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2
+                }
+                SimpleButton {
+                    id: optModel2
+                    label: qsTr("Model2") + api.tr
+                    note: qsTr("Change Configuration for Model2 emulator for Sega Model2 !") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        console.log("openModel2Settings");
+                        root.openModel2Settings();
                     }
                     onFocusChanged: container.onFocus(this)
 //                    KeyNavigation.down: optDolphin
