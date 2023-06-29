@@ -29,6 +29,7 @@ FocusScope {
     signal openModel2Settings
     signal openDolphinSettings
     signal openPcsx2Settings
+    signal openCitraSettings
 
     width: parent.width
     height: parent.height

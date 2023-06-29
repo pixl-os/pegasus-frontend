@@ -52,6 +52,7 @@ FocusScope {
         onOpenModel2Settings: root.openScreen("emulatorsetting/Model2Settings.qml")
         onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
         onOpenPcsx2Settings: root.openScreen("emulatorsetting/Pcsx2Settings.qml")
+        onOpenCitraSettings: root.openScreen("emulatorsetting/CitraSettings.qml")
     }
     Loader {
         id: modal

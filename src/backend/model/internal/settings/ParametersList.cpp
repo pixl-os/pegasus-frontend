@@ -285,7 +285,7 @@ QStringList GetParametersList(QString Parameter)
         /*
          * MSAA = 0x00000001 # None, 0x00000002, 0x00000004, 0x00000008,
         */
-        ListOfValue << QObject::tr("None") << QObject::tr("2x MSAA") <<  QObject::tr("4x MSAA") << QObject::tr("8x MSAA");
+        ListOfValue << QObject::tr("None") << QObject::tr("2x MSAA") << QObject::tr("4x MSAA") << QObject::tr("8x MSAA");
 
         ListOfInternalValue << "0x00000001" << "0x00000002" << "0x00000004" << "0x00000008" ;
     }
@@ -305,7 +305,7 @@ QStringList GetParametersList(QString Parameter)
         /*
          * MaxAnisotropy = 0, 2, 4, 8, 16
         */
-        ListOfValue << QObject::tr("Off") << QObject::tr("2x") <<  QObject::tr("4x") << QObject::tr("8x") << QObject::tr("16x");
+        ListOfValue << QObject::tr("Off") << QObject::tr("2x") << QObject::tr("4x") << QObject::tr("8x") << QObject::tr("16x");
 
         ListOfInternalValue << "0" << "2" << "4" << "8" << "16";
     }
@@ -316,6 +316,30 @@ QStringList GetParametersList(QString Parameter)
         */
         ListOfValue << QObject::tr("None") << QObject::tr("Scanline filter") << QObject::tr("Diagonal filter")
                     << QObject::tr("Triangular filter") << QObject::tr("Wave filter") << QObject::tr("Lottes CRT filter");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter == "citra.resolution")
+    {
+        /*
+         * resolution_factor = 1
+        */
+        ListOfValue << QObject::tr("Auto (Window Size)") << QObject::tr("Native 400x240") << QObject::tr("x2 Native 800x480") << QObject::tr("x3 Native 1200x720")
+                    << QObject::tr("x4 Native 1600x960") << QObject::tr("x5 Native 2000x1200") << QObject::tr("x6 Native 2400x1440") << QObject::tr("x7 Native 2800x1680")
+                    << QObject::tr("x8 Native 3200x1920") << QObject::tr("x9 Native 3600x2160") << QObject::tr("x10 Native 4000x2400");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "citra.texture.filter")
+    {
+        /*
+         * texture_filter = 1
+        */
+        ListOfValue << QObject::tr("None") << QObject::tr("Anime4k") << QObject::tr("Bicubic")
+                    << QObject::tr("Nearest Neighbor") << QObject::tr("ScaleForce") << QObject::tr("xBRZ");
 
         ListOfInternalValue << "0" << "1" << "2"
                             << "3" << "4" << "5";
