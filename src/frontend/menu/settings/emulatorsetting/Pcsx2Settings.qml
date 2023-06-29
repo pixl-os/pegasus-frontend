@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > dolphin-emu") + api.tr
+        text: qsTr("Advanced emulators settings > pcsx2") + api.tr
         z: 2
     }
     Flickable {
@@ -96,7 +96,7 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "dolphin.resolution"
+                    property string parameterName : "pcsx2.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
                     note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality,But cause issues in certain games") + api.tr
@@ -114,22 +114,46 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optAntiAliasing
+                    KeyNavigation.down: optAnisotropy
                 }
                 MultivalueOption {
-                    id: optAntiAliasing
+                    id: optAnisotropy
 
                     //property to manage parameter name
-                    property string parameterName : "dolphin.antialiasing"
+                    property string parameterName : "pcsx2.anisotropy"
 
-                    label: qsTr("Anti-Aliasing") + api.tr
+                    label: qsTr("Anisotropy") + api.tr
                     note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optAntiAliasing;
+                        parameterslistBox.callerid = optAnisotropy;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTVShaders
+                }
+                MultivalueOption {
+                    id: optTVShaders
+
+                    //property to manage parameter name
+                    property string parameterName : "pcsx2.tvshaders"
+
+                    label: qsTr("Tv Shaders") + api.tr
+                    note: qsTr("Set your shaders effect") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optTVShaders;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -151,9 +175,9 @@ FocusScope {
                     label: qsTr("Enable Cheats") + api.tr
                     note: qsTr("Ingames cheats enable") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("dolphin.cheats")
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.cheats")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("dolphin.cheats",checked);
+                        api.internal.recalbox.setBoolParameter("pcsx2.cheats",checked);
                     }
                     onFocusChanged: container.onFocus(this)
 //                    KeyNavigation.down: optAutoSave

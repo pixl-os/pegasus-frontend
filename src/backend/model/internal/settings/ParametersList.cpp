@@ -272,12 +272,12 @@ QStringList GetParametersList(QString Parameter)
         /*
          * InternalResolution = 1, 2, 3, 4, 5, 6, 7, 8, 0 # AUTO
         */
-        ListOfValue << QObject::tr("Auto Multiple of 640x528") << QObject::tr("Native 640x528") <<  QObject::tr("x2 Native 1280x1056 (720p)") << QObject::tr("x3 Native 1920x1584 (1080p)")
+        ListOfValue << QObject::tr("Auto Multiple of 640x528") << QObject::tr("Native 640x528") << QObject::tr("x2 Native 1280x1056 (720p)") << QObject::tr("x3 Native 1920x1584 (1080p)")
                     << QObject::tr("x4 Native 2560x2112 (1440p)") << QObject::tr("x5 Native 3200x2640") << QObject::tr("x6 Native 3840x3168 (4k)") << QObject::tr("x7 Native 4480x3696")
-                    << QObject::tr("x8 Native 5120x4224 (5k)");// using ionIcons Font
+                    << QObject::tr("x8 Native 5120x4224 (5k)");
 
-        ListOfInternalValue << "0" <<  "1" << "2" << "3"
-                            << "4" << "5" <<  "6" << "7"
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
                             << "8" ;
     }
     else if (Parameter == "dolphin.antialiasing")
@@ -287,7 +287,38 @@ QStringList GetParametersList(QString Parameter)
         */
         ListOfValue << QObject::tr("None") << QObject::tr("2x MSAA") <<  QObject::tr("4x MSAA") << QObject::tr("8x MSAA");
 
-        ListOfInternalValue << "0x00000001" <<  "0x00000002" << "0x00000004" << "0x00000008" ;
+        ListOfInternalValue << "0x00000001" << "0x00000002" << "0x00000004" << "0x00000008" ;
+    }
+    else if (Parameter == "pcsx2.resolution")
+    {
+        /*
+         * upscale_multiplier = 1, 2, 3, 4, 5, 6, 7, 8, 0
+        */
+        ListOfValue << QObject::tr("Native (ps2)") << QObject::tr("x2 Native (720p)") << QObject::tr("x3 Native (1080p)") << QObject::tr("x4 Native (1440p 2k)")
+                    << QObject::tr("x5 Native (1620p)") << QObject::tr("x6 Native (4k)") << QObject::tr("x7 Native (2520p)") << QObject::tr("x8 Native (2880p)");
+
+        ListOfInternalValue << "1" << "2" << "3" << "4"
+                            << "5" << "6" << "7" << "8" ;
+    }
+    else if (Parameter == "pcsx2.anisotropy")
+    {
+        /*
+         * MaxAnisotropy = 0, 2, 4, 8, 16
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("2x") <<  QObject::tr("4x") << QObject::tr("8x") << QObject::tr("16x");
+
+        ListOfInternalValue << "0" << "2" << "4" << "8" << "16";
+    }
+    else if (Parameter == "pcsx2.tvshaders")
+    {
+        /*
+         * TvShaders = 0, 1, 2, 3, 4, 5
+        */
+        ListOfValue << QObject::tr("None") << QObject::tr("Scanline filter") << QObject::tr("Diagonal filter")
+                    << QObject::tr("Triangular filter") << QObject::tr("Wave filter") << QObject::tr("Lottes CRT filter");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
     }
     else if (Parameter == "boot.audio.device")
     {

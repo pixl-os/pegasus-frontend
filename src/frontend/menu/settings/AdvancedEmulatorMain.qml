@@ -28,6 +28,7 @@ FocusScope {
     signal openRetroarchSettings
     signal openModel2Settings
     signal openDolphinSettings
+    signal openPcsx2Settings
 
     width: parent.width
     height: parent.height
