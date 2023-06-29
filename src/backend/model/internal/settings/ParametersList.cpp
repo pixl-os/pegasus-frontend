@@ -267,6 +267,28 @@ QStringList GetParametersList(QString Parameter)
             ListOfInternalValue.append(""); //to empty parameter
         }
     }
+    else if (Parameter == "dolphin.resolution")
+    {
+        /*
+         * InternalResolution = 1, 2, 3, 4, 5, 6, 7, 8, 0 # AUTO
+        */
+        ListOfValue << QObject::tr("Auto Multiple of 640x528") << QObject::tr("Native 640x528") <<  QObject::tr("x2 Native 1280x1056 (720p)") << QObject::tr("x3 Native 1920x1584 (1080p)")
+                    << QObject::tr("x4 Native 2560x2112 (1440p)") << QObject::tr("x5 Native 3200x2640") << QObject::tr("x6 Native 3840x3168 (4k)") << QObject::tr("x7 Native 4480x3696")
+                    << QObject::tr("x8 Native 5120x4224 (5k)");// using ionIcons Font
+
+        ListOfInternalValue << "0" <<  "1" << "2" << "3"
+                            << "4" << "5" <<  "6" << "7"
+                            << "8" ;
+    }
+    else if (Parameter == "dolphin.antialiasing")
+    {
+        /*
+         * MSAA = 0x00000001 # None, 0x00000002, 0x00000004, 0x00000008,
+        */
+        ListOfValue << QObject::tr("None") << QObject::tr("2x MSAA") <<  QObject::tr("4x MSAA") << QObject::tr("8x MSAA");
+
+        ListOfInternalValue << "0x00000001" <<  "0x00000002" << "0x00000004" << "0x00000008" ;
+    }
     else if (Parameter == "boot.audio.device")
     {
         /*

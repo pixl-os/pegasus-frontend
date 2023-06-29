@@ -50,6 +50,7 @@ FocusScope {
         onClose: root.close()
         onOpenRetroarchSettings: root.openScreen("emulatorsetting/RetroarchSettings.qml")
         onOpenModel2Settings: root.openScreen("emulatorsetting/Model2Settings.qml")
+        onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
     }
     Loader {
         id: modal
