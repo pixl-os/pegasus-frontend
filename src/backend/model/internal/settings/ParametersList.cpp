@@ -115,19 +115,19 @@ QStringList GetParametersList(QString Parameter)
         select only compatible extension shaders in menu opengl(glslp) / vulkan(slangp)*/
         QString shadersext;
         QString filterext;
-//        QString dirShaders;
+        //        QString dirShaders;
         // check vulkan option in recalbox.conf
         if (RecalboxConf::Instance().AsBool("system.video.driver.vulkan", false) == true)
         {
             shadersext = "*.slangp";
             filterext = ".slangp";
-//            dirShaders = "shaders_slang";
+            //            dirShaders = "shaders_slang";
         }
         else
         {
             shadersext = "*.glslp";
             filterext = ".glslp";
-//            dirShaders = "shaders_glsl";
+            //            dirShaders = "shaders_glsl";
         }
 
         // add none in list for disabled option if needed
@@ -137,7 +137,7 @@ QStringList GetParametersList(QString Parameter)
 
         //read root directory
         // Define shaders path
-//        QDir shadersDir("/recalbox/share/shaders/" + dirShaders + "/");
+        //        QDir shadersDir("/recalbox/share/shaders/" + dirShaders + "/");
         QDir shadersDir("/recalbox/share/shaders/");
         // Sorting by name
         shadersDir.setSorting(QDir::Name);
@@ -159,7 +159,7 @@ QStringList GetParametersList(QString Parameter)
         while (it.hasNext()) {
             QString dir = it.next();
             QString relativedir = dir;
-//            relativedir = relativedir.replace("/recalbox/share/shaders/" + dirShaders + "/","");
+            //            relativedir = relativedir.replace("/recalbox/share/shaders/" + dirShaders + "/","");
             relativedir = relativedir.replace("/recalbox/share/shaders/","");
             //Log::debug(LOGMSG("Subdir : '%1'").arg(dir));
             QDir shadersSubDir(dir);
@@ -344,6 +344,21 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << "0" << "1" << "2"
                             << "3" << "4" << "5";
     }
+    else if (Parameter.startsWith("cemu.", Qt::CaseInsensitive) == true)
+    {
+        if (Parameter.endsWith(".filter", Qt::CaseInsensitive) == true)
+        {
+            /*
+            * <UpscaleFilter>1</UpscaleFilter>
+            * <DownscaleFilter>0</DownscaleFilter>
+            */
+            ListOfValue << QObject::tr("Bilinear") << QObject::tr("Bicubic")
+                        << QObject::tr("Hermite") << QObject::tr("Nearest Neighbor");
+
+            ListOfInternalValue << "0" << "1"
+                                << "2" << "3";
+        }
+    }
     else if (Parameter == "boot.audio.device")
     {
         /*
@@ -524,8 +539,8 @@ ParametersList::ParametersList(QObject* parent)
     : QAbstractListModel(parent)
     , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
     , m_role_names({
-{ Roles::Name, QByteArrayLiteral("name") },
-})
+                    { Roles::Name, QByteArrayLiteral("name") },
+                    })
 {
     //empty constructor to be generic
 }

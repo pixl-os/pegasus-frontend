@@ -30,6 +30,7 @@ FocusScope {
     signal openDolphinSettings
     signal openPcsx2Settings
     signal openCitraSettings
+    signal openCemuSettings
 
     width: parent.width
     height: parent.height
@@ -173,6 +174,21 @@ FocusScope {
                         focus = true;
                         console.log("openXemuSettings");
                         root.openXemuSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optCemu
+                }
+                SimpleButton {
+                    id: optCemu
+                    label: qsTr("Cemu") + api.tr
+                    note: qsTr("Change Configuration for Cemu emulator for Nintendo Wiiu") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        console.log("openCemuSettings");
+                        root.openCemuSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2

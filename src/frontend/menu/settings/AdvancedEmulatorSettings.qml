@@ -53,6 +53,7 @@ FocusScope {
         onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
         onOpenPcsx2Settings: root.openScreen("emulatorsetting/Pcsx2Settings.qml")
         onOpenCitraSettings: root.openScreen("emulatorsetting/CitraSettings.qml")
+        onOpenCemuSettings: root.openScreen("emulatorsetting/CemuSettings.qml")
     }
     Loader {
         id: modal

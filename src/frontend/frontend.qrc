@@ -255,5 +255,6 @@
         <file>menu/settings/emulatorsetting/DolphinSettings.qml</file>
         <file>menu/settings/emulatorsetting/Pcsx2Settings.qml</file>
         <file>menu/settings/emulatorsetting/CitraSettings.qml</file>
+        <file>menu/settings/emulatorsetting/CemuSettings.qml</file>
     </qresource>
 </RCC>
