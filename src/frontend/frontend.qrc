@@ -257,5 +257,6 @@
         <file>menu/settings/emulatorsetting/CitraSettings.qml</file>
         <file>menu/settings/emulatorsetting/CemuSettings.qml</file>
         <file>menu/settings/emulatorsetting/XemuSettings.qml</file>
+        <file>menu/settings/emulatorsetting/SupermodelSettings.qml</file>
     </qresource>
 </RCC>

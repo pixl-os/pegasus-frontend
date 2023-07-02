@@ -114,7 +114,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTextureFilter
+//                    KeyNavigation.down: optTextureFilter
                 }
                 Item {
                     width: parent.width

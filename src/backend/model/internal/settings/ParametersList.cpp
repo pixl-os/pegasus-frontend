@@ -359,6 +359,18 @@ QStringList GetParametersList(QString Parameter)
                                 << "2" << "3";
         }
     }
+    else if (Parameter == "supermodel.resolution")
+    {
+        /*
+         * XResolution=640
+         * YResolution=480
+        */
+        ListOfValue << QObject::tr("Auto (screen resolution)") << QObject::tr("Native") << QObject::tr("x2 Native (720p)")
+                    << QObject::tr("x3 Native (1080p)") << QObject::tr("x4 Native (2k)") << QObject::tr("x5 Native (4k)");
+
+        ListOfInternalValue << "auto" << "640,480" << "1280,720"
+                            << "1920,1080" << "2560,1440" << "3840,2160";
+    }
     else if (Parameter == "xemu.resolution")
     {
         /*

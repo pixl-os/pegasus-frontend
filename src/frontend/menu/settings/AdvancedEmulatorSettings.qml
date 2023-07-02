@@ -54,6 +54,8 @@ FocusScope {
         onOpenPcsx2Settings: root.openScreen("emulatorsetting/Pcsx2Settings.qml")
         onOpenCitraSettings: root.openScreen("emulatorsetting/CitraSettings.qml")
         onOpenCemuSettings: root.openScreen("emulatorsetting/CemuSettings.qml")
+        onOpenXemuSettings: root.openScreen("emulatorsetting/XemuSettings.qml")
+        onOpenSupermodelSettings: root.openScreen("emulatorsetting/SupermodelSettings.qml")
     }
     Loader {
         id: modal

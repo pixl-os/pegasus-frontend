@@ -31,6 +31,8 @@ FocusScope {
     signal openPcsx2Settings
     signal openCitraSettings
     signal openCemuSettings
+    signal openXemuSettings
+    signal openSupermodelSettings
 
     width: parent.width
     height: parent.height
@@ -204,6 +206,21 @@ FocusScope {
                         focus = true;
                         console.log("openModel2Settings");
                         root.openModel2Settings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSupermodel
+                }
+                SimpleButton {
+                    id: optSupermodel
+                    label: qsTr("Supermodel") + api.tr
+                    note: qsTr("Change Configuration for Supermodel emulator for Sega Model3 !") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        console.log("openSupermodelSettings");
+                        root.openSupermodelSettings();
                     }
                     onFocusChanged: container.onFocus(this)
 //                    KeyNavigation.down: optDolphin
