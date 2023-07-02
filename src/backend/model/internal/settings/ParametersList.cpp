@@ -359,6 +359,19 @@ QStringList GetParametersList(QString Parameter)
                                 << "2" << "3";
         }
     }
+    else if (Parameter == "xemu.resolution")
+    {
+        /*
+         * surface_scale = 1
+        */
+        ListOfValue << QObject::tr("Native") << QObject::tr("x2 Native") << QObject::tr("x3 Native") << QObject::tr("x4 Native")
+                    << QObject::tr("x5 Native") << QObject::tr("x6 Native") << QObject::tr("x7 Native") << QObject::tr("x8 Native")
+                    << QObject::tr("x9 Native") << QObject::tr("x10 Native");
+
+        ListOfInternalValue << "1" << "2" << "3" << "4"
+                            << "5" << "6" << "7" << "8"
+                            << "9" << "10";
+    }
     else if (Parameter == "boot.audio.device")
     {
         /*
