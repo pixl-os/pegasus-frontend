@@ -114,7 +114,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGpuThreaded
+                    KeyNavigation.down: optNew3dEngine
                 }
                 SectionTitle {
                     text: qsTr("Core options") + api.tr
@@ -122,14 +122,14 @@ FocusScope {
                     symbol: "\uf179"
                 }
                 ToggleOption {
-                    id: optGpuThreaded
+                    id: optNew3dEngine
 
-                    label: qsTr("Gpu threaded") + api.tr
-                    note: qsTr("Run graphics rendering in main thread") + api.tr
+                    label: qsTr("New 3d engine") + api.tr
+                    note: qsTr("Switch between legacy and new 3d engine. \nEnable for new 3d engine by default") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("supermodel.gpu.threaded")
+                    checked: api.internal.recalbox.getBoolParameter("supermodel.new3d.engine")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("supermodel.gpu.threaded",checked);
+                        api.internal.recalbox.setBoolParameter("supermodel.new3d.engine",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optMultiTexture
@@ -138,11 +138,25 @@ FocusScope {
                     id: optMultiTexture
 
                     label: qsTr("Multi texture") + api.tr
-                    note: qsTr("Use 8 texture maps for decoding (legacy engine)") + api.tr
+                    note: qsTr("Use 8 texture maps for decoding (legacy engine). \nDisabled on default") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.multi.texture")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("supermodel.multi.texture",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGpuThreaded
+                    visible: optNew3dEngine.checked ? false : true
+                }
+                ToggleOption {
+                    id: optGpuThreaded
+
+                    label: qsTr("Gpu threaded") + api.tr
+                    note: qsTr("Run graphics rendering in main thread. \nEnable by default") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("supermodel.gpu.threaded")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("supermodel.gpu.threaded",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optQuadRendering
@@ -151,58 +165,50 @@ FocusScope {
                     id: optQuadRendering
 
                     label: qsTr("Quad Rendering") + api.tr
-                    note: qsTr("Enable proper quad rendering") + api.tr
+                    note: qsTr("Enable proper quad rendering. \nEnable by default") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.quad.rendering")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("supermodel.quad.rendering",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optThrottle
-                }
-                ToggleOption {
-                    id: optThrottle
-
-                    label: qsTr("Enable Throttle") + api.tr
-                    note: qsTr("Enable frame rate lock") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("supermodel.throttle")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("supermodel.throttle",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optPowerPcFrequency
-                }
-                SliderOption {
-                    id: optPowerPcFrequency
-
-                    //property to manage parameter name
-                    property string parameterName : "supermodel.powerpc.frequency"
-
-                    //property of SliderOption to set
-                    label: qsTr("PowerPC frequency") + api.tr
-                    note: qsTr("Many games can be run at as low as 25 MHz,\nbut others require higher clock frequencies.\nOptimal values will differ from game to game.") + api.tr
-                    // in slider object
-                    max : 145
-                    min : 25
-                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
-                    // in text object
-                    value: api.internal.recalbox.getIntParameter(parameterName) + "MHz"
-                    onActivate: {
-                        focus = true;
-                    }
-                    Keys.onLeftPressed: {
-                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-                        value = slidervalue + "MHz";
-                        sfxNav.play();
-                    }
-                    Keys.onRightPressed: {
-                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-                        value = slidervalue + "MHz";
-                        sfxNav.play();
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetwork
+                }
+//                SliderOption {
+//                    id: optPowerPcFrequency
+
+//                    //property to manage parameter name
+//                    property string parameterName : "supermodel.powerpc.frequency"
+
+//                    //property of SliderOption to set
+//                    label: qsTr("PowerPC frequency") + api.tr
+//                    note: qsTr("Many games can be run at as low as 25 MHz,\nbut others require higher clock frequencies.\nOptimal values will differ from game to game.") + api.tr
+//                    // in slider object
+//                    max : 145
+//                    min : 25
+//                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+//                    // in text object
+//                    value: api.internal.recalbox.getIntParameter(parameterName) + "MHz"
+//                    onActivate: {
+//                        focus = true;
+//                    }
+//                    Keys.onLeftPressed: {
+//                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+//                        value = slidervalue + "MHz";
+//                        sfxNav.play();
+//                    }
+//                    Keys.onRightPressed: {
+//                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+//                        value = slidervalue + "MHz";
+//                        sfxNav.play();
+//                    }
+//                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.down: optNetwork
+//                }
+                SectionTitle {
+                    text: qsTr("Netplay") + api.tr
+                    first: true
+                    symbol: "\uf343"
                 }
                 ToggleOption {
                     id: optNetwork
@@ -286,7 +292,7 @@ FocusScope {
                     id: optLegacySoundEngine
 
                     label: qsTr("Legacy Sound engine") + api.tr
-                    note: qsTr("Use Legacy SCSP engine") + api.tr
+                    note: qsTr("Use Legacy SCSP engine. \nDisable on default") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.legacy.sound.engine")
                     onCheckedChanged: {
