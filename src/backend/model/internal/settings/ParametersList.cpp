@@ -384,6 +384,73 @@ QStringList GetParametersList(QString Parameter)
                             << "5" << "6" << "7" << "8"
                             << "9" << "10";
     }
+    else if (Parameter == "ppsspp.resolution")
+    {
+        /*
+         * InternalResolution = 1
+        */
+        ListOfValue << QObject::tr("Auto 1:1") << QObject::tr("Native") << QObject::tr("x2 Native") << QObject::tr("x3 Native")
+                    << QObject::tr("x4 Native") << QObject::tr("x5 Native") << QObject::tr("x6 Native") << QObject::tr("x7 Native")
+                    << QObject::tr("x8 Native") << QObject::tr("x9 Native") << QObject::tr("x10 Native");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "ppsspp.msaa")
+    {
+        /*
+         * multiSampleLevel = 0
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("x2") << QObject::tr("x4") << QObject::tr("x8");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
+    else if (Parameter == "ppsspp.texture.scaling.level")
+    {
+        /*
+         * texScalingLevel = 0
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("x2") << QObject::tr("x3") << QObject::tr("x4") << QObject::tr("x5");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3" << "4";
+    }
+    else if (Parameter == "ppsspp.texture.scaling.type")
+    {
+        /*
+         * texScalingType = 0
+        */
+        ListOfValue << QObject::tr("xBRZ") << QObject::tr("Hybrid") << QObject::tr("Bicubic") << QObject::tr("Hybrid + Bicubic");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
+    else if (Parameter == "ppsspp.anisotropy.level")
+    {
+        /*
+         * AnisotropyLevel = 0
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("x2") << QObject::tr("x4") << QObject::tr("x8") << QObject::tr("x16");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3" << "4";
+    }
+    else if (Parameter == "ppsspp.texture.filter")
+    {
+        /*
+         * TextureFiltering = 0
+        */
+        ListOfValue << QObject::tr("Auto") << QObject::tr("Nearest") << QObject::tr("Linear") << QObject::tr("Auto Max Quality");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
+    else if (Parameter == "ppsspp.texture.shader")
+    {
+        /*
+         * TextureFiltering = 0
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("Tex2xBRZ") << QObject::tr("Tex4xBRZ") << QObject::tr("TexMMPX");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
     else if (Parameter == "boot.audio.device")
     {
         /*

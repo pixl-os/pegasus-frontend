@@ -33,6 +33,7 @@ FocusScope {
     signal openCemuSettings
     signal openXemuSettings
     signal openSupermodelSettings
+    signal openPpssppSettings
 
     width: parent.width
     height: parent.height
@@ -221,6 +222,21 @@ FocusScope {
                         focus = true;
                         console.log("openSupermodelSettings");
                         root.openSupermodelSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optPpsspp
+                }
+                SimpleButton {
+                    id: optPpsspp
+                    label: qsTr("PPSSPP") + api.tr
+                    note: qsTr("Change Configuration for PPSSPP emulator for Sony Playstation Portable !") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        console.log("openPpssppSettings");
+                        root.openPpssppSettings();
                     }
                     onFocusChanged: container.onFocus(this)
 //                    KeyNavigation.down: optDolphin

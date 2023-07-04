@@ -56,6 +56,7 @@ FocusScope {
         onOpenCemuSettings: root.openScreen("emulatorsetting/CemuSettings.qml")
         onOpenXemuSettings: root.openScreen("emulatorsetting/XemuSettings.qml")
         onOpenSupermodelSettings: root.openScreen("emulatorsetting/SupermodelSettings.qml")
+        onOpenPpssppSettings: root.openScreen("emulatorsetting/PpssppSettings.qml")
     }
     Loader {
         id: modal
