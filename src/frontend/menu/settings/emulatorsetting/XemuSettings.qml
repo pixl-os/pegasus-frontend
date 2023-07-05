@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > xemu") + api.tr
+        text: qsTr("Advanced emulators settings > Xemu") + api.tr
         z: 2
     }
     Flickable {

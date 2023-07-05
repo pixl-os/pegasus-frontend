@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > cemu") + api.tr
+        text: qsTr("Advanced emulators settings > Cemu") + api.tr
         z: 2
     }
     Flickable {
@@ -165,6 +165,11 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAsyncCompile
+                }
+                SectionTitle {
+                    text: qsTr("Core options") + api.tr
+                    first: true
+                    symbol: "\uf179"
                 }
                 ToggleOption {
                     id: optAsyncCompile

@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > dolphin-emu") + api.tr
+        text: qsTr("Advanced emulators settings > Dolphin-emu") + api.tr
         z: 2
     }
     Flickable {

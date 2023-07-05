@@ -259,5 +259,6 @@
         <file>menu/settings/emulatorsetting/XemuSettings.qml</file>
         <file>menu/settings/emulatorsetting/SupermodelSettings.qml</file>
         <file>menu/settings/emulatorsetting/PpssppSettings.qml</file>
+        <file>menu/settings/emulatorsetting/YuzuSettings.qml</file>
     </qresource>
 </RCC>

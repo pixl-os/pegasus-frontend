@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > ppsspp") + api.tr
+        text: qsTr("Advanced emulators settings > PPSSPP") + api.tr
         z: 2
     }
     Flickable {
@@ -90,12 +90,6 @@ FocusScope {
                     first: true
                     symbol: "\uf17f"
                 }
-//                multiSampleLevel = conf.getInt("ppsspp.msaa", 0)
-//                shaderChainRequires60FPS = conf.getInt("ppsspp.force.60fps", 0)
-//                texScalingLevel = conf.getInt("ppsspp.texture.scaling.level", 0)
-//                texScalingType = conf.getInt("ppsspp.texture.scaling.type", 0)
-//                anisotropyLevel = conf.getInt("ppsspp.anisotropy.level", 0)
-//                textureFiltering = conf.getInt("ppsspp.texture.filter", 0)
                 MultivalueOption {
                     id: optInternalResolution
                     // set focus only on first item

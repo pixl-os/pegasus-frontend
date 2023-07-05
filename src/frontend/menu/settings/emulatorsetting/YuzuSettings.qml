@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Pcsx2") + api.tr
+        text: qsTr("Advanced emulators settings > Yuzu") + api.tr
         z: 2
     }
     Flickable {
@@ -84,7 +84,6 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
@@ -96,10 +95,10 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "pcsx2.resolution"
+                    property string parameterName : "yuzu.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
-                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality,But cause issues in certain games") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -114,22 +113,49 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optAnisotropy
+                    KeyNavigation.down: optFsrSharpening
+                }
+                SliderOption {
+                    id: optFsrSharpening
+                    //property to manage parameter name
+                    property string parameterName : "yuzu.fsr.sharpening"
+
+                    //property of SliderOption to set
+                    label: qsTr("Fsr Sharpening") + api.tr
+                    note: qsTr("") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName)
+                    onActivate: focus = true;
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue;
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue;
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScalingFilter
                 }
                 MultivalueOption {
-                    id: optAnisotropy
-
+                    id: optScalingFilter
                     //property to manage parameter name
-                    property string parameterName : "pcsx2.anisotropy"
+                    property string parameterName : "yuzu.scaling.filter"
 
-                    label: qsTr("Anisotropy") + api.tr
-                    note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics") + api.tr
+                    label: qsTr("Scaling Filter") + api.tr
+                    note: qsTr("") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optAnisotropy;
+                        parameterslistBox.callerid = optScalingFilter;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -138,49 +164,34 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTVShaders
-                }
-                MultivalueOption {
-                    id: optTVShaders
-
-                    //property to manage parameter name
-                    property string parameterName : "pcsx2.tvshaders"
-
-                    label: qsTr("Tv Shaders") + api.tr
-                    note: qsTr("Set your shaders effect") + api.tr
-
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optTVShaders;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optCheats
+                    KeyNavigation.down: optAsyncShader
                 }
                 SectionTitle {
-                    text: qsTr("Gameplay options") + api.tr
+                    text: qsTr("Core options") + api.tr
                     first: true
-                    symbol: "\uf412"
+                    symbol: "\uf179"
                 }
                 ToggleOption {
-                    id: optCheats
+                    id: optAsyncShader
 
-                    label: qsTr("Enable Cheats") + api.tr
-                    note: qsTr("Ingames cheats enable") + api.tr
+                    label: qsTr("Enable Async shaders") + api.tr
+                    note: qsTr("Async shaders and pipeline compilation, \nReduce stutter at the cost of objects.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.cheats")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.cheats",checked);
-                    }
+                    checked: api.internal.recalbox.getBoolParameter("yuzu.async.shader")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.async.shader",checked);
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optAutoSave
+                    KeyNavigation.down: optExtendedMemory
+                }
+                ToggleOption {
+                    id: optExtendedMemory
+
+                    label: qsTr("Extended memory") + api.tr
+                    note: qsTr("Unsafe extended memory layout (8GB DRAM). \nDisabled on default") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("yuzu.extended.memory")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.extended.memory",checked);
+                    onFocusChanged: container.onFocus(this)
+//                    KeyNavigation.down: optTextureFilter
                 }
                 Item {
                     width: parent.width

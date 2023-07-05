@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Model2") + api.tr
+        text: qsTr("Advanced emulators settings > Model2-emu") + api.tr
         z: 2
     }
     Flickable {

@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > citra-emu") + api.tr
+        text: qsTr("Advanced emulators settings > Citra-emu") + api.tr
         z: 2
     }
     Flickable {
@@ -138,7 +138,7 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optCheats
+//                    KeyNavigation.down: optCheats
                 }
                 Item {
                     width: parent.width
