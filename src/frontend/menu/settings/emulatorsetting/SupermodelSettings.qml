@@ -114,6 +114,19 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optCrosshairs
+                }
+                ToggleOption {
+                    id: optCrosshairs
+
+                    label: qsTr("Crosshairs") + api.tr
+                    note: qsTr("Ative crosshairs on lightgun games") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("supermodel.crosshairs")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("supermodel.crosshairs",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNew3dEngine
                 }
                 SectionTitle {
