@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file (focus on ch
 
 - Features:
 	- add options for model 2 emulator in sega model2 system
+	- set visible only if vulkan is compatible
 
 ## [pixL-master] - 2023-05-26 - v0.1.3
 - Fixes:
