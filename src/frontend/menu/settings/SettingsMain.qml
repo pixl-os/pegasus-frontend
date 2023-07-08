@@ -322,6 +322,8 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optStorageDevices
+                    // Check if vulkan is compatible
+                    visible: api.internal.system.run("grep 'Vulkan Instance Version:' /tmp/vulkaninfo.tmp | cut -d ':' -f2") === "" ? false : true
                 }
                 /*
                 SectionTitle {
