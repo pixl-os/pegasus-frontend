@@ -116,7 +116,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openCemuSettings");
                         root.openCemuSettings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -131,7 +130,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openCitraSettings");
                         root.openCitraSettings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -146,7 +144,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openDolphinSettings");
                         root.openDolphinSettings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -161,7 +158,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openModel2Settings");
                         root.openModel2Settings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -176,7 +172,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openPcsx2Settings");
                         root.openPcsx2Settings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -191,7 +186,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openPpssppSettings");
                         root.openPpssppSettings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -207,7 +201,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openRetroarchSettings");
                         root.openRetroarchSettings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -222,7 +215,7 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openSupermodelSettings");
+                        console.log(aviableSystems)
                         root.openSupermodelSettings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -237,7 +230,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openXemuSettings");
                         root.openXemuSettings();
                     }
                     onFocusChanged: container.onFocus(this)
@@ -252,11 +244,9 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log("openYuzuSettings");
                         root.openYuzuSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optCemu
                 }
                 Item {
                     width: parent.width

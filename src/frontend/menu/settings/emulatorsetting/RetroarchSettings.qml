@@ -158,14 +158,49 @@ FocusScope {
                     id: optSwapmenucontrol
 
                     label: qsTr("Swap menu validate") + api.tr
-                    note: qsTr("Set autosave/load savestate for all Retroarch core") + api.tr
+                    note: qsTr("Swap buttons for OK/Cancel in retroarch menu only") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("global.autosave")
+                    checked: api.internal.recalbox.getBoolParameter("retroarch.swap.menu.button")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.autosave",checked);
+                        api.internal.recalbox.setBoolParameter("retroarch.swap.menu.button",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optBiosChecking
+                    KeyNavigation.down: optLoadContentAnimation
+                }
+                ToggleOption {
+                    id: optLoadContentAnimation
+
+                    label: qsTr("Load content animations") + api.tr
+                    note: qsTr("Show a little animation on launch game") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("retroarch.load.content.animation")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("retroarch.load.content.animation",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optOzoneMenucolorTheme
+                }
+                MultivalueOption {
+                    id: optOzoneMenucolorTheme
+                    //property to manage parameter name
+                    property string parameterName : "retroarch.color.theme.menu"
+
+                    label: qsTr("Change menu color") + api.tr
+                    note: qsTr("Change color of retroarch interface.") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optOzoneMenucolorTheme;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width

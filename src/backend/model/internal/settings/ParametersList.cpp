@@ -475,6 +475,23 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << "0" << "1" << "2"
                             << "3" << "4" << "5";
     }
+    else if (Parameter == "retroarch.color.theme.menu")
+    {
+        /*
+         * ozone_menu_color_theme = 0
+        */
+        ListOfValue << QObject::tr("basic white") << QObject::tr("basic black") << QObject::tr("nord")
+                    << QObject::tr("gruvbox dark") << QObject::tr("boysenberry") << QObject::tr("hacking the kernel")
+                    << QObject::tr("twilight zone") << QObject::tr("dracula") << QObject::tr("solarized dark")
+                    << QObject::tr("solarized light") << QObject::tr("gray dark") << QObject::tr("gray light")
+                    << QObject::tr("purple rain");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5"
+                            << "6" << "7" << "8"
+                            << "9" << "10" << "11"
+                            << "12";
+    }
     else if (Parameter == "boot.audio.device")
     {
         /*
