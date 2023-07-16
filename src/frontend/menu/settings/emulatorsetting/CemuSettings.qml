@@ -125,7 +125,7 @@ FocusScope {
                     property string parameterName : "cemu.upscale.filter"
 
                     label: qsTr("Upscale Filter") + api.tr
-                    note: qsTr("Used when the game resolution is smaller than the windows size") + api.tr
+                    note: qsTr("Used when the game resolution is smaller than the windows size.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {

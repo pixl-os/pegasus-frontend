@@ -96,7 +96,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Pixel perfect") + api.tr
-                    note: qsTr("Once enabled, your screen will be cropped, and you will have a pixel perfect image") + api.tr
+                    note: qsTr("Once enabled, your screen will be cropped, and you will have a pixel perfect image.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.integerscale")
                     onCheckedChanged: {
@@ -109,7 +109,7 @@ FocusScope {
                     id: optSmoothGame
 
                     label: qsTr("Smooth games") + api.tr
-                    note: qsTr("Set smooth for all Retroarch core") + api.tr
+                    note: qsTr("Set smooth for all Retroarch core.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.smooth")
                     onCheckedChanged: {
@@ -127,7 +127,7 @@ FocusScope {
                     id: optGameRewind
 
                     label: qsTr("Game rewind") + api.tr
-                    note: qsTr("Set rewind for all Retroarch core") + api.tr
+                    note: qsTr("Set rewind for all Retroarch core.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.rewind")
                     onCheckedChanged: {
@@ -140,7 +140,7 @@ FocusScope {
                     id: optAutoSave
 
                     label: qsTr("Auto save/load") + api.tr
-                    note: qsTr("Set autosave/load savestate for all Retroarch core") + api.tr
+                    note: qsTr("Set autosave/load savestate for all Retroarch core.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.autosave")
                     onCheckedChanged: {
@@ -158,7 +158,7 @@ FocusScope {
                     id: optSwapmenucontrol
 
                     label: qsTr("Swap menu validate") + api.tr
-                    note: qsTr("Swap buttons for OK/Cancel in retroarch menu only") + api.tr
+                    note: qsTr("Swap buttons for OK/Cancel in retroarch menu only.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("retroarch.swap.menu.button")
                     onCheckedChanged: {
@@ -171,7 +171,7 @@ FocusScope {
                     id: optLoadContentAnimation
 
                     label: qsTr("Load content animations") + api.tr
-                    note: qsTr("Show a little animation on launch game") + api.tr
+                    note: qsTr("Show a little animation on launch game.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("retroarch.load.content.animation")
                     onCheckedChanged: {

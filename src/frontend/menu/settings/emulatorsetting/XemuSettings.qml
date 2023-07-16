@@ -99,7 +99,7 @@ FocusScope {
                     property string parameterName : "xemu.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
-                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality,But cause issues in certain games") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {

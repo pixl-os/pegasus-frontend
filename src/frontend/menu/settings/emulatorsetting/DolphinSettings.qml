@@ -99,7 +99,7 @@ FocusScope {
                     property string parameterName : "dolphin.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
-                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality,But cause issues in certain games") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -123,7 +123,7 @@ FocusScope {
                     property string parameterName : "dolphin.antialiasing"
 
                     label: qsTr("Anti-Aliasing") + api.tr
-                    note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics") + api.tr
+                    note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -149,7 +149,7 @@ FocusScope {
                     id: optCheats
 
                     label: qsTr("Enable Cheats") + api.tr
-                    note: qsTr("Ingames cheats enable") + api.tr
+                    note: qsTr("Ingames cheats enable.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("dolphin.cheats")
                     onCheckedChanged: {

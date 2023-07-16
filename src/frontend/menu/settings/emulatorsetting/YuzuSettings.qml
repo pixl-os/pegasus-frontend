@@ -98,13 +98,36 @@ FocusScope {
                     property string parameterName : "yuzu.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
-                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optInternalResolution;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScalingFilter
+                }
+                MultivalueOption {
+                    id: optScalingFilter
+                    //property to manage parameter name
+                    property string parameterName : "yuzu.scaling.filter"
+
+                    label: qsTr("Scaling Filter") + api.tr
+                    note: qsTr("Set your scaling filter resolution.") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optScalingFilter;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -122,7 +145,7 @@ FocusScope {
 
                     //property of SliderOption to set
                     label: qsTr("Fsr Sharpening") + api.tr
-                    note: qsTr("") + api.tr
+                    note: qsTr("FidelityFX Super Resolution for great game rendering.") + api.tr
                     // in slider object
                     max : 100
                     min : 0
@@ -141,30 +164,8 @@ FocusScope {
                         sfxNav.play();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optScalingFilter
-                }
-                MultivalueOption {
-                    id: optScalingFilter
-                    //property to manage parameter name
-                    property string parameterName : "yuzu.scaling.filter"
-
-                    label: qsTr("Scaling Filter") + api.tr
-                    note: qsTr("") + api.tr
-
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optScalingFilter;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAsyncShader
+                    visible : optScalingFilter.value === "AMD Fidelity FX" ? true : false
                 }
                 SectionTitle {
                     text: qsTr("Core options") + api.tr
@@ -186,7 +187,7 @@ FocusScope {
                     id: optExtendedMemory
 
                     label: qsTr("Extended memory") + api.tr
-                    note: qsTr("Unsafe extended memory layout (8GB DRAM). \nDisabled on default") + api.tr
+                    note: qsTr("Unsafe extended memory layout (8GB DRAM). \nDisabled on default.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("yuzu.extended.memory")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.extended.memory",checked);

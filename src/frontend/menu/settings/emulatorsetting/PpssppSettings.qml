@@ -99,7 +99,7 @@ FocusScope {
                     property string parameterName : "ppsspp.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
-                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality,But cause issues in certain games") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -135,7 +135,7 @@ FocusScope {
                     property string parameterName : "ppsspp.msaa"
 
                     label: qsTr("Antialiasing") + api.tr
-                    note: qsTr("Antialiasing msaa level") + api.tr
+                    note: qsTr("Antialiasing msaa level.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {

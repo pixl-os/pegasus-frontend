@@ -99,7 +99,7 @@ FocusScope {
                     property string parameterName : "pcsx2.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
-                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality,But cause issues in certain games") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -123,7 +123,7 @@ FocusScope {
                     property string parameterName : "pcsx2.anisotropy"
 
                     label: qsTr("Anisotropy") + api.tr
-                    note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics") + api.tr
+                    note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -147,7 +147,7 @@ FocusScope {
                     property string parameterName : "pcsx2.tvshaders"
 
                     label: qsTr("Tv Shaders") + api.tr
-                    note: qsTr("Set your shaders effect") + api.tr
+                    note: qsTr("Set your shaders effect.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -173,7 +173,7 @@ FocusScope {
                     id: optCheats
 
                     label: qsTr("Enable Cheats") + api.tr
-                    note: qsTr("Ingames cheats enable") + api.tr
+                    note: qsTr("Ingames cheats enable.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pcsx2.cheats")
                     onCheckedChanged: {

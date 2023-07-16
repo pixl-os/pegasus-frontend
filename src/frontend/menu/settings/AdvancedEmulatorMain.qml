@@ -215,7 +215,6 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        console.log(aviableSystems)
                         root.openSupermodelSettings();
                     }
                     onFocusChanged: container.onFocus(this)

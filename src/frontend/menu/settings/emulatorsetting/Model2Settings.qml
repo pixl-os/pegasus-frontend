@@ -107,7 +107,7 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption2
                     label: qsTr("Fake Gouraud") + api.tr
-                    note: qsTr("Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat)") + api.tr
+                    note: qsTr("Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat).") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.fakeGouraud")
                     onCheckedChanged: {
@@ -119,7 +119,7 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption21
                     label: qsTr("Bilinear Filtering") + api.tr
-                    note: qsTr("Enables bilinear filtering of textures") + api.tr
+                    note: qsTr("Enables bilinear filtering of textures.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.bilinearFiltering")
                     onCheckedChanged: {
@@ -131,7 +131,7 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption3
                     label: qsTr("Trilinear Filtering") + api.tr
-                    note: qsTr("Enables mipmap usage and trilinear filtering (doesn’t work with some games, DoA for example)") + api.tr
+                    note: qsTr("Enables mipmap usage and trilinear filtering. (doesn’t work with some games, DoA for example)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.trilinearFiltering")
                     onCheckedChanged: {
@@ -143,7 +143,7 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption4
                     label: qsTr("Filter Tilemaps") + api.tr
-                    note: qsTr("Enables bilinear filtering on tilemaps (looks good, but can cause some stretch artifacts)") + api.tr
+                    note: qsTr("Enables bilinear filtering on tilemaps. (looks good, but can cause some stretch artifacts)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.filterTilemaps")
                     onCheckedChanged: {
@@ -155,7 +155,7 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption5
                     label: qsTr("Force Managed") + api.tr
-                    note: qsTr("Forces the DX driver to use Managed textures instead of Dynamic") + api.tr
+                    note: qsTr("Forces the DX driver to use Managed textures instead of Dynamic.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.forceManaged")
                     onCheckedChanged: {
@@ -167,7 +167,7 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption6
                     label: qsTr("Enable MIP") + api.tr
-                    note: qsTr("Enables Direct3D Automipmap generation") + api.tr
+                    note: qsTr("Enables Direct3D Automipmap generation.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.enableMIP")
                     onCheckedChanged: {
@@ -179,7 +179,7 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption7
                     label: qsTr("Mesh Transparency") + api.tr
-                    note: qsTr("Enabled meshed polygons for translucency") + api.tr
+                    note: qsTr("Enabled meshed polygons for translucency.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.meshTransparency")
                     onCheckedChanged: {
@@ -191,7 +191,7 @@ FocusScope {
                 ToggleOption {
                     id: optModel2emuOption8
                     label: qsTr("Full screen anti-aliasing") + api.tr
-                    note: qsTr("Enable full screen antialiasing in Direct3D") + api.tr
+                    note: qsTr("Enable full screen antialiasing in Direct3D.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("model2emu.fullscreenAA")
                     onCheckedChanged: {

@@ -99,7 +99,7 @@ FocusScope {
                     property string parameterName : "supermodel.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
-                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality,\nbut cause issues in certain games") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
@@ -120,7 +120,7 @@ FocusScope {
                     id: optCrosshairs
 
                     label: qsTr("Crosshairs") + api.tr
-                    note: qsTr("Ative crosshairs on lightgun games") + api.tr
+                    note: qsTr("Active crosshairs on lightgun games.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.crosshairs")
                     onCheckedChanged: {
@@ -138,7 +138,7 @@ FocusScope {
                     id: optNew3dEngine
 
                     label: qsTr("New 3d engine") + api.tr
-                    note: qsTr("Switch between legacy and new 3d engine. \nEnable for new 3d engine by default") + api.tr
+                    note: qsTr("Switch between legacy and new 3d engine. \nEnable for new 3d engine by default.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.new3d.engine")
                     onCheckedChanged: {
@@ -150,8 +150,8 @@ FocusScope {
                 ToggleOption {
                     id: optMultiTexture
 
-                    label: qsTr("Multi texture") + api.tr
-                    note: qsTr("Use 8 texture maps for decoding (legacy engine). \nDisabled on default") + api.tr
+                    label: qsTr("Multi textures") + api.tr
+                    note: qsTr("Use 8 texture maps for decoding (legacy engine). \nDisabled on default.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.multi.texture")
                     onCheckedChanged: {
@@ -165,7 +165,7 @@ FocusScope {
                     id: optGpuThreaded
 
                     label: qsTr("Gpu threaded") + api.tr
-                    note: qsTr("Run graphics rendering in main thread. \nEnable by default") + api.tr
+                    note: qsTr("Run graphics rendering in main thread. \nEnable by default.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.gpu.threaded")
                     onCheckedChanged: {
@@ -178,7 +178,7 @@ FocusScope {
                     id: optQuadRendering
 
                     label: qsTr("Quad Rendering") + api.tr
-                    note: qsTr("Enable proper quad rendering. \nEnable by default") + api.tr
+                    note: qsTr("Enable proper quad rendering. \nEnable by default.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.quad.rendering")
                     onCheckedChanged: {
@@ -227,7 +227,7 @@ FocusScope {
                     id: optNetwork
 
                     label: qsTr("Network") + api.tr
-                    note: qsTr("Enable Network betwen two cab") + api.tr
+                    note: qsTr("Enable Network betwen two cab.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.network")
                     onCheckedChanged: {
@@ -239,7 +239,7 @@ FocusScope {
                 SimpleButton {
                     id: optAddressOut
                     label: qsTr("Address Out") + api.tr
-                    note: qsTr("type your output address for next net cab's") + api.tr
+                    note: qsTr("type your output address for next net cab's.") + api.tr
 
                     TextFieldOption {
                         id: addressOut
@@ -259,7 +259,7 @@ FocusScope {
                 SimpleButton {
                     id: optPortIn
                     label: qsTr("Port In") + api.tr
-                    note: qsTr("type your Input port for next net cab's") + api.tr
+                    note: qsTr("type your Input port for next net cab's.") + api.tr
 
                     TextFieldOption {
                         id: portIn
@@ -279,7 +279,7 @@ FocusScope {
                 SimpleButton {
                     id: optPortOut
                     label: qsTr("Port Out") + api.tr
-                    note: qsTr("type your Input port for next net cab's") + api.tr
+                    note: qsTr("type your Input port for next net cab's.") + api.tr
 
                     TextFieldOption {
                         id: portOut
@@ -305,7 +305,7 @@ FocusScope {
                     id: optLegacySoundEngine
 
                     label: qsTr("Legacy Sound engine") + api.tr
-                    note: qsTr("Use Legacy SCSP engine. \nDisable on default") + api.tr
+                    note: qsTr("Use Legacy SCSP engine. \nDisable on default.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.legacy.sound.engine")
                     onCheckedChanged: {
@@ -318,7 +318,7 @@ FocusScope {
                     id: optFlipStereo
 
                     label: qsTr("Flip stereo") + api.tr
-                    note: qsTr("Swap left and right audio channels") + api.tr
+                    note: qsTr("Swap left and right audio channels.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.flip.stereo")
                     onCheckedChanged: {
@@ -336,7 +336,7 @@ FocusScope {
                     id: optServiceButton
 
                     label: qsTr("Active service button") + api.tr
-                    note: qsTr("Active service button for acces menu test arcade game. \nconfigured in L3: service R3 test ") + api.tr
+                    note: qsTr("Active service button for acces menu test arcade game. \nConfigured in L3: service R3 test.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.service.button")
                     onCheckedChanged: {
@@ -353,7 +353,7 @@ FocusScope {
 
                     //property of SliderOption to set
                     label: qsTr("Set sensitvity Controller") + api.tr
-                    note: qsTr("The sensitvity is expressed as a percentage. \nthe default value is 25%.") + api.tr
+                    note: qsTr("The sensitvity is expressed as a percentage. \nThe default value is 25%.") + api.tr
                     // in slider object
                     max : 100
                     min : 0
