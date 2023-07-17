@@ -1,6 +1,6 @@
 // Pegasus Frontend
 //
-// Created by BozoTheGeek 10/05/2021
+// Created by Strodown 17/07/2023
 //
 
 import "../common"
@@ -164,8 +164,31 @@ FocusScope {
                         sfxNav.play();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optAsyncShader
+                    KeyNavigation.down: optVsync
                     visible : optScalingFilter.value === "AMD Fidelity FX" ? true : false
+                }
+                MultivalueOption {
+                    id: optVsync
+                    //property to manage parameter name
+                    property string parameterName : "yuzu.vsync"
+
+                    label: qsTr("Scaling Filter") + api.tr
+                    note: qsTr("Set your scaling filter resolution.") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optVsync;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optAsyncShader
                 }
                 SectionTitle {
                     text: qsTr("Core options") + api.tr

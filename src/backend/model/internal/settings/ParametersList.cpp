@@ -475,6 +475,16 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << "0" << "1" << "2"
                             << "3" << "4" << "5";
     }
+    else if (Parameter == "yuzu.vsync")
+    {
+        /*
+         * use_vsync = 0
+         * no 1 value ???
+        */
+        ListOfValue << QObject::tr("Immediate (VSync Off)") << QObject::tr("FIFO (VSync On)") << QObject::tr("FIFO Relaxed");
+
+        ListOfInternalValue << "0" << "2" << "3";
+    }
     else if (Parameter == "retroarch.color.theme.menu")
     {
         /*
