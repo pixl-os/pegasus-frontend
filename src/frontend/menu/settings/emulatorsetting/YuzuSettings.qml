@@ -172,8 +172,8 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "yuzu.vsync"
 
-                    label: qsTr("Scaling Filter") + api.tr
-                    note: qsTr("Set your scaling filter resolution.") + api.tr
+                    label: qsTr("Vsync") + api.tr
+                    note: qsTr("Choose your vertical sync type.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {

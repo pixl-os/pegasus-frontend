@@ -358,6 +358,16 @@ QStringList GetParametersList(QString Parameter)
             ListOfInternalValue << "0" << "1"
                                 << "2" << "3";
         }
+        else if (Parameter.endsWith(".vsync", Qt::CaseInsensitive) == true)
+        {
+
+            /*
+            * <VSync>0</VSync>
+            */
+            ListOfValue << QObject::tr("Off") << QObject::tr("Double buffering")<< QObject::tr("Triple buffering");
+
+            ListOfInternalValue << "0" << "1" << "2";
+        }
     }
     else if (Parameter == "supermodel.resolution")
     {

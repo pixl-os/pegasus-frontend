@@ -164,6 +164,30 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optVsync
+                }
+                MultivalueOption {
+                    id: optVsync
+
+                    //property to manage parameter name
+                    property string parameterName : "cemu.vsync"
+
+                    label: qsTr("Vsync") + api.tr
+                    note: qsTr("Choose your vertical sync type.") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optVsync;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAsyncCompile
                 }
                 SectionTitle {
