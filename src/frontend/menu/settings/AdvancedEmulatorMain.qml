@@ -28,6 +28,7 @@ FocusScope {
     signal openRetroarchSettings
     signal openModel2Settings
     signal openDolphinSettings
+    signal openDolphinTriforceSettings
     signal openPcsx2Settings
     signal openCitraSettings
     signal openCemuSettings
@@ -145,6 +146,20 @@ FocusScope {
                     onActivate: {
                         focus = true;
                         root.openDolphinSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDolphinTriforce
+                }
+                SimpleButton {
+                    id: optDolphinTriforce
+                    label: qsTr("Dolphin-Triforce") + api.tr
+                    note: qsTr("Change Configuration for Dolphin-Triforce emulator for Triforce arcade systems.") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openDolphinTriforceSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2

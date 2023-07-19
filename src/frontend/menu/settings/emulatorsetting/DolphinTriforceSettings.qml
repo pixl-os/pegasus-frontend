@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Dolphin-emu") + api.tr
+        text: qsTr("Advanced emulators settings > Dolphin Triforce") + api.tr
         z: 2
     }
     Flickable {
@@ -84,7 +84,6 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
@@ -96,7 +95,7 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "dolphin.resolution"
+                    property string parameterName : "dolphin-triforce.resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
                     note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
@@ -122,9 +121,9 @@ FocusScope {
                     label: qsTr("Enable Vsync") + api.tr
                     note: qsTr("Enable Vsync for best rendering, but improve performance.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("dolphin.vsync")
+                    checked: api.internal.recalbox.getBoolParameter("dolphin-triforce.vsync")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("dolphin.vsync",checked);
+                        api.internal.recalbox.setBoolParameter("dolphin-triforce.vsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWideScreenHack
@@ -135,9 +134,9 @@ FocusScope {
                     label: qsTr("Enable Widescreen Hack") + api.tr
                     note: qsTr("Force screen ratio to 16/9.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("dolphin.widescreenhack")
+                    checked: api.internal.recalbox.getBoolParameter("dolphin-triforce.widescreenhack")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("dolphin.widescreenhack",checked);
+                        api.internal.recalbox.setBoolParameter("dolphin-triforce.widescreenhack",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAntiAliasing
@@ -146,7 +145,7 @@ FocusScope {
                     id: optAntiAliasing
 
                     //property to manage parameter name
-                    property string parameterName : "dolphin.antialiasing"
+                    property string parameterName : "dolphin-triforce.antialiasing"
 
                     label: qsTr("Anti-Aliasing") + api.tr
                     note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics.") + api.tr
@@ -164,25 +163,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optCheats
-                }
-                SectionTitle {
-                    text: qsTr("Gameplay options") + api.tr
-                    first: true
-                    symbol: "\uf412"
-                }
-                ToggleOption {
-                    id: optCheats
-
-                    label: qsTr("Enable Cheats") + api.tr
-                    note: qsTr("Ingames cheats enable.") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("dolphin.cheats")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("dolphin.cheats",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optAutoSave
                 }
                 Item {
                     width: parent.width
