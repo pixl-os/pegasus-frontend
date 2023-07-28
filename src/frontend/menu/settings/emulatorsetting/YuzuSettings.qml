@@ -1,36 +1,23 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Created by Strodown 17/07/2023
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
-import "common"
+import "../common"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
-
 
 FocusScope {
     id: root
 
     signal close
-    signal openBiosCheckingSettings
-    signal openSystemsAdvancedEmulatorSettings
-    signal openAdvancedEmulatorSettings
 
     width: parent.width
     height: parent.height
+    
+    anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
@@ -39,7 +26,6 @@ FocusScope {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
-            api.internal.recalbox.saveParameters();
         }
     }
     PegasusUtils.HorizontalSwipeArea {
@@ -53,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Games") + api.tr
+        text: qsTr("Advanced emulators settings > Yuzu") + api.tr
         z: 2
     }
     Flickable {
@@ -98,28 +84,27 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
                     symbol: "\uf17f"
                 }
                 MultivalueOption {
-                    id: optGlobalGameRatio
+                    id: optInternalResolution
                     // set focus only on first item
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "global.ratio"
+                    property string parameterName : "yuzu.resolution"
 
-                    label: qsTr("Game ratio") + api.tr
-                    note: qsTr("Set ratio for all emulators (auto,4/3,16/9,16/10,etc...)") + api.tr
+                    label: qsTr("Internal Resolution") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalGameRatio;
+                        parameterslistBox.callerid = optInternalResolution;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -128,21 +113,21 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGlobalShaderSet
+                    KeyNavigation.down: optScalingFilter
                 }
                 MultivalueOption {
-                    id: optGlobalShaderSet
+                    id: optScalingFilter
                     //property to manage parameter name
-                    property string parameterName : "global.shaderset"
+                    property string parameterName : "yuzu.scaling.filter"
 
-                    label: qsTr("Predefined shader") + api.tr
-                    note: qsTr("Set predefined Shader effect") + api.tr
+                    label: qsTr("Scaling Filter") + api.tr
+                    note: qsTr("Set your scaling filter resolution.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalShaderSet;
+                        parameterslistBox.callerid = optScalingFilter;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -151,21 +136,50 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGlobalShader
+                    KeyNavigation.down: optFsrSharpening
+                }
+                SliderOption {
+                    id: optFsrSharpening
+                    //property to manage parameter name
+                    property string parameterName : "yuzu.fsr.sharpening"
+
+                    //property of SliderOption to set
+                    label: qsTr("Fsr Sharpening") + api.tr
+                    note: qsTr("FidelityFX Super Resolution for great game rendering.") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName)
+                    onActivate: focus = true;
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue;
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue;
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optVsync
+                    visible : optScalingFilter.value === "AMD Fidelity FX" ? true : false
                 }
                 MultivalueOption {
-                    id: optGlobalShader
+                    id: optVsync
                     //property to manage parameter name
-                    property string parameterName : "global.shaders"
+                    property string parameterName : "yuzu.vsync"
 
-                    label: qsTr("Shaders") + api.tr
-                    note: qsTr("Set prefered Shader effect") + api.tr
+                    label: qsTr("Vsync") + api.tr
+                    note: qsTr("Choose your vertical sync type.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalShader;
+                        parameterslistBox.callerid = optVsync;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -174,82 +188,34 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGlobalOverlays
-                }
-                ToggleOption {
-                    id: optGlobalOverlays
-
-                    label: qsTr("Set overlays") + api.tr
-                    note: qsTr("Set overlays for all systems") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.recalboxoverlays")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.recalboxoverlays",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optShowFramerate
-                }
-                ToggleOption {
-                    id: optShowFramerate
-
-                    label: qsTr("Show framerate") + api.tr
-                    note: qsTr("Show FPS in game") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.showfps")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.showfps",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optBiosChecking
+                    KeyNavigation.down: optAsyncShader
                 }
                 SectionTitle {
-                    text: qsTr("Other options") + api.tr
+                    text: qsTr("Core options") + api.tr
                     first: true
-                    symbol: "\uf1d9"
+                    symbol: "\uf179"
                 }
-                SimpleButton {
-                    id: optBiosChecking
+                ToggleOption {
+                    id: optAsyncShader
 
-                    label: qsTr("Bios Checking") + api.tr
-                    note: qsTr("Check all necessary bios !") + api.tr
-                    pointerIcon: true
+                    label: qsTr("Enable Async shaders") + api.tr
+                    note: qsTr("Async shaders and pipeline compilation, \nReduce stutter at the cost of objects.") + api.tr
 
-                    onActivate: {
-                        focus = true;
-                        root.openBiosCheckingSettings();
-                    }
+                    checked: api.internal.recalbox.getBoolParameter("yuzu.async.shader")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.async.shader",checked);
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSystemsAdvancedEmulator
+                    KeyNavigation.down: optExtendedMemory
                 }
-                SimpleButton {
-                    id: optSystemsAdvancedEmulator
+                ToggleOption {
+                    id: optExtendedMemory
 
-                    label: qsTr("Settings systems") + api.tr
-                    note: qsTr("choose emulators, ratio and more per systems") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
+                    label: qsTr("Extended memory") + api.tr
+                    note: qsTr("Unsafe extended memory layout (8GB DRAM). \nDisabled on default.") + api.tr
 
-                    onActivate: {
-                        focus = true;
-                        root.openSystemsAdvancedEmulatorSettings();
-                    }
+                    checked: api.internal.recalbox.getBoolParameter("yuzu.extended.memory")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.extended.memory",checked);
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optAdvancedEmulator
-                }
-                SimpleButton {
-                    id: optAdvancedEmulator
-
-                    label: qsTr("Advanced emulators settings") + api.tr
-                    note: qsTr("Configuration per emulators, resolution, antialiasing, etc...") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openAdvancedEmulatorSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optSystemsAdvancedEmulator
+//                    KeyNavigation.down: optTextureFilter
                 }
                 Item {
                     width: parent.width
@@ -278,25 +244,5 @@ FocusScope {
             //to force update of display of selected value
             callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
         }
-    }
-    MultivalueBox {
-        id: localeBox
-        z: 3
-
-        model: api.internal.settings.locales
-        index: api.internal.settings.locales.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.locales.currentIndex = index
-    }
-    MultivalueBox {
-        id: themeBox
-        z: 3
-
-        model: api.internal.settings.themes
-        index: api.internal.settings.themes.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.themes.currentIndex = index
     }
 }

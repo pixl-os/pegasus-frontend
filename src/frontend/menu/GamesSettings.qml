@@ -49,6 +49,7 @@ FocusScope {
 
         onClose: root.close()
         onOpenBiosCheckingSettings: root.openScreen("settings/BiosChecking.qml")
+        onOpenSystemsAdvancedEmulatorSettings: root.openScreen("settings/SystemsAdvancedEmulatorSettings.qml")
         onOpenAdvancedEmulatorSettings: root.openScreen("settings/AdvancedEmulatorSettings.qml")
     }
     Loader {

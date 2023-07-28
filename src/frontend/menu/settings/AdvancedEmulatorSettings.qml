@@ -1,25 +1,20 @@
 // Pegasus Frontend
 //
 // Created by BozoTheGeek - 17/05/2021
+// Updated by Strodown - 17/07/2023
 //
 
+import "emulatorsetting"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
+
 
 FocusScope {
     id: root
 
     signal close
 
-    // for any system menu
-    function openScreenWithSystem(url,system) {
-        //subscreen.setSource(url, {"systemName": system.name, "systemShortName": system.shortName, "system": system});
-        subscreen.setSource(url, {"system": system});
-        subscreen.focus = true;
-        root.state = "sub";
-    }
-    
     function openScreen(url) {
         subscreen.source = url;
         subscreen.focus = true;
@@ -42,10 +37,17 @@ FocusScope {
         anchors.right: parent.right
 
         onClose: root.close()
-        onOpenEmulatorConfiguration: {
-            console.log("onOpenEmulatorConfiguration");
-            root.openScreenWithSystem("EmulatorConfiguration.qml", system);
-        }
+        onOpenRetroarchSettings: root.openScreen("emulatorsetting/RetroarchSettings.qml")
+        onOpenModel2Settings: root.openScreen("emulatorsetting/Model2Settings.qml")
+        onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
+        onOpenDolphinTriforceSettings: root.openScreen("emulatorsetting/DolphinTriforceSettings.qml")
+        onOpenPcsx2Settings: root.openScreen("emulatorsetting/Pcsx2Settings.qml")
+        onOpenCitraSettings: root.openScreen("emulatorsetting/CitraSettings.qml")
+        onOpenCemuSettings: root.openScreen("emulatorsetting/CemuSettings.qml")
+        onOpenXemuSettings: root.openScreen("emulatorsetting/XemuSettings.qml")
+        onOpenSupermodelSettings: root.openScreen("emulatorsetting/SupermodelSettings.qml")
+        onOpenPpssppSettings: root.openScreen("emulatorsetting/PpssppSettings.qml")
+        onOpenYuzuSettings: root.openScreen("emulatorsetting/YuzuSettings.qml")
     }
     Loader {
         id: modal

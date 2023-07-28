@@ -115,19 +115,19 @@ QStringList GetParametersList(QString Parameter)
         select only compatible extension shaders in menu opengl(glslp) / vulkan(slangp)*/
         QString shadersext;
         QString filterext;
-//        QString dirShaders;
+        //        QString dirShaders;
         // check vulkan option in recalbox.conf
         if (RecalboxConf::Instance().AsBool("system.video.driver.vulkan", false) == true)
         {
             shadersext = "*.slangp";
             filterext = ".slangp";
-//            dirShaders = "shaders_slang";
+            //            dirShaders = "shaders_slang";
         }
         else
         {
             shadersext = "*.glslp";
             filterext = ".glslp";
-//            dirShaders = "shaders_glsl";
+            //            dirShaders = "shaders_glsl";
         }
 
         // add none in list for disabled option if needed
@@ -137,7 +137,7 @@ QStringList GetParametersList(QString Parameter)
 
         //read root directory
         // Define shaders path
-//        QDir shadersDir("/recalbox/share/shaders/" + dirShaders + "/");
+        //        QDir shadersDir("/recalbox/share/shaders/" + dirShaders + "/");
         QDir shadersDir("/recalbox/share/shaders/");
         // Sorting by name
         shadersDir.setSorting(QDir::Name);
@@ -159,7 +159,7 @@ QStringList GetParametersList(QString Parameter)
         while (it.hasNext()) {
             QString dir = it.next();
             QString relativedir = dir;
-//            relativedir = relativedir.replace("/recalbox/share/shaders/" + dirShaders + "/","");
+            //            relativedir = relativedir.replace("/recalbox/share/shaders/" + dirShaders + "/","");
             relativedir = relativedir.replace("/recalbox/share/shaders/","");
             //Log::debug(LOGMSG("Subdir : '%1'").arg(dir));
             QDir shadersSubDir(dir);
@@ -266,6 +266,254 @@ QStringList GetParametersList(QString Parameter)
             ListOfValue.append(QObject::tr("no device detected"));
             ListOfInternalValue.append(""); //to empty parameter
         }
+    }
+    else if (Parameter.startsWith("dolphin", Qt::CaseInsensitive) == true)
+    {
+        if (Parameter.endsWith(".resolution", Qt::CaseInsensitive) == true)
+        {
+            /*
+         * InternalResolution = 1, 2, 3, 4, 5, 6, 7, 8, 0 # AUTO
+        */
+            ListOfValue << QObject::tr("Auto Multiple of 640x528") << QObject::tr("Native 640x528") << QObject::tr("x2 Native 1280x1056 (720p)") << QObject::tr("x3 Native 1920x1584 (1080p)")
+                        << QObject::tr("x4 Native 2560x2112 (1440p)") << QObject::tr("x5 Native 3200x2640") << QObject::tr("x6 Native 3840x3168 (4k)") << QObject::tr("x7 Native 4480x3696")
+                        << QObject::tr("x8 Native 5120x4224 (5k)");
+
+            ListOfInternalValue << "0" << "1" << "2" << "3"
+                                << "4" << "5" << "6" << "7"
+                                << "8" ;
+        }
+        else if (Parameter.endsWith(".antialiasing", Qt::CaseInsensitive) == true)
+        {
+            /*
+         * MSAA = 0x00000001 # None, 0x00000002, 0x00000004, 0x00000008,
+        */
+            ListOfValue << QObject::tr("None") << QObject::tr("2x MSAA") << QObject::tr("4x MSAA") << QObject::tr("8x MSAA");
+
+            ListOfInternalValue << "0x00000001" << "0x00000002" << "0x00000004" << "0x00000008" ;
+        }
+    }
+    else if (Parameter == "pcsx2.resolution")
+    {
+        /*
+         * upscale_multiplier = 1, 2, 3, 4, 5, 6, 7, 8, 0
+        */
+        ListOfValue << QObject::tr("Native (ps2)") << QObject::tr("x2 Native (720p)") << QObject::tr("x3 Native (1080p)") << QObject::tr("x4 Native (1440p 2k)")
+                    << QObject::tr("x5 Native (1620p)") << QObject::tr("x6 Native (4k)") << QObject::tr("x7 Native (2520p)") << QObject::tr("x8 Native (2880p)");
+
+        ListOfInternalValue << "1" << "2" << "3" << "4"
+                            << "5" << "6" << "7" << "8" ;
+    }
+    else if (Parameter == "pcsx2.anisotropy")
+    {
+        /*
+         * MaxAnisotropy = 0, 2, 4, 8, 16
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("2x") << QObject::tr("4x") << QObject::tr("8x") << QObject::tr("16x");
+
+        ListOfInternalValue << "0" << "2" << "4" << "8" << "16";
+    }
+    else if (Parameter == "pcsx2.tvshaders")
+    {
+        /*
+         * TvShaders = 0, 1, 2, 3, 4, 5
+        */
+        ListOfValue << QObject::tr("None") << QObject::tr("Scanline filter") << QObject::tr("Diagonal filter")
+                    << QObject::tr("Triangular filter") << QObject::tr("Wave filter") << QObject::tr("Lottes CRT filter");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter == "citra.resolution")
+    {
+        /*
+         * resolution_factor = 1
+        */
+        ListOfValue << QObject::tr("Auto (Window Size)") << QObject::tr("Native 400x240") << QObject::tr("x2 Native 800x480") << QObject::tr("x3 Native 1200x720")
+                    << QObject::tr("x4 Native 1600x960") << QObject::tr("x5 Native 2000x1200") << QObject::tr("x6 Native 2400x1440") << QObject::tr("x7 Native 2800x1680")
+                    << QObject::tr("x8 Native 3200x1920") << QObject::tr("x9 Native 3600x2160") << QObject::tr("x10 Native 4000x2400");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "citra.texture.filter")
+    {
+        /*
+         * texture_filter = 1
+        */
+        ListOfValue << QObject::tr("None") << QObject::tr("Anime4k") << QObject::tr("Bicubic")
+                    << QObject::tr("Nearest Neighbor") << QObject::tr("ScaleForce") << QObject::tr("xBRZ");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter.startsWith("cemu.", Qt::CaseInsensitive) == true)
+    {
+        if (Parameter.endsWith(".filter", Qt::CaseInsensitive) == true)
+        {
+            /*
+            * <UpscaleFilter>1</UpscaleFilter>
+            * <DownscaleFilter>0</DownscaleFilter>
+            */
+            ListOfValue << QObject::tr("Bilinear") << QObject::tr("Bicubic")
+                        << QObject::tr("Hermite") << QObject::tr("Nearest Neighbor");
+
+            ListOfInternalValue << "0" << "1"
+                                << "2" << "3";
+        }
+        else if (Parameter.endsWith(".vsync", Qt::CaseInsensitive) == true)
+        {
+
+            /*
+            * <VSync>0</VSync>
+            */
+            ListOfValue << QObject::tr("Off") << QObject::tr("Double buffering")<< QObject::tr("Triple buffering");
+
+            ListOfInternalValue << "0" << "1" << "2";
+        }
+    }
+    else if (Parameter == "supermodel.resolution")
+    {
+        /*
+         * XResolution=640
+         * YResolution=480
+        */
+        ListOfValue << QObject::tr("Auto (screen resolution)") << QObject::tr("Native") << QObject::tr("x2 Native (720p)")
+                    << QObject::tr("x3 Native (1080p)") << QObject::tr("x4 Native (2k)") << QObject::tr("x5 Native (4k)");
+
+        ListOfInternalValue << "auto" << "640,480" << "1280,720"
+                            << "1920,1080" << "2560,1440" << "3840,2160";
+    }
+    else if (Parameter == "xemu.resolution")
+    {
+        /*
+         * surface_scale = 1
+        */
+        ListOfValue << QObject::tr("Native") << QObject::tr("x2 Native") << QObject::tr("x3 Native") << QObject::tr("x4 Native")
+                    << QObject::tr("x5 Native") << QObject::tr("x6 Native") << QObject::tr("x7 Native") << QObject::tr("x8 Native")
+                    << QObject::tr("x9 Native") << QObject::tr("x10 Native");
+
+        ListOfInternalValue << "1" << "2" << "3" << "4"
+                            << "5" << "6" << "7" << "8"
+                            << "9" << "10";
+    }
+    else if (Parameter == "ppsspp.resolution")
+    {
+        /*
+         * InternalResolution = 1
+        */
+        ListOfValue << QObject::tr("Auto 1:1") << QObject::tr("Native") << QObject::tr("x2 Native") << QObject::tr("x3 Native")
+                    << QObject::tr("x4 Native") << QObject::tr("x5 Native") << QObject::tr("x6 Native") << QObject::tr("x7 Native")
+                    << QObject::tr("x8 Native") << QObject::tr("x9 Native") << QObject::tr("x10 Native");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "ppsspp.msaa")
+    {
+        /*
+         * multiSampleLevel = 0
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("x2") << QObject::tr("x4") << QObject::tr("x8");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
+    else if (Parameter == "ppsspp.texture.scaling.level")
+    {
+        /*
+         * texScalingLevel = 0
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("x2") << QObject::tr("x3") << QObject::tr("x4") << QObject::tr("x5");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3" << "4";
+    }
+    else if (Parameter == "ppsspp.texture.scaling.type")
+    {
+        /*
+         * texScalingType = 0
+        */
+        ListOfValue << QObject::tr("xBRZ") << QObject::tr("Hybrid") << QObject::tr("Bicubic") << QObject::tr("Hybrid + Bicubic");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
+    else if (Parameter == "ppsspp.anisotropy.level")
+    {
+        /*
+         * AnisotropyLevel = 0
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("x2") << QObject::tr("x4") << QObject::tr("x8") << QObject::tr("x16");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3" << "4";
+    }
+    else if (Parameter == "ppsspp.texture.filter")
+    {
+        /*
+         * TextureFiltering = 0
+        */
+        ListOfValue << QObject::tr("Auto") << QObject::tr("Nearest") << QObject::tr("Linear") << QObject::tr("Auto Max Quality");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
+    else if (Parameter == "ppsspp.texture.shader")
+    {
+        /*
+         * TextureFiltering = 0
+        */
+        ListOfValue << QObject::tr("Off") << QObject::tr("Tex2xBRZ") << QObject::tr("Tex4xBRZ") << QObject::tr("TexMMPX");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
+    else if (Parameter == "yuzu.resolution")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("x0.5 (360p/540p) [experimental]") << QObject::tr("x0.75 (540p/810p) [experimental]") << QObject::tr("x1 (720p/1080p) [native]") << QObject::tr("x1.5 (1080p/1620p) [experimental]")
+                    << QObject::tr("x2 (1440p/2160p)") << QObject::tr("x3 (2160p/3240p)") << QObject::tr("x4 (2880p/4320p)") << QObject::tr("x5 (3600p/5400p)")
+                    << QObject::tr("x6 (4320p/6480p)") << QObject::tr("x7 (5040p/7560p)") << QObject::tr("x8 (5760p/8640p)");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "yuzu.scaling.filter")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("Nearest Neighbor") << QObject::tr("Bilinear") << QObject::tr("Bicubic")
+                    << QObject::tr("Gaussian") << QObject::tr("Scaleforce") << QObject::tr("AMD Fidelity FX");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter == "yuzu.vsync")
+    {
+        /*
+         * use_vsync = 0
+         * no 1 value ???
+        */
+        ListOfValue << QObject::tr("Immediate (VSync Off)") << QObject::tr("FIFO (VSync On)") << QObject::tr("FIFO Relaxed");
+
+        ListOfInternalValue << "0" << "2" << "3";
+    }
+    else if (Parameter == "retroarch.color.theme.menu")
+    {
+        /*
+         * ozone_menu_color_theme = 0
+        */
+        ListOfValue << QObject::tr("basic white") << QObject::tr("basic black") << QObject::tr("nord")
+                    << QObject::tr("gruvbox dark") << QObject::tr("boysenberry") << QObject::tr("hacking the kernel")
+                    << QObject::tr("twilight zone") << QObject::tr("dracula") << QObject::tr("solarized dark")
+                    << QObject::tr("solarized light") << QObject::tr("gray dark") << QObject::tr("gray light")
+                    << QObject::tr("purple rain");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5"
+                            << "6" << "7" << "8"
+                            << "9" << "10" << "11"
+                            << "12";
     }
     else if (Parameter == "boot.audio.device")
     {
@@ -447,8 +695,8 @@ ParametersList::ParametersList(QObject* parent)
     : QAbstractListModel(parent)
     , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
     , m_role_names({
-{ Roles::Name, QByteArrayLiteral("name") },
-})
+                    { Roles::Name, QByteArrayLiteral("name") },
+                    })
 {
     //empty constructor to be generic
 }

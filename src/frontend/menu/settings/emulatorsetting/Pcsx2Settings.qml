@@ -1,36 +1,23 @@
 // Pegasus Frontend
-// Copyright (C) 2017-2018  Mátyás Mustoha
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Created by Strodown 17/07/2023
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
-import "common"
+import "../common"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
-
 
 FocusScope {
     id: root
 
     signal close
-    signal openBiosCheckingSettings
-    signal openSystemsAdvancedEmulatorSettings
-    signal openAdvancedEmulatorSettings
 
     width: parent.width
     height: parent.height
+    
+    anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
@@ -39,7 +26,6 @@ FocusScope {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.close();
-            api.internal.recalbox.saveParameters();
         }
     }
     PegasusUtils.HorizontalSwipeArea {
@@ -53,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Games") + api.tr
+        text: qsTr("Advanced emulators settings > Pcsx2") + api.tr
         z: 2
     }
     Flickable {
@@ -105,21 +91,21 @@ FocusScope {
                     symbol: "\uf17f"
                 }
                 MultivalueOption {
-                    id: optGlobalGameRatio
+                    id: optInternalResolution
                     // set focus only on first item
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "global.ratio"
+                    property string parameterName : "pcsx2.resolution"
 
-                    label: qsTr("Game ratio") + api.tr
-                    note: qsTr("Set ratio for all emulators (auto,4/3,16/9,16/10,etc...)") + api.tr
+                    label: qsTr("Internal Resolution") + api.tr
+                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalGameRatio;
+                        parameterslistBox.callerid = optInternalResolution;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -128,21 +114,22 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGlobalShaderSet
+                    KeyNavigation.down: optAnisotropy
                 }
                 MultivalueOption {
-                    id: optGlobalShaderSet
-                    //property to manage parameter name
-                    property string parameterName : "global.shaderset"
+                    id: optAnisotropy
 
-                    label: qsTr("Predefined shader") + api.tr
-                    note: qsTr("Set predefined Shader effect") + api.tr
+                    //property to manage parameter name
+                    property string parameterName : "pcsx2.anisotropy"
+
+                    label: qsTr("Anisotropy") + api.tr
+                    note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalShaderSet;
+                        parameterslistBox.callerid = optAnisotropy;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -151,21 +138,22 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGlobalShader
+                    KeyNavigation.down: optTVShaders
                 }
                 MultivalueOption {
-                    id: optGlobalShader
-                    //property to manage parameter name
-                    property string parameterName : "global.shaders"
+                    id: optTVShaders
 
-                    label: qsTr("Shaders") + api.tr
-                    note: qsTr("Set prefered Shader effect") + api.tr
+                    //property to manage parameter name
+                    property string parameterName : "pcsx2.tvshaders"
+
+                    label: qsTr("Tv Shaders") + api.tr
+                    note: qsTr("Set your shaders effect.") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalShader;
+                        parameterslistBox.callerid = optTVShaders;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -174,82 +162,25 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGlobalOverlays
-                }
-                ToggleOption {
-                    id: optGlobalOverlays
-
-                    label: qsTr("Set overlays") + api.tr
-                    note: qsTr("Set overlays for all systems") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.recalboxoverlays")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.recalboxoverlays",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optShowFramerate
-                }
-                ToggleOption {
-                    id: optShowFramerate
-
-                    label: qsTr("Show framerate") + api.tr
-                    note: qsTr("Show FPS in game") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("global.showfps")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.showfps",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optBiosChecking
+                    KeyNavigation.down: optCheats
                 }
                 SectionTitle {
-                    text: qsTr("Other options") + api.tr
+                    text: qsTr("Gameplay options") + api.tr
                     first: true
-                    symbol: "\uf1d9"
+                    symbol: "\uf412"
                 }
-                SimpleButton {
-                    id: optBiosChecking
+                ToggleOption {
+                    id: optCheats
 
-                    label: qsTr("Bios Checking") + api.tr
-                    note: qsTr("Check all necessary bios !") + api.tr
-                    pointerIcon: true
+                    label: qsTr("Enable Cheats") + api.tr
+                    note: qsTr("Ingames cheats enable.") + api.tr
 
-                    onActivate: {
-                        focus = true;
-                        root.openBiosCheckingSettings();
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.cheats")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pcsx2.cheats",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSystemsAdvancedEmulator
-                }
-                SimpleButton {
-                    id: optSystemsAdvancedEmulator
-
-                    label: qsTr("Settings systems") + api.tr
-                    note: qsTr("choose emulators, ratio and more per systems") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openSystemsAdvancedEmulatorSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optAdvancedEmulator
-                }
-                SimpleButton {
-                    id: optAdvancedEmulator
-
-                    label: qsTr("Advanced emulators settings") + api.tr
-                    note: qsTr("Configuration per emulators, resolution, antialiasing, etc...") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openAdvancedEmulatorSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optSystemsAdvancedEmulator
+//                    KeyNavigation.down: optAutoSave
                 }
                 Item {
                     width: parent.width
@@ -278,25 +209,5 @@ FocusScope {
             //to force update of display of selected value
             callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
         }
-    }
-    MultivalueBox {
-        id: localeBox
-        z: 3
-
-        model: api.internal.settings.locales
-        index: api.internal.settings.locales.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.locales.currentIndex = index
-    }
-    MultivalueBox {
-        id: themeBox
-        z: 3
-
-        model: api.internal.settings.themes
-        index: api.internal.settings.themes.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.themes.currentIndex = index
     }
 }

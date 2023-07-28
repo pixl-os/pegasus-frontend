@@ -82,9 +82,9 @@
         <file>menu/settings/GamesMain.qml</file>
         <file>menu/settings/InterfaceMain.qml</file>
         <file>menu/settings/BiosChecking.qml</file>
-        <file>menu/settings/AdvancedEmulatorMain.qml</file>
-        <file>menu/settings/AdvancedEmulatorSettings.qml</file>
-        <file>menu/settings/EmulatorConfiguration.qml</file>
+        <file>menu/settings/SystemsAdvancedEmulatorMain.qml</file>
+        <file>menu/settings/SystemsAdvancedEmulatorSettings.qml</file>
+        <file>menu/settings/SystemsEmulatorConfiguration.qml</file>
         <file>assets/recalbox-next.svg</file>
         <file>menu/settings/AdvancedControllersConf.qml</file>
         <file>menu/settings/BluetoothDevices.qml</file>
@@ -248,5 +248,18 @@
         <file>assets/gamepad/switchpro/r2_switchpro.png</file>
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
+        <file>menu/settings/AdvancedEmulatorMain.qml</file>
+        <file>menu/settings/emulatorsetting/RetroarchSettings.qml</file>
+        <file>menu/settings/AdvancedEmulatorSettings.qml</file>
+        <file>menu/settings/emulatorsetting/Model2Settings.qml</file>
+        <file>menu/settings/emulatorsetting/DolphinSettings.qml</file>
+        <file>menu/settings/emulatorsetting/Pcsx2Settings.qml</file>
+        <file>menu/settings/emulatorsetting/CitraSettings.qml</file>
+        <file>menu/settings/emulatorsetting/CemuSettings.qml</file>
+        <file>menu/settings/emulatorsetting/XemuSettings.qml</file>
+        <file>menu/settings/emulatorsetting/SupermodelSettings.qml</file>
+        <file>menu/settings/emulatorsetting/PpssppSettings.qml</file>
+        <file>menu/settings/emulatorsetting/YuzuSettings.qml</file>
+        <file>menu/settings/emulatorsetting/DolphinTriforceSettings.qml</file>
     </qresource>
 </RCC>

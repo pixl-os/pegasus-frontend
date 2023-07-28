@@ -34,7 +34,6 @@ FocusScope {
 
     enabled: focus
 
-
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -99,8 +98,6 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
-
                 ToggleOption {
                     id: optRetroachievementActivate
                     // set focus only on first item
@@ -108,15 +105,13 @@ FocusScope {
                     SectionTitle {
                         text: qsTr("Retroachievement") + api.tr
                         first: true
+                        symbol: "\uf39b"
                     }
                     // label: qsTr("Activate retroachievement") + api.tr
                     // note: qsTr("Achievements to your favourites retro games.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.retroachievements",checked);
-                    }
-                    symbol: "\uf39b"
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRetroachievementUsername
                 }
@@ -167,13 +162,10 @@ FocusScope {
                     note: qsTr("Unlock trophies without cheats and rewind. \nOnly work with Retroarch cores.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.hardcore")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
-                    }
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optScreenshootsAchievementActivate
                     visible: optRetroachievementActivate.checked
-
                 }
                 ToggleOption {
                     id: optScreenshootsAchievementActivate
@@ -181,13 +173,10 @@ FocusScope {
                     note: qsTr("Take an screenshot when an achievement is triggere.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.screenshot")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.retroachievements.screenshot",checked);
-                    }
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.screenshot",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optUnlockSoundsAchievementActivate
                     visible: optRetroachievementActivate.checked
-
                 }
                 ToggleOption {
                     id: optUnlockSoundsAchievementActivate
@@ -195,13 +184,10 @@ FocusScope {
                     note: qsTr("Play Sounds if you unlock a trophies.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.unlock.sound")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.retroachievements.unlock.sound",checked);
-                    }
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.unlock.sound",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optChallengeIndicators
                     visible: optRetroachievementActivate.checked
-
                 }
                 ToggleOption {
                     id: optChallengeIndicators
@@ -209,28 +195,23 @@ FocusScope {
                     note: qsTr("Allow achievements to display an on-screen indicator while the achievement can be earned.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.challenge.indicators")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.retroachievements.challenge.indicators",checked);
-                    }
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.challenge.indicators",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayActivate
                     visible: optRetroachievementActivate.checked
-
                 }
                 ToggleOption {
                     id: optNetplayActivate
                     SectionTitle {
                         text: qsTr("Netplay") + api.tr
                         first: true
+                        symbol: "\uf343"
                     }
                     // label: qsTr("Activate netplay") + api.tr
                     // note: qsTr("Play with your friends online") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.netplay")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("global.netplay",checked);
-                    }
-                    symbol: "\uf343"
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.netplay",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayNickname
                 }
@@ -285,9 +266,7 @@ FocusScope {
                     note: qsTr("Set password for other players join your game") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforplayer")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
-                    }
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("netplay.password.useforplayer",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayPswdClient
                     visible: optNetplayActivate.checked
@@ -314,7 +293,6 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayPswdViewerActivate
                     visible: optNetplayPswdClientActivate.checked && optNetplayActivate.checked
-
                 }
                 ToggleOption {
                     id: optNetplayPswdViewerActivate
@@ -323,9 +301,7 @@ FocusScope {
                     note: qsTr("Set password for netplay spectator") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("netplay.password.useforviewer")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
-                    }
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("netplay.password.useforviewer",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayPswdViewer
                     visible: optNetplayActivate.checked

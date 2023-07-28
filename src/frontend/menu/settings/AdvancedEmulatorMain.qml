@@ -13,11 +13,20 @@ FocusScope {
     id: root
 
     signal close
-    signal openEmulatorConfiguration(var system)
+    signal openRetroarchSettings
+    signal openModel2Settings
+    signal openDolphinSettings
+    signal openDolphinTriforceSettings
+    signal openPcsx2Settings
+    signal openCitraSettings
+    signal openCemuSettings
+    signal openXemuSettings
+    signal openSupermodelSettings
+    signal openPpssppSettings
+    signal openYuzuSettings
 
     width: parent.width
     height: parent.height
-    
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
@@ -84,34 +93,166 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
+                SimpleButton {
+                    id: optCemu
+                    //set focus only on firt item
+                    focus: true
 
-                Repeater {
-                    id: systemButtons
-                    model: api.collections
-                    SimpleButton {
-                        label: qsTr(modelData.name) + api.tr
+                    label: qsTr("Cemu") + api.tr
+                    note: qsTr("Change Configuration for Cemu emulator for Nintendo Wiiu") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
-                        // set focus only on first item
-                        focus: index === 0 ? true : false
-
-                        onActivate: {
-                            //console.log("root.openEmulatorConfiguration()");
-                            focus = true;
-                            root.openEmulatorConfiguration(modelData);
-
-                        }
-                        
-                        onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index !== 0) ?  systemButtons.itemAt(index-1) : systemButtons.itemAt(systemButtons.count-1)
-                        KeyNavigation.down: (index < systemButtons.count) ? systemButtons.itemAt(index+1) : systemButtons.itemAt(0)
-                        //pointer moved in SimpleButton desactived on default
-                        pointerIcon: true
+                    onActivate: {
+                        focus = true;
+                        root.openCemuSettings();
                     }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optCitra
+                }
+                SimpleButton {
+                    id: optCitra
+                    label: qsTr("Citra-emu") + api.tr
+                    note: qsTr("Change Configuration for Citra-emu emulator for Nintendo 3ds") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
+                    onActivate: {
+                        focus = true;
+                        root.openCitraSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDolphin
+                }
+                SimpleButton {
+                    id: optDolphin
+                    label: qsTr("Dolphin") + api.tr
+                    note: qsTr("Change Configuration for Dolphin emulator for Nintendo GameCube and Wii.") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openDolphinSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDolphinTriforce
+                }
+                SimpleButton {
+                    id: optDolphinTriforce
+                    label: qsTr("Dolphin-Triforce") + api.tr
+                    note: qsTr("Change Configuration for Dolphin-Triforce emulator for Triforce arcade systems.") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openDolphinTriforceSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2
+                }
+                SimpleButton {
+                    id: optModel2
+                    label: qsTr("Model2") + api.tr
+                    note: qsTr("Change Configuration for Model2 emulator for Sega Model2 !") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openModel2Settings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optPcsx2
+                }
+                SimpleButton {
+                    id: optPcsx2
+                    label: qsTr("Pcsx2") + api.tr
+                    note: qsTr("Change Configuration for Pcsx2 emulator for Sony Playstation 2") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openPcsx2Settings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optPpsspp
+                }
+                SimpleButton {
+                    id: optPpsspp
+                    label: qsTr("PPSSPP") + api.tr
+                    note: qsTr("Change Configuration for PPSSPP emulator for Sony Playstation Portable !") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openPpssppSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRetroarch
+                }
+                SimpleButton {
+                    id: optRetroarch
+
+                    label: qsTr("Retroarch") + api.tr
+                    note: qsTr("Change Configuration for retroarch/libretro multi emulator !") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openRetroarchSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSupermodel
+                } 
+                SimpleButton {
+                    id: optSupermodel
+                    label: qsTr("Supermodel") + api.tr
+                    note: qsTr("Change Configuration for Supermodel emulator for Sega Model3 !") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openSupermodelSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optXemu
+                }
+                SimpleButton {
+                    id: optXemu
+                    label: qsTr("Xemu") + api.tr
+                    note: qsTr("Change Configuration for Xemu emulator for Microsoft Xbox") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openXemuSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optYuzu
+                }
+                SimpleButton {
+                    id: optYuzu
+                    label: qsTr("Yuzu") + api.tr
+                    note: qsTr("Change Configuration for Yuzu emulator for Nintendo switch") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openYuzuSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: vpx(30)
                 }
             }
         }
