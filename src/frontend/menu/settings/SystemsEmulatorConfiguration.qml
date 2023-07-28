@@ -1,6 +1,6 @@
 // Pegasus Frontend
 //
-// Created by BozoTheGeek 10/05/2021
+// Created by Strodown 17/07/2023
 //
 
 import "common"
