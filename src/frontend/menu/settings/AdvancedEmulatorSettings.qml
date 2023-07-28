@@ -1,6 +1,7 @@
 // Pegasus Frontend
 //
 // Created by BozoTheGeek - 17/05/2021
+// Updated by Strodown - 17/07/2023
 //
 
 import "emulatorsetting"
