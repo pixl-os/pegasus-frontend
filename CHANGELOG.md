@@ -1,14 +1,28 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2023-XX-XX - v0.1.4
+## [pixL-master] - 2023-07-28 - v0.1.4
 - Build:
 	- upgrade c++ to 17 in pegasus-front build
 	- upgrade gcc on 12.2.0 in pegasus-front build
 
 - Features:
-	- add options for model 2 emulator in sega model2 system
 	- set visible only if vulkan is compatible
+	- add new menu for emulators configuration :
+		- add dedicated qml(menu) for model2emu
+		- add dedicated qml(menu) for dolphin
+		- add dedicated qml(menu) for pcsx2
+		- add dedicated qml(menu) for citra
+		- add dedicated qml(menu) for cemu
+		- add dedicated qml(menu) for xemu
+		- add dedicated qml(menu) for supermodel
+		- add dedicated qml(menu) for ppsspp
+		- add dedicated qml(menu) for yuzu
+		- add dedicated qml(menu) for retroarch
+		- add dedicated qml(menu) for dolphin-triforce
+		- fix missing crosshairs option in menu for supermodel
+		- refactoring configgen and user options
+		- add vsync option for yuzu and cemu
 
 - Fixes:
 	- new way to have local ip for wifi/ethernet and to manage more cases of ethernet/wifi adapter naming #[50]
