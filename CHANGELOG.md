@@ -3,12 +3,15 @@ All notable changes to this project will be documented in this file (focus on ch
 
 ## [pixL-master] - 2023-XX-XX - v0.1.4
 - Build:
-	- Upgrade c++ to 17 in pegasus-front build
-	- Upgrade gcc on 12.2.0 in pegasus-front build
+	- upgrade c++ to 17 in pegasus-front build
+	- upgrade gcc on 12.2.0 in pegasus-front build
 
 - Features:
 	- add options for model 2 emulator in sega model2 system
 	- set visible only if vulkan is compatible
+
+- Fixes:
+	- new way to have local ip for wifi/ethernet and to manage more cases of ethernet/wifi adapter naming #[50]
 
 ## [pixL-master] - 2023-05-26 - v0.1.3
 - Fixes:

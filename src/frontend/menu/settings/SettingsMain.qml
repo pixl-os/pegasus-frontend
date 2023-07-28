@@ -388,7 +388,7 @@ FocusScope {
                     onTriggered: {
                         //get ethernet ip if exists
                         var ethIP = ""
-                        if(!isDebugEnv()) ethIP = api.internal.system.run("timeout 1 ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                        if(!isDebugEnv()) ethIP = api.internal.system.run("timeout 1 ifconfig 2> /dev/null | grep -A1 '^e'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2");
                         else ethIP = "192.168.1.255"; //for test purpose
                         if(ethIP !== ""){
                             optEthernet.note = qsTr("Ethernet Local IP :") + api.tr + " " + ethIP;
@@ -400,7 +400,7 @@ FocusScope {
                         if(optWifiToggle.checked){
                             //get wifi ip if exists
                             var wifiIP = "";
-                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig 2> /dev/null | grep -A1 '^w'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2");
                             else wifiIP = "192.168.1.254"; //for test purpose
                             //get wifi ssid if exists
                             var ssid = "";

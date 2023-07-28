@@ -111,7 +111,7 @@ FocusScope {
                         var wifiIP = ""
                         //wait 10s max to have an IP
                         for(var i=0; i < 10; i++){
-                            if(!isDebugEnv()) wifiIP = api.internal.system.run("ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'");
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("ifconfig 2> /dev/null | grep -A1 '^w'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2");
                             if(wifiIP !== ""){
                                 break; //to exit waiting
                             }

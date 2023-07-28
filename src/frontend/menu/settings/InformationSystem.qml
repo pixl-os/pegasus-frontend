@@ -77,9 +77,12 @@ sudo lshw -c display | grep product | cut -d ':' -f 2 | cut -c 2-
 cat /sys/class/thermal/thermal_zone0/temp 2> /dev/null || cat /sys/class/hwmon/hwmon0/temp1_input 2> /dev/null || echo 0
 
 # Network
-ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'
-ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'
+ifconfig eth0 2> /dev/null | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'
+ifconfig wlan0 2> /dev/null | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'
 
+#new way to manage specific cases also:
+ifconfig 2> /dev/null | grep -A1 '^e'| grep "inet addr:" | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2
+ifconfig 2> /dev/null | grep -A1 '^w'| grep "inet addr:" | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2
 */
 FocusScope {
     id: root
@@ -120,8 +123,8 @@ FocusScope {
 
     property var model2: [
         //{ name: qsTr("System Disk Usage :"), cmd: api.internal.system.run("df -mT | awk \'NR>1 && ($7 == \'/\' || $7 == \'/dev\' || $7 == \'/boot\' || $7 == \'/tmp\' || $7 == \'/var\' || $7 == \'/overlay/lower\')\' | awk \'NF-=2\' | uniq | awk \'{total+=$3;used+=$4;free+=$5}END{if(total>1048576){total_out=total\/1048576;used_out=used\/1048576;unit_out=\'TB\';} else {total_out=total\/1024;used_out=used\/1024;unit_out=\'GB\'};percentage=used*100\/total;printf(\'%.2f\/%.2f %s (%.1f %)\n\',used_out,total_out,unit_out,percentage)}\'") },
-        { name: qsTr("Wifi Local IP :"), cmd: api.internal.system.run("ifconfig wlan0 2> /dev/null | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
-        { name: qsTr("Ethernet Local IP :"), cmd: api.internal.system.run("ifconfig eth0 2> /dev/null | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'") },
+        { name: qsTr("Wifi Local IP :"), cmd: api.internal.system.run("ifconfig 2> /dev/null | grep -A1 '^w'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2") },
+        { name: qsTr("Ethernet Local IP :"), cmd: api.internal.system.run("ifconfig 2> /dev/null | grep -A1 '^e'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2") },
         { name: qsTr("External IP :"), cmd: api.internal.system.run("curl -4 'http://icanhazip.com/' 2> /dev/null") },
         { name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("sensors -A '*-isa-*' | cut -d '(' -f 1 | sed -e 's/C  /C/g' ")}, // sed -e 's/C  /C/g' " remove empty space for force right alignement
         //{ name: qsTr("GPU Temperature :"), cmd: api.internal.system.run("gpu_temp=$(vcgencmd measure_temp | cut -d '=' -f 2 | cut -d \' -f 1); echo '$gpu_temp'$'\xc2\xb0'C")},
