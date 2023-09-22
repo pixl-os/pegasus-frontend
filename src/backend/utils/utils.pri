@@ -1,5 +1,6 @@
-#to find include files of rcheevos part QT
+#to find include files of rcheevos/libretro-common parts for QT
 INCLUDEPATH += . utils/rcheevos/include
+INCLUDEPATH += . utils/libretro-common/include
 
 HEADERS += \
     $$PWD/CommandTokenizer.h \
