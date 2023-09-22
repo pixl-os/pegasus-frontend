@@ -27,8 +27,8 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-#include "utils/libretro-common/include/retro_common_api.h"
-#include "utils/libretro-common/include/boolean.h"
+#include <retro_common_api.h>
+#include <boolean.h>
 
 RETRO_BEGIN_DECLS
 
@@ -105,6 +105,8 @@ int intfstream_flush(intfstream_internal_t *intf);
 uint32_t intfstream_get_offset_to_start(intfstream_internal_t *intf);
 
 uint32_t intfstream_get_frame_size(intfstream_internal_t *intf);
+
+uint32_t intfstream_get_first_sector(intfstream_internal_t* intf);
 
 bool intfstream_is_compressed(intfstream_internal_t *intf);
 

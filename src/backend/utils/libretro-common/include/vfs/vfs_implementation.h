@@ -25,9 +25,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "utils/libretro-common/include/libretro.h"
-#include "utils/libretro-common/include/retro_environment.h"
-#include "utils/libretro-common/include/vfs/vfs.h"
+#include <libretro.h>
+#include <retro_environment.h>
+#include <vfs/vfs.h>
 
 RETRO_BEGIN_DECLS
 
@@ -70,6 +70,12 @@ const char *retro_vfs_dirent_get_name_impl(libretro_vfs_implementation_dir *dirs
 bool retro_vfs_dirent_is_dir_impl(libretro_vfs_implementation_dir *dirstream);
 
 int retro_vfs_closedir_impl(libretro_vfs_implementation_dir *dirstream);
+
+#ifdef __WINRT__
+
+void uwp_set_acl(const wchar_t* path, const wchar_t* AccessString);
+
+#endif
 
 RETRO_END_DECLS
 

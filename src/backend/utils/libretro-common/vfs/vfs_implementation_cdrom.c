@@ -20,11 +20,11 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include "utils/libretro-common/include/vfs/vfs_implementation.h"
-#include "utils/libretro-common/include/file/file_path.h"
-#include "utils/libretro-common/include/compat/fopen_utf8.h"
-#include "utils/libretro-common/include/string/stdstring.h"
-#include "utils/libretro-common/include/cdrom/cdrom.h"
+#include <vfs/vfs_implementation.h>
+#include <file/file_path.h>
+#include <compat/fopen_utf8.h>
+#include <string/stdstring.h>
+#include <cdrom/cdrom.h>
 
 #if defined(_WIN32) && !defined(_XBOX)
 #include <windows.h>

@@ -22,7 +22,7 @@
 
 #include <ctype.h>
 
-#include "utils/libretro-common/include/compat/strcasestr.h"
+#include <compat/strcasestr.h>
 
 /* Pretty much strncasecmp. */
 static int casencmp(const char *a, const char *b, size_t n)

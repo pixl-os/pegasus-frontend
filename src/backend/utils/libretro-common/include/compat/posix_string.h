@@ -23,7 +23,7 @@
 #ifndef __LIBRETRO_SDK_COMPAT_POSIX_STRING_H
 #define __LIBRETRO_SDK_COMPAT_POSIX_STRING_H
 
-#include "utils/libretro-common/include/retro_common_api.h"
+#include <retro_common_api.h>
 
 #ifdef _MSC_VER
 #include <compat/msvc.h>

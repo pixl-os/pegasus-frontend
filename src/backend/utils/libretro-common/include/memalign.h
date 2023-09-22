@@ -25,7 +25,7 @@
 
 #include <stddef.h>
 
-#include "utils/libretro-common/include/retro_common_api.h"
+#include <retro_common_api.h>
 
 RETRO_BEGIN_DECLS
 

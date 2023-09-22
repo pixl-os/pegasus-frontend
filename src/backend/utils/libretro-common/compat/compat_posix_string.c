@@ -22,7 +22,7 @@
 
 #include <ctype.h>
 
-#include "utils/libretro-common/include/compat/posix_string.h"
+#include <compat/posix_string.h>
 
 #ifdef _WIN32
 
@@ -33,7 +33,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include "utils/libretro-common/include/compat/strl.h"
+#include <compat/strl.h>
 
 #include <string.h>
 

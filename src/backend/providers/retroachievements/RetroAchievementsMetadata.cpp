@@ -16,10 +16,9 @@
 #include "utils/Zip.h"
 
 //for retroachievements management coming from libretro and rcheevos
-#include "utils/libretro-common/include/libretro.h"
-#include "utils/rcheevos/include/rc_hash.h"
-#include "utils/libretro-common/include/cheevos_util.h"
-#include "utils/libretro-common/include/formats/cdfs.h"
+#include "libretro.h"
+#include "rc_hash.h"
+#include "formats/cdfs.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>

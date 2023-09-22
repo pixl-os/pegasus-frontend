@@ -21,13 +21,12 @@
  */
 
 #ifdef HAVE_THREADS
-#include "utils/libretro-common/include/rthreads/rthreads.h"
-#include "utils/libretro-common/include/retro_assert.h"
+#include <rthreads/rthreads.h>
 #include <stdlib.h>
 #endif
 
 #include <string.h>
-#include "utils/libretro-common/include/time/rtime.h"
+#include <time/rtime.h>
 
 #ifdef HAVE_THREADS
 /* TODO/FIXME - global */
@@ -41,8 +40,6 @@ void rtime_init(void)
 #ifdef HAVE_THREADS
    if (!rtime_localtime_lock)
       rtime_localtime_lock = slock_new();
-
-   retro_assert(rtime_localtime_lock);
 #endif
 }
 

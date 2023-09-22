@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "utils/libretro-common/include/boolean.h"
+#include <boolean.h>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -33,9 +33,9 @@
 #include <unistd.h>
 #endif
 
-#include "utils/libretro-common/include/retro_miscellaneous.h"
+#include <retro_miscellaneous.h>
 
-#include "utils/libretro-common/include/retro_common_api.h"
+#include <retro_common_api.h>
 
 RETRO_BEGIN_DECLS
 

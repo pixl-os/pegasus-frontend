@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include "utils/libretro-common/include/retro_miscellaneous.h"
+#include <retro_miscellaneous.h>
 
 typedef uint64_t UINT64;
 #ifndef OSD_CPU_H

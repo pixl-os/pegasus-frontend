@@ -23,7 +23,7 @@
 #ifndef __LIBRETRO_SDK_RTIME_H__
 #define __LIBRETRO_SDK_RTIME_H__
 
-#include "utils/libretro-common/include/retro_common_api.h"
+#include <retro_common_api.h>
 
 #include <stdint.h>
 #include <stddef.h>

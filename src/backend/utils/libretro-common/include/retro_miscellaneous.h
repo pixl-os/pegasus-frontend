@@ -27,8 +27,9 @@
 #define RARCH_MAX_SUBSYSTEM_ROMS 10
 
 #include <stdint.h>
-#include "utils/libretro-common/include/boolean.h"
-#include "utils/libretro-common/include/retro_inline.h"
+#include <boolean.h>
+#include <retro_inline.h>
+
 #if defined(_WIN32)
 
 #if defined(_XBOX)
@@ -46,6 +47,10 @@
 
 #ifdef _MSC_VER
 #include <compat/msvc.h>
+#endif
+
+#ifdef IOS
+#include <sys/param.h>
 #endif
 
 static INLINE void bits_or_bits(uint32_t *a, uint32_t *b, uint32_t count)
@@ -73,12 +78,27 @@ static INLINE bool bits_any_set(uint32_t* ptr, uint32_t count)
    return false;
 }
 
+static INLINE bool bits_any_different(uint32_t *a, uint32_t *b, uint32_t count)
+{
+   uint32_t i;
+   for (i = 0; i < count; i++)
+   {
+      if (a[i] != b[i])
+         return true;
+   }
+   return false;
+}
+
 #ifndef PATH_MAX_LENGTH
-#if defined(_XBOX1) || defined(_3DS) || defined(PSP) || defined(PS2) || defined(GEKKO)|| defined(WIIU) || defined(ORBIS) || defined(__PSL1GHT__) || defined(__PS3__)
+#if defined(_XBOX1) || defined(_3DS) || defined(PSP) || defined(PS2) || defined(GEKKO)|| defined(WIIU) || defined(__PSL1GHT__) || defined(__PS3__)
 #define PATH_MAX_LENGTH 512
 #else
 #define PATH_MAX_LENGTH 4096
 #endif
+#endif
+
+#ifndef NAME_MAX_LENGTH
+#define NAME_MAX_LENGTH 256
 #endif
 
 #ifndef MAX
@@ -133,6 +153,16 @@ static INLINE bool bits_any_set(uint32_t* ptr, uint32_t count)
 #define BIT256_GET_PTR(a, bit)   BIT256_GET(*a, bit)
 #define BIT256_CLEAR_ALL_PTR(a)  BIT256_CLEAR_ALL(*a)
 
+#define BIT512_SET(a, bit)       BIT256_SET(a, bit)
+#define BIT512_CLEAR(a, bit)     BIT256_CLEAR(a, bit)
+#define BIT512_GET(a, bit)       BIT256_GET(a, bit)
+#define BIT512_CLEAR_ALL(a)      BIT256_CLEAR_ALL(a)
+
+#define BIT512_SET_PTR(a, bit)   BIT512_SET(*a, bit)
+#define BIT512_CLEAR_PTR(a, bit) BIT512_CLEAR(*a, bit)
+#define BIT512_GET_PTR(a, bit)   BIT512_GET(*a, bit)
+#define BIT512_CLEAR_ALL_PTR(a)  BIT512_CLEAR_ALL(*a)
+
 #define BITS_COPY16_PTR(a,bits) \
 { \
    BIT128_CLEAR_ALL_PTR(a); \
@@ -158,6 +188,12 @@ typedef struct
 {
    uint32_t data[8];
 } retro_bits_t;
+
+/* This struct has 512 bits. */
+typedef struct
+{
+   uint32_t data[16];
+} retro_bits_512_t;
 
 #ifdef _WIN32
 #  ifdef _WIN64

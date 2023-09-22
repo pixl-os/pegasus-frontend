@@ -28,12 +28,12 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-#include "utils/libretro-common/include/vfs/vfs.h"
-#include "utils/libretro-common/include/libretro.h"
-#include "utils/libretro-common/include/retro_common_api.h"
-#include "utils/libretro-common/include/retro_inline.h"
+#include <vfs/vfs.h>
+#include <libretro.h>
+#include <retro_common_api.h>
+#include <retro_inline.h>
 
-#include "utils/libretro-common/include/boolean.h"
+#include <boolean.h>
 
 struct string_list;
 
