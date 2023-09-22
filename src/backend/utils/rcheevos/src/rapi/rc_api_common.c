@@ -4,15 +4,15 @@
 
 #include "../rcheevos/rc_compat.h"
 
-#include "../rhash/md5.h"
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define RETROACHIEVEMENTS_HOST "https://retroachievements.org"
-#define RETROACHIEVEMENTS_IMAGE_HOST "http://i.retroachievements.org"
+#define RETROACHIEVEMENTS_IMAGE_HOST "https://media.retroachievements.org"
+#define RETROACHIEVEMENTS_HOST_NONSSL "http://retroachievements.org"
+#define RETROACHIEVEMENTS_IMAGE_HOST_NONSSL "http://media.retroachievements.org"
 static char* g_host = NULL;
 static char* g_imagehost = NULL;
 
@@ -20,7 +20,7 @@ static char* g_imagehost = NULL;
 
 /* --- rc_json --- */
 
-static int rc_json_parse_object(const char** json_ptr, rc_json_field_t* fields, size_t field_count);
+static int rc_json_parse_object(const char** json_ptr, rc_json_field_t* fields, size_t field_count, unsigned* fields_seen);
 static int rc_json_parse_array(const char** json_ptr, rc_json_field_t* field);
 
 static int rc_json_parse_field(const char** json_ptr, rc_json_field_t* field) {
@@ -68,19 +68,19 @@ static int rc_json_parse_field(const char** json_ptr, rc_json_field_t* field) {
       break;
 
     case '{': /* object */
-      result = rc_json_parse_object(json_ptr, NULL, 0);
+      result = rc_json_parse_object(json_ptr, NULL, 0, &field->array_size);
       if (result != RC_OK)
         return result;
 
       break;
 
     default: /* non-quoted text [true,false,null] */
-      if (!isalpha(**json_ptr))
+      if (!isalpha((unsigned char)**json_ptr))
         return RC_INVALID_JSON;
 
       do {
         ++(*json_ptr);
-      } while (isalnum(**json_ptr));
+      } while (isalnum((unsigned char)**json_ptr));
       break;
   }
 
@@ -101,7 +101,7 @@ static int rc_json_parse_array(const char** json_ptr, rc_json_field_t* field) {
   if (*json != ']') {
     do
     {
-      while (isspace(*json))
+      while (isspace((unsigned char)*json))
         ++json;
 
       result = rc_json_parse_field(&json, &unused_field);
@@ -110,7 +110,7 @@ static int rc_json_parse_array(const char** json_ptr, rc_json_field_t* field) {
 
       ++field->array_size;
 
-      while (isspace(*json))
+      while (isspace((unsigned char)*json))
         ++json;
 
       if (*json != ',')
@@ -127,13 +127,54 @@ static int rc_json_parse_array(const char** json_ptr, rc_json_field_t* field) {
   return RC_OK;
 }
 
-static int rc_json_parse_object(const char** json_ptr, rc_json_field_t* fields, size_t field_count) {
-  rc_json_field_t non_matching_field;
-  rc_json_field_t* field;
+static int rc_json_get_next_field(rc_json_object_field_iterator_t* iterator) {
+  const char* json = iterator->json;
+
+  while (isspace((unsigned char)*json))
+    ++json;
+
+  if (*json != '"')
+    return RC_INVALID_JSON;
+
+  iterator->field.name = ++json;
+  while (*json != '"') {
+    if (!*json)
+      return RC_INVALID_JSON;
+    ++json;
+  }
+  iterator->name_len = json - iterator->field.name;
+  ++json;
+
+  while (isspace((unsigned char)*json))
+    ++json;
+
+  if (*json != ':')
+    return RC_INVALID_JSON;
+
+  ++json;
+
+  while (isspace((unsigned char)*json))
+    ++json;
+
+  if (rc_json_parse_field(&json, &iterator->field) < 0)
+    return RC_INVALID_JSON;
+
+  while (isspace((unsigned char)*json))
+    ++json;
+
+  iterator->json = json;
+  return RC_OK;
+}
+
+static int rc_json_parse_object(const char** json_ptr, rc_json_field_t* fields, size_t field_count, unsigned* fields_seen) {
+  rc_json_object_field_iterator_t iterator;
   const char* json = *json_ptr;
-  const char* key_start;
-  size_t key_len;
   size_t i;
+  unsigned num_fields = 0;
+  int result;
+
+  if (fields_seen)
+    *fields_seen = 0;
 
   for (i = 0; i < field_count; ++i)
     fields[i].value_start = fields[i].value_end = NULL;
@@ -147,59 +188,48 @@ static int rc_json_parse_object(const char** json_ptr, rc_json_field_t* fields, 
     return RC_OK;
   }
 
+  memset(&iterator, 0, sizeof(iterator));
+  iterator.json = json;
+
   do
   {
-    while (isspace(*json))
-      ++json;
+    result = rc_json_get_next_field(&iterator);
+    if (result != RC_OK)
+      return result;
 
-    if (*json != '"')
-      return RC_INVALID_JSON;
-
-    key_start = ++json;
-    while (*json != '"') {
-      if (!*json)
-        return RC_INVALID_JSON;
-      ++json;
-    }
-    key_len = json - key_start;
-    ++json;
-
-    while (isspace(*json))
-      ++json;
-
-    if (*json != ':')
-      return RC_INVALID_JSON;
-
-    ++json;
-
-    while (isspace(*json))
-      ++json;
-
-    field = &non_matching_field;
     for (i = 0; i < field_count; ++i) {
-      if (!fields[i].value_start && strncmp(fields[i].name, key_start, key_len) == 0 && fields[i].name[key_len] == '\0') {
-        field = &fields[i];
+      if (!fields[i].value_start && strncmp(fields[i].name, iterator.field.name, iterator.name_len) == 0 &&
+          fields[i].name[iterator.name_len] == '\0') {
+        fields[i].value_start = iterator.field.value_start;
+        fields[i].value_end = iterator.field.value_end;
+        fields[i].array_size = iterator.field.array_size;
         break;
       }
     }
 
-    if (rc_json_parse_field(&json, field) < 0)
-      return RC_INVALID_JSON;
-
-    while (isspace(*json))
-      ++json;
-
-    if (*json != ',')
+    ++num_fields;
+    if (*iterator.json != ',')
       break;
 
-    ++json;
+    ++iterator.json;
   } while (1);
 
-  if (*json != '}')
+  if (*iterator.json != '}')
     return RC_INVALID_JSON;
 
-  *json_ptr = ++json;
+  if (fields_seen)
+    *fields_seen = num_fields;
+
+  *json_ptr = ++iterator.json;
   return RC_OK;
+}
+
+int rc_json_get_next_object_field(rc_json_object_field_iterator_t* iterator) {
+  if (*iterator->json != ',' && *iterator->json != '{')
+    return 0;
+
+  ++iterator->json;
+  return (rc_json_get_next_field(iterator) == RC_OK);
 }
 
 int rc_json_parse_response(rc_api_response_t* response, const char* json, rc_json_field_t* fields, size_t field_count) {
@@ -213,7 +243,7 @@ int rc_json_parse_response(rc_api_response_t* response, const char* json, rc_jso
 #endif
 
   if (*json == '{') {
-    int result = rc_json_parse_object(&json, fields, field_count);
+    int result = rc_json_parse_object(&json, fields, field_count, NULL);
 
     rc_json_get_optional_string(&response->error_message, response, &fields[1], "Error", NULL);
     rc_json_get_optional_bool(&response->succeeded, &fields[0], "Success", 1);
@@ -225,6 +255,27 @@ int rc_json_parse_response(rc_api_response_t* response, const char* json, rc_jso
 
   if (*json) {
     const char* end = json;
+
+    if (strncmp(json, "<html>", 6) == 0) {
+      const char* title_start = strstr(json, "<title>");
+      if (title_start) {
+        title_start += 7;
+        if (isdigit((int)*title_start)) {
+          const char* title_end = strstr(title_start + 7, "</title>");
+          if (title_end) {
+            char *dst = rc_buf_reserve(&response->buffer, (title_end - title_start) + 1);
+            response->error_message = dst;
+            memcpy(dst, title_start, title_end - title_start);
+            dst += (title_end - title_start);
+            *dst++ = '\0';
+            rc_buf_consume(&response->buffer, response->error_message, dst);
+            response->succeeded = 0;
+            return RC_INVALID_JSON;
+          }
+        }
+      }
+    }
+
     while (*end && *end != '\n' && end - json < 200)
       ++end;
 
@@ -266,23 +317,29 @@ static int rc_json_missing_field(rc_api_response_t* response, const rc_json_fiel
 
 int rc_json_get_required_object(rc_json_field_t* fields, size_t field_count, rc_api_response_t* response, rc_json_field_t* field, const char* field_name) {
   const char* json = field->value_start;
+#ifndef NDEBUG
+  if (strcmp(field->name, field_name) != 0)
+    return 0;
+#else
+  (void)field_name;
+#endif
 
   if (!json)
     return rc_json_missing_field(response, field);
 
-  return (rc_json_parse_object(&json, fields, field_count) == RC_OK);
+  return (rc_json_parse_object(&json, fields, field_count, &field->array_size) == RC_OK);
 }
 
 static int rc_json_get_array_entry_value(rc_json_field_t* field, rc_json_field_t* iterator) {
   if (!iterator->array_size)
     return 0;
 
-  while (isspace(*iterator->value_start))
+  while (isspace((unsigned char)*iterator->value_start))
     ++iterator->value_start;
 
   rc_json_parse_field(&iterator->value_start, field);
 
-  while (isspace(*iterator->value_start))
+  while (isspace((unsigned char)*iterator->value_start))
     ++iterator->value_start;
 
   ++iterator->value_start; /* skip , or ] */
@@ -322,6 +379,13 @@ int rc_json_get_required_unum_array(unsigned** entries, unsigned* num_entries, r
 }
 
 int rc_json_get_required_array(unsigned* num_entries, rc_json_field_t* iterator, rc_api_response_t* response, const rc_json_field_t* field, const char* field_name) {
+#ifndef NDEBUG
+  if (strcmp(field->name, field_name) != 0)
+    return 0;
+#else
+  (void)field_name;
+#endif
+
   if (!field->value_start || *field->value_start != '[') {
     *num_entries = 0;
     return rc_json_missing_field(response, field);
@@ -338,12 +402,12 @@ int rc_json_get_array_entry_object(rc_json_field_t* fields, size_t field_count, 
   if (!iterator->array_size)
     return 0;
 
-  while (isspace(*iterator->value_start))
+  while (isspace((unsigned char)*iterator->value_start))
     ++iterator->value_start;
 
-  rc_json_parse_object(&iterator->value_start, fields, field_count);
+  rc_json_parse_object(&iterator->value_start, fields, field_count, NULL);
 
-  while (isspace(*iterator->value_start))
+  while (isspace((unsigned char)*iterator->value_start))
     ++iterator->value_start;
 
   ++iterator->value_start; /* skip , or ] */
@@ -358,7 +422,7 @@ static unsigned rc_json_decode_hex4(const char* input) {
   memcpy(hex, input, 4);
   hex[4] = '\0';
 
-  return strtol(hex, NULL, 16);
+  return (unsigned)strtoul(hex, NULL, 16);
 }
 
 static int rc_json_ucs32_to_utf8(unsigned char* dst, unsigned ucs32_char) {
@@ -414,6 +478,8 @@ int rc_json_get_string(const char** out, rc_api_buffer_t* buffer, const rc_json_
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (!src) {
@@ -481,6 +547,13 @@ int rc_json_get_string(const char** out, rc_api_buffer_t* buffer, const rc_json_
           continue;
         }
 
+        if (*src == 't') {
+          /* tab */
+          ++src;
+          *dst++ = '\t';
+          continue;
+        }
+
         /* just an escaped character, fallthrough to normal copy */
       }
 
@@ -518,6 +591,8 @@ int rc_json_get_num(int* out, const rc_json_field_t* field, const char* field_na
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (!src) {
@@ -569,6 +644,8 @@ int rc_json_get_unum(unsigned* out, const rc_json_field_t* field, const char* fi
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (!src) {
@@ -592,7 +669,7 @@ int rc_json_get_unum(unsigned* out, const rc_json_field_t* field, const char* fi
   return 1;
 }
 
-void rc_json_get_optional_unum(unsigned* out, const rc_json_field_t* field, const char* field_name, int default_value) {
+void rc_json_get_optional_unum(unsigned* out, const rc_json_field_t* field, const char* field_name, unsigned default_value) {
   if (!rc_json_get_unum(out, field, field_name))
     *out = default_value;
 }
@@ -604,12 +681,60 @@ int rc_json_get_required_unum(unsigned* out, rc_api_response_t* response, const 
   return rc_json_missing_field(response, field);
 }
 
+int rc_json_get_datetime(time_t* out, const rc_json_field_t* field, const char* field_name) {
+  struct tm tm;
+
+#ifndef NDEBUG
+  if (strcmp(field->name, field_name) != 0)
+    return 0;
+#else
+  (void)field_name;
+#endif
+
+  if (*field->value_start == '\"') {
+    memset(&tm, 0, sizeof(tm));
+    if (sscanf_s(field->value_start + 1, "%d-%d-%d %d:%d:%d",
+        &tm.tm_year, &tm.tm_mon, &tm.tm_mday, &tm.tm_hour, &tm.tm_min, &tm.tm_sec) == 6) {
+      tm.tm_mon--; /* 0-based */
+      tm.tm_year -= 1900; /* 1900 based */
+
+      /* mktime converts a struct tm to a time_t using the local timezone.
+       * the input string is UTC. since timegm is not universally cross-platform,
+       * figure out the offset between UTC and local time by applying the
+       * timezone conversion twice and manually removing the difference */
+      {
+         time_t local_timet = mktime(&tm);
+         time_t skewed_timet, tz_offset;
+         struct tm gmt_tm;
+         gmtime_s(&gmt_tm, &local_timet);
+         skewed_timet = mktime(&gmt_tm); /* applies local time adjustment second time */
+         tz_offset = skewed_timet - local_timet;
+         *out = local_timet - tz_offset;
+      }
+
+      return 1;
+    }
+  }
+
+  *out = 0;
+  return 0;
+}
+
+int rc_json_get_required_datetime(time_t* out, rc_api_response_t* response, const rc_json_field_t* field, const char* field_name) {
+  if (rc_json_get_datetime(out, field, field_name))
+    return 1;
+
+  return rc_json_missing_field(response, field);
+}
+
 int rc_json_get_bool(int* out, const rc_json_field_t* field, const char* field_name) {
   const char* src = field->value_start;
 
 #ifndef NDEBUG
   if (strcmp(field->name, field_name) != 0)
     return 0;
+#else
+  (void)field_name;
 #endif
 
   if (src) {
@@ -645,31 +770,32 @@ int rc_json_get_required_bool(int* out, rc_api_response_t* response, const rc_js
 /* --- rc_buf --- */
 
 void rc_buf_init(rc_api_buffer_t* buffer) {
-  buffer->write = &buffer->data[0];
-  buffer->end = &buffer->data[sizeof(buffer->data)];
-  buffer->next = NULL;
+  buffer->chunk.write = buffer->chunk.start = &buffer->data[0];
+  buffer->chunk.end = &buffer->data[sizeof(buffer->data)];
+  buffer->chunk.next = NULL;
 }
 
 void rc_buf_destroy(rc_api_buffer_t* buffer) {
+  rc_api_buffer_chunk_t *chunk;
 #ifdef DEBUG_BUFFERS
   int count = 0;
   int wasted = 0;
   int total = 0;
 #endif
 
-  /* first buffer is not allocated */
-  buffer = buffer->next;
+  /* first chunk is not allocated. skip it. */
+  chunk = buffer->chunk.next;
 
   /* deallocate any additional buffers */
-  while (buffer) {
-    rc_api_buffer_t* next = buffer->next;
+  while (chunk) {
+    rc_api_buffer_chunk_t* next = chunk->next;
 #ifdef DEBUG_BUFFERS
-    total += (int)(buffer->end - buffer->data);
-    wasted += (int)(buffer->end - buffer->write);
+    total += (int)(chunk->end - chunk->data);
+    wasted += (int)(chunk->end - chunk->write);
     ++count;
 #endif
-    free(buffer);
-    buffer = next;
+    free(chunk);
+    chunk = next;
   }
 
 #ifdef DEBUG_BUFFERS
@@ -679,47 +805,50 @@ void rc_buf_destroy(rc_api_buffer_t* buffer) {
 }
 
 char* rc_buf_reserve(rc_api_buffer_t* buffer, size_t amount) {
+  rc_api_buffer_chunk_t* chunk = &buffer->chunk;
   size_t remaining;
-  while (buffer) {
-    remaining = buffer->end - buffer->write;
+  while (chunk) {
+    remaining = chunk->end - chunk->write;
     if (remaining >= amount)
-      return buffer->write;
+      return chunk->write;
 
-    if (!buffer->next) {
-      /* allocate a chunk of memory that is a multiple of 256-bytes. casting it to an rc_api_buffer_t will
-       * effectively unbound the data field, so use write and end pointers to track how data is being used.
+    if (!chunk->next) {
+      /* allocate a chunk of memory that is a multiple of 256-bytes. the first 32 bytes will be associated
+       * to the chunk header, and the remaining will be used for data.
        */
-      const size_t buffer_prefix_size = sizeof(rc_api_buffer_t) - sizeof(buffer->data);
-      const size_t alloc_size = (amount + buffer_prefix_size + 0xFF) & ~0xFF;
-      buffer->next = (rc_api_buffer_t*)malloc(alloc_size);
-      if (!buffer->next)
+      const size_t chunk_header_size = sizeof(rc_api_buffer_chunk_t);
+      const size_t alloc_size = (chunk_header_size + amount + 0xFF) & ~0xFF;
+      chunk->next = (rc_api_buffer_chunk_t*)malloc(alloc_size);
+      if (!chunk->next)
         break;
 
-      buffer->next->write = buffer->next->data;
-      buffer->next->end = buffer->next->write + (alloc_size - buffer_prefix_size);
-      buffer->next->next = NULL;
+      chunk->next->start = (char*)chunk->next + chunk_header_size;
+      chunk->next->write = chunk->next->start;
+      chunk->next->end = (char*)chunk->next + alloc_size;
+      chunk->next->next = NULL;
     }
 
-    buffer = buffer->next;
+    chunk = chunk->next;
   }
 
   return NULL;
 }
 
 void rc_buf_consume(rc_api_buffer_t* buffer, const char* start, char* end) {
+  rc_api_buffer_chunk_t* chunk = &buffer->chunk;
   do {
-    if (buffer->write == start) {
-      size_t offset = (end - buffer->data);
+    if (chunk->write == start) {
+      size_t offset = (end - chunk->start);
       offset = (offset + 7) & ~7;
-      buffer->write = &buffer->data[offset];
+      chunk->write = &chunk->start[offset];
 
-      if (buffer->write > buffer->end)
-        buffer->write = buffer->end;
+      if (chunk->write > chunk->end)
+        chunk->write = chunk->end;
       break;
     }
 
-    buffer = buffer->next;
-  } while (buffer);
+    chunk = chunk->next;
+  } while (chunk);
 }
 
 void* rc_buf_alloc(rc_api_buffer_t* buffer, size_t amount) {
@@ -732,13 +861,7 @@ void rc_api_destroy_request(rc_api_request_t* request) {
   rc_buf_destroy(&request->buffer);
 }
 
-void rc_api_generate_checksum(char checksum[33], const char* data) {
-  md5_state_t md5;
-  md5_byte_t digest[16];
-
-  md5_init(&md5);
-  md5_append(&md5, (unsigned char*)data, (int)strlen(data));
-  md5_finish(&md5, digest);
+void rc_api_format_md5(char checksum[33], const unsigned char digest[16]) {
   snprintf(checksum, 33, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
       digest[0], digest[1], digest[2], digest[3], digest[4], digest[5], digest[6], digest[7],
       digest[8], digest[9], digest[10], digest[11], digest[12], digest[13], digest[14], digest[15]
@@ -748,13 +871,13 @@ void rc_api_generate_checksum(char checksum[33], const char* data) {
 /* --- rc_url_builder --- */
 
 void rc_url_builder_init(rc_api_url_builder_t* builder, rc_api_buffer_t* buffer, size_t estimated_size) {
-  rc_api_buffer_t* used_buffer;
+  rc_api_buffer_chunk_t* used_buffer;
 
   memset(builder, 0, sizeof(*builder));
   builder->buffer = buffer;
   builder->write = builder->start = rc_buf_reserve(buffer, estimated_size);
 
-  used_buffer = buffer;
+  used_buffer = &buffer->chunk;
   while (used_buffer && used_buffer->write != builder->write)
     used_buffer = used_buffer->next;
 
@@ -777,7 +900,7 @@ static int rc_url_builder_reserve(rc_api_url_builder_t* builder, size_t amount) 
     if (remaining < amount) {
       const size_t used = builder->write - builder->start;
       const size_t current_size = builder->end - builder->start;
-      const size_t buffer_prefix_size = sizeof(rc_api_buffer_t) - sizeof(builder->buffer->data);
+      const size_t buffer_prefix_size = sizeof(rc_api_buffer_chunk_t);
       char* new_start;
       size_t new_size = (current_size < 256) ? 256 : current_size * 2;
       do {
@@ -974,6 +1097,16 @@ static void rc_api_update_host(char** host, const char* hostname) {
 
 void rc_api_set_host(const char* hostname) {
   rc_api_update_host(&g_host, hostname);
+
+  if (!hostname) {
+    /* also clear out the image hostname */
+    rc_api_set_image_host(NULL);
+  }
+  else if (strcmp(hostname, RETROACHIEVEMENTS_HOST_NONSSL) == 0) {
+    /* if just pointing at the non-HTTPS host, explicitly use the default image host
+     * so it doesn't try to use the web host directly */
+    rc_api_set_image_host(RETROACHIEVEMENTS_IMAGE_HOST_NONSSL);
+  }
 }
 
 void rc_api_set_image_host(const char* hostname) {
@@ -1021,7 +1154,7 @@ int rc_api_init_fetch_image_request(rc_api_request_t* request, const rc_api_fetc
     case RC_IMAGE_TYPE_USER:
       rc_url_builder_append(&builder, "/UserPic/", 9);
       rc_url_builder_append(&builder, api_params->image_name, strlen(api_params->image_name));
-      rc_url_builder_append(&builder, ".png", 9);
+      rc_url_builder_append(&builder, ".png", 4);
       break;
 
     default:

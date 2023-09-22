@@ -7,6 +7,8 @@ extern "C" {
 
 #include "rc_error.h"
 
+#include <stddef.h>
+
 /*****************************************************************************\
 | Forward Declarations (defined in rc_runtime_types.h)                        |
 \*****************************************************************************/
@@ -56,6 +58,7 @@ typedef struct rc_runtime_lboard_t {
   void* buffer;
   rc_memref_t* invalid_memref;
   unsigned char md5[16];
+  int serialized_size;
   char owns_memrefs;
 }
 rc_runtime_lboard_t;
@@ -64,6 +67,7 @@ typedef struct rc_runtime_richpresence_t {
   rc_richpresence_t* richpresence;
   void* buffer;
   struct rc_runtime_richpresence_t* previous;
+  unsigned char md5[16];
   char owns_memrefs;
 }
 rc_runtime_richpresence_t;
@@ -84,9 +88,12 @@ typedef struct rc_runtime_t {
 
   rc_value_t* variables;
   rc_value_t** next_variable;
+
+  char owns_self;
 }
 rc_runtime_t;
 
+rc_runtime_t* rc_runtime_alloc(void);
 void rc_runtime_init(rc_runtime_t* runtime);
 void rc_runtime_destroy(rc_runtime_t* runtime);
 
@@ -94,6 +101,7 @@ int rc_runtime_activate_achievement(rc_runtime_t* runtime, unsigned id, const ch
 void rc_runtime_deactivate_achievement(rc_runtime_t* runtime, unsigned id);
 rc_trigger_t* rc_runtime_get_achievement(const rc_runtime_t* runtime, unsigned id);
 int rc_runtime_get_achievement_measured(const rc_runtime_t* runtime, unsigned id, unsigned* measured_value, unsigned* measured_target);
+int rc_runtime_format_achievement_measured(const rc_runtime_t* runtime, unsigned id, char *buffer, size_t buffer_size);
 
 int rc_runtime_activate_lboard(rc_runtime_t* runtime, unsigned id, const char* memaddr, lua_State* L, int funcs_idx);
 void rc_runtime_deactivate_lboard(rc_runtime_t* runtime, unsigned id);
@@ -116,7 +124,8 @@ enum {
   RC_RUNTIME_EVENT_LBOARD_TRIGGERED,
   RC_RUNTIME_EVENT_ACHIEVEMENT_DISABLED,
   RC_RUNTIME_EVENT_LBOARD_DISABLED,
-  RC_RUNTIME_EVENT_ACHIEVEMENT_UNPRIMED
+  RC_RUNTIME_EVENT_ACHIEVEMENT_UNPRIMED,
+  RC_RUNTIME_EVENT_ACHIEVEMENT_PROGRESS_UPDATED
 };
 
 typedef struct rc_runtime_event_t {
