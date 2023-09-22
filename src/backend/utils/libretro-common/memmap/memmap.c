@@ -21,7 +21,8 @@
  */
 
 #include <stdint.h>
-#include "utils/libretro-common/include/memmap.h"
+#include <stdlib.h>
+#include <memmap.h>
 
 #ifndef PROT_READ
 #define PROT_READ         0x1  /* Page can be read */

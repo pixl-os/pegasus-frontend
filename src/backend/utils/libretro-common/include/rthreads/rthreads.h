@@ -23,12 +23,12 @@
 #ifndef __LIBRETRO_SDK_RTHREADS_H__
 #define __LIBRETRO_SDK_RTHREADS_H__
 
-#include "utils/libretro-common/include/retro_common_api.h"
+#include <retro_common_api.h>
 
-#include "utils/libretro-common/include/boolean.h"
+#include <boolean.h>
 #include <stdint.h>
-#include "utils/libretro-common/include/retro_inline.h"
-#include "utils/libretro-common/include/retro_miscellaneous.h"
+#include <retro_inline.h>
+#include <retro_miscellaneous.h>
 
 RETRO_BEGIN_DECLS
 

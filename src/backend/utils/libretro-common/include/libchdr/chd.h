@@ -46,8 +46,8 @@
 extern "C" {
 #endif
 
-#include "utils/libretro-common/include/libchdr/coretypes.h"
-#include "utils/libretro-common/include/streams/file_stream.h"
+#include "coretypes.h"
+#include <streams/file_stream.h>
 
 /***************************************************************************
 

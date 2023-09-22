@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "utils/libretro-common/include/memalign.h"
+#include <memalign.h>
 
 void *memalign_alloc(size_t boundary, size_t size)
 {

@@ -31,6 +31,6 @@ in a public API, you may need this.
 */
 
 /* conditional compilation is handled inside here */
-#include "utils/libretro-common/include/compat/msvc.h"
+#include <compat/msvc.h>
 
 #endif

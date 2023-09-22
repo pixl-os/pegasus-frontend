@@ -23,8 +23,8 @@
 #ifndef __LIBRETRO_SDK_VFS_H
 #define __LIBRETRO_SDK_VFS_H
 
-#include "utils/libretro-common/include/retro_common_api.h"
-#include "utils/libretro-common/include/boolean.h"
+#include <retro_common_api.h>
+#include <boolean.h>
 
 #ifdef RARCH_INTERNAL
 #ifndef VFS_FRONTEND
@@ -62,7 +62,7 @@ enum vfs_scheme
    VFS_SCHEME_CDROM
 };
 
-#ifndef __WINRT__
+#if !(defined(__WINRT__) && defined(__cplusplus_winrt))
 #ifdef VFS_FRONTEND
 struct retro_vfs_file_handle
 #else

@@ -22,16 +22,16 @@
 
 #include <stdlib.h>
 
-#include "utils/libretro-common/include/streams/interface_stream.h"
-#include "utils/libretro-common/include/streams/file_stream.h"
-#include "utils/libretro-common/include/streams/memory_stream.h"
+#include <streams/interface_stream.h>
+#include <streams/file_stream.h>
+#include <streams/memory_stream.h>
 #ifdef HAVE_CHD
-#include "utils/libretro-common/include/streams/chd_stream.h"
+#include <streams/chd_stream.h>
 #endif
 #if defined(HAVE_ZLIB)
-#include "utils/libretro-common/include/streams/rzip_stream.h"
+#include <streams/rzip_stream.h>
 #endif
-#include "utils/libretro-common/include/encodings/crc32.h"
+#include <encodings/crc32.h>
 
 struct intfstream_internal
 {
@@ -598,6 +598,19 @@ uint32_t intfstream_get_frame_size(intfstream_internal_t *intf)
 #ifdef HAVE_CHD
       if (intf->type == INTFSTREAM_CHD)
          return chdstream_get_frame_size(intf->chd.fp);
+#endif
+   }
+
+   return 0;
+}
+
+uint32_t intfstream_get_first_sector(intfstream_internal_t* intf)
+{
+   if (intf)
+   {
+#ifdef HAVE_CHD
+      if (intf->type == INTFSTREAM_CHD)
+         return chdstream_get_first_track_sector(intf->chd.fp);
 #endif
    }
 

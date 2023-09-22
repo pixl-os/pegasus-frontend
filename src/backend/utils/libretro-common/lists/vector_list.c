@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "utils/libretro-common/include/boolean.h"
+#include <boolean.h>
 #include <stdlib.h>
 #include <stddef.h>
 

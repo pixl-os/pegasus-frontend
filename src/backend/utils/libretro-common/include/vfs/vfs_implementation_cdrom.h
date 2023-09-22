@@ -23,8 +23,8 @@
 #ifndef __LIBRETRO_SDK_VFS_IMPLEMENTATION_CDROM_H
 #define __LIBRETRO_SDK_VFS_IMPLEMENTATION_CDROM_H
 
-#include "utils/libretro-common/include/vfs/vfs.h"
-#include "utils/libretro-common/include/cdrom/cdrom.h"
+#include <vfs/vfs.h>
+#include <cdrom/cdrom.h>
 
 RETRO_BEGIN_DECLS
 

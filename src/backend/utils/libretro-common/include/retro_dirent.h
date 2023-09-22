@@ -23,11 +23,10 @@
 #ifndef __RETRO_DIRENT_H
 #define __RETRO_DIRENT_H
 
-#include "utils/libretro-common/include/libretro.h"
-#include "utils/libretro-common/include/retro_common_api.h"
-#include "utils/libretro-common/include/retro_miscellaneous.h"
+#include <libretro.h>
+#include <retro_common_api.h>
 
-#include "utils/libretro-common/include/boolean.h"
+#include <boolean.h>
 
 RETRO_BEGIN_DECLS
 

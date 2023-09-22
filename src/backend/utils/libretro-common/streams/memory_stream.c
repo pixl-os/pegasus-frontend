@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils/libretro-common/include/streams/memory_stream.h"
+#include <streams/memory_stream.h>
 
 /* TODO/FIXME - static globals */
 static uint8_t* g_buffer      = NULL;

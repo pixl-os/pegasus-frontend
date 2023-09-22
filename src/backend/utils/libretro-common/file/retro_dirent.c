@@ -24,12 +24,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils/libretro-common/include/retro_common.h"
+#include <retro_common.h>
 
-#include "utils/libretro-common/include/boolean.h"
-#include "utils/libretro-common/include/retro_dirent.h"
+#include <boolean.h>
+#include <retro_dirent.h>
 #define VFS_FRONTEND
-#include "utils/libretro-common/include/vfs/vfs_implementation.h"
+#include <vfs/vfs_implementation.h>
 
 /* TODO/FIXME - static globals */
 static retro_vfs_opendir_t dirent_opendir_cb                 = NULL;

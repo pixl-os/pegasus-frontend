@@ -26,12 +26,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "utils/libretro-common/include/retro_common_api.h"
+#include <retro_common_api.h>
 
 RETRO_BEGIN_DECLS
 
 uint32_t encoding_crc32(uint32_t crc, const uint8_t *buf, size_t len);
-uint32_t file_crc32(uint32_t crc, const char *path);
 
 RETRO_END_DECLS
 
