@@ -1,4 +1,4 @@
-#include "../../include/rc_consoles.h"
+#include "rc_consoles.h"
 
 #include <ctype.h>
 
