@@ -104,7 +104,6 @@ HEADERS += \
     $$PWD/libretro-common/include/retro_endianness.h \
     $$PWD/libretro-common/include/memmap.h \
     $$PWD/libretro-common/include/memalign.h \
-    $$PWD/libretro-common/include/cheevos_util.h \
     $$PWD/libretro-common/include/boolean.h \
     $$PWD/libretro-common/include/retro_assert.h \
     $$PWD/libretro-common/include/retro_math.h \

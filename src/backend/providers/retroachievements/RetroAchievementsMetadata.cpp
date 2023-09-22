@@ -541,7 +541,7 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
     cdreader.close_track = rc_hash_handle_cd_close_track;
 	// deactivate to avoid hooking on this part (for rcheevis 10.1) not yet supported by retroarch (using rcheevos 9.0)
 	// Hooking TO DO for 'absolute_sector_to_track_sector' when retroarch will support that
-	cdreader.absolute_sector_to_track_sector = NULL;
+    //cdreader.absolute_sector_to_track_sector = NULL;
     rc_hash_init_custom_cdreader(&cdreader);
 	
 	const char* path = rom_file.toUtf8().data(); //toLocal8Bit().data(); //.toUtf8().data();
