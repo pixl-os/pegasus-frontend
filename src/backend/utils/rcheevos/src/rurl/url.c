@@ -1,4 +1,4 @@
-#include "../../include/rc_url.h"
+#include "rc_url.h"
 
 #include "../rcheevos/rc_compat.h"
 #include "../rhash/md5.h"

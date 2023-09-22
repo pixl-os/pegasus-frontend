@@ -1,4 +1,4 @@
-#include "../../include/rc_api_user.h"
+#include "rc_api_user.h"
 #include "rc_api_common.h"
 
 #include <string.h>

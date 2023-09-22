@@ -1,4 +1,4 @@
-#include "../../include/rc_hash.h"
+#include "rc_hash.h"
 
 #include "../rcheevos/rc_compat.h"
 

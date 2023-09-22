@@ -1,4 +1,4 @@
-#include "../../include/rc_runtime.h"
+#include "rc_runtime.h"
 #include "rc_internal.h"
 
 #include "../rhash/md5.h"

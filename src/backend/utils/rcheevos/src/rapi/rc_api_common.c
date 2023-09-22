@@ -1,6 +1,6 @@
 #include "rc_api_common.h"
-#include "../../include/rc_api_request.h"
-#include "../../include/rc_api_runtime.h"
+#include "rc_api_request.h"
+#include "rc_api_runtime.h"
 
 #include "../rcheevos/rc_compat.h"
 
