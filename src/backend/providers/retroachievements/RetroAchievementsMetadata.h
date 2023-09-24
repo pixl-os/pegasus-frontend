@@ -6,6 +6,7 @@
 #pragma once
 
 #include <QString>
+#include "utils/HashMap.h"
 
 #ifndef __RARCH_CHEEVOS_UTIL_H
 #define __RARCH_CHEEVOS_UTIL_H
@@ -57,6 +58,11 @@ public:
 
     void fill_from_network_or_cache(model::Game&, bool) const;
     const QString& log_tag() const { return m_log_tag; }
+    void build_md5_db(QString hashlibrary_url) const;
+
+private:
+    //to store content of http://retroachievements.org/dorequest.php?r=hashlibrary
+    static HashMap <QString, qint64> mRetroAchievementsGames;
 
 private:
     const QString m_log_tag;
