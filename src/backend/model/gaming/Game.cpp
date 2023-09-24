@@ -134,6 +134,32 @@ const QString Game::getEmulatorCore() const
     return core;
 }
 
+int Game::getRaGameID()
+{
+    //Log::debug(LOGMSG("Game::getRaGameID_slot() put in Qt::QueuedConnection"));
+    QMetaObject::invokeMethod(this,"getRaGameID_slot", Qt::QueuedConnection);
+
+    return 0;
+}
+
+void Game::getRaGameID_slot()
+{
+   //Log::debug(LOGMSG("Game::initRetroAchievements_slot()"));
+    //Initialize Metahelper for each update and for each games for the moment
+    QString log_tag = "Retroachievements";
+    try{
+    const providers::retroAchievements::Metadata metahelper(log_tag);
+    //get GameID from cache and calculating the hash
+    metahelper.fill_RaGameID_from_cache(*this, false);
+    //emit signal to alert front-end about end of change
+    emit raGameIDChanged();
+    }
+    catch ( const std::exception & Exp )
+    {
+        Log::error(log_tag, LOGMSG("Error: %1.\n").arg(Exp.what()));
+    }
+}
+
 void Game::onEntryPlayStatsChanged()
 {
     const auto prev_play_count = m_data.playstats.play_count;

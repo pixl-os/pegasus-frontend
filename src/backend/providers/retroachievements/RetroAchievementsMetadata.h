@@ -57,6 +57,7 @@ public:
     explicit Metadata(QString);
 
     void fill_from_network_or_cache(model::Game&, bool) const;
+    void fill_RaGameID_from_cache(model::Game&, bool) const;
     const QString& log_tag() const { return m_log_tag; }
     void build_md5_db(QString hashlibrary_url) const;
 
