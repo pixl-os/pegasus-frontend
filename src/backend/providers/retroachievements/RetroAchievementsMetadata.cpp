@@ -299,6 +299,52 @@ bool apply_achievements_status_json(model::Game& game,int Hardcore, QString log_
 	
     return true;	
 }	
+
+HashMap <QString, qint64> apply_hash_library_json(QString log_tag, const QJsonDocument& json)
+//from: http://retroachievements.org/dorequest.php?r=hashlibrary
+//{"Success":true,"MD5List":{"1b1d9ac862c387367e904036114c4825":1,"1bc674be034e43c96b86487ac69d9293":1,........
+{
+    using QL1 = QLatin1String;
+
+    if (json.isNull())
+    {
+        Log::debug(log_tag, LOGMSG("json.isNull()"));
+        return {};
+    }
+    const auto json_root = json.object();
+    if (json_root.isEmpty())
+    {
+        Log::debug(log_tag, LOGMSG("json_root.isEmpty()"));
+        return {};
+    }
+    const bool success = json_root[QL1("Success")].toBool();
+    if (!success)
+    {
+        Log::debug(log_tag, LOGMSG("Error: %1").arg(json_root[QL1("Error")].toString()));
+        return {};
+    }
+
+    QJsonObject MD5List = json_root[QL1("MD5List")].toObject();
+    QJsonDocument doc(MD5List);
+    //convert to string to be able to be able to split (need to remove {} and "")
+    QString jsonString(doc.toJson(QJsonDocument::Compact).trimmed());
+    jsonString.remove('{');
+    jsonString.remove('}');
+    jsonString.remove('"');
+    jsonString.remove('"');
+    Log::debug(log_tag, LOGMSG("Json MD5LIST content (first 100 characters) : '%1'").arg(jsonString.toStdString().substr(0,100).c_str()));
+    //convert to array split by ","
+    QStringList list = jsonString.split(",");
+    //parse list to create hashmap
+    HashMap <QString, qint64> map;
+    foreach(const QString &HashAndGameId, list){
+        QStringList content = HashAndGameId.split(":");
+        if(content.length() == 2){
+            map.emplace(std::move(content.at(0)), std::move(content.at(1).toLongLong()));
+        }
+    }
+    return map;
+}
 //***********************END OF JSON PARSING FUNCTIONS***********************************//
 
 //***********************GET FUNCTIONS***********************************//
@@ -565,10 +611,48 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
 namespace providers {
 namespace retroAchievements {
 
+HashMap <QString, qint64> Metadata::mRetroAchievementsGames;
+
 Metadata::Metadata(QString log_tag)
     : m_log_tag(std::move(log_tag))
     , m_json_cache_dir(QStringLiteral("retroachievements"))
 {
+}
+
+void Metadata::build_md5_db(QString hashlibrary_url) const
+{
+    QElapsedTimer build_md5_db_timer;
+    build_md5_db_timer.start();
+    int size = 0;
+
+    //Try to get RA hash library from cache
+    QJsonDocument json = providers::read_json_from_cache(m_log_tag + " - cache", m_json_cache_dir, "ra_hash_library");
+
+    Metadata::mRetroAchievementsGames = apply_hash_library_json(m_log_tag + " - cache", json);
+    if (Metadata::mRetroAchievementsGames.size() < 1)
+    {
+        //Delete JSON in cache by security
+        providers::delete_cached_json(m_log_tag, m_json_cache_dir, "ra_hash_library");
+
+        //Create Network Access
+        QNetworkAccessManager *manager = new QNetworkAccessManager();
+        //To get JSON from internet
+        json = get_json_from_url(hashlibrary_url, m_log_tag, *manager);
+        //kill manager to avoid memory leaks
+        delete manager;
+
+        Metadata::mRetroAchievementsGames = apply_hash_library_json(m_log_tag + " - cache", json);
+        if (Metadata::mRetroAchievementsGames.size() >= 1)
+        {
+            //saved in cache
+            providers::cache_json(m_log_tag, m_json_cache_dir, "ra_hash_library", json.toJson(QJsonDocument::Compact));
+        }
+    }
+    size = Metadata::mRetroAchievementsGames.size();
+    Log::debug(m_log_tag, LOGMSG("Stats - Timing: JSON to HashMap processing: %1 ms - games quantity: %2 ").arg(QString::number(build_md5_db_timer.elapsed()), QString::number(size)));
+    //for test purposes
+    //Metadata::mRetroAchievementsGames.emplace(std::move("12345678"), 1);
+    //Metadata::mRetroAchievementsGames.emplace(std::move("12345679"), 2);
 }
 
 void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) const
@@ -585,6 +669,13 @@ void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) c
 		Log::debug(m_log_tag, LOGMSG("not activated !"));
         return;
 	}
+
+    //for test to check static hash map of RA Hash/GameId
+    /*for (const auto& entry : mRetroAchievementsGames) {
+        const QString& hash = entry.first;
+        const qint64 gameid = entry.second;
+        Log::debug(m_log_tag, LOGMSG("Hash: %1 GameId: %2").arg(hash,QString::number(gameid)));
+    }*/
 
 	//Create Network Access 
 	QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());

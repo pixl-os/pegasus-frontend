@@ -15,9 +15,14 @@ class RetroAchievementsProvider : public Provider {
     Q_OBJECT
 
 public:
+
+    explicit RetroAchievementsProvider(QString hashlibrary_url, QObject* parent = nullptr);
     explicit RetroAchievementsProvider(QObject* parent = nullptr);
 
     Provider& run(SearchContext&) final;
+
+private:
+    const QString m_hashlibrary_url;
 };
 
 } // namespace retroAchievements
