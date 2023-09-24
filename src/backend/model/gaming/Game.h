@@ -113,9 +113,12 @@ public:
     GETTER(bool, isFavorite, m_data.is_favorite)
 	
     GETTER(const QList<RetroAchievement> &, retroAchievements, m_data.retro_achievements)
-    GETTER(int, RaGameID, m_data.ra_game_id)
-    GETTER(const QString&, RaHash, m_data.ra_hash)
 
+    //GETTER(int, RaGameID, m_data.ra_game_id)
+    //New custom getter to provide ra_game_id from hash library
+    int RaGameID() { return getRaGameID(); }
+
+    GETTER(const QString&, RaHash, m_data.ra_hash)
     //new way using collection to access information from GETTER
     GETTER(const QString&, systemManufacturer, m_collections->get(0)->manufacturer())
     GETTER(const QString&, systemShortName, m_collections->get(0)->shortName())
@@ -232,6 +235,7 @@ private:
 
     const QString getEmulatorName() const;
     const QString getEmulatorCore() const;
+    int getRaGameID();
 
 signals:
     void launchFileSelectorRequested();
@@ -239,11 +243,13 @@ signals:
     void playStatsChanged();
 	void retroAchievementsInitialized();
 	void retroAchievementsChanged();
+    void raGameIDChanged();
 
 private slots:
     void onEntryPlayStatsChanged();
 	void updateRetroAchievements_slot();
 	void initRetroAchievements_slot();
+    void getRaGameID_slot();
 
 public:
     explicit Game(QObject* parent = nullptr);
