@@ -63,10 +63,6 @@ private:
     //! Audio controller
     AudioController mAudioController;
 
-    //! retroAchievements hashmap
-    //to store content of http://retroachievements.org/dorequest.php?r=hashlibrary
-    HashMap<QString, int> mRetroAchievementsGames;
-
     ApiObject* m_api;
     FrontendLayer* m_frontend;
     ProcessLauncher* m_launcher;
