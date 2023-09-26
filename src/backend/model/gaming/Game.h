@@ -113,11 +113,7 @@ public:
     GETTER(bool, isFavorite, m_data.is_favorite)
 	
     GETTER(const QList<RetroAchievement> &, retroAchievements, m_data.retro_achievements)
-
-    //GETTER(int, RaGameID, m_data.ra_game_id)
-    //New custom getter to provide ra_game_id from hash library
-    int RaGameID() { return getRaGameID(); }
-
+    GETTER(int, RaGameID, m_data.ra_game_id)
     GETTER(const QString&, RaHash, m_data.ra_hash)
     //new way using collection to access information from GETTER
     GETTER(const QString&, systemManufacturer, m_collections->get(0)->manufacturer())
@@ -184,8 +180,8 @@ public:
     Q_PROPERTY(QString systemShortName READ systemShortName CONSTANT)
     Q_PROPERTY(QString systemManufacturer READ systemManufacturer CONSTANT)
 
-	Q_PROPERTY(int RaGameID READ RaGameID CONSTANT)
-	Q_PROPERTY(QString RaHash READ RaHash CONSTANT)
+    Q_PROPERTY(int RaGameID READ RaGameID NOTIFY raGameIDChanged)
+    Q_PROPERTY(QString RaHash READ RaHash NOTIFY raHashChanged)
 	
     Q_PROPERTY(QVariantMap extra READ extraMap CONSTANT)
     const QVariantMap& extraMap() const { return m_extra; }
@@ -207,7 +203,9 @@ public:
 														else return false;};
 	Q_INVOKABLE bool isRaHardcoreAt (const int index)  {if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).HardcoreMode;
 														else return false;};
-	
+    //New function to know if ra_game_id is available from hash library using hash
+    Q_INVOKABLE void checkRAHashLibrary();
+
     Assets& assets() { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
@@ -244,12 +242,13 @@ signals:
 	void retroAchievementsInitialized();
 	void retroAchievementsChanged();
     void raGameIDChanged();
+    void raHashChanged();
 
 private slots:
     void onEntryPlayStatsChanged();
 	void updateRetroAchievements_slot();
 	void initRetroAchievements_slot();
-    void getRaGameID_slot();
+    void checkRAHashLibrary_slot();
 
 public:
     explicit Game(QObject* parent = nullptr);

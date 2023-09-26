@@ -134,25 +134,28 @@ const QString Game::getEmulatorCore() const
     return core;
 }
 
-int Game::getRaGameID()
+void Game::checkRAHashLibrary()
 {
-    //Log::debug(LOGMSG("Game::getRaGameID_slot() put in Qt::QueuedConnection"));
-    QMetaObject::invokeMethod(this,"getRaGameID_slot", Qt::QueuedConnection);
-
-    return 0;
+    //TO DO - check if RA are activated
+    if(m_data.ra_hash.isEmpty())
+    {
+        //Log::debug(LOGMSG("Game::hasRetroachievements_slot() put in Qt::QueuedConnection"));
+        QMetaObject::invokeMethod(this,"checkRAHashLibrary_slot", Qt::QueuedConnection);
+    }
 }
 
-void Game::getRaGameID_slot()
+void Game::checkRAHashLibrary_slot()
 {
-   //Log::debug(LOGMSG("Game::initRetroAchievements_slot()"));
+   //Log::debug(LOGMSG("Game::hasRetroachievements_slot()"));
     //Initialize Metahelper for each update and for each games for the moment
     QString log_tag = "Retroachievements";
     try{
-    const providers::retroAchievements::Metadata metahelper(log_tag);
-    //get GameID from cache and calculating the hash
-    metahelper.fill_RaGameID_from_cache(*this, false);
-    //emit signal to alert front-end about end of change
-    emit raGameIDChanged();
+        const providers::retroAchievements::Metadata metahelper(log_tag);
+        //get GameID from cache and calculating the hash
+        metahelper.fill_RaGameID_from_hashlibrary(*this, false);
+        //emit signal to alert front-end about end of change
+        emit raHashChanged();
+        emit raGameIDChanged();
     }
     catch ( const std::exception & Exp )
     {
