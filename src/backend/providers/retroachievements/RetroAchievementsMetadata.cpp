@@ -678,7 +678,7 @@ void Metadata::build_md5_db(QString hashlibrary_url) const
     //Metadata::mRetroAchievementsGames.emplace(std::move("12345679"), 2);
 }
 
-void Metadata::fill_RaGameID_from_cache(model::Game& game, bool ForceUpdate) const
+void Metadata::fill_RaGameID_from_hashlibrary(model::Game& game, bool ForceUpdate) const
 {
     QString token;
     bool result = false;
