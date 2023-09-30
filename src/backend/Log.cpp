@@ -62,16 +62,16 @@ public:
         : m_stream(stdout)
     {}
     void debug(const QString& msg) override {
-        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) colorlog(m_pre_debug, msg);
+        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) colorlog(m_pre_debug, m_marker_debug, msg);
     }
     void info(const QString& msg) override {
-        colorlog(m_pre_info, msg);
+        colorlog(m_pre_info, m_marker_info, msg);
     }
     void warning(const QString& msg) override {
-        colorlog(m_pre_warning, msg);
+        colorlog(m_pre_warning, m_marker_info, msg);
     }
     void error(const QString& msg) override {
-        colorlog(m_pre_error, msg);
+        colorlog(m_pre_error, m_marker_error, msg);
     }
 
 private:
@@ -84,15 +84,22 @@ private:
     static constexpr auto m_pre_error = "[e]";
     static constexpr auto m_fmt_reset = "";
 #else
-    static constexpr auto m_pre_debug = "\x1b[34m[d]";
-    static constexpr auto m_pre_info = "[i]";
-    static constexpr auto m_pre_warning = "\x1b[93m[w]";
-    static constexpr auto m_pre_error = "\x1b[91m[e]";
-    static constexpr auto m_fmt_reset = "\x1b[0m";
+    static constexpr auto m_pre_debug = "\x1b[34m";
+    static constexpr auto m_marker_debug = "[d]";
+    static constexpr auto m_pre_info = "\x1b[0m";
+    static constexpr auto m_marker_info = "[i]";
+    static constexpr auto m_pre_warning = "\x1b[93m";
+    static constexpr auto m_marker_warning = "[w]";
+    static constexpr auto m_pre_error = "\x1b[91m";
+    static constexpr auto m_marker_error = "[e]";
+    //static constexpr auto m_fmt_reset = "\x1b[0m";
 #endif
 
-    void colorlog(const char* const prefix, const QString& msg) {
-        m_stream << prefix << QChar(' ') << msg << m_fmt_reset << Qt::endl;
+    void colorlog(const char* const prefix, const char* const marker, const QString& msg) {
+        //m_stream << prefix << QChar(' ') << msg << m_fmt_reset << Qt::endl;
+        m_stream << prefix << QChar(' ') << QDateTime::currentDateTime().toString(Qt::ISODate) << QChar(' ')
+                 << marker << QChar(' ') << msg << Qt::endl;
+
     }
 };
 
@@ -115,7 +122,7 @@ public:
         if (Q_UNLIKELY(!m_file.isOpen()))
             return;
 
-        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) datelog(m_marker_info, msg);
+        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) datelog(m_marker_debug, msg);
     }
     void info(const QString& msg) override {
         if (Q_UNLIKELY(!m_file.isOpen()))

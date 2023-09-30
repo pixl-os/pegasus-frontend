@@ -189,7 +189,7 @@ QString get_script_from_path(QString path_str, QString log_tag)
         raw_data = in.readAll();
     }
     QString script = QString(raw_data);
-    Log::debug(log_tag, LOGMSG("Script Raw data: %1").arg(script));
+    //Log::debug(log_tag, LOGMSG("Script Raw data: %1").arg(script));
 
     if (script.isNull()) {
         Log::warning(log_tag, LOGMSG(
@@ -231,7 +231,7 @@ QString get_script_from_url(QString url_str, QString log_tag, QNetworkAccessMana
         return "";
     }
     QString script = reply->readAll();
-    Log::debug(log_tag, LOGMSG("Script Raw data: %1").arg(script));
+    //Log::debug(log_tag, LOGMSG("Script Raw data: %1").arg(script));
 
     //to avoid memory leacks
     reply->deleteLater();
