@@ -55,10 +55,12 @@ namespace retroAchievements {
 class Metadata {
 public:
     explicit Metadata(QString);
-
-    void fill_from_network_or_cache(model::Game&, bool) const;
-    void fill_RaGameID_from_hashlibrary(model::Game&, bool) const;
+    //function to set Hash and GameID for game object
+    void set_RaHash_And_GameID_from_hashlibrary(model::Game&, bool) const;
+    //function to set Ra Details for game object
+    void fill_Ra_from_network_or_cache(model::Game&, bool) const;
     const QString& log_tag() const { return m_log_tag; }
+    //function to build md5/gameid hash map from hash library json url provided by retroachievements.org
     void build_md5_db(QString hashlibrary_url) const;
 
 private:
