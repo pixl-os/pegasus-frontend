@@ -1,5 +1,6 @@
 //
 // From recalbox ES and Integrated by BozoTheGeek 26/03/2021 in Pegasus Front-end
+// Updated 30/09/2023 by BozoTheGeek to redirect to Pegasus-Frontend Log class
 //
 
 #ifndef _LOG_H_
@@ -48,7 +49,6 @@ class rLog
     rLog& operator << (const Strings::Vector& v) { for(const std::string& s : v) mMessage.append(s).append(1, ' '); return *this; }
 
   private:
-    static FILE* sFile;
     static LogLevel reportingLevel;
     std::string mMessage;
     LogLevel messageLevel;
