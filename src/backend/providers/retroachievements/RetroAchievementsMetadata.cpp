@@ -678,7 +678,7 @@ void Metadata::build_md5_db(QString hashlibrary_url) const
     //Metadata::mRetroAchievementsGames.emplace(std::move("12345679"), 2);
 }
 
-void Metadata::fill_RaGameID_from_hashlibrary(model::Game& game, bool ForceUpdate) const
+void Metadata::set_RaHash_And_GameID_from_hashlibrary(model::Game& game, bool ForceUpdate) const
 {
     QString token;
     bool result = false;
@@ -751,20 +751,21 @@ void Metadata::fill_RaGameID_from_hashlibrary(model::Game& game, bool ForceUpdat
         Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
      }
 }
-void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) const
+
+void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate) const
 {
-	QString token;
-	bool result = false;
-	//Set Game info
-	model::Game* const game_ptr = &game;
+    QString token;
+    bool result = false;
+    //Set Game info
+    model::Game* const game_ptr = &game;
     QString title = game_ptr->title();
-    
-	//check if recalbox.conf to know if activated
-	if (!RecalboxConf::Instance().AsBool("global.retroachievements"))
-	{
-		Log::debug(m_log_tag, LOGMSG("not activated !"));
+
+    //check if recalbox.conf to know if activated
+    if (!RecalboxConf::Instance().AsBool("global.retroachievements"))
+    {
+        Log::debug(m_log_tag, LOGMSG("not activated !"));
         return;
-	}
+    }
 
     //for test to check static hash map of RA Hash/GameId
     /*for (const auto& entry : mRetroAchievementsGames) {
@@ -773,90 +774,93 @@ void Metadata::fill_from_network_or_cache(model::Game& game, bool ForceUpdate) c
         Log::debug(m_log_tag, LOGMSG("Hash: %1 GameId: %2").arg(hash,QString::number(gameid)));
     }*/
 
-	//Create Network Access 
-	QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
-	
-	//GetToken first from cache or network
-	token = get_token(m_log_tag, m_json_cache_dir, *manager);
-	if (token != "")
-	{
-		//check if gameid exists and hash already calculated
-		if((game_ptr->RaGameID() == 0) && (game_ptr->RaHash() == ""))
-		{
-            Log::debug(m_log_tag, LOGMSG("RetroAchievement RaGameId to find from RA site or cache !"));
-			const model::GameFile* gamefile = game_ptr->filesConst().first(); /// take into account only the first file for the moment.
-			const QFileInfo& finfo = gamefile->fileinfo();		
-			QString romfile = QDir::toNativeSeparators(finfo.absoluteFilePath());
-			QString targetfile;
-			//check if zip
-			if(romfile.toLower().endsWith(".zip"))
-			{	
-				Zip zip(Path(romfile.toLocal8Bit().data()));
-				Log::debug(m_log_tag, LOGMSG("This zip has %1 file(s).").arg(zip.Count()));
-				if(zip.Count() == 1)
-				{
-					//it seems a console game because only one file is present
-					//unzip file_unzipped
-					//example : unzip -o -d /tmp "/recalbox/share/roms/nes/Duck Hunt (World).zip"
-					QString UnzipCommand = "unzip";
-					QStringList args = QStringList {
-											QStringLiteral("-o"),
-											QStringLiteral("-d /tmp"),
-											"\""+romfile+"\""
-										};
-					int exitcode = system(qPrintable(serialize_command(UnzipCommand, args)));
+    //Create Network Access
+    QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
 
-					//set target file from /tmp
-					targetfile = "/tmp/" + QString::fromStdString(zip.FileName(0).ToString());
-				}	
-				else	
-				{
-					//could be a arcade game in this case
-					//set target file from as the initial zip due to the fact that hash for arcade use the name of the file
-					targetfile = romfile;					
-				}
-			}
-			else
-			{	//not zipped
-				//set target file as the intial romfile
-				targetfile = romfile;	
-			}
-			Log::debug(m_log_tag, LOGMSG("The target file to hash is '%1'").arg(targetfile));
-			QString hash = calculate_hash_from_file(targetfile, m_log_tag);
-			//save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
-			game_ptr->setRaHash(hash);
-			//check if tmp file used
-			if(targetfile.toLower().startsWith("/tmp/"))
-			{
-				Log::debug(m_log_tag, LOGMSG("Deletion of target file : '%1'").arg(targetfile));
-				//delete file
-				QString DeleteFileCommand = "rm";
-				QStringList args = QStringList {"\""+targetfile+"\""};
-				int exitcode = system(qPrintable(serialize_command(DeleteFileCommand, args)));
-			}
-			
-			game_ptr->setRaGameID(get_gameid_from_hash(hash, m_log_tag, *manager));
-			Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
-			
-			//get details about Game from GameID
-			result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
-			//set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one	
-			result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);	
-		}
-		else
-		{
-			Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId already known : %1").arg(game_ptr->RaGameID()));
-			//set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
-			if (ForceUpdate) {
-				//Delete JSON in cache for cleaning and force update vs init when we reuse cache.
-				providers::delete_cached_json(m_log_tag, m_json_cache_dir, "RaGameID=" + QString::number(game_ptr->RaGameID()));
-				//get details about Game from GameID
-				result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
-				//set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one	
-				result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);	
-			}	
-		}
-	}
+    //GetToken first from cache or network
+    token = get_token(m_log_tag, m_json_cache_dir, *manager);
+    if (token != "")
+    {
+        //check if gameid exists and hash already calculated
+        if((game_ptr->RaGameID() == 0) && (game_ptr->RaHash() == ""))
+        {
+            Log::debug(m_log_tag, LOGMSG("RetroAchievement RaGameId to find from RA site or cache !"));
+            const model::GameFile* gamefile = game_ptr->filesConst().first(); /// take into account only the first file for the moment.
+            const QFileInfo& finfo = gamefile->fileinfo();
+            QString romfile = QDir::toNativeSeparators(finfo.absoluteFilePath());
+            QString targetfile;
+            //check if zip
+            if(romfile.toLower().endsWith(".zip"))
+            {
+                Zip zip(Path(romfile.toLocal8Bit().data()));
+                Log::debug(m_log_tag, LOGMSG("This zip has %1 file(s).").arg(zip.Count()));
+                if(zip.Count() == 1)
+                {
+                    //it seems a console game because only one file is present
+                    //unzip file_unzipped
+                    //example : unzip -o -d /tmp "/recalbox/share/roms/nes/Duck Hunt (World).zip"
+                    QString UnzipCommand = "unzip";
+                    QStringList args = QStringList {
+                                            QStringLiteral("-o"),
+                                            QStringLiteral("-d /tmp"),
+                                            "\""+romfile+"\""
+                                        };
+                    int exitcode = system(qPrintable(serialize_command(UnzipCommand, args)));
+
+                    //set target file from /tmp
+                    targetfile = "/tmp/" + QString::fromStdString(zip.FileName(0).ToString());
+                }
+                else
+                {
+                    //could be a arcade game in this case
+                    //set target file from as the initial zip due to the fact that hash for arcade use the name of the file
+                    targetfile = romfile;
+                }
+            }
+            else
+            {	//not zipped
+                //set target file as the intial romfile
+                targetfile = romfile;
+            }
+            Log::debug(m_log_tag, LOGMSG("The target file to hash is '%1'").arg(targetfile));
+            QString hash = calculate_hash_from_file(targetfile, m_log_tag);
+            //save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
+            game_ptr->setRaHash(hash);
+            //check if tmp file used
+            if(targetfile.toLower().startsWith("/tmp/"))
+            {
+                Log::debug(m_log_tag, LOGMSG("Deletion of target file : '%1'").arg(targetfile));
+                //delete file
+                QString DeleteFileCommand = "rm";
+                QStringList args = QStringList {"\""+targetfile+"\""};
+                int exitcode = system(qPrintable(serialize_command(DeleteFileCommand, args)));
+            }
+
+            game_ptr->setRaGameID(get_gameid_from_hash(hash, m_log_tag, *manager));
+            Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
+
+            //get details about Game from GameID
+            result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
+            //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
+            result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);
+        }
+        else
+        {
+            Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId already known : %1").arg(game_ptr->RaGameID()));
+            if(game_ptr->retroAchievements().isEmpty() || ForceUpdate)
+            {
+                //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
+                if (ForceUpdate) {
+                    //Delete JSON in cache for cleaning and force update vs init when we reuse cache.
+                    providers::delete_cached_json(m_log_tag, m_json_cache_dir, "RaGameID=" + QString::number(game_ptr->RaGameID()));
+                }
+                //get details about Game from GameID
+                result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
+                //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
+                result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);
+            }
+        }
+    }
     //kill manager to avoid memory leaks
     delete manager;
 
