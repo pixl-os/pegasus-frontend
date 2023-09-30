@@ -27,6 +27,8 @@
 
 //For recalbox
 #include "RecalboxConf.h"
+#include "RootFolders.h"
+#include <utils/os/fs/Path.h>
 
 #if defined(Q_OS_ANDROID) && defined(QT_DEBUG)
 #include <android/log.h>
@@ -155,7 +157,8 @@ private:
     static constexpr auto m_marker_error = "[e]";
 
     QString default_log_path() {
-        return paths::writableConfigDir() + QLatin1String("/lastrun.log");
+        Path folder = RootFolders::DataRootFolder / "system/logs" / "lastrun.log";
+        return QString::fromStdString(folder.ToString());
     }
 
     void datelog(const char* const marker, const QString& msg) {
