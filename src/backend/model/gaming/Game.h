@@ -115,6 +115,7 @@ public:
     GETTER(const QList<RetroAchievement> &, retroAchievements, m_data.retro_achievements)
     GETTER(int, RaGameID, m_data.ra_game_id)
     GETTER(const QString&, RaHash, m_data.ra_hash)
+
     //new way using collection to access information from GETTER
     GETTER(const QString&, systemManufacturer, m_collections->get(0)->manufacturer())
     GETTER(const QString&, systemShortName, m_collections->get(0)->shortName())
@@ -203,8 +204,6 @@ public:
 														else return false;};
 	Q_INVOKABLE bool isRaHardcoreAt (const int index)  {if (m_data.retro_achievements.count() > index) return m_data.retro_achievements.at(index).HardcoreMode;
 														else return false;};
-    //New function to know if ra_game_id is available from hash library using hash
-    Q_INVOKABLE void checkRAHashLibrary();
 
     Assets& assets() { return *m_assets; }
     Assets& assetsMut() { return *m_assets; }
@@ -233,7 +232,6 @@ private:
 
     const QString getEmulatorName() const;
     const QString getEmulatorCore() const;
-    int getRaGameID();
 
 signals:
     void launchFileSelectorRequested();
@@ -248,7 +246,7 @@ private slots:
     void onEntryPlayStatsChanged();
 	void updateRetroAchievements_slot();
 	void initRetroAchievements_slot();
-    void checkRAHashLibrary_slot();
+    void checkRetroAchievements_slot();
 
 public:
     explicit Game(QObject* parent = nullptr);
@@ -257,9 +255,15 @@ public:
 	void unlockRetroAchievement(const int index) { if (m_data.retro_achievements.count() > index) m_data.retro_achievements[index].Unlocked = true; };
 	void activateHardcoreRetroAchievement(const int index) { if (m_data.retro_achievements.count() > index) m_data.retro_achievements[index].HardcoreMode = true; };
 	Q_INVOKABLE void launch();
-	Q_INVOKABLE void launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash, const QString& emulator, const QString& core);;
-	Q_INVOKABLE void updateRetroAchievements(); 
-	Q_INVOKABLE void initRetroAchievements();
+    Q_INVOKABLE void launchNetplay(const int mode, const QString& port, const QString& ip, const QString& playerpassword, const QString& viewerpassword, const bool vieweronly, const QString& hash, const QString& emulator, const QString& core);
+
+    //Function to check if any Retroachievements are available (just generate hash and check if gameid exists)
+    Q_INVOKABLE void checkRetroAchievements();
+    //Function to initialize all Retrachievements details for a game
+    Q_INVOKABLE void initRetroAchievements();
+    //Function to update existing retroachievements
+    Q_INVOKABLE void updateRetroAchievements();
+
     void finalize();
 };
 
