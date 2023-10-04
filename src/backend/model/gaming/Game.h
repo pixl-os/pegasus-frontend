@@ -26,6 +26,9 @@
 #include "model/gaming/Collection.h"
 #include "model/gaming/GameFile.h"
 
+//add here to access Metadata for retroAchievements for game
+#include "providers/retroachievements/RetroAchievementsMetadata.h"
+
 namespace model { class Assets; }
 namespace model { class GameFile; }
 namespace model { class Collection; }
@@ -226,6 +229,7 @@ private:
     Assets* const m_assets;
     Collection* m_collections;
     QVariantMap m_extra;
+    static const providers::retroAchievements::Metadata m_metahelper;
 
     Assets* assetsPtr() const { return m_assets; }
     Collection* collectionPtr() const { return m_collections; }

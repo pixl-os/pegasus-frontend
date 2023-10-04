@@ -18,7 +18,6 @@
 #include "Game.h"
 
 #include "providers/SearchContext.h"
-#include "providers/retroachievements/RetroAchievementsMetadata.h"
 
 #include "Log.h"
 
@@ -30,13 +29,15 @@
 //For recalbox
 #include "RecalboxConf.h"
 
-
 namespace {
 QString joined_list(const QStringList& list) { return list.join(QLatin1String(", ")); }
 } // namespace
 
 
 namespace model {
+
+const providers::retroAchievements::Metadata Game::m_metahelper("Game retroachievements");
+
 GameData::GameData() = default;
 
 GameData::GameData(QString new_title)
@@ -150,9 +151,9 @@ void Game::checkRetroAchievements_slot()
     //Initialize Metahelper for each update and for each games for the moment
     QString log_tag = "Retroachievements";
     try{
-        const providers::retroAchievements::Metadata metahelper(log_tag);
+        //const providers::retroAchievements::Metadata metahelper(log_tag);
         //get GameID from cache and calculating the hash
-        metahelper.set_RaHash_And_GameID_from_hashlibrary(*this, false);
+        m_metahelper.set_RaHash_And_GameID_from_hashlibrary(*this, false);
         //emit signal to alert front-end about end of changes
         emit raHashChanged();
         emit raGameIDChanged();
@@ -221,9 +222,9 @@ void Game::initRetroAchievements_slot()
 	//Initialize Metahelper for each update and for each games for the moment
 	QString log_tag = "Retroachievements";
     try{
-	const providers::retroAchievements::Metadata metahelper(log_tag);
+    //const providers::retroAchievements::Metadata metahelper(log_tag);
 	//get all from network for the moment to have last information / one function called for the moment
-    metahelper.fill_Ra_from_network_or_cache(*this, false);
+    m_metahelper.fill_Ra_from_network_or_cache(*this, false);
 	//emit signal to alert front-end about end of update
 	emit retroAchievementsInitialized();
     }
@@ -236,7 +237,7 @@ void Game::initRetroAchievements_slot()
 void Game::updateRetroAchievements()
 {
     //Log::debug(LOGMSG("Game::updateRetroAchievements_slot() put in Qt::QueuedConnection"));
-	QMetaObject::invokeMethod(this,"updateRetroAchievements_slot", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this,"updateRetroAchievements_slot", Qt::QueuedConnection);
 }
 
 void Game::updateRetroAchievements_slot()
@@ -245,9 +246,9 @@ void Game::updateRetroAchievements_slot()
 	//Initialize Metahelper for each update and for each games for the moment
 	QString log_tag = "Retroachievements";
     try{
-		const providers::retroAchievements::Metadata metahelper(log_tag);
+        //const providers::retroAchievements::Metadata metahelper(log_tag);
 		//get all from network for the moment to have last information / one function called for the moment
-        metahelper.fill_Ra_from_network_or_cache(*this, true);
+        m_metahelper.fill_Ra_from_network_or_cache(*this, true);
 		//emit signal to alert front-end about end of update
 		emit retroAchievementsChanged();
     }

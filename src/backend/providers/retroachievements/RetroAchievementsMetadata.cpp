@@ -623,8 +623,8 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
             break;
 	} */
 	rc_hash_destroy_iterator(&iterator);
-	//Log::info(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));    
-	//Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
+    Log::debug(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));
+    Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
 	return QString::fromLocal8Bit(hash_iterator);
 }	
 //***********************END OF HASH FUNCTIONS***********************************//
@@ -692,6 +692,14 @@ void Metadata::set_RaHash_And_GameID_from_hashlibrary(model::Game& game, bool Fo
         Log::debug(m_log_tag, LOGMSG("not activated !"));
         return;
     }
+    else if (game_ptr->collections().retroachievements() != true){
+        Log::debug(m_log_tag, LOGMSG("not applicable for this system !"));
+        //force result for this game to avoid to use it
+        game_ptr->setRaHash("FFFFFFFFFF");
+        game_ptr->setRaGameID(-1);
+        return;
+    }
+
     //check if gameid exists and hash already calculated
     if(((game_ptr->RaGameID() == 0) && (game_ptr->RaHash() == "")) || ForceUpdate)
     {
@@ -766,7 +774,13 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
         Log::debug(m_log_tag, LOGMSG("not activated !"));
         return;
     }
-
+    else if (game_ptr->collections().retroachievements() != true){
+        Log::debug(m_log_tag, LOGMSG("not applicable for this system !"));
+        //force result for this game to avoid to use it
+        game_ptr->setRaHash("FFFFFFFFFF");
+        game_ptr->setRaGameID(-1);
+        return;
+    }
     //for test to check static hash map of RA Hash/GameId
     /*for (const auto& entry : mRetroAchievementsGames) {
         const QString& hash = entry.first;
