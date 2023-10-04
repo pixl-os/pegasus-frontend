@@ -75,7 +75,13 @@ size_t create_collection_for(
         .setScreenScraperId(sysentry.screenscraper)
         .setManufacturer(sysentry.manufacturer)
         .setType(sysentry.type)
-        .setReleaseDate(sysentry.releasedate);
+        .setReleaseDate(sysentry.releasedate)
+        //flag added 02/10/2023 from systemlist.xml
+        .setPad(sysentry.pad.toInt())
+        .setKeyboard(sysentry.keyboard.toInt())
+        .setMouse(sysentry.mouse.toInt())
+        .setLightgun(sysentry.lightgun.toInt())
+        .setRetroachievements(sysentry.retroachievements.toInt());
         
     struct model::EmulatorsEntry Emulator;
     QList<model::EmulatorsEntry> AllEmulators;
