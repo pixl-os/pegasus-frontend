@@ -505,10 +505,12 @@ bool get_achievements_status_from_gameid(int gameid, QString token, model::Game&
 
 static void* rc_hash_handle_file_open(const char* path)
 {
-   return intfstream_open_file(path, RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
+   return intfstream_open_file(path,
+         RETRO_VFS_FILE_ACCESS_READ, RETRO_VFS_FILE_ACCESS_HINT_NONE);
 }
 
-static void rc_hash_handle_file_seek(void* file_handle, int64_t offset, int origin)
+static void rc_hash_handle_file_seek(
+      void* file_handle, int64_t offset, int origin)
 {
    intfstream_seek((intfstream_t*)file_handle, offset, origin);
 }
@@ -518,9 +520,11 @@ static int64_t rc_hash_handle_file_tell(void* file_handle)
    return intfstream_tell((intfstream_t*)file_handle);
 }
 
-static size_t rc_hash_handle_file_read(void* file_handle, void* buffer, size_t requested_bytes)
+static size_t rc_hash_handle_file_read(
+      void* file_handle, void* buffer, size_t requested_bytes)
 {
-   return intfstream_read((intfstream_t*)file_handle, buffer, requested_bytes);
+   return intfstream_read((intfstream_t*)file_handle,
+         buffer, requested_bytes);
 }
 
 static void rc_hash_handle_file_close(void* file_handle)
@@ -529,37 +533,67 @@ static void rc_hash_handle_file_close(void* file_handle)
    CHEEVOS_FREE(file_handle);
 }
 
-static void* rc_hash_handle_cd_open_track(const char* path, uint32_t track)
+#ifdef HAVE_CHD
+static void* rc_hash_handle_chd_open_track(
+      const char* path, uint32_t track)
 {
    cdfs_track_t* cdfs_track;
 
-   if (track == 0)
-      cdfs_track = cdfs_open_data_track(path);
-   else
-      cdfs_track = cdfs_open_track(path, track);
+   switch (track)
+   {
+      case RC_HASH_CDTRACK_FIRST_DATA:
+         cdfs_track = cdfs_open_data_track(path);
+         break;
+
+      case RC_HASH_CDTRACK_LAST:
+         cdfs_track = cdfs_open_track(path, CHDSTREAM_TRACK_LAST);
+         break;
+
+      case RC_HASH_CDTRACK_LARGEST:
+         cdfs_track = cdfs_open_track(path, CHDSTREAM_TRACK_PRIMARY);
+         break;
+
+      default:
+         cdfs_track = cdfs_open_track(path, track);
+         break;
+   }
 
    if (cdfs_track)
    {
       cdfs_file_t* file = (cdfs_file_t*)malloc(sizeof(cdfs_file_t));
       if (cdfs_open_file(file, cdfs_track, NULL))
-         return file;
+         return file; /* ASSERT: file owns cdfs_track now */
 
       CHEEVOS_FREE(file);
+      cdfs_close_track(cdfs_track); /* ASSERT: this free()s cdfs_track */
    }
 
-   cdfs_close_track(cdfs_track); /* ASSERT: this free()s cdfs_track */
    return NULL;
 }
 
-static size_t rc_hash_handle_cd_read_sector(void* track_handle, uint32_t sector, void* buffer, size_t requested_bytes)
+static size_t rc_hash_handle_chd_read_sector(
+      void* track_handle, uint32_t sector,
+      void* buffer, size_t requested_bytes)
 {
    cdfs_file_t* file = (cdfs_file_t*)track_handle;
+   uint32_t track_sectors = cdfs_get_num_sectors(file);
+
+   sector -= cdfs_get_first_sector(file);
+   if (sector >= track_sectors)
+      return 0;
 
    cdfs_seek_sector(file, sector);
    return cdfs_read_file(file, buffer, requested_bytes);
 }
 
-static void rc_hash_handle_cd_close_track(void* track_handle)
+static uint32_t rc_hash_handle_chd_first_track_sector(
+   void* track_handle)
+{
+   cdfs_file_t* file = (cdfs_file_t*)track_handle;
+   return cdfs_get_first_sector(file);
+}
+
+static void rc_hash_handle_chd_close_track(void* track_handle)
 {
    cdfs_file_t* file = (cdfs_file_t*)track_handle;
    if (file)
@@ -570,6 +604,8 @@ static void rc_hash_handle_cd_close_track(void* track_handle)
    }
 }
 
+#endif
+
 static void rc_hash_handle_error_log_message(const char* message)
 {
    Log::error("Cheevos", LOGMSG("%1").arg(QString::fromStdString(message))); 
@@ -578,6 +614,47 @@ static void rc_hash_handle_error_log_message(const char* message)
 static void rc_hash_handle_debug_log_message(const char* message)
 {
    Log::debug("Cheevos", LOGMSG("%1").arg(QString::fromStdString(message))); 
+}
+
+static void rc_hash_reset_cdreader_hooks(void);
+
+static void* rc_hash_handle_cd_open_track(
+      const char* path, uint32_t track)
+{
+   struct rc_hash_cdreader cdreader;
+
+   if (string_is_equal_noncase(path_get_extension(path), "chd"))
+   {
+#ifdef HAVE_CHD
+      /* special handlers for CHD file */
+      memset(&cdreader, 0, sizeof(cdreader));
+      cdreader.open_track = rc_hash_handle_cd_open_track;
+      cdreader.read_sector = rc_hash_handle_chd_read_sector;
+      cdreader.close_track = rc_hash_handle_chd_close_track;
+      cdreader.first_track_sector = rc_hash_handle_chd_first_track_sector;
+      rc_hash_init_custom_cdreader(&cdreader);
+
+      return rc_hash_handle_chd_open_track(path, track);
+#else
+      CHEEVOS_LOG(RCHEEVOS_TAG "Cannot generate hash from CHD without HAVE_CHD compile flag\n");
+      return NULL;
+#endif
+   }
+   else
+   {
+      /* not a CHD file, use the default handlers */
+      rc_hash_get_default_cdreader(&cdreader);
+      rc_hash_reset_cdreader_hooks();
+      return cdreader.open_track(path, track);
+   }
+}
+
+static void rc_hash_reset_cdreader_hooks(void)
+{
+   struct rc_hash_cdreader cdreader;
+   rc_hash_get_default_cdreader(&cdreader);
+   cdreader.open_track = rc_hash_handle_cd_open_track;
+   rc_hash_init_custom_cdreader(&cdreader);
 }
 
 /* end hooks */
@@ -598,6 +675,7 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
 	//rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
 
     /* provide hooks for reading files */
+   memset(&filereader, 0, sizeof(filereader));
     filereader.open = rc_hash_handle_file_open;
     filereader.seek = rc_hash_handle_file_seek;
     filereader.tell = rc_hash_handle_file_tell;
@@ -605,23 +683,23 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
     filereader.close = rc_hash_handle_file_close;
 	rc_hash_init_custom_filereader(&filereader);
 
-    cdreader.open_track = rc_hash_handle_cd_open_track;
-    cdreader.read_sector = rc_hash_handle_cd_read_sector;
-    cdreader.close_track = rc_hash_handle_cd_close_track;
+    //cdreader.open_track = rc_hash_handle_cd_open_track;
+    //cdreader.read_sector = rc_hash_handle_cd_read_sector;
+    //cdreader.close_track = rc_hash_handle_cd_close_track;
+   rc_hash_init_error_message_callback(rc_hash_handle_error_log_message);
+    rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
 	// deactivate to avoid hooking on this part (for rcheevis 10.1) not yet supported by retroarch (using rcheevos 9.0)
 	// Hooking TO DO for 'absolute_sector_to_track_sector' when retroarch will support that
     //cdreader.absolute_sector_to_track_sector = NULL;
-    rc_hash_init_custom_cdreader(&cdreader);
-	
+    //rc_hash_init_custom_cdreader(&cdreader);
+    rc_hash_reset_cdreader_hooks();
 	const char* path = rom_file.toUtf8().data(); //toLocal8Bit().data(); //.toUtf8().data();
 	rc_hash_initialize_iterator(&iterator, path, NULL, 0);
 	result_iterator = rc_hash_iterate(hash_iterator, &iterator);
-	//TO DO - to ahve more chance to find the good hash
-	/* 	while (rc_hash_iterate(hash_iterator, &iterator))
-	{	
-		if (QString::fromLocal8Bit(hash_iterator) != "")
-            break;
-	} */
+    if (!result_iterator)
+    {
+       Log::debug(log_tag, LOGMSG("no hashes generated"));
+    }
 	rc_hash_destroy_iterator(&iterator);
     Log::debug(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));
     Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
