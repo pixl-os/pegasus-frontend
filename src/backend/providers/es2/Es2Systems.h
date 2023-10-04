@@ -84,6 +84,7 @@ struct SystemEntry {
     QString releasedate;
     QString manufacturer; // added in recalbox 8.1
     QString retroachievements;
+
     QList <EmulatorsEntry> emulators;
 };
 

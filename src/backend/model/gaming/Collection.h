@@ -55,6 +55,13 @@ struct CollectionData {
     QString releasedate;
     QString screen_scraper_id;
 
+    //flag added 02/10/2023 from systemlist.xml
+    bool pad;
+    bool keyboard;
+    bool mouse;
+    bool lightgun;
+    bool retroachievements;
+
     QString common_launch_cmd;
     QString common_launch_workdir;
     QString common_relative_basedir;
@@ -83,6 +90,14 @@ public:
     GETTER(const QString&, manufacturer, manufacturer)
     GETTER(const QString&, releasedate, releasedate)
     GETTER(const QString&, screenScraperId, screen_scraper_id)
+
+    //flag added 02/10/2023 from systemlist.xml
+    GETTER(bool, pad, pad)
+    GETTER(bool, keyboard, keyboard)
+    GETTER(bool, mouse, mouse)
+    GETTER(bool, lightgun, lightgun)
+    GETTER(bool, retroachievements, retroachievements)
+
     GETTER(const QString&, commonLaunchCmd, common_launch_cmd)
     GETTER(const QString&, commonLaunchWorkdir, common_launch_workdir)
     GETTER(const QString&, commonLaunchCmdBasedir, common_relative_basedir)
@@ -100,6 +115,14 @@ public:
     SETTER(QString, Manufacturer, manufacturer)
     SETTER(QString, ReleaseDate, releasedate)
     SETTER(QString, ScreenScraperId, screen_scraper_id)
+
+    //flag added 02/10/2023 from systemlist.xml
+    SETTER(bool, Pad, pad)
+    SETTER(bool, Keyboard, keyboard)
+    SETTER(bool, Mouse, mouse)
+    SETTER(bool, Lightgun, lightgun)
+    SETTER(bool, Retroachievements, retroachievements)
+
     SETTER(QString, CommonLaunchCmd, common_launch_cmd)
     SETTER(QString, CommonLaunchWorkdir, common_launch_workdir)
     SETTER(QString, CommonLaunchCmdBasedir, common_relative_basedir)
@@ -117,6 +140,12 @@ public:
     Q_PROPERTY(QString manufacturer READ manufacturer CONSTANT)
     Q_PROPERTY(QString releasedate READ releasedate CONSTANT)
     Q_PROPERTY(QString screenScraperId READ screenScraperId CONSTANT)
+    //flag added 02/10/2023 from systemlist.xml
+    Q_PROPERTY(bool pad READ pad CONSTANT)
+    Q_PROPERTY(bool keyboard READ keyboard CONSTANT)
+    Q_PROPERTY(bool mouse READ mouse CONSTANT)
+    Q_PROPERTY(bool lightgun READ lightgun CONSTANT)
+    Q_PROPERTY(bool retroachievements READ retroachievements CONSTANT)
 
     //need specific property and invokable function due to QList<struct> is not supported by QML layer
     Q_PROPERTY(int emulatorsCount READ getEmulatorsCount CONSTANT)
