@@ -11,7 +11,7 @@
 #ifndef __RARCH_CHEEVOS_UTIL_H
 #define __RARCH_CHEEVOS_UTIL_H
 
-#include "retro_common_api.h"
+#include "utils/libretro-common/include/retro_common_api.h"
 
 RETRO_BEGIN_DECLS
 
