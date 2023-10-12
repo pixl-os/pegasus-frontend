@@ -19,6 +19,9 @@
 #include "libretro.h"
 #include "rc_hash.h"
 #include "formats/cdfs.h"
+#include "file/file_path.h"
+#include "string/stdstring.h"
+#include "streams/chd_stream.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -66,7 +69,7 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 	Q_ASSERT(url.isValid());
 	if (Q_UNLIKELY(!url.isValid()))
 	{
-		Log::debug(log_tag, LOGMSG("Q_UNLIKELY(!url.isValid())"));
+        Log::debug(log_tag, LOGMSG("Q_UNLIKELY(!url.isValid())"));
 		return QJsonDocument();
 	}
 	
@@ -413,7 +416,7 @@ int get_gameid_from_hash(QString Hash, QString log_tag, QNetworkAccessManager &m
 		gameid = apply_gameid_json(log_tag, json);
 	}
 	
-    //Log::info(log_tag, LOGMSG("Stats - Timing: Get GameID processing from RA web site: %1ms").arg(get_gameid_timer.elapsed()));
+    Log::debug(log_tag, LOGMSG("Stats - Timing: Get GameID processing from RA web site: %1ms").arg(get_gameid_timer.elapsed()));
 	return gameid;
 }	
 
@@ -436,7 +439,7 @@ int get_gameid_from_hashlibrary(QString Hash, QString log_tag, HashMap <QString,
                 gameid = it->second;
         }
     }
-    //Log::info(log_tag, LOGMSG("Stats - Timing: Get GameID processing from hash library: %1ms").arg(get_gameid_timer.elapsed()));
+    Log::debug(log_tag, LOGMSG("Stats - Timing: Get GameID processing from hash library: %1ms").arg(get_gameid_timer.elapsed()));
     return gameid;
 }
 
@@ -469,7 +472,7 @@ bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, 
 			}
 		}
 	}
-	//Log::info(log_tag, LOGMSG("Stats - Timing: Get Game Details processing: %1ms").arg(get_game_details_timer.elapsed()));    
+    Log::debug(log_tag, LOGMSG("Stats - Timing: Get Game Details processing: %1ms").arg(get_game_details_timer.elapsed()));
 	return result;
 }
 
@@ -493,7 +496,7 @@ bool get_achievements_status_from_gameid(int gameid, QString token, model::Game&
 		result = apply_achievements_status_json(game,Hardcore, log_tag, json);
 	}
 	
-	//Log::info(log_tag, LOGMSG("Stats - Timing: Get achievements status processing: %1ms").arg(get_achievements_status_timer.elapsed()));    
+    Log::debug(log_tag, LOGMSG("Stats - Timing: Get achievements status processing: %1ms").arg(get_achievements_status_timer.elapsed()));
 	return gameid;
 }
 
@@ -636,7 +639,7 @@ static void* rc_hash_handle_cd_open_track(
 
       return rc_hash_handle_chd_open_track(path, track);
 #else
-      CHEEVOS_LOG(RCHEEVOS_TAG "Cannot generate hash from CHD without HAVE_CHD compile flag\n");
+      Log::debug("Cheevos", LOGMSG("Cannot generate hash from CHD without HAVE_CHD compile flag"));
       return NULL;
 #endif
    }
@@ -668,14 +671,9 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
 	int result_iterator;
 	struct rc_hash_iterator iterator;
 	struct rc_hash_filereader filereader;
-	struct rc_hash_cdreader cdreader;
-	
-	//init error management // only for manual debug because impact result of hash calculation in some cases :-(
-	//rc_hash_init_error_message_callback(rc_hash_handle_error_log_message);
-	//rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
 
     /* provide hooks for reading files */
-   memset(&filereader, 0, sizeof(filereader));
+    memset(&filereader, 0, sizeof(filereader));
     filereader.open = rc_hash_handle_file_open;
     filereader.seek = rc_hash_handle_file_seek;
     filereader.tell = rc_hash_handle_file_tell;
@@ -683,17 +681,14 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
     filereader.close = rc_hash_handle_file_close;
 	rc_hash_init_custom_filereader(&filereader);
 
-    //cdreader.open_track = rc_hash_handle_cd_open_track;
-    //cdreader.read_sector = rc_hash_handle_cd_read_sector;
-    //cdreader.close_track = rc_hash_handle_cd_close_track;
-   rc_hash_init_error_message_callback(rc_hash_handle_error_log_message);
-    rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
-	// deactivate to avoid hooking on this part (for rcheevis 10.1) not yet supported by retroarch (using rcheevos 9.0)
-	// Hooking TO DO for 'absolute_sector_to_track_sector' when retroarch will support that
-    //cdreader.absolute_sector_to_track_sector = NULL;
-    //rc_hash_init_custom_cdreader(&cdreader);
+    //to uncomment to activate logs
+    rc_hash_init_error_message_callback(rc_hash_handle_error_log_message);
+
+    //Take care: verbose mode could be bugguy as for arcade .zip file hash calculation due to snprintf no-secured function used in logs :-(
+    //rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
+
     rc_hash_reset_cdreader_hooks();
-	const char* path = rom_file.toUtf8().data(); //toLocal8Bit().data(); //.toUtf8().data();
+    const char* path = rom_file.toUtf8().data(); //for testing //toLocal8Bit().data(); //.toUtf8().data();
 	rc_hash_initialize_iterator(&iterator, path, NULL, 0);
 	result_iterator = rc_hash_iterate(hash_iterator, &iterator);
     if (!result_iterator)
@@ -823,18 +818,35 @@ void Metadata::set_RaHash_And_GameID_from_hashlibrary(model::Game& game, bool Fo
         QString hash = calculate_hash_from_file(targetfile, m_log_tag);
         //save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
         game_ptr->setRaHash(hash);
+        game_ptr->setRaGameID(get_gameid_from_hashlibrary(hash, m_log_tag, Metadata::mRetroAchievementsGames));
+        if(game_ptr->RaGameID() > 0){
+            //but finally we need to connect to retroachievements.org to be sure this game is valid and has any retroachievements :-(
+            //Create Network Access
+            QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
+            //GetToken first from cache or network
+            token = get_token(m_log_tag, m_json_cache_dir, *manager);
+            if (token != "")
+            {
+                //check details of game :-(
+                result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
+                if(!result){
+                    game_ptr->setRaGameID(-1);
+                }
+            }
+            //kill manager to avoid memory leaks
+            delete manager;
+        }
+
         //check if tmp file used
         if(targetfile.toLower().startsWith("/tmp/"))
         {
-            Log::debug(m_log_tag, LOGMSG("Deletion of target file : '%1'").arg(targetfile));
+            Log::debug(m_log_tag, LOGMSG("Deletion of target file : %1").arg(targetfile));
             //delete file
             QString DeleteFileCommand = "rm";
             QStringList args = QStringList {"\""+targetfile+"\""};
             int exitcode = system(qPrintable(serialize_command(DeleteFileCommand, args)));
         }
-
-        game_ptr->setRaGameID(get_gameid_from_hashlibrary(hash, m_log_tag, Metadata::mRetroAchievementsGames));
-        Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
+        Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId set is : %1").arg(game_ptr->RaGameID()));
      }
 }
 
@@ -948,8 +960,15 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
                 }
                 //get details about Game from GameID
                 result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
-                //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
-                result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);
+                if(result){
+                    //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
+                    result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);
+                }
+                else{
+                    //force result for this game to avoid to use it in the future
+                    game_ptr->setRaHash("FFFFFFFFFF");
+                    game_ptr->setRaGameID(-1);
+                }
             }
         }
     }

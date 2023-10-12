@@ -137,7 +137,7 @@ const QString Game::getEmulatorCore() const
 
 void Game::checkRetroAchievements()
 {
-    //TO DO - check if RA are activated and if system is with Ra
+    //check only if hash is not already generated
     if(m_data.ra_hash.isEmpty())
     {
         //Log::debug(LOGMSG("Game::checkRetroAchievements_slot() put in Qt::QueuedConnection"));
