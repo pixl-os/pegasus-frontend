@@ -42,8 +42,10 @@ Provider& RetroAchievementsProvider::run(SearchContext& sctx)
     //Initialize Metahelper for each update and for each games for the moment
     QString log_tag = "Retroachievements provider";
     try{
-        //build md5 db for hash library
         providers::retroAchievements::Metadata metahelper(log_tag);
+        //reset of md5 db requested at launch of pegasus-frontend or restart
+        metahelper.reset_md5_db();
+        //build md5 db for hash library
         metahelper.build_md5_db(m_hashlibrary_url);
     }
     catch ( const std::exception & Exp )

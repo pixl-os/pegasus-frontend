@@ -715,6 +715,12 @@ Metadata::Metadata(QString log_tag)
 {
 }
 
+void Metadata::reset_md5_db() const
+{
+    //Delete JSON in cache
+    providers::delete_cached_json(m_log_tag, m_json_cache_dir, "ra_hash_library");
+}
+
 void Metadata::build_md5_db(QString hashlibrary_url) const
 {
     QElapsedTimer build_md5_db_timer;
@@ -728,7 +734,7 @@ void Metadata::build_md5_db(QString hashlibrary_url) const
     if (Metadata::mRetroAchievementsGames.size() < 1)
     {
         //Delete JSON in cache by security
-        providers::delete_cached_json(m_log_tag, m_json_cache_dir, "ra_hash_library");
+        reset_md5_db();
 
         //Create Network Access
         QNetworkAccessManager *manager = new QNetworkAccessManager();

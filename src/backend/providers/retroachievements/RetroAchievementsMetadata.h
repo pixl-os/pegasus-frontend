@@ -33,7 +33,9 @@ public:
     const QString& log_tag() const { return m_log_tag; }
     //function to build md5/gameid hash map from hash library json url provided by retroachievements.org
     void build_md5_db(QString hashlibrary_url) const;
-
+    //function used by when provider is launch at pegasus-frontend start
+    //and need to reset cache each time to force update of hash library
+    void reset_md5_db() const;
 private:
     //to store content of http://retroachievements.org/dorequest.php?r=hashlibrary
     static HashMap <QString, qint64> mRetroAchievementsGames;
