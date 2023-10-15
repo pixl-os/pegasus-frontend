@@ -348,6 +348,44 @@ HashMap <QString, qint64> apply_hash_library_json(QString log_tag, const QJsonDo
     }
     return map;
 }
+
+QString apply_ra_hash_json(QString log_tag, const QJsonDocument& json)
+//Example of JSON content
+//  {"crc32":"AC6E93EA","ra_md5":"b43c8b4ec999588c04dad79bb8bcc745"}
+//from json cache
+{
+
+    using QL1 = QLatin1String;
+
+    if (json.isNull())
+    {
+        Log::debug(log_tag, LOGMSG("json.isNull()"));
+        return "";
+    }
+    const auto json_root = json.object();
+    if (json_root.isEmpty())
+    {
+        Log::debug(log_tag, LOGMSG("json_root.isEmpty()"));
+        return "";
+    }
+
+    const auto crc32 = json_root[QL1("crc32")].toString();
+    if (crc32.isEmpty())
+    {
+        Log::debug(log_tag, LOGMSG("crc32 is empty"));
+        return "";
+    }
+
+    const auto ra_md5 = json_root[QL1("ra_md5")].toString();
+    if (ra_md5.isEmpty())
+    {
+        Log::debug(log_tag, LOGMSG("RetroAchivements md5 is empty"));
+        return "";
+    }
+    Log::debug(log_tag, LOGMSG("RetroAchivements md5 from cache: %1").arg(ra_md5));
+    return ra_md5;
+}
+
 //***********************END OF JSON PARSING FUNCTIONS***********************************//
 
 //***********************GET FUNCTIONS***********************************//
@@ -672,6 +710,42 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
 	struct rc_hash_iterator iterator;
 	struct rc_hash_filereader filereader;
 
+    QString targetfile;
+    //check if zip
+    if(rom_file.toLower().endsWith(".zip"))
+    {
+        Zip zip(Path(rom_file.toLocal8Bit().data()));
+        Log::debug(log_tag, LOGMSG("This zip has %1 file(s).").arg(zip.Count()));
+        if(zip.Count() == 1)
+        {
+            //it seems a console game because only one file is present
+            //unzip file_unzipped
+            //example : unzip -o -d /tmp "/recalbox/share/roms/nes/Duck Hunt (World).zip"
+            QString UnzipCommand = "unzip";
+            QStringList args = QStringList {
+                                    QStringLiteral("-o"),
+                                    QStringLiteral("-d /tmp"),
+                                    "\""+rom_file+"\""
+                                };
+            int exitcode = system(qPrintable(serialize_command(UnzipCommand, args)));
+
+            //set target file from /tmp
+            targetfile = "/tmp/" + QString::fromStdString(zip.FileName(0).ToString());
+        }
+        else
+        {
+            //could be a arcade game in this case
+            //set target file from as the initial zip due to the fact that hash for arcade use the name of the file
+            targetfile = rom_file;
+        }
+    }
+    else
+    {	//not zipped
+        //set target file as the intial romfile
+        targetfile = rom_file;
+    }
+    Log::debug(log_tag, LOGMSG("The target file to hash is '%1'").arg(targetfile));
+
     /* provide hooks for reading files */
     memset(&filereader, 0, sizeof(filereader));
     filereader.open = rc_hash_handle_file_open;
@@ -688,7 +762,7 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
     //rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
 
     rc_hash_reset_cdreader_hooks();
-    const char* path = rom_file.toUtf8().data(); //for testing //toLocal8Bit().data(); //.toUtf8().data();
+    const char* path = targetfile.toUtf8().data(); //for testing //toLocal8Bit().data(); //.toUtf8().data();
 	rc_hash_initialize_iterator(&iterator, path, NULL, 0);
 	result_iterator = rc_hash_iterate(hash_iterator, &iterator);
     if (!result_iterator)
@@ -698,6 +772,16 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
 	rc_hash_destroy_iterator(&iterator);
     Log::debug(log_tag, LOGMSG("Stats - Timing: Hash processing: %1ms").arg(calculate_hash_timer.elapsed()));
     Log::debug(log_tag, LOGMSG("Hash on file: '%1' - '%2'").arg(rom_file, QString::fromLocal8Bit(hash_iterator)));
+
+    //check if tmp file has been used
+    if(targetfile.toLower().startsWith("/tmp/"))
+    {
+        Log::debug(log_tag, LOGMSG("Deletion of target file : '%1'").arg(targetfile));
+        //delete file
+        QString DeleteFileCommand = "rm";
+        QStringList args = QStringList {"\""+targetfile+"\""};
+        int exitcode = system(qPrintable(serialize_command(DeleteFileCommand, args)));
+    }
 	return QString::fromLocal8Bit(hash_iterator);
 }	
 //***********************END OF HASH FUNCTIONS***********************************//
@@ -786,45 +870,29 @@ void Metadata::set_RaHash_And_GameID_from_hashlibrary(model::Game& game, bool Fo
         const model::GameFile* gamefile = game_ptr->filesConst().first(); /// take into account only the first file for the moment.
         const QFileInfo& finfo = gamefile->fileinfo();
         QString romfile = QDir::toNativeSeparators(finfo.absoluteFilePath());
-        QString targetfile;
-        //check if zip
-        if(romfile.toLower().endsWith(".zip"))
-        {
-            Zip zip(Path(romfile.toLocal8Bit().data()));
-            Log::debug(m_log_tag, LOGMSG("This zip has %1 file(s).").arg(zip.Count()));
-            if(zip.Count() == 1)
-            {
-                //it seems a console game because only one file is present
-                //unzip file_unzipped
-                //example : unzip -o -d /tmp "/recalbox/share/roms/nes/Duck Hunt (World).zip"
-                QString UnzipCommand = "unzip";
-                QStringList args = QStringList {
-                                        QStringLiteral("-o"),
-                                        QStringLiteral("-d /tmp"),
-                                        "\""+romfile+"\""
-                                    };
-                int exitcode = system(qPrintable(serialize_command(UnzipCommand, args)));
+        Log::debug(m_log_tag, LOGMSG("The rom file to hash is '%1'").arg(romfile));
+        QString md5_hash = "";
 
-                //set target file from /tmp
-                targetfile = "/tmp/" + QString::fromStdString(zip.FileName(0).ToString());
-            }
-            else
-            {
-                //could be a arcade game in this case
-                //set target file from as the initial zip due to the fact that hash for arcade use the name of the file
-                targetfile = romfile;
-            }
+        //Try to get md5 hash from json in cache using crc32 hash
+        if(game_ptr->hash().length() > 1){
+            QJsonDocument json_from_cache = providers::read_json_from_cache(m_log_tag + " - cache", m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash());
+            md5_hash = apply_ra_hash_json(m_log_tag + " - cache", json_from_cache);
         }
-        else
-        {	//not zipped
-            //set target file as the intial romfile
-            targetfile = romfile;
+        //Calculate md5 hash if not found from cache
+        if (md5_hash != ""){
+            md5_hash = calculate_hash_from_file(romfile, m_log_tag);
+            //save hash for this rom in cache for next reboot
+            QJsonObject recordObject;
+            recordObject.insert("crc32", QJsonValue::fromVariant(game_ptr->hash()));
+            recordObject.insert("ra_md5", QJsonValue::fromVariant(md5_hash));
+            QJsonDocument json(recordObject);
+            //saved in cache
+            providers::cache_json(m_log_tag, m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash(), json.toJson(QJsonDocument::Compact));
         }
-        Log::debug(m_log_tag, LOGMSG("The target file to hash is '%1'").arg(targetfile));
-        QString hash = calculate_hash_from_file(targetfile, m_log_tag);
+
         //save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
-        game_ptr->setRaHash(hash);
-        game_ptr->setRaGameID(get_gameid_from_hashlibrary(hash, m_log_tag, Metadata::mRetroAchievementsGames));
+        game_ptr->setRaHash(md5_hash);
+        game_ptr->setRaGameID(get_gameid_from_hashlibrary(md5_hash, m_log_tag, Metadata::mRetroAchievementsGames));
         if(game_ptr->RaGameID() > 0){
             //but finally we need to connect to retroachievements.org to be sure this game is valid and has any retroachievements :-(
             //Create Network Access
@@ -841,16 +909,6 @@ void Metadata::set_RaHash_And_GameID_from_hashlibrary(model::Game& game, bool Fo
             }
             //kill manager to avoid memory leaks
             delete manager;
-        }
-
-        //check if tmp file used
-        if(targetfile.toLower().startsWith("/tmp/"))
-        {
-            Log::debug(m_log_tag, LOGMSG("Deletion of target file : %1").arg(targetfile));
-            //delete file
-            QString DeleteFileCommand = "rm";
-            QStringList args = QStringList {"\""+targetfile+"\""};
-            int exitcode = system(qPrintable(serialize_command(DeleteFileCommand, args)));
         }
         Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId set is : %1").arg(game_ptr->RaGameID()));
      }
@@ -898,55 +956,29 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
             const model::GameFile* gamefile = game_ptr->filesConst().first(); /// take into account only the first file for the moment.
             const QFileInfo& finfo = gamefile->fileinfo();
             QString romfile = QDir::toNativeSeparators(finfo.absoluteFilePath());
-            QString targetfile;
-            //check if zip
-            if(romfile.toLower().endsWith(".zip"))
-            {
-                Zip zip(Path(romfile.toLocal8Bit().data()));
-                Log::debug(m_log_tag, LOGMSG("This zip has %1 file(s).").arg(zip.Count()));
-                if(zip.Count() == 1)
-                {
-                    //it seems a console game because only one file is present
-                    //unzip file_unzipped
-                    //example : unzip -o -d /tmp "/recalbox/share/roms/nes/Duck Hunt (World).zip"
-                    QString UnzipCommand = "unzip";
-                    QStringList args = QStringList {
-                                            QStringLiteral("-o"),
-                                            QStringLiteral("-d /tmp"),
-                                            "\""+romfile+"\""
-                                        };
-                    int exitcode = system(qPrintable(serialize_command(UnzipCommand, args)));
+            Log::debug(m_log_tag, LOGMSG("The rom file to hash is '%1'").arg(romfile));
 
-                    //set target file from /tmp
-                    targetfile = "/tmp/" + QString::fromStdString(zip.FileName(0).ToString());
-                }
-                else
-                {
-                    //could be a arcade game in this case
-                    //set target file from as the initial zip due to the fact that hash for arcade use the name of the file
-                    targetfile = romfile;
-                }
+            QString md5_hash = "";
+            //Try to get md5 hash from json in cache using crc32 hash
+            if(game_ptr->hash().length() > 1){
+                QJsonDocument json_from_cache = providers::read_json_from_cache(m_log_tag + " - cache", m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash());
+                md5_hash = apply_ra_hash_json(m_log_tag + " - cache", json_from_cache);
             }
-            else
-            {	//not zipped
-                //set target file as the intial romfile
-                targetfile = romfile;
+            //Calculate md5 hash if not found from cache
+            if (md5_hash != ""){
+                md5_hash = calculate_hash_from_file(romfile, m_log_tag);
+                //save hash for this rom in cache for next reboot
+                QJsonObject recordObject;
+                recordObject.insert("crc32", QJsonValue::fromVariant(game_ptr->hash()));
+                recordObject.insert("ra_md5", QJsonValue::fromVariant(md5_hash));
+                QJsonDocument json(recordObject);
+                //saved in cache
+                providers::cache_json(m_log_tag, m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash(), json.toJson(QJsonDocument::Compact));
             }
-            Log::debug(m_log_tag, LOGMSG("The target file to hash is '%1'").arg(targetfile));
-            QString hash = calculate_hash_from_file(targetfile, m_log_tag);
+
             //save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
-            game_ptr->setRaHash(hash);
-            //check if tmp file used
-            if(targetfile.toLower().startsWith("/tmp/"))
-            {
-                Log::debug(m_log_tag, LOGMSG("Deletion of target file : '%1'").arg(targetfile));
-                //delete file
-                QString DeleteFileCommand = "rm";
-                QStringList args = QStringList {"\""+targetfile+"\""};
-                int exitcode = system(qPrintable(serialize_command(DeleteFileCommand, args)));
-            }
-
-            game_ptr->setRaGameID(get_gameid_from_hash(hash, m_log_tag, *manager));
+            game_ptr->setRaHash(md5_hash);
+            game_ptr->setRaGameID(get_gameid_from_hash(md5_hash, m_log_tag, *manager));
             Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
 
             //get details about Game from GameID
