@@ -26,8 +26,8 @@ namespace retroAchievements {
 class Metadata {
 public:
     explicit Metadata(QString);
-    //function to set Hash and GameID for game object
-    void set_RaHash_And_GameID_from_hashlibrary(model::Game&, bool) const;
+    //function to set Hash and GameID for game object (return gameid)
+    int set_RaHash_And_GameID_from_hashlibrary_or_cache(model::Game&, bool) const;
     //function to set Ra Details for game object
     void fill_Ra_from_network_or_cache(model::Game&, bool) const;
     const QString& log_tag() const { return m_log_tag; }
@@ -36,10 +36,12 @@ public:
     //function used by when provider is launch at pegasus-frontend start
     //and need to reset cache each time to force update of hash library
     void reset_md5_db() const;
+    //function to verify/get token for the first time
+    bool verify_token() const;
 private:
     //to store content of http://retroachievements.org/dorequest.php?r=hashlibrary
     static HashMap <QString, qint64> mRetroAchievementsGames;
-
+    static bool HashProcessingInProgress;
 private:
     const QString m_log_tag;
     const QString m_json_cache_dir;
