@@ -43,6 +43,8 @@ Provider& RetroAchievementsProvider::run(SearchContext& sctx)
     QString log_tag = "Retroachievements provider";
     try{
         providers::retroAchievements::Metadata metahelper(log_tag);
+        //to verify and get token first
+        metahelper.verify_token();
         //reset of md5 db requested at launch of pegasus-frontend or restart
         metahelper.reset_md5_db();
         //build md5 db for hash library

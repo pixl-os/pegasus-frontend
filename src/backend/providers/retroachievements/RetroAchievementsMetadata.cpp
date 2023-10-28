@@ -26,12 +26,20 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+
+//for networking download
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QUrl>
+#include <QObject>
+
 #include <QStringBuilder>
 #include <QDir>
 
 #include <QEventLoop>
 #include <QElapsedTimer>
+#include <QCoreApplication>
 
 #include <RecalboxConf.h>
 
@@ -64,6 +72,7 @@ QString serialize_command(const QString& cmd, const QStringList& args)
 
 QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccessManager &manager)
 {
+    //Log::debug(log_tag, LOGMSG("get_json_from_url - url: %1").arg(url_str));
 	QNetworkAccessManager* const manager_ptr = &manager;
 	const QUrl url(url_str, QUrl::StrictMode);
 	Q_ASSERT(url.isValid());
@@ -75,20 +84,19 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 	
 	//Set request
 	QNetworkRequest request(url);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setRawHeader("User-Agent", "Mozilla Firefox");
 	#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 		request.setTransferTimeout(10000);
 	#endif
 
-	//Get request
-    QNetworkReply* const reply = manager_ptr->get(request);
-	
-	//do loop on connect to wait donwload in this case
-	QEventLoop loop;
-	QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-	loop.exec();
-	
-	if (reply->error()) {
+    //do loop on connect to wait donwload in this case
+    QEventLoop loop;
+    //Get request
+    QNetworkReply* reply = manager_ptr->get(request);
+    QObject::connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+    loop.exec();
+
+    if (QNetworkReply::NoError != reply->error()) {
 		Log::warning(log_tag, LOGMSG("Downloading metadata failed: %1").arg(reply->errorString()));
 		return QJsonDocument();
 	}
@@ -389,12 +397,9 @@ QString apply_ra_hash_json(QString log_tag, const QJsonDocument& json)
 //***********************END OF JSON PARSING FUNCTIONS***********************************//
 
 //***********************GET FUNCTIONS***********************************//
-QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager &manager)
+QString get_token_from_cache(QString log_tag, QString json_cache_dir)
 //from : http://retroachievements.org/dorequest.php?r=login&u=username&p=password
 {
-	QElapsedTimer get_token_timer;
-    get_token_timer.start();
-	
 /* 	## Enable retroarchievements (0,1)
 	## Set your www.retroachievements.org username/password
 	## Escape your special chars (# ; $) with a backslash : $ => \$
@@ -403,41 +408,55 @@ QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager
 	global.retroachievements.username=login
 	global.retroachievements.password=motdepasse */
 	
-	
-	
 	//GET information from recalbox.conf
 	QString Username = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.username"));
 	QString Password = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.password"));
-		
-	//Try to get token from json in cache
-	QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, Username + Password);
-	
+
 	//replace backslash as proposed in recalbox.conf, this backslash is only necessary for retroarch (but seems not to work in retroarch ?!)
 	Username.remove("\\", Qt::CaseInsensitive); 
 	Password.remove("\\", Qt::CaseInsensitive);
 	
-	QString token = apply_login_json(log_tag + " - cache", json);
+    //Try to get token from json in cache
+    QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, Username + Password);
+    QString token = apply_login_json(log_tag + " - cache", json);
+    if(token == ""){
+        //Delete JSON inb cache by security - use Username and Password to have a unique key and if password is changed finally.
+        providers::delete_cached_json(log_tag, json_cache_dir, Username + Password);
+    }
+    return token;
+}
+
+QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager &manager)
+//from : http://retroachievements.org/dorequest.php?r=login&u=username&p=password
+{
+	QElapsedTimer get_token_timer;
+    get_token_timer.start();
+	
+    QString token = get_token_from_cache(log_tag, json_cache_dir);
 	if (token == "")
 	{
-		//Delete JSON inb cache by security - use Username and Password to have a unique key and if password is changed finally.
-		providers::delete_cached_json(log_tag, json_cache_dir, Username + Password);
-
+        //GET information from recalbox.conf
+        QString Username = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.username"));
+        QString Password = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.password"));
+        //replace backslash as proposed in recalbox.conf, this backslash is only necessary for retroarch (but seems not to work in retroarch ?!)
+        Username.remove("\\", Qt::CaseInsensitive);
+        Password.remove("\\", Qt::CaseInsensitive);
 		//To get token
 		const QString url_str = QStringLiteral("http://retroachievements.org/dorequest.php?r=login&u=%1&p=%2").arg(Username,Password);
-		json = get_json_from_url(url_str, log_tag, manager);
+        QJsonDocument json = get_json_from_url(url_str, log_tag, manager);
 		token = apply_login_json(log_tag, json);
 		if (token != "")
 		{
 			//saved in cache
 			providers::cache_json(log_tag, json_cache_dir, Username + Password, json.toJson(QJsonDocument::Compact));
 		}
+        Log::debug(log_tag, LOGMSG("Stats - Timing: Get token processing (from site): %1ms").arg(get_token_timer.elapsed()));
 	}
-	
-	//Log::info(log_tag, LOGMSG("Stats - Timing: Get token processing: %1ms").arg(get_token_timer.elapsed()));    
+    else Log::debug(log_tag, LOGMSG("Stats - Timing: Get token processing (from cache): %1ms").arg(get_token_timer.elapsed()));
 	return token;
 }	
 
-int get_gameid_from_hash(QString Hash, QString log_tag, QNetworkAccessManager &manager)
+int get_gameid_from_hashrequest(QString Hash, QString log_tag, QNetworkAccessManager &manager)
 //from : http://retroachievements.org/dorequest.php?r=gameid&m=44dca16afbee7fd947e86c30c1183846
 {
 	QElapsedTimer get_gameid_timer;
@@ -473,8 +492,10 @@ int get_gameid_from_hashlibrary(QString Hash, QString log_tag, HashMap <QString,
         if (map.size() >= 1)
         {
             const auto it = map.find(Hash);
-            if (it != map.cend())
+            if (it != map.cend()){
                 gameid = it->second;
+                Log::debug(log_tag, LOGMSG("GameID found from hash value: '%1'").arg(QString::number(gameid)));
+            }
         }
     }
     Log::debug(log_tag, LOGMSG("Stats - Timing: Get GameID processing from hash library: %1ms").arg(get_gameid_timer.elapsed()));
@@ -493,7 +514,8 @@ bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, 
 		//Try to get game details from json in cache
 		QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, "RaGameID=" + QString::number(gameid));
 		result = apply_game_json(game, log_tag + " - cache", json);
-		if (result == false)
+        Log::debug(log_tag, LOGMSG("Json cache for RaGameID '%1' found: %2").arg(QString::number(gameid), QString::number(result)));
+        if (result == false)
 		{
 			//Delete JSON inb cache by security - use Username and Password to have a unique key and if password is changed finally.
 			providers::delete_cached_json(log_tag + " - cache", json_cache_dir, "RaGameID=" + QString::number(gameid));
@@ -503,6 +525,7 @@ bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, 
 			const QString url_str = QStringLiteral("http://retroachievements.org/dorequest.php?r=patch&u=%1&t=%2&g=%3").arg(Username,token,QString::number(gameid));
 			QJsonDocument json = get_json_from_url(url_str, log_tag, manager);
 			result = apply_game_json(game, log_tag, json);
+            Log::debug(log_tag, LOGMSG("Json info for RaGameID '%1' fromm RA site found: %2").arg(QString::number(gameid), QString::number(result)));
 			if (result == true)
 			{
 				//saved in cache
@@ -792,6 +815,7 @@ namespace providers {
 namespace retroAchievements {
 
 HashMap <QString, qint64> Metadata::mRetroAchievementsGames;
+bool Metadata::HashProcessingInProgress = false;
 
 Metadata::Metadata(QString log_tag)
     : m_log_tag(std::move(log_tag))
@@ -803,6 +827,21 @@ void Metadata::reset_md5_db() const
 {
     //Delete JSON in cache
     providers::delete_cached_json(m_log_tag, m_json_cache_dir, "ra_hash_library");
+    //set initial values
+    Metadata::HashProcessingInProgress = false;
+}
+
+bool Metadata::verify_token() const
+{
+    //Create Network Access
+    QNetworkAccessManager* manager = new QNetworkAccessManager();
+    //GetToken first from cache or network
+    QString token = "";
+    token = get_token(m_log_tag, m_json_cache_dir, *manager);
+    //kill manager to avoid memory leaks
+    delete manager;
+    if (token != "") return true;
+    else return false;
 }
 
 void Metadata::build_md5_db(QString hashlibrary_url) const
@@ -841,29 +880,26 @@ void Metadata::build_md5_db(QString hashlibrary_url) const
     //Metadata::mRetroAchievementsGames.emplace(std::move("12345679"), 2);
 }
 
-void Metadata::set_RaHash_And_GameID_from_hashlibrary(model::Game& game, bool ForceUpdate) const
+int Metadata::set_RaHash_And_GameID_from_hashlibrary_or_cache(model::Game& game, bool ForceUpdate) const
 {
-    QString token;
     bool result = false;
     //Set Game info
     model::Game* const game_ptr = &game;
-    QString title = game_ptr->title();
 
     //check if recalbox.conf to know if activated
     if (!RecalboxConf::Instance().AsBool("global.retroachievements"))
     {
         Log::debug(m_log_tag, LOGMSG("not activated !"));
-        return;
+        return 0;
     }
     else if (game_ptr->collections().retroachievements() != true){
         Log::debug(m_log_tag, LOGMSG("not applicable for this system !"));
-        //force result for this game to avoid to use it
+        //force  result for this game to avoid to use it
         game_ptr->setRaHash("FFFFFFFFFF");
         game_ptr->setRaGameID(-1);
-        return;
+        return -1;
     }
-
-    //check if gameid exists and hash already calculated
+    //check if gameid is no set and if hash should be calculated
     if(((game_ptr->RaGameID() == 0) && (game_ptr->RaHash() == "")) || ForceUpdate)
     {
         Log::debug(m_log_tag, LOGMSG("RetroAchievement RaGameId to find from Hash library!"));
@@ -879,7 +915,12 @@ void Metadata::set_RaHash_And_GameID_from_hashlibrary(model::Game& game, bool Fo
             md5_hash = apply_ra_hash_json(m_log_tag + " - cache", json_from_cache);
         }
         //Calculate md5 hash if not found from cache
-        if (md5_hash != ""){
+        if (md5_hash == ""){
+            //wait that previous hash has been calculated by other thread
+            while(Metadata::HashProcessingInProgress == true){
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+            }
+            Metadata::HashProcessingInProgress = true;
             md5_hash = calculate_hash_from_file(romfile, m_log_tag);
             //save hash for this rom in cache for next reboot
             QJsonObject recordObject;
@@ -888,107 +929,47 @@ void Metadata::set_RaHash_And_GameID_from_hashlibrary(model::Game& game, bool Fo
             QJsonDocument json(recordObject);
             //saved in cache
             providers::cache_json(m_log_tag, m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash(), json.toJson(QJsonDocument::Compact));
+            Metadata::HashProcessingInProgress = false;
         }
-
         //save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
         game_ptr->setRaHash(md5_hash);
-        game_ptr->setRaGameID(get_gameid_from_hashlibrary(md5_hash, m_log_tag, Metadata::mRetroAchievementsGames));
-        if(game_ptr->RaGameID() > 0){
+        int gameID = get_gameid_from_hashlibrary(md5_hash, m_log_tag, Metadata::mRetroAchievementsGames);
+        if(gameID > 0){
             //but finally we need to connect to retroachievements.org to be sure this game is valid and has any retroachievements :-(
+            //GetToken first from cache only in this case
+            QString token = "";
+            token = get_token_from_cache(m_log_tag, m_json_cache_dir);
             //Create Network Access
-            QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
-            //GetToken first from cache or network
-            token = get_token(m_log_tag, m_json_cache_dir, *manager);
+            QNetworkAccessManager* manager = new QNetworkAccessManager();
             if (token != "")
             {
-                //check details of game :-(
-                result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
-                if(!result){
-                    game_ptr->setRaGameID(-1);
-                }
+                //check hash of game from web site using "details" :-(
+                result = get_game_details_from_gameid(gameID, token, game, m_log_tag, m_json_cache_dir, *manager);
+                if (result) game_ptr->setRaGameID(gameID);
             }
             //kill manager to avoid memory leaks
             delete manager;
         }
         Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId set is : %1").arg(game_ptr->RaGameID()));
-     }
+    }
+    return game_ptr->RaGameID();
 }
 
 void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate) const
 {
-    QString token;
+    //first calculate RA md5 hash(if needed) and set it with gameID.
     bool result = false;
-    //Set Game info
-    model::Game* const game_ptr = &game;
-    QString title = game_ptr->title();
-
-    //check if recalbox.conf to know if activated
-    if (!RecalboxConf::Instance().AsBool("global.retroachievements"))
-    {
-        Log::debug(m_log_tag, LOGMSG("not activated !"));
-        return;
-    }
-    else if (game_ptr->collections().retroachievements() != true){
-        Log::debug(m_log_tag, LOGMSG("not applicable for this system !"));
-        //force result for this game to avoid to use it
-        game_ptr->setRaHash("FFFFFFFFFF");
-        game_ptr->setRaGameID(-1);
-        return;
-    }
-    //for test to check static hash map of RA Hash/GameId
-    /*for (const auto& entry : mRetroAchievementsGames) {
-        const QString& hash = entry.first;
-        const qint64 gameid = entry.second;
-        Log::debug(m_log_tag, LOGMSG("Hash: %1 GameId: %2").arg(hash,QString::number(gameid)));
-    }*/
-
-    //Create Network Access
-    QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
-
-    //GetToken first from cache or network
-    token = get_token(m_log_tag, m_json_cache_dir, *manager);
-    if (token != "")
-    {
-        //check if gameid exists and hash already calculated
-        if((game_ptr->RaGameID() == 0) && (game_ptr->RaHash() == ""))
+    int gameID = set_RaHash_And_GameID_from_hashlibrary_or_cache(game, ForceUpdate);
+    if(gameID > 0){
+        //Set Game info
+        model::Game* const game_ptr = &game;
+        //QString title = game_ptr->title();
+        Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
+        //GetToken first from cache only in this case
+        QString token = "";
+        token = get_token_from_cache(m_log_tag, m_json_cache_dir);
+        if (token != "")
         {
-            Log::debug(m_log_tag, LOGMSG("RetroAchievement RaGameId to find from RA site or cache !"));
-            const model::GameFile* gamefile = game_ptr->filesConst().first(); /// take into account only the first file for the moment.
-            const QFileInfo& finfo = gamefile->fileinfo();
-            QString romfile = QDir::toNativeSeparators(finfo.absoluteFilePath());
-            Log::debug(m_log_tag, LOGMSG("The rom file to hash is '%1'").arg(romfile));
-
-            QString md5_hash = "";
-            //Try to get md5 hash from json in cache using crc32 hash
-            if(game_ptr->hash().length() > 1){
-                QJsonDocument json_from_cache = providers::read_json_from_cache(m_log_tag + " - cache", m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash());
-                md5_hash = apply_ra_hash_json(m_log_tag + " - cache", json_from_cache);
-            }
-            //Calculate md5 hash if not found from cache
-            if (md5_hash != ""){
-                md5_hash = calculate_hash_from_file(romfile, m_log_tag);
-                //save hash for this rom in cache for next reboot
-                QJsonObject recordObject;
-                recordObject.insert("crc32", QJsonValue::fromVariant(game_ptr->hash()));
-                recordObject.insert("ra_md5", QJsonValue::fromVariant(md5_hash));
-                QJsonDocument json(recordObject);
-                //saved in cache
-                providers::cache_json(m_log_tag, m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash(), json.toJson(QJsonDocument::Compact));
-            }
-
-            //save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
-            game_ptr->setRaHash(md5_hash);
-            game_ptr->setRaGameID(get_gameid_from_hash(md5_hash, m_log_tag, *manager));
-            Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
-
-            //get details about Game from GameID
-            result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
-            //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
-            result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);
-        }
-        else
-        {
-            Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId already known : %1").arg(game_ptr->RaGameID()));
             if(game_ptr->retroAchievements().isEmpty() || ForceUpdate)
             {
                 //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
@@ -996,6 +977,8 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
                     //Delete JSON in cache for cleaning and force update vs init when we reuse cache.
                     providers::delete_cached_json(m_log_tag, m_json_cache_dir, "RaGameID=" + QString::number(game_ptr->RaGameID()));
                 }
+                //Create Network Access
+                QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
                 //get details about Game from GameID
                 result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
                 if(result){
@@ -1007,12 +990,11 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
                     game_ptr->setRaHash("FFFFFFFFFF");
                     game_ptr->setRaGameID(-1);
                 }
+                //kill manager to avoid memory leaks
+                delete manager;
             }
         }
     }
-    //kill manager to avoid memory leaks
-    delete manager;
-
 }
 
 } // namespace retroAchievements

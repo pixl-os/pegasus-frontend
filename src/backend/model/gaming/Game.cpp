@@ -140,7 +140,7 @@ void Game::checkRetroAchievements()
     //check only if hash is not already generated
     if(m_data.ra_hash.isEmpty())
     {
-        //Log::debug(LOGMSG("Game::checkRetroAchievements_slot() put in Qt::QueuedConnection"));
+        Log::debug(LOGMSG("Game::checkRetroAchievements_slot() put in Qt::QueuedConnection : %1").arg(m_data.title));
         QMetaObject::invokeMethod(this,"checkRetroAchievements_slot", Qt::QueuedConnection);
     }
 }
@@ -153,7 +153,7 @@ void Game::checkRetroAchievements_slot()
     try{
         //const providers::retroAchievements::Metadata metahelper(log_tag);
         //get GameID from cache and calculating the hash
-        m_metahelper.set_RaHash_And_GameID_from_hashlibrary(*this, false);
+        m_metahelper.set_RaHash_And_GameID_from_hashlibrary_or_cache(*this, false);
         //emit signal to alert front-end about end of changes
         emit raHashChanged();
         emit raGameIDChanged();
