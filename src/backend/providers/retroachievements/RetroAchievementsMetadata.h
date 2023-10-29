@@ -42,6 +42,7 @@ private:
     //to store content of http://retroachievements.org/dorequest.php?r=hashlibrary
     static HashMap <QString, qint64> mRetroAchievementsGames;
     static bool HashProcessingInProgress;
+    static QString Token; //to keep token locally in memory to avoid use read cache (using file)
 private:
     const QString m_log_tag;
     const QString m_json_cache_dir;
