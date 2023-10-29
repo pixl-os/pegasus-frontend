@@ -239,6 +239,8 @@ bool apply_game_json(model::Game& game, QString log_tag, const QJsonDocument& js
 	if (Achievements.isEmpty()) 
 	{
 		Log::debug(log_tag, LOGMSG("No Achievements found"));
+        //reset to 0 in this case
+        game.setRaGameID(0);
 		return false;
 	}
 
