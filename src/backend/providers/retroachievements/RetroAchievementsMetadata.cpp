@@ -843,6 +843,7 @@ namespace retroAchievements {
 
 HashMap <QString, qint64> Metadata::mRetroAchievementsGames;
 bool Metadata::HashProcessingInProgress = false;
+QString  Metadata::Token = "";
 
 Metadata::Metadata(QString log_tag)
     : m_log_tag(std::move(log_tag))
@@ -856,6 +857,7 @@ void Metadata::reset_md5_db() const
     providers::delete_cached_json(m_log_tag, m_json_cache_dir, "ra_hash_library");
     //set initial values
     Metadata::HashProcessingInProgress = false;
+    Metadata::Token = "";
 }
 
 bool Metadata::verify_token() const
@@ -863,11 +865,11 @@ bool Metadata::verify_token() const
     //Create Network Access
     QNetworkAccessManager* manager = new QNetworkAccessManager();
     //GetToken first from cache or network
-    QString token = "";
-    token = get_token(m_log_tag, m_json_cache_dir, *manager);
+    Metadata::Token = "";
+    Metadata::Token = get_token(m_log_tag, m_json_cache_dir, *manager);
     //kill manager to avoid memory leaks
     delete manager;
-    if (token != "") return true;
+    if (Metadata::Token != "") return true;
     else return false;
 }
 
@@ -967,14 +969,13 @@ int Metadata::set_RaHash_And_GameID_from_hashlibrary_or_cache(model::Game& game,
         if(gameID > 0){
             //but finally we need to connect to retroachievements.org to be sure this game is valid and has any retroachievements :-(
             //GetToken first from cache only in this case
-            QString token = "";
-            token = get_token_from_cache(m_log_tag, m_json_cache_dir);
+            if(Metadata::Token == "") Metadata::Token = get_token_from_cache(m_log_tag, m_json_cache_dir);
             //Create Network Access
             QNetworkAccessManager* manager = new QNetworkAccessManager();
-            if (token != "")
+            if (Metadata::Token != "")
             {
                 //check hash of game from web site using "details" :-(
-                result = get_game_details_from_gameid(gameID, token, game, m_log_tag, m_json_cache_dir, *manager);
+                result = get_game_details_from_gameid(gameID, Metadata::Token, game, m_log_tag, m_json_cache_dir, *manager);
                 if (result) game_ptr->setRaGameID(gameID);
             }
             //kill manager to avoid memory leaks
@@ -996,9 +997,9 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
         //QString title = game_ptr->title();
         Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
         //GetToken first from cache only in this case
-        QString token = "";
-        token = get_token_from_cache(m_log_tag, m_json_cache_dir);
-        if (token != "")
+        //GetToken first from cache only in this case
+        if(Metadata::Token == "") Metadata::Token = get_token_from_cache(m_log_tag, m_json_cache_dir);
+        if(Metadata::Token != "")
         {
             if(game_ptr->retroAchievements().isEmpty() || ForceUpdate)
             {
@@ -1010,10 +1011,10 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
                 //Create Network Access
                 QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
                 //get details about Game from GameID
-                result = get_game_details_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, m_json_cache_dir, *manager);
+                result = get_game_details_from_gameid(game_ptr->RaGameID(), Metadata::Token, game, m_log_tag, m_json_cache_dir, *manager);
                 if(result){
                     //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
-                    result = get_achievements_status_from_gameid(game_ptr->RaGameID(), token, game, m_log_tag, *manager);
+                    result = get_achievements_status_from_gameid(game_ptr->RaGameID(), Metadata::Token, game, m_log_tag, *manager);
                 }
                 else{
                     //force result for this game to avoid to use it in the future
