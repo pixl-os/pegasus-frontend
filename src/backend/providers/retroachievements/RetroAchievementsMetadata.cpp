@@ -97,11 +97,12 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
     loop.exec();
 
     if (QNetworkReply::NoError != reply->error()) {
-		Log::warning(log_tag, LOGMSG("Downloading metadata failed: %1").arg(reply->errorString()));
-		return QJsonDocument();
+        Log::warning(log_tag, LOGMSG("Downloading metadata failed: %1").arg(reply->errorString()));
+        //return QJsonDocument();
 	}
 	const QByteArray raw_data = reply->readAll();
 	QJsonDocument json = QJsonDocument::fromJson(raw_data);
+    //Log::warning(log_tag, LOGMSG("Downloading raw_data: %1").arg(QString::fromLocal8Bit(raw_data)));
 	if (json.isNull()) {
 		Log::warning(log_tag, LOGMSG(
                          "Failed to parse the response of the server, "
@@ -178,11 +179,16 @@ int apply_gameid_json(QString log_tag, const QJsonDocument& json)
 		return 0;
 	}
 
-    const bool login_success = json_root[QL1("Success")].toBool();
-    if (!login_success)
+    const bool success = json_root[QL1("Success")].toBool();
+    if (!success)
 	{
-		Log::debug(log_tag, LOGMSG("gameid request wrong")); 
-		return 0;
+        Log::debug(log_tag, LOGMSG("Error: %1").arg(json_root[QL1("Error")].toString()));
+        if(json_root[QL1("Error")].toString() == "Too Many Attempts"){
+            //mark that we should retry later in this case
+            //set game id to -2 in this case
+            return -2;
+        }
+        return -3; //other error
 	}
 	const int gameid_data = json_root[QL1("GameID")].toInt();
 	Log::debug(log_tag, LOGMSG("GameID: %1").arg(gameid_data));
@@ -193,36 +199,57 @@ bool apply_game_json(model::Game& game, QString log_tag, const QJsonDocument& js
 //from : "http://retroachievements.org/dorequest.php?r=patch&u=%1&t=%2&g=%3"
 {
     using QL1 = QLatin1String;
+    //Log::warning(log_tag, LOGMSG("apply_game_json: %1").arg(QString::fromLocal8Bit(json.toJson())));
 
     if (json.isNull())
 	{
 		Log::debug(log_tag, LOGMSG("json.isNull()"));
         return false;
 	}
+
     const auto json_root = json.object();
     if (json_root.isEmpty())
 	{
 		Log::debug(log_tag, LOGMSG("json_root.isEmpty()")); 
 		return false;
 	}
-    const bool patch_success = json_root[QL1("Success")].toBool();
-    if (!patch_success)
+
+    const bool success = json_root[QL1("Success")].toBool();
+    if (!success)
 	{
-		Log::debug(log_tag, LOGMSG("Error: %1").arg(json_root[QL1("Error")].toString())); 
+        Log::debug(log_tag, LOGMSG("Error: %1").arg(json_root[QL1("Error")].toString()));
+        if(json_root[QL1("Error")].toString() == "Too Many Attempts"){
+            //mark that we should retry later in this case
+            //set game id to -2 in this case
+            game.setRaGameID(-2);
+        }
+        Log::debug(log_tag, LOGMSG("Error: gameid request wrong"));
+        game.setRaGameID(-3);
 		return false;
 	}
+
 	const auto PatchData = json_root[QL1("PatchData")].toObject();
 	if (PatchData.isEmpty()) 
 	{
 		Log::debug(log_tag, LOGMSG("No Patch Data found"));
 		return false;
-	}
+    }
+
 	const auto Achievements = PatchData[QL1("Achievements")].toArray();
 	if (Achievements.isEmpty()) 
 	{
 		Log::debug(log_tag, LOGMSG("No Achievements found"));
 		return false;
 	}
+
+    const auto gameID = PatchData[QL1("ID")].toInt();
+    //save gameID in game
+    game.setRaGameID(gameID);
+    if (gameID == 0)
+    {
+        Log::debug(log_tag, LOGMSG("no gameid"));
+        return false;
+    }
 
     QList<model::RetroAchievement> AllRetroAchievements;
 	
@@ -933,7 +960,10 @@ int Metadata::set_RaHash_And_GameID_from_hashlibrary_or_cache(model::Game& game,
         }
         //save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
         game_ptr->setRaHash(md5_hash);
-        int gameID = get_gameid_from_hashlibrary(md5_hash, m_log_tag, Metadata::mRetroAchievementsGames);
+    }
+    if((game_ptr->RaHash() != "") && ((game_ptr->RaGameID() <= -2) || (game_ptr->RaGameID() == 0))){
+        //if gameID == 0 (initial value) or -2 (to retry if needed)
+        int gameID = get_gameid_from_hashlibrary(game_ptr->RaHash(), m_log_tag, Metadata::mRetroAchievementsGames);
         if(gameID > 0){
             //but finally we need to connect to retroachievements.org to be sure this game is valid and has any retroachievements :-(
             //GetToken first from cache only in this case
@@ -950,7 +980,7 @@ int Metadata::set_RaHash_And_GameID_from_hashlibrary_or_cache(model::Game& game,
             //kill manager to avoid memory leaks
             delete manager;
         }
-        Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId set is : %1").arg(game_ptr->RaGameID()));
+        Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId set is : %1 for %2").arg(QString::number(game_ptr->RaGameID()), game_ptr->title()));
     }
     return game_ptr->RaGameID();
 }

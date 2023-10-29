@@ -137,10 +137,10 @@ const QString Game::getEmulatorCore() const
 
 void Game::checkRetroAchievements()
 {
-    //check only if hash is not already generated
-    if(m_data.ra_hash.isEmpty())
+    //check only if hash is not already generated o ifr previous checks were in error
+    if(m_data.ra_hash.isEmpty() || (m_data.ra_game_id <= -2))
     {
-        Log::debug(LOGMSG("Game::checkRetroAchievements_slot() put in Qt::QueuedConnection : %1").arg(m_data.title));
+        //Log::debug(LOGMSG("Game::checkRetroAchievements_slot() put in Qt::QueuedConnection : %1/%2/%3").arg(m_data.title,m_data.ra_hash,QString::number(m_data.ra_game_id)));
         QMetaObject::invokeMethod(this,"checkRetroAchievements_slot", Qt::QueuedConnection);
     }
 }
