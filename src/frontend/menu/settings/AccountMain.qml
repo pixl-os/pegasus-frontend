@@ -197,6 +197,17 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.challenge.indicators")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.challenge.indicators",checked);
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRAIconsInLists
+                    visible: optRetroachievementActivate.checked
+                }
+                ToggleOption {
+                    id: optRAIconsInLists
+                    label: qsTr("Retroachievement Games search (Beta)") + api.tr
+                    note: qsTr("Check and identify games with retroachievents.\nUsing md5 hash calculation during list loading (could be slow during first scrollings)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.games.search")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.games.search",checked);
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayActivate
                     visible: optRetroachievementActivate.checked
                 }
