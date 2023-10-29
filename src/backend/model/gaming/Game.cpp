@@ -147,20 +147,22 @@ void Game::checkRetroAchievements()
 
 void Game::checkRetroAchievements_slot()
 {
-   //Log::debug(LOGMSG("Game::hasRetroachievements_slot()"));
+    //Log::debug(LOGMSG("Game::hasRetroachievements_slot()"));
     //Initialize Metahelper for each update and for each games for the moment
     QString log_tag = "Retroachievements";
-    try{
-        //const providers::retroAchievements::Metadata metahelper(log_tag);
-        //get GameID from cache and calculating the hash
-        m_metahelper.set_RaHash_And_GameID_from_hashlibrary_or_cache(*this, false);
-        //emit signal to alert front-end about end of changes
-        emit raHashChanged();
-        emit raGameIDChanged();
-    }
-    catch ( const std::exception & Exp )
-    {
-        Log::error(log_tag, LOGMSG("Error: %1.\n").arg(Exp.what()));
+    if (RecalboxConf::Instance().AsBool("global.retroachievements.games.search",false)){
+        try{
+            //const providers::retroAchievements::Metadata metahelper(log_tag);
+            //get GameID from cache and calculating the hash
+            m_metahelper.set_RaHash_And_GameID_from_hashlibrary_or_cache(*this, false);
+            //emit signal to alert front-end about end of changes
+            emit raHashChanged();
+            emit raGameIDChanged();
+        }
+        catch ( const std::exception & Exp )
+        {
+            Log::error(log_tag, LOGMSG("Error: %1.\n").arg(Exp.what()));
+        }
     }
 }
 
