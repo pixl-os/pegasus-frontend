@@ -970,10 +970,10 @@ int Metadata::set_RaHash_And_GameID_from_hashlibrary_or_cache(model::Game& game,
         int gameID = get_gameid_from_hashlibrary(game_ptr->RaHash(), m_log_tag, Metadata::mRetroAchievementsGames);
         if(gameID > 0){
             //but finally we need to connect to retroachievements.org to be sure this game is valid and has any retroachievements :-(
-            //GetToken first from cache only in this case
-            if(Metadata::Token == "") Metadata::Token = get_token_from_cache(m_log_tag, m_json_cache_dir);
             //Create Network Access
             QNetworkAccessManager* manager = new QNetworkAccessManager();
+            //GetToken first from cache only in this case
+            if(Metadata::Token == "") Metadata::Token = get_token(m_log_tag, m_json_cache_dir, *manager);
             if (Metadata::Token != "")
             {
                 //check hash of game from web site using "details" :-(
@@ -998,7 +998,6 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
         model::Game* const game_ptr = &game;
         //QString title = game_ptr->title();
         Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
-        //GetToken first from cache only in this case
         //GetToken first from cache only in this case
         if(Metadata::Token == "") Metadata::Token = get_token_from_cache(m_log_tag, m_json_cache_dir);
         if(Metadata::Token != "")
