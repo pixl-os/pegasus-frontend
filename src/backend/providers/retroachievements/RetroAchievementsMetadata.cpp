@@ -543,7 +543,7 @@ bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, 
 		//Try to get game details from json in cache
 		QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, "RaGameID=" + QString::number(gameid));
 		result = apply_game_json(game, log_tag + " - cache", json);
-        Log::debug(log_tag, LOGMSG("Json cache for RaGameID '%1' found: %2").arg(QString::number(gameid), QString::number(result)));
+        Log::debug(log_tag, LOGMSG("get_game_details_from_gameid - Json cache for Game: '%1' - RaGameID '%2' found: '%3'").arg(game.title(),QString::number(gameid), QString::number(result)));
         if (result == false)
 		{
 			//Delete JSON inb cache by security - use Username and Password to have a unique key and if password is changed finally.
@@ -554,7 +554,7 @@ bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, 
 			const QString url_str = QStringLiteral("http://retroachievements.org/dorequest.php?r=patch&u=%1&t=%2&g=%3").arg(Username,token,QString::number(gameid));
 			QJsonDocument json = get_json_from_url(url_str, log_tag, manager);
 			result = apply_game_json(game, log_tag, json);
-            Log::debug(log_tag, LOGMSG("Json info for RaGameID '%1' fromm RA site found: %2").arg(QString::number(gameid), QString::number(result)));
+            Log::debug(log_tag, LOGMSG("get_game_details_from_gameid - Json info for RaGameID '%1' fromm RA site found: %2").arg(QString::number(gameid), QString::number(result)));
 			if (result == true)
 			{
 				//saved in cache
@@ -562,7 +562,7 @@ bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, 
 			}
 		}
 	}
-    Log::debug(log_tag, LOGMSG("Stats - Timing: Get Game Details processing: %1ms").arg(get_game_details_timer.elapsed()));
+    Log::debug(log_tag, LOGMSG("get_game_details_from_gameid - Stats - Timing: Get Game Details processing: %1ms").arg(get_game_details_timer.elapsed()));
 	return result;
 }
 
@@ -997,34 +997,34 @@ void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate
         //Set Game info
         model::Game* const game_ptr = &game;
         //QString title = game_ptr->title();
-        Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
+        Log::debug(m_log_tag, LOGMSG("fill_Ra_from_network_or_cache - RetroAchievement GameId found is : %1").arg(game_ptr->RaGameID()));
         //GetToken first from cache only in this case
         if(Metadata::Token == "") Metadata::Token = get_token_from_cache(m_log_tag, m_json_cache_dir);
         if(Metadata::Token != "")
         {
+            //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
+            if (ForceUpdate) {
+                //Delete JSON in cache for cleaning and force update vs init when we reuse cache.
+                providers::delete_cached_json(m_log_tag, m_json_cache_dir, "RaGameID=" + QString::number(game_ptr->RaGameID()));
+            }
+            //Create Network Access
+            QNetworkAccessManager *manager = new QNetworkAccessManager();
             if(game_ptr->retroAchievements().isEmpty() || ForceUpdate)
             {
-                //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
-                if (ForceUpdate) {
-                    //Delete JSON in cache for cleaning and force update vs init when we reuse cache.
-                    providers::delete_cached_json(m_log_tag, m_json_cache_dir, "RaGameID=" + QString::number(game_ptr->RaGameID()));
-                }
-                //Create Network Access
-                QNetworkAccessManager *manager = new QNetworkAccessManager(game_ptr->parent());
                 //get details about Game from GameID
                 result = get_game_details_from_gameid(game_ptr->RaGameID(), Metadata::Token, game, m_log_tag, m_json_cache_dir, *manager);
-                if(result){
-                    //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
-                    result = get_achievements_status_from_gameid(game_ptr->RaGameID(), Metadata::Token, game, m_log_tag, *manager);
-                }
-                else{
-                    //force result for this game to avoid to use it in the future
-                    game_ptr->setRaHash("FFFFFFFFFF");
-                    game_ptr->setRaGameID(-1);
-                }
-                //kill manager to avoid memory leaks
-                delete manager;
             }
+            if(!game_ptr->retroAchievements().isEmpty()){
+                //set status of retroachievements (lock or no locked) -> no cache used in this case, to have always the last one
+                result = get_achievements_status_from_gameid(game_ptr->RaGameID(), Metadata::Token, game, m_log_tag, *manager);
+            }
+            else{
+                //force result for this game to avoid to use it in the future
+                game_ptr->setRaHash("FFFFFFFFFF");
+                game_ptr->setRaGameID(-1);
+            }
+            //kill manager to avoid memory leaks
+            delete manager;
         }
     }
 }
