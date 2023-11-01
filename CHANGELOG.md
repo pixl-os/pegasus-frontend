@@ -1,6 +1,33 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2023-11-01 - v0.1.5
+- Features:
+	- bump libretro-common using commit 01c612 - 18-08-2023
+	- bump rcheevos v10.7.1 - using commit 3af1e2f - 02-07-2023
+	- management of flags (pad,keyboard,mouse,lightgun,retroarchievements) from systemlist.xml
+	- new retroachievements management:
+		- prepare to have a retroachievements provider and hasmap to store lists of games
+		- set a provider of RA hashlibrary using download/cache from metadata
+		- using hash library to check retroachievements info (gameid/hash)
+		- get game id from hashlibrary with getter using thread
+		- rework RA check function and function to fill details on retroachievements using hash library
+		- set Retroachievements helper as static from Game class
+		- update hooks for rc_hash library from rcheevos and working for all systems including also Arcade for RA in version 10.7.1
+		- load RA hashes library by the provider at launch/restart
+		- manage new cache now for MD5 RA hash using CRC32 hash as reference
+		- optimization for token, hash generation and api calling
+		- option in menu to search/identify games with retroachievements (in Beta for the moment)
+
+- Fixes:
+	- fix warning url reference when we check retroarch netplay lobby
+	- fix warning url reference when we check retroachievement api
+	- fix warning url reference when we check any "update" repo
+	- fix to bump easily rcheevos in pegasus-frontend project
+	- fix to bump easily libretro-common in pegasus-frontend project
+	- fix to rework logs to have recalbox.log/lastrun.log and common formats
+	- fix to have lastrun.log in /recalbox/share/system/logs
+
 ## [pixL-master] - 2023-07-28 - v0.1.4
 - Build:
 	- upgrade c++ to 17 in pegasus-front build
