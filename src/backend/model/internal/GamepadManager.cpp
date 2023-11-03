@@ -171,37 +171,42 @@ void GamepadManager::swap(int device_id1, int device_id2)
     //swap now in model::gamepad also
     try{
 		QString name1;
+        QString layout1;
 		int iid1;
 		int idx1;
 		//search & backup first device
         const auto it = find_by_deviceid(*m_devices, device_id1);
         if (it != m_devices->constEnd()) {
 			name1 = (*it)->name();
+            layout1 = (*it)->deviceLayout();
             iid1 = (*it)->deviceInstance();
 			idx1 = (*it)->deviceIndex();
         }
         QString name2;
+        QString layout2;
         int iid2;
         int idx2;
 		//search second device
 		const auto it2 = find_by_deviceid(*m_devices, device_id2);
         if (it2 != m_devices->constEnd()) {
 			name2 = (*it2)->name();
+            layout2 = (*it2)->deviceLayout();
             iid2 = (*it2)->deviceInstance();
 			idx2 = (*it2)->deviceIndex();
         }
 		
 		//swap information
 		if (it != m_devices->constEnd()) {
-
             //(*it)->setName(std::move(name2));
             (*it)->setName(name2);
+            (*it)->setLayout(layout2);
             (*it)->setInstance(iid2);
             (*it)->setIndex(idx2);
 		}
 		if (it2 != m_devices->constEnd()) {
             //(*it2)->setName(std::move(name1));
             (*it2)->setName(name1);
+            (*it2)->setLayout(layout1);
             (*it2)->setInstance(iid1);
             (*it2)->setIndex(idx1);
 		}		

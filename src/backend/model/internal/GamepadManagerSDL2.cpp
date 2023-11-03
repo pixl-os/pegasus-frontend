@@ -1190,7 +1190,7 @@ QString GamepadManagerSDL2::getFullName_by_path(QString JoystickDevicePath){
     Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - JoystickDevicePath: '%1'").arg(JoystickDevicePath));
     QString hidpath = run("udevadm info -e | grep -B 10 'DEVNAME=" +
                         JoystickDevicePath +
-                        "' | grep 'P:'" +
+                        "'$ | grep 'P:'" +
                          " | awk '{print $2}'" +
                          " | awk -F '/input/' '{print $1}'" +
                          " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
@@ -1198,7 +1198,7 @@ QString GamepadManagerSDL2::getFullName_by_path(QString JoystickDevicePath){
 
     QString hidname = run("udevadm info -e | grep -A 6 'P: " +
                         hidpath +
-                        "' | grep 'HID_NAME='" +
+                        "'$ | grep 'HID_NAME='" +
                         " | cut -d= -f2" +
                         " | head -n 1 | awk '{print $0}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
     Log::debug(m_log_tag, LOGMSG("[UDEV] Analysing input device - HID NAME: '%1'").arg(hidname));

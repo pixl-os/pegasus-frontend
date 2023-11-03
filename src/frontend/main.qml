@@ -1399,6 +1399,8 @@ Window {
             }
             i = i + 1;
         }while (icon === "" && i < myDeviceIcons.count)
+        //var iconcode = parseInt(icon.charCodeAt(0));
+        //console.log("getIcon 1 - name: " + name + " - iconcode: " + iconcode);
         //check if any icon has been found
         if(icon !== "") return icon;
         //reset counter
@@ -1412,6 +1414,7 @@ Window {
             }
             i = i + 1;
         }while (type === "" && i < myDeviceTypes.count)
+        //console.log("getIcon 2 - name: " + name + " - type: " + type);
         //reset counter
         i = 0;
         //searchIcon using the good type
@@ -1433,7 +1436,8 @@ Window {
             }
             i = i + 1;
         }while (icon === "" && i < myDeviceIcons.count)
-
+        //iconcode = parseInt(icon.charCodeAt(0));
+        //console.log("getIcon 3 - name: " + name + " - type: " + type + " - iconcode: " + iconcode);
         return icon;
     }
 

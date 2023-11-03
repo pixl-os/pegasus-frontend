@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2023-11-03 - v0.1.4.1
+- Fixes:
+	- quick fix for naming and icons bugs of display in controllers list
+
 ## [pixL-master] - 2023-07-28 - v0.1.4
 - Build:
 	- upgrade c++ to 17 in pegasus-front build
