@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2023-11-01 - v0.1.5
+## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
 	- bump libretro-common using commit 01c612 - 18-08-2023
 	- bump rcheevos v10.7.1 - using commit 3af1e2f - 02-07-2023
@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix to bump easily libretro-common in pegasus-frontend project
 	- fix to rework logs to have recalbox.log/lastrun.log and common formats
 	- fix to have lastrun.log in /recalbox/share/system/logs
+	- quick fix for naming and icons bugs of display in controllers list
 
 ## [pixL-master] - 2023-07-28 - v0.1.4
 - Build:
