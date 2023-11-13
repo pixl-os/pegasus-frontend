@@ -89,7 +89,7 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
-import QtBluetooth 5.2
+import QtBluetooth 5.15
 
 FocusScope {
     id: root
