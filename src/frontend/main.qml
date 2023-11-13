@@ -19,7 +19,7 @@ import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.15
-import QtMultimedia 5.12
+import QtMultimedia 5.15
 import "dialogs"
 import "global"
 import QtQuick.VirtualKeyboard 2.15
