@@ -60,6 +60,22 @@ void print_metainfo()
         QSysInfo::currentCpuArchitecture(),
         QGuiApplication::platformName()));
     Log::info(LOGMSG("Qt version %1").arg(qVersion()));
+    Log::info(LOGMSG("Qt 'QLibraryInfo' version %1").arg(QLibraryInfo::version().toString()));
+    Log::info(LOGMSG("Qt PrefixPath: %1").arg(QLibraryInfo::location(QLibraryInfo::PrefixPath)));        //	0	The default prefix for all paths.
+    Log::info(LOGMSG("Qt DocumentationPath: %1").arg(QLibraryInfo::location(QLibraryInfo::DocumentationPath))); //	1	The location for documentation upon install.
+    Log::info(LOGMSG("Qt HeadersPath: %1").arg(QLibraryInfo::location(QLibraryInfo::HeadersPath))); //	2	The location for all headers.
+    Log::info(LOGMSG("Qt LibrariesPath: %1").arg(QLibraryInfo::location(QLibraryInfo::LibrariesPath))); //	3	The location of installed libraries.
+    Log::info(LOGMSG("Qt LibraryExecutablesPath: %1").arg(QLibraryInfo::location(QLibraryInfo::LibraryExecutablesPath))); //	4	The location of installed executables required by libraries at runtime.
+    Log::info(LOGMSG("Qt BinariesPath: %1").arg(QLibraryInfo::location(QLibraryInfo::BinariesPath))); //	5	The location of installed Qt binaries (tools and applications).
+    Log::info(LOGMSG("Qt PluginsPath: %1").arg(QLibraryInfo::location(QLibraryInfo::PluginsPath))); //	6	The location of installed Qt plugins.
+    Log::info(LOGMSG("Qt ImportsPath: %1").arg(QLibraryInfo::location(QLibraryInfo::ImportsPath))); //	7	The location of installed QML extensions to import (QML 1.x).
+    Log::info(LOGMSG("Qt Qml2ImportsPath: %1").arg(QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath))); //	8	The location of installed QML extensions to import (QML 2.x).
+    Log::info(LOGMSG("Qt ArchDataPath: %1").arg(QLibraryInfo::location(QLibraryInfo::ArchDataPath))); //	9	The location of general architecture-dependent Qt data.
+    Log::info(LOGMSG("Qt DataPath: %1").arg(QLibraryInfo::location(QLibraryInfo::DataPath))); //	10	The location of general architecture-independent Qt data.
+    Log::info(LOGMSG("Qt TranslationsPath: %1").arg(QLibraryInfo::location(QLibraryInfo::TranslationsPath))); //	11	The location of translation information for Qt strings.
+    Log::info(LOGMSG("Qt ExamplesPath: %1").arg(QLibraryInfo::location(QLibraryInfo::ExamplesPath))); //	12	The location for examples upon install.
+    Log::info(LOGMSG("Qt TestsPath: %1").arg(QLibraryInfo::location(QLibraryInfo::TestsPath))); //	13	The location of installed Qt testcases.
+    Log::info(LOGMSG("Qt SettingsPath: %1").arg(QLibraryInfo::location(QLibraryInfo::SettingsPath))); //	100	The location for Qt settings. Not applicable on Windows.*/
 }
 
 void register_api_classes()
