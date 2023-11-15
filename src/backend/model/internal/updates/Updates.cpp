@@ -93,7 +93,7 @@ QString getVersionString(const QString rawVersion){
     // 'retroarch-v1.9.14 test" -> [1,9,14]
     //Other string format will be not OK and can't be well parsed
 
-    QRegularExpression regex("(-v|v)(\\d+.*?)(-|\\s|$)");// to get between "v" or "-v" and ("-" or end of line or space)
+    QRegularExpression regex("(-v|v|-V|V)(\\d+.*?)(-|\\s|$)");// to get between "v" or "-v" and ("-" or end of line or space) and in upper case also now.
 
     QRegularExpressionMatch match = regex.match(rawVersion);
     Log::debug("getVersionNumbers", LOGMSG("versionString: %1").arg(rawVersion));
