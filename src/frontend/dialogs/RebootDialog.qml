@@ -27,7 +27,7 @@ GenericOkCancelDialog
 //    symbol: "\u21BB"
 
     onAccept: {
-        api.memory.unset("repoStatusRefreshTime");
+        api.internal.recalbox.setStringParameter("updates.lastchecktime", "")
         api.internal.system.reboot();
     }
 }
