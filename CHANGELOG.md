@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2023-XX-XX - vX.X.X
+- Features:
+	- add possibility to use 'dev' updates to help testing of OS update by developers
+	- use recalbox.conf "updates." parameters now
+
+- Fixes:
+	- add support of "-v" and "v" tags in updates versions in upper case also now
+	- use recalbox.conf to store last check time for updates
+
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
 	- bump libretro-common using commit 01c612 - 18-08-2023
