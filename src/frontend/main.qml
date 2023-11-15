@@ -1107,29 +1107,39 @@ Window {
     property bool isBeta: false
     property bool isRelease: false
 
-    Timer{ //timer to add pixL-OS Beta or Release component
+    Timer{ //timer to add pixL-OS Dev, Beta or Release component
         id: addUpdateTimer
         repeat: false
         running: true
         triggeredOnStart: true
         onTriggered: {
-            //check if not dev version is requested
-            if(api.internal.recalbox.getStringParameter("updates.type") !== "dev"){
-                //check version via recalbox.version
-                //if "beta"/"release" terms are found
-                isBeta = (api.internal.system.run("grep -i 'beta' /recalbox/recalbox.version") === "") ? false : true
-                isRelease = (api.internal.system.run("grep -i 'release' /recalbox/recalbox.version") === "") ? false : true
-                if(isRelease === true){// to propose release or pre-release in priority
-                    componentsListModel.append({ componentName: "pixL-OS", repoUrl:"https://updates.pixl-os.com/release-pixl-os.json",icon: "qrc:/frontend/assets/logo.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+            //check if not dev version is requested from recalbox.conf
+            /*
+            # ------------ F - UPDATES ------------ #
+            ## Automatically check for updates at start (0,1)
+            updates.enabled=1
+            # Update type : default to stable (only dev is checked today)
+            updates.type=stable
+            */
+            //running if updates activated
+            if(api.internal.recalbox.getBoolParameter("updates.enabled") === true){
+                //check that 'dev' updates is not selected
+                if(api.internal.recalbox.getStringParameter("updates.type") !== "dev"){
+                    //check version via recalbox.version
+                    //if "beta"/"release" terms are found
+                    isBeta = (api.internal.system.run("grep -i 'beta' /recalbox/recalbox.version") === "") ? false : true
+                    isRelease = (api.internal.system.run("grep -i 'release' /recalbox/recalbox.version") === "") ? false : true
+                    if(isRelease === true){// to propose release or pre-release in priority
+                        componentsListModel.append({ componentName: "pixL-OS", repoUrl:"https://updates.pixl-os.com/release-pixl-os.json",icon: "qrc:/frontend/assets/logo.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+                    }
+                    else if(isBeta === true){ // to propose beta only if we have already a beta version installed
+                        componentsListModel.append({ componentName: "pixL-OS (Beta)", repoUrl:"https://updates.pixl-os.com/beta-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+                    }
                 }
-                else if(isBeta === true){ // to propose beta only if we have already a beta version installed
-                    componentsListModel.append({ componentName: "pixL-OS (Beta)", repoUrl:"https://updates.pixl-os.com/beta-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+                else{// for dev testing only about updates
+                    componentsListModel.append({ componentName: "pixL-OS (Dev)", repoUrl:"https://updates.pixl-os.com/dev-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
                 }
             }
-            else{// for dev testing only about updates
-                componentsListModel.append({ componentName: "pixL-OS (Dev)", repoUrl:"https://updates.pixl-os.com/dev-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
-            }
-
             //stop timer
             addUpdateTimer.stop();
             //start other timers
@@ -1145,35 +1155,38 @@ Window {
         running: false
         triggeredOnStart: true
         onTriggered: {
-            var before = api.memory.get("repoStatusRefreshTime");
-            console.log("repoStatusRefreshTime restored : ", before);
-            //check if we restart the front end or not in the last 30 minutes
+            //only if updates are enabled from recalbox.conf
+            console.log("updates.enabled : ",api.internal.recalbox.getBoolParameter("updates.enabled"));
+            if(api.internal.recalbox.getBoolParameter("updates.enabled") === true){
                 var before = api.internal.recalbox.getStringParameter("updates.lastchecktime")
                 //console.log("updates.lastchecktime read: ", before);
-            //if now is upper or equal than before + interval, updates will be checked
-            //if now is less than before + interval, we do nothing
-            if(Date.now() < (parseInt(before) + interval)){
-                //do nothing, no check of repo, use only existing json from /tmp
-            }
-            else {
-                //store info in memory and launch check of updates
+                //check if we restart the front end or not in the last 30 minutes
+                //if before is empty, updates will be checked
+                //if now is upper or equal than before + interval, updates will be checked
+                //if now is less than before + interval, we do nothing
+                if((Date.now() < (parseInt(before) + interval)) && (api.internal.recalbox.getStringParameter("updates.type") !== "dev")){
+                    //do nothing, no check of repo, use only existing json from /tmp
+                }
+                else {
+                    //store info in memory and launch check of updates
                     //console.log("updates.lastchecktime write: ", Date.now());
                     api.internal.recalbox.setStringParameter("updates.lastchecktime", Date.now())
-                //loop to launch download of all json repository files
-                for(var i = 0;i < componentsListModel.count; i++){
-                    if((typeof(componentsListModel.get(i).repoUrl) !== "undefined") && (componentsListModel.get(i).repoUrl !== ""))
-                    {
-                        api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoUrl);
-                    }
-                    else if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
-                    {
-                        api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoLocal);
+                    //loop to launch download of all json repository files
+                    for(var i = 0;i < componentsListModel.count; i++){
+                        if((typeof(componentsListModel.get(i).repoUrl) !== "undefined") && (componentsListModel.get(i).repoUrl !== ""))
+                        {
+                            api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoUrl);
+                        }
+                        else if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
+                        {
+                            api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoLocal);
+                        }
                     }
                 }
+                //start timer to check one minute later the result
+                jsonStatusRefreshTimer.running = false;
+                jsonStatusRefreshTimer.running = true;
             }
-            //start timer to check one minute later the result
-            jsonStatusRefreshTimer.running = false;
-            jsonStatusRefreshTimer.running = true;
         }
     }
 
