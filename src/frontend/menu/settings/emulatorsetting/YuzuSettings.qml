@@ -215,7 +215,17 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("yuzu.extended.memory")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.extended.memory",checked);
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optTextureFilter
+                    KeyNavigation.down: optDockedMode
+                }
+                ToggleOption {
+                    id: optDockedMode
+
+                    label: qsTr("Docked Mode") + api.tr
+                    note: qsTr("Increases resolution, decreasing performance. \nHandheld Mode is used when disabled") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("yuzu.docked.mode")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.docked.mode",checked);
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
