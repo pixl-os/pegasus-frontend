@@ -226,7 +226,6 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("yuzu.docked.mode")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.docked.mode",checked);
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down:
                 }
                 Item {
                     width: parent.width

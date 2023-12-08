@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file (focus on ch
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
 	- use recalbox.conf "updates." parameters now
+	- add docked mode options in advanced emulator settings
 
 - Fixes:
 	- add support of "-v" and "v" tags in updates versions in upper case also now
