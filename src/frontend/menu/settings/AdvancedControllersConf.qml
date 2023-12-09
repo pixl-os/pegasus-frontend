@@ -437,8 +437,46 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.joycond.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.down: optXboxOneControllers
+                    KeyNavigation.down: optSindenLightgun
 
+                }
+                ToggleOption {
+                    id: optSindenLightgun
+                    // set focus only on first item
+                    focus: false
+                    SectionTitle {
+                        text: qsTr("Sinden Lightgun") + api.tr
+                        first: true
+                    }
+                    checked: api.internal.recalbox.getBoolParameter("lightgun.sinden.enabled");
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("lightgun.sinden.enabled")){
+                            api.internal.recalbox.setBoolParameter("lightgun.sinden.enabled",checked);
+                        }
+                    }
+                    symbol: "\uf29a" /*to do, find icon to change */
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSindenLightgunBorder
+                }
+                MultivalueOption {
+                    id: optSindenLightgunBorder
+                    property string parameterName :"lightgun.sinden.border"
+                    label: qsTr("Border color/type/size") + api.tr
+                    note: qsTr("Select a border from its color, type or size to use") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optSindenLightgunBorder;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+
+                    visible: optSindenLightgun.checked
+                    //KeyNavigation.down: optBluetoothPairMethods
                 }
                 // Section deactivated from removing xow - keep code to easily reactivate if needed
                 /*SectionTitle {
@@ -477,6 +515,7 @@ FocusScope {
             }
         }
     }
+
     MultivalueBox {
         id: parameterslistBox
         z: 3
