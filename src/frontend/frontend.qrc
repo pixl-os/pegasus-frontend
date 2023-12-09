@@ -261,5 +261,11 @@
         <file>menu/settings/emulatorsetting/PpssppSettings.qml</file>
         <file>menu/settings/emulatorsetting/YuzuSettings.qml</file>
         <file>menu/settings/emulatorsetting/DolphinTriforceSettings.qml</file>
+        <file>assets/sinden/SindenBorderBlue_Wide.png</file>
+        <file>assets/sinden/SindenBorderCRT_Wide.png</file>
+        <file>assets/sinden/SindenBorderWhiteLarge_Wide.png</file>
+        <file>assets/sinden/SindenBorderWhiteMedium_Wide.png</file>
+        <file>assets/sinden/SindenBorderWhiteSuperThin_Wide.png</file>
+        <file>assets/sinden/SindenBorderWhiteThin_Wide.png</file>
     </qresource>
 </RCC>

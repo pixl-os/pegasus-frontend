@@ -595,6 +595,11 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("Legacy (script)") << QObject::tr("Simple one (one commande line)");
         ListOfInternalValue << "" << "0";
     }
+    else if (Parameter == "lightgun.sinden.border")
+    {
+        ListOfValue << QObject::tr("White medium") << QObject::tr("White Large") << QObject::tr("White Thin") << QObject::tr("White Super Thin") << QObject::tr("CRT") << QObject::tr("Blue");
+        ListOfInternalValue << "WhiteMedium_Wide" << "WhiteLarge_Wide" << "WhiteThin_Wide" << "WhiteSuperThin_Wide" << "CRT_Wide" << "Blue_Wide";
+    }
     else
     {
         ListOfValue << QString("error: Parameters list for '%1' not found").arg(Parameter);

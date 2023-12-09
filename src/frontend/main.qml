@@ -1487,4 +1487,73 @@ Window {
     }
     //***********************************************************END OF GENERIC FUNCTIONS ACCESSIBLE ALSO FOR THEMES***************************************************************
 
+    //***********************************************************BEGIN OF SINDEN LIGHTGUN BORDER MANAGEMENT *************************************************************
+
+    property int nb_sinden_lightgun: 0
+    //zone to detect if gun is triggered
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        propagateComposedEvents: true
+        onClicked: {
+            //console.log("onClicked");
+            if(nb_sinden_lightgun > 0) {
+                sindenBorderImage.visible = true;
+                //to reload source if conf changed
+                sindenBorderImage.source = "assets/sinden/SindenBorder" + api.internal.recalbox.getStringParameter("lightgun.sinden.border","WhiteMedium_Wide") + ".png"
+                sindenBorderDelay.restart();
+            }
+            else {
+                sindenBorderImage.visible = false;
+            }
+            mouse.accepted = false;
+        }
+        /*onReleased: mouse.accepted = false;
+        onPressed: mouse.accepted = false;
+        onDoubleClicked: mouse.accepted = false;
+        onPositionChanged: mouse.accepted = false;
+        onPressAndHold: mouse.accepted = false;*/
+    }
+
+    //to display border for sinden lightgun
+    Image {
+        id: sindenBorderImage
+        anchors.fill: parent
+        source: "assets/sinden/SindenBorder" + api.internal.recalbox.getStringParameter("lightgun.sinden.border","WhiteMedium_Wide") + ".png"
+        sourceSize: Qt.size(parent.width, parent.height)
+        fillMode: Image.Stretch
+        smooth: true
+        asynchronous: true
+        anchors.centerIn: parent
+        visible: false
+        z: 3
+    }
+
+    // Timer to show the sinden lightgun border selected from menu if gun plugged
+    Timer {
+        id: sindenBorderTimer
+        interval: 2000
+        repeat: true
+        running: splashScreen.focus ? false : true
+        onTriggered: {
+            nb_sinden_lightgun = parseInt(api.internal.system.run("if (test -e /var/run/sinden.count) ; then cat /var/run/sinden.count; else echo 0; fi;"));
+            if(nb_sinden_lightgun <= 0) {
+                sindenBorderImage.visible = false;
+            }
+        }
+    }
+
+    Timer {
+        id: sindenBorderDelay
+        interval: 60000 // 1 minutes
+        repeat: false
+        running: false
+        triggeredOnStart: false
+        onTriggered: {
+            //hide sinder lightgun border after 60 seconds without inactivity with mouse/gun
+            sindenBorderImage.visible = false;
+        }
+    }
+    //***********************************************************END OF SINDEN LIGHTGUN BORDER MANAGEMENT *************************************************************
+
 }
