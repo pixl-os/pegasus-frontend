@@ -1487,26 +1487,68 @@ Window {
     }
     //***********************************************************END OF GENERIC FUNCTIONS ACCESSIBLE ALSO FOR THEMES***************************************************************
 
+    //***********************************************************BEGIN OF LIGHTGUNS MANAGEMENT *************************************************************
+    //to display a crossair for lightguns
+    Image {
+        id: lightgunCrosshair
+        source: "assets/white_crosshair.png"
+        width: vpx(50)
+        height: vpx(50)
+        x: 0
+        y: 0
+        smooth: true
+        asynchronous: true
+        visible: false
+        z: 3
+    }
+    //***********************************************************END OF LIGHTGUNS MANAGEMENT *************************************************************
+
     //***********************************************************BEGIN OF SINDEN LIGHTGUN BORDER MANAGEMENT *************************************************************
 
     property int nb_sinden_lightgun: 0
     //zone to detect if gun is triggered
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.LeftButton
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         propagateComposedEvents: true
+        hoverEnabled: (nb_sinden_lightgun > 0 && sindenBorderImage.visible === true) ? true : false
+        cursorShape: (nb_sinden_lightgun > 0 && sindenBorderImage.visible === true) ? Qt.BlankCursor : api.internal.settings.mouseSupport ? Qt.PointingHandCursor : Qt.BlankCursor
+
+        onPositionChanged: {
+            if (sindenBorderImage.visible === true){
+                lightgunCrosshair.x = mouse.x - (lightgunCrosshair.width/2);
+                lightgunCrosshair.y = mouse.y - (lightgunCrosshair.height/2);
+                lightgunCrosshair.visible = true;
+            }
+            else lightgunCrosshair.visible = false;
+        }
+
         onClicked: {
             //console.log("onClicked");
             if(nb_sinden_lightgun > 0) {
-                sindenBorderImage.visible = true;
+                if(sindenBorderImage.visible === false){
+                    sindenBorderImage.visible = true;
+                    //for first click to display border
+                    mouse.accepted = true;
+                }
+                else{
+                    mouse.accepted = false;
+                }
                 //to reload source if conf changed
-                sindenBorderImage.source = "assets/sinden/SindenBorder" + api.internal.recalbox.getStringParameter("lightgun.sinden.border","WhiteMedium_Wide") + ".png"
+                if(api.internal.recalbox.getStringParameter("lightgun.sinden.border") === ""){
+                    //use default value if empty
+                    sindenBorderImage.source = "assets/sinden/SindenBorder" + "WhiteMedium_Wide" + ".png"
+                }
+                else{
+                    sindenBorderImage.source = "assets/sinden/SindenBorder" + api.internal.recalbox.getStringParameter("lightgun.sinden.border") + ".png"
+                }
+                //to restart timer to let display the border if no click during
                 sindenBorderDelay.restart();
             }
             else {
                 sindenBorderImage.visible = false;
+                mouse.accepted = false;
             }
-            mouse.accepted = false;
         }
         /*onReleased: mouse.accepted = false;
         onPressed: mouse.accepted = false;
@@ -1536,9 +1578,10 @@ Window {
         repeat: true
         running: splashScreen.focus ? false : true
         onTriggered: {
-            nb_sinden_lightgun = parseInt(api.internal.system.run("if (test -e /var/run/sinden.count) ; then cat /var/run/sinden.count; else echo 0; fi;"));
+            nb_sinden_lightgun = parseInt(api.internal.system.run("if (test -e /var/run/sinden-lightguns.count) ; then cat /var/run/sinden-lightguns.count; else echo 0; fi;"));
             if(nb_sinden_lightgun <= 0) {
                 sindenBorderImage.visible = false;
+                lightgunCrosshair.visible = false;
             }
         }
     }
@@ -1552,6 +1595,7 @@ Window {
         onTriggered: {
             //hide sinder lightgun border after 60 seconds without inactivity with mouse/gun
             sindenBorderImage.visible = false;
+            lightgunCrosshair.visible = false;
         }
     }
     //***********************************************************END OF SINDEN LIGHTGUN BORDER MANAGEMENT *************************************************************

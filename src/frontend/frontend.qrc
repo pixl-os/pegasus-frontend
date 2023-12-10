@@ -267,5 +267,6 @@
         <file>assets/sinden/SindenBorderWhiteMedium_Wide.png</file>
         <file>assets/sinden/SindenBorderWhiteSuperThin_Wide.png</file>
         <file>assets/sinden/SindenBorderWhiteThin_Wide.png</file>
+        <file>assets/white_crosshair.png</file>
     </qresource>
 </RCC>
