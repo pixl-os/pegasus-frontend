@@ -7,11 +7,14 @@ All notable changes to this project will be documented in this file (focus on ch
 	- use recalbox.conf "updates." parameters now
 	- add docked mode options in advanced emulator settings
 	- add more log at start for QT Library Information about version and paths
+	- add token saving also in recalbox.conf parameters now for configgen/emulators
+	- use hash of login+password now to discriminate cache and change about retroachievement token 
 
 - Fixes:
 	- add support of "-v" and "v" tags in updates versions in upper case also now
 	- use recalbox.conf to store last check time for updates
 	- start to change some QML import for QT 5.15 (tested with new buildroot version also)
+	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated.
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
