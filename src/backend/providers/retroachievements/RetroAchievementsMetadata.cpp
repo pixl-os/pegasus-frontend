@@ -449,8 +449,10 @@ QString get_token_from_cache(QString log_tag, QString json_cache_dir)
     QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, Username + Password);
     QString token = apply_login_json(log_tag + " - cache", json);
     if(token == ""){
-        //Delete JSON inb cache by security - use Username and Password to have a unique key and if password is changed finally.
+        //Delete JSON in cache by security - use Username and Password to have a unique key and if password is changed finally.
         providers::delete_cached_json(log_tag, json_cache_dir, Username + Password);
+        //Delete also from recalbox.conf
+        RecalboxConf::Instance().SetString("global.retroachievements.token", token.toUtf8().constData());
     }
     return token;
 }
@@ -478,10 +480,24 @@ QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager
 		{
 			//saved in cache
 			providers::cache_json(log_tag, json_cache_dir, Username + Password, json.toJson(QJsonDocument::Compact));
+			//saved in recalbox.conf also for configgen and emulators if needed
+			RecalboxConf::Instance().SetString("global.retroachievements.token", token.toUtf8().constData());
+            //saved to have it asap in recalbox.conf
+            RecalboxConf::Instance().Save();
 		}
         Log::debug(log_tag, LOGMSG("Stats - Timing: Get token processing (from site): %1ms").arg(get_token_timer.elapsed()));
 	}
-    else Log::debug(log_tag, LOGMSG("Stats - Timing: Get token processing (from cache): %1ms").arg(get_token_timer.elapsed()));
+    else
+    {
+        QString conftoken = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.token"));
+        if(token != conftoken) {
+            //saved in recalbox.conf also for configgen and emulators if needed
+            RecalboxConf::Instance().SetString("global.retroachievements.token", token.toUtf8().constData());
+            //saved to have it asap in recalbox.conf
+            RecalboxConf::Instance().Save();
+        }
+        Log::debug(log_tag, LOGMSG("Stats - Timing: Get token processing (from cache): %1ms").arg(get_token_timer.elapsed()));
+    }
 	return token;
 }	
 
