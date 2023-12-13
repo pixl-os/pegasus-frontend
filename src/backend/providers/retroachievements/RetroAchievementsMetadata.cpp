@@ -42,6 +42,7 @@
 #include <QCoreApplication>
 
 #include <RecalboxConf.h>
+#include <QCryptographicHash>
 
 namespace {
 //***********************UTILS FUNCTIONS***********************************//
@@ -111,6 +112,18 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 	}	
 	return json;
 }
+
+//simple function to hash qstring simply
+QString hashQString(const QString & str)
+{
+  QByteArray hash = QCryptographicHash::hash(
+    QByteArray::fromRawData((const char*)str.utf16(), str.length()*2),
+    QCryptographicHash::Md5
+  );
+  QString HashAsString =  QString(hash.toHex());
+  return HashAsString;
+}
+
 //***********************END OF UTILS FUNCTIONS***********************************//
 
 //***********************JSON PARSING FUNCTIONS***********************************//
@@ -446,11 +459,11 @@ QString get_token_from_cache(QString log_tag, QString json_cache_dir)
 	Password.remove("\\", Qt::CaseInsensitive);
 	
     //Try to get token from json in cache
-    QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, Username + Password);
+    QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, hashQString(Username + Password));
     QString token = apply_login_json(log_tag + " - cache", json);
     if(token == ""){
         //Delete JSON in cache by security - use Username and Password to have a unique key and if password is changed finally.
-        providers::delete_cached_json(log_tag, json_cache_dir, Username + Password);
+        providers::delete_cached_json(log_tag, json_cache_dir, hashQString(Username + Password));
         //Delete also from recalbox.conf
         RecalboxConf::Instance().SetString("global.retroachievements.token", token.toUtf8().constData());
     }
@@ -479,7 +492,7 @@ QString get_token(QString log_tag, QString json_cache_dir, QNetworkAccessManager
 		if (token != "")
 		{
 			//saved in cache
-			providers::cache_json(log_tag, json_cache_dir, Username + Password, json.toJson(QJsonDocument::Compact));
+            providers::cache_json(log_tag, json_cache_dir, hashQString(Username + Password), json.toJson(QJsonDocument::Compact));
 			//saved in recalbox.conf also for configgen and emulators if needed
 			RecalboxConf::Instance().SetString("global.retroachievements.token", token.toUtf8().constData());
             //saved to have it asap in recalbox.conf
