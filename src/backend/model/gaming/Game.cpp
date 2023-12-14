@@ -154,7 +154,7 @@ void Game::checkRetroAchievements_slot()
         try{
             //const providers::retroAchievements::Metadata metahelper(log_tag);
             //get GameID from cache and calculating the hash
-            m_metahelper.set_RaHash_And_GameID_from_hashlibrary_or_cache(*this, false);
+            m_metahelper.set_RaHash_And_GameID(*this, false);
             //emit signal to alert front-end about end of changes
             emit raHashChanged();
             emit raGameIDChanged();
@@ -226,7 +226,7 @@ void Game::initRetroAchievements_slot()
     try{
     //const providers::retroAchievements::Metadata metahelper(log_tag);
 	//get all from network for the moment to have last information / one function called for the moment
-    m_metahelper.fill_Ra_from_network_or_cache(*this, false);
+    m_metahelper.fill_Ra_details_and_status(*this, false);
 	//emit signal to alert front-end about end of update
 	emit retroAchievementsInitialized();
     }
@@ -250,7 +250,7 @@ void Game::updateRetroAchievements_slot()
     try{
         //const providers::retroAchievements::Metadata metahelper(log_tag);
 		//get all from network for the moment to have last information / one function called for the moment
-        m_metahelper.fill_Ra_from_network_or_cache(*this, true);
+        m_metahelper.fill_Ra_details_and_status(*this, true);
 		//emit signal to alert front-end about end of update
 		emit retroAchievementsChanged();
     }

@@ -940,7 +940,7 @@ void Metadata::build_md5_db(QString hashlibrary_url) const
     //Metadata::mRetroAchievementsGames.emplace(std::move("12345679"), 2);
 }
 
-int Metadata::set_RaHash_And_GameID_from_hashlibrary_or_cache(model::Game& game, bool ForceUpdate) const
+int Metadata::set_RaHash_And_GameID(model::Game& game, bool ForceUpdate) const
 {
     bool result = false;
     //Set Game info
@@ -996,32 +996,39 @@ int Metadata::set_RaHash_And_GameID_from_hashlibrary_or_cache(model::Game& game,
     }
     if((game_ptr->RaHash() != "") && ((game_ptr->RaGameID() <= -2) || (game_ptr->RaGameID() == 0))){
         //if gameID == 0 (initial value) or -2 (to retry if needed)
-        int gameID = get_gameid_from_hashlibrary(game_ptr->RaHash(), m_log_tag, Metadata::mRetroAchievementsGames);
+        int gameID = 0;
+        //Create Network Access
+        QNetworkAccessManager* manager = new QNetworkAccessManager();
+        if(RecalboxConf::Instance().AsBool("global.retroachievements.games.search")){
+            //finally, due to issues, we use this hash library only for testing of this "beta" feature
+            gameID = get_gameid_from_hashlibrary(game_ptr->RaHash(), m_log_tag, Metadata::mRetroAchievementsGames);
+        }
+        else{
+            gameID = get_gameid_from_hashrequest(game_ptr->RaHash(), m_log_tag, *manager);
+        }
         if(gameID > 0){
             //but finally we need to connect to retroachievements.org to be sure this game is valid and has any retroachievements :-(
-            //Create Network Access
-            QNetworkAccessManager* manager = new QNetworkAccessManager();
             //GetToken first from cache only in this case
             if(Metadata::Token == "") Metadata::Token = get_token(m_log_tag, m_json_cache_dir, *manager);
             if (Metadata::Token != "")
             {
-                //check hash of game from web site using "details" :-(
+                //mandatory to check game details from web site using "details" to confirm that is a game with ra :-(
                 result = get_game_details_from_gameid(gameID, Metadata::Token, game, m_log_tag, m_json_cache_dir, *manager);
                 if (result) game_ptr->setRaGameID(gameID);
             }
-            //kill manager to avoid memory leaks
-            delete manager;
         }
+        //kill manager to avoid memory leaks
+        delete manager;
         Log::debug(m_log_tag, LOGMSG("RetroAchievement GameId set is : %1 for %2").arg(QString::number(game_ptr->RaGameID()), game_ptr->title()));
     }
     return game_ptr->RaGameID();
 }
 
-void Metadata::fill_Ra_from_network_or_cache(model::Game& game, bool ForceUpdate) const
+void Metadata::fill_Ra_details_and_status(model::Game& game, bool ForceUpdate) const
 {
     //first calculate RA md5 hash(if needed) and set it with gameID.
     bool result = false;
-    int gameID = set_RaHash_And_GameID_from_hashlibrary_or_cache(game, ForceUpdate);
+    int gameID = set_RaHash_And_GameID(game, ForceUpdate);
     if(gameID > 0){
         //Set Game info
         model::Game* const game_ptr = &game;
