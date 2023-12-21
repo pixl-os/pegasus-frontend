@@ -437,46 +437,115 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.joycond.enabled",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSindenLightgun
+                    KeyNavigation.down: optSindenLightgunCrossair
 
                 }
-                ToggleOption {
-                    id: optSindenLightgun
-                    // set focus only on first item
-                    focus: false
-                    SectionTitle {
-                        text: qsTr("Sinden Lightgun") + api.tr
-                        first: true
-                    }
-                    checked: api.internal.recalbox.getBoolParameter("lightgun.sinden.enabled");
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter("lightgun.sinden.enabled")){
-                            api.internal.recalbox.setBoolParameter("lightgun.sinden.enabled",checked);
-                        }
-                    }
-                    symbol: "\uf29a" /*to do, find icon to change */
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSindenLightgunBorder
+                SectionTitle {
+                    text: qsTr("Lightguns") + api.tr
+                    first: true
+                    symbol: "\uf0d0"
+                    symbolFontFamily: global.fonts.awesome //global.fonts.ion is used by default
                 }
+
+                ToggleOption {
+                    id: optSindenLightgunCrossair
+                    label: qsTr("Sinden lightgun crossair enabled") + api.tr
+                    note: qsTr("Force crossair display for compatible games") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("lightgun.sinden.crossair.enabled", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("lightgun.sinden.crossair.enabled",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSindenLightgunBorderColor
+
+                }
+
                 MultivalueOption {
-                    id: optSindenLightgunBorder
-                    property string parameterName :"lightgun.sinden.border"
-                    label: qsTr("Border color/type/size") + api.tr
-                    note: qsTr("Select a border from its color, type or size to use") + api.tr
+                    id: optSindenLightgunBorderColor
+                    property string parameterName :"lightgun.sinden.bordercolor"
+                    label: qsTr("Sinden lightgun border color") + api.tr
+                    note: qsTr("Select the border's color for sinden lightguns") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     onActivate: {
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optSindenLightgunBorder;
+                        parameterslistBox.callerid = optSindenLightgunBorderColor;
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSindenLightgunBorderSize
+                }
 
-                    visible: optSindenLightgun.checked
-                    //KeyNavigation.down: optBluetoothPairMethods
+                MultivalueOption {
+                    id: optSindenLightgunBorderSize
+                    property string parameterName :"lightgun.sinden.bordersize"
+                    label: qsTr("Sinden lightgun border size") + api.tr
+                    note: qsTr("Select the border's size for sinden lightguns") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optSindenLightgunBorderSize;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSindenLightgunRecoilMode
+                }
+
+                MultivalueOption {
+                    id: optSindenLightgunRecoilMode
+                    property string parameterName :"lightgun.sinden.recoilmode"
+                    label: qsTr("Sinden lightgun recoil mode") + api.tr
+                    note: qsTr("Select the behavior of sinden lightgun recoils") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optSindenLightgunRecoilMode;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSindenLightgunSettingsApply
+                }
+                // to apply settings
+                SimpleButton {
+                    id: optSindenLightgunSettingsApply
+                    Rectangle {
+                        id: containerValidate
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Apply Sinden settings (mandatory for recoil)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //force save in recalbox.conf file before to execute script
+                        api.internal.recalbox.saveParameters();
+                        //update sinden lightgun xml values from /recalbox/share/system/.config/sinden/LightgunMono.exe.config
+                        //TO DO
+                        //restart service
+                        api.internal.system.run("/etc/init.d/S99sindenlightgun restart");
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 // Section deactivated from removing xow - keep code to easily reactivate if needed
                 /*SectionTitle {
