@@ -595,10 +595,20 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("Legacy (script)") << QObject::tr("Simple one (one commande line)");
         ListOfInternalValue << "" << "0";
     }
-    else if (Parameter == "lightgun.sinden.border")
+    else if (Parameter == "lightgun.sinden.bordercolor")
     {
-        ListOfValue << QObject::tr("White medium") << QObject::tr("White Large") << QObject::tr("White Thin") << QObject::tr("White Super Thin") << QObject::tr("CRT") << QObject::tr("Blue");
-        ListOfInternalValue << "WhiteMedium_Wide" << "WhiteLarge_Wide" << "WhiteThin_Wide" << "WhiteSuperThin_Wide" << "CRT_Wide" << "Blue_Wide";
+        ListOfValue << QObject::tr("White") << QObject::tr("Red") << QObject::tr("Green") << QObject::tr("Blue");
+        ListOfInternalValue << "white" << "red" << "green" << "blue";
+    }
+    else if (Parameter == "lightgun.sinden.bordersize")
+    {
+        ListOfValue << QObject::tr("Super Thin") << QObject::tr("Thin") << QObject::tr("Medium") << QObject::tr("Big");
+        ListOfInternalValue << "superthin" << "thin" << "medium" << "big";
+    }
+    else if (Parameter == "lightgun.sinden.recoilmode")
+    {
+        ListOfValue << QObject::tr("None") << QObject::tr("Stronger") << QObject::tr("Softer") << QObject::tr("Strong Machine Gun") << QObject::tr("Soft Machine Gun");
+        ListOfInternalValue << "none" << "stronger" << "softer" << "strongmachinegun" << "softmachinegun";
     }
     else
     {

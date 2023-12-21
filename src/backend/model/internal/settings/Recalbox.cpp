@@ -29,17 +29,17 @@ Recalbox::Recalbox(QObject* parent)
 {
 }
 
-QString Recalbox::getStringParameter(const QString& Parameter)
+QString Recalbox::getStringParameter(const QString& Parameter, const QString& defaultValue)
 {
     if(Parameter.contains("boot.", Qt::CaseInsensitive))
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        return QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData()));
+        return QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(), defaultValue.toUtf8().constData()));
     }
     else
     {
-        return QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData()));
+        return QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(), defaultValue.toUtf8().constData()));
     }
 }
 

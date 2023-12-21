@@ -272,6 +272,11 @@ Window {
     FocusScope {
         id: content
         anchors.fill: parent
+        anchors.leftMargin: sindenInnerBorderRectangle.border.width + sindenOuterBorderRectangle.border.width
+        anchors.rightMargin: sindenInnerBorderRectangle.border.width + sindenOuterBorderRectangle.border.width
+        anchors.topMargin: sindenInnerBorderRectangle.border.width + sindenOuterBorderRectangle.border.width
+        anchors.bottomMargin: sindenInnerBorderRectangle.border.width + sindenOuterBorderRectangle.border.width
+
         enabled: focus
 
         signal onClose
@@ -1511,11 +1516,11 @@ Window {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         propagateComposedEvents: true
-        hoverEnabled: (nb_sinden_lightgun > 0 && sindenBorderImage.visible === true) ? true : false
-        cursorShape: (nb_sinden_lightgun > 0 && sindenBorderImage.visible === true) ? Qt.BlankCursor : api.internal.settings.mouseSupport ? Qt.PointingHandCursor : Qt.BlankCursor
+        hoverEnabled: (nb_sinden_lightgun > 0 && (sindenBorderImage.visible === true || sindenInnerBorderRectangle.visible === true)) ? true : false
+        cursorShape: (nb_sinden_lightgun > 0 && (sindenBorderImage.visible === true || sindenInnerBorderRectangle.visible === true)) ? Qt.BlankCursor : api.internal.settings.mouseSupport ? Qt.PointingHandCursor : Qt.BlankCursor
 
         onPositionChanged: {
-            if (sindenBorderImage.visible === true){
+            if (sindenBorderImage.visible === true || ((sindenInnerBorderRectangle.visible === true) && (sindenInnerBorderRectangle.border.width !== 0))){
                 lightgunCrosshair.x = mouse.x - (lightgunCrosshair.width/2);
                 lightgunCrosshair.y = mouse.y - (lightgunCrosshair.height/2);
                 lightgunCrosshair.visible = true;
@@ -1524,10 +1529,12 @@ Window {
         }
 
         onClicked: {
-            //console.log("onClicked");
+            console.log("onClicked");
             if(nb_sinden_lightgun > 0) {
-                if(sindenBorderImage.visible === false){
-                    sindenBorderImage.visible = true;
+                if(sindenBorderImage.visible === false && sindenInnerBorderRectangle.visible === false){
+                    //sindenBorderImage.visible = true;
+                    sindenInnerBorderRectangle.visible = true;
+                    sindenOuterBorderRectangle.visible = true;
                     //for first click to display border
                     mouse.accepted = true;
                 }
@@ -1535,18 +1542,59 @@ Window {
                     mouse.accepted = false;
                 }
                 //to reload source if conf changed
-                if(api.internal.recalbox.getStringParameter("lightgun.sinden.border") === ""){
-                    //use default value if empty
-                    sindenBorderImage.source = "assets/sinden/SindenBorder" + "WhiteMedium_Wide" + ".png"
+                let bordersize = api.internal.recalbox.getStringParameter("lightgun.sinden.bordersize","superthin");
+                let bordercolor = api.internal.recalbox.getStringParameter("lightgun.sinden.bordercolor","white");
+                console.log("bordersize : ", bordersize);
+                console.log("bordercolor : ", bordercolor);
+                switch (bordersize) {
+                  case 'superthin':
+                      //0.5 % of width: 1280
+                      sindenInnerBorderRectangle.border.width = parseInt(appWindow.width*0.5 / 100);
+                      //0 % of width: 1280
+                      sindenOuterBorderRectangle.border.width = 0
+                      break;
+                  case 'thin':
+                      //1 % of width: 1280
+                      sindenInnerBorderRectangle.border.width = parseInt(appWindow.width*1 / 100);
+                      //0 % of width: 1280
+                      sindenOuterBorderRectangle.border.width = 0
+                    break;
+                  case 'medium':
+                      //2 % of width: 1280
+                      sindenInnerBorderRectangle.border.width = parseInt(appWindow.width*2 / 100);
+                      //0 % of width: 1280
+                      sindenOuterBorderRectangle.border.width = 0
+                    break;
+                  case 'big':
+                      //2 % of width: 1280
+                      sindenInnerBorderRectangle.border.width = parseInt(appWindow.width*2 / 100);
+                      //1 % of width: 1280
+                      sindenOuterBorderRectangle.border.width = parseInt(appWindow.width*1 / 100);
+                  default:
                 }
-                else{
-                    sindenBorderImage.source = "assets/sinden/SindenBorder" + api.internal.recalbox.getStringParameter("lightgun.sinden.border") + ".png"
+                switch (bordercolor) {
+                  case 'white':
+                      sindenInnerBorderRectangle.border.color =  "#ffffff"; //"white";
+                    break;
+                  case 'red':
+                      sindenInnerBorderRectangle.border.color =  "red";
+                    break;
+                  case 'green':
+                      sindenInnerBorderRectangle.border.color =  "green";
+                    break;
+                  case 'blue':
+                      sindenInnerBorderRectangle.border.color =  "blue";
+                    break;
+                  default:
+                      sindenInnerBorderRectangle.border.color =  "white";
                 }
                 //to restart timer to let display the border if no click during
                 sindenBorderDelay.restart();
             }
             else {
                 sindenBorderImage.visible = false;
+                sindenOuterBorderRectangle.visible = false;
+                sindenInnerBorderRectangle.visible = false;
                 mouse.accepted = false;
             }
         }
@@ -1557,11 +1605,11 @@ Window {
         onPressAndHold: mouse.accepted = false;*/
     }
 
-    //to display border for sinden lightgun
+    //NOT USED: to display "image" border for sinden lightgun - used for testing to be reused in the future
     Image {
         id: sindenBorderImage
         anchors.fill: parent
-        source: "assets/sinden/SindenBorder" + api.internal.recalbox.getStringParameter("lightgun.sinden.border","WhiteMedium_Wide") + ".png"
+        source: "" //"assets/sinden/SindenBorder" + api.internal.recalbox.getStringParameter("lightgun.sinden.border","WhiteMedium_Wide") + ".png"
         sourceSize: Qt.size(parent.width, parent.height)
         fillMode: Image.Stretch
         smooth: true
@@ -1569,6 +1617,35 @@ Window {
         anchors.centerIn: parent
         visible: false
         z: 3
+    }
+
+    Rectangle {
+        id: sindenOuterBorderRectangle
+                anchors.fill: parent
+                border.color: "#000000"
+                border.width: 0
+                color: "transparent"
+                opacity: 1.0
+                Behavior on opacity { NumberAnimation { duration: 100 } }
+                visible: false //splashScreen.focus ? false : true
+                z: 4
+    }
+
+    Rectangle {
+        id: sindenInnerBorderRectangle
+                anchors.fill: parent
+                anchors.leftMargin: sindenOuterBorderRectangle.border.width
+                anchors.rightMargin: sindenOuterBorderRectangle.border.width
+                anchors.topMargin: sindenOuterBorderRectangle.border.width
+                anchors.bottomMargin: sindenOuterBorderRectangle.border.width
+
+                border.color: "#ffffff"
+                border.width: 0
+                color: "transparent"
+                opacity: 1.0
+                Behavior on opacity { NumberAnimation { duration: 100 } }
+                visible: false //splashScreen.focus ? false : true
+                z: 3
     }
 
     // Timer to show the sinden lightgun border selected from menu if gun plugged
@@ -1581,6 +1658,10 @@ Window {
             nb_sinden_lightgun = parseInt(api.internal.system.run("if (test -e /var/run/sinden-lightguns.count) ; then cat /var/run/sinden-lightguns.count; else echo 0; fi;"));
             if(nb_sinden_lightgun <= 0) {
                 sindenBorderImage.visible = false;
+                sindenInnerBorderRectangle.visible = false;
+                sindenInnerBorderRectangle.border.width = 0;
+                sindenOuterBorderRectangle.visible = false;
+                sindenOuterBorderRectangle.border.width = 0;
                 lightgunCrosshair.visible = false;
             }
         }
@@ -1593,8 +1674,12 @@ Window {
         running: false
         triggeredOnStart: false
         onTriggered: {
-            //hide sinder lightgun border after 60 seconds without inactivity with mouse/gun
+            //hide sinden lightgun border after 60 seconds without inactivity with mouse/gun
             sindenBorderImage.visible = false;
+            sindenInnerBorderRectangle.visible = false;
+            sindenOuterBorderRectangle.visible = false;
+            sindenInnerBorderRectangle.border.width = 0;
+            sindenOuterBorderRectangle.border.width = 0;
             lightgunCrosshair.visible = false;
         }
     }

@@ -84,6 +84,8 @@ FocusScope {
 
     MainMenuPanel {
         id: menuPanel
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         anchors.left: parent.right
 
         focus: true

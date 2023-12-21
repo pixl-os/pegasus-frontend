@@ -21,7 +21,7 @@ class Recalbox : public QObject {
 public:
     explicit Recalbox(QObject* parent = nullptr);
    
-    Q_INVOKABLE QString getStringParameter(const QString& Parameter);
+    Q_INVOKABLE QString getStringParameter(const QString& Parameter, const QString& defaultValue = "");
     Q_INVOKABLE void setStringParameter(const QString& Parameter, const QString& Value);
     
     Q_INVOKABLE bool getBoolParameter(const QString& Parameter, const bool& defaultValue = false);
