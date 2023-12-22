@@ -51,6 +51,14 @@ FocusScope {
         text: qsTr("Controllers > Advanced controllers configuration") + api.tr
         z: 2
     }
+    //functions to manage XML configuration file for sinden lightgun service
+    function updateSindenConfValue(key,value) {
+        api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+    }
+    function updateSindenPlayersConfValue(key,value) {
+        api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+        api.internal.system.run('sed -i \'s/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+    }
     Flickable {
         id: container
 
@@ -476,6 +484,26 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         parameterslistBox.focus = true;
                     }
+                    onValueChanged: {
+                        let bordercolor = api.internal.recalbox.getStringParameter("lightgun.sinden.bordercolor","white");
+                        switch (bordercolor) {
+                          case 'white':
+                              //<add key="ColourMatchRGB" value="255,255,255" />
+                              root.updateSindenConfValue("ColourMatchRGB","255,255,255");
+                          break;
+                          case 'red':
+                              root.updateSindenConfValue("ColourMatchRGB","255,0,0");
+                            break;
+                          case 'green':
+                              root.updateSindenConfValue("ColourMatchRGB","0,128,0");
+                            break;
+                          case 'blue':
+                              root.updateSindenConfValue("ColourMatchRGB","0,0,255");
+                            break;
+                          default:
+                              root.updateSindenConfValue("ColourMatchRGB","255,255,255");
+                        }
+                    }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSindenLightgunBorderSize
                 }
@@ -514,6 +542,38 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         parameterslistBox.focus = true;
                     }
+                    onValueChanged: {
+                        let recoilmode = api.internal.recalbox.getStringParameter("lightgun.sinden.recoilmode","none");
+
+                        switch (recoilmode) {
+                          case 'none':
+                              //example of full command: api.internal.system.run('sed -i \'s/<add key=\\"EnableRecoil\\" value=\\".*\\"\\/>/<add key=\\"EnableRecoil\\" value=\\"0\\"\\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+                              root.updateSindenPlayersConfValue("EnableRecoil","0");
+                              break;
+                          case 'stronger':
+                              root.updateSindenPlayersConfValue("EnableRecoil","1");
+                              root.updateSindenPlayersConfValue("RecoilStrength","100");
+                              root.updateSindenPlayersConfValue("TriggerRecoilNormalOrRepeat","0");
+                              break;
+                          case 'softer':
+                              root.updateSindenPlayersConfValue("EnableRecoil","1");
+                              root.updateSindenPlayersConfValue("RecoilStrength","50");
+                              root.updateSindenPlayersConfValue("TriggerRecoilNormalOrRepeat","0");
+                            break;
+                          case 'strongmachinegun':
+                              root.updateSindenPlayersConfValue("EnableRecoil","1");
+                              root.updateSindenPlayersConfValue("AutoRecoilStrength","80");
+                              root.updateSindenPlayersConfValue("TriggerRecoilNormalOrRepeat","1");
+                            break;
+                          case 'softmachinegun':
+                              root.updateSindenPlayersConfValue("EnableRecoil","1");
+                              root.updateSindenPlayersConfValue("AutoRecoilStrength","30");
+                              root.updateSindenPlayersConfValue("TriggerRecoilNormalOrRepeat","1");
+                            break;
+                          default:
+                              root.updateSindenPlayersConfValue("EnableRecoil","0");
+                        }
+                    }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSindenLightgunSettingsApply
                 }
@@ -540,8 +600,6 @@ FocusScope {
                     onActivate: {
                         //force save in recalbox.conf file before to execute script
                         api.internal.recalbox.saveParameters();
-                        //update sinden lightgun xml values from /recalbox/share/system/.config/sinden/LightgunMono.exe.config
-                        //TO DO
                         //restart service
                         api.internal.system.run("/etc/init.d/S99sindenlightgun restart");
                     }
