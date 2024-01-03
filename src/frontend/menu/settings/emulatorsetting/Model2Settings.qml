@@ -39,7 +39,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Model2-emu") + api.tr
+        text: qsTr("Advanced emulators settings > Model2emu") + api.tr
         z: 2
     }
     Flickable {
@@ -196,6 +196,18 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("model2emu.fullscreenAA")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("model2emu.fullscreenAA",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuOption9
+                }
+                ToggleOption {
+                    id: optModel2emuOption9
+                    label: qsTr("Scanlines") + api.tr
+                    note: qsTr("Enable default scanlines.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.scanlines")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.scanlines",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                 }

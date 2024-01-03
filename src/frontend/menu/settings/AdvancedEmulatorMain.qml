@@ -154,7 +154,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optModel2
-                    label: qsTr("Model2") + api.tr
+                    label: qsTr("Model2emu") + api.tr
                     note: qsTr("Change Configuration for Model2 emulator for Sega Model2 !") + api.tr
                     //pointer moved in SimpleButton desactived on default
                     pointerIcon: true
