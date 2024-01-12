@@ -292,6 +292,17 @@ QStringList GetParametersList(QString Parameter)
             ListOfInternalValue << "0x00000001" << "0x00000002" << "0x00000004" << "0x00000008" ;
         }
     }
+    else if (Parameter == "duckstation.resolution")
+    {
+        /*
+         * upscale_multiplier = 1, 2, 3, 4, 5, 6, 7, 8, 0
+        */
+        ListOfValue << QObject::tr("Native (ps1)") << QObject::tr("x2 Native (720p)") << QObject::tr("x3 Native (1080p)") << QObject::tr("x4 Native (1440p 2k)")
+                    << QObject::tr("x5 Native (1620p)") << QObject::tr("x6 Native (4k)") << QObject::tr("x7 Native (2520p)") << QObject::tr("x8 Native (2880p)");
+
+        ListOfInternalValue << "1" << "2" << "3" << "4"
+                            << "5" << "6" << "7" << "8" ;
+    }
     else if (Parameter == "pcsx2.resolution")
     {
         /*

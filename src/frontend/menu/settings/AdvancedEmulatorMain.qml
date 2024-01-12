@@ -17,6 +17,7 @@ FocusScope {
     signal openModel2Settings
     signal openDolphinSettings
     signal openDolphinTriforceSettings
+    signal openDuckstationSettings
     signal openPcsx2Settings
     signal openCitraSettings
     signal openCemuSettings
@@ -148,6 +149,20 @@ FocusScope {
                     onActivate: {
                         focus = true;
                         root.openDolphinTriforceSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDuckstation
+                }
+                SimpleButton {
+                    id: optDuckstation
+                    label: qsTr("Duckstation") + api.tr
+                    note: qsTr("Change Configuration for Duckstation emulator for Playstation 1.") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openDuckstationSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2
