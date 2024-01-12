@@ -268,5 +268,6 @@
         <file>assets/sinden/SindenBorderWhiteSuperThin_Wide.png</file>
         <file>assets/sinden/SindenBorderWhiteThin_Wide.png</file>
         <file>assets/white_crosshair.png</file>
+        <file>menu/settings/emulatorsetting/DuckstationSettings.qml</file>
     </qresource>
 </RCC>
