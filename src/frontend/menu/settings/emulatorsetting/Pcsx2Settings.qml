@@ -114,6 +114,19 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optVsync
+                }
+                ToggleOption {
+                    id: optVsync
+
+                    label: qsTr("Enable Vsync") + api.tr
+                    note: qsTr("Vertical syncronisation.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.vsync")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pcsx2.vsync",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAnisotropy
                 }
                 MultivalueOption {

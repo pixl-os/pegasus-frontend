@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file (focus on ch
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
 	- use recalbox.conf "updates." parameters now
-	- add docked mode options in advanced emulator settings
+	- add docked mode options in advanced emulator settings for Yuzu
 	- add more log at start for QT Library Information about version and paths
 	- add token saving also in recalbox.conf parameters now for configgen/emulators
 	- use hash of login+password now to discriminate cache and change about retroachievement token
 	- add "overlay" option for 3 systems:   model2/3 and triforce + fixes
 	- get default "overlays" value of system option from global one
 	- add menu advanced emulator settings for Duckstation
+	- add Vsync options in advanced emulator settings for Pcsx2
 	- support of sinden lightgun:
 		- management of border in pegasus
 		- manage display of crosshair
