@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+- Fixes:
+	- fix S40bluetooth to S40bluetoothd since buildroot 2023.08
+
 ## [pixL-master] - 2023-XX-XX - vX.X.X
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
@@ -18,6 +21,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- start to change some QML import for QT 5.15 (tested with new buildroot version also)
 	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated.
 	- Fix warning libpng ICCP bad profile
+	- Fix S40bluetoothd since buildroot update 2023.08
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:

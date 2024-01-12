@@ -1300,7 +1300,7 @@ Window {
         onTriggered: {
             console.log("bluetoothRestartTimer triggered !");
             if (!isDebugEnv()){
-                api.internal.system.run("/etc/init.d/S40bluetooth restart");
+                api.internal.system.run("/etc/init.d/S40bluetoothd restart");
                 api.internal.system.run("bluetoothctl power on");
             }
         }
