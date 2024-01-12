@@ -41,6 +41,7 @@ FocusScope {
         onOpenModel2Settings: root.openScreen("emulatorsetting/Model2Settings.qml")
         onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
         onOpenDolphinTriforceSettings: root.openScreen("emulatorsetting/DolphinTriforceSettings.qml")
+        onOpenDuckstationSettings: root.openScreen("emulatorsetting/DuckstationSettings.qml")
         onOpenPcsx2Settings: root.openScreen("emulatorsetting/Pcsx2Settings.qml")
         onOpenCitraSettings: root.openScreen("emulatorsetting/CitraSettings.qml")
         onOpenCemuSettings: root.openScreen("emulatorsetting/CemuSettings.qml")
