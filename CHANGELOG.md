@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+- Fixes:
+	- fix S40bluetooth to S40bluetoothd since buildroot 2023.08
+
 ## [pixL-master] - 2024-01-31 - v0.1.6
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
@@ -37,6 +40,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated
 	- restore RetroAchievements features by adding valid "user-agent", "accept" and "host" header data
 	- Fix warning libpng ICCP bad profile
+	- Fix S40bluetoothd since buildroot update 2023.08
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
