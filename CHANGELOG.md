@@ -34,6 +34,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- start to change some QML import for QT 5.15 (tested with new buildroot version also)
 	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated
 	- restore RetroAchievements features by adding valid "user-agent", "accept" and "host" header data
+	- Fix warning libpng ICCP bad profile
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
