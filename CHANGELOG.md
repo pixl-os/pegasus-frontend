@@ -1,9 +1,6 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-- Fixes:
-	- fix S40bluetooth to S40bluetoothd since buildroot 2023.08
-
 ## [pixL-master] - 2024-01-31 - v0.1.6
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
@@ -16,6 +13,8 @@ All notable changes to this project will be documented in this file (focus on ch
 	- get default "overlays" value of system option from global one
 	- add menu advanced emulator settings for Duckstation
 	- add Vsync options in advanced emulator settings for Pcsx2
+    - add 8bitdo sfc30 and snes30 as snes controller layout/icon
+    - add details on "bluetooth autopairing" in menu to confirm that pairing is lost after reboot
 	- support of sinden lightgun:
 		- management of border in pegasus
 		- manage display of crosshair
@@ -37,10 +36,12 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add support of "-v" and "v" tags in updates versions in upper case also now
 	- use recalbox.conf to store last check time for updates
 	- start to change some QML import for QT 5.15 (tested with new buildroot version also)
-	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated
+	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated.
+	- fix warning libpng ICCP bad profile
 	- restore RetroAchievements features by adding valid "user-agent", "accept" and "host" header data
-	- Fix warning libpng ICCP bad profile
-	- Fix S40bluetoothd since buildroot update 2023.08
+	- fix S40bluetooth to S40bluetoothd since buildroot 2023.08
+	- fix bluetoothctl to use new command syntax to check devices already paired in pixL
+	- improve robustness on checking of paired devices
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
