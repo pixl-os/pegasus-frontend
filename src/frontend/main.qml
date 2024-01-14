@@ -1337,8 +1337,8 @@ Window {
 
         ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,md/gen,sega genesis"; type:"controller"; iconfont: "awesome"}
-
-        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo"; type:"controller"; iconfont: "awesome"; layout: "snes"}
+        //8bitdo sfc30 and snes30 added to be considered as SNES controller
+        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo,sfc30,snes30"; type:"controller"; iconfont: "awesome"; layout: "snes"}
         ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
         //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
