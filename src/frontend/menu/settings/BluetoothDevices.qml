@@ -377,8 +377,8 @@ FocusScope {
         id: bluetoothTimer
         interval: 1000 // Run the timer every second
         repeat: true
-        running: true //(api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
-        triggeredOnStart: true
+        running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+        triggeredOnStart: false
         onTriggered: {
 
                 if ((interval/1000)*counter === 2){ // wait 2 seconds before to scan bluetooth for the first time
@@ -720,7 +720,7 @@ FocusScope {
         else return ""; //no battery well detected
     }
 
-    //function to read saved data from recalbox.conf. Could be used for My Devices and Ignored Devices
+    //function to save data to recalbox.conf. Could be used for My Devices and Ignored Devices
     function saveDevicesList(list,parameter){
         //to populate list from recalbox.conf
         for(var i = 0; i < list.count; i++){
@@ -731,8 +731,10 @@ FocusScope {
           savedData = savedData + "|" + list.get(i).service;
           api.internal.recalbox.setStringParameter(parameter + i, savedData);
         }
-        //save an empty line at the end to confirm end of the list in reclbox.conf
+        //save an empty line at the end to confirm end of the list in recalbox.conf
         api.internal.recalbox.setStringParameter(parameter + i,"");
+        //save it in file immediatelly to be take into account if needed and for investigation
+        api.internal.recalbox.saveParameters();
     }
 
     //function to read saved data from recalbox.conf. Could be used for My Devices and Ignored Devices
@@ -755,12 +757,16 @@ FocusScope {
     //As readSavedDevicesList but check also pairing at the same time
     function readSavedDevicesListAndPairing(list,parameter){
         let result = "";
+        let nextOne = "";
         let i = 0;
         let icon;
         let allmacaddresses = "";
         //First to populate list from recalbox.conf and check if exists as paired
         do {
-          result = api.internal.recalbox.getStringParameter(parameter + i);
+          result = api.internal.recalbox.getStringParameter(parameter + i,"");
+          nextOne = api.internal.recalbox.getStringParameter(parameter + (i+1),"");
+          console.log(parameter + i + " : ",result);
+          console.log(parameter + (i+1) + " : ",nextOne);
           if(result !== ""){
             const parameters = result.split("|");
             if(!isDebugEnv()) result = api.internal.system.run("timeout 1 bluetoothctl info " + parameters[0] + " | grep -i 'paired' | awk '{print $2}'");
@@ -771,15 +777,27 @@ FocusScope {
               icon = getIcon(parameters[2],"");
               list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
               allmacaddresses = allmacaddresses + parameters[0];
-              i = i + 1;
+              if(nextOne !== "") i = i + 1;
+              else break; //to exit directly if nothing after
             }
             else{
-              //replace by next one
-              let nextOne = api.internal.recalbox.getStringParameter(parameter + (i+1));
-              api.internal.recalbox.setStringParameter(parameter + i,nextOne);
+              //replace by next one if different and not empty
+              if (nextOne !== result && nextOne !== ""){
+                  api.internal.recalbox.setStringParameter(parameter + i,nextOne);
+                  //and next one is set to "" in this case
+                  api.internal.recalbox.setStringParameter(parameter + (i+1),"");
+              }
+              else{//set as empty and increase
+                  api.internal.recalbox.setStringParameter(parameter + i,"");
+                  i = i + 1;
+              }
             }
           }
-        } while (result !== "");
+          else if(nextOne !== "") i = i + 1;
+          else break; //to exit directly if nothing after to secure robustness
+        } while (result !== "" && nextOne !== "");
+        //save recalbox.conf to be sure to be well updated
+        api.internal.recalbox.saveParameters();
 
         //Check if anyone paired is missing from list
         //with timeout of 50 ms
