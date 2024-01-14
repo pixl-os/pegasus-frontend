@@ -42,6 +42,7 @@
 // # bluetoothctl paired-devices
 // Device 48:A5:E7:5D:AF:EB SNES Controller
 // Device 48:A5:E7:5D:41:87 SNES Controller
+// new buildroot command: bluetoothctl devices Paired
 
 // #unpair
 // python /recalbox/scripts/bluetooth/test-device remove 48:A5:E7:5D:41:87
@@ -782,8 +783,8 @@ FocusScope {
 
         //Check if anyone paired is missing from list
         //with timeout of 50 ms
-        if(!isDebugEnv()) result = api.internal.system.run("timeout 1 bluetoothctl paired-devices | grep -i 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}'");
-        else result = api.internal.system.run("timeout 1 echo -e 'paired-devices' | bluetoothctl | grep -I 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}' | grep -v 'NEW'");
+        if(!isDebugEnv()) result = api.internal.system.run("timeout 1 bluetoothctl devices Paired | grep -i 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}'");
+        else result = api.internal.system.run("timeout 1 echo -e 'devices Paired' | bluetoothctl | grep -I 'Device' | awk '{printf $2\"|\";$1=\"\";$2=\"\";gsub(/^[ \t]+/,\"\");print $0}' | grep -v 'NEW'");
 
         //console.log("***********");
         //console.log(result);
