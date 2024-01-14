@@ -123,7 +123,7 @@ FocusScope {
                     id: optBluetoothAutopair
                     //controllers.bluetooth.autopair=1 by default
                     label: qsTr("Enable Auto pairing") + api.tr
-                    note: qsTr("Enable support of autopairing during 5 min after boot for bluetooth controllers.\nPlease reboot to apply change") + api.tr
+                    note: qsTr("Enable support of autopairing during 5 min after boot\nThis Pairing is not persistent after reboot, Please reboot to apply change") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.autopair",true);
                     onCheckedChanged: {
