@@ -1,9 +1,6 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-- Fixes:
-	- fix S40bluetooth to S40bluetoothd since buildroot 2023.08
-
 ## [pixL-master] - 2023-XX-XX - vX.X.X
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
@@ -14,14 +11,18 @@ All notable changes to this project will be documented in this file (focus on ch
 	- use hash of login+password now to discriminate cache and change about retroachievement token
 	- add menu advanced emulator settings for Duckstation
 	- add Vsync options in advanced emulator settings for Pcsx2
+    - add 8bitdo sfc30 and snes30 as snes controller layout/icon
+    - add details on "bluetooth autopairing" in menu to confirm that pairing is lost after reboot
 
 - Fixes:
 	- add support of "-v" and "v" tags in updates versions in upper case also now
 	- use recalbox.conf to store last check time for updates
 	- start to change some QML import for QT 5.15 (tested with new buildroot version also)
 	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated.
-	- Fix warning libpng ICCP bad profile
-	- Fix S40bluetoothd since buildroot update 2023.08
+	- fix warning libpng ICCP bad profile
+	- fix S40bluetooth to S40bluetoothd since buildroot 2023.08
+	- fix bluetoothctl to use new command syntax to check devices already paired in pixL
+	- improve robustness on checking of paired devices
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
