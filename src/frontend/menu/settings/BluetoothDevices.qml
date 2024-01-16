@@ -756,46 +756,46 @@ FocusScope {
 
     //As readSavedDevicesList but check also pairing at the same time
     function readSavedDevicesListAndPairing(list,parameter){
+        let device = "";
+        let nextdevice = "";
         let result = "";
-        let nextOne = "";
         let i = 0;
         let icon;
         let allmacaddresses = "";
         //First to populate list from recalbox.conf and check if exists as paired
         do {
-          result = api.internal.recalbox.getStringParameter(parameter + i,"");
-          nextOne = api.internal.recalbox.getStringParameter(parameter + (i+1),"");
-          console.log(parameter + i + " : ",result);
-          console.log(parameter + (i+1) + " : ",nextOne);
-          if(result !== ""){
-            const parameters = result.split("|");
+          device = api.internal.recalbox.getStringParameter(parameter + i,"");
+          nextdevice = api.internal.recalbox.getStringParameter(parameter + (i+1),"");
+          console.log(parameter + i + " : ",device);
+          console.log(parameter + (i+1) + " : ",nextdevice);
+          if(device !== ""){
+            const parameters = device.split("|");
             if(!isDebugEnv()) result = api.internal.system.run("timeout 1 bluetoothctl info " + parameters[0] + " | grep -i 'paired' | awk '{print $2}'");
             //with timeout of 50 ms
             else result = api.internal.system.run("timeout 1 echo -e 'info " + parameters[0] + "' | bluetoothctl | grep -i 'paired' | awk '{print $2}'");
             //console.log("result:",result);
-            if(result.toLowerCase().includes("yes")){
+            if(result.toLowerCase().includes("yes")){ // if well "paired" in pixL
               icon = getIcon(parameters[2],"");
               list.append({icon: icon, iconfont: getIconFont, vendor: parameters[1], name: parameters[2], macaddress: parameters[0], service: parameters[3] });
-              allmacaddresses = allmacaddresses + parameters[0];
-              if(nextOne !== "") i = i + 1;
+              allmacaddresses = allmacaddresses + parameters[0];  
+              if(nextdevice !== "") i = i + 1;
               else break; //to exit directly if nothing after
-            }
-            else{
-              //replace by next one if different and not empty
-              if (nextOne !== result && nextOne !== ""){
-                  api.internal.recalbox.setStringParameter(parameter + i,nextOne);
-                  //and next one is set to "" in this case
-                  api.internal.recalbox.setStringParameter(parameter + (i+1),"");
-              }
-              else{//set as empty and increase
+              //to detect doubloons
+              if(nextdevice === device){
+                  //set as empty if dooblons and increase
                   api.internal.recalbox.setStringParameter(parameter + i,"");
                   i = i + 1;
               }
             }
+            else{ // if "not paired" in pixL
+                  //set as empty and increase
+                  api.internal.recalbox.setStringParameter(parameter + i,"");
+                  i = i + 1;
+            }
           }
-          else if(nextOne !== "") i = i + 1;
+          else if(nextdevice !== "") i = i + 1;
           else break; //to exit directly if nothing after to secure robustness
-        } while (result !== "" && nextOne !== "");
+        } while (device !== "" && nextdevice !== "");
         //save recalbox.conf to be sure to be well updated
         api.internal.recalbox.saveParameters();
 

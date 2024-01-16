@@ -41,7 +41,8 @@ All notable changes to this project will be documented in this file (focus on ch
 	- restore RetroAchievements features by adding valid "user-agent", "accept" and "host" header data
 	- fix S40bluetooth to S40bluetoothd since buildroot 2023.08
 	- fix bluetoothctl to use new command syntax to check devices already paired in pixL
-	- improve robustness on checking of paired devices
+	- improve robustness on checking of bluetooth paired devices
+	- remove dooblons of paired bluetooth device if exists
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
