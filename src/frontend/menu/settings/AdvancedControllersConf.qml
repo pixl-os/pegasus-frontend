@@ -24,6 +24,31 @@ import QtQuick.Window 2.12
 FocusScope {
     id: root
 
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: confirmDialog.item
+        function onAccept() {
+            //restart service
+            if (!isDebugEnv()){
+                api.internal.system.run("/etc/init.d/S99sindenlightgun restart");
+            }
+            else{//for debug and see spinner
+                api.internal.system.run("sleep 5; /etc/init.d/S99sindenlightgun restart");
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
+        }
+    }
+
     signal close
 
     anchors.fill: parent
@@ -594,14 +619,24 @@ FocusScope {
                             color: themeColor.textValue
                             font.pixelSize: vpx(30)
                             font.family: globalFonts.ion
-                            text : "\uf2ba  " + qsTr("Apply Sinden settings (mandatory for recoil)") + api.tr
+                            text : "\uf2ba  " + qsTr("Restart Sinden Lightgun service (apply changes)") + api.tr
                         }
                     }
                     onActivate: {
                         //force save in recalbox.conf file before to execute script
                         api.internal.recalbox.saveParameters();
-                        //restart service
-                        api.internal.system.run("/etc/init.d/S99sindenlightgun restart");
+                        //to force change of focus
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "Sinden lightgun service",
+                                                  "message": qsTr("Are you ready to restart service\nand change settings ?") + api.tr,
+                                                  "symbol": "\uf0d0",
+                                                  "symbolfont" : global.fonts.awesome,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                 }
