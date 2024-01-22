@@ -5,6 +5,7 @@
 //
 
 #include "Internationalizer.h"
+#include <cstdint>
 #include <utils/rLog.h>
 #include <utils/Files.h>
 #include <cstring>
