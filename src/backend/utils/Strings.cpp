@@ -1,6 +1,7 @@
 #include "utils/Strings.h"
 
 #include <cstdarg>
+#include <cstdint>
 #include <cstring>
 
 #include "Unicode.h"
