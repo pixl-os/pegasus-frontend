@@ -80,7 +80,7 @@ size_t create_collection_for(
         .setPad(sysentry.pad.toInt())
         .setKeyboard(sysentry.keyboard.toInt())
         .setMouse(sysentry.mouse.toInt())
-        .setLightgun(sysentry.lightgun.toInt())
+        .setLightgun(sysentry.lightgun != "no" ? true : false)
         .setRetroachievements(sysentry.retroachievements.toInt());
         
     struct model::EmulatorsEntry Emulator;

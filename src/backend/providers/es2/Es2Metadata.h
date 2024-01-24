@@ -23,6 +23,7 @@
 #include "types/AssetType.h"
 
 #include <QString>
+#include <QList>
 #include <QRegularExpression>
 
 namespace model { class Game; }
@@ -30,7 +31,6 @@ namespace model { class GameFile; }
 namespace providers { class SearchContext; }
 class QDir;
 class QXmlStreamReader;
-
 
 namespace providers {
 namespace es2 {
@@ -40,11 +40,20 @@ enum class MetaType : unsigned char;
 
 class Metadata {
 
+struct lightgunGameData {
+    lightgunGameData(QString name, QString system)
+        :name(name), system(system){}
+    lightgunGameData(){}
+    QString name;
+    QString system;
+};
+
 public:
     explicit Metadata(QString, std::vector<QString>);
     void find_metadata_for_system(const SystemEntry&, providers::SearchContext&) const;
-    QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name) const;
-    QString find_media_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name) const;
+    void prepare_lightgun_games_metadata();
+    QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry&) const;
+    QString find_media_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry&) const;
 
 private:
     const QString m_log_tag;
@@ -54,11 +63,15 @@ private:
     const QRegularExpression m_players_regex;
     const std::vector<std::pair<MetaType, AssetType>> m_asset_type_map;
 
-    void process_gamelist_xml(const QDir&, QXmlStreamReader&, providers::SearchContext&, const QString&) const;
+    QList <lightgunGameData> m_lightgun_games;
+
+    void process_gamelist_xml(const QDir&, QXmlStreamReader&, providers::SearchContext&, const SystemEntry&) const;
     HashMap<MetaType, QString, EnumHash> parse_gamelist_game_node(QXmlStreamReader&) const;
     void apply_metadata(model::GameFile&, const QDir&, HashMap<MetaType, QString, EnumHash>&) const;
-    void add_skraper_media_metadata(const QDir&, providers::SearchContext&, bool generateMediaXML = false) const;
-    size_t import_media_from_xml(const QDir&, providers::SearchContext&) const;
+    void add_skraper_media_metadata(const QDir&, providers::SearchContext&, const SystemEntry&, bool generateMediaXML = false) const;
+    size_t import_media_from_xml(const QDir&, providers::SearchContext&, const SystemEntry&) const;
+    size_t import_lightgun_games_from_xml(const QString&);
+
 };
 
 } // namespace es2

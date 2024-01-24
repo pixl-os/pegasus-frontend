@@ -71,7 +71,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
     }
 
     //Create metadata helper
-    const Metadata metahelper(display_name(), possible_config_dirs);
+    Metadata metahelper("Metadata", possible_config_dirs);
 
     // Find systems
     QElapsedTimer systems_timer;
@@ -104,7 +104,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
             {
                 //check if no gamelist exists
                 const QDir xml_dir(sysentry.path);
-                if(metahelper.find_gamelist_xml(possible_config_dirs, xml_dir,sysentry.name).isEmpty()){
+                if(metahelper.find_gamelist_xml(possible_config_dirs, xml_dir,sysentry).isEmpty()){
                     const size_t found_games = find_games_for(sysentry, sctx);
                     Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
                     .arg(sysentry.name, QString::number(found_games)));
@@ -121,7 +121,19 @@ Provider& Es2Provider::run(SearchContext& sctx)
             emit progressChanged(progress);
     }
     Log::info(LOGMSG("Global Timing: Game files searching took %1ms").arg(games_timer.elapsed()));
-    // Find assets and games in case of gamelist only
+
+    // prepare and parse lightgun games from lightgun.cfg
+    QElapsedTimer lightgun_games_timer;
+    lightgun_games_timer.start();
+    emit progressStage("lightgun games");
+    progress += progress_step;
+    emit progressChanged(progress);
+    //Process event in the queue
+    QCoreApplication::processEvents();
+    metahelper.prepare_lightgun_games_metadata();
+    Log::info(LOGMSG("Stats - Global Timing: lightgun.cfg parsing took %1ms").arg(lightgun_games_timer.elapsed()));
+
+    // Find assets and games in case of gamelist only (+ add info for lightgun games)
     QElapsedTimer assets_timer;
     assets_timer.start();
     for (const SystemEntry& sysentry : systems) {

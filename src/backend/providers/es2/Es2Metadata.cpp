@@ -37,6 +37,12 @@
 #include <QtXml>
 #include <QTextStream>
 #include <QXmlStreamReader>
+#include <QDomDocument>
+
+//to remove later
+//#include <QXmlQuery>
+/*#include <QXmlNamePool>*/
+
 #include <QElapsedTimer>
 
 //For recalbox
@@ -44,7 +50,54 @@
 
 namespace {
 
-HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::GameFile*>& filepath_to_entry_map)
+std::vector<QString> default_config_paths()
+{
+    QString shareInitPath = paths::homePath() % QStringLiteral("/.pegasus-frontend/");
+    shareInitPath.replace("/share/","/share_init/");
+
+    return {
+        paths::homePath() % QStringLiteral("/.pegasus-frontend/"),
+        shareInitPath,
+        QStringLiteral("/etc/pegasus-frontend/"),
+    };
+}
+
+QString lightgun_xml(const std::vector<QString>& possible_config_dirs)
+{
+    for (const QString& dir_path : possible_config_dirs) {
+        QString xml_path = dir_path + QStringLiteral("lightgun.cfg");
+        if (QFileInfo::exists(xml_path))
+            return xml_path;
+    }
+    return {};
+}
+
+HashMap<QString, model::Game*> build_simplified_game_name_db(providers::SearchContext& sctx, const QString& system_name)
+{
+    QString log_tag = "lightgun.cfg ";
+    HashMap<QString, model::Game*> map;
+    model::Collection& collection = *sctx.get_or_create_collection(system_name);
+    Log::debug(log_tag, LOGMSG("collection '%1'").arg(collection.name()));
+    Log::debug(log_tag, LOGMSG("collection size '%1'").arg(collection.collectionSize()));
+    Log::debug(log_tag, LOGMSG("hasGame : '%1'").arg(collection.hasGame() == false ? "false" : "true"));
+    //if(collection.lightgun() && collection.hasGame()){
+    Log::debug(log_tag, LOGMSG("to simplify '%1' game names (size)").arg(collection.gamesConst().size()));
+    Log::debug(log_tag, LOGMSG("to simplify '%1' game names (count))").arg(collection.gamesConst().count()));
+
+    for (auto& game : collection.gamesConst()) {
+        QString simplified_game_name = game->title();
+        //lowercase
+        simplified_game_name = simplified_game_name.toLower();
+        //keep only alphanumeric characters
+        const QRegularExpression replace_regex(QStringLiteral("[^a-z0-9!]"));
+        simplified_game_name.remove(replace_regex);
+        Log::warning(log_tag, LOGMSG("simplified_game_name : %1").arg(simplified_game_name));
+        /*map.emplace(std::move(simplified_game_name), game);*/
+    }
+    return map;
+}
+
+HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::GameFile*>& filepath_to_entry_map, const QString& system_name = "")
 {
     HashMap<QString, model::Game*> map;
 
@@ -52,7 +105,11 @@ HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::G
     for (const auto& entry : filepath_to_entry_map) {
         const QFileInfo finfo(entry.first);
         QString path = ::clean_abs_dir(finfo) % '/' % finfo.completeBaseName();
-        map.emplace(std::move(path), entry.second->parentGame());
+        //Log::warning(LOGMSG("entry.second->parentGame()->collectionMut()->name() : %1").arg(entry.second->parentGame()->collectionMut()->name()));
+        //Log::warning(LOGMSG("system_name : %1").arg(system_name));
+        //if(entry.second->parentGame()->collectionMut()->name() == system_name){
+            map.emplace(std::move(path), entry.second->parentGame());
+        //}
     }
 
     return map;
@@ -168,17 +225,17 @@ HashMap<MetaType, QString, EnumHash> Metadata::parse_gamelist_game_node(QXmlStre
     return xml_props;
 }
 
-QString Metadata::find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name) const
+QString Metadata::find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry& sysentry) const
 {
     const QString GAMELISTFILE = QStringLiteral("/gamelist.xml");
 
     std::vector<QString> possible_files { system_dir.path() % GAMELISTFILE };
 
-    if (!system_name.isEmpty()) {
+    if (!sysentry.name.isEmpty()) {
         for (const QString& dir_path : possible_config_dirs) {
             possible_files.emplace_back(dir_path
                 % QStringLiteral("/gamelists/")
-                % system_name
+                % sysentry.name
                 % GAMELISTFILE);
         }
     }
@@ -191,17 +248,17 @@ QString Metadata::find_gamelist_xml(const std::vector<QString>& possible_config_
     return {};
 }
 
-QString Metadata::find_media_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const QString& system_name) const
+QString Metadata::find_media_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry& sysentry) const
 {
     const QString MEDIAFILE = QStringLiteral("/media.xml");
 
     std::vector<QString> possible_files { system_dir.path() % MEDIAFILE };
 
-    if (!system_name.isEmpty()) {
+    if (!sysentry.name.isEmpty()) {
         for (const QString& dir_path : possible_config_dirs) {
             possible_files.emplace_back(dir_path
                 % QStringLiteral("/media/")
-                % system_name
+                % sysentry.name
                 % MEDIAFILE);
         }
     }
@@ -214,8 +271,9 @@ QString Metadata::find_media_xml(const std::vector<QString>& possible_config_dir
     return {};
 }
 
-void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, providers::SearchContext& sctx, const QString& system_name) const
+void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, providers::SearchContext& sctx, const SystemEntry& sysentry) const
 {
+    QString log_tag = sysentry.shortname + " " + m_log_tag;
     // find the root <gameList> element
     if (!xml.readNextStartElement()) {
         xml.raiseError(LOGMSG("could not parse `%1`")
@@ -229,7 +287,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
     }
 
     //need collection for gamelist only activated
-    model::Collection& collection = *sctx.get_or_create_collection(system_name);
+    model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
 	
     size_t found_games = 0;
     // read all <game> nodes
@@ -248,7 +306,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
         const QString shell_filepath = xml_props[MetaType::PATH];
         if (shell_filepath.isEmpty()) {
-            Log::warning(m_log_tag, LOGMSG("The `<game>` node in `%1` at line %2 has no valid `<path>` entry")
+            Log::warning(log_tag, LOGMSG("The `<game>` node in `%1` at line %2 has no valid `<path>` entry")
                 .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(linenum)));
             continue;
         }
@@ -281,25 +339,43 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
     if(RecalboxConf::Instance().AsBool("pegasus.gamelistonly") || RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
     {
-        Log::info(m_log_tag, LOGMSG("System `%1` gamelist provided %2 games")
-        .arg(system_name, QString::number(found_games)));     
+        Log::info(log_tag, LOGMSG("System `%1` gamelist provided %2 games")
+        .arg(sysentry.name, QString::number(found_games)));
     }
     
     if (xml.error()) {
-        Log::warning(m_log_tag, xml.errorString());
+        Log::warning(log_tag, xml.errorString());
         return;
     }
 }
 
+void Metadata::prepare_lightgun_games_metadata()
+ {
+     QString log_tag = "lightgun.cfg " + m_log_tag;
+     //part after is dedicated to set flag for lightgun games from our "lightgun.cfg" xml file
+     if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
+     {
+         const QString xml_path = lightgun_xml(default_config_paths());
+         if (xml_path.isEmpty()) {
+             Log::warning(log_tag, LOGMSG("No lightgun.cfg found"));
+         }
+         else {
+             Log::debug(LOGMSG("File Found : `%1`").arg(xml_path));
+             //get lightgun games from xml and for a system
+             size_t lightgunGamesFound = import_lightgun_games_from_xml(xml_path);
+             Log::info(log_tag, LOGMSG("%1 lightgun games known as compatible with pixL").arg(lightgunGamesFound));
+         }
+     }
+ }
 
 void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::SearchContext& sctx) const
 {
     Q_ASSERT(!sysentry.name.isEmpty());
     Q_ASSERT(!sysentry.path.isEmpty());
 
-
+    QString log_tag = sysentry.shortname + " " + m_log_tag;
     if (sysentry.shortname == QLatin1String("steam")) {
-        Log::info(m_log_tag, LOGMSG("Ignoring the `steam` system in favor of the built-in Steam support"));
+        Log::info(log_tag, LOGMSG("Ignoring the `steam` system in favor of the built-in Steam support"));
         return;
     }
 
@@ -308,25 +384,26 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
 
     const QDir xml_dir(sysentry.path);
     
-    //Log::debug(m_log_tag, LOGMSG("sysentry.path:  %1").arg(sysentry.path));
+    //Log::debug(log_tag, LOGMSG("sysentry.path:  %1").arg(sysentry.path));
       
-    const QString gamelist_path = find_gamelist_xml(m_config_dirs, xml_dir, sysentry.shortname);
+    const QString gamelist_path = find_gamelist_xml(m_config_dirs, xml_dir, sysentry);
     if (gamelist_path.isEmpty()) {
-        Log::warning(m_log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
+        Log::warning(log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
         return;
     }
-    Log::info(m_log_tag, LOGMSG("Found `%1`").arg(gamelist_path));
+    Log::info(log_tag, LOGMSG("Found `%1`").arg(gamelist_path));
 
     QFile xml_file(gamelist_path);
     if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(m_log_tag, LOGMSG("Could not open `%1`").arg(gamelist_path));
+        Log::error(log_tag, LOGMSG("Could not open `%1`").arg(gamelist_path));
         return;
     }
 
     QXmlStreamReader xml(&xml_file);
-    process_gamelist_xml(xml_dir, xml, sctx, sysentry.name);
-    Log::info(LOGMSG("Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));    
-    
+    process_gamelist_xml(xml_dir, xml, sctx, sysentry);
+    Log::info(log_tag, LOGMSG("Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));
+
+    //part after is dedicated to add additional media from skraper and not referenced in "gamelist.xml" files
     if(!RecalboxConf::Instance().AsBool("pegasus.deactivateskrapermedia", false))
     {
         //to add images stored by skraper and linked to gamelist/system of ES
@@ -337,27 +414,39 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
         if(RecalboxConf::Instance().AsBool("pegasus.usemedialist", true)){
             //Log::info(LOGMSG("media.xml to use: %1").arg(xml_dir.path() + "/media.xml"));
             //add media from xml (to see if it's quicker or not ?!)
-            size_t mediaFound = import_media_from_xml(xml_dir, sctx);
+            size_t mediaFound = import_media_from_xml(xml_dir, sctx, sysentry);
             if (mediaFound == 0){
-                Log::info(LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(xml_dir.path() + "/media.xml"));
+                Log::info(log_tag,  LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(xml_dir.path() + "/media.xml"));
                 //set last parameter to activate or not the media.xml generation during parsing of media
-                add_skraper_media_metadata(xml_dir, sctx, true);
-                Log::info(LOGMSG("Timing: Skraper media searching (with media.xml generation) took %1ms").arg(skraper_media_timer.elapsed()));
+                add_skraper_media_metadata(xml_dir, sctx, sysentry, true);
+                Log::info(log_tag, LOGMSG("Timing: Skraper media searching (with media.xml generation) took %1ms").arg(skraper_media_timer.elapsed()));
             }
-            else Log::info(LOGMSG("Timing: Skraper media.xml import took %1ms").arg(skraper_media_timer.elapsed()));
+            else Log::info(log_tag, LOGMSG("Timing: Skraper media.xml import took %1ms").arg(skraper_media_timer.elapsed()));
         }
         else{
             //set last parameter to activate deactivate the media.xml generation during parsing of media
-            add_skraper_media_metadata(xml_dir, sctx, false);
-            Log::info(LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
+            add_skraper_media_metadata(xml_dir, sctx, sysentry, false);
+            Log::info(log_tag, LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
         }
         //*****************************************************     
     }
+
+    //part after is dedicated to set flag for lightgun games from our "lightgun.cfg" xml file
+    if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
+    {
+        QElapsedTimer lightgun_games_timer;
+        lightgun_games_timer.start();
+        //build simplified game name db for search !!!
+        HashMap<QString, model::Game*> simplified_game_name_to_game = build_simplified_game_name_db(sctx,sysentry.name);
+        Log::info(log_tag, LOGMSG("Timing: lightgun games flagging took %1ms").arg(lightgun_games_timer.elapsed()));
+    }
+
 }
 
-void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::SearchContext& sctx, bool generateMediaXML) const
+void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::SearchContext& sctx, const SystemEntry& sysentry, bool generateMediaXML) const
 {
-    //Log::info(m_log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
+    QString log_tag = sysentry.shortname + " " + m_log_tag;
+    //Log::info(log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
     // NOTE: The entries are ordered by priority
     const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
         { AssetType::ARCADE_MARQUEE, {
@@ -430,10 +519,10 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
     constexpr auto DIR_FILTERS = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
     constexpr auto DIR_FLAGS = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
     
-    //Log::debug(m_log_tag, LOGMSG("Nb elements in extless_path_to_game : %1").arg(QString::number(extless_path_to_game.size())));
+    //Log::debug(log_tag, LOGMSG("Nb elements in extless_path_to_game : %1").arg(QString::number(extless_path_to_game.size())));
     
-    //Log::debug(m_log_tag, LOGMSG("Nb elements in sctx.current_filepath_to_entry_map() : %1").arg(QString::number(sctx.current_filepath_to_entry_map().size())));
-    //Log::debug(m_log_tag, LOGMSG("Nb elements in sctx.current_collection_to_entry_map() : %1").arg(QString::number(sctx.current_collection_to_entry_map().size())));
+    //Log::debug(log_tag, LOGMSG("Nb elements in sctx.current_filepath_to_entry_map() : %1").arg(QString::number(sctx.current_filepath_to_entry_map().size())));
+    //Log::debug(log_tag, LOGMSG("Nb elements in sctx.current_collection_to_entry_map() : %1").arg(QString::number(sctx.current_collection_to_entry_map().size())));
 
     size_t found_assets_cnt = 0;
     bool gamepath_db_generated = false;
@@ -450,11 +539,11 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
     QFile xmlFile;
     QTextStream xmlContent(&xmlFile);
     if(generateMediaXML){
-        //Open media.xml file to write it (we consider that media.xml deson't exist if we call this function
+        //Open media.xml file to write it (we consider that media.xml doesn't exist if we call this function
         xmlFile.setFileName(xml_dir.path() + "/media.xml");
         if (!xmlFile.open(QFile::WriteOnly | QFile::Text ))
         {
-            Log::error(m_log_tag, LOGMSG("%1 already opened or there is another issue").arg(xml_dir.path() + "/media.xml"));
+            Log::error(log_tag, LOGMSG("%1 already opened or there is another issue").arg(xml_dir.path() + "/media.xml"));
             xmlFile.close();
             //exit function due to issue finally
             return;
@@ -477,28 +566,28 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
         document.appendChild(root);
     }
 
-    //Log::debug(m_log_tag, LOGMSG("Nb elements in MEDIA_DIRS : %1").arg(QString::number(MEDIA_DIRS.size())));
+    //Log::debug(log_tag, LOGMSG("Nb elements in MEDIA_DIRS : %1").arg(QString::number(MEDIA_DIRS.size())));
     for (const QString& media_dir_subpath : MEDIA_DIRS) {
         const QString game_media_dir = xml_dir.path() % media_dir_subpath;
         if (!QFileInfo::exists(game_media_dir)) 
             {
-                //Log::debug(m_log_tag, LOGMSG("%1 directory not found :-(").arg(game_media_dir));
+                //Log::debug(log_tag, LOGMSG("%1 directory not found :-(").arg(game_media_dir));
                 continue;
             }
         else if (!gamepath_db_generated) //first iteration only
             {
-            //all path name seems here but without extension !!!
-            extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map()); 
+            //we build this db only one time and for one system now, to be able to search quickly
+            extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map(), sysentry.name);
             gamepath_db_generated = true;
             }            
         //check existing asset directories in media
-        //Log::debug(m_log_tag, LOGMSG("Nb elements in ASSET_DIRS : %1").arg(QString::number(ASSET_DIRS.size())));
+        //Log::debug(log_tag, LOGMSG("Nb elements in ASSET_DIRS : %1").arg(QString::number(ASSET_DIRS.size())));
         for (const auto& asset_dir_entry : ASSET_DIRS) {
             const AssetType asset_type = asset_dir_entry.first;
             const QStringList& dir_names = asset_dir_entry.second;
             for (const QString& dir_name : dir_names) {
                 const QString search_dir = game_media_dir % dir_name;
-                //Log::debug(m_log_tag, LOGMSG("%1 is the directory to search !").arg(search_dir));
+                //Log::debug(log_tag, LOGMSG("%1 is the directory to search !").arg(search_dir));
                 const int subpath_len = media_dir_subpath.length() + dir_name.length();
                 QDirIterator dir_it(search_dir, DIR_FILTERS, DIR_FLAGS);
                 while (dir_it.hasNext()) {
@@ -506,7 +595,7 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
                     const QFileInfo finfo = dir_it.fileInfo();
                     const QString game_path = ::clean_abs_dir(finfo).remove(xml_dir.path().length(), subpath_len)
                                             % '/' % finfo.completeBaseName();
-                    //Log::debug(m_log_tag, LOGMSG("%1 is the game path !").arg(game_path));
+                    //Log::debug(log_tag, LOGMSG("%1 is the game path !").arg(game_path));
                     const auto it = extless_path_to_game.find(game_path);
                     if (it == extless_path_to_game.cend())
                         continue;
@@ -524,7 +613,7 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
                         //appen new asset to root
                         root.appendChild(gamenode);
                     }
-                    //Log::debug(m_log_tag, LOGMSG("%1 asset added !").arg(dir_it.filePath()));
+                    //Log::debug(log_tag, LOGMSG("%1 asset added !").arg(dir_it.filePath()));
                     found_assets_cnt++;
                 }
             }
@@ -536,13 +625,13 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
         //close xml
         xmlFile.close();
     }
-    Log::info(m_log_tag, LOGMSG("%1 assets found from media directory").arg(QString::number(found_assets_cnt)));
+    Log::info(log_tag, LOGMSG("%1 assets found from media directory").arg(QString::number(found_assets_cnt)));
 }
 
-size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchContext& sctx) const
+size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchContext& sctx, const SystemEntry& sysentry) const
 {
-    //Log::info(m_log_tag, LOGMSG("Start to add Assets from media.xml in addition of ES Gamelist"));
-
+    QString log_tag  = sysentry.shortname + " " + m_log_tag;
+    //Log::info(log_tag, LOGMSG("Start to add Assets from media.xml in addition of ES Gamelist"));
     QHash<QString, QList<AssetType>> ASSET_REFS {
         { QStringLiteral("marquee"), {AssetType::ARCADE_MARQUEE}},
         { QStringLiteral("screenmarquee"), {AssetType::ARCADE_MARQUEE}},
@@ -576,7 +665,7 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
     QFile xmlFile(xml_dir.path() + "/media.xml");
     if (!xmlFile.open(QFile::ReadOnly | QFile::Text ))
     {
-        Log::error(m_log_tag, LOGMSG("%1 already opened, not found or there is another issue").arg(xml_dir.path() + "/media.xml"));
+        Log::error(log_tag, LOGMSG("%1 already opened, not found or there is another issue").arg(xml_dir.path() + "/media.xml"));
         xmlFile.close();
         //exit function due to issue
         return 0;
@@ -616,13 +705,13 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
     QDomElement asset=root.firstChild().toElement();
 
     //build gamepath db for search !!!
-    extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map());
+    extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map(), sysentry.name);
 
     // Loop while there is a child
     while(!asset.isNull())
     {
         QString game_path = asset.attribute("game");
-        //Log::info(m_log_tag, LOGMSG("game_path : %1").arg(game_path));
+        //Log::info(log_tag, LOGMSG("game_path : %1").arg(game_path));
         const auto it = extless_path_to_game.find(game_path);
         if (it == extless_path_to_game.cend()){
             // Next asset
@@ -643,8 +732,209 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
 
     //close xml
     xmlFile.close();
-    Log::info(m_log_tag, LOGMSG("%1 assets imported from media.xml").arg(QString::number(found_assets_cnt)));
+    Log::info(log_tag, LOGMSG("%1 assets imported from media.xml").arg(QString::number(found_assets_cnt)));
     return found_assets_cnt;
+}
+
+size_t Metadata::import_lightgun_games_from_xml(const QString& xml_path)
+{
+    QString log_tag  = "lightgun.cfg " + m_log_tag;
+    Log::debug(log_tag, LOGMSG("Start to parse lightgun.cfg"));
+
+    size_t found_lightgun_games_cnt = 0;
+
+
+    //Open media.xml file to write it (we consider that media.xml deson't exist if we call this function
+    QFile xmlFile(xml_path);
+    if (!xmlFile.open(QFile::ReadOnly | QFile::Text ))
+    {
+        Log::error(log_tag, LOGMSG("%1 already opened, not found or there is another issue").arg(xml_path));
+        xmlFile.close();
+        //exit function due to issue
+        return 0;
+    }
+
+
+    //using xpath to isolate games of a system
+    /*QXmlQuery query;
+    QXmlQuery entries;
+    QString res;
+    QDomDocument xml_dom;
+
+    query.setFocus(&xmlFile);
+    query.setQuery("/root/system/platform[test()='" + sysentry.shortname + "']/../games/game[@tested='ok']/name");
+    if ( ! query.isValid()){
+        return 0;
+    }
+    query.evaluateTo(&res);
+
+    xml_dom.setContent("" + res + "");
+    QDomNodeList entryNodes = xml_dom.elementsByTagName("name");
+
+    //QDomNode TracksByLocation[];
+    for (int i = 0; i < entryNodes.count(); i++) {
+        QDomNode n = entryNodes.at(i);
+        //QString location = n.firstChildElement("location").text();
+        //TracksByLocation[location] = n;
+    }
+
+    //qDebug() << xml_dom.doctype().name();
+    qDebug() << "entryNodes size is" << entryNodes.size();
+    */
+
+    /*QXmlStreamReader xml(&xmlFile);
+    if (!xml.readNextStartElement()) {
+        Log::error(log_tag, LOGMSG("Could not parse `%1`").arg(xml_path));
+        return 0;
+    }
+
+    if (xml.name() != QLatin1String("root")) {
+        Log::error(log_tag, LOGMSG("`%1` does not have a `<root> node").arg(xml_path));
+        return 0;
+    }
+    bool plaformMatched = false;
+    // read all <system> node
+    while (xml.readNextStartElement()) {
+        QStringRef name = xml.name();
+        Log::warning(log_tag, LOGMSG("level 1 - tag <%1> found").arg(name));
+        if (name == QLatin1String("system")) {
+            // read inside <system>
+            plaformMatched = false;
+            while (xml.readNextStartElement()) {
+                 Log::warning(log_tag, LOGMSG("level 2 - tag <%1> found").arg(xml.name()));
+                 if (xml.name() == "platform") {
+                     QString text = xml.readElementText();
+                     Log::warning(log_tag, LOGMSG("`%1` platform found").arg(text));
+                     if(text == sysentry.shortname) {
+                         Log::warning(log_tag, LOGMSG("`%1` platform matched").arg(text));
+                         plaformMatched = true;
+                     }
+                 }
+                 else if (xml.name() == "games" && plaformMatched == true) {
+                     // read inside <games>
+                     while (xml.readNextStartElement()) {
+                         name = xml.name();
+                         Log::warning(log_tag, LOGMSG("level 3 - tag <%1> found").arg(name));
+                         if (name == QLatin1String("game")) {
+                             QString tested = xml.attributes().value("tested").toString();
+                             Log::warning(log_tag, LOGMSG("level 3 - attribut '%1' = '%2'").arg("tested", tested));
+                             if(tested == "ok"){
+                                // read inside <game>
+                                while (xml.readNextStartElement()) {
+                                    name = xml.name();
+                                    Log::warning(log_tag, LOGMSG("level 4 - tag <%1> found").arg(name));
+                                    QString text = xml.readElementText();
+                                    if(name == QLatin1String("name")){
+                                        Log::warning(log_tag, LOGMSG("`%1` as game OK").arg(text));
+                                    }
+                                    else xml.skipCurrentElement();
+                                }
+                             }
+                             else xml.skipCurrentElement();
+                         }
+                         else xml.skipCurrentElement();
+                     }
+                 }
+                 else xml.skipCurrentElement();
+            }
+        }
+        else xml.skipCurrentElement();
+    }*/
+
+    QDomDocument document;
+    //load content of XML
+    document.setContent(&xmlFile);
+
+    // Extract the root markup
+    QDomElement root=document.documentElement();
+
+    // Get the first child of the root (Markup COMPONENT is expected)
+    QDomNode n=root.firstChild();
+    while (!n.isNull()) {
+        if (n.isElement()) {
+            QDomElement e = n.toElement();
+            //search corresponding system in xml file
+            if (e.tagName() == "system")
+            {
+                QString systemNames = ""; //reset here system name(s) for each plaform
+                Log::debug(log_tag, LOGMSG("system tag found"));
+                QDomNode systemNode=e.firstChild();
+                while (!systemNode.isNull()) {
+                    if (systemNode.isElement()) {
+                        QDomElement systemElement = systemNode.toElement();
+                        if (systemElement.tagName() == "platform")
+                        {
+                            Log::debug(log_tag, LOGMSG("`%1` platform found").arg(systemElement.text()));
+                            //manage case to have several platforms in the same system (i know, it's strange... but we did that to regroup conf of flycast for exemple)
+                            if (systemNames != "") systemNames = systemNames + "," + systemElement.text();
+                            else systemNames = systemElement.text();
+                        }
+                        else if (systemElement.tagName() == "games")
+                        {
+                            Log::debug(log_tag, LOGMSG("games tag found"));
+                            QDomNode gamesNode=systemElement.firstChild();
+                            while (!gamesNode.isNull()) {
+                                if (systemNode.isElement()) {
+                                    QDomElement gameElement = gamesNode.toElement();
+                                    if (gameElement.tagName() == "game")
+                                    {
+                                        Log::debug(log_tag, LOGMSG("game '%1' found").arg(gameElement.attribute("tested")));
+                                        if(gameElement.attribute("tested").toLower() == "ok"){
+                                            QDomNode gameNode=gamesNode.firstChild();
+                                            while (!gameNode.isNull()) {
+                                                if (gameNode.isElement()) {
+                                                    QDomElement nameElement = gameNode.toElement();
+                                                    if (nameElement.tagName() == "name")
+                                                    {
+                                                        QString name =  nameElement.text();
+                                                        Log::debug(log_tag, LOGMSG("`%1` as valid game found for '%2'").arg(name, systemNames));
+                                                        m_lightgun_games.append(lightgunGameData(name, systemNames));
+                                                        found_lightgun_games_cnt++;
+                                                    }
+                                                }
+                                            gameNode = gameNode.nextSibling();
+                                            }
+                                        }
+                                    }
+                                }
+                            gamesNode = gamesNode.nextSibling();
+                            }
+                        }
+                    }
+                systemNode = systemNode.nextSibling();
+                }
+            }
+        }
+        n = n.nextSibling();
+    }
+
+    /*//build simplified game name db for search !!!
+    simplified_game_name_to_game = build_simplified_game_name_db(sctx, system_name);
+
+    // Loop while there is a child
+    while(!lightgun_game.isNull())
+    {
+        QString simplified_game_name = lightgun_game.attribute("game");
+        //Log::info(log_tag, LOGMSG("game_path : %1").arg(game_path));
+        const auto it = simplified_game_name_to_game.find(simplified_game_name);
+        if (it == simplified_game_name_to_game.cend()){
+            // Next game
+            lightgun_game = lightgun_game.nextSibling().toElement();
+            continue;
+        }
+        //check if this game node already exist
+        model::Game& game = *(it->second);
+        //game.lightgun = true;
+        found_lightgun_games_cnt++;
+        // Next lightgun game
+        lightgun_game = lightgun_game.nextSibling().toElement();
+    }
+    */
+
+    //close xml
+    xmlFile.close();
+    Log::debug(log_tag, LOGMSG("%1 games as 'ok' found from lightgun.cfg").arg(QString::number(found_lightgun_games_cnt)));
+    return found_lightgun_games_cnt;
 }
 
 void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, HashMap<MetaType, QString, EnumHash>& xml_props) const
