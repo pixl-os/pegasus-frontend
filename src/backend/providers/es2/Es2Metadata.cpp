@@ -39,10 +39,7 @@
 #include <QXmlStreamReader>
 #include <QDomDocument>
 
-//to remove later
-//#include <QXmlQuery>
-/*#include <QXmlNamePool>*/
-
+#include <algorithm>
 #include <QElapsedTimer>
 
 //For recalbox
@@ -72,32 +69,7 @@ QString lightgun_xml(const std::vector<QString>& possible_config_dirs)
     return {};
 }
 
-HashMap<QString, model::Game*> build_simplified_game_name_db(providers::SearchContext& sctx, const QString& system_name)
-{
-    QString log_tag = "lightgun.cfg ";
-    HashMap<QString, model::Game*> map;
-    model::Collection& collection = *sctx.get_or_create_collection(system_name);
-    Log::debug(log_tag, LOGMSG("collection '%1'").arg(collection.name()));
-    Log::debug(log_tag, LOGMSG("collection size '%1'").arg(collection.collectionSize()));
-    Log::debug(log_tag, LOGMSG("hasGame : '%1'").arg(collection.hasGame() == false ? "false" : "true"));
-    //if(collection.lightgun() && collection.hasGame()){
-    Log::debug(log_tag, LOGMSG("to simplify '%1' game names (size)").arg(collection.gamesConst().size()));
-    Log::debug(log_tag, LOGMSG("to simplify '%1' game names (count))").arg(collection.gamesConst().count()));
-
-    for (auto& game : collection.gamesConst()) {
-        QString simplified_game_name = game->title();
-        //lowercase
-        simplified_game_name = simplified_game_name.toLower();
-        //keep only alphanumeric characters
-        const QRegularExpression replace_regex(QStringLiteral("[^a-z0-9!]"));
-        simplified_game_name.remove(replace_regex);
-        Log::warning(log_tag, LOGMSG("simplified_game_name : %1").arg(simplified_game_name));
-        /*map.emplace(std::move(simplified_game_name), game);*/
-    }
-    return map;
-}
-
-HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::GameFile*>& filepath_to_entry_map, const QString& system_name = "")
+HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::GameFile*>& filepath_to_entry_map)
 {
     HashMap<QString, model::Game*> map;
 
@@ -105,11 +77,7 @@ HashMap<QString, model::Game*> build_gamepath_db(const HashMap<QString, model::G
     for (const auto& entry : filepath_to_entry_map) {
         const QFileInfo finfo(entry.first);
         QString path = ::clean_abs_dir(finfo) % '/' % finfo.completeBaseName();
-        //Log::warning(LOGMSG("entry.second->parentGame()->collectionMut()->name() : %1").arg(entry.second->parentGame()->collectionMut()->name()));
-        //Log::warning(LOGMSG("system_name : %1").arg(system_name));
-        //if(entry.second->parentGame()->collectionMut()->name() == system_name){
-            map.emplace(std::move(path), entry.second->parentGame());
-        //}
+        map.emplace(std::move(path), entry.second->parentGame());
     }
 
     return map;
@@ -334,7 +302,7 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
         model::GameFile* const entry_ptr = sctx.gamefile_by_filepath(path);
         if (!entry_ptr)  // ie. the file was not picked up by the system's extension list
             continue;
-        apply_metadata(*entry_ptr, xml_dir, xml_props);
+        apply_metadata(*entry_ptr, xml_dir, xml_props, sysentry);
     }
 
     if(RecalboxConf::Instance().AsBool("pegasus.gamelistonly") || RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
@@ -350,23 +318,52 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 }
 
 void Metadata::prepare_lightgun_games_metadata()
- {
-     QString log_tag = "lightgun.cfg " + m_log_tag;
-     //part after is dedicated to set flag for lightgun games from our "lightgun.cfg" xml file
-     if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
-     {
-         const QString xml_path = lightgun_xml(default_config_paths());
-         if (xml_path.isEmpty()) {
-             Log::warning(log_tag, LOGMSG("No lightgun.cfg found"));
-         }
-         else {
-             Log::debug(LOGMSG("File Found : `%1`").arg(xml_path));
-             //get lightgun games from xml and for a system
-             size_t lightgunGamesFound = import_lightgun_games_from_xml(xml_path);
-             Log::info(log_tag, LOGMSG("%1 lightgun games known as compatible with pixL").arg(lightgunGamesFound));
-         }
-     }
- }
+{
+    QString log_tag = "lightgun.cfg " + m_log_tag;
+    //part after is dedicated to set flag for lightgun games from our "lightgun.cfg" xml file
+    if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
+    {
+        const QString xml_path = lightgun_xml(default_config_paths());
+        if (xml_path.isEmpty()) {
+            Log::warning(log_tag, LOGMSG("No lightgun.cfg found"));
+        }
+        else {
+            Log::debug(LOGMSG("File Found : `%1`").arg(xml_path));
+            //get lightgun games from xml and for a system
+            size_t lightgunGamesFound = import_lightgun_games_from_xml(xml_path);
+            Log::info(log_tag, LOGMSG("%1 lightgun games known as compatible with pixL").arg(lightgunGamesFound));
+        }
+    }
+}
+
+bool Metadata::isLightgunGames(model::Game* game, const SystemEntry& systementry) const
+{
+    QString log_tag = "lightgun.cfg ";
+    QString simplified_game_name = game->title();
+
+    //lowercase
+    simplified_game_name = simplified_game_name.toLower();
+    //keep only alphanumeric characters
+    const QRegularExpression replace_regex(QStringLiteral("[^a-z0-9!]"));
+    simplified_game_name.remove(replace_regex);
+    //Log::warning(log_tag, LOGMSG("simplified_game_name : %1").arg(simplified_game_name));
+
+    //parse m_lightgun_games to know if this game is a lightgun game one or not
+    const lightgunGameData lightgunGameToFind = {simplified_game_name, systementry.shortname};
+    QList<lightgunGameData>::const_iterator it = std::find_if(m_lightgun_games.begin(),m_lightgun_games.end(),
+                                                              [&](const lightgunGameData& input){
+                                                                    return lightgunGameToFind.name.contains(input.name) && input.system == lightgunGameToFind.system;
+                                                              }
+    );
+
+    if ((it != m_lightgun_games.end())) {
+        //Log::debug(log_tag, LOGMSG("%1 is lightgun game for %2").arg(game->title(), systementry.name));
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::SearchContext& sctx) const
 {
@@ -429,16 +426,6 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
             Log::info(log_tag, LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
         }
         //*****************************************************     
-    }
-
-    //part after is dedicated to set flag for lightgun games from our "lightgun.cfg" xml file
-    if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
-    {
-        QElapsedTimer lightgun_games_timer;
-        lightgun_games_timer.start();
-        //build simplified game name db for search !!!
-        HashMap<QString, model::Game*> simplified_game_name_to_game = build_simplified_game_name_db(sctx,sysentry.name);
-        Log::info(log_tag, LOGMSG("Timing: lightgun games flagging took %1ms").arg(lightgun_games_timer.elapsed()));
     }
 
 }
@@ -577,7 +564,7 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
         else if (!gamepath_db_generated) //first iteration only
             {
             //we build this db only one time and for one system now, to be able to search quickly
-            extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map(), sysentry.name);
+            extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map());
             gamepath_db_generated = true;
             }            
         //check existing asset directories in media
@@ -705,7 +692,7 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
     QDomElement asset=root.firstChild().toElement();
 
     //build gamepath db for search !!!
-    extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map(), sysentry.name);
+    extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map());
 
     // Loop while there is a child
     while(!asset.isNull())
@@ -739,7 +726,7 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
 size_t Metadata::import_lightgun_games_from_xml(const QString& xml_path)
 {
     QString log_tag  = "lightgun.cfg " + m_log_tag;
-    Log::debug(log_tag, LOGMSG("Start to parse lightgun.cfg"));
+    //Log::debug(log_tag, LOGMSG("Start to parse lightgun.cfg"));
 
     size_t found_lightgun_games_cnt = 0;
 
@@ -753,93 +740,6 @@ size_t Metadata::import_lightgun_games_from_xml(const QString& xml_path)
         //exit function due to issue
         return 0;
     }
-
-
-    //using xpath to isolate games of a system
-    /*QXmlQuery query;
-    QXmlQuery entries;
-    QString res;
-    QDomDocument xml_dom;
-
-    query.setFocus(&xmlFile);
-    query.setQuery("/root/system/platform[test()='" + sysentry.shortname + "']/../games/game[@tested='ok']/name");
-    if ( ! query.isValid()){
-        return 0;
-    }
-    query.evaluateTo(&res);
-
-    xml_dom.setContent("" + res + "");
-    QDomNodeList entryNodes = xml_dom.elementsByTagName("name");
-
-    //QDomNode TracksByLocation[];
-    for (int i = 0; i < entryNodes.count(); i++) {
-        QDomNode n = entryNodes.at(i);
-        //QString location = n.firstChildElement("location").text();
-        //TracksByLocation[location] = n;
-    }
-
-    //qDebug() << xml_dom.doctype().name();
-    qDebug() << "entryNodes size is" << entryNodes.size();
-    */
-
-    /*QXmlStreamReader xml(&xmlFile);
-    if (!xml.readNextStartElement()) {
-        Log::error(log_tag, LOGMSG("Could not parse `%1`").arg(xml_path));
-        return 0;
-    }
-
-    if (xml.name() != QLatin1String("root")) {
-        Log::error(log_tag, LOGMSG("`%1` does not have a `<root> node").arg(xml_path));
-        return 0;
-    }
-    bool plaformMatched = false;
-    // read all <system> node
-    while (xml.readNextStartElement()) {
-        QStringRef name = xml.name();
-        Log::warning(log_tag, LOGMSG("level 1 - tag <%1> found").arg(name));
-        if (name == QLatin1String("system")) {
-            // read inside <system>
-            plaformMatched = false;
-            while (xml.readNextStartElement()) {
-                 Log::warning(log_tag, LOGMSG("level 2 - tag <%1> found").arg(xml.name()));
-                 if (xml.name() == "platform") {
-                     QString text = xml.readElementText();
-                     Log::warning(log_tag, LOGMSG("`%1` platform found").arg(text));
-                     if(text == sysentry.shortname) {
-                         Log::warning(log_tag, LOGMSG("`%1` platform matched").arg(text));
-                         plaformMatched = true;
-                     }
-                 }
-                 else if (xml.name() == "games" && plaformMatched == true) {
-                     // read inside <games>
-                     while (xml.readNextStartElement()) {
-                         name = xml.name();
-                         Log::warning(log_tag, LOGMSG("level 3 - tag <%1> found").arg(name));
-                         if (name == QLatin1String("game")) {
-                             QString tested = xml.attributes().value("tested").toString();
-                             Log::warning(log_tag, LOGMSG("level 3 - attribut '%1' = '%2'").arg("tested", tested));
-                             if(tested == "ok"){
-                                // read inside <game>
-                                while (xml.readNextStartElement()) {
-                                    name = xml.name();
-                                    Log::warning(log_tag, LOGMSG("level 4 - tag <%1> found").arg(name));
-                                    QString text = xml.readElementText();
-                                    if(name == QLatin1String("name")){
-                                        Log::warning(log_tag, LOGMSG("`%1` as game OK").arg(text));
-                                    }
-                                    else xml.skipCurrentElement();
-                                }
-                             }
-                             else xml.skipCurrentElement();
-                         }
-                         else xml.skipCurrentElement();
-                     }
-                 }
-                 else xml.skipCurrentElement();
-            }
-        }
-        else xml.skipCurrentElement();
-    }*/
 
     QDomDocument document;
     //load content of XML
@@ -857,28 +757,28 @@ size_t Metadata::import_lightgun_games_from_xml(const QString& xml_path)
             if (e.tagName() == "system")
             {
                 QString systemNames = ""; //reset here system name(s) for each plaform
-                Log::debug(log_tag, LOGMSG("system tag found"));
+                //Log::debug(log_tag, LOGMSG("system tag found"));
                 QDomNode systemNode=e.firstChild();
                 while (!systemNode.isNull()) {
                     if (systemNode.isElement()) {
                         QDomElement systemElement = systemNode.toElement();
                         if (systemElement.tagName() == "platform")
                         {
-                            Log::debug(log_tag, LOGMSG("`%1` platform found").arg(systemElement.text()));
+                            //Log::debug(log_tag, LOGMSG("`%1` platform found").arg(systemElement.text()));
                             //manage case to have several platforms in the same system (i know, it's strange... but we did that to regroup conf of flycast for exemple)
                             if (systemNames != "") systemNames = systemNames + "," + systemElement.text();
                             else systemNames = systemElement.text();
                         }
                         else if (systemElement.tagName() == "games")
                         {
-                            Log::debug(log_tag, LOGMSG("games tag found"));
+                            //Log::debug(log_tag, LOGMSG("games tag found"));
                             QDomNode gamesNode=systemElement.firstChild();
                             while (!gamesNode.isNull()) {
                                 if (systemNode.isElement()) {
                                     QDomElement gameElement = gamesNode.toElement();
                                     if (gameElement.tagName() == "game")
                                     {
-                                        Log::debug(log_tag, LOGMSG("game '%1' found").arg(gameElement.attribute("tested")));
+                                        //Log::debug(log_tag, LOGMSG("game '%1' found").arg(gameElement.attribute("tested")));
                                         if(gameElement.attribute("tested").toLower() == "ok"){
                                             QDomNode gameNode=gamesNode.firstChild();
                                             while (!gameNode.isNull()) {
@@ -887,7 +787,7 @@ size_t Metadata::import_lightgun_games_from_xml(const QString& xml_path)
                                                     if (nameElement.tagName() == "name")
                                                     {
                                                         QString name =  nameElement.text();
-                                                        Log::debug(log_tag, LOGMSG("`%1` as valid game found for '%2'").arg(name, systemNames));
+                                                        //Log::debug(log_tag, LOGMSG("`%1` as valid game found for '%2'").arg(name, systemNames));
                                                         m_lightgun_games.append(lightgunGameData(name, systemNames));
                                                         found_lightgun_games_cnt++;
                                                     }
@@ -908,36 +808,13 @@ size_t Metadata::import_lightgun_games_from_xml(const QString& xml_path)
         n = n.nextSibling();
     }
 
-    /*//build simplified game name db for search !!!
-    simplified_game_name_to_game = build_simplified_game_name_db(sctx, system_name);
-
-    // Loop while there is a child
-    while(!lightgun_game.isNull())
-    {
-        QString simplified_game_name = lightgun_game.attribute("game");
-        //Log::info(log_tag, LOGMSG("game_path : %1").arg(game_path));
-        const auto it = simplified_game_name_to_game.find(simplified_game_name);
-        if (it == simplified_game_name_to_game.cend()){
-            // Next game
-            lightgun_game = lightgun_game.nextSibling().toElement();
-            continue;
-        }
-        //check if this game node already exist
-        model::Game& game = *(it->second);
-        //game.lightgun = true;
-        found_lightgun_games_cnt++;
-        // Next lightgun game
-        lightgun_game = lightgun_game.nextSibling().toElement();
-    }
-    */
-
     //close xml
     xmlFile.close();
-    Log::debug(log_tag, LOGMSG("%1 games as 'ok' found from lightgun.cfg").arg(QString::number(found_lightgun_games_cnt)));
+    //Log::debug(log_tag, LOGMSG("%1 games as 'ok' found from lightgun.cfg").arg(QString::number(found_lightgun_games_cnt)));
     return found_lightgun_games_cnt;
 }
 
-void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, HashMap<MetaType, QString, EnumHash>& xml_props) const
+void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, HashMap<MetaType, QString, EnumHash>& xml_props, const SystemEntry& sysentry) const
 {
     model::Game& game = *gamefile.parentGame();
 
@@ -950,6 +827,16 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
     game.developerList().append(xml_props[MetaType::DEVELOPER]);
     game.publisherList().append(xml_props[MetaType::PUBLISHER]);
     game.genreList().append(xml_props[MetaType::GENRE]);
+
+    //add here if lightgun games
+    //part after is dedicated to set flag for lightgun games from our "lightgun.cfg" xml file
+    if(sysentry.lightgun != "no"){
+        if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
+        {
+            //search game from lightgun db using lightgun.cfg
+            game.setLightgunGame(isLightgunGames(&game, sysentry));
+        }
+    }
 
     // then the numbers
     const int play_count = xml_props[MetaType::PLAYCOUNT].toInt();
