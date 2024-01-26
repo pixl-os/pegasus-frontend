@@ -81,6 +81,13 @@ Game& Game::setFavorite(bool new_val)
     return *this;
 }
 
+Game& Game::setLightgunGame(bool new_val)
+{
+    m_data.is_lightgun_game = new_val;
+    emit lightgunGameChanged();
+    return *this;
+}
+
 const QString Game::getEmulatorName() const
 {
     QString shortname = m_collections->get(0)->shortName();
