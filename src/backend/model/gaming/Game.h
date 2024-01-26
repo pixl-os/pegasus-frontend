@@ -76,6 +76,7 @@ struct GameData {
     } playstats;
 
     bool is_favorite = false;
+    bool is_lightgun_game = false;
 
     QList <RetroAchievement> retro_achievements;
     int ra_game_id = 0;
@@ -114,6 +115,7 @@ public:
     GETTER(int, playTime, m_data.playstats.play_time)
     GETTER(const QDateTime&, lastPlayed, m_data.playstats.last_played)
     GETTER(bool, isFavorite, m_data.is_favorite)
+    GETTER(bool, isLightgunGame, m_data.is_lightgun_game)
 	
     GETTER(const QList<RetroAchievement> &, retroAchievements, m_data.retro_achievements)
     GETTER(int, RaGameID, m_data.ra_game_id)
@@ -146,6 +148,7 @@ public:
 	SETTER(QString, RaHash, ra_hash)
 	SETTER(QList<RetroAchievement>, RetroAchievements, retro_achievements)
     Game& setFavorite(bool val);
+    Game& setLightgunGame(bool val);
 #undef SETTER
 
 
@@ -180,6 +183,7 @@ public:
     Q_PROPERTY(int playTime READ playTime NOTIFY playStatsChanged)
     Q_PROPERTY(QDateTime lastPlayed READ lastPlayed NOTIFY playStatsChanged)
     Q_PROPERTY(bool favorite READ isFavorite WRITE setFavorite NOTIFY favoriteChanged)
+    Q_PROPERTY(bool lightgungame READ isLightgunGame WRITE setLightgunGame NOTIFY lightgunGameChanged)
 
     Q_PROPERTY(QString systemShortName READ systemShortName CONSTANT)
     Q_PROPERTY(QString systemManufacturer READ systemManufacturer CONSTANT)
@@ -240,6 +244,7 @@ private:
 signals:
     void launchFileSelectorRequested();
     void favoriteChanged();
+    void lightgunGameChanged();
     void playStatsChanged();
 	void retroAchievementsInitialized();
 	void retroAchievementsChanged();
