@@ -200,18 +200,7 @@ public:
     Q_PROPERTY(model::Assets* assets READ assetsPtr CONSTANT)
 
     Collection& setGames(std::vector<model::Game*>&&);
-    int collectionSize(){
-        return m_games->size();
-    };
-    bool hasGame(){
-        if(m_games->at(0) != nullptr){
-            return true;
-        }
-        else return false;
-    };
-
-    //const QVector<model::Game*>& gamesConst() const { Q_ASSERT(!m_games->isEmpty()); return m_games->asList(); }
-    const QVector<model::Game*>& gamesConst() const { return m_games->asList(); }
+    const QVector<model::Game*>& gamesConst() const { Q_ASSERT(!m_games->isEmpty()); return m_games->asList(); }
     QML_OBJMODEL_PROPERTY(model::Game, games)
 
 public:
