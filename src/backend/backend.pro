@@ -1,6 +1,6 @@
 TEMPLATE = lib
 
-QT += core qml quick sql xmlpatterns xml
+QT += core qml quick sql xml
 CONFIG += c++17 staticlib warn_on exceptions debug
 android: QT += androidextras
 
