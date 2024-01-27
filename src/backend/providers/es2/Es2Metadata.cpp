@@ -352,7 +352,9 @@ bool Metadata::isLightgunGames(model::Game* game, const SystemEntry& systementry
     const lightgunGameData lightgunGameToFind = {simplified_game_name, systementry.shortname};
     QList<lightgunGameData>::const_iterator it = std::find_if(m_lightgun_games.begin(),m_lightgun_games.end(),
                                                               [&](const lightgunGameData& input){
-                                                                    return lightgunGameToFind.name.contains(input.name) && input.system == lightgunGameToFind.system;
+                                                                    //Log::debug(log_tag, LOGMSG("lightgunGameToFind.system : %1").arg(lightgunGameToFind.system));
+                                                                    //Log::debug(log_tag, LOGMSG("input.system : %1").arg(input.system));
+                                                                    return lightgunGameToFind.name.contains(input.name) && input.system.contains("'" + lightgunGameToFind.system + "'");
                                                               }
     );
 
@@ -765,9 +767,11 @@ size_t Metadata::import_lightgun_games_from_xml(const QString& xml_path)
                         if (systemElement.tagName() == "platform")
                         {
                             //Log::debug(log_tag, LOGMSG("`%1` platform found").arg(systemElement.text()));
-                            //manage case to have several platforms in the same system (i know, it's strange... but we did that to regroup conf of flycast for exemple)
-                            if (systemNames != "") systemNames = systemNames + "," + systemElement.text();
-                            else systemNames = systemElement.text();
+                            //manage case to have several platforms in the same system (i know, it's strange... but we did that to regroup conf of flycast for exemple
+                            //format : 'nes' or 'atomiswave','naomi','naomigd' or 'snes'
+                            //we add ' around system name to well distinguish nes or snes for example when we will seach name of system.
+                            if (systemNames != "") systemNames = systemNames + "," + "'" + systemElement.text() + "'";
+                            else systemNames = "'" + systemElement.text() + "'";
                         }
                         else if (systemElement.tagName() == "games")
                         {
