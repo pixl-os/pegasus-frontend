@@ -41,10 +41,11 @@ enum class MetaType : unsigned char;
 class Metadata {
 
 struct lightgunGameData {
-    lightgunGameData(QString name, QString system)
-        :name(name), system(system){}
+    lightgunGameData(QString name, QString roms, QString system)
+        :name(name), roms(roms), system(system){}
     lightgunGameData(){}
     QString name;
+    QString roms;
     QString system;
 };
 
@@ -71,7 +72,7 @@ private:
     void add_skraper_media_metadata(const QDir&, providers::SearchContext&, const SystemEntry&, bool generateMediaXML = false) const;
     size_t import_media_from_xml(const QDir&, providers::SearchContext&, const SystemEntry&) const;
     size_t import_lightgun_games_from_xml(const QString&);
-    bool isLightgunGames(model::Game*, const SystemEntry&) const;
+    bool isLightgunGames(model::Game*, const model::GameFile*, const SystemEntry&) const;
     bool compareLightgunGames(const lightgunGameData&, const lightgunGameData&) const;
 
 

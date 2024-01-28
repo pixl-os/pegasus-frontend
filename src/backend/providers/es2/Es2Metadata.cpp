@@ -336,25 +336,31 @@ void Metadata::prepare_lightgun_games_metadata()
     }
 }
 
-bool Metadata::isLightgunGames(model::Game* game, const SystemEntry& systementry) const
+bool Metadata::isLightgunGames(model::Game* game, const model::GameFile* gamefile, const SystemEntry& systementry) const
 {
     QString log_tag = "lightgun.cfg ";
     QString simplified_game_name = game->title();
+    //Log::debug(log_tag, LOGMSG("game name to simplified : %1").arg(simplified_game_name));
 
     //lowercase
     simplified_game_name = simplified_game_name.toLower();
     //keep only alphanumeric characters
     const QRegularExpression replace_regex(QStringLiteral("[^a-z0-9!]"));
     simplified_game_name.remove(replace_regex);
-    //Log::warning(log_tag, LOGMSG("simplified_game_name : %1").arg(simplified_game_name));
+    //Log::debug(log_tag, LOGMSG("simplified game name : %1").arg(simplified_game_name));
 
     //parse m_lightgun_games to know if this game is a lightgun game one or not
-    const lightgunGameData lightgunGameToFind = {simplified_game_name, systementry.shortname};
+    lightgunGameData lightgunGameToFind = {simplified_game_name, gamefile->fileinfo().baseName(), systementry.shortname};
     QList<lightgunGameData>::const_iterator it = std::find_if(m_lightgun_games.begin(),m_lightgun_games.end(),
                                                               [&](const lightgunGameData& input){
                                                                     //Log::debug(log_tag, LOGMSG("lightgunGameToFind.system : %1").arg(lightgunGameToFind.system));
                                                                     //Log::debug(log_tag, LOGMSG("input.system : %1").arg(input.system));
-                                                                    return lightgunGameToFind.name.contains(input.name) && input.system.contains("'" + lightgunGameToFind.system + "'");
+                                                                    if(input.roms == ""){
+                                                                        return lightgunGameToFind.name.contains(input.name) && input.system.contains("'" + lightgunGameToFind.system + "'");
+                                                                    }
+                                                                    else{
+                                                                        return input.roms.contains(lightgunGameToFind.roms) && input.system.contains("'" + lightgunGameToFind.system + "'");
+                                                                    }
                                                               }
     );
 
@@ -785,18 +791,27 @@ size_t Metadata::import_lightgun_games_from_xml(const QString& xml_path)
                                         //Log::debug(log_tag, LOGMSG("game '%1' found").arg(gameElement.attribute("tested")));
                                         if(gameElement.attribute("tested").toLower() == "ok"){
                                             QDomNode gameNode=gamesNode.firstChild();
+                                            QString name = "";
+                                            QString roms = "";
                                             while (!gameNode.isNull()) {
                                                 if (gameNode.isElement()) {
                                                     QDomElement nameElement = gameNode.toElement();
                                                     if (nameElement.tagName() == "name")
                                                     {
-                                                        QString name =  nameElement.text();
+                                                        name =  nameElement.text();
                                                         //Log::debug(log_tag, LOGMSG("`%1` as valid game found for '%2'").arg(name, systemNames));
-                                                        m_lightgun_games.append(lightgunGameData(name, systemNames));
-                                                        found_lightgun_games_cnt++;
+                                                    }
+                                                    if (nameElement.tagName() == "roms")
+                                                    {
+                                                        roms =  nameElement.text();
+                                                        //Log::debug(log_tag, LOGMSG("`%1` as valid roms found for '%2'").arg(roms, systemNames));
                                                     }
                                                 }
                                             gameNode = gameNode.nextSibling();
+                                            }
+                                            if(name != ""){
+                                                m_lightgun_games.append(lightgunGameData(name, roms, systemNames));
+                                                found_lightgun_games_cnt++;
                                             }
                                         }
                                     }
@@ -838,7 +853,7 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
         if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
         {
             //search game from lightgun db using lightgun.cfg
-            game.setLightgunGame(isLightgunGames(&game, sysentry));
+            game.setLightgunGame(isLightgunGames(&game, &gamefile, sysentry));
         }
     }
 
