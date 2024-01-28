@@ -192,7 +192,7 @@ FocusScope {
                     label: qsTr("Set overlay") + api.tr
                     note: qsTr("Set overlay on this system") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays")
+                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays", api.internal.recalbox.getBoolParameter("global.recalboxoverlays"))
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".recalboxoverlays",checked);
                     }
