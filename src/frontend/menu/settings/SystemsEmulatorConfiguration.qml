@@ -25,6 +25,7 @@ FocusScope {
     property var system;
     // check if is a libretro emulator for dynamic entry
     property bool isLibretroCore
+    property bool hasOverlaySupport
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -198,7 +199,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSystemGameRewind
                     // not visible if not libretro Core
-                    visible : isLibretroCore
+                    visible : hasOverlaySupport
                 }
                 SectionTitle {
                     text: qsTr("Gameplay options") + api.tr
@@ -274,24 +275,49 @@ FocusScope {
                             checked: {
                                 var emulator = api.internal.recalbox.getStringParameter(system.shortName + ".emulator");
                                 var core = api.internal.recalbox.getStringParameter(system.shortName + ".core");
-                                console.log("index=",index);
-                                console.log("emulator=", emulator);
-                                console.log("core=", core);
-                                console.log("is default=",system.isDefaultEmulatorAt(index));
+                                //console.log("index=",index);
+                                //console.log("emulator=", emulator);
+                                //console.log("core=", core);
+                                //console.log("is default=",system.isDefaultEmulatorAt(index));
                                 
-                                if ((emulator === system.getNameAt(index)) && (core === system.getCoreAt(index))){
-                                    // check is libretro for filter menu
-                                    if(emulator === "libretro") isLibretroCore = true
-                                    else isLibretroCore = false
-                                    return true;
-                                }
-                                else if (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === ""))){
-                                    // check is libretro for filter menu
-                                    if(system.getNameAt(index) === "libretro") isLibretroCore = true
-                                    else isLibretroCore = false
-                                    return true;
+                                if (((emulator === system.getNameAt(index)) && (core === system.getCoreAt(index))) ||
+                                    (system.isDefaultEmulatorAt(index) && ((core === "") || (emulator === "")))){
+                                     return true;
                                 }
                                 else return false;
+                            }
+                            onCheckedChanged: {
+                                if(checked){
+                                    var emulator = system.getNameAt(index);
+                                    var core = system.getCoreAt(index);
+                                    //console.log("index=",index);
+                                    //console.log("emulator=", emulator);
+                                    //console.log("core=", core);
+                                    //console.log("is default=",system.isDefaultEmulatorAt(index));
+
+                                    if(emulator === "libretro")
+                                        isLibretroCore = true;
+                                    else
+                                        isLibretroCore = false;
+
+                                    //check to confirm overlay support
+                                    switch (emulator) {
+                                      case 'libretro':
+                                          hasOverlaySupport = true;
+                                        break;
+                                      case 'model2emu':
+                                          hasOverlaySupport = true;
+                                        break;
+                                      case 'supermodel':
+                                          hasOverlaySupport = true;
+                                        break;
+                                      case 'dolphin-triforce':
+                                          hasOverlaySupport = true;
+                                        break;
+                                      default:
+                                          hasOverlaySupport = false;
+                                    }
+                                }
                             }
                             ButtonGroup.group: radioGroup
                         }
