@@ -8,8 +8,26 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add docked mode options in advanced emulator settings
 	- add more log at start for QT Library Information about version and paths
 	- add token saving also in recalbox.conf parameters now for configgen/emulators
-	- use hash of login+password now to discriminate cache and change about retroachievement token 
-
+	- use hash of login+password now to discriminate cache and change about retroachievement token
+	- add "overlay" option for 3 systems:   model2/3 and triforce + fixes
+	- get default "overlays" value of system option from global one
+	- support of sinden lightgun:
+		- management of border in pegasus
+		- manage display of crosshair
+		- add sinden lightgun icon font
+		- rework border and way to resize theme/menu
+		- manage recoil mode and colors from xml .config file
+		- quick rework border/crosshair management
+		- spinner/dialog box to restart sinden lightgun service
+	- lightguns feature:
+		- add way to read lightgun.cfg as metadata
+		- add and manage "lightgungame" property setting to game model for usage by theme
+		- able to to manage several systems regrouped in 'lightgun.cfg'
+		- able to manage "<roms>" tag from "lightgun.cfg"
+		
+	- model2emu menu:
+		- add scanlines option from model2emu menu
+	
 - Fixes:
 	- add support of "-v" and "v" tags in updates versions in upper case also now
 	- use recalbox.conf to store last check time for updates
