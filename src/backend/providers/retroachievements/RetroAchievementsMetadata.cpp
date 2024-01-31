@@ -85,7 +85,12 @@ QJsonDocument get_json_from_url(QString url_str, QString log_tag, QNetworkAccess
 	
 	//Set request
 	QNetworkRequest request(url);
-    request.setRawHeader("User-Agent", "Mozilla Firefox");
+    //Log::debug(log_tag, LOGMSG("User-Agent: '%1'").arg("pixL Pegasus-Frontend/" + QStringLiteral(GIT_REVISION)));
+    request.setRawHeader("User-Agent", "Pegasus-Frontend/" + QStringLiteral(GIT_REVISION).toUtf8());
+    request.setRawHeader("accept", "*/*");
+    //Log::debug(log_tag, LOGMSG("Host: '%1'").arg(url.host()));
+    request.setRawHeader("Host", url.host().toUtf8());
+
 	#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 		request.setTransferTimeout(10000);
 	#endif
