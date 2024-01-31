@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2023-XX-XX - vX.X.X
+## [pixL-master] - 2024-01-31 - v0.1.5.1
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
 	- use recalbox.conf "updates." parameters now
@@ -14,7 +14,8 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add support of "-v" and "v" tags in updates versions in upper case also now
 	- use recalbox.conf to store last check time for updates
 	- start to change some QML import for QT 5.15 (tested with new buildroot version also)
-	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated.
+	- quick fix for retroachievement display to restore previous behavior due to issue with hashlibrary parsing and when 'mass' hash calculation/check is deactivated
+	- restore RetroAchievements features by adding valid "user-agent", "accept" and "host" header data
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
