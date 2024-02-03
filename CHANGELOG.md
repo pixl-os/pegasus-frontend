@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2024-01-31 - v0.1.5.1
+## [pixL-master] - 2024-01-31 - v0.1.6
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
 	- use recalbox.conf "updates." parameters now
