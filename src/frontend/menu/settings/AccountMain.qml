@@ -389,6 +389,37 @@ FocusScope {
                     }
 
                     visible: optNetplayPswdViewerActivate.checked && optNetplayActivate.checked
+                    KeyNavigation.down: optStartDiscord
+                }
+                SectionTitle {
+                    text: qsTr("Discord") + api.tr
+                    first: true
+                    // visible: optNetplayActivate.checked
+                    symbol: "\uf16e"
+                    symbolFontFamily: global.fonts.awesome //global.fonts.ion is used by default
+                }
+                SimpleButton {
+                    id: optStartDiscord
+
+                    label: qsTr("Start Discord") + api.tr
+                    note: qsTr("Launch Discord application and connect you with mobile QRCode.\nChange Windows with alt + tab on keyboard.\nSwitch to discord in-game with hotkey + select") + api.tr
+
+                    onActivate: {
+                        focus = true;
+                        api.internal.system.run("/usr/bin/launchDiscord.sh")
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optAutoLaunchDiscord
+                }
+                ToggleOption {
+                    id: optAutoLaunchDiscord
+
+                    label: qsTr("Auto start Discord") + api.tr
+                    note: qsTr("Launch Discord on pixL boot") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("discord.autolaunch")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("discord.autolaunch",checked);
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
