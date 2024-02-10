@@ -406,7 +406,7 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        api.internal.system.run("/usr/bin/launchDiscord.sh")
+                        api.internal.system.runAsync("/usr/bin/launchDiscord.sh")
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAutoLaunchDiscord
