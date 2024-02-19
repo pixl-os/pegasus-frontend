@@ -1467,14 +1467,15 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
     //Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id) - m_iid_to_idx.count(instance_id) : %1").arg(m_iid_to_idx.count(instance_id)));
     //Log::debug(m_log_tag, LOGMSG("void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id) - m_iid_to_device.count(instance_id) : %1").arg(m_iid_to_device.count(instance_id)));
     try{
+        //Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
+        emit disconnected(instance_id); /*diconnected change to SDL "connection" index
+                                       remove also in model:gamepad & an change recalbox.conf now.*/
+
+        //check if instance_id exists because it could be already erased
         if(m_iid_to_idx.count(instance_id) == 1 && m_iid_to_device.count(instance_id) == 1){
             const int device_idx = m_iid_to_idx.at(instance_id);
             Log::debug(m_log_tag, LOGMSG("int device_idx : %1").arg(device_idx));
             Log::debug(m_log_tag, LOGMSG("int instance_id : %1").arg(instance_id));
-
-            //Log::debug(m_log_tag, LOGMSG("emit disconnected(%1)").arg(QString::number(device_idx)));
-            emit disconnected(instance_id); /*diconnected change to SDL "connection" index
-                                           remove also in model:gamepad & an change recalbox.conf now.*/
 
             //erase existing device index/device and instance id
             m_iid_to_device.erase(instance_id);
@@ -1483,30 +1484,30 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
 
             if (m_recording.device == device_idx) //Good here finally, the index should be used, but still to verify in other function also, take care !
                 cancel_recording();
+        }
 
-            //check instance for all indexes after this removing
-            //Get number of Joystick
-            int count = SDL_NumJoysticks();
-            for(int j = 0; j < count; j++ ){
-                //Get Device
-                SDL_Joystick* joystick = SDL_JoystickOpen(j);
-                //Get global index of Device
-                SDL_JoystickID joystickIdentifier = SDL_JoystickInstanceID(joystick);
-                //Get previous index from instance
-                int previousIndex = m_iid_to_idx.at(joystickIdentifier);
-                //Clode device
-                SDL_JoystickClose(joystick);
-                if(previousIndex != j){
-                    //need to redo hasmaps
-                    //remove previous value
-                    m_iid_to_idx.erase(joystickIdentifier);
-                    m_idx_to_iid.erase(previousIndex);
-                    //store new value using an index decremented
-                    m_iid_to_idx.emplace(joystickIdentifier,j);
-                    m_idx_to_iid.emplace(j,joystickIdentifier);
-                    //Request to update indexes in model::gamepad & recalbox.conf
-                    emit indexChanged(previousIndex, j);
-                }
+        //check instance for all indexes after this removing
+        //Get number of Joystick
+        int count = SDL_NumJoysticks();
+        for(int j = 0; j < count; j++ ){
+            //Get Device
+            SDL_Joystick* joystick = SDL_JoystickOpen(j);
+            //Get global index of Device
+            SDL_JoystickID joystickIdentifier = SDL_JoystickInstanceID(joystick);
+            //Get previous index from instance
+            int previousIndex = m_iid_to_idx.at(joystickIdentifier);
+            //Clode device
+            SDL_JoystickClose(joystick);
+            if(previousIndex != j){
+                //need to redo hasmaps
+                //remove previous value
+                m_iid_to_idx.erase(joystickIdentifier);
+                m_idx_to_iid.erase(previousIndex);
+                //store new value using an index decremented
+                m_iid_to_idx.emplace(joystickIdentifier,j);
+                m_idx_to_iid.emplace(j,joystickIdentifier);
+                //Request to update indexes in model::gamepad & recalbox.conf
+                emit indexChanged(previousIndex, j);
             }
         }
     }
