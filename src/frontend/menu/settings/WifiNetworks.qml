@@ -105,7 +105,8 @@ FocusScope {
             switch (actionState) {
                     case "Connect": //as connect
                         //restart wifi to force to connect to priority 1 wifi
-                        if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi restart");
+                        //console.log("command : " + "/etc/init.d/S09wifi connect '" + confirmDialog.wifi_name + "'");
+                        if(!isDebugEnv()) api.internal.system.run("/etc/init.d/S09wifi connect '" + confirmDialog.wifi_name + "'");
                         //wait 5s to start
                         api.internal.system.run("sleep 5");
                         var wifiIP = ""

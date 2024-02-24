@@ -388,7 +388,7 @@ FocusScope {
                 wifiPriorityBox.focus = true;
             }
             onFocusChanged: container.onFocus(this)
-            KeyNavigation.down: optWifiPriority.value === "1" ? okButton : secondButton
+            KeyNavigation.down: okButton
         }
 
 
@@ -480,30 +480,28 @@ FocusScope {
 
                 width: (secondchoice !== "") ? parent.width * 0.33 : ((thirdchoice !== "") ? parent.width * 0.5 : parent.width)
                 height: root.textSize * 2.25
-                color: (optWifiPriority.value === "1") ? ((focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main) : "grey"
+                color: (focus || okMouseArea.containsMouse) ? "darkGreen" : themeColor.main
                 KeyNavigation.up: optWifiPriority
                 KeyNavigation.right: (secondchoice !== "") ? secondButton : cancelButton
                 Keys.onPressed: {
                     //console.log("okButton Keys.onPressed");
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
-                        if (optWifiPriority.value === "1"){
-                            //change text to ask to wait if needed
-                            okButtonText.text = qsTr("Please wait...") + api.tr
-                            messageText.text = qsTr("Under progress...") + api.tr
-                            //add spinner display
-                            spinnerloader.active = true;
-                            //hide other buttons
-                            secondButtonText.text = "";
-                            cancelButtonText.text = "";
-                            //save conf depending actionState
-                            if(actionState === "Connect"){
-                                saveWifiConf();
-                            }
-                            //let 50 ms to update interface
-                            lastchoice = "firstchoice";
-                            acceptTimer.running = true;
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr
+                        messageText.text = qsTr("Under progress...") + api.tr
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //save conf depending actionState
+                        if(actionState === "Connect"){
+                            saveWifiConf();
                         }
+                        //let 50 ms to update interface
+                        lastchoice = "firstchoice";
+                        acceptTimer.running = true;
                     }
                 }
 
@@ -516,7 +514,7 @@ FocusScope {
                     font {
                         pixelSize: root.textSize
                         family: globalFonts.sans
-                        strikeout: (optWifiPriority.value === "1") ? false : true
+                        strikeout: false
                     }
                 }
 
@@ -525,23 +523,21 @@ FocusScope {
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
-                        if (optWifiPriority.value === "1"){
-                            //change text to ask to wait if needed
-                            okButtonText.text = qsTr("Please wait...") + api.tr;
-                            messageText.text = qsTr("Under progress...") + api.tr;
-                            //add spinner display
-                            spinnerloader.active = true;
-                            //hide other buttons
-                            secondButtonText.text = "";
-                            cancelButtonText.text = "";
-                            //save conf depending actionState
-                            if(actionState === "Connect"){
-                                saveWifiConf();
-                            }
-                            //let 50 ms to update interface
-                            lastchoice = "firstchoice";
-                            acceptTimer.running = true;
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr;
+                        messageText.text = qsTr("Under progress...") + api.tr;
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //save conf depending actionState
+                        if(actionState === "Connect"){
+                            saveWifiConf();
                         }
+                        //let 50 ms to update interface
+                        lastchoice = "firstchoice";
+                        acceptTimer.running = true;
                    }
                 }
                 //Spinner Loader to wait after accept (if needed and if UI blocked)
@@ -589,10 +585,7 @@ FocusScope {
                 KeyNavigation.up: optWifiPriority
                 KeyNavigation.right: cancelButton
                 KeyNavigation.left:{
-                    if(optWifiPriority.value === "1"){
-                        return okButton;
-                    }
-                    else return cancelButton;
+                    return okButton;
                 }
                 Keys.onPressed: {
                     //console.log("secondButton Keys.onPressed");
