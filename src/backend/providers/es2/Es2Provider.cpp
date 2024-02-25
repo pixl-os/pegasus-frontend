@@ -157,9 +157,19 @@ inputConfigEntry Es2Provider::load_input_data(const QString& DeviceName, const Q
             : default_config_paths();
     }();
 
-    // Find input
-    return find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUID);
-
+    // Find input with CRC and Without if needed
+    // since 25/02/24 - with new buildroot and new SDL2 version
+    providers::es2::inputConfigEntry inputentry = find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUID);
+    if((inputentry.inputConfigAttributs.deviceGUID != DeviceGUID) && (DeviceGUID.mid(4,4) != "0000")){
+        QString DeviceGUIDWithoutCRC = DeviceGUID.mid(0,4) + "0000" + DeviceGUID.mid(8);
+        inputentry = find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUIDWithoutCRC);
+        if(inputentry.inputConfigAttributs.deviceGUID == DeviceGUIDWithoutCRC){
+            //save conf with DeviceGUID with CRC
+            inputentry.inputConfigAttributs.deviceGUID = DeviceGUID;
+            bool status = save_input_data(inputentry);
+        }
+    }
+    return inputentry;
 }
 
 inputConfigEntry Es2Provider::load_any_input_data_by_guid(const QString& DeviceGUID)
