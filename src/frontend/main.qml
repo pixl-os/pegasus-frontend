@@ -930,12 +930,11 @@ Window {
                 id: inputPanel
                 z: 89
                 y: yPositionWhenHidden
-                x: Screen.orientation === Qt.LandscapeOrientation ? 0 : (parent.width-parent.height) / 2
-                width: Screen.orientation === Qt.LandscapeOrientation ? parent.width : parent.height
-                height: (Screen.orientation === Qt.LandscapeOrientation ? parent.height : parent.width) - keyboard.height
+                x: 0
+                width: parent.width
+                height: parent.height - keyboard.height
                 visible: Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport
-
-                property real yPositionWhenHidden: Screen.orientation === Qt.LandscapeOrientation ? parent.height : parent.width + (parent.height-parent.width) / 2
+                property real yPositionWhenHidden: parent.height
                 states: State {
                     name: "visible"
                     /*  The visibility of the InputPanel can be bound to the Qt.inputMethod.visible property,
