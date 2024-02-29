@@ -245,12 +245,26 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("pegasus.multiwindows",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGamelistsOnly
+                    KeyNavigation.down: optHideEmbeddedGames
                 }
                 SectionTitle {
                     text: qsTr("Games library loading") + api.tr
                     first: true
                     symbol: "\uf1d9"
+                }
+                ToggleOption {
+                    id: optHideEmbeddedGames
+
+                    label: qsTr("Hide embedded games") + api.tr
+                    note: qsTr("Once enabled, default games embedded from pixL will be hide") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.embedded.games.hide",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.embedded.games.hide",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGamelistsOnly
+
                 }
                 ToggleOption {
                     id: optGamelistsOnly
