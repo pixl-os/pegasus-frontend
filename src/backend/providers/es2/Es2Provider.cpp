@@ -99,26 +99,33 @@ Provider& Es2Provider::run(SearchContext& sctx)
             Log::debug(display_name(), LOGMSG("System `%1` provided %2 system videos")
             .arg(sysentry.name, QString::number(found_videos)));
 
-            //if gamelistfist activated we propose to search games if no gamelist in this system
-            if(RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
-            {
-                //check if no gamelist exists
-                const QDir xml_dir(sysentry.path);
-                if(metahelper.find_gamelist_xml(possible_config_dirs, xml_dir,sysentry).isEmpty()){
-                    const size_t found_games = find_games_for(sysentry, sctx);
-                    Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
+            for(const QString& romsDir : paths::romsDirs()){
+                QString share_path = sysentry.path ;
+                share_path = share_path.replace("%ROOT%",romsDir);
+                const QDir xml_dir(share_path);
+
+                //if gamelistfist activated we propose to search games if no gamelist in this system
+                if(RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
+                {
+                    //check if no gamelist exists
+                    if(metahelper.find_gamelist_xml(possible_config_dirs, xml_dir,sysentry).isEmpty()){
+                        const size_t found_games = find_games_for(sysentry, xml_dir, sctx);
+                        Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from share init")
+                        .arg(sysentry.name, QString::number(found_games)));
+                    }
+                }
+                // Find games if not Gamelist Only activated
+                else if(!RecalboxConf::Instance().AsBool("pegasus.gamelistonly"))
+                {
+                    //check if game exists
+                    size_t found_games = find_games_for(sysentry, xml_dir, sctx);
+                    Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from share init")
                     .arg(sysentry.name, QString::number(found_games)));
                 }
+
+                progress += progress_step;
+                emit progressChanged(progress);
             }
-            // Find games if not Gamelist Only activated
-            else if(!RecalboxConf::Instance().AsBool("pegasus.gamelistonly"))
-            {
-                const size_t found_games = find_games_for(sysentry, sctx);
-                Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
-                .arg(sysentry.name, QString::number(found_games)));
-            }
-            progress += progress_step;
-            emit progressChanged(progress);
     }
     Log::info(LOGMSG("Global Timing: Game files searching took %1ms").arg(games_timer.elapsed()));
 
@@ -137,12 +144,17 @@ Provider& Es2Provider::run(SearchContext& sctx)
     QElapsedTimer assets_timer;
     assets_timer.start();
     for (const SystemEntry& sysentry : systems) {
-        emit progressStage(sysentry.name);
-        progress += progress_step;
-        emit progressChanged(progress);
-        //Process event in the queue
-        QCoreApplication::processEvents();
-        metahelper.find_metadata_for_system(sysentry, sctx);
+        for(const QString& romsDir : paths::romsDirs()){
+            QString share_path = sysentry.path ;
+            share_path = share_path.replace("%ROOT%",romsDir);
+            const QDir xml_dir(share_path);
+            emit progressStage(sysentry.name);
+            progress += progress_step;
+            emit progressChanged(progress);
+            //Process event in the queue
+            QCoreApplication::processEvents();
+            metahelper.find_metadata_for_system(sysentry, xml_dir, sctx);
+        }
     }
     Log::info(LOGMSG("Stats - Global Timing: Gamelists/Assets parsing/searching took %1ms").arg(assets_timer.elapsed()));
     return *this;

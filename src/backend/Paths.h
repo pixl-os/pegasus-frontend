@@ -33,6 +33,9 @@ QStringList configDirs();
 /// Returns the directory paths where themes may be located
 QStringList themesDirs();
 
+/// Returns the directory paths where roms could be located
+QStringList romsDirs();
+
 /// Returns a directory path where persistent data could be stored
 QString writableConfigDir();
 
