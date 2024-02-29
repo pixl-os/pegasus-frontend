@@ -145,6 +145,28 @@ QStringList themesDirs()
     return themes_dir_paths;
 }
 
+QStringList romsDirs()
+{
+    static const QStringList roms_dir_paths = [](){
+        QStringList paths(QLatin1String(""));
+        const QString local_roms_dir = QCoreApplication::applicationDirPath()
+                                       + QStringLiteral("/roms");
+        if (QFileInfo::exists(local_roms_dir))
+            paths << local_roms_dir;
+
+        //add recalbox share root in romsDirs
+        paths.append("/recalbox/share/roms");
+
+        //add recalbox share init root in romsDirs
+        paths.append("/recalbox/share_init/roms");
+
+        paths.removeDuplicates();
+        return paths;
+    }();
+
+    return roms_dir_paths;
+}
+
 QString writableConfigDir()
 {
     static const QString config_dir = get_appconfig_dir();

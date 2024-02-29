@@ -359,8 +359,8 @@ providers::es2::SystemEntry read_system_entry_v2(const QString& log_tag, QXmlStr
     // do some path formatting
     xml_props[QLatin1String("path")]
             .replace("\\", "/")
-            .replace("~", paths::homePath())
-            .replace("%ROOT%","/recalbox/share/roms");
+            .replace("~", paths::homePath());
+            //.replace("%ROOT%","/recalbox/share/roms");
 
 
     // construct the new platform

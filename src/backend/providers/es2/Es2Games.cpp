@@ -107,22 +107,23 @@ size_t create_collection_for(
 
 size_t find_games_for(
     const SystemEntry& sysentry,
+    const QDir& system_dir,
     SearchContext& sctx)
 {
     model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
 
     // find all (sub-)directories, but ignore 'media'
-    const QStringList dirs = [&sysentry]{
+    const QStringList dirs = [& system_dir]{
         QStringList result;
 
         constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
         constexpr auto subdir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
-        QDirIterator dirs_it(sysentry.path, subdir_filters, subdir_flags);
+        QDirIterator dirs_it(system_dir.path(), subdir_filters, subdir_flags);
         while (dirs_it.hasNext())
             result.append(dirs_it.next());
 
-        result.removeOne(sysentry.path + QStringLiteral("/media"));
-        result.append(sysentry.path);
+        result.removeOne(system_dir.path() + QStringLiteral("/media"));
+        result.append(system_dir.path());
         return result;
     }();
 

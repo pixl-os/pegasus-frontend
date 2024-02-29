@@ -51,7 +51,7 @@ struct lightgunGameData {
 
 public:
     explicit Metadata(QString, std::vector<QString>);
-    void find_metadata_for_system(const SystemEntry&, providers::SearchContext&) const;
+    void find_metadata_for_system(const SystemEntry&, const QDir&, providers::SearchContext&) const;
     void prepare_lightgun_games_metadata();
     QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry&) const;
     QString find_media_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry&) const;
