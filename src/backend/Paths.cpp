@@ -29,6 +29,8 @@
 
 #include <functional>
 
+//For recalbox
+#include "RecalboxConf.h"
 
 namespace {
 using QSP = QStandardPaths;
@@ -157,8 +159,11 @@ QStringList romsDirs()
         //add recalbox share root in romsDirs
         paths.append("/recalbox/share/roms");
 
-        //add recalbox share init root in romsDirs
-        paths.append("/recalbox/share_init/roms");
+        //if embedded games are not hidden
+        if(!RecalboxConf::Instance().AsBool("pegasus.embedded.games.hide")){
+                    //add recalbox share init root in romsDirs
+            paths.append("/recalbox/share_init/roms");
+        }
 
         paths.removeDuplicates();
         return paths;
