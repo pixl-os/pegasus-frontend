@@ -83,13 +83,27 @@ FocusScope {
                     first: true
                     symbol: "\uf17f"
                 }
+                // primary screen
+                ToggleOption {
+                    id: optPrimaryScreenActivate
+                    SectionTitle {
+                        text: qsTr("Primary screen settings") + api.tr
+                        first: true
+                    }
+                    checked: api.internal.recalbox.getBoolParameter("system.primary.screen.enabled", true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("system.primary.screen.enabled",checked);
+                    }
+                    symbol: "\uf17f"
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDisplayOutput
+                }
                 MultivalueOption {
                     id: optDisplayOutput
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen"
                     property variant optionsList : []
                     // set focus only on first item
-                    focus: true
 
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose your output for primary screen.") + api.tr
@@ -109,6 +123,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDisplayResolution
+                    visible: optPrimaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayResolution
@@ -134,6 +149,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDisplayFrequency
+                    visible: optPrimaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayFrequency
@@ -159,6 +175,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDisplayRotation
+                    visible: optPrimaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayRotation
@@ -169,7 +186,6 @@ FocusScope {
                     note: qsTr("Choose orientation for your primary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     font: globalFonts.ion
-
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
@@ -182,19 +198,18 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optMarqueeScreenActivate
+                    KeyNavigation.down: optSecondaryScreenActivate
+                    visible: optPrimaryScreenActivate.checked
                 }
 
-                // second screen marquee or else
+                // second screen or else
                 ToggleOption {
-                    id: optMarqueeScreenActivate
+                    id: optSecondaryScreenActivate
                     SectionTitle {
                         text: qsTr("Secondary screen settings") + api.tr
                         first: true
                     }
-                    // label: qsTr("Activate secondary screen") + api.tr
-                    // note: qsTr("Secondary screen for marquee or else.") + api.tr
-                    checked: api.internal.recalbox.getBoolParameter("system.secondary.screen.enabled")
+                    checked: api.internal.recalbox.getBoolParameter("system.secondary.screen.enabled", false)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("system.secondary.screen.enabled",checked);
                     }
@@ -229,7 +244,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDisplayMarqueeResolution
                     // only show if video marquee option as enabled
-                    visible: optMarqueeScreenActivate.checked
+                    visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeResolution
@@ -256,7 +271,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDisplayMarqueeFrequency
                     // only show if video marquee option as enabled
-                    visible: optMarqueeScreenActivate.checked
+                    visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeFrequency
@@ -283,7 +298,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDisplayMarqueeRotation
                     // only show if video marquee option as enabled
-                    visible: optMarqueeScreenActivate.checked
+                    visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayMarqueeRotation
@@ -309,7 +324,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDisplayMarqueePosition
                     // only show if video marquee option as enabled
-                    visible: optMarqueeScreenActivate.checked
+                    visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayMarqueePosition
@@ -335,7 +350,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optValidateChange
                     // only show if video marquee option as enabled
-                    visible: optMarqueeScreenActivate.checked
+                    visible: optSecondaryScreenActivate.checked
                 }
 
                 // to validate first and second screen
@@ -366,7 +381,7 @@ FocusScope {
                         api.internal.recalbox.getStringParameter(optDisplayFrequency.parameterName, optDisplayFrequency.value)
                         api.internal.recalbox.getStringParameter(optDisplayRotation.parameterName, optDisplayRotation.value)
                         //for second screen (if activated)
-                        if(optMarqueeScreenActivate.checked){
+                        if(optSecondaryScreenActivate.checked){
                             api.internal.recalbox.setStringParameter(optDisplayMarqueeOutput.parameterName, optDisplayMarqueeOutput.value)
                             api.internal.recalbox.getStringParameter(optDisplayMarqueeResolution.parameterName, optDisplayMarqueeResolution.value)
                             api.internal.recalbox.getStringParameter(optDisplayMarqueeFrequency.parameterName, optDisplayMarqueeFrequency.value)
