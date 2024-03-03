@@ -78,10 +78,29 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
 
-                SectionTitle {
-                    text: qsTr("Primary screen settings") + api.tr
-                    first: true
-                    symbol: "\uf17f"
+                //mode: switch, clone or extended
+                MultivalueOption {
+                    id: optDisplayMode
+                    //property to manage parameter name
+                    property string parameterName : "system.video.screens.mode"
+                    label: qsTr("Display mode") + api.tr
+                    note: qsTr("Choose any mode to manage behavior when you plug/unplug any screen") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    font: globalFonts.ion
+                    focus: true
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optDisplayMode;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName)
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optPrimaryScreenActivate
                 }
                 // primary screen
                 ToggleOption {
