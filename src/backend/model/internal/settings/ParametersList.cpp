@@ -84,6 +84,16 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("normal") << QObject::tr("inverted") << QObject::tr("left") << QObject::tr("right");
         ListOfInternalValue << "normal" << "inverted" << "left" << "right";
     }
+    else if (Parameter == "system.video.screens.mode")
+    {
+        /* parameter List for mode :
+        switch: when we plug a screen we switch to secondary one if connected
+        clone: we replicate image between primary and secondary screen
+        extended: when we ahve 2 screens, we extend to secondary one
+        */
+        ListOfValue << QObject::tr("switch") << QObject::tr("clone") << QObject::tr("extended");
+        ListOfInternalValue << "switch" << "clone" << "extended";
+    }
     else if (Parameter == "system.secondary.screen.position")
     {
         /* parameter List for xrandr option :
