@@ -216,11 +216,11 @@ FocusScope {
                     symbol: "\uf115"
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optDisplayRotation
-                    KeyNavigation.down: optDisplayMarqueeOutput
+                    KeyNavigation.down: optDisplaySecondaryOutput
                 }
 
                 MultivalueOption {
-                    id: optDisplayMarqueeOutput
+                    id: optDisplaySecondaryOutput
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen"
                     property variant optionsList : []
@@ -233,7 +233,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optDisplayMarqueeOutput;
+                        parameterslistBox.callerid = optDisplaySecondaryOutput;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 == \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -242,15 +242,15 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optDisplayMarqueeResolution
-                    // only show if video marquee option as enabled
+                    KeyNavigation.down: optDisplaySecondaryResolution
+                    // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
-                    id: optDisplayMarqueeResolution
+                    id: optDisplaySecondaryResolution
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.resolution"
-                    property variant optionsList : [optDisplayMarqueeOutput.value]
+                    property variant optionsList : [optDisplaySecondaryOutput.value]
 
                     label: qsTr("Resolution") + api.tr
                     note: qsTr("Choose resolution for secondary screen.") + api.tr
@@ -260,7 +260,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optDisplayMarqueeResolution;
+                        parameterslistBox.callerid = optDisplaySecondaryResolution;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'",optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -269,15 +269,15 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optDisplayMarqueeFrequency
-                    // only show if video marquee option as enabled
+                    KeyNavigation.down: optDisplaySecondaryFrequency
+                    // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
-                    id: optDisplayMarqueeFrequency
+                    id: optDisplaySecondaryFrequency
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.frequency"
-                    property variant optionsList : [optDisplayMarqueeOutput.value, optDisplayMarqueeResolution.value]
+                    property variant optionsList : [optDisplaySecondaryOutput.value, optDisplaySecondaryResolution.value]
 
                     label: qsTr("Frequency") + api.tr
                     note: qsTr("Choose frequency for secondary screen.") + api.tr
@@ -287,7 +287,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optDisplayMarqueeFrequency;
+                        parameterslistBox.callerid = optDisplaySecondaryFrequency;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -296,12 +296,12 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optDisplayMarqueeRotation
-                    // only show if video marquee option as enabled
+                    KeyNavigation.down: optDisplaySecondaryRotation
+                    // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
-                    id: optDisplayMarqueeRotation
+                    id: optDisplaySecondaryRotation
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.rotation"
 
@@ -313,7 +313,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optDisplayMarqueeRotation;
+                        parameterslistBox.callerid = optDisplaySecondaryRotation;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -322,12 +322,12 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optDisplayMarqueePosition
-                    // only show if video marquee option as enabled
+                    KeyNavigation.down: optDisplaySecondaryPosition
+                    // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
-                    id: optDisplayMarqueePosition
+                    id: optDisplaySecondaryPosition
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.position"
 
@@ -339,7 +339,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optDisplayMarqueePosition;
+                        parameterslistBox.callerid = optDisplaySecondaryPosition;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName)
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -349,7 +349,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optValidateChange
-                    // only show if video marquee option as enabled
+                    // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
 
@@ -382,11 +382,11 @@ FocusScope {
                         api.internal.recalbox.getStringParameter(optDisplayRotation.parameterName, optDisplayRotation.value)
                         //for second screen (if activated)
                         if(optSecondaryScreenActivate.checked){
-                            api.internal.recalbox.setStringParameter(optDisplayMarqueeOutput.parameterName, optDisplayMarqueeOutput.value)
-                            api.internal.recalbox.getStringParameter(optDisplayMarqueeResolution.parameterName, optDisplayMarqueeResolution.value)
-                            api.internal.recalbox.getStringParameter(optDisplayMarqueeFrequency.parameterName, optDisplayMarqueeFrequency.value)
-                            api.internal.recalbox.getStringParameter(optDisplayMarqueeRotation.parameterName, optDisplayMarqueeRotation.value)
-                            api.internal.recalbox.getStringParameter(optDisplayMarqueePosition.parameterName, optDisplayMarqueePosition.value)
+                            api.internal.recalbox.setStringParameter(optDisplaySecondaryOutput.parameterName, optDisplaySecondaryOutput.value)
+                            api.internal.recalbox.getStringParameter(optDisplaySecondaryResolution.parameterName, optDisplaySecondaryResolution.value)
+                            api.internal.recalbox.getStringParameter(optDisplaySecondaryFrequency.parameterName, optDisplaySecondaryFrequency.value)
+                            api.internal.recalbox.getStringParameter(optDisplaySecondaryRotation.parameterName, optDisplaySecondaryRotation.value)
+                            api.internal.recalbox.getStringParameter(optDisplaySecondaryPosition.parameterName, optDisplaySecondaryPosition.value)
                         }
                         //force save in recalbox.conf file before to execute script
                         api.internal.recalbox.saveParameters();
