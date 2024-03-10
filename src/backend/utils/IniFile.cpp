@@ -72,6 +72,35 @@ bool IniFile::Load()
   return !mConfiguration.empty();
 }
 
+bool IniFile::ReloadValue(const std::string& keytoreload)
+{
+  // Load file
+  std::string content;
+  if (!mFilePath.IsEmpty() && mFilePath.Exists()) content = Files::LoadFile(mFilePath);
+  else if (!mFallbackFilePath.IsEmpty() && mFallbackFilePath.Exists()) content = Files::LoadFile(mFallbackFilePath);
+  else return false;
+
+  // Split lines
+  content = Strings::Replace(content, "\r", "");
+  Strings::Vector lines = Strings::Split(content, '\n');
+
+  // Get key/value
+  std::string key, value;
+  for (std::string& line : lines) {
+      if (IsValidKeyValue(Strings::Trim(line, " \t\r\n"), key, value)){
+          //update only for the key to reload
+          if(key == keytoreload){
+              //LOG(LogInfo) << "[IniFile] ReloadValue - key: '" << key << "' - value: '" << value << "'";
+              // Move from Pendings to regular Configuration
+              mConfiguration[key] = value;
+              mPendingWrites.erase(key);
+          }
+      }
+  }
+  OnLoad();
+  return !mConfiguration.empty();
+}
+
 bool IniFile::Reload()
 {
   // force Load of file

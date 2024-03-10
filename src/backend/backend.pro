@@ -20,6 +20,7 @@ SOURCES += \
     DownloadManager.cpp \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
+    HttpServer.cpp \
     PegasusAssets.cpp \
     ProcessLauncher.cpp \
     ScriptRunner.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     DownloadManager.h \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
+    HttpServer.h \
     PegasusAssets.h \
     ProcessLauncher.h \
     ScriptRunner.h \

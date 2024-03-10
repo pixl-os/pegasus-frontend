@@ -159,6 +159,7 @@ Backend::~Backend()
     delete m_launcher;
     delete m_frontend;
     delete m_api;
+    delete m_httpapi;
 
 #if defined(WITH_SDL_GAMEPAD) || defined(WITH_SDL_POWER)
     SDL_Quit();
@@ -183,6 +184,8 @@ Backend::Backend(const CliArgs& args, char** environment)
     m_api = new ApiObject(args);
     m_frontend = new FrontendLayer(m_api);
     m_launcher = new ProcessLauncher();
+    //start http server to help system scripts to communicate with pegasus-frontend
+    m_httpapi = new HttpServer(1234);
 
     // the following communication is required because process handling
     // and destroying/rebuilding the frontend stack are asynchronous tasks;
@@ -232,6 +235,10 @@ Backend::Backend(const CliArgs& args, char** environment)
 
     // quit/reboot/restart/shutdown request
     QObject::connect(&m_api->internal().system(), &model::System::appCloseRequested, on_app_close);
+
+    // to reload parameters from recalbox.conf
+    QObject::connect(m_httpapi, &HttpServer::confReloaded,&m_api->internal().recalbox(), &model::Recalbox::reloadParameter);
+
 }
 
 void Backend::start()

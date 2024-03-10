@@ -222,23 +222,21 @@ FocusScope {
                     // in slider object
                     max : 100
                     min : 0
-                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
-                    // in text object
-                    value: api.internal.recalbox.getIntParameter(parameterName) + "%"
+                    slidervalue : api.internal.recalbox.audioVolume
+                    value: api.internal.recalbox.audioVolume + "%"
+
 
                     onActivate: {
                         focus = true;
                     }
                     
                     Keys.onLeftPressed: {
-                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-                        value = slidervalue + "%";
+                        api.internal.recalbox.audioVolume = slidervalue;
                         sfxNav.play();
                     }
 
                     Keys.onRightPressed: {
-                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-                        value = slidervalue + "%";
+                        api.internal.recalbox.audioVolume = slidervalue;
                         sfxNav.play();
                     }
                     

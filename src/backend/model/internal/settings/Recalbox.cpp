@@ -1,6 +1,5 @@
-
 #include "Recalbox.h"
-
+#include "Log.h"
 
 namespace {
 
@@ -27,6 +26,15 @@ Recalbox::Recalbox(QObject* parent)
     : QObject(parent)
     , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
 {
+
+}
+
+void Recalbox::setAudioVolume(int new_val)
+{
+    if (new_val == RecalboxConf::Instance().GetAudioVolume())
+        return;
+    RecalboxConf::Instance().SetAudioVolume(new_val);
+    emit audioVolumeChanged();
 }
 
 QString Recalbox::getStringParameter(const QString& Parameter, const QString& defaultValue)
@@ -129,10 +137,14 @@ void Recalbox::saveParameters()
     RecalboxConf::Instance().Save();
 }
 
-void Recalbox::reloadParameters() //to relaod parameters from recalbox.conf
+void Recalbox::reloadParameter(QString parameter) //to relaod parameters from recalbox.conf
 {
-    RecalboxConf::Instance().Reload();
-}	
+    //need to identify the parameter to emit the good signal to update the value
+    //no other solution found avoiding to reload all parameters except this one
+    if(parameter.toLower() == "audio.volume"){
+        emit audioVolumeChanged();
+    }
+}
 
 QString Recalbox::runCommand(const QString& SysCommand, const QStringList& SysOptions)
 {

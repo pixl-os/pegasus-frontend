@@ -45,6 +45,12 @@ class IniFile
     bool Reload();
 
     /*!
+     * @brief (Re)Load a specific value for a specific key from configuration file
+     * @return True if a key and value has been (re)loaded successfully
+     */
+    bool ReloadValue(const std::string& keytoreload);
+
+    /*!
      * @brief Get string value from the given key
      * @param name Key
      * @return Value or empty string if the key does not exist
