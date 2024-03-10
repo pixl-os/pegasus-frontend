@@ -24,6 +24,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include <iostream>
 
 //For recalbox
 #include "RecalboxConf.h"
@@ -98,10 +99,19 @@ private:
 #endif
 
     void colorlog(const char* const prefix, const char* const marker, const QString& msg) {
-        //m_stream << prefix << QChar(' ') << msg << m_fmt_reset << Qt::endl;
-        m_stream << prefix << QChar(' ') << QDateTime::currentDateTime().toString(Qt::ISODate) << QChar(' ')
-                 << marker << QChar(' ') << msg << Qt::endl;
-
+        try{
+            //crash identified just after 06/03/20224
+            //try/catch added to avoid it
+            QDateTime dateTime = QDateTime::currentDateTime();
+            if(dateTime.isValid()){
+                QString isoDate = dateTime.toString(Qt::ISODate);
+                m_stream << prefix << QChar(' ') << isoDate << QChar(' ')
+                         << marker << QChar(' ') << msg << Qt::endl;
+            }
+        } catch ( const std::exception & Exp )
+        {
+            std::cout << "Exception catched : " << Exp.what() << std::endl;
+        }
     }
 };
 
@@ -162,9 +172,20 @@ private:
     }
 
     void datelog(const char* const marker, const QString& msg) {
-        m_stream << QDateTime::currentDateTime().toString(Qt::ISODate) << QChar(' ')
-                 << marker << QChar(' ')
-                 << msg << QChar('\n');
+        try{
+            //crash identified here 10//03/2024 03h49
+            //try/catch added to avoid it
+            QDateTime dateTime = QDateTime::currentDateTime();
+            if(dateTime.isValid()){
+                QString isoDate = dateTime.toString(Qt::ISODate);
+                m_stream << isoDate << QChar(' ')
+                     << marker << QChar(' ')
+                     << msg << QChar('\n');
+                }
+        } catch ( const std::exception & Exp )
+        {
+            std::cout << "Exception catched : " << Exp.what() << std::endl;
+        }
     }
 };
 

@@ -118,6 +118,7 @@ size_t find_games_for(
 
         constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
         constexpr auto subdir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
+        //crash identified with just after debugguer 06-03-2024 - 22h25
         QDirIterator dirs_it(system_dir.path(), subdir_filters, subdir_flags);
         while (dirs_it.hasNext())
             result.append(dirs_it.next());
