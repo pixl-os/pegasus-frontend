@@ -279,13 +279,13 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
     //to avoid issue with spaces in directories and scripts
     componentName = cleanName(componentName);
 
-    Log::debug(log_tag, LOGMSG("void Updates::getRepoInfo_slot()"));
+    //Log::debug(log_tag, LOGMSG("void Updates::getRepoInfo_slot()"));
     QJsonDocument json;
     //bool result = false;
     try{
-        Log::debug(log_tag, LOGMSG("url_str: %1").arg(url_str));
+        //Log::debug(log_tag, LOGMSG("url_str: %1").arg(url_str));
         if(url_str.startsWith("http",Qt::CaseInsensitive)){ //to check that is a remote repo using url
-            Log::debug(log_tag, LOGMSG("url valid: %1").arg(url_str));
+            //Log::debug(log_tag, LOGMSG("url valid: %1").arg(url_str));
             //Create Network Access
             QNetworkAccessManager *manager = new QNetworkAccessManager(this);
             //get json url
@@ -297,7 +297,7 @@ void Updates::getRepoInfo_slot(QString componentName, QString url_str){
         }
         else if(url_str.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
         {
-            Log::debug(log_tag, LOGMSG("path valid: %1").arg(url_str));
+            //Log::debug(log_tag, LOGMSG("path valid: %1").arg(url_str));
             //read file
             json = loadJson(url_str);
             //save json in a file in /tmp directory
