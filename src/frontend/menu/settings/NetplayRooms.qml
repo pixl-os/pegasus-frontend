@@ -223,10 +223,10 @@ FocusScope {
     //function to check room availability before to launch retroarch
     function isRoomAvailable(ip,port){
         //do telnet to verify connectivity quickly and avoid to wait too long time if not accessible finally
-        console.log("command:","timeout 5 telnet " + ip + " " + port);
+        //console.log("command:","timeout 5 telnet " + ip + " " + port);
         //check during 5 seconds
         var result = api.internal.system.run("timeout 5 telnet " + ip + " " + port);
-        console.log("result:",result)
+        //console.log("result:",result)
         if(result.toLowerCase().includes("connected")){
             //wait 3 seconds to avoid disturbing connection due to telnet
             api.internal.system.run("sleep 3");
@@ -629,7 +629,7 @@ FocusScope {
                                             }
                                             else {
                                                 searchByCRCorFile.system = searchByCRCorFile.system + "|" + api.collections.get(i).shortName;
-                                                console.log("game_name :", game_name," - system found :", searchByCRCorFile.system);
+                                                //console.log("game_name :", game_name," - system found :", searchByCRCorFile.system);
                                             }
                                         }
                                     }
