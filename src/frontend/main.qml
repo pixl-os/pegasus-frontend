@@ -240,6 +240,7 @@ Window {
 
         //to know if Guide button still released
         property bool guideButtonPressed: false
+        property bool buttonLongPress: false
 
         readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
 
@@ -296,39 +297,67 @@ Window {
             Keys.onReleased: {
                 // Guide
                 if (api.keys.isGuide(event) && !event.isAutoRepeat) {
-                    //console.log("Keys.onReleased: api.keys.isGuide(event)");
                     event.accepted = true;
+                    timerButtonPressed.stop()
                     global.guideButtonPressed = false;
+                    global.buttonLongPress = false;
                 }
-            }
-
-            // Input handling
-            Keys.onPressed: {
-                // Guide
-                if (api.keys.isGuide(event) && !event.isAutoRepeat) {
-                    //console.log("Keys.onPressed: api.keys.isGuide(event)");
-                    event.accepted = true;
-                    global.guideButtonPressed = true;
-                }
-                // Menu
-                if (api.keys.isMenu(event) && !event.isAutoRepeat && !global.guideButtonPressed) {
-                    //console.log("Keys.onPressed: api.keys.isMenu(event)");
-                    event.accepted = true;
-                    mainMenu.focus = true;
-                }
-
-                if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay") && !global.guideButtonPressed){
+                // Netplay
+                else if (api.keys.isNetplay(event) && !event.isAutoRepeat && !global.guideButtonPressed && !global.buttonLongPress){
+                    //console.log("Keys.onReleased: api.keys.isNetplay(event)");
                     event.accepted = true;
                     subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
                     subscreen.focus = true;
                     content.state = "sub";
+                    //stop longpress timer also to avoid border effect
+                    timerButtonPressed.stop()
+                    global.guideButtonPressed = false;
+                    global.buttonLongPress = false;
                 }
+            }
 
+            Timer {
+              id: timerButtonPressed
+              interval: 1000 // more than 1 second press is considered as long press
+              running: false
+              triggeredOnStart: false
+              repeat: false
+              onTriggered: {
+                  global.buttonLongPress = true;
+              }
+            }
 
-                if (event.key === Qt.Key_F5) {
+            // Input handling
+            Keys.onPressed: {
+                //if (api.keys.isGuide(event)) console.log("Keys.onPressed: saw as guide");
+                //if (api.keys.isNetplay(event)) console.log("Keys.onPressed: saw as netplay");
+
+                //start timer to detect button long press
+                if((global.buttonLongPress == false) && (timerButtonPressed.running  == false))  timerButtonPressed.restart();
+                // Guide
+                if (api.keys.isGuide(event) && !event.isAutoRepeat) {
+                    //console.log("Keys.onPressed: api.keys.isGuide(event)");
+                    event.accepted = true;
+                    global.guideButtonPressed = true
+                }
+                // Netplay
+                else if (api.keys.isNetplay(event) && !event.isAutoRepeat && !global.guideButtonPressed && global.buttonLongPress){
+                    event.accepted = true;
+                    //reset long press in this case
+                    timerButtonPressed.stop()
+                    global.buttonLongPress = false;
+                }
+                // Menu
+                else if (api.keys.isMenu(event) && !event.isAutoRepeat) {
+                    //console.log("Keys.onPressed: api.keys.isMenu(event)");
+                    event.accepted = true;
+                    mainMenu.focus = true;
+                }
+                //To refresh theme
+                else if (event.key === Qt.Key_F5) {
                     event.accepted = true;
                     pegasusReloadTheme();
-                }
+                }                
             }
 
             source: getThemeFile()
