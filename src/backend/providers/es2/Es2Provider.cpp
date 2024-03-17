@@ -143,8 +143,14 @@ Provider& Es2Provider::run(SearchContext& sctx)
     // Find assets and games in case of gamelist only (+ add info for lightgun games)
     QElapsedTimer assets_timer;
     assets_timer.start();
-    for (const SystemEntry& sysentry : systems) {
-        for(const QString& romsDir : paths::romsDirs()){
+    //unlock file system temporary to permit to store updates during asset parsing (as generation of media.xml from share_init for example)
+    if (system("mount -o remount,rw /") != 0) Log::error(LOGMSG("Issue to provide read/write on '/'"));
+    for(const QString& romsDir : paths::romsDirs()){
+        if(romsDir.contains("/share_init/")){
+            //unlock file system temporary to permit to store updates during asset parsing (as generation of media.xml from share_init for example)
+            if (system("mount -o remount,rw /") != 0) Log::error(LOGMSG("Issue to provide read/write on '/'"));
+        }
+        for (const SystemEntry& sysentry : systems) {
             QString share_path = sysentry.path ;
             share_path = share_path.replace("%ROOT%",romsDir);
             const QDir xml_dir(share_path);
@@ -154,6 +160,10 @@ Provider& Es2Provider::run(SearchContext& sctx)
             //Process event in the queue
             QCoreApplication::processEvents();
             metahelper.find_metadata_for_system(sysentry, xml_dir, sctx);
+        }
+        if(romsDir.contains("/share_init/")){
+            //unlock file system after asset parsing/updates from share_init
+            if (system("mount -o remount,ro /") != 0) Log::error(LOGMSG("Issue to provide read only on '/'"));
         }
     }
     Log::info(LOGMSG("Stats - Global Timing: Gamelists/Assets parsing/searching took %1ms").arg(assets_timer.elapsed()));
