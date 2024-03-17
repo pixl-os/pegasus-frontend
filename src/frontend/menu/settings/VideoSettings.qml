@@ -394,18 +394,20 @@ FocusScope {
                     }
                     onActivate: {
                         //add to set parameters selected before to save ItemSelectionModel
-                        //for first screen
-                        api.internal.recalbox.setStringParameter(optDisplayOutput.parameterName, optDisplayOutput.value)
-                        api.internal.recalbox.getStringParameter(optDisplayResolution.parameterName, optDisplayResolution.value)
-                        api.internal.recalbox.getStringParameter(optDisplayFrequency.parameterName, optDisplayFrequency.value)
-                        api.internal.recalbox.getStringParameter(optDisplayRotation.parameterName, optDisplayRotation.value)
+                        //for first screen (if activated)
+                        if(optPrimaryScreenActivate.checked){
+                            api.internal.recalbox.setStringParameter(optDisplayOutput.parameterName, optDisplayOutput.value)
+                            api.internal.recalbox.setStringParameter(optDisplayResolution.parameterName, optDisplayResolution.value)
+                            api.internal.recalbox.setStringParameter(optDisplayFrequency.parameterName, optDisplayFrequency.value)
+                            api.internal.recalbox.setStringParameter(optDisplayRotation.parameterName, optDisplayRotation.value)
+                        }
                         //for second screen (if activated)
                         if(optSecondaryScreenActivate.checked){
                             api.internal.recalbox.setStringParameter(optDisplaySecondaryOutput.parameterName, optDisplaySecondaryOutput.value)
-                            api.internal.recalbox.getStringParameter(optDisplaySecondaryResolution.parameterName, optDisplaySecondaryResolution.value)
-                            api.internal.recalbox.getStringParameter(optDisplaySecondaryFrequency.parameterName, optDisplaySecondaryFrequency.value)
-                            api.internal.recalbox.getStringParameter(optDisplaySecondaryRotation.parameterName, optDisplaySecondaryRotation.value)
-                            api.internal.recalbox.getStringParameter(optDisplaySecondaryPosition.parameterName, optDisplaySecondaryPosition.value)
+                            api.internal.recalbox.setStringParameter(optDisplaySecondaryResolution.parameterName, optDisplaySecondaryResolution.value)
+                            api.internal.recalbox.setStringParameter(optDisplaySecondaryFrequency.parameterName, optDisplaySecondaryFrequency.value)
+                            api.internal.recalbox.setStringParameter(optDisplaySecondaryRotation.parameterName, optDisplaySecondaryRotation.value)
+                            api.internal.recalbox.setStringParameter(optDisplaySecondaryPosition.parameterName, optDisplaySecondaryPosition.value)
                         }
                         //force save in recalbox.conf file before to execute script
                         api.internal.recalbox.saveParameters();
