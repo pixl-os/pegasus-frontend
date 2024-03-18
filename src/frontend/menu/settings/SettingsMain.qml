@@ -197,13 +197,11 @@ FocusScope {
                     Keys.onLeftPressed: {
                         api.internal.recalbox.setIntParameter(parameterName,slidervalue);
                         value = slidervalue + "%";
-                        sfxNav.play();
                     }
 
                     Keys.onRightPressed: {
                         api.internal.recalbox.setIntParameter(parameterName,slidervalue);
                         value = slidervalue + "%";
-                        sfxNav.play();
                     }
 
                     onFocusChanged: container.onFocus(this)
@@ -222,21 +220,29 @@ FocusScope {
                     // in slider object
                     max : 100
                     min : 0
-                    slidervalue : api.internal.recalbox.audioVolume
+                    slidervalue: api.internal.recalbox.audioVolume
                     value: api.internal.recalbox.audioVolume + "%"
 
+                    onSlidervalueChanged: {
+                        api.internal.recalbox.audioVolume = slidervalue;
+                    }
+
+                    onValueChanged: {
+                        if(value !== slidervalue.toString() + "%"){
+                            slidervalue = api.internal.recalbox.audioVolume;
+                            sfxNav.play();
+                        }
+                    }
 
                     onActivate: {
                         focus = true;
                     }
                     
                     Keys.onLeftPressed: {
-                        api.internal.recalbox.audioVolume = slidervalue;
                         sfxNav.play();
                     }
 
                     Keys.onRightPressed: {
-                        api.internal.recalbox.audioVolume = slidervalue;
                         sfxNav.play();
                     }
                     
