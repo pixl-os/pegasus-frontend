@@ -31,8 +31,13 @@ Recalbox::Recalbox(QObject* parent)
 
 void Recalbox::setAudioVolume(int new_val)
 {
-    if (new_val == RecalboxConf::Instance().GetAudioVolume())
+    if (new_val == RecalboxConf::Instance().GetAudioVolume()){
         return;
+    }
+    if(RecalboxConf::Instance().AsString("audio.mode") != "none"){
+        AudioController::Instance().SetVolume(new_val);
+    }
+    else AudioController::Instance().SetVolume(0); // to mute in all cases
     RecalboxConf::Instance().SetAudioVolume(new_val);
     emit audioVolumeChanged();
 }
@@ -121,14 +126,6 @@ void Recalbox::setIntParameter(const QString& Parameter, const int& Value)
     else
     {
         RecalboxConf::Instance().SetInt(Parameter.toUtf8().constData(), Value);
-
-        /********************* realtime action linked to any parameter (to avoid to create a new api just for that :-(***************/
-        if(Parameter == "audio.volume")
-        {
-            //change audio volume as proposed
-            if(RecalboxConf::Instance().AsString("audio.mode") != "none") AudioController::Instance().SetVolume(Value);
-            else AudioController::Instance().SetVolume(0); // to mute in all cases
-        }
     }
 }
 

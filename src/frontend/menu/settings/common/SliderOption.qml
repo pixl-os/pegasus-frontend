@@ -104,16 +104,16 @@ FocusScope {
                      radius: vpx(7)
                  }
              }
-             // slider handle
-             handle: Rectangle {
-                 x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
-                 y: slider.topPadding + slider.availableHeight / 2 - height / 2
-                 implicitWidth: vpx(26)
-                 implicitHeight: vpx(26)
-                 radius: vpx(13)
-                 color: themeColor.textLabel // handle color
-                 border.color: themeColor.main
-             }
+         // slider handle
+         handle: Rectangle {
+             x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
+             y: slider.topPadding + slider.availableHeight / 2 - height / 2
+             implicitWidth: vpx(26)
+             implicitHeight: vpx(26)
+             radius: vpx(13)
+             color: themeColor.textLabel // handle color
+             border.color: themeColor.main
+         }
     }
 
     Text {
