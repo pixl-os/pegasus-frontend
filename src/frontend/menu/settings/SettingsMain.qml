@@ -242,10 +242,11 @@ FocusScope {
                     
                     onFocusChanged: container.onFocus(this)
                     
-                    KeyNavigation.down: !opti915patchactivation.visible ? optVideoSettings : opti915patchactivation
+                    KeyNavigation.down: optVideoSettings
                 }
 
-                ToggleOption {
+                //Tip for i915 chipset Depreacated now
+                /*ToggleOption {
                     id: opti915patchactivation
                     //command to get/catch reference of card id if issue
                     //check if file exists or error found in dmesg (we will use finally 'cat /var/log/messages' for tests purposes ;-)
@@ -266,7 +267,8 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optVideoSettings
-                }
+                }*/
+
                 SectionTitle {
                     text: qsTr("Video Configuration") + api.tr
                     first: true
