@@ -912,6 +912,24 @@ QString ParametersList::currentName(const QString& Parameter) {
     return m_parameterslist.at(m_current_idx).name;
 }
 
+QString ParametersList::currentInternalName(const QString& Parameter) {
+
+    //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+
+    if (m_parameter != Parameter)
+    {
+        //to signal refresh of model's data
+        emit QAbstractItemModel::beginResetModel();
+        m_parameter = Parameter;
+        QStringList EmptyQStringList;
+        m_parameterslist = find_available_parameterslist(Parameter,"",EmptyQStringList);
+        select_preferred_parameter(Parameter);
+        //to signal end of model's data
+        emit QAbstractItemModel::endResetModel();
+    }
+    return ListOfInternalValue.at(m_current_idx);
+}
+
 QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) {
 
     //Log::debug(LOGMSG("QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) - parameter: `%1` - SysCommand: `%2` - SysOptions: TODO ").arg(Parameter,SysCommand));
