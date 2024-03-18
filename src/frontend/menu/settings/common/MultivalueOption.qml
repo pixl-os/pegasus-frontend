@@ -24,6 +24,7 @@ FocusScope {
     property alias label: label.text
     property alias note: sublabel.text
     property alias value: value.text
+    property var internalvalue
     property alias font: value.font.family 
 
     property int fontSize: vpx(22)

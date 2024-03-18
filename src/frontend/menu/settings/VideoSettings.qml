@@ -204,6 +204,7 @@ FocusScope {
                     label: qsTr("Rotate") + api.tr
                     note: qsTr("Choose orientation for your primary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
                     font: globalFonts.ion
                     onActivate: {
                         //for callback by parameterslistBox
@@ -211,6 +212,7 @@ FocusScope {
                         parameterslistBox.callerid = optDisplayRotation;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -327,6 +329,7 @@ FocusScope {
                     label: qsTr("Rotation") + api.tr
                     note: qsTr("Choose orientation for your secondary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
                     font: globalFonts.ion
 
                     onActivate: {
@@ -335,6 +338,7 @@ FocusScope {
                         parameterslistBox.callerid = optDisplaySecondaryRotation;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -353,6 +357,7 @@ FocusScope {
                     label: qsTr("Position") + api.tr
                     note: qsTr("Choose position for your Secondary screen.") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
                     font: globalFonts.ion
 
                     onActivate: {
@@ -360,7 +365,8 @@ FocusScope {
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplaySecondaryPosition;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName)
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -395,19 +401,21 @@ FocusScope {
                     onActivate: {
                         //add to set parameters selected before to save ItemSelectionModel
                         //for first screen (if activated)
+                        api.internal.recalbox.setBoolParameter("system.primary.screen.enabled",optPrimaryScreenActivate.checked);
                         if(optPrimaryScreenActivate.checked){
                             api.internal.recalbox.setStringParameter(optDisplayOutput.parameterName, optDisplayOutput.value)
                             api.internal.recalbox.setStringParameter(optDisplayResolution.parameterName, optDisplayResolution.value)
                             api.internal.recalbox.setStringParameter(optDisplayFrequency.parameterName, optDisplayFrequency.value)
-                            api.internal.recalbox.setStringParameter(optDisplayRotation.parameterName, optDisplayRotation.value)
+                            api.internal.recalbox.setStringParameter(optDisplayRotation.parameterName, optDisplayRotation.internalvalue)
                         }
                         //for second screen (if activated)
+                        api.internal.recalbox.setBoolParameter("system.secondary.screen.enabled",optSecondaryScreenActivate.checked);
                         if(optSecondaryScreenActivate.checked){
                             api.internal.recalbox.setStringParameter(optDisplaySecondaryOutput.parameterName, optDisplaySecondaryOutput.value)
                             api.internal.recalbox.setStringParameter(optDisplaySecondaryResolution.parameterName, optDisplaySecondaryResolution.value)
                             api.internal.recalbox.setStringParameter(optDisplaySecondaryFrequency.parameterName, optDisplaySecondaryFrequency.value)
-                            api.internal.recalbox.setStringParameter(optDisplaySecondaryRotation.parameterName, optDisplaySecondaryRotation.value)
-                            api.internal.recalbox.setStringParameter(optDisplaySecondaryPosition.parameterName, optDisplaySecondaryPosition.value)
+                            api.internal.recalbox.setStringParameter(optDisplaySecondaryRotation.parameterName, optDisplaySecondaryRotation.internalvalue)
+                            api.internal.recalbox.setStringParameter(optDisplaySecondaryPosition.parameterName, optDisplaySecondaryPosition.internalvalue)
                         }
                         //force save in recalbox.conf file before to execute script
                         api.internal.recalbox.saveParameters();
