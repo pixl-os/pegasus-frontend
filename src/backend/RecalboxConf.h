@@ -111,6 +111,8 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
     DefineGetterSetter(AudioVolume, int, Int, sAudioVolume, 90)
     DefineGetterSetter(AudioOuput, std::string, String, sAudioOuput, "")
 
+    DefineGetterSetter(ScreenBrightness, int, Int, sScreenBrightness, 100)
+
     DefineGetterSetter(ScreenSaverTime, int, Int, sScreenSaverTime, 5)
     DefineGetterSetter(ScreenSaverType, std::string, String, sScreenSaverType, "dim")
     DefineListGetterSetter(ScreenSaverSystemList, sScreenSaverSystemList, "")
@@ -297,6 +299,8 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
     static constexpr const char* sAudioGameClip              = "audio.gameclip";*/
 	static constexpr const char* sAudioOptions               = "audio.mode";
     static constexpr const char* sAudioOuput                 = "audio.device";
+
+    static constexpr const char* sScreenBrightness           = "screen.brightness";
 
     static constexpr const char* sScreenSaverTime            = "emulationstation.screensaver.time";
     static constexpr const char* sScreenSaverType            = "emulationstation.screensaver.type";

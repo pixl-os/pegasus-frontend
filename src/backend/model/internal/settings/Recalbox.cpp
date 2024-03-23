@@ -42,6 +42,18 @@ void Recalbox::setAudioVolume(int new_val)
     emit audioVolumeChanged();
 }
 
+void Recalbox::setScreenBrightness(int new_val)
+{
+    if (new_val == RecalboxConf::Instance().GetScreenBrightness()){
+        return;
+    }
+    //set brightness
+    QString brightnessCommand = "timeout 1 sh /recalbox/system/hardware/device/pixl-backlight.sh brightness " + QString::number(new_val);
+    int exitcode = system(qPrintable(brightnessCommand));
+    RecalboxConf::Instance().SetScreenBrightness(new_val);
+    emit screenBrightnessChanged();
+}
+
 QString Recalbox::getStringParameter(const QString& Parameter, const QString& defaultValue)
 {
     if(Parameter.contains("boot.", Qt::CaseInsensitive))
@@ -140,6 +152,9 @@ void Recalbox::reloadParameter(QString parameter) //to relaod parameters from re
     //no other solution found avoiding to reload all parameters except this one
     if(parameter.toLower() == "audio.volume"){
         emit audioVolumeChanged();
+    }
+    else if(parameter.toLower() == "screen.brightness"){
+        emit screenBrightnessChanged();
     }
 }
 

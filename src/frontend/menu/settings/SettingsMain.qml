@@ -295,6 +295,52 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optBiosChecking
+                    KeyNavigation.down: optBrightness.visible ? optBrightness : optVideoFiltrer
+                }
+                SliderOption {
+                    id: optBrightness
+
+                    //property to manage parameter name
+                    property string parameterName : "screen.brightness"
+
+                    //property of SliderOption to set
+                    label: qsTr("Brightness") + api.tr
+                    note: qsTr("Set backlight brightness for internal/primary screen only") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue: api.internal.recalbox.screenBrightness
+                    value: api.internal.recalbox.screenBrightness + "%"
+                    visible: {
+                        var brightness = ""
+                        brightness = api.internal.system.run("timeout 1 sh /recalbox/system/hardware/device/pixl-backlight.sh brightness");
+                        if(brightness == "no brightness found") return false;
+                        else return true;
+                    }
+                    onSlidervalueChanged: {
+                        api.internal.recalbox.screenBrightness = slidervalue;
+                    }
+
+                    onValueChanged: {
+                        if(value !== slidervalue.toString() + "%"){
+                            slidervalue = api.internal.recalbox.screenBrightness;
+                        }
+                    }
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        //no specific action here for the moment
+                    }
+
+                    Keys.onRightPressed: {
+                        //no specific action here for the moment
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+
                     KeyNavigation.down: optVideoFiltrer
                 }
                 ToggleOption {
