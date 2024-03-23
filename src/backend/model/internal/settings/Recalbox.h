@@ -19,6 +19,7 @@ class Recalbox : public QObject {
 
     //for recalbox.conf parameters using binding to be updated dynamically in menu and from other tools/services/scripts
     Q_PROPERTY(int audioVolume READ getAudioVolume WRITE setAudioVolume NOTIFY audioVolumeChanged);
+    Q_PROPERTY(int screenBrightness READ getScreenBrightness WRITE setScreenBrightness NOTIFY screenBrightnessChanged);
 
     QML_CONST_PROPERTY(model::ParametersList, parameterslist);
 
@@ -28,6 +29,8 @@ public:
     //for recalbox.conf parameters using binding to be updated dynamically in menu and from other tools/services/scripts
     int getAudioVolume() const { return RecalboxConf::Instance().GetAudioVolume(); }
     void setAudioVolume(int);
+    int getScreenBrightness() const { return RecalboxConf::Instance().GetScreenBrightness(); }
+    void setScreenBrightness(int);
 
     //INVOKABLE functions but without binding
     Q_INVOKABLE QString getStringParameter(const QString& Parameter, const QString& defaultValue = "");
@@ -43,6 +46,7 @@ public:
 signals:
     //for recalbox.conf parameters using binding to be updated dynamically in menu and from other tools/services/scripts
     void audioVolumeChanged();
+    void screenBrightnessChanged();
 
 private:
 
