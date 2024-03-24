@@ -312,10 +312,12 @@ FocusScope {
                     slidervalue: api.internal.recalbox.screenBrightness
                     value: api.internal.recalbox.screenBrightness + "%"
                     visible: {
-                        var brightness = ""
+                        var brightness = "";
                         brightness = api.internal.system.run("timeout 1 sh /recalbox/system/hardware/device/pixl-backlight.sh brightness");
+                        //console.log("brightness : ", brightness);
                         if(brightness == "no brightness found") return false;
-                        else return true;
+                        else if (parseInt(brightness) >= 0) return true;
+                        else return false;
                     }
                     onSlidervalueChanged: {
                         api.internal.recalbox.screenBrightness = slidervalue;
