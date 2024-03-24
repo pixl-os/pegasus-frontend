@@ -9,8 +9,9 @@ import QtQuick.Controls 2.15
 FocusScope {
     id: root
 
-    property alias value: value.text 
-    
+    property alias value: value.text
+    property alias symbol: symbol.text
+    property alias symbolFontFamily: symbol.font.family
     property alias slidervalue : slider.value
     property alias max : slider.from
     property alias min : slider.to
@@ -70,5 +71,17 @@ FocusScope {
         font.pixelSize: fontSize
         font.family: globalFonts.sans
     }    
-    
+
+    Text {
+        id: symbol
+        anchors.left: parent.left
+        anchors.leftMargin: horizontalPadding //- fontSize * 2
+        anchors.top: value.text !== "" ? value.bottom : slider.bottom
+        color: themeColor.textValue
+        font {
+            bold: false
+            pixelSize: fontSize * 1.25
+            family: global.fonts.ion
+        }
+    }
 }
