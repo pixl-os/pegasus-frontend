@@ -9,9 +9,6 @@ import QtQuick.Controls 2.15
 FocusScope {
     id: root
 
-    //property alias label: label.text
-    //property alias note: sublabel.text
-    
     property alias value: value.text 
     
     property alias slidervalue : slider.value
@@ -21,47 +18,16 @@ FocusScope {
     property int fontSize: vpx(16)
     property int horizontalPadding: vpx(10)
 
-    //signal activate()
-
-    //width: parent.width //fontSize * 1.25 //parent.width
-    //height: parent.height /// 3 //labelContainer.height + fontSize * 1.25
-
-    /*Keys.onPressed: {
-        if (api.keys.isAccept(event) && !event.isAutoRepeat) {
-            event.accepted = true;
-            root.activate();
-        }
-    }*/
-    //Keys.onLeftPressed: slider.value > min ? slider.value = slider.value - 1 : min
-    //Keys.onRightPressed: slider.value < max ? slider.value = slider.value + 1 : max
-
-    /*Rectangle {
-        id: underline
-
-        width: parent.width
-        height: vpx(3)
-        anchors.bottom: parent.bottom
-
-        color: themeColor.underline
-        visible: parent.focus || mouseArea.containsMouse
-    }*/
-
     Slider {
         id: slider
-        x: - 0.8 * parent.width/2
+
+        x: parent.x - 0.8 * parent.height/2
         y: 0
-        width: parent.width
-        height: parent.height // / 2 //parent.width
+
+        //use height only and for "slider" because need to calculate/rotate in a square finally :-(
+        width: parent.height
+        height: parent.height
         visible: true
-        //horizontal: false
-        //orientation: Qt.Horizontal
-
-        //anchors.left: parent.left
-        //anchors.top: parent.top
-        //anchors.leftMargin: horizontalPadding
-
-        //anchors.verticalCenter: parent.verticalCenter
-        //anchors.horizontalCenter: parent.horizontalCenter
 
         rotation: 90
 
@@ -97,13 +63,9 @@ FocusScope {
 
     Text {
         id: value
-
-        //anchors.verticalCenter: parent.verticalCenter
-        //anchors.rightMargin: horizontalPadding + slider.width
-        //anchors.horizontalCenter: parent.horizontalCenter
-        //x: - 0.8 * parent.width/2
+        anchors.left: parent.left
+        anchors.leftMargin: horizontalPadding
         anchors.top: slider.bottom
-
         color: themeColor.textValue
         font.pixelSize: fontSize
         font.family: globalFonts.sans
