@@ -22,6 +22,7 @@ import QtQuick.Controls 2.15
 import QtMultimedia 5.15
 import "dialogs"
 import "global"
+import "menu/settings/common"
 import QtQuick.VirtualKeyboard 2.15
 import QtQuick.VirtualKeyboard.Settings 2.15
 
@@ -1722,6 +1723,111 @@ Window {
             lightgunCrosshair.visible = false;
         }
     }
-    //***********************************************************END OF LIGHTGUNS MANAGEMENT *************************************************************
+    //*********************************************************** END OF LIGHTGUNS MANAGEMENT *************************************************************
 
+    //*********************************************************** START OF SLIDERS MANAGEMENT *************************************************************
+
+    // Timer to show the sliders during a limited after update
+    Timer {
+        id: sliderVisibilityTimer
+        interval: 1000
+        repeat: false
+        running: false
+        triggeredOnStart: false
+        onTriggered: {
+            optOutputVolume.opacity = 0
+            optBrightness.opacity = 0
+        }
+    }
+
+    SliderVertical {
+        id: optOutputVolume
+
+        //property to manage parameter name
+        property string parameterName : "audio.volume"
+        x: 0
+        y : 0
+        height: parent.height / 4
+        width: parent.height / 4
+        //property of SliderOption to set
+        //label: ""
+        //note: ""
+        // in slider object
+        max : 100
+        min : 0
+        slidervalue: api.internal.recalbox.audioVolume
+        value: api.internal.recalbox.audioVolume + "%"
+        visible: true
+        focus: false
+        opacity: 0
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 500
+            }
+        }
+
+        property bool completed : false
+        Component.onCompleted:{
+            completed = true;
+        }
+
+        onValueChanged: {
+            if(completed){
+                opacity = 1;
+                sliderVisibilityTimer.restart();
+                //sfxNav.play();
+            }
+        }
+
+        /*onActivate: {
+            focus = false;
+        }*/
+
+        //onFocusChanged: container.onFocus(this)
+    }
+
+    SliderVertical {
+        id: optBrightness
+
+        //property to manage parameter name
+        property string parameterName : "screen.brightness"
+
+        //property of SliderOption to set
+        //label: ""
+        //note: ""
+
+        // in slider object
+        max : 100
+        min : 0
+        slidervalue: api.internal.recalbox.screenBrightness
+        value: api.internal.recalbox.screenBrightness + "%"
+        visible: true
+        focus: false
+        opacity: 0
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 500
+            }
+        }
+
+        property bool completed : false
+        Component.onCompleted:{
+            completed = true;
+        }
+
+        onValueChanged: {
+            if(completed){
+                opacity = true;
+                sliderVisibilityTimer.restart();
+            }
+        }
+
+        /*onActivate: {
+            focus = false;
+        }*/
+
+        //onFocusChanged: container.onFocus(this)
+    }
+    //*********************************************************** END OF SLIDERS MANAGEMENT *************************************************************
 }
