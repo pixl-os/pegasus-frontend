@@ -1754,7 +1754,10 @@ Window {
         max : 100
         min : 0
         slidervalue: api.internal.recalbox.audioVolume
-        value: api.internal.recalbox.audioVolume + "%"
+        //value: api.internal.recalbox.audioVolume + "%"
+
+        symbol: "\uf11c"
+
         visible: true
         focus: false
         opacity: 0
