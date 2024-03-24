@@ -1745,13 +1745,11 @@ Window {
 
         //property to manage parameter name
         property string parameterName : "audio.volume"
-        x: 0
-        y : 0
         height: parent.height / 4
         width: parent.height / 4
-        //property of SliderOption to set
-        //label: ""
-        //note: ""
+        x: 0
+        y : 0
+
         // in slider object
         max : 100
         min : 0
@@ -1772,19 +1770,12 @@ Window {
             completed = true;
         }
 
-        onValueChanged: {
+        onSlidervalueChanged: {
             if(completed){
                 opacity = 1;
                 sliderVisibilityTimer.restart();
-                //sfxNav.play();
             }
         }
-
-        /*onActivate: {
-            focus = false;
-        }*/
-
-        //onFocusChanged: container.onFocus(this)
     }
 
     SliderVertical {
@@ -1792,10 +1783,10 @@ Window {
 
         //property to manage parameter name
         property string parameterName : "screen.brightness"
-
-        //property of SliderOption to set
-        //label: ""
-        //note: ""
+        height: parent.height / 4
+        width: parent.height / 4
+        x: 0
+        y : 0
 
         // in slider object
         max : 100
@@ -1805,6 +1796,7 @@ Window {
         visible: true
         focus: false
         opacity: 0
+
         Behavior on opacity {
             PropertyAnimation {
                 duration: 500
@@ -1816,18 +1808,12 @@ Window {
             completed = true;
         }
 
-        onValueChanged: {
+        onSlidervalueChanged: {
             if(completed){
                 opacity = true;
                 sliderVisibilityTimer.restart();
             }
         }
-
-        /*onActivate: {
-            focus = false;
-        }*/
-
-        //onFocusChanged: container.onFocus(this)
     }
     //*********************************************************** END OF SLIDERS MANAGEMENT *************************************************************
 }
