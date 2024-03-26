@@ -1745,8 +1745,8 @@ Window {
 
         //property to manage parameter name
         property string parameterName : "audio.volume"
-        height: parent.height / 4
-        width: parent.height / 4
+        height: parent.height / 6
+        width: parent.height / 6
         x: 0
         y : 0
 
@@ -1776,7 +1776,18 @@ Window {
         onSlidervalueChanged: {
             if(completed){
                 opacity = 1;
-                sliderVisibilityTimer.restart();
+                optBrightness.opacity = 0;
+                sliderVisibilityTimer.restart()
+                if(slidervalue >= 75){
+                    symbol = "\uf11c"
+                }
+                else if(slidervalue >= 50){
+                    symbol = "\uf11e"
+                }
+                else if(slidervalue >= 25){
+                    symbol = "\uf11e"
+                }
+                else symbol = "\uf263" //mute
             }
         }
     }
@@ -1786,8 +1797,8 @@ Window {
 
         //property to manage parameter name
         property string parameterName : "screen.brightness"
-        height: parent.height / 4
-        width: parent.height / 4
+        height: parent.height / 6
+        width: parent.height / 6
         x: 0
         y : 0
 
@@ -1795,7 +1806,10 @@ Window {
         max : 100
         min : 0
         slidervalue: api.internal.recalbox.screenBrightness
-        value: api.internal.recalbox.screenBrightness + "%"
+        //value: api.internal.recalbox.screenBrightness + "%"
+
+        symbol: "\uf4b7"
+
         visible: true
         focus: false
         opacity: 0
@@ -1813,7 +1827,8 @@ Window {
 
         onSlidervalueChanged: {
             if(completed){
-                opacity = true;
+                opacity = 1;
+                optOutputVolume.opacity = 0;
                 sliderVisibilityTimer.restart();
             }
         }
