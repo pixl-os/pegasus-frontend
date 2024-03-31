@@ -109,9 +109,9 @@ FocusScope {
                         text: qsTr("Primary screen settings") + api.tr
                         first: true
                     }
-                    checked: api.internal.recalbox.getBoolParameter("system.primary.screen.enabled", true)
+                    checked: api.internal.recalbox.systemPrimaryScreenEnabled
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("system.primary.screen.enabled",checked);
+                        api.internal.recalbox.systemPrimaryScreenEnabled = checked;
                     }
                     symbol: "\uf17f"
                     onFocusChanged: container.onFocus(this)
@@ -230,9 +230,9 @@ FocusScope {
                         text: qsTr("Secondary screen settings") + api.tr
                         first: true
                     }
-                    checked: api.internal.recalbox.getBoolParameter("system.secondary.screen.enabled", false)
+                    checked: api.internal.recalbox.systemSecondaryScreenEnabled
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("system.secondary.screen.enabled",checked);
+                        api.internal.recalbox.systemSecondaryScreenEnabled = checked;
                     }
                     symbol: "\uf115"
                     onFocusChanged: container.onFocus(this)

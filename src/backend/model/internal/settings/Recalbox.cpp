@@ -54,6 +54,24 @@ void Recalbox::setScreenBrightness(int new_val)
     emit screenBrightnessChanged();
 }
 
+void Recalbox::setSystemPrimaryScreenEnabled(bool new_val)
+{
+    if (new_val == RecalboxConf::Instance().GetSystemPrimaryScreenEnabled()){
+        return;
+    }
+    RecalboxConf::Instance().SetSystemPrimaryScreenEnabled(new_val);
+    emit systemPrimaryScreenEnabledChanged();
+}
+
+void Recalbox::setSystemSecondaryScreenEnabled(bool new_val)
+{
+    if (new_val == RecalboxConf::Instance().GetSystemSecondaryScreenEnabled()){
+        return;
+    }
+    RecalboxConf::Instance().SetSystemSecondaryScreenEnabled(new_val);
+    emit systemSecondaryScreenEnabledChanged();
+}
+
 QString Recalbox::getStringParameter(const QString& Parameter, const QString& defaultValue)
 {
     if(Parameter.contains("boot.", Qt::CaseInsensitive))
@@ -155,6 +173,12 @@ void Recalbox::reloadParameter(QString parameter) //to relaod parameters from re
     }
     else if(parameter.toLower() == "screen.brightness"){
         emit screenBrightnessChanged();
+    }
+    else if(parameter.toLower() == "system.primary.screen.enabled"){
+        emit systemPrimaryScreenEnabledChanged();
+    }
+    else if(parameter.toLower() == "system.secondary.screen.enabled"){
+        emit systemSecondaryScreenEnabledChanged();
     }
 }
 
