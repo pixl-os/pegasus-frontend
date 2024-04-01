@@ -54,7 +54,7 @@ DeviceInfo::DeviceInfo(QObject* parent)
 {
     poll_battery();
     connect(&m_battery_poll, &QTimer::timeout, this, &DeviceInfo::poll_battery);
-    m_battery_poll.start(30 * 1000);
+    m_battery_poll.start(5 * 1000); //check every 5 seconds now
 }
 
 void DeviceInfo::poll_battery()
