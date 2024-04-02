@@ -649,6 +649,23 @@ Window {
                                      { "title": qsTr("New controller") + " : " + msg, "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
             genericMessage.focus = true;
         }
+        function onRequestAction(msg) {
+            //console.log("New action requested : #", msg);
+            if(msg === "shutdown"){
+                powerDialog.source = "dialogs/ShutdownDialog.qml"
+                powerDialog.focus = true;
+            }
+            else if(msg === "reboot"){
+                powerDialog.source = "dialogs/RebootDialog.qml";
+                powerDialog.item.message = qsTr("The system will reboot. Are you sure?");
+                powerDialog.focus = true;
+            }
+            else if(msg === "restart"){
+                powerDialog.source = "dialogs/RestartDialog.qml";
+                powerDialog.item.message = qsTr("Pegasus will restart. Are you sure?");
+                powerDialog.focus = true;
+            }
+        }
         function onEventLoadingStarted() {
             console.log("onEventLoadingStarted()");
             splashScreen.focus = true;

@@ -14,6 +14,7 @@ public:
     void incomingConnection(qintptr socketDescriptor) override;
 signals:
     void confReloaded(QString parameter);
+    void requestAction(QString action);
 };
 
 #endif // HTTPSERVER_H

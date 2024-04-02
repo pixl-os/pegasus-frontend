@@ -145,6 +145,11 @@ void ApiObject::onNewController(int device_idx, QString message)
     emit newController(device_idx, message);
 }
 
+void ApiObject::onRequestAction(QString action)
+{
+    emit requestAction(action);
+}
+
 void ApiObject::onGameFinished()
 {
     Q_ASSERT(m_launch_game_file);

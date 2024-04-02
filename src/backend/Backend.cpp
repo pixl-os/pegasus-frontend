@@ -239,6 +239,9 @@ Backend::Backend(const CliArgs& args, char** environment)
     // to reload parameters from recalbox.conf
     QObject::connect(m_httpapi, &HttpServer::confReloaded,&m_api->internal().recalbox(), &model::Recalbox::reloadParameter);
 
+    //to send action to frontend from HTTP API
+    QObject::connect(m_httpapi, &HttpServer::requestAction, m_api, &ApiObject::requestAction);
+
 }
 
 void Backend::start()
