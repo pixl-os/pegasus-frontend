@@ -53,6 +53,13 @@ void HttpServer::incomingConnection(qintptr socketDescriptor) {
                 //Log::debug(LOGMSG("audio.volume UpdatedValue : %1").arg(UpdatedValue));
                 out << "<h1>" + parameterName + "=" + UpdatedValue + "</h1>";
               }
+              else if (uri.toLower().contains("/api?action=")){
+                QString action = uri.split('?')[1];
+                QString actionName = action.split('=')[1];
+                //Log::debug(LOGMSG("actionName : %1").arg(actionName));
+                emit requestAction(actionName);
+                out << "<h1>" + actionName + "</h1>";
+              }
               else {
                 out << "<h1>404 Not Found</h1>";
               }
