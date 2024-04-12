@@ -188,6 +188,82 @@ QStringList GetParametersList(QString Parameter)
             }
         }
     }
+    else if (Parameter.endsWith(".wine", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read subdirectories in /usr/wine
+        QDirIterator it("/usr/wine/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            QString relativedir = dir;
+            Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
+            //if contain /bin directory, we could consider that is a valid wine installed in pixL
+            if(relativedir.endsWith("/bin")){
+                //QString fulldir = relativedir;
+                relativedir = relativedir.replace("/usr/wine/","");
+                relativedir = relativedir.replace("/bin","");
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(relativedir);
+                // remove file extension on menu
+                ListOfValue.append(relativedir);
+            }
+        }
+    }
+    else if (Parameter.endsWith(".wineappimage", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read "embedded" appimages file from /usr/wine :
+        QDir wineDir("/usr/wine");
+        // Sorting by name
+        wineDir.setSorting(QDir::Name);
+        QString ext = "*.AppImage";
+        QStringList files = wineDir.entryList(QStringList(ext), QDir::Files);
+        for ( int index = 0; index < files.count(); index++ )
+        {
+            QString file = files.at(index);
+            //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
+            ListOfInternalValue.append("/use/wine/" + file);
+            // remove file extension on menu
+            ListOfValue.append(file.replace(ext, ""));
+        }
+        //read "user" appimages file from /recalbox/share/save/usersettings/appimages
+        QDir wineUserDir("/recalbox/share/save/usersettings/appimages");
+        // Sorting by name
+        wineUserDir.setSorting(QDir::Name);
+        QStringList userfiles = wineUserDir.entryList(QStringList(ext), QDir::Files);
+        for ( int index = 0; index < userfiles.count(); index++ )
+        {
+            QString file = userfiles.at(index);
+            //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
+            ListOfInternalValue.append("/recalbox/share/save/usersettings/appimages/" + file);
+            // remove file extension on menu
+            ListOfValue.append(file.replace(ext, ""));
+        }
+    }
+    else if (Parameter.endsWith(".winearch", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        ListOfValue << "32 bits" << "64 bits";
+        ListOfInternalValue << "win32" << "win64";
+    }
+    else if (Parameter.endsWith(".winver", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        ListOfValue << "Windows 10" << "Windows 8.1" << "Windows 8" << "Windows 7" << "Windows 2008" << "Windows Vista" << "Windows 2003" << "Windows XP" << "Windows 2000" << "Windows NT 4.0" << "Windows Millennium Edition" << "Windows 98" << "Windows 95" << "Windows 3.1";
+        ListOfInternalValue << "win10" << "win81" << "win8" << "win7" << "win2008" << "vista" << "win2003" << "winxp" << "win2k" << "nt40" << "winme" << "win98" << "win95"  << "win31";
+    }
     else if (Parameter == "system.selected.color")
     {
         /* "Original,Black,Gray,Blue,Green,Red" */
