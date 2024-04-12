@@ -210,6 +210,108 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("model2emu.scanlines",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineEngine
+                }
+                //****************************** section to manage wine version of this emulator*****************************************
+                SectionTitle {
+                    text: qsTr("Wine configuration") + api.tr
+                    first: true
+                    symbol: "\uf17f"
+                }
+                MultivalueOption {
+                    id: optWineEngine
+
+                    //property to manage parameter name
+                    property string parameterName : "model2emu.wine"
+
+                    label: qsTr("Wine 'engine'") + api.tr
+                    note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineEngine;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineEngine.value === "auto" ? optWineAppImage : optWineArch
+                }
+                MultivalueOption {
+                    id: optWineAppImage
+
+                    //property to manage parameter name
+                    property string parameterName : "model2emu.wineappimage"
+
+                    label: qsTr("Wine AppImage") + api.tr
+                    note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
+                    visible: optWineEngine.value === "auto" ? true : false
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineAppImage;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineArch
+                }
+                MultivalueOption {
+                    id: optWineArch
+
+                    //property to manage parameter name
+                    property string parameterName : "model2emu.winearch"
+
+                    label: qsTr("Wine architecture") + api.tr
+                    note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineArch;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineVer
+                }
+                MultivalueOption {
+                    id: optWineVer
+
+                    //property to manage parameter name
+                    property string parameterName : "model2emu.winver"
+
+                    label: qsTr("Windows version") + api.tr
+                    note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineVer;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width

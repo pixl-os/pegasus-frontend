@@ -38,7 +38,7 @@ FocusScope {
 
         onClose: root.close()
         onOpenRetroarchSettings: root.openScreen("emulatorsetting/RetroarchSettings.qml")
-        onOpenModel2Settings: root.openScreen("emulatorsetting/Model2Settings.qml")
+        onOpenModel2emuSettings: root.openScreen("emulatorsetting/Model2emuSettings.qml")
         onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
         onOpenDolphinTriforceSettings: root.openScreen("emulatorsetting/DolphinTriforceSettings.qml")
         onOpenDuckstationSettings: root.openScreen("emulatorsetting/DuckstationSettings.qml")

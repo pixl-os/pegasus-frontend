@@ -14,7 +14,7 @@ FocusScope {
 
     signal close
     signal openRetroarchSettings
-    signal openModel2Settings
+    signal openModel2emuSettings
     signal openDolphinSettings
     signal openDolphinTriforceSettings
     signal openDuckstationSettings
@@ -165,10 +165,10 @@ FocusScope {
                         root.openDuckstationSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optModel2
+                    KeyNavigation.down: optModel2emu
                 }
                 SimpleButton {
-                    id: optModel2
+                    id: optModel2emu
                     label: qsTr("Model2emu") + api.tr
                     note: qsTr("Change Configuration for Model2 emulator for Sega Model2 !") + api.tr
                     //pointer moved in SimpleButton desactived on default
@@ -176,7 +176,7 @@ FocusScope {
 
                     onActivate: {
                         focus = true;
-                        root.openModel2Settings();
+                        root.openModel2emuSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPcsx2
