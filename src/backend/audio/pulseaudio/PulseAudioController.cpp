@@ -364,7 +364,7 @@ IAudioController::DeviceList PulseAudioController::GetPlaybackList()
         case AudioIcon::Screens: device.append(" \uf1e3"); break;
       }
       std::string displayable = available ? std::string("\u26ab ").append(device).append(" \u26ab") : std::string("\u26aa ").append(device).append(" \u26aa") ;
-      result.push_back({ displayable, std::string(card.Name).append(1, ':').append(port.Name), port.Icon });
+      result.push_back({ displayable, std::string(card.Name).append(1, ':').append(port.Name), port.Icon, available });
     }
 
   return result;
