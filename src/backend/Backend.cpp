@@ -253,6 +253,42 @@ void Backend::start()
     if(mRecalboxConf.AsString("audio.mode") != "none") mAudioController.SetVolume(mAudioController.GetVolume());
     else mAudioController.SetVolume(0); // to mute in all cases
     std::string originalAudioDevice = mRecalboxConf.GetAudioOuput();
+
+    //if configuration is empty or audio device not found, we will propose to take the first hdmi device connected
+    //could be useful at first start in  pegasus to have sound or when we change drivers as in cas of nvidia gpu cards
+    std::string connectedAudioDevice = "";
+    bool originalAudioDeviceFound =  false;
+    IAudioController::DeviceList playbackList = mAudioController.GetPlaybackList();
+    for(const auto& playback : playbackList)
+    {
+        Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+        Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+        if(playback.InternalName == originalAudioDevice){
+            originalAudioDeviceFound = true;
+            Log::debug(LOGMSG("Original Audio Device Found : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+            break; //exit for in this case, device found as configured
+        }
+        else if( QString::fromStdString(playback.DisplayableName).contains("hdmi", Qt::CaseInsensitive) ||
+                 QString::fromStdString(playback.DisplayableName).contains("displayport", Qt::CaseInsensitive) ||
+                 QString::fromStdString(playback.DisplayableName).contains("display port", Qt::CaseInsensitive))
+        {
+            if(playback.available){ // if device available
+                if(connectedAudioDevice == ""){
+                    connectedAudioDevice = playback.InternalName;
+                    Log::debug(LOGMSG("Connected Audio Device Found : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+                }
+            }
+        }
+    }
+    //if configuration is empty, we propose to find the first hdmi connected
+    if((originalAudioDevice == "" || originalAudioDeviceFound == false) && connectedAudioDevice != ""){
+        //set originalAudioDevice with the connectedHDMIAudioDevice
+        Log::debug(LOGMSG("Usage of Connected HDMI Audio Device Found : '%1'").arg(QString::fromStdString(connectedAudioDevice)));
+        originalAudioDevice = connectedAudioDevice;
+        mRecalboxConf.SetAudioOuput(connectedAudioDevice);
+        mRecalboxConf.Save();
+    }
+
     std::string fixedAudioDevice = mAudioController.SetDefaultPlayback(originalAudioDevice);
     if (fixedAudioDevice != originalAudioDevice)
     {
