@@ -16,6 +16,7 @@ struct ParameterEntry {
 class ParametersList : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY parameterChanged)
+    Q_PROPERTY(int count READ rowCount NOTIFY parameterChanged)
 public:
     explicit ParametersList(QObject* parent = nullptr);
 
