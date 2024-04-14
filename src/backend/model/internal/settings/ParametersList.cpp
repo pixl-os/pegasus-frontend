@@ -202,13 +202,39 @@ QStringList GetParametersList(QString Parameter)
             Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
             //if contain /bin directory, we could consider that is a valid wine installed in pixL
             if(relativedir.endsWith("/bin")){
-                //QString fulldir = relativedir;
-                relativedir = relativedir.replace("/usr/wine/","");
-                relativedir = relativedir.replace("/bin","");
-                // use name of directory from /usr/win for recalbox.conf
-                ListOfInternalValue.append(relativedir);
-                // remove file extension on menu
-                ListOfValue.append(relativedir);
+                QString fulldir;
+                QString winename;
+                //check if file wine or wine64 exists to detect a valid wine directory
+                if (QFile::exists(relativedir + "/wine")) {
+                    fulldir = relativedir + "/wine";
+                    winename = relativedir;
+                    winename = winename.replace("/usr/wine/","");
+                    winename = winename.replace("/bin","");
+                    // use name of directory from /usr/win for recalbox.conf
+                    ListOfInternalValue.append(fulldir);
+                    // remove file extension on menu
+                    ListOfValue.append(winename + " (32 bits)");
+                }
+                if (QFile::exists(relativedir + "/wine32")){
+                    fulldir = relativedir + "/wine32";
+                    winename = relativedir;
+                    winename = winename.replace("/usr/wine/","");
+                    winename = winename.replace("/bin","");
+                    // use name of directory from /usr/win for recalbox.conf
+                    ListOfInternalValue.append(fulldir);
+                    // remove file extension on menu
+                    ListOfValue.append(winename + " (32 bits)");
+                }
+                if (QFile::exists(relativedir + "/wine64")){
+                    fulldir = relativedir + "/wine64";
+                    winename = relativedir;
+                    winename = winename.replace("/usr/wine/","");
+                    winename = winename.replace("/bin","");
+                    // use name of directory from /usr/win for recalbox.conf
+                    ListOfInternalValue.append(fulldir);
+                    // remove file extension on menu
+                    ListOfValue.append(winename + " (64 bits)");
+                }
             }
         }
     }
@@ -223,6 +249,7 @@ QStringList GetParametersList(QString Parameter)
         // Sorting by name
         wineDir.setSorting(QDir::Name);
         QString ext = "*.AppImage";
+        QString fileext = ".AppImage";
         QStringList files = wineDir.entryList(QStringList(ext), QDir::Files);
         for ( int index = 0; index < files.count(); index++ )
         {
@@ -230,7 +257,7 @@ QStringList GetParametersList(QString Parameter)
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             ListOfInternalValue.append("/use/wine/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(ext, ""));
+            ListOfValue.append(file.replace(fileext, ""));
         }
         //read "user" appimages file from /recalbox/share/save/usersettings/appimages
         QDir wineUserDir("/recalbox/share/save/usersettings/appimages");
@@ -243,7 +270,7 @@ QStringList GetParametersList(QString Parameter)
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             ListOfInternalValue.append("/recalbox/share/save/usersettings/appimages/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(ext, ""));
+            ListOfValue.append(file.replace(fileext, ""));
         }
     }
     else if (Parameter.endsWith(".winearch", Qt::CaseInsensitive) == true)
