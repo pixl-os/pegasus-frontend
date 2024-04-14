@@ -743,14 +743,4 @@ FocusScope {
             api.internal.recalbox.parameterslist.currentIndex = index;
         }
     }
-    MultivalueBox {
-        id: themeBox
-        z: 3
-
-        model: api.internal.settings.themes
-        index: api.internal.settings.themes.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.themes.currentIndex = index
-    }
 }
