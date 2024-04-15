@@ -165,7 +165,7 @@ FocusScope {
         anchors.right: rightPointer.left
         anchors.rightMargin: vpx(10)
         anchors.top: parent.top
-        anchors.topMargin: vpx(13)
+        anchors.topMargin: vpx(14)
         color: themeColor.textValue
         font.pixelSize: fontSize
         font.family: globalFonts.sans
