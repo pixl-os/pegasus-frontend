@@ -117,6 +117,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementUsername
+
                     label: qsTr("Username") + api.tr
                     note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
 
@@ -137,7 +138,8 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementPassword
-                     label: qsTr("Password") + api.tr
+
+                    label: qsTr("Password") + api.tr
                     note: qsTr("then login with your username and password") + api.tr
 
                     TextFieldOption {
@@ -226,11 +228,12 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayNickname
                 }
-                MultivalueOption {
+                SimpleButton {
                     id: optNetplayNickname
 
                     label: qsTr("Netplay nickname") + api.tr
                     note: qsTr("Set your netplay nickname") + api.tr
+
                     TextFieldOption {
                         id: netplayNickname
                         anchors.right: parent.right
