@@ -44,6 +44,7 @@ class Themes : public QAbstractListModel {
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY themeChanged)
     Q_PROPERTY(QString currentName READ currentName NOTIFY themeChanged)
     Q_PROPERTY(QString currentQmlPath READ currentQmlPath NOTIFY themeChanged)
+    Q_PROPERTY(int count READ rowCount NOTIFY themeChanged)
 
 public:
     explicit Themes(QObject* parent = nullptr);

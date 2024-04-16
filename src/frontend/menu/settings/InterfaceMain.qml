@@ -103,6 +103,7 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optBackgroungColorConfig
+
                     //set focus only on firt item
                     focus: true
 
@@ -111,7 +112,11 @@ FocusScope {
 
                     label: qsTr("choose background color interface") + api.tr
                     note: qsTr("Change background color only in interface") + api.tr
+                    
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -124,10 +129,29 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
+
                     onValueChanged: {
                         backgroundThemeColor = api.internal.recalbox.getStringParameter(parameterName);
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optTextColorConfig
 
                 }
@@ -139,7 +163,11 @@ FocusScope {
 
                     label: qsTr("choose text color interface") + api.tr
                     note: qsTr("Change text color only in interface") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -152,10 +180,29 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
+
                     onValueChanged: {
                         textThemeColor = api.internal.recalbox.getStringParameter(parameterName);
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optSelectedColorConfig
 
                 }
@@ -167,7 +214,11 @@ FocusScope {
 
                     label: qsTr("choose selected color interface") + api.tr
                     note: qsTr("Change selected color only in interface") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -180,10 +231,29 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
+
                     onValueChanged: {
                             selectedThemeColor = api.internal.recalbox.getStringParameter(parameterName);
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optMenuControlsConfig
 
                 }
@@ -212,13 +282,38 @@ FocusScope {
 
                     label: qsTr("Theme") + api.tr
                     note: qsTr("Change theme system interface") + api.tr
+
                     value: api.internal.settings.themes.currentName
 
+                    currentIndex: api.internal.settings.themes.currentIndex;
+                    count: api.internal.settings.themes.count
+
                     onActivate: {
-                        focus = true;
+                        //for callback by themeBox
+                        themeBox.callerid = optTheme;
+                        //to force update of list of parameters
+                        themeBox.model = api.internal.settings.themes;
+                        themeBox.index = api.internal.settings.themes.currentIndex;
+                        //to transfer focus to themeBox
                         themeBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to update index
+                        api.internal.settings.themes.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.settings.themes.currentName;
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            value = api.internal.settings.themes.currentName
+                            currentIndex = api.internal.settings.themes.currentIndex;
+                            count = api.internal.settings.themes.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optThemeKeepLoaded
                 }
                 ToggleOption {
@@ -356,20 +451,37 @@ FocusScope {
 
         onClose: content.focus = true
         onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
+            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
     MultivalueBox {
         id: themeBox
         z: 3
 
+        property MultivalueOption callerid
+
+        //reuse same model
         model: api.internal.settings.themes
+        //to use index from themes QAbstractList
         index: api.internal.settings.themes.currentIndex
 
         onClose: content.focus = true
-        onSelect: api.internal.settings.themes.currentIndex = index
+        onSelect: {
+            callerid.keypressed = true;
+            //to update index of locales QAbstractList
+            api.internal.settings.themes.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.settings.themes.currentName;
+            callerid.currentIndex = api.internal.settings.themes.currentIndex;
+            callerid.count = api.internal.settings.themes.count;
+        }
     }
 }
