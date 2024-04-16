@@ -119,6 +119,10 @@ FocusScope {
                     label: qsTr("Mode") + api.tr
                     note: qsTr("Choose audio mode") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -132,7 +136,24 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optOutputAudio
                 }
                 MultivalueOption {
@@ -144,6 +165,10 @@ FocusScope {
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose audio output") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.awesome
                     
                     onActivate: {
@@ -157,21 +182,25 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    /*
-                    Keys.onLeftPressed: {
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
                         //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = api.internal.recalbox.parameterslist.currentIndex + 1;
+                        api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
                     }
-                    Keys.onRightPressed: {
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = api.internal.recalbox.parameterslist.currentIndex - 1;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
                     }
-                    */
-                    onFocusChanged: container.onFocus(this)
+
                     KeyNavigation.down: optOutputBootVolume
                 }
                 SliderOption {
@@ -412,12 +441,18 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optStorageDevices
+
                     //property to manage parameter name
                     property string parameterName : "boot.sharedevice"
 
                     label: qsTr("Storage device") + api.tr
                     note: qsTr("change to over storage") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
@@ -429,7 +464,25 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     // KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optEthernet
                 }
@@ -600,10 +653,18 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optLanguage
+
+                    //property to manage parameter name
                     property string parameterName : "system.language"
+
                     label: qsTr("Language") + api.tr
                     note: qsTr("Set your language interface") + api.tr
+
                     value: api.internal.settings.locales.currentName
+                    internalvalue: api.internal.recalbox.parameterslist.currentName(parameterName);
+
+                    currentIndex: api.internal.settings.locales.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
 
                     /* pegasus language format :
                     ar ,bs, de, en-GB, en, es, fr, hu, ko, nl, pt-BR, ru, zh, zh-TW
@@ -611,10 +672,38 @@ FocusScope {
                     ## Set the language of the system (fr_FR,en_US,en_GB,de_DE,pt_BR,es_ES,it_IT,eu_ES,tr_TR,zh_CN)
                     system.language=en_US */
                     onActivate: {
+                        //for callback by localeBox
+                        localeBox.parameterName = parameterName;
+                        localeBox.callerid = optLanguage;
+                        //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
+                        localeBox.model = api.internal.settings.locales;
+                        localeBox.index = api.internal.settings.locales.currentIndex;
+                        //to transfer focus to localeBox
                         localeBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        api.internal.settings.locales.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.settings.locales.currentName;
+                        internalvalue = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            value = api.internal.settings.locales.currentName
+                            currentIndex = api.internal.settings.locales.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.up: optWifiToggle.checked ? optWifiNetwork : optWifiToggle
                     KeyNavigation.down: optKbLayout
                 }
@@ -626,7 +715,11 @@ FocusScope {
 
                     label: qsTr("Keyboard layout") + api.tr
                     note: qsTr("Change keyboard layout language") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -639,7 +732,25 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this);
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optInformationSystem
                 }
                 SectionTitle {
@@ -708,6 +819,7 @@ FocusScope {
             }
         }
     }
+
     MultivalueBox {
         id: parameterslistBox
         z: 3
@@ -723,24 +835,45 @@ FocusScope {
 
         onClose: content.focus = true
         onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
+            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
+
     MultivalueBox {
         id: localeBox
         z: 3
 
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
+
+        //reuse same model
         model: api.internal.settings.locales
-        index: api.internal.settings.locales.currentIndex
+        //to use index from locales QAbstractList
+        index:  api.internal.settings.locales.currentIndex
 
         onClose: content.focus = true
         onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            //to update index of locales QAbstractList
             api.internal.settings.locales.currentIndex = index;
             /* Set recalbox settings on same time */
             api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.settings.locales.currentName;
+            callerid.internalvalue = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
 }
