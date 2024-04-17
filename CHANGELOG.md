@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2024-01-31 - v0.1.6
+## [pixL-master] - 2024-04-?? - v0.1.6
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
 	- use recalbox.conf "updates." parameters now
@@ -13,8 +13,16 @@ All notable changes to this project will be documented in this file (focus on ch
 	- get default "overlays" value of system option from global one
 	- add menu advanced emulator settings for Duckstation
 	- add Vsync options in advanced emulator settings for Pcsx2
-    - add 8bitdo sfc30 and snes30 as snes controller layout/icon
-    - add details on "bluetooth autopairing" in menu to confirm that pairing is lost after reboot
+	- add 8bitdo sfc30 and snes30 as snes controller layout/icon
+	- add details on "bluetooth autopairing" in menu to confirm that pairing is lost after reboot
+	- add management of "embedded" pixL games from share_init (could be hide from "interface/games library loading" menu)
+	- gamecontrollerdb updated with a 24th Feb 2024 version
+	- to select connnected/available audio output in priority to first boot or when previous output selected is missing
+	- use new MultivalueOption/MultivalueBox design for all menus using parameters list
+	- 'embedded' games management:
+		- to have the games from share_init visible also
+		- add option from menu to hide embedded pixL games
+		- fix to be able to generate media.xml from "share_init" games also
 	- support of sinden lightgun:
 		- management of border in pegasus
 		- manage display of crosshair
@@ -28,9 +36,29 @@ All notable changes to this project will be documented in this file (focus on ch
 		- add and manage "lightgungame" property setting to game model for usage by theme
 		- able to to manage several systems regrouped in 'lightgun.cfg'
 		- able to manage "<roms>" tag from "lightgun.cfg"
-		
+	- new screens management:
+		- add activation/deactivation primary screen
+		- replace 'marquee' word by 'secondary' word to be consistent
+		- screen modes setting as 'switch', 'clone' or 'extended'
+		- fix to really set all parameters when we apply settings before to launch 'externalscreen' script
+		- fix to improve update of parameters from lists with translation
+		- add binding/api for screens enabled
+	- steamdeck/handheld pc features:
+		- management of brightness in pegasus
+		- introduce HTTP API to interact between scripts and pegasus-frontend (for volume first)
+		- add action from HTTP api to be able to restart, reboot and shutdown
+		- pegasus adapted to accept external command using hotkeys with BTN_MODE or BTN_SELECT
+		- fix slider display/visibility in menu
+		- vertical sliders display when volume/brightness change
+		- add icon using symbol in vertical slider
+		- for battery/power management:
+			- remove android code to activate sdl power
+			- change batterycheck to 5 seconds (it was 30 s before) to detect plug/unplug quicker
 	- model2emu menu:
 		- add scanlines option from model2emu menu
+		- add first "wine" parameters for model2emu settings
+		- add more details for wine/appimage options
+		- have left/right selection of options for model2emu
 	
 - Fixes:
 	- add support of "-v" and "v" tags in updates versions in upper case also now
@@ -43,6 +71,19 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix bluetoothctl to use new command syntax to check devices already paired in pixL
 	- improve robustness on checking of bluetooth paired devices
 	- remove dooblons of paired bluetooth device if exists
+	- fix sdl2 by "Assert" replacing by "If" to avoid de/connection/mapping crash
+	- fix sdl2 by removing from list on disconnect in all cases
+	- to really select wifi to "connect" and not from priority finally
+	- manage now CRC in GUID with re-use of existing mappings
+	- remove orientation that impact "vertical" screen
+	- 2 interceptions of crash added to avoid issues and linked to logs
+	- remove some debug logs to avoid border effects
+	- remove too logs set from Info to Debug now for PulseAudio Controller
+	- remove depreacated i915 tip from menu
+	- fix to improve volume update from menu
+	- cleaning unused codes about multivalueboxes
+	- quick fix to replace multivalueoption by simplebutton for account part
+	- fix to align better label and parameter value
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
