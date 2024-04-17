@@ -38,8 +38,10 @@ std::vector<QString> default_config_paths()
 {
     QString shareInitPath = paths::homePath() % QStringLiteral("/.pegasus-frontend/");
     shareInitPath.replace("/share/","/share_init/");
-
+    //to work in all cases and also on other linux distribution
+    QString shareInitStrongPath = QStringLiteral("/recalbox/share_init/system/.pegasus-frontend/");
     return {
+        shareInitStrongPath,
         paths::homePath() % QStringLiteral("/.pegasus-frontend/"),
         shareInitPath,
         QStringLiteral("/etc/pegasus-frontend/"),
