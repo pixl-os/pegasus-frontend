@@ -81,11 +81,18 @@ FocusScope {
                 //mode: switch, clone or extended
                 MultivalueOption {
                     id: optDisplayMode
+
                     //property to manage parameter name
                     property string parameterName : "system.video.screens.mode"
+
                     label: qsTr("Display mode") + api.tr
                     note: qsTr("Choose any mode to manage behavior when you plug/unplug any screen") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
                     focus: true
                     onActivate: {
@@ -99,7 +106,24 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
                     KeyNavigation.down: optPrimaryScreenActivate
                 }
                 // primary screen
@@ -119,6 +143,7 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDisplayOutput
+
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen"
                     property variant optionsList : []
@@ -126,7 +151,12 @@ FocusScope {
 
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose your output for primary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 ~ \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -140,19 +170,43 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optDisplayResolution
                     visible: optPrimaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayResolution
+
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen.resolution"
                     property variant optionsList : [optDisplayOutput.value]
 
                     label: qsTr("Resolution") + api.tr
                     note: qsTr("Choose resolution for your primary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'",optionsList)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -166,19 +220,43 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optDisplayFrequency
                     visible: optPrimaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayFrequency
+
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen.frequency"
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
 
                     label: qsTr("Frequency") + api.tr
                     note: qsTr("Choose frequency for your primary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -192,19 +270,43 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optDisplayRotation
                     visible: optPrimaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplayRotation
+
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen.rotation"
 
                     label: qsTr("Rotate") + api.tr
                     note: qsTr("Choose orientation for your primary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
                     onActivate: {
                         //for callback by parameterslistBox
@@ -218,7 +320,25 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optSecondaryScreenActivate
                     visible: optPrimaryScreenActivate.checked
                 }
@@ -242,13 +362,19 @@ FocusScope {
 
                 MultivalueOption {
                     id: optDisplaySecondaryOutput
+
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen"
                     property variant optionsList : []
 
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose your output for secondary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 ~ \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -262,20 +388,44 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optDisplaySecondaryResolution
                     // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplaySecondaryResolution
+
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.resolution"
                     property variant optionsList : [optDisplaySecondaryOutput.value]
 
                     label: qsTr("Resolution") + api.tr
                     note: qsTr("Choose resolution for secondary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'",optionsList)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -289,20 +439,44 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optDisplaySecondaryFrequency
                     // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplaySecondaryFrequency
+
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.frequency"
                     property variant optionsList : [optDisplaySecondaryOutput.value, optDisplaySecondaryResolution.value]
 
                     label: qsTr("Frequency") + api.tr
                     note: qsTr("Choose frequency for secondary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -316,20 +490,44 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optDisplaySecondaryRotation
                     // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplaySecondaryRotation
+
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.rotation"
 
                     label: qsTr("Rotation") + api.tr
                     note: qsTr("Choose orientation for your secondary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -344,20 +542,44 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optDisplaySecondaryPosition
                     // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
                 }
                 MultivalueOption {
                     id: optDisplaySecondaryPosition
+
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.position"
 
                     label: qsTr("Position") + api.tr
                     note: qsTr("Choose position for your Secondary screen.") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     font: globalFonts.ion
 
                     onActivate: {
@@ -372,7 +594,25 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optValidateChange
                     // only show if video Secondary option as enabled
                     visible: optSecondaryScreenActivate.checked
@@ -446,10 +686,15 @@ FocusScope {
 
         onClose: content.focus = true
         onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
+            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
 }
