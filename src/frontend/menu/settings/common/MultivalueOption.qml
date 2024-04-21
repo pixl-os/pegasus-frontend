@@ -25,6 +25,9 @@ FocusScope {
     property alias note: sublabel.text
     property alias value: valueText.text
 
+    property alias rightPointer : rightPointer
+    property alias leftPointer : leftPointer
+
     property var internalvalue
 
     property bool keypressed: false

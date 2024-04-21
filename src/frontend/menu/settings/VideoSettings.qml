@@ -147,24 +147,45 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen"
                     property variant optionsList : []
+                    property string command: "awk '$2 ~ \"connected\" {print $1}' /tmp/xrandr.tmp"
                     // set focus only on first item
 
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose your output for primary screen.") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 ~ \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
 
                     font: globalFonts.ion
 
+                    Component.onCompleted: {
+                        //console.log(label," onCompleted count : ", count);
+                        //console.log(label," onCompleted currentindex : ", currentIndex);
+                        //console.log(label," onCompleted value : ", value);
+                        //console.log(label," onCompleted internalvalue : ", internalvalue);
+
+                        //to force update of value and pointers at the beginning
+                        keypressed = true;
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
+                        count = api.internal.recalbox.parameterslist.count;
+                        currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        //To force update of pointers
+                        if(currentIndex < (count - 1)){
+                          rightPointer.visible = true;
+                        } else rightPointer.visible = false;
+                        if(currentIndex >=1){
+                          leftPointer.visible = true
+                        } else leftPointer.visible = false;
+                    }
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplayOutput;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 == \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -173,16 +194,16 @@ FocusScope {
 
                     onSelect: {
                         //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         //to update index of parameterlist QAbstractList
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                             currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                             count = api.internal.recalbox.parameterslist.count;
                         }
@@ -198,23 +219,44 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen.resolution"
                     property variant optionsList : [optDisplayOutput.value]
+                    property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'"
 
                     label: qsTr("Resolution") + api.tr
                     note: qsTr("Choose resolution for your primary screen.") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
 
                     font: globalFonts.ion
 
+                    Component.onCompleted: {
+                        //console.log(label," onCompleted count : ", count);
+                        //console.log(label," onCompleted currentindex : ", currentIndex);
+                        //console.log(label," onCompleted value : ", value);
+                        //console.log(label," onCompleted internalvalue : ", internalvalue);
+
+                        //to force update of value and pointers at the beginning
+                        keypressed = true;
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
+                        count = api.internal.recalbox.parameterslist.count;
+                        currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        //To force update of pointers
+                        if(currentIndex < (count - 1)){
+                          rightPointer.visible = true;
+                        } else rightPointer.visible = false;
+                        if(currentIndex >=1){
+                          leftPointer.visible = true
+                        } else leftPointer.visible = false;
+                    }
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplayResolution;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'",optionsList);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -223,18 +265,22 @@ FocusScope {
 
                     onSelect: {
                         //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         //to update index of parameterlist QAbstractList
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            /*console.log(label," onFocusChanged count : ", count);
+                            console.log(label," onFocusChanged currentindex : ", currentIndex);
+                            console.log(label," onFocusChanged value : ", value);
+                            console.log(label," onFocusChanged internalvalue : ", internalvalue);*/
+                            value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                             count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                         }
                         container.onFocus(this)
                     }
@@ -248,23 +294,43 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen.frequency"
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
-
+                    property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'"
                     label: qsTr("Frequency") + api.tr
                     note: qsTr("Choose frequency for your primary screen.") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
 
                     font: globalFonts.ion
 
+                    Component.onCompleted: {
+                        //console.log(label," onCompleted count : ", count);
+                        //console.log(label," onCompleted currentindex : ", currentIndex);
+                        //console.log(label," onCompleted value : ", value);
+                        //console.log(label," onCompleted internalvalue : ", internalvalue);
+
+                        //to force update of value and pointers at the beginning
+                        keypressed = true;
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
+                        count = api.internal.recalbox.parameterslist.count;
+                        currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        //To force update of pointers
+                        if(currentIndex < (count - 1)){
+                          rightPointer.visible = true;
+                        } else rightPointer.visible = false;
+                        if(currentIndex >=1){
+                          leftPointer.visible = true
+                        } else leftPointer.visible = false;
+                    }
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplayFrequency;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList)
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -273,16 +339,16 @@ FocusScope {
 
                     onSelect: {
                         //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         //to update index of parameterlist QAbstractList
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                             currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                             count = api.internal.recalbox.parameterslist.count;
                         }
@@ -328,13 +394,15 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                            internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                             count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                         }
                         container.onFocus(this)
                     }
@@ -366,23 +434,44 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen"
                     property variant optionsList : []
+                    property string command : "awk '$2 ~ \"connected\" {print $1}' /tmp/xrandr.tmp"
 
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose your output for secondary screen.") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 ~ \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
 
                     font: globalFonts.ion
 
+                    Component.onCompleted: {
+                        //console.log(label," onCompleted count : ", count);
+                        //console.log(label," onCompleted currentindex : ", currentIndex);
+                        //console.log(label," onCompleted value : ", value);
+                        //console.log(label," onCompleted internalvalue : ", internalvalue);
+
+                        //to force update of value and pointers at the beginning
+                        keypressed = true;
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
+                        count = api.internal.recalbox.parameterslist.count;
+                        currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        //To force update of pointers
+                        if(currentIndex < (count - 1)){
+                          rightPointer.visible = true;
+                        } else rightPointer.visible = false;
+                        if(currentIndex >=1){
+                          leftPointer.visible = true
+                        } else leftPointer.visible = false;
+                    }
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplaySecondaryOutput;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk '$2 == \"connected\" {print $1}' /tmp/xrandr.tmp",optionsList);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -391,16 +480,16 @@ FocusScope {
 
                     onSelect: {
                         //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         //to update index of parameterlist QAbstractList
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                             currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                             count = api.internal.recalbox.parameterslist.count;
                         }
@@ -417,23 +506,44 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.resolution"
                     property variant optionsList : [optDisplaySecondaryOutput.value]
+                    property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'"
 
                     label: qsTr("Resolution") + api.tr
                     note: qsTr("Choose resolution for secondary screen.") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
 
                     font: globalFonts.ion
 
+                    Component.onCompleted: {
+                        //console.log(label," onCompleted count : ", count);
+                        //console.log(label," onCompleted currentindex : ", currentIndex);
+                        //console.log(label," onCompleted value : ", value);
+                        //console.log(label," onCompleted internalvalue : ", internalvalue);
+
+                        //to force update of value and pointers at the beginning
+                        keypressed = true;
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
+                        count = api.internal.recalbox.parameterslist.count;
+                        currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        //To force update of pointers
+                        if(currentIndex < (count - 1)){
+                          rightPointer.visible = true;
+                        } else rightPointer.visible = false;
+                        if(currentIndex >=1){
+                          leftPointer.visible = true
+                        } else leftPointer.visible = false;
+                    }
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplaySecondaryResolution;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'",optionsList);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -442,16 +552,16 @@ FocusScope {
 
                     onSelect: {
                         //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         //to update index of parameterlist QAbstractList
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                             currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                             count = api.internal.recalbox.parameterslist.count;
                         }
@@ -468,23 +578,44 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.frequency"
                     property variant optionsList : [optDisplaySecondaryOutput.value, optDisplaySecondaryResolution.value]
+                    property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'"
 
                     label: qsTr("Frequency") + api.tr
                     note: qsTr("Choose frequency for secondary screen.") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+                    value: api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
 
                     font: globalFonts.ion
 
+                    Component.onCompleted: {
+                        //console.log(label," onCompleted count : ", count);
+                        //console.log(label," onCompleted currentindex : ", currentIndex);
+                        //console.log(label," onCompleted value : ", value);
+                        //console.log(label," onCompleted internalvalue : ", internalvalue);
+
+                        //to force update of value and pointers at the beginning
+                        keypressed = true;
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
+                        count = api.internal.recalbox.parameterslist.count;
+                        currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        //To force update of pointers
+                        if(currentIndex < (count - 1)){
+                          rightPointer.visible = true;
+                        } else rightPointer.visible = false;
+                        if(currentIndex >=1){
+                          leftPointer.visible = true
+                        } else leftPointer.visible = false;
+                    }
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDisplaySecondaryFrequency;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,"awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'",optionsList)
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList)
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -493,16 +624,16 @@ FocusScope {
 
                     onSelect: {
                         //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                         //to update index of parameterlist QAbstractList
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        value = api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            api.internal.recalbox.parameterslist.currentNameFromSystem(parameterName,command,optionsList);
                             currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                             count = api.internal.recalbox.parameterslist.count;
                         }
@@ -550,6 +681,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -602,13 +734,15 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                            internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                             count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                         }
                         container.onFocus(this)
                     }
@@ -686,15 +820,30 @@ FocusScope {
 
         onClose: content.focus = true
         onSelect: {
-            callerid.keypressed = true;
+            /*console.log(callerid.label," onSelect count : ", callerid.count);
+            console.log(callerid.label," onSelect currentindex : ", callerid.currentIndex);
+            console.log(callerid.label," onSelect newindex : ", index);
+            console.log(callerid.label," onSelect value : ", callerid.value);
+            console.log(callerid.label," onSelect internalvalue : ", callerid.internalvalue);*/
             //to use the good parameter
-            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+
+            if(typeof(callerid.command) === "undefined") api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            else api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
+
+            callerid.keypressed = true;
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
-            //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+            callerid.currentIndex = index;
+
+            //to force update of display of selected value
+            if(typeof(callerid.command) === "undefined"){
+                callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+                callerid.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+            }
+            else {
+                callerid.value = api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
+            }
         }
     }
 }
