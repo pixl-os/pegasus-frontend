@@ -255,7 +255,7 @@ QStringList GetParametersList(QString Parameter)
         {
             QString file = files.at(index);
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
-            ListOfInternalValue.append("/use/wine/" + file);
+            ListOfInternalValue.append("/usr/wine/" + file);
             // remove file extension on menu
             ListOfValue.append(file.replace(fileext, ""));
         }
