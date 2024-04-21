@@ -56,8 +56,12 @@ FocusScope {
 
     onCurrentIndexChanged: {
         if(keypressed || firsttime){
-            //if(firsttime) console.log(labeltext.text," onCurrentIndexChanged (first time)");
-            //else console.log(labeltext.text," onCurrentIndexChanged (key pressed)");
+            /*if(firsttime) console.log(labeltext.text," onCurrentIndexChanged (first time)");
+            else console.log(labeltext.text," onCurrentIndexChanged (key pressed)");
+            console.log(labeltext.text," onCurrentIndexChanged count : ", count);
+            console.log(labeltext.text," onCurrentIndexChanged currentindex : ", currentIndex);
+            console.log(labeltext.text," onCurrentIndexChanged value : ", value);
+            console.log(labeltext.text," onCurrentIndexChanged internalvalue : ", internalvalue);*/
             if(currentIndex < (count - 1)){
               rightPointer.visible = true;
             } else rightPointer.visible = false;

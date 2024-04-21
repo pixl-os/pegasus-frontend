@@ -762,8 +762,9 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
     }
 
     //launch command using Qprocess to get output
+    //Log::debug(LOGMSG("%2 SysCommand.toUtf8().constData(): '%1'").arg(SysCommand.toUtf8().constData(),Parameter));
     QString stdout = GetCommandOutput(SysCommand.toUtf8().constData());
-    Log::debug(LOGMSG("GetCommandOutput(SysCommand.toUtf8().constData()): '%1'").arg(stdout));
+    //Log::debug(LOGMSG("%2 GetCommandOutput(SysCommand.toUtf8().constData()): '%1'").arg(stdout,Parameter));
 
     //get list of value from stdout
     if (stdout.isEmpty())
