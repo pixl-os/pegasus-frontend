@@ -125,19 +125,16 @@ QStringList GetParametersList(QString Parameter)
         select only compatible extension shaders in menu opengl(glslp) / vulkan(slangp)*/
         QString shadersext;
         QString filterext;
-        //        QString dirShaders;
         // check vulkan option in recalbox.conf
         if (RecalboxConf::Instance().AsBool("system.video.driver.vulkan", false) == true)
         {
             shadersext = "*.slangp";
             filterext = ".slangp";
-            //            dirShaders = "shaders_slang";
         }
         else
         {
             shadersext = "*.glslp";
             filterext = ".glslp";
-            //            dirShaders = "shaders_glsl";
         }
 
         // add none in list for disabled option if needed
@@ -147,7 +144,6 @@ QStringList GetParametersList(QString Parameter)
 
         //read root directory
         // Define shaders path
-        //        QDir shadersDir("/recalbox/share/shaders/" + dirShaders + "/");
         QDir shadersDir("/recalbox/share/shaders/");
         // Sorting by name
         shadersDir.setSorting(QDir::Name);
@@ -157,19 +153,16 @@ QStringList GetParametersList(QString Parameter)
             QString file = files.at(index);
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             // set absolute path and extension for recalbox.conf
-            // ListOfInternalValue.append("/recalbox/share/shaders/" + dirShaders + "/" + file);
             ListOfInternalValue.append("/recalbox/share/shaders/" + file);
             // remove file extension on menu
             ListOfValue.append(file.replace(filterext, ""));
         }
 
         //read subdirectories
-        // QDirIterator it("/recalbox/share/shaders/" + dirShaders + "/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         QDirIterator it("/recalbox/share/shaders/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         while (it.hasNext()) {
             QString dir = it.next();
             QString relativedir = dir;
-            //            relativedir = relativedir.replace("/recalbox/share/shaders/" + dirShaders + "/","");
             relativedir = relativedir.replace("/recalbox/share/shaders/","");
             //Log::debug(LOGMSG("Subdir : '%1'").arg(dir));
             QDir shadersSubDir(dir);
@@ -184,7 +177,6 @@ QStringList GetParametersList(QString Parameter)
                 ListOfInternalValue.append(dir + '/' + subfile);
                 // remove file extension on menu
                 ListOfValue.append(subfile.replace(filterext, ""));
-                //ListOfValue.append(relativedir + " - " + subfile.replace(filterext, ""));
             }
         }
     }
