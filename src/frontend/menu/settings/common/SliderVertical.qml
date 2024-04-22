@@ -19,6 +19,8 @@ FocusScope {
     property int fontSize: vpx(16)
     property int horizontalPadding: vpx(10)
 
+    signal activate()
+
     Slider {
         id: slider
 
@@ -82,5 +84,13 @@ FocusScope {
             pixelSize: fontSize * 1.25
             family: global.fonts.ion
         }
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        onClicked: activate()
+        cursorShape: Qt.PointingHandCursor
     }
 }
