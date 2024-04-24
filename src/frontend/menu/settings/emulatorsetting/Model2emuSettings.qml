@@ -216,7 +216,8 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Wine configuration") + api.tr
                     first: true
-                    symbol: "\uf17f"
+                    symbol: "\uf26f"
+                    symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
                     id: optWineEngine
@@ -412,7 +413,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("model2emu.winesoftrenderer",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                     KeyNavigation.down: optWineAudioDriver
+                    KeyNavigation.down: optWineAudioDriver
                 }
                 MultivalueOption {
                     id: optWineAudioDriver
@@ -457,6 +458,43 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    KeyNavigation.down: btnCleanModel2emuBottles
+                }
+                // to apply settings
+                SimpleButton {
+                    id: btnCleanModel2emuBottles
+                    Rectangle {
+                        id: containerValidate
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Clean Model2emu wine bottle(s) (to re-install)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "Model2emu Wine Bottles",
+                                                  "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
@@ -465,6 +503,32 @@ FocusScope {
             }
         }
     }
+
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: confirmDialog.item
+        function onAccept() {
+            //restart service
+            if (!isDebugEnv()){
+                api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/.model2emu_* ; mount -o remount,ro /");
+            }
+            else{//for simulate and see more the spinner
+                api.internal.system.run("sleep 5");
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
+        }
+    }
+
     MultivalueBox {
         id: parameterslistBox
         z: 3
