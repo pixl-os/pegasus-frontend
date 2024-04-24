@@ -205,7 +205,7 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (32 bits)");
+                    ListOfValue.append(winename + " (Wine)");
                 }
                 if (QFile::exists(relativedir + "/wine32")){
                     fulldir = relativedir + "/wine32";
@@ -215,7 +215,7 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (32 bits)");
+                    ListOfValue.append(winename + " (Wine32)");
                 }
                 if (QFile::exists(relativedir + "/wine64")){
                     fulldir = relativedir + "/wine64";
@@ -225,7 +225,7 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (64 bits)");
+                    ListOfValue.append(winename + " (Wine64)");
                 }
             }
         }
