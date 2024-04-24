@@ -399,6 +399,64 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+
+                    KeyNavigation.down: optWineSoftRenderer
+                }
+                ToggleOption {
+                    id: optWineSoftRenderer
+                    label: qsTr("Wine Software renderer") + api.tr
+                    note: qsTr("Enable software renderer for wine") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("model2emu.winesoftrenderer")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("model2emu.winesoftrenderer",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                     KeyNavigation.down: optWineAudioDriver
+                }
+                MultivalueOption {
+                    id: optWineAudioDriver
+
+                    //property to manage parameter name
+                    property string parameterName : "model2emu.wineaudiodriver"
+
+                    label: qsTr("Wine audio driver") + api.tr
+                    note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineAudioDriver;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
                 }
                 Item {
                     width: parent.width

@@ -283,6 +283,15 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << "Windows 10" << "Windows 8.1" << "Windows 8" << "Windows 7" << "Windows 2008" << "Windows Vista" << "Windows 2003" << "Windows XP" << "Windows 2000" << "Windows NT 4.0" << "Windows Millennium Edition" << "Windows 98" << "Windows 95" << "Windows 3.1";
         ListOfInternalValue << "win10" << "win81" << "win8" << "win7" << "win2008" << "vista" << "win2003" << "winxp" << "win2k" << "nt40" << "winme" << "win98" << "win95"  << "win31";
     }
+    else if (Parameter.endsWith(".wineaudiodriver", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        ListOfValue << "alsa" << "pulse";
+        ListOfInternalValue << "alsa" << "pulse";
+    }
     else if (Parameter == "system.selected.color")
     {
         /* "Original,Black,Gray,Blue,Green,Red" */
