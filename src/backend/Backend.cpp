@@ -134,9 +134,6 @@ void on_app_close(AppCloseType type)
     }
     
     Log::info(LOGMSG("Closing Pegasus, goodbye! %1...").arg(AppCloseTypeName));
-    Log::close();
-    
-    QCoreApplication::quit();
     switch (type) {
         case AppCloseType::RESTART:
             platform::power::restart();
@@ -149,6 +146,9 @@ void on_app_close(AppCloseType type)
             break;
         default: break;
     }
+    Log::debug(LOGMSG("Closing Pegasus log now !"));
+    Log::close();
+    QCoreApplication::quit();
 }
 } // namespace
 

@@ -87,17 +87,20 @@ namespace power {
 
 void reboot()
 {
-    QProcess::startDetached(QLatin1String("reboot"), QStringList());
+    Log::debug(LOGMSG("Requesting reboot..."));
+    system("(sleep 1; reboot)&");
 }
 
 void restart()
 {
+    Log::debug(LOGMSG("Requesting restart..."));
     QProcess::startDetached(QCoreApplication::arguments()[0], QCoreApplication::arguments());
 }
 
 void shutdown()
 {
-    QProcess::startDetached(QLatin1String("poweroff"), QStringList());
+    Log::debug(LOGMSG("Requesting shutdown..."));
+    system("(sleep 1; shutdown -h now)&");
 }
 
 } // namespace power
