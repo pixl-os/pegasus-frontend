@@ -514,7 +514,7 @@ FocusScope {
     Connections {
         target: confirmDialog.item
         function onAccept() {
-            //restart service
+            //remove model2emu bottles
             if (!isDebugEnv()){
                 api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/.model2emu_* ; mount -o remount,ro /");
             }
