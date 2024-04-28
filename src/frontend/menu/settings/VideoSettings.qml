@@ -84,6 +84,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.video.screens.mode"
+                    //to keep initial value and before to apply new one
+                    property string previousinternalvalue: api.internal.recalbox.getStringParameter(parameterName)
+                    property string previousvalue : api.internal.recalbox.parameterslist.currentName(parameterName)
 
                     label: qsTr("Display mode") + api.tr
                     note: qsTr("Choose any mode to manage behavior when you plug/unplug any screen") + api.tr
@@ -129,6 +132,12 @@ FocusScope {
                 // primary screen
                 ToggleOption {
                     id: optPrimaryScreenActivate
+
+                    //property to manage parameter name
+                    property string parameterName : "system.primary.screen.enabled"
+                    //to keep initial value and before to apply new one
+                    property bool previousvalue: api.internal.recalbox.getBoolParameter(parameterName)
+
                     SectionTitle {
                         text: qsTr("Primary screen settings") + api.tr
                         first: true
@@ -146,6 +155,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen"
+                    //to keep initial value and before to apply new one
+                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
+
                     property variant optionsList : []
                     property string command: "awk '$2 ~ \"connected\" {print $1}' /tmp/xrandr.tmp"
                     // set focus only on first item
@@ -218,6 +230,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen.resolution"
+                    //to keep initial value and before to apply new one
+                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
+
                     property variant optionsList : [optDisplayOutput.value]
                     property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'"
 
@@ -293,6 +308,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen.frequency"
+                    //to keep initial value and before to apply new one
+                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
+
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
                     property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'"
                     label: qsTr("Frequency") + api.tr
@@ -363,6 +381,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.primary.screen.rotation"
+                    //to keep initial internal value and before to apply new one
+                    property string previousinternalvalue: api.internal.recalbox.getStringParameter(parameterName)
+                    property string previousvalue : api.internal.recalbox.parameterslist.currentName(parameterName)
 
                     label: qsTr("Rotate") + api.tr
                     note: qsTr("Choose orientation for your primary screen.") + api.tr
@@ -414,6 +435,12 @@ FocusScope {
                 // second screen or else
                 ToggleOption {
                     id: optSecondaryScreenActivate
+
+                    //property to manage parameter name
+                    property string parameterName : "system.secondary.screen.enabled"
+                    //to keep initial value and before to apply new one
+                    property bool previousvalue: api.internal.recalbox.getBoolParameter(parameterName)
+
                     SectionTitle {
                         text: qsTr("Secondary screen settings") + api.tr
                         first: true
@@ -433,6 +460,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen"
+                    //to keep initial value and before to apply new one
+                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
+
                     property variant optionsList : []
                     property string command : "awk '$2 ~ \"connected\" {print $1}' /tmp/xrandr.tmp"
 
@@ -505,6 +535,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.resolution"
+                    //to keep initial value and before to apply new one
+                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
+
                     property variant optionsList : [optDisplaySecondaryOutput.value]
                     property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'"
 
@@ -577,6 +610,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.frequency"
+                    //to keep initial value and before to apply new one
+                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
+
                     property variant optionsList : [optDisplaySecondaryOutput.value, optDisplaySecondaryResolution.value]
                     property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'"
 
@@ -649,6 +685,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.rotation"
+                    //to keep initial internal value and before to apply new one
+                    property string previousinternalvalue: api.internal.recalbox.getStringParameter(parameterName)
+                    property string previousvalue : api.internal.recalbox.parameterslist.currentName(parameterName)
 
                     label: qsTr("Rotation") + api.tr
                     note: qsTr("Choose orientation for your secondary screen.") + api.tr
@@ -702,6 +741,9 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "system.secondary.screen.position"
+                    //to keep initial internal value and before to apply new one
+                    property string previousinternalvalue : api.internal.recalbox.getStringParameter(parameterName)
+                    property string previousvalue : api.internal.recalbox.parameterslist.currentName(parameterName)
 
                     label: qsTr("Position") + api.tr
                     note: qsTr("Choose position for your Secondary screen.") + api.tr
@@ -773,9 +815,10 @@ FocusScope {
                         }
                     }
                     onActivate: {
-                        //add to set parameters selected before to save ItemSelectionModel
+                        //for display mode
+                        api.internal.recalbox.setBoolParameter(optDisplayMode.parameterName,optDisplayMode.internalvalue);
                         //for first screen (if activated)
-                        api.internal.recalbox.setBoolParameter("system.primary.screen.enabled",optPrimaryScreenActivate.checked);
+                        api.internal.recalbox.setBoolParameter(optPrimaryScreenActivate.parameterName,optPrimaryScreenActivate.checked);
                         if(optPrimaryScreenActivate.checked){
                             api.internal.recalbox.setStringParameter(optDisplayOutput.parameterName, optDisplayOutput.value)
                             api.internal.recalbox.setStringParameter(optDisplayResolution.parameterName, optDisplayResolution.value)
@@ -783,7 +826,7 @@ FocusScope {
                             api.internal.recalbox.setStringParameter(optDisplayRotation.parameterName, optDisplayRotation.internalvalue)
                         }
                         //for second screen (if activated)
-                        api.internal.recalbox.setBoolParameter("system.secondary.screen.enabled",optSecondaryScreenActivate.checked);
+                        api.internal.recalbox.setBoolParameter(optSecondaryScreenActivate.parameterName,optSecondaryScreenActivate.checked);
                         if(optSecondaryScreenActivate.checked){
                             api.internal.recalbox.setStringParameter(optDisplaySecondaryOutput.parameterName, optDisplaySecondaryOutput.value)
                             api.internal.recalbox.setStringParameter(optDisplaySecondaryResolution.parameterName, optDisplaySecondaryResolution.value)
@@ -795,6 +838,20 @@ FocusScope {
                         api.internal.recalbox.saveParameters();
                         //Execute script to udpate screen settings in real-time
                         api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
+
+                        //to confirm change or not
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": qsTr("Confirmation"),
+                                                  "message": qsTr("Do you want to keep this change ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr,
+                                                  "canceldelay": 10});
+                        //to force change of focus
+                        confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                 }
@@ -805,6 +862,83 @@ FocusScope {
             }
         }
     }
+
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: confirmDialog.item
+        function onAccept() {
+            //confirm to keep same conf
+            //update previousvalue with value
+            //for display mode
+            optDisplayMode.previousvalue = optDisplayMode.value
+            optDisplayMode.previousinternalvalue = api.internal.recalbox.getStringParameter(optDisplayMode.parameterName)
+            //for first screen (if activated)
+            optPrimaryScreenActivate.previousvalue = optPrimaryScreenActivate.checked
+            if(optPrimaryScreenActivate.checked){
+                optDisplayOutput.previousvalue = optDisplayOutput.value
+                optDisplayResolution.previousvalue = optDisplayResolution.value
+                optDisplayFrequency.previousvalue = optDisplayFrequency.value
+                optDisplayRotation.previousvalue = optDisplayRotation.value
+                optDisplayRotation.previousinternalvalue = api.internal.recalbox.getStringParameter(optDisplayRotation.parameterName)
+            }
+            //for second screen (if activated)
+            optSecondaryScreenActivate.previousvalue = optSecondaryScreenActivate.checked
+            if(optSecondaryScreenActivate.checked){
+                optDisplaySecondaryOutput.previousvalue = optDisplaySecondaryOutput.value
+                optDisplaySecondaryResolution.previousvalue = optDisplaySecondaryResolution.value
+                optDisplaySecondaryFrequency.previousvalue = optDisplaySecondaryFrequency.value
+                optDisplaySecondaryRotation.previousvalue = optDisplaySecondaryRotation.value
+                optDisplaySecondaryRotation.previousinternalvalue = api.internal.recalbox.getStringParameter(optDisplaySecondaryRotation.parameterName)
+                optDisplaySecondaryPosition.previousvalue  = optDisplaySecondaryPosition.value
+                optDisplaySecondaryPosition.previousinternalvalue = api.internal.recalbox.getStringParameter(optDisplaySecondaryPosition.parameterName)
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //restore previous value
+            //for display mode
+            api.internal.recalbox.setStringParameter(optDisplayMode.parameterName,optDisplayMode.previousvalue);
+            optDisplayMode.value = optDisplayMode.previousvalue;
+            //for first screen (if activated)
+            api.internal.recalbox.setBoolParameter(optPrimaryScreenActivate.parameterName,optPrimaryScreenActivate.previousvalue);
+            optPrimaryScreenActivate.checked = optPrimaryScreenActivate.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplayOutput.parameterName, optDisplayOutput.previousvalue);
+            optDisplayOutput.value = optDisplayOutput.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplayResolution.parameterName, optDisplayResolution.previousvalue);
+            optDisplayResolution.value = optDisplayResolution.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplayFrequency.parameterName, optDisplayFrequency.previousvalue);
+            optDisplayFrequency.value = optDisplayFrequency.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplayRotation.parameterName, optDisplayRotation.previousinternalvalue);
+            optDisplayRotation.value = optDisplayRotation.previousvalue;
+
+            //for second screen (if activated)
+            api.internal.recalbox.setBoolParameter(optSecondaryScreenActivate.parameterName,optSecondaryScreenActivate.previousvalue);
+            optSecondaryScreenActivate.checked = optSecondaryScreenActivate.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplaySecondaryOutput.parameterName, optDisplaySecondaryOutput.previousvalue);
+            optDisplaySecondaryOutput.value = optDisplaySecondaryOutput.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplaySecondaryResolution.parameterName, optDisplaySecondaryResolution.previousvalue);
+            optDisplaySecondaryResolution.value = optDisplaySecondaryResolution.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplaySecondaryFrequency.parameterName, optDisplaySecondaryFrequency.previous);
+            optDisplaySecondaryFrequency.value = optDisplaySecondaryFrequency.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplaySecondaryRotation.parameterName, optDisplaySecondaryRotation.previousinternalvalue);
+            optDisplaySecondaryRotation.value = optDisplaySecondaryRotation.previousvalue;
+            api.internal.recalbox.setStringParameter(optDisplaySecondaryPosition.parameterName, optDisplaySecondaryPosition.previousinternalvalue);
+            optDisplaySecondaryPosition.value = optDisplaySecondaryPosition.previousvalue;
+
+            //re-save conf
+            api.internal.recalbox.saveParameters();
+            //Execute script to restore screen openVideoSettings
+            api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
+            content.focus = true;
+        }
+    }
+
     MultivalueBox {
         id: parameterslistBox
         z: 3
