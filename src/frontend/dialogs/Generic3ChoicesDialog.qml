@@ -28,11 +28,21 @@ FocusScope {
     property alias firstchoice: okButtonText.text
     property alias secondchoice: secondButtonText.text
     property alias thirdchoice: cancelButtonText.text
+    property int canceldelay: 0
     property string logo: ""
+
+    //to start timer
+    onCanceldelayChanged: {
+        if(displayCancelDelayTimer.running !== true){
+            if(canceldelay > 0){
+                displayCancelDelayTimer.start();
+            }
+        }
+    }
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
-    property var lastchoice: ""
+    property string lastchoice: ""
 
     signal accept()
     signal secondChoice()
@@ -178,6 +188,33 @@ FocusScope {
                     if(lastchoice === "firstchoice") root.accept();
                     else if(lastchoice === "secondchoice") root.secondChoice();
                     else root.cancel();
+                }
+            }
+
+            //to let display and decrease delay if different of 0 ;-)
+            Timer{
+                id: displayCancelDelayTimer
+                interval: 1000 // each seconds
+                repeat: true
+                running: false
+                triggeredOnStart: true
+                onTriggered: {
+                    cancelButtonDelayText.text   = " (" + canceldelay.toString() + " s)"
+                    if(canceldelay < 1){
+                        running = false;
+                        //change text to ask to wait if needed
+                        okButtonText.text = qsTr("Please wait...") + api.tr;
+                        messageText.text = qsTr("Under progress...") + api.tr;
+                        //add spinner display
+                        spinnerloader.active = true;
+                        //hide other buttons
+                        secondButtonText.text = "";
+                        cancelButtonText.text = "";
+                        //let 50 ms to update interface
+                        lastchoice = "thirdchoice";
+                        acceptTimer.running = true;
+                    }
+                    else canceldelay = canceldelay - 1;
                 }
             }
 
@@ -364,6 +401,19 @@ FocusScope {
                     anchors.centerIn: parent
 
                     text: qsTr("Cancel") + api.tr
+                    color: themeColor.textTitle
+                    font {
+                        pixelSize: root.textSize
+                        family: globalFonts.sans
+                    }
+                }
+
+                Text {
+                    id: cancelButtonDelayText
+                    anchors.left: cancelButtonText.right
+                    anchors.top: cancelButtonText.top
+
+                    text: ""
                     color: themeColor.textTitle
                     font {
                         pixelSize: root.textSize
