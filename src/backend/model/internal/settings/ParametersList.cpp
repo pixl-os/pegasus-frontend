@@ -999,7 +999,7 @@ void ParametersList::setCurrentIndex(int idx_int)
 }
 
 
-QString ParametersList::currentName(const QString& Parameter) {
+QString ParametersList::currentName(const QString& Parameter, const QString& InternalName) {
 
     //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
 
@@ -1013,6 +1013,16 @@ QString ParametersList::currentName(const QString& Parameter) {
         select_preferred_parameter(Parameter);
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
+    }
+    //if added to check if InternalName changed finally espcially for value change from recalbox.conf and using HTTP API
+    if(InternalName != ""){
+        //need to reset from InternalName as comming from recalox.conf
+        for(int i = 0; i < ListOfInternalValue.count(); i++) {
+            if(ListOfInternalValue.at(i) == InternalName){
+                m_current_idx = i;
+                break;
+            }
+        }
     }
     return m_parameterslist.at(m_current_idx).name;
 }

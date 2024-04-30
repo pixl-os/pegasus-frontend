@@ -171,6 +171,9 @@ void Recalbox::reloadParameter(QString parameter) //to relaod parameters from re
     if(parameter.toLower() == "audio.volume"){
         emit audioVolumeChanged();
     }
+    else if(parameter.toLower() == "audio.device"){
+        emit audioDeviceChanged();
+    }
     else if(parameter.toLower() == "screen.brightness"){
         emit screenBrightnessChanged();
     }
