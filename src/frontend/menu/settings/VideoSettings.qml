@@ -844,7 +844,7 @@ FocusScope {
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                 { "title": qsTr("Confirmation"),
                                                   "message": qsTr("Do you want to keep this change ?") + api.tr,
-                                                  "symbol": "\uf431",
+                                                  "symbol": "\uf17f",
                                                   "symbolfont" : global.fonts.ion,
                                                   "firstchoice": qsTr("Yes") + api.tr,
                                                   "secondchoice": "",
