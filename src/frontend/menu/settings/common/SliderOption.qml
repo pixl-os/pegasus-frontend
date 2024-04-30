@@ -85,7 +85,8 @@ FocusScope {
         orientation: Qt.Horizontal
         anchors.right: parent.right
         anchors.rightMargin: horizontalPadding
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: value.verticalCenter
+
         // left bar
         background: Rectangle {
                  x: slider.leftPadding
@@ -121,7 +122,8 @@ FocusScope {
 
         anchors.right: parent.right
         anchors.rightMargin: horizontalPadding + slider.width
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
+        anchors.topMargin: vpx(14)
 
         color: themeColor.textValue
         font.pixelSize: fontSize
