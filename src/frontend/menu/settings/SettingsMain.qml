@@ -165,12 +165,22 @@ FocusScope {
                     label: qsTr("Output") + api.tr
                     note: qsTr("Choose audio output") + api.tr
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.audioDevice
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
 
                     font: globalFonts.awesome
-                    
+
+                    onInternalvalueChanged: {
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName, internalvalue);
+                        //console.log("value = ", value);
+                        count = api.internal.recalbox.parameterslist.count;
+                        //console.log("count = ", count);
+                        currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        //console.log("currentIndex = ", currentIndex);unt);
+                    }
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;

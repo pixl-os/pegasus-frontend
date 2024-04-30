@@ -19,6 +19,7 @@ class Recalbox : public QObject {
 
     //for recalbox.conf parameters using binding to be updated dynamically in menu and from other tools/services/scripts
     Q_PROPERTY(int audioVolume READ getAudioVolume WRITE setAudioVolume NOTIFY audioVolumeChanged);
+    Q_PROPERTY(QString audioDevice READ getAudioDevice NOTIFY audioDeviceChanged);
     Q_PROPERTY(int screenBrightness READ getScreenBrightness WRITE setScreenBrightness NOTIFY screenBrightnessChanged);
     Q_PROPERTY(int systemPrimaryScreenEnabled READ getSystemPrimaryScreenEnabled WRITE setSystemPrimaryScreenEnabled NOTIFY systemPrimaryScreenEnabledChanged);
     Q_PROPERTY(int systemSecondaryScreenEnabled READ getSystemSecondaryScreenEnabled WRITE setSystemSecondaryScreenEnabled NOTIFY systemSecondaryScreenEnabledChanged);
@@ -31,6 +32,7 @@ public:
     //for recalbox.conf parameters using binding to be updated dynamically in menu and from other tools/services/scripts
     int getAudioVolume() const { return RecalboxConf::Instance().GetAudioVolume(); }
     void setAudioVolume(int);
+    QString getAudioDevice() const { return QString::fromStdString(RecalboxConf::Instance().GetAudioOuput()); }
     int getScreenBrightness() const { return RecalboxConf::Instance().GetScreenBrightness(); }
     void setScreenBrightness(int);
     bool getSystemPrimaryScreenEnabled() const { return RecalboxConf::Instance().GetSystemPrimaryScreenEnabled(); }
@@ -52,6 +54,7 @@ public:
 signals:
     //for recalbox.conf parameters using binding to be updated dynamically in menu and from other tools/services/scripts
     void audioVolumeChanged();
+    void audioDeviceChanged();
     void screenBrightnessChanged();
     void systemPrimaryScreenEnabledChanged();
     void systemSecondaryScreenEnabledChanged();

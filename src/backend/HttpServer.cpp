@@ -46,11 +46,11 @@ void HttpServer::incomingConnection(qintptr socketDescriptor) {
                 QString parameterName = parameter.split('=')[1];
                 //Log::debug(LOGMSG("parameterName : %1").arg(parameterName));
                 QString PreviousValue = QString::fromStdString(RecalboxConf::Instance().AsString(parameterName.toStdString()));
-                //Log::debug(LOGMSG("audio.volume PreviousValue : %1").arg(PreviousValue));
+                //Log::debug(LOGMSG("PreviousValue : %1").arg(PreviousValue));
                 RecalboxConf::Instance().ReloadValue(parameterName.toStdString());
                 emit  confReloaded(parameterName);
                 QString UpdatedValue = QString::fromStdString(RecalboxConf::Instance().AsString(parameterName.toStdString()));
-                //Log::debug(LOGMSG("audio.volume UpdatedValue : %1").arg(UpdatedValue));
+                //Log::debug(LOGMSG("UpdatedValue : %1").arg(UpdatedValue));
                 out << "<h1>" + parameterName + "=" + UpdatedValue + "</h1>";
               }
               else if (uri.toLower().contains("/api?action=")){
