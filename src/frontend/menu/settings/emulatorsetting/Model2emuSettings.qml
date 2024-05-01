@@ -214,7 +214,7 @@ FocusScope {
                 }
                 //****************************** section to manage wine version of this emulator*****************************************
                 SectionTitle {
-                    text: qsTr("Wine configuration") + api.tr
+                    text: qsTr("Wine configuration (Beta)") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
