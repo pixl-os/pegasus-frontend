@@ -57,6 +57,9 @@ Window {
         }
     }
 
+    //TIPS: property to preload shader during launch of pegasus-fe and avoid "slow" effect during loding of "Games" menu
+    property string preload: api.internal.recalbox.parameterslist.currentName("global.shaders")
+
     /*onClosing: {
         theme.source = "";
         api.internal.system.quit();
