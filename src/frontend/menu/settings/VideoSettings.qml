@@ -849,7 +849,7 @@ FocusScope {
                                                   "firstchoice": qsTr("Yes") + api.tr,
                                                   "secondchoice": "",
                                                   "thirdchoice": qsTr("No") + api.tr,
-                                                  "canceldelay": 10});
+                                                  "canceldelay": 15});
                         //to force change of focus
                         confirmDialog.focus = true;
                     }
