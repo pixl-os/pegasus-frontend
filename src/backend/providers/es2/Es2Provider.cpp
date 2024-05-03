@@ -38,11 +38,13 @@ std::vector<QString> default_config_paths()
 {
     QString shareInitPath = paths::homePath() % QStringLiteral("/.pegasus-frontend/");
     shareInitPath.replace("/share/","/share_init/");
-
+    //to work in all cases and also on other linux distribution
+    QString shareInitStrongPath = QStringLiteral("/recalbox/share_init/system/.pegasus-frontend/");
     return {
         paths::homePath() % QStringLiteral("/.pegasus-frontend/"),
         shareInitPath,
         QStringLiteral("/etc/pegasus-frontend/"),
+        shareInitStrongPath
     };
 }
 
@@ -99,26 +101,33 @@ Provider& Es2Provider::run(SearchContext& sctx)
             Log::debug(display_name(), LOGMSG("System `%1` provided %2 system videos")
             .arg(sysentry.name, QString::number(found_videos)));
 
-            //if gamelistfist activated we propose to search games if no gamelist in this system
-            if(RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
-            {
-                //check if no gamelist exists
-                const QDir xml_dir(sysentry.path);
-                if(metahelper.find_gamelist_xml(possible_config_dirs, xml_dir,sysentry).isEmpty()){
-                    const size_t found_games = find_games_for(sysentry, sctx);
-                    Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
+            for(const QString& romsDir : paths::romsDirs()){
+                QString share_path = sysentry.path ;
+                share_path = share_path.replace("%ROOT%",romsDir);
+                const QDir xml_dir(share_path);
+
+                //if gamelistfist activated we propose to search games if no gamelist in this system
+                if(RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
+                {
+                    //check if no gamelist exists
+                    if(metahelper.find_gamelist_xml(possible_config_dirs, xml_dir,sysentry).isEmpty()){
+                        const size_t found_games = find_games_for(sysentry, xml_dir, sctx);
+                        Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from share init")
+                        .arg(sysentry.name, QString::number(found_games)));
+                    }
+                }
+                // Find games if not Gamelist Only activated
+                else if(!RecalboxConf::Instance().AsBool("pegasus.gamelistonly"))
+                {
+                    //check if game exists
+                    size_t found_games = find_games_for(sysentry, xml_dir, sctx);
+                    Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from share init")
                     .arg(sysentry.name, QString::number(found_games)));
                 }
+
+                progress += progress_step;
+                emit progressChanged(progress);
             }
-            // Find games if not Gamelist Only activated
-            else if(!RecalboxConf::Instance().AsBool("pegasus.gamelistonly"))
-            {
-                const size_t found_games = find_games_for(sysentry, sctx);
-                Log::debug(display_name(), LOGMSG("System `%1` provided %2 games")
-                .arg(sysentry.name, QString::number(found_games)));
-            }
-            progress += progress_step;
-            emit progressChanged(progress);
     }
     Log::info(LOGMSG("Global Timing: Game files searching took %1ms").arg(games_timer.elapsed()));
 
@@ -136,13 +145,28 @@ Provider& Es2Provider::run(SearchContext& sctx)
     // Find assets and games in case of gamelist only (+ add info for lightgun games)
     QElapsedTimer assets_timer;
     assets_timer.start();
-    for (const SystemEntry& sysentry : systems) {
-        emit progressStage(sysentry.name);
-        progress += progress_step;
-        emit progressChanged(progress);
-        //Process event in the queue
-        QCoreApplication::processEvents();
-        metahelper.find_metadata_for_system(sysentry, sctx);
+    //unlock file system temporary to permit to store updates during asset parsing (as generation of media.xml from share_init for example)
+    if (system("mount -o remount,rw /") != 0) Log::error(LOGMSG("Issue to provide read/write on '/'"));
+    for(const QString& romsDir : paths::romsDirs()){
+        if(romsDir.contains("/share_init/")){
+            //unlock file system temporary to permit to store updates during asset parsing (as generation of media.xml from share_init for example)
+            if (system("mount -o remount,rw /") != 0) Log::error(LOGMSG("Issue to provide read/write on '/'"));
+        }
+        for (const SystemEntry& sysentry : systems) {
+            QString share_path = sysentry.path ;
+            share_path = share_path.replace("%ROOT%",romsDir);
+            const QDir xml_dir(share_path);
+            emit progressStage(sysentry.name);
+            progress += progress_step;
+            emit progressChanged(progress);
+            //Process event in the queue
+            QCoreApplication::processEvents();
+            metahelper.find_metadata_for_system(sysentry, xml_dir, sctx);
+        }
+        if(romsDir.contains("/share_init/")){
+            //unlock file system after asset parsing/updates from share_init
+            if (system("mount -o remount,ro /") != 0) Log::error(LOGMSG("Issue to provide read only on '/'"));
+        }
     }
     Log::info(LOGMSG("Stats - Global Timing: Gamelists/Assets parsing/searching took %1ms").arg(assets_timer.elapsed()));
     return *this;
@@ -157,9 +181,19 @@ inputConfigEntry Es2Provider::load_input_data(const QString& DeviceName, const Q
             : default_config_paths();
     }();
 
-    // Find input
-    return find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUID);
-
+    // Find input with CRC and Without if needed
+    // since 25/02/24 - with new buildroot and new SDL2 version
+    providers::es2::inputConfigEntry inputentry = find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUID);
+    if((inputentry.inputConfigAttributs.deviceGUID != DeviceGUID) && (DeviceGUID.mid(4,4) != "0000")){
+        QString DeviceGUIDWithoutCRC = DeviceGUID.mid(0,4) + "0000" + DeviceGUID.mid(8);
+        inputentry = find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUIDWithoutCRC);
+        if(inputentry.inputConfigAttributs.deviceGUID == DeviceGUIDWithoutCRC){
+            //save conf with DeviceGUID with CRC
+            inputentry.inputConfigAttributs.deviceGUID = DeviceGUID;
+            bool status = save_input_data(inputentry);
+        }
+    }
+    return inputentry;
 }
 
 inputConfigEntry Es2Provider::load_any_input_data_by_guid(const QString& DeviceGUID)

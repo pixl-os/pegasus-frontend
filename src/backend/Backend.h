@@ -28,9 +28,14 @@
 #include "hardware/Board.h"
 #include "audio/AudioController.h"
 
+//for http server used for http api
+#include <HttpServer.h>
+
+
 class ApiObject;
 class FrontendLayer;
 class ProcessLauncher;
+class HttpServer;
 
 namespace backend {
 
@@ -62,6 +67,9 @@ private:
     
     //! Audio controller
     AudioController mAudioController;
+
+    //! Http Server
+    HttpServer* m_httpapi;
 
     ApiObject* m_api;
     FrontendLayer* m_frontend;

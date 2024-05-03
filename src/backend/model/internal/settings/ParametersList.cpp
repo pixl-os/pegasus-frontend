@@ -84,6 +84,16 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("normal") << QObject::tr("inverted") << QObject::tr("left") << QObject::tr("right");
         ListOfInternalValue << "normal" << "inverted" << "left" << "right";
     }
+    else if (Parameter == "system.video.screens.mode")
+    {
+        /* parameter List for mode :
+        switch: when we plug a screen we switch to secondary one if connected
+        clone: we replicate image between primary and secondary screen
+        extended: when we ahve 2 screens, we extend to secondary one
+        */
+        ListOfValue << QObject::tr("switch") << QObject::tr("clone") << QObject::tr("extended");
+        ListOfInternalValue << "switch" << "clone" << "extended";
+    }
     else if (Parameter == "system.secondary.screen.position")
     {
         /* parameter List for xrandr option :
@@ -115,19 +125,16 @@ QStringList GetParametersList(QString Parameter)
         select only compatible extension shaders in menu opengl(glslp) / vulkan(slangp)*/
         QString shadersext;
         QString filterext;
-        //        QString dirShaders;
         // check vulkan option in recalbox.conf
         if (RecalboxConf::Instance().AsBool("system.video.driver.vulkan", false) == true)
         {
             shadersext = "*.slangp";
             filterext = ".slangp";
-            //            dirShaders = "shaders_slang";
         }
         else
         {
             shadersext = "*.glslp";
             filterext = ".glslp";
-            //            dirShaders = "shaders_glsl";
         }
 
         // add none in list for disabled option if needed
@@ -137,7 +144,6 @@ QStringList GetParametersList(QString Parameter)
 
         //read root directory
         // Define shaders path
-        //        QDir shadersDir("/recalbox/share/shaders/" + dirShaders + "/");
         QDir shadersDir("/recalbox/share/shaders/");
         // Sorting by name
         shadersDir.setSorting(QDir::Name);
@@ -147,19 +153,16 @@ QStringList GetParametersList(QString Parameter)
             QString file = files.at(index);
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             // set absolute path and extension for recalbox.conf
-            // ListOfInternalValue.append("/recalbox/share/shaders/" + dirShaders + "/" + file);
             ListOfInternalValue.append("/recalbox/share/shaders/" + file);
             // remove file extension on menu
             ListOfValue.append(file.replace(filterext, ""));
         }
 
         //read subdirectories
-        // QDirIterator it("/recalbox/share/shaders/" + dirShaders + "/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         QDirIterator it("/recalbox/share/shaders/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         while (it.hasNext()) {
             QString dir = it.next();
             QString relativedir = dir;
-            //            relativedir = relativedir.replace("/recalbox/share/shaders/" + dirShaders + "/","");
             relativedir = relativedir.replace("/recalbox/share/shaders/","");
             //Log::debug(LOGMSG("Subdir : '%1'").arg(dir));
             QDir shadersSubDir(dir);
@@ -174,9 +177,120 @@ QStringList GetParametersList(QString Parameter)
                 ListOfInternalValue.append(dir + '/' + subfile);
                 // remove file extension on menu
                 ListOfValue.append(subfile.replace(filterext, ""));
-                //ListOfValue.append(relativedir + " - " + subfile.replace(filterext, ""));
             }
         }
+    }
+    else if (Parameter.endsWith(".wine", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read subdirectories in /usr/wine
+        QDirIterator it("/usr/wine/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            QString relativedir = dir;
+            Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
+            //if contain /bin directory, we could consider that is a valid wine installed in pixL
+            if(relativedir.endsWith("/bin")){
+                QString fulldir;
+                QString winename;
+                //check if file wine or wine64 exists to detect a valid wine directory
+                if (QFile::exists(relativedir + "/wine")) {
+                    fulldir = relativedir + "/wine";
+                    winename = relativedir;
+                    winename = winename.replace("/usr/wine/","");
+                    winename = winename.replace("/bin","");
+                    // use name of directory from /usr/win for recalbox.conf
+                    ListOfInternalValue.append(fulldir);
+                    // remove file extension on menu
+                    ListOfValue.append(winename + " (Wine)");
+                }
+                if (QFile::exists(relativedir + "/wine32")){
+                    fulldir = relativedir + "/wine32";
+                    winename = relativedir;
+                    winename = winename.replace("/usr/wine/","");
+                    winename = winename.replace("/bin","");
+                    // use name of directory from /usr/win for recalbox.conf
+                    ListOfInternalValue.append(fulldir);
+                    // remove file extension on menu
+                    ListOfValue.append(winename + " (Wine32)");
+                }
+                if (QFile::exists(relativedir + "/wine64")){
+                    fulldir = relativedir + "/wine64";
+                    winename = relativedir;
+                    winename = winename.replace("/usr/wine/","");
+                    winename = winename.replace("/bin","");
+                    // use name of directory from /usr/win for recalbox.conf
+                    ListOfInternalValue.append(fulldir);
+                    // remove file extension on menu
+                    ListOfValue.append(winename + " (Wine64)");
+                }
+            }
+        }
+    }
+    else if (Parameter.endsWith(".wineappimage", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read "embedded" appimages file from /usr/wine :
+        QDir wineDir("/usr/wine");
+        // Sorting by name
+        wineDir.setSorting(QDir::Name);
+        QString ext = "*.AppImage";
+        QString fileext = ".AppImage";
+        QStringList files = wineDir.entryList(QStringList(ext), QDir::Files);
+        for ( int index = 0; index < files.count(); index++ )
+        {
+            QString file = files.at(index);
+            //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
+            ListOfInternalValue.append("/usr/wine/" + file);
+            // remove file extension on menu
+            ListOfValue.append(file.replace(fileext, ""));
+        }
+        //read "user" appimages file from /recalbox/share/save/usersettings/appimages
+        QDir wineUserDir("/recalbox/share/save/usersettings/appimages");
+        // Sorting by name
+        wineUserDir.setSorting(QDir::Name);
+        QStringList userfiles = wineUserDir.entryList(QStringList(ext), QDir::Files);
+        for ( int index = 0; index < userfiles.count(); index++ )
+        {
+            QString file = userfiles.at(index);
+            //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
+            ListOfInternalValue.append("/recalbox/share/save/usersettings/appimages/" + file);
+            // remove file extension on menu
+            ListOfValue.append(file.replace(fileext, ""));
+        }
+    }
+    else if (Parameter.endsWith(".winearch", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        ListOfValue << "32 bits" << "64 bits";
+        ListOfInternalValue << "win32" << "win64";
+    }
+    else if (Parameter.endsWith(".winver", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        ListOfValue << "Windows 10" << "Windows 8.1" << "Windows 8" << "Windows 7" << "Windows 2008" << "Windows Vista" << "Windows 2003" << "Windows XP" << "Windows 2000" << "Windows NT 4.0" << "Windows Millennium Edition" << "Windows 98" << "Windows 95" << "Windows 3.1";
+        ListOfInternalValue << "win10" << "win81" << "win8" << "win7" << "win2008" << "vista" << "win2003" << "winxp" << "win2k" << "nt40" << "winme" << "win98" << "win95"  << "win31";
+    }
+    else if (Parameter.endsWith(".wineaudiodriver", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        ListOfValue << "alsa" << "pulse";
+        ListOfInternalValue << "alsa" << "pulse";
     }
     else if (Parameter == "system.selected.color")
     {
@@ -649,8 +763,9 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
     }
 
     //launch command using Qprocess to get output
+    //Log::debug(LOGMSG("%2 SysCommand.toUtf8().constData(): '%1'").arg(SysCommand.toUtf8().constData(),Parameter));
     QString stdout = GetCommandOutput(SysCommand.toUtf8().constData());
-    Log::debug(LOGMSG("GetCommandOutput(SysCommand.toUtf8().constData()): '%1'").arg(stdout));
+    //Log::debug(LOGMSG("%2 GetCommandOutput(SysCommand.toUtf8().constData()): '%1'").arg(stdout,Parameter));
 
     //get list of value from stdout
     if (stdout.isEmpty())
@@ -884,7 +999,7 @@ void ParametersList::setCurrentIndex(int idx_int)
 }
 
 
-QString ParametersList::currentName(const QString& Parameter) {
+QString ParametersList::currentName(const QString& Parameter, const QString& InternalName) {
 
     //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
 
@@ -899,7 +1014,35 @@ QString ParametersList::currentName(const QString& Parameter) {
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
     }
+    //if added to check if InternalName changed finally espcially for value change from recalbox.conf and using HTTP API
+    if(InternalName != ""){
+        //need to reset from InternalName as comming from recalox.conf
+        for(int i = 0; i < ListOfInternalValue.count(); i++) {
+            if(ListOfInternalValue.at(i) == InternalName){
+                m_current_idx = i;
+                break;
+            }
+        }
+    }
     return m_parameterslist.at(m_current_idx).name;
+}
+
+QString ParametersList::currentInternalName(const QString& Parameter) {
+
+    //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+
+    if (m_parameter != Parameter)
+    {
+        //to signal refresh of model's data
+        emit QAbstractItemModel::beginResetModel();
+        m_parameter = Parameter;
+        QStringList EmptyQStringList;
+        m_parameterslist = find_available_parameterslist(Parameter,"",EmptyQStringList);
+        select_preferred_parameter(Parameter);
+        //to signal end of model's data
+        emit QAbstractItemModel::endResetModel();
+    }
+    return ListOfInternalValue.at(m_current_idx);
 }
 
 QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) {

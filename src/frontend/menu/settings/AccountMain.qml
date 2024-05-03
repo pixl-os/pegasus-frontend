@@ -117,6 +117,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementUsername
+
                     label: qsTr("Username") + api.tr
                     note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
 
@@ -137,7 +138,8 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optRetroachievementPassword
-                     label: qsTr("Password") + api.tr
+
+                    label: qsTr("Password") + api.tr
                     note: qsTr("then login with your username and password") + api.tr
 
                     TextFieldOption {
@@ -226,11 +228,12 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayNickname
                 }
-                MultivalueOption {
+                SimpleButton {
                     id: optNetplayNickname
 
                     label: qsTr("Netplay nickname") + api.tr
                     note: qsTr("Set your netplay nickname") + api.tr
+
                     TextFieldOption {
                         id: netplayNickname
                         anchors.right: parent.right
@@ -284,12 +287,18 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optNetplayPswdClient
+
                     //property to manage parameter name
                     property string parameterName : "netplay.password.client"
 
                     label: qsTr("Password netplay players") + api.tr
                     note: qsTr("Choose password for join session") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
@@ -301,7 +310,25 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optNetplayPswdViewerActivate
                     visible: optNetplayPswdClientActivate.checked && optNetplayActivate.checked
                 }
@@ -319,12 +346,18 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optNetplayPswdViewer
+
                     //property to manage parameter name
                     property string parameterName : "netplay.password.viewer"
 
                     label: qsTr("Password netplay spectator") + api.tr
                     note: qsTr("Choose password for netplay spectator") + api.tr
+
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
@@ -336,7 +369,25 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     visible: optNetplayPswdViewerActivate.checked && optNetplayActivate.checked
                 }
                 Item {
@@ -361,30 +412,15 @@ FocusScope {
 
         onClose: content.focus = true
         onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
+            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
-    }
-    MultivalueBox {
-        id: localeBox
-        z: 3
-
-        model: api.internal.settings.locales
-        index: api.internal.settings.locales.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.locales.currentIndex = index
-    }
-    MultivalueBox {
-        id: themeBox
-        z: 3
-
-        model: api.internal.settings.themes
-        index: api.internal.settings.themes.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.themes.currentIndex = index
     }
 }

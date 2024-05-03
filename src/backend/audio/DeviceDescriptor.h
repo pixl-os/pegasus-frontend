@@ -7,10 +7,12 @@
 #pragma once
 
 #include <audio/AudioIcons.h>
+#include <string>
 
 struct DeviceDescriptor
 {
   std::string DisplayableName;
   std::string InternalName;
   AudioIcon Icon;
+  bool available;
 };

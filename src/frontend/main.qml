@@ -22,6 +22,7 @@ import QtQuick.Controls 2.15
 import QtMultimedia 5.15
 import "dialogs"
 import "global"
+import "menu/settings/common"
 import QtQuick.VirtualKeyboard 2.15
 import QtQuick.VirtualKeyboard.Settings 2.15
 
@@ -55,6 +56,9 @@ Window {
             return true;
         }
     }
+
+    //TIPS: property to preload shader during launch of pegasus-fe and avoid "slow" effect during loding of "Games" menu
+    property string preload: api.internal.recalbox.parameterslist.currentName("global.shaders")
 
     /*onClosing: {
         theme.source = "";
@@ -240,6 +244,7 @@ Window {
 
         //to know if Guide button still released
         property bool guideButtonPressed: false
+        property bool buttonLongPress: false
 
         readonly property real winScale: Math.min(width / 1280.0, height / 720.0)
 
@@ -296,39 +301,67 @@ Window {
             Keys.onReleased: {
                 // Guide
                 if (api.keys.isGuide(event) && !event.isAutoRepeat) {
-                    //console.log("Keys.onReleased: api.keys.isGuide(event)");
                     event.accepted = true;
+                    timerButtonPressed.stop()
                     global.guideButtonPressed = false;
+                    global.buttonLongPress = false;
                 }
-            }
-
-            // Input handling
-            Keys.onPressed: {
-                // Guide
-                if (api.keys.isGuide(event) && !event.isAutoRepeat) {
-                    //console.log("Keys.onPressed: api.keys.isGuide(event)");
-                    event.accepted = true;
-                    global.guideButtonPressed = true;
-                }
-                // Menu
-                if (api.keys.isMenu(event) && !event.isAutoRepeat && !global.guideButtonPressed) {
-                    //console.log("Keys.onPressed: api.keys.isMenu(event)");
-                    event.accepted = true;
-                    mainMenu.focus = true;
-                }
-
-                if (api.keys.isNetplay(event) && api.internal.recalbox.getBoolParameter("global.netplay") && !global.guideButtonPressed){
+                // Netplay
+                else if (api.keys.isNetplay(event) && !event.isAutoRepeat && !global.guideButtonPressed && !global.buttonLongPress){
+                    //console.log("Keys.onReleased: api.keys.isNetplay(event)");
                     event.accepted = true;
                     subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
                     subscreen.focus = true;
                     content.state = "sub";
+                    //stop longpress timer also to avoid border effect
+                    timerButtonPressed.stop()
+                    global.guideButtonPressed = false;
+                    global.buttonLongPress = false;
                 }
+            }
 
+            Timer {
+              id: timerButtonPressed
+              interval: 1000 // more than 1 second press is considered as long press
+              running: false
+              triggeredOnStart: false
+              repeat: false
+              onTriggered: {
+                  global.buttonLongPress = true;
+              }
+            }
 
-                if (event.key === Qt.Key_F5) {
+            // Input handling
+            Keys.onPressed: {
+                //if (api.keys.isGuide(event)) console.log("Keys.onPressed: saw as guide");
+                //if (api.keys.isNetplay(event)) console.log("Keys.onPressed: saw as netplay");
+
+                //start timer to detect button long press
+                if((global.buttonLongPress == false) && (timerButtonPressed.running  == false))  timerButtonPressed.restart();
+                // Guide
+                if (api.keys.isGuide(event) && !event.isAutoRepeat) {
+                    //console.log("Keys.onPressed: api.keys.isGuide(event)");
+                    event.accepted = true;
+                    global.guideButtonPressed = true
+                }
+                // Netplay
+                else if (api.keys.isNetplay(event) && !event.isAutoRepeat && !global.guideButtonPressed && global.buttonLongPress){
+                    event.accepted = true;
+                    //reset long press in this case
+                    timerButtonPressed.stop()
+                    global.buttonLongPress = false;
+                }
+                // Menu
+                else if (api.keys.isMenu(event) && !event.isAutoRepeat) {
+                    //console.log("Keys.onPressed: api.keys.isMenu(event)");
+                    event.accepted = true;
+                    mainMenu.focus = true;
+                }
+                //To refresh theme
+                else if (event.key === Qt.Key_F5) {
                     event.accepted = true;
                     pegasusReloadTheme();
-                }
+                }                
             }
 
             source: getThemeFile()
@@ -618,6 +651,23 @@ Window {
             genericMessage.setSource("dialogs/GenericContinueDialog.qml",
                                      { "title": qsTr("New controller") + " : " + msg, "message": qsTr("Press any button to continue") + "\n(" + qsTr("please read instructions at the bottom of next view to understand possible actions") + "\n" + qsTr("mouse and keyboard could be used to help configuration") + ")" });
             genericMessage.focus = true;
+        }
+        function onRequestAction(msg) {
+            //console.log("New action requested : #", msg);
+            if(msg === "shutdown"){
+                powerDialog.source = "dialogs/ShutdownDialog.qml"
+                powerDialog.focus = true;
+            }
+            else if(msg === "reboot"){
+                powerDialog.source = "dialogs/RebootDialog.qml";
+                powerDialog.item.message = qsTr("The system will reboot. Are you sure?");
+                powerDialog.focus = true;
+            }
+            else if(msg === "restart"){
+                powerDialog.source = "dialogs/RestartDialog.qml";
+                powerDialog.item.message = qsTr("Pegasus will restart. Are you sure?");
+                powerDialog.focus = true;
+            }
         }
         function onEventLoadingStarted() {
             console.log("onEventLoadingStarted()");
@@ -930,12 +980,11 @@ Window {
                 id: inputPanel
                 z: 89
                 y: yPositionWhenHidden
-                x: Screen.orientation === Qt.LandscapeOrientation ? 0 : (parent.width-parent.height) / 2
-                width: Screen.orientation === Qt.LandscapeOrientation ? parent.width : parent.height
-                height: (Screen.orientation === Qt.LandscapeOrientation ? parent.height : parent.width) - keyboard.height
+                x: 0
+                width: parent.width
+                height: parent.height - keyboard.height
                 visible: Qt.inputMethod.visible && api.internal.settings.virtualKeyboardSupport
-
-                property real yPositionWhenHidden: Screen.orientation === Qt.LandscapeOrientation ? parent.height : parent.width + (parent.height-parent.width) / 2
+                property real yPositionWhenHidden: parent.height
                 states: State {
                     name: "visible"
                     /*  The visibility of the InputPanel can be bound to the Qt.inputMethod.visible property,
@@ -1694,6 +1743,115 @@ Window {
             lightgunCrosshair.visible = false;
         }
     }
-    //***********************************************************END OF LIGHTGUNS MANAGEMENT *************************************************************
+    //*********************************************************** END OF LIGHTGUNS MANAGEMENT *************************************************************
 
+    //*********************************************************** START OF SLIDERS MANAGEMENT *************************************************************
+
+    // Timer to show the sliders during a limited after update
+    Timer {
+        id: sliderVisibilityTimer
+        interval: 1000
+        repeat: false
+        running: false
+        triggeredOnStart: false
+        onTriggered: {
+            optOutputVolume.opacity = 0
+            optBrightness.opacity = 0
+        }
+    }
+
+    SliderVertical {
+        id: optOutputVolume
+
+        //property to manage parameter name
+        property string parameterName : "audio.volume"
+        height: parent.height / 6
+        width: parent.height / 6
+        x: 0
+        y : 0
+
+        // in slider object
+        max : 100
+        min : 0
+        slidervalue: api.internal.recalbox.audioVolume
+        //value: api.internal.recalbox.audioVolume + "%"
+
+        symbol: "\uf11c"
+
+        visible: true
+        focus: false
+        opacity: 0
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 500
+            }
+        }
+
+        property bool completed : false
+        Component.onCompleted:{
+            completed = true;
+        }
+
+        onSlidervalueChanged: {
+            if(completed){
+                opacity = 1;
+                optBrightness.opacity = 0;
+                sliderVisibilityTimer.restart()
+                if(slidervalue >= 75){
+                    symbol = "\uf11c"
+                }
+                else if(slidervalue >= 50){
+                    symbol = "\uf11e"
+                }
+                else if(slidervalue >= 25){
+                    symbol = "\uf11e"
+                }
+                else symbol = "\uf263" //mute
+            }
+        }
+    }
+
+    SliderVertical {
+        id: optBrightness
+
+        //property to manage parameter name
+        property string parameterName : "screen.brightness"
+        height: parent.height / 6
+        width: parent.height / 6
+        x: 0
+        y : 0
+
+        // in slider object
+        max : 100
+        min : 0
+        slidervalue: api.internal.recalbox.screenBrightness
+        //value: api.internal.recalbox.screenBrightness + "%"
+
+        symbol: "\uf4b7"
+
+        visible: true
+        focus: false
+        opacity: 0
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 500
+            }
+        }
+
+        property bool completed : false
+        Component.onCompleted:{
+            completed = true;
+        }
+
+        onSlidervalueChanged: {
+            if(completed){
+                opacity = 1;
+                optOutputVolume.opacity = 0;
+                sliderVisibilityTimer.restart();
+            }
+        }
+    }
+    //*********************************************************** END OF SLIDERS MANAGEMENT *************************************************************
 }

@@ -172,61 +172,142 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optBluetoothScanMethods
+                    
                     //controllers.bluetooth.scan.methods
                     property string parameterName :"controllers.bluetooth.scan.methods"
+                    
                     label: qsTr("Scanning Method") + api.tr
                     note: qsTr("Select Legacy or any new ones") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
+                        //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optBluetoothScanMethods;
+                        //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optBluetoothPairMethods
                     visible: optBluetoothControllers.checked
                 }
                 MultivalueOption {
                     id: optBluetoothPairMethods
+
                     //controllers.bluetooth.pair.methods
                     property string parameterName :"controllers.bluetooth.pair.methods"
+
                     label: qsTr("Pairing Device Method") + api.tr
                     note: qsTr("Select legacy or simple one") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
+                        //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optBluetoothPairMethods;
+                        //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optBluetoothUnpairMethods
                     visible: optBluetoothControllers.checked
                 }
                 MultivalueOption {
                     id: optBluetoothUnpairMethods
+
                     //controllers.bluetooth.unpair.methods
                     property string parameterName :"controllers.bluetooth.unpair.methods"
+
                     label: qsTr("Forget Device Method") + api.tr
                     note: qsTr("Select Legacy or simple one") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
+                        //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optBluetoothUnpairMethods;
+                        //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optBluetoothERTM
                     visible: optBluetoothControllers.checked
                 }
@@ -306,21 +387,49 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optDriversPs3Controllers
+
+                    //property to manage parameter name
                     property string parameterName :"controllers.ps3.driver"
                     // ## Choose a driver between bluez, official and shanwan
+
                     label: qsTr("Sony PS3 Sixaxis drivers") + api.tr
                     note: qsTr("Choose a driver between bluez, official and shanwan for Sisaxis") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
+                        //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optDriversPs3Controllers;
+                        //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optArcadeStick //optDB9Controllers
                     visible: optPs3Controllers.checked && optBluetoothControllers.checked
                 }
@@ -496,19 +605,30 @@ FocusScope {
 
                 MultivalueOption {
                     id: optSindenLightgunBorderColor
+
+                    //property to manage parameter name
                     property string parameterName :"lightgun.sinden.bordercolor"
+
                     label: qsTr("Sinden lightgun border color") + api.tr
                     note: qsTr("Select the border's color for sinden lightguns") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
+                        //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optSindenLightgunBorderColor;
+                        //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
+
                     onValueChanged: {
                         let bordercolor = api.internal.recalbox.getStringParameter("lightgun.sinden.bordercolor","white");
                         switch (bordercolor) {
@@ -529,44 +649,101 @@ FocusScope {
                               root.updateSindenConfValue("ColourMatchRGB","255,255,255");
                         }
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optSindenLightgunBorderSize
                 }
 
                 MultivalueOption {
                     id: optSindenLightgunBorderSize
+
+                    //property to manage parameter name
                     property string parameterName :"lightgun.sinden.bordersize"
+
                     label: qsTr("Sinden lightgun border size") + api.tr
                     note: qsTr("Select the border's size for sinden lightguns") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
+                        //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optSindenLightgunBorderSize;
+                        //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optSindenLightgunRecoilMode
                 }
 
                 MultivalueOption {
                     id: optSindenLightgunRecoilMode
+
+                    //property to manage parameter name
                     property string parameterName :"lightgun.sinden.recoilmode"
+
                     label: qsTr("Sinden lightgun recoil mode") + api.tr
                     note: qsTr("Select the behavior of sinden lightgun recoils") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
                     onActivate: {
+                        //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optSindenLightgunRecoilMode;
+                        //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
+
                     onValueChanged: {
                         let recoilmode = api.internal.recalbox.getStringParameter("lightgun.sinden.recoilmode","none");
 
@@ -599,7 +776,25 @@ FocusScope {
                               root.updateSindenPlayersConfValue("EnableRecoil","0");
                         }
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optSindenLightgunSettingsApply
                 }
                 // to apply settings
@@ -693,30 +888,15 @@ FocusScope {
 
         onClose: content.focus = true
         onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(parameterName);
+            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
-    }
-    MultivalueBox {
-        id: localeBox
-        z: 3
-
-        model: api.internal.settings.locales
-        index: api.internal.settings.locales.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.locales.currentIndex = index
-    }
-    MultivalueBox {
-        id: themeBox
-        z: 3
-
-        model: api.internal.settings.themes
-        index: api.internal.settings.themes.currentIndex
-
-        onClose: content.focus = true
-        onSelect: api.internal.settings.themes.currentIndex = index
     }
 }

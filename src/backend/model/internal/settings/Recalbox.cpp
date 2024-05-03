@@ -1,6 +1,5 @@
-
 #include "Recalbox.h"
-
+#include "Log.h"
 
 namespace {
 
@@ -27,6 +26,50 @@ Recalbox::Recalbox(QObject* parent)
     : QObject(parent)
     , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
 {
+
+}
+
+void Recalbox::setAudioVolume(int new_val)
+{
+    if (new_val == RecalboxConf::Instance().GetAudioVolume()){
+        return;
+    }
+    if(RecalboxConf::Instance().AsString("audio.mode") != "none"){
+        AudioController::Instance().SetVolume(new_val);
+    }
+    else AudioController::Instance().SetVolume(0); // to mute in all cases
+    RecalboxConf::Instance().SetAudioVolume(new_val);
+    emit audioVolumeChanged();
+}
+
+void Recalbox::setScreenBrightness(int new_val)
+{
+    if (new_val == RecalboxConf::Instance().GetScreenBrightness()){
+        return;
+    }
+    //set brightness
+    QString brightnessCommand = "timeout 1 sh /recalbox/system/hardware/device/pixl-backlight.sh brightness " + QString::number(new_val);
+    int exitcode = system(qPrintable(brightnessCommand));
+    RecalboxConf::Instance().SetScreenBrightness(new_val);
+    emit screenBrightnessChanged();
+}
+
+void Recalbox::setSystemPrimaryScreenEnabled(bool new_val)
+{
+    if (new_val == RecalboxConf::Instance().GetSystemPrimaryScreenEnabled()){
+        return;
+    }
+    RecalboxConf::Instance().SetSystemPrimaryScreenEnabled(new_val);
+    emit systemPrimaryScreenEnabledChanged();
+}
+
+void Recalbox::setSystemSecondaryScreenEnabled(bool new_val)
+{
+    if (new_val == RecalboxConf::Instance().GetSystemSecondaryScreenEnabled()){
+        return;
+    }
+    RecalboxConf::Instance().SetSystemSecondaryScreenEnabled(new_val);
+    emit systemSecondaryScreenEnabledChanged();
 }
 
 QString Recalbox::getStringParameter(const QString& Parameter, const QString& defaultValue)
@@ -113,14 +156,6 @@ void Recalbox::setIntParameter(const QString& Parameter, const int& Value)
     else
     {
         RecalboxConf::Instance().SetInt(Parameter.toUtf8().constData(), Value);
-
-        /********************* realtime action linked to any parameter (to avoid to create a new api just for that :-(***************/
-        if(Parameter == "audio.volume")
-        {
-            //change audio volume as proposed
-            if(RecalboxConf::Instance().AsString("audio.mode") != "none") AudioController::Instance().SetVolume(Value);
-            else AudioController::Instance().SetVolume(0); // to mute in all cases
-        }
     }
 }
 
@@ -129,10 +164,26 @@ void Recalbox::saveParameters()
     RecalboxConf::Instance().Save();
 }
 
-void Recalbox::reloadParameters() //to relaod parameters from recalbox.conf
+void Recalbox::reloadParameter(QString parameter) //to relaod parameters from recalbox.conf
 {
-    RecalboxConf::Instance().Reload();
-}	
+    //need to identify the parameter to emit the good signal to update the value
+    //no other solution found avoiding to reload all parameters except this one
+    if(parameter.toLower() == "audio.volume"){
+        emit audioVolumeChanged();
+    }
+    else if(parameter.toLower() == "audio.device"){
+        emit audioDeviceChanged();
+    }
+    else if(parameter.toLower() == "screen.brightness"){
+        emit screenBrightnessChanged();
+    }
+    else if(parameter.toLower() == "system.primary.screen.enabled"){
+        emit systemPrimaryScreenEnabledChanged();
+    }
+    else if(parameter.toLower() == "system.secondary.screen.enabled"){
+        emit systemSecondaryScreenEnabledChanged();
+    }
+}
 
 QString Recalbox::runCommand(const QString& SysCommand, const QStringList& SysOptions)
 {

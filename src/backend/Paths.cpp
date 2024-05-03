@@ -29,6 +29,8 @@
 
 #include <functional>
 
+//For recalbox
+#include "RecalboxConf.h"
 
 namespace {
 using QSP = QStandardPaths;
@@ -143,6 +145,31 @@ QStringList themesDirs()
     }();
 
     return themes_dir_paths;
+}
+
+QStringList romsDirs()
+{
+    static const QStringList roms_dir_paths = [](){
+        QStringList paths(QLatin1String(""));
+        const QString local_roms_dir = QCoreApplication::applicationDirPath()
+                                       + QStringLiteral("/roms");
+        if (QFileInfo::exists(local_roms_dir))
+            paths << local_roms_dir;
+
+        //add recalbox share root in romsDirs
+        paths.append("/recalbox/share/roms");
+
+        //if embedded games are not hidden
+        if(!RecalboxConf::Instance().AsBool("pegasus.embedded.games.hide")){
+                    //add recalbox share init root in romsDirs
+            paths.append("/recalbox/share_init/roms");
+        }
+
+        paths.removeDuplicates();
+        return paths;
+    }();
+
+    return roms_dir_paths;
 }
 
 QString writableConfigDir()

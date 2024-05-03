@@ -14,22 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "DeviceInfo.h"
 
-#ifdef WITH_SDL_POWER
 #include <SDL.h>
-#elif defined(Q_OS_ANDROID)
-#include "platform/AndroidHelpers.h"
-#include <QtAndroidExtras/QAndroidJniEnvironment>
-#include <QtAndroidExtras/QAndroidJniObject>
-#endif
-
 #include <cmath>
 
 
 namespace {
-#ifdef WITH_SDL_POWER
 model::DeviceInfo::BatteryStatus sdl_state_to_qt(const SDL_PowerState sdl_state)
 {
     using Status = model::DeviceInfo::BatteryStatus;
@@ -54,38 +45,6 @@ model::DeviceInfo::BatteryInfo query_battery()
         sdl_secs,
     };
 }
-#elif defined(Q_OS_ANDROID)
-model::DeviceInfo::BatteryInfo query_battery()
-{
-    static constexpr auto JNI_METHOD = "queryBattery";
-    static constexpr auto JNI_SIGNATURE = "()Lorg/pegasus_frontend/android/BatteryInfo;";
-
-    QAndroidJniEnvironment jni_env;
-
-    const QAndroidJniObject jni_obj = QAndroidJniObject::callStaticObjectMethod(android::jni_classname(), JNI_METHOD, JNI_SIGNATURE);
-    if (!jni_obj.isValid())
-        return {model::DeviceInfo::BatteryStatus::Unknown, NAN, -1};
-
-    const bool present = jni_obj.callMethod<jboolean>("present");
-    const bool plugged = jni_obj.callMethod<jboolean>("plugged");
-    const bool charged = jni_obj.callMethod<jboolean>("charged");
-    const float percent = qBound(0.f, jni_obj.callMethod<jfloat>("percent"), 1.f);
-
-    if (!present)
-        return {model::DeviceInfo::BatteryStatus::NoBattery, NAN, -1};
-    if (charged)
-        return {model::DeviceInfo::BatteryStatus::Charged, 1.f, -1};
-    if (plugged)
-        return {model::DeviceInfo::BatteryStatus::Charging, percent, -1};
-
-    return {model::DeviceInfo::BatteryStatus::Discharging, percent, -1};
-}
-#else
-model::DeviceInfo::BatteryInfo query_battery()
-{
-    return {model::DeviceInfo::BatteryStatus::Unknown, NAN, -1};
-}
-#endif
 } // namespace
 
 
@@ -95,7 +54,7 @@ DeviceInfo::DeviceInfo(QObject* parent)
 {
     poll_battery();
     connect(&m_battery_poll, &QTimer::timeout, this, &DeviceInfo::poll_battery);
-    m_battery_poll.start(30 * 1000);
+    m_battery_poll.start(5 * 1000); //check every 5 seconds now
 }
 
 void DeviceInfo::poll_battery()

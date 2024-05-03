@@ -16,6 +16,7 @@ struct ParameterEntry {
 class ParametersList : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY parameterChanged)
+    Q_PROPERTY(int count READ rowCount NOTIFY parameterChanged)
 public:
     explicit ParametersList(QObject* parent = nullptr);
 
@@ -31,7 +32,8 @@ public:
     void setCurrentIndex(int);
     
 	//CurrentName is used to initiate the parameters list from list define by the developer and return the existing value from recalbox.conf if exist
-    Q_INVOKABLE  QString currentName (const QString& Parameter);
+    Q_INVOKABLE  QString currentName (const QString& Parameter, const QString& InternalName = "");
+    Q_INVOKABLE  QString currentInternalName (const QString& Parameter);
     //CurrentNameFromSystem is used to initiate the parameters list generated from a system/script command and return the existing value from recalbox.conf if exist
     Q_INVOKABLE  QString currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions);
 

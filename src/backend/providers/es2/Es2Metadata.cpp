@@ -373,7 +373,7 @@ bool Metadata::isLightgunGames(model::Game* game, const model::GameFile* gamefil
     }
 }
 
-void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::SearchContext& sctx) const
+void Metadata::find_metadata_for_system(const SystemEntry& sysentry, const QDir& system_dir, providers::SearchContext& sctx) const
 {
     Q_ASSERT(!sysentry.name.isEmpty());
     Q_ASSERT(!sysentry.path.isEmpty());
@@ -386,12 +386,10 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
 
     QElapsedTimer gamelist_timer;
     gamelist_timer.start();
-
-    const QDir xml_dir(sysentry.path);
     
     //Log::debug(log_tag, LOGMSG("sysentry.path:  %1").arg(sysentry.path));
       
-    const QString gamelist_path = find_gamelist_xml(m_config_dirs, xml_dir, sysentry);
+    const QString gamelist_path = find_gamelist_xml(m_config_dirs, system_dir, sysentry);
     if (gamelist_path.isEmpty()) {
         Log::warning(log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
         return;
@@ -405,7 +403,7 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
     }
 
     QXmlStreamReader xml(&xml_file);
-    process_gamelist_xml(xml_dir, xml, sctx, sysentry);
+    process_gamelist_xml(system_dir, xml, sctx, sysentry);
     Log::info(log_tag, LOGMSG("Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));
 
     //part after is dedicated to add additional media from skraper and not referenced in "gamelist.xml" files
@@ -419,18 +417,18 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, providers::
         if(RecalboxConf::Instance().AsBool("pegasus.usemedialist", true)){
             //Log::info(LOGMSG("media.xml to use: %1").arg(xml_dir.path() + "/media.xml"));
             //add media from xml (to see if it's quicker or not ?!)
-            size_t mediaFound = import_media_from_xml(xml_dir, sctx, sysentry);
+            size_t mediaFound = import_media_from_xml(system_dir, sctx, sysentry);
             if (mediaFound == 0){
-                Log::info(log_tag,  LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(xml_dir.path() + "/media.xml"));
+                Log::info(log_tag,  LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(system_dir.path() + "/media.xml"));
                 //set last parameter to activate or not the media.xml generation during parsing of media
-                add_skraper_media_metadata(xml_dir, sctx, sysentry, true);
+                add_skraper_media_metadata(system_dir, sctx, sysentry, true);
                 Log::info(log_tag, LOGMSG("Timing: Skraper media searching (with media.xml generation) took %1ms").arg(skraper_media_timer.elapsed()));
             }
             else Log::info(log_tag, LOGMSG("Timing: Skraper media.xml import took %1ms").arg(skraper_media_timer.elapsed()));
         }
         else{
             //set last parameter to activate deactivate the media.xml generation during parsing of media
-            add_skraper_media_metadata(xml_dir, sctx, sysentry, false);
+            add_skraper_media_metadata(system_dir, sctx, sysentry, false);
             Log::info(log_tag, LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
         }
         //*****************************************************     

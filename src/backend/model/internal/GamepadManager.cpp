@@ -217,7 +217,7 @@ void GamepadManager::swap(int device_id1, int device_id2)
     } 
 }
 
-void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString device_name, QString device_path, QString device_layout, int device_idd)
+void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString device_name, QString device_path, QString device_layout, int device_iid)
 {
     if (device_name.isEmpty()){
         device_name = QLatin1String("generic");
@@ -238,12 +238,15 @@ void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString 
 	//save in file immediately for test/follow-up purpose
 	RecalboxConf::Instance().Save();	
 
-    m_devices->append(new Gamepad(device_idx, device_name, device_idd, device_idx, device_layout, m_devices)); //device_id equals to device_idx at connnection
-
-    Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), device_name));
-    
-    //showpopup for 4 seconds by default
-    emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(device_name),QStringLiteral("%1").arg(device_layout), 4);
+    //add check to avoid to re-add device already added previously (strange behavior found with wine and from steamdeck unfortunatelly)
+    const auto it = find_by_deviceiid(*m_devices, device_iid);
+    if (it == m_devices->constEnd()) {
+        m_devices->append(new Gamepad(device_idx, device_name, device_iid, device_idx, device_layout, m_devices)); //device_id equals to device_idx at connnection
+        Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), device_name));
+        //showpopup for 4 seconds by default
+        emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(device_name),QStringLiteral("%1").arg(device_layout), 4);
+    }
+    else Log::error(m_log_tag, LOGMSG("device %1 (%2) already connected").arg(pretty_id(device_idx), device_name));
 }
 
 void GamepadManager::bkOnDisconnected(int device_iid)
