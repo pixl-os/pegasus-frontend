@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2024-04-?? - v0.1.6
+## [pixL-master] - 2024-03-05 - v0.1.6
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
 	- use recalbox.conf "updates." parameters now
@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- gamecontrollerdb updated with a 24th Feb 2024 version
 	- to select connnected/available audio output in priority to first boot or when previous output selected is missing
 	- use new MultivalueOption/MultivalueBox design for all menus using parameters list
+	- lang submodule updated to have last translations for last features
 	- 'embedded' games management:
 		- to have the games from share_init visible also
 		- add option from menu to hide embedded pixL games
@@ -43,6 +44,9 @@ All notable changes to this project will be documented in this file (focus on ch
 		- fix to really set all parameters when we apply settings before to launch 'externalscreen' script
 		- fix to improve update of parameters from lists with translation
 		- add binding/api for screens enabled
+		- add possibility to accept/cancel changes and restore previous configuration/values
+		- add possibility to change audio output/device from script and http api depending of screen activated
+		- pass to 15 seconds now before to restore settings if issue
 	- steamdeck/handheld pc features:
 		- management of brightness in pegasus
 		- introduce HTTP API to interact between scripts and pegasus-frontend (for volume first)
@@ -59,7 +63,10 @@ All notable changes to this project will be documented in this file (focus on ch
 		- add first "wine" parameters for model2emu settings
 		- add more details for wine/appimage options
 		- have left/right selection of options for model2emu
-	
+		- add wine parameters for model2emu about audio driver and soft renderer
+		- display wine/wine64 now and add button/icons/dialog box to confirm clean of bottles
+		- model2emu parameters for wine set as beta feature for the moment
+
 - Fixes:
 	- add support of "-v" and "v" tags in updates versions in upper case also now
 	- use recalbox.conf to store last check time for updates
@@ -84,6 +91,10 @@ All notable changes to this project will be documented in this file (focus on ch
 	- cleaning unused codes about multivalueboxes
 	- quick fix to replace multivalueoption by simplebutton for account part
 	- fix to align better label and parameter value
+	- remove/block multi-connect as steam deck (in case of wine)
+	- fix to reboot/restart using 'system' c++ command as more stable
+	- recenter label for slideroption in menu to have more space for note
+	- use a tip to pre-load shaders list from storage and avoid bad effect when we load shader list in menu
 
 ## [pixL-master] - 2023-11-13 - v0.1.5
 - Features:
