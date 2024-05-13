@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2024-mm-dd - v0.1.x
+- Fixes:
+	- fix ip display in settings menu
+
+
 ## [pixL-master] - 2024-03-05 - v0.1.6
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
