@@ -511,7 +511,7 @@ FocusScope {
                     onTriggered: {
                         //get ethernet ip if exists
                         var ethIP = ""
-                        if(!isDebugEnv()) ethIP = api.internal.system.run("timeout 1 ifconfig 2> /dev/null | grep -A1 '^e'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2");
+                        if(!isDebugEnv()) ethIP = api.internal.system.run("timeout 1 ifconfig 2> /dev/null | grep -A1 '^e'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2 | tr -d '\\n' | tr -d '\\r' | tr -s [:space:]");
                         else ethIP = "192.168.1.255"; //for test purpose
                         if(ethIP !== ""){
                             optEthernet.note = qsTr("Ethernet Local IP :") + api.tr + " " + ethIP;
@@ -523,11 +523,11 @@ FocusScope {
                         if(optWifiToggle.checked){
                             //get wifi ip if exists
                             var wifiIP = "";
-                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig 2> /dev/null | grep -A1 '^w'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2");
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig 2> /dev/null | grep -A1 '^w'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2 | tr -d '\\n' | tr -d '\\r' | tr -d [:space:]");
                             else wifiIP = "192.168.1.254"; //for test purpose
                             //get wifi ssid if exists
                             var ssid = "";
-                            if(!isDebugEnv()) ssid = api.internal.system.run("timeout 1 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}'");
+                            if(!isDebugEnv()) ssid = api.internal.system.run("timeout 1 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}' | tr -d '\\n' | tr -d '\\r' | tr -d [:space:]");
                             else ssid = "lesv2-5G-3"; //for test purpose
 
                             if(wifiIP !== ""){
