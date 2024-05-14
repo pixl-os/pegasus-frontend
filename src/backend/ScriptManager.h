@@ -18,6 +18,11 @@
 //#include <systems/SystemData.h>
 //#include <mqtt/MqttClient.h>
 
+#include <QThread>
+
+#include <sys/wait.h>
+#include <spawn.h>
+
 enum class Notification
 {
     None                 = 0x00000, //!< Non triggered event
@@ -58,6 +63,9 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
       Notification mFilter;    //!< Bitflag of notifications this script must reply to
       bool         mSync;      //!< RunSynchronously?
     };
+
+    //! Environement
+    char** mEnvironment;
 
     /*!
      * @brief Default constructor
@@ -221,9 +229,6 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
     //! Previous data
     ParamBag mPreviousParamBag;
 
-    //! Environement
-    char** mEnvironment;
-
     /*!
      * @brief Convert an Action into a string
      * @param action Action to convert
@@ -332,4 +337,94 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @return True if the path has a valid extension
      */
     static bool HasValidExtension(const Path& path);
+};
+
+//create a specific object to work in independant thread
+class ScriptManagerThread : public QThread {
+    Q_OBJECT
+
+public:
+    ScriptManagerThread(const Path& _target, const Strings::Vector& _arguments, bool _synchronous, char* const* _mEnvironment)
+        :target(_target),
+        arguments(_arguments),
+        synchronous(_synchronous),
+        mEnvironment(_mEnvironment)
+    {}
+private:
+    const Path& target;
+    const Strings::Vector& arguments;
+    bool synchronous;
+    char* const* mEnvironment;
+
+signals:
+    void finished(int exit_status);
+
+protected:
+
+    void run() override {
+        // final argument array
+        std::vector<const char*> args;
+        std::string command;
+
+        // Extract extension
+        std::string ext = Strings::ToLowerASCII(target.Extension());
+        if      (ext == ".sh")  { command = "/bin/sh";          args.push_back(command.data()); }
+        else if (ext == ".ash") { command = "/bin/ash";         args.push_back(command.data()); }
+        else if (ext == ".py")  { command = "/usr/bin/python";  args.push_back(command.data()); }
+        else if (ext == ".py2") { command = "/usr/bin/python2"; args.push_back(command.data()); }
+        else if (ext == ".py3") { command = "/usr/bin/python3"; args.push_back(command.data()); }
+        else { command = target.ToString(); }
+
+        args.push_back(target.ToChars());
+        for (const std::string& argument : arguments) args.push_back(argument.c_str());
+
+        { LOG(LogDebug) << "[Script] Run script in dedicated thread: " << Strings::Join(args, ' '); }
+
+        // Push final null
+        args.push_back(nullptr);
+
+        pid_t pid = 0;
+        pid_t wpid;
+        posix_spawnattr_t spawn_attr;
+        posix_spawnattr_init(&spawn_attr);
+        int status = posix_spawn(&pid, command.data(), nullptr, &spawn_attr, (char **) args.data(), mEnvironment);
+        posix_spawnattr_destroy(&spawn_attr);
+        if (status != 0) // Error
+        {
+            { LOG(LogError) << "[Script] Error running " << target.ToString() << " (spawn failed)"; }
+            return;
+        }
+
+        // Wait for child? and block UI in this case
+        if (synchronous)
+        {
+            do {
+                wpid = waitpid(pid, &status, WNOHANG);
+                if(wpid == pid){
+                    if (WIFEXITED(status)) {
+                        LOG(LogError) << "[Script] Exited, status=" << WEXITSTATUS(status);
+                    }
+                    else if (WIFSIGNALED(status)) {
+                        LOG(LogError) << "[Script] Killed by signal " << WTERMSIG(status);
+                    }
+                    else if (WIFSTOPPED(status)) {
+                        LOG(LogError) << "[Script] Stopped by signal " << WSTOPSIG(status);
+                    }
+                    break; // we could leave loop
+                }
+                else if(wpid == 0){
+                    LOG(LogDebug) << "[Script] Continued...";
+                    QThread::msleep(2000);
+                }
+                else{
+                    LOG(LogError) << "[Script] Error waiting for " << target.ToString() << " to complete. (waitpid failed)";
+                    break; // we could leave loop
+                }
+            }
+            while (wpid != pid);
+            LOG(LogDebug) << "[Script] exit loop";
+        }
+        // Emit signal with exit code
+        emit finished(WEXITSTATUS(status));
+    }
 };

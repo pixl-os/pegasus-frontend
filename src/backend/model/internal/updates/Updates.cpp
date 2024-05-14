@@ -600,15 +600,25 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
 
                 //prepare script to run
                 const Path path = Path(QString(diretoryPath + "/" + installationScriptAsset.m_name_asset).toStdString());
+
+                //sync to wait end of script in this slot
                 const ScriptManager::ScriptData script = { path, Notification::None , true };
-                ScriptManager::Instance().RunProcess(script.mPath,args,script.mSync,false);
-                //Check if OK and no error during installation
-                if(getInstallationError(componentName) == 0){
-                    m_updates[foundIndex].m_installationStep = 3; //installation finish
-                }
-                else{
-                    m_updates[foundIndex].m_installationStep = 4; //installation finish on error
-                }
+                ScriptManagerThread *MyThread = new ScriptManagerThread(script.mPath,args,script.mSync,ScriptManager::Instance().mEnvironment);
+
+                //connect to Thread
+                connect(MyThread, &ScriptManagerThread::finished, [this, foundIndex, componentName](int exit_status)->void{
+                    //Check if OK and no error during installation
+                    if((exit_status == 0) && (this->getInstallationError(componentName) <= 0)){
+                        Log::debug(log_tag, LOGMSG("Thread finished without error - exit status: %1").arg(QString::number(exit_status)));
+                        this->m_updates[foundIndex].m_installationStep = 3; //installation finish
+                    }
+                    else{
+                        Log::debug(log_tag, LOGMSG("Thread finished with error - exit status: %1").arg(QString::number(exit_status)));
+                        this->m_updates[foundIndex].m_installationStep = 4; //installation finish on error
+                    }
+                });
+                MyThread->start();
+                QThread::msleep(200); // sleep temporary to let thread start and show changes else it could crash :-(
             }
         }
     }

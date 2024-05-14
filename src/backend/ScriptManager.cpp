@@ -14,9 +14,6 @@
 //nclude <systems/SystemData.h>
 //nclude <systems/SystemManager.h>
 
-#include <sys/wait.h>
-#include <spawn.h>
-
 #include "ScriptManager.h"
 
 /*
@@ -385,6 +382,7 @@ void ScriptManager::RunProcess(const Path& target, const Strings::Vector& argume
   }
 
   pid_t pid = 0;
+  pid_t wpid;
   posix_spawnattr_t spawn_attr;
   posix_spawnattr_init(&spawn_attr);
   int status = posix_spawn(&pid, command.data(), nullptr, &spawn_attr, (char **) args.data(), mEnvironment);
@@ -396,11 +394,33 @@ void ScriptManager::RunProcess(const Path& target, const Strings::Vector& argume
     return;
   }
 
-  // Wait for child?
+  // Wait for child? and block UI in this case
   if (synchronous)
   {
-    if (waitpid(pid, &status, 0) != pid)
-    { LOG(LogError) << "[Script] Error waiting for " << target.ToString() << " to complete. (waitpid failed)"; }
+    do {
+        wpid = waitpid(pid, &status, WNOHANG);
+        if(wpid == pid){
+            if (WIFEXITED(status)) {
+              LOG(LogError) << "[Script] Exited, status=" << WEXITSTATUS(status);
+            }
+            else if (WIFSIGNALED(status)) {
+              LOG(LogError) << "[Script] Killed by signal " << WTERMSIG(status);
+            }
+            else if (WIFSTOPPED(status)) {
+              LOG(LogError) << "[Script] Stopped by signal " << WSTOPSIG(status);
+            }
+            break; // we could leave loop
+        }
+        else if(wpid == 0){
+            LOG(LogDebug) << "[Script] Continued...";
+        }
+        else{
+            LOG(LogError) << "[Script] Error waiting for " << target.ToString() << " to complete. (waitpid failed)";
+            break; // we could leave loop
+        }
+    }
+    while (wpid != pid);
+    LOG(LogDebug) << "[Script] exit loop";
   }
 
   // Permanent?
