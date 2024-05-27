@@ -82,7 +82,7 @@ void ScriptRunner::run(ScriptEvent event, const QStringList& args)
 {
     static const HashMap<ScriptEvent, QString, EnumHash> SCRIPT_DIRS {
         { ScriptEvent::QUIT, QStringLiteral("quit") },
-        { ScriptEvent::REBOOT, QStringLiteral("reboot") },
+        { ScriptEvent::REBOOT, QStringLiteral("shutdown -r now") }, //use shutdown -r and not reboot to well reboot and well initialize framebuffer for example
 		{ ScriptEvent::RESTART, QStringLiteral("restart") },
         { ScriptEvent::SHUTDOWN, QStringLiteral("shutdown") },
         { ScriptEvent::CONFIG_CHANGED, QStringLiteral("config-changed") },
