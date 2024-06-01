@@ -1199,6 +1199,42 @@ Window {
             //start other timers
             repoStatusRefreshTimer.start();
             updatePopupTimer.start();
+            checkUpgradeTimer.start();
+
+        }
+    }
+
+    Timer{//timer to check and alert about upgrade
+        id: checkUpgradeTimer
+        interval: 5000 // Check after 5 s
+        repeat: false //check and display popup only one time
+        running: false
+        triggeredOnStart: false
+        onTriggered: {
+            var upgradeFailed = api.internal.system.run("test -f /tmp/upgradefailed && echo 'true' || echo 'false'").includes("true") ? true : false
+            var upgraded = api.internal.system.run("test -f /tmp/upgraded && echo 'true' || echo 'false'").includes("true") ? true : false
+            //check if upgraded or failed
+            if((upgradeFailed === true) || (upgraded === true)){
+                //to popup to alert about upgrade
+                //init parameters
+                popup.title = qsTr("Information");
+                if(upgradeFailed === true){
+                    popup.message = qsTr("Upgrade failed !");
+                }
+                else if(upgraded === true){
+                    popup.message = qsTr("Upgrade done !");
+                }
+                //icon is optional but should be set to empty string if not use
+                popup.icon = "\uf2c6";
+                popup.iconfont = global.fonts.ion;
+                //delay provided in second and interval is in ms
+                popupDelay.interval = 10 * 1000;
+                //Open popup and set it as showable to have animation
+                popup.open();
+                popup.showing = true;
+                //start timer to close popup automatically
+                popupDelay.restart();
+            }
         }
     }
 
