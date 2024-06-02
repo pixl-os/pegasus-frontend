@@ -72,6 +72,7 @@ void DownloadManager::clear(){
     iteration = 0;
     statusMessage = "";
     statusProgress = 0.01; // not zero to consider that is started
+    statusError = 0;
 }
 
 void DownloadManager::setMessage(const QString &m)
@@ -82,6 +83,11 @@ void DownloadManager::setMessage(const QString &m)
 void DownloadManager::setSpeed(const QString &m)
 {
     statusSpeed = m;
+}
+
+void DownloadManager::setError(qint64 val)
+{
+    statusError = val;
 }
 
 void DownloadManager::setStatus(qint64 val, qint64 max)
@@ -169,20 +175,38 @@ void DownloadManager::startNextDownload()
         filename = saveFileName(url);
     }
     output.setFileName(filename);
-    setMessage(QString("Download of %1 started...").arg(output.fileName()));
-    Log::debug("DownloadManager", LOGMSG("Download of %1 started...").arg(output.fileName()));
-
+    QByteArray rangeHeaderValue;
+    qint64 existingFileSize = 0;
     if (!output.open(QIODevice::WriteOnly)) {
         setMessage(QString("Problem to save %1 : %2").arg(qPrintable(filename),
                                                           qPrintable(output.errorString())));
 
         Log::error("DownloadManager", LOGMSG("Problem to save %1 : %2").arg(qPrintable(filename),
                                                           qPrintable(output.errorString())));
+        //set error to save file
+        setError(2);
+
         startNextDownload();
         return;                 // skip this download
     }
-
+    else{
+        existingFileSize = output.size();
+        if(existingFileSize == 0){
+            setMessage(QString("Download of %1 started...").arg(output.fileName()));
+            Log::debug("DownloadManager", LOGMSG("Download of %1 started...").arg(output.fileName()));
+        }
+        else{
+            setMessage(QString("Download of %1 restarted...").arg(output.fileName()));
+            Log::debug("DownloadManager", LOGMSG("Download of %1 restarted from %2 Bytes...").arg(output.fileName(),QString::number(existingFileSize)));
+            rangeHeaderValue = "bytes=" + QByteArray::number(existingFileSize) + "-";
+        }
+    }
     QNetworkRequest request(url);
+    //to restart download from existing file (if needed)
+    if(existingFileSize != 0) request.setRawHeader("Range",rangeHeaderValue);
+    //set timeout if no reply/transfer stop to 15 seconds
+    request.setTransferTimeout(15000);
+
     currentDownload = manager.get(request);
     connect(currentDownload, &QNetworkReply::downloadProgress,
             this, &DownloadManager::downloadProgress);
@@ -233,7 +257,9 @@ void DownloadManager::downloadFinished()
         // download failed
         setMessage(QString("Failed: %1").arg(qPrintable(currentDownload->errorString())));
         Log::error("DownloadManager", LOGMSG("Failed: %1").arg(qPrintable(currentDownload->errorString())));
-        output.remove();
+        //don't remove to be able to manage retry in case of slow download, stop to remove output file to be able to complete it with retry.
+        //set error of download
+        setError(1);
     } else {
         // let's check if it was actually a redirect
         if (isHttpRedirect()) {

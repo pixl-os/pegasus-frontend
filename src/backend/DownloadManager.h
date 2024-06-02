@@ -66,6 +66,7 @@ public:
     float statusProgress = 0.0;
     int downloadedCount = 0;
     int totalCount = 0;
+    int statusError = 0; //0: no error, 1: error during download, 2: error to save downloaded file
 
 signals:
     void finished();
@@ -80,6 +81,7 @@ private:
     void setMessage(const QString &m);
     void setSpeed(const QString &m);
     void setStatus(qint64 val, qint64 max);
+    void setError(qint64 val);
     bool isHttpRedirect() const;
     QUrl reportRedirect();
 
