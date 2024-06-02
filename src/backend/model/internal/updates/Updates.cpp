@@ -561,11 +561,11 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                 {
                     //first download zip, script and other asset files + clear before to use or reuse the slot
                     downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
-                    if (installationScriptAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset);
-                    if (zipAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset);
+                    if (installationScriptAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset); //no set size to always download from 0
+                    if (zipAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset, zipAsset.m_size);
                     //additional ones only when we ahve to update OS
-                    if (sha1Asset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(sha1Asset.m_download_url),diretoryPath + "/" + sha1Asset.m_name_asset);
-                    if (imgAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(imgAsset.m_download_url),diretoryPath + "/" + imgAsset.m_name_asset);
+                    if (sha1Asset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(sha1Asset.m_download_url),diretoryPath + "/" + sha1Asset.m_name_asset); //no set size to always download from 0
+                    if (imgAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(imgAsset.m_download_url),diretoryPath + "/" + imgAsset.m_name_asset, imgAsset.m_size);
 
                     //do loop on connect to wait download in this case
                     m_updates[foundIndex].m_installationStep = 1;
@@ -575,7 +575,6 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
                     if(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError > 0){
                         Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: finished with error - exit status: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
-                        this->m_updates[foundIndex].m_installationStep = 4; //installation finish on error
                         return; //exit function now
                     }
                 }
@@ -690,7 +689,7 @@ int Updates::getInstallationError(QString componentName){
     for(int i = 0;i < m_updates.count();i++){
         if(m_updates[i].m_componentName == componentName){
             if(m_updates[i].m_installationStep == 1){
-                return 0; //no error code manage during this step at the moment
+                return downloadManager[m_updates[i].m_downloaderIndex].statusError;
             }
             else if(m_updates[i].m_installationStep >= 2){//if we are installing...and more.
                //return content of file /tmp/componentName/install.err
@@ -767,8 +766,9 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
                 else if(asset_entry[QL1("browser_download_url")].toString().contains("picture.png")){
                     m_versions[i].m_picture = asset_entry[QL1("browser_download_url")].toString();
                 }
-                //Log::info(log_tag, LOGMSG("asset_entry[QL1('name')].toString(): %1").arg(asset_entry[QL1("name")].toString()));
-                //Log::info(log_tag, LOGMSG("asset_entry[QL1('size')].toString(): %1").arg(asset_entry[QL1("size")].toInt()));
+                Log::info(log_tag, LOGMSG("asset_entry[QL1('name')].toString(): %1").arg(asset_entry[QL1("name")].toString()));
+                Log::info(log_tag, LOGMSG("asset_entry[QL1('size')].toInt(): %1").arg(asset_entry[QL1("size")].toInt()));
+                Log::info(log_tag, LOGMSG("m_versions[i].m_assets.size(): %1").arg(QString::number(m_versions[i].m_assets.size())));
                 m_versions[i].m_size = m_versions[i].m_size + asset_entry[QL1("size")].toInt();
             }
             i++;
