@@ -109,7 +109,7 @@ void DownloadManager::setStatus(qint64 val, qint64 max)
 void DownloadManager::append(const QStringList &urls)
 {
     for (const QString &urlAsString : urls)
-        append(QUrl::fromEncoded(urlAsString.toLocal8Bit()),"");
+        append(QUrl::fromEncoded(urlAsString.toLocal8Bit()),"",0);
 
     if (downloadQueue.isEmpty())
         QTimer::singleShot(0, this, &DownloadManager::finished);
@@ -117,10 +117,17 @@ void DownloadManager::append(const QStringList &urls)
 
 void DownloadManager::append(const QUrl &url, const QString &filename)
 {
+    //Log::debug("DownloadManager", LOGMSG("append('%1','%2','%3')").arg(url.toString(),filename));
+    append(url, filename, 0);
+}
+
+void DownloadManager::append(const QUrl &url, const QString &filename, const int filesize)
+{
     //Log::debug("DownloadManager", LOGMSG("append('%1','%2')").arg(url.toString(),filename));
     if (downloadQueue.isEmpty()){
         downloadQueue.enqueue(url);
         filenameQueue.enqueue(filename);
+        filesizeQueue.enqueue(filesize);
         ++totalCount;
         //Log::debug("DownloadManager", LOGMSG("downloadQueue.isEmpty()"));
         //wait 1s to late add list of files in queue before to start to avoid issues
@@ -129,6 +136,7 @@ void DownloadManager::append(const QUrl &url, const QString &filename)
     else{
         downloadQueue.enqueue(url);
         filenameQueue.enqueue(filename);
+        filesizeQueue.enqueue(filesize);
         ++totalCount;
     }
 }
@@ -170,6 +178,7 @@ void DownloadManager::startNextDownload()
 
     QUrl url = downloadQueue.dequeue();
     QString filename = filenameQueue.dequeue();
+    int targetedFileSize = filesizeQueue.dequeue();
 
     if(filename == ""){
         filename = saveFileName(url);
@@ -177,30 +186,57 @@ void DownloadManager::startNextDownload()
     output.setFileName(filename);
     QByteArray rangeHeaderValue;
     qint64 existingFileSize = 0;
-    if (!output.open(QIODevice::WriteOnly)) {
-        setMessage(QString("Problem to save %1 : %2").arg(qPrintable(filename),
-                                                          qPrintable(output.errorString())));
 
-        Log::error("DownloadManager", LOGMSG("Problem to save %1 : %2").arg(qPrintable(filename),
-                                                          qPrintable(output.errorString())));
-        //set error to save file
-        setError(2);
+    if (!QFile::exists(filename) || (targetedFileSize == 0)) {
+        if (!output.open(QIODevice::WriteOnly)) {
+            setMessage(QString("Problem to write %1 : %2").arg(qPrintable(filename),
+                                                              qPrintable(output.errorString())));
 
+            Log::error("DownloadManager", LOGMSG("Problem to write %1 : %2").arg(qPrintable(filename),
+                                                              qPrintable(output.errorString())));
+            //set error to save file
+            setError(2);
+
+            startNextDownload();
+            return;                 // skip this download
+        }
+    }
+    else {
+        if (!output.open(QIODevice::Append)) {
+            setMessage(QString("Problem to append %1 : %2").arg(qPrintable(filename),
+                                                              qPrintable(output.errorString())));
+
+            Log::error("DownloadManager", LOGMSG("Problem to append %1 : %2").arg(qPrintable(filename),
+                                                                                qPrintable(output.errorString())));
+            //set error to append file
+            setError(3);
+
+            startNextDownload();
+            return;                 // skip this download
+        }
+        else {
+            existingFileSize = output.size();
+        }
+    }
+
+    if(existingFileSize == 0) {
+        setMessage(QString("Download of %1 started...").arg(output.fileName()));
+        Log::debug("DownloadManager", LOGMSG("Download of %1 started...").arg(output.fileName()));
+    }
+    else if((existingFileSize >= targetedFileSize) && (targetedFileSize != 0)) {
+        downloadedCount++; //we consider it as already downloaded
+        setMessage(QString("%1 already downloaded").arg(output.fileName()));
+        Log::debug("DownloadManager", LOGMSG("%1 already downloaded").arg(output.fileName()));
+        output.close();
         startNextDownload();
-        return;                 // skip this download
+        return; // skip this download
     }
-    else{
-        existingFileSize = output.size();
-        if(existingFileSize == 0){
-            setMessage(QString("Download of %1 started...").arg(output.fileName()));
-            Log::debug("DownloadManager", LOGMSG("Download of %1 started...").arg(output.fileName()));
-        }
-        else{
-            setMessage(QString("Download of %1 restarted...").arg(output.fileName()));
-            Log::debug("DownloadManager", LOGMSG("Download of %1 restarted from %2 Bytes...").arg(output.fileName(),QString::number(existingFileSize)));
-            rangeHeaderValue = "bytes=" + QByteArray::number(existingFileSize) + "-";
-        }
+    else {
+        setMessage(QString("Download of %1 restarted...").arg(output.fileName()));
+        Log::debug("DownloadManager", LOGMSG("Download of %1 restarted from %2 Bytes...").arg(output.fileName(),QString::number(existingFileSize)));
+        rangeHeaderValue = "bytes=" + QByteArray::number(existingFileSize) + "-";
     }
+
     QNetworkRequest request(url);
     //to restart download from existing file (if needed)
     if(existingFileSize != 0) request.setRawHeader("Range",rangeHeaderValue);

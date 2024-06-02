@@ -57,6 +57,7 @@ class DownloadManager: public QObject
     Q_OBJECT
 public:
     explicit DownloadManager(QObject *parent = nullptr);
+    void append(const QUrl &url, const QString &filename, const int filesize);
     void append(const QUrl &url, const QString &filename);
     void append(const QStringList &urls);
     static QString saveFileName(const QUrl &url);
@@ -88,6 +89,7 @@ private:
     QNetworkAccessManager manager;
     QQueue<QUrl> downloadQueue;
     QQueue<QString> filenameQueue;
+    QQueue<int> filesizeQueue;
     QNetworkReply *currentDownload = nullptr;
     QFile output;
     QElapsedTimer downloadTimer;

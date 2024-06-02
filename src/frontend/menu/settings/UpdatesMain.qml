@@ -243,6 +243,7 @@ FocusScope {
                             if(entry !== null){
                                 // calculate unit of size
                                 var size = entry.size;
+                                console.log("size in bytes: ", size)
                                 let unit;
                                 if (size < 1024) {
                                     unit = qsTr("bytes") + api.tr;
