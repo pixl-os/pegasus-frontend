@@ -573,6 +573,11 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     QObject::connect(&downloadManager[m_updates[foundIndex].m_downloaderIndex], &DownloadManager::finished, &loop, &QEventLoop::quit);
                     loop.exec();
                     Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
+                    if(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError > 0){
+                        Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: finished with error - exit status: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
+                        this->m_updates[foundIndex].m_installationStep = 4; //installation finish on error
+                        return; //exit function now
+                    }
                 }
                 else if(installationScriptAsset.m_download_url.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
                 {
