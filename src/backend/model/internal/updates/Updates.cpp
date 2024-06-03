@@ -758,7 +758,7 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
                 m_versions[i].m_assets.append({ asset_entry[QL1("name")].toString(),
                                                 asset_entry[QL1("created_at")].toString(),
                                                 asset_entry[QL1("published_at")].toString(),
-                                                asset_entry[QL1("size")].toInt(),
+                                                qint64(asset_entry[QL1("size")].toDouble()),
                                                 asset_entry[QL1("browser_download_url")].toString()});
                 if(asset_entry[QL1("browser_download_url")].toString().contains("icon.png")){
                     m_versions[i].m_icon = asset_entry[QL1("browser_download_url")].toString();
@@ -766,10 +766,10 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
                 else if(asset_entry[QL1("browser_download_url")].toString().contains("picture.png")){
                     m_versions[i].m_picture = asset_entry[QL1("browser_download_url")].toString();
                 }
-                Log::info(log_tag, LOGMSG("asset_entry[QL1('name')].toString(): %1").arg(asset_entry[QL1("name")].toString()));
-                Log::info(log_tag, LOGMSG("asset_entry[QL1('size')].toInt(): %1").arg(asset_entry[QL1("size")].toInt()));
-                Log::info(log_tag, LOGMSG("m_versions[i].m_assets.size(): %1").arg(QString::number(m_versions[i].m_assets.size())));
-                m_versions[i].m_size = m_versions[i].m_size + asset_entry[QL1("size")].toInt();
+                //Log::info(log_tag, LOGMSG("asset_entry[QL1('name')].toString(): %1").arg(asset_entry[QL1("name")].toString()));
+                //Log::info(log_tag, LOGMSG("asset_entry[QL1('size')].ToDouble(): %1").arg(QString::number(qint64(asset_entry[QL1("size")].toDouble()))));
+                m_versions[i].m_size = m_versions[i].m_size + qint64(asset_entry[QL1("size")].toDouble());
+                //Log::info(log_tag, LOGMSG("m_versions[i].m_size: %1").arg(QString::number(m_versions[i].m_size)));
             }
             i++;
         }
