@@ -121,7 +121,7 @@ void DownloadManager::append(const QUrl &url, const QString &filename)
     append(url, filename, 0);
 }
 
-void DownloadManager::append(const QUrl &url, const QString &filename, const int filesize)
+void DownloadManager::append(const QUrl &url, const QString &filename, const qint64 filesize)
 {
     //Log::debug("DownloadManager", LOGMSG("append('%1','%2')").arg(url.toString(),filename));
     if (downloadQueue.isEmpty()){
@@ -178,7 +178,7 @@ void DownloadManager::startNextDownload()
 
     QUrl url = downloadQueue.dequeue();
     QString filename = filenameQueue.dequeue();
-    int targetedFileSize = filesizeQueue.dequeue();
+    qint64 targetedFileSize = filesizeQueue.dequeue();
 
     if(filename == ""){
         filename = saveFileName(url);
@@ -286,7 +286,7 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 void DownloadManager::downloadFinished()
 {
     //Log::debug("DownloadManager", LOGMSG("downloadFinished()"));
-
+    Log::debug("DownloadManager", LOGMSG("downloadFinished() of %1 Bytes ").arg(QString::number(output.size())));
     output.close();
 
     if (currentDownload->error()) {

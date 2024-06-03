@@ -17,7 +17,7 @@ struct UpdateAssets {
     QString m_name_asset;
     QString m_created_at_asset;
     QString m_published_at_asset;
-    int m_size;
+    qint64 m_size;
     QString m_download_url;
 };
 Q_DECLARE_METATYPE(UpdateAssets)
@@ -52,7 +52,7 @@ struct UpdateEntry {
       //from asset
       Q_PROPERTY(QString icon MEMBER m_icon)
       Q_PROPERTY(QString picture MEMBER m_picture)
-      Q_PROPERTY(int size MEMBER m_size) //get size of the update, if several files, all sizes will be added to have the full size in this value.
+      Q_PROPERTY(qint64 size MEMBER m_size) //get size of the update, if several files, all sizes will be added to have the full size in this value.
 
 
 
@@ -68,7 +68,7 @@ public:
       //if available from repo
       QString m_icon = "";
       QString m_picture = "";
-      int m_size; //to have the total size
+      qint64 m_size; //to have the total size
 
       //for asset
       QList <UpdateAssets> m_assets;
