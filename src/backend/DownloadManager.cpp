@@ -316,7 +316,6 @@ void DownloadManager::downloadFinished()
         } else {
             setMessage(QString("%1 downloaded").arg(output.fileName()));
             Log::debug("DownloadManager", LOGMSG("%1 downloaded").arg(output.fileName()));
-            ++downloadedCount;
             Log::debug("DownloadManager", LOGMSG("outputTargetedSize : %1").arg(QString::number(outputTargetedSize)));
             Log::debug("DownloadManager", LOGMSG("output.size() : %1").arg(QString::number(output.size())));
             if((outputTargetedSize != 0) && (outputTargetedSize != output.size())){
@@ -326,6 +325,9 @@ void DownloadManager::downloadFinished()
                 setError(4);
                 //we remove in this case to retry
                 output.remove();
+            }
+            else{
+                ++downloadedCount;
             }
         }
     }
