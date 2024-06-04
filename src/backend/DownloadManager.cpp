@@ -178,16 +178,25 @@ void DownloadManager::startNextDownload()
 
     QUrl url = downloadQueue.dequeue();
     QString filename = filenameQueue.dequeue();
-    qint64 targetedFileSize = filesizeQueue.dequeue();
-
+    outputTargetedSize = filesizeQueue.dequeue();
+    Log::debug("DownloadManager", LOGMSG("initial outputTargetedSize:  %1 \n").arg(QString::number(outputTargetedSize)));
     if(filename == ""){
         filename = saveFileName(url);
+    }
+    // Check if the directory exists
+    QDir directory(QFileInfo(filename).dir());  // Get directory from file path
+    if (!directory.exists()) {
+        // Create the directory (including any parent directories)
+        if (!directory.mkpath(directory.absolutePath())) {
+            // Handle error if directory creation fails (e.g., permission issues)
+            Log::error("DownloadManager", LOGMSG("Failed to create directory: %1").arg(directory.absolutePath()));
+        }
     }
     output.setFileName(filename);
     QByteArray rangeHeaderValue;
     qint64 existingFileSize = 0;
 
-    if (!QFile::exists(filename) || (targetedFileSize == 0)) {
+    if (!QFile::exists(filename) || (outputTargetedSize == 0)) {
         if (!output.open(QIODevice::WriteOnly)) {
             setMessage(QString("Problem to write %1 : %2").arg(qPrintable(filename),
                                                               qPrintable(output.errorString())));
@@ -223,7 +232,7 @@ void DownloadManager::startNextDownload()
         setMessage(QString("Download of %1 started...").arg(output.fileName()));
         Log::debug("DownloadManager", LOGMSG("Download of %1 started...").arg(output.fileName()));
     }
-    else if((existingFileSize >= targetedFileSize) && (targetedFileSize != 0)) {
+    else if((existingFileSize >= outputTargetedSize) && (outputTargetedSize != 0)) {
         downloadedCount++; //we consider it as already downloaded
         setMessage(QString("%1 already downloaded").arg(output.fileName()));
         Log::debug("DownloadManager", LOGMSG("%1 already downloaded").arg(output.fileName()));
@@ -308,6 +317,16 @@ void DownloadManager::downloadFinished()
             setMessage(QString("%1 downloaded").arg(output.fileName()));
             Log::debug("DownloadManager", LOGMSG("%1 downloaded").arg(output.fileName()));
             ++downloadedCount;
+            Log::debug("DownloadManager", LOGMSG("outputTargetedSize : %1").arg(QString::number(outputTargetedSize)));
+            Log::debug("DownloadManager", LOGMSG("output.size() : %1").arg(QString::number(output.size())));
+            if((outputTargetedSize != 0) && (outputTargetedSize != output.size())){
+                setMessage(QString("%1 has wrong size downloaded !").arg(output.fileName()));
+                Log::debug("DownloadManager", LOGMSG("%1 has wrong size downloaded !").arg(output.fileName()));
+                //set error of wrong size downloaded
+                setError(4);
+                //we remove in this case to retry
+                output.remove();
+            }
         }
     }
     currentDownload->deleteLater();
