@@ -92,6 +92,7 @@ private:
     QQueue<qint64> filesizeQueue;
     QNetworkReply *currentDownload = nullptr;
     QFile output;
+    qint64 outputTargetedSize;
     QElapsedTimer downloadTimer;
 
     qint64 value = 0;

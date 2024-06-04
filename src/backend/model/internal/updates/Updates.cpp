@@ -424,18 +424,18 @@ UpdateEntry Updates::componentVersionDetails(QString componentName, const int ve
 }
 
 //Asynchronous function to install a component
-void Updates::launchComponentInstallation(QString componentName, const QString version){
+void Updates::launchComponentInstallation(QString componentName, const QString version, const QString downloaddirectory){
     //to avoid issue with directories and scripts
     componentName = cleanName(componentName);
 
     Log::debug(log_tag, LOGMSG("launchComponentInstallation for: %1 in version: %2\n").arg(componentName,version));
     //launch installation
     QMetaObject::invokeMethod(this,"launchComponentInstallation_slot", Qt::QueuedConnection,
-                              Q_ARG(QString,componentName),Q_ARG(QString,version));
+                              Q_ARG(QString,componentName),Q_ARG(QString,version),Q_ARG(QString,downloaddirectory));
 }
 
 //void Updates::launchComponentInstallation_slot(const QString componentName, const QString zipUrl, const QString installationScriptUrl){
-void Updates::launchComponentInstallation_slot(QString componentName, const QString version){
+void Updates::launchComponentInstallation_slot(QString componentName, const QString version, const QString downloaddirectory){
     //to avoid issue with directories and scripts
     componentName = cleanName(componentName);
 
@@ -466,8 +466,13 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
             imgAsset.m_name_asset = "";
             UpdateAssets sha1Asset;
             sha1Asset.m_name_asset = "";
-
-
+            //to manage linux kernel + pixL os
+            UpdateAssets linuxAsset;
+            linuxAsset.m_name_asset = "";
+            UpdateAssets pixLAsset;
+            pixLAsset.m_name_asset = "";
+            // to manage other files ;-)
+            QList<UpdateAssets> genericAssets;
             for(int j = 0;j < m_versions[versionIndex].m_assets.count();j++){
                 //if it's a zip file, we consider that's the package to download
                 if(m_versions[versionIndex].m_assets[j].m_name_asset.endsWith(".zip",Qt::CaseInsensitive)){
@@ -484,6 +489,15 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                 }//if it's a .img.xz.sha1 file, we consider that it will be any sha1 of image to install
                 else if(m_versions[versionIndex].m_assets[j].m_name_asset.endsWith(".img.xz.sha1",Qt::CaseInsensitive)){
                     sha1Asset = m_versions[versionIndex].m_assets[j];
+                }//if it's a 'linux' file as for "raw" update
+                else if(m_versions[versionIndex].m_assets[j].m_name_asset.endsWith("/linux")){
+                    linuxAsset = m_versions[versionIndex].m_assets[j];
+                }//if it's a 'recalbox' os file as for "raw" update
+                else if(m_versions[versionIndex].m_assets[j].m_name_asset.endsWith("/recalbox")){
+                    pixLAsset = m_versions[versionIndex].m_assets[j];
+                }
+                else{//for all other assets if needed
+                    genericAssets.append(m_versions[versionIndex].m_assets[j]);
                 }
             }
             //check and create directory if needed
@@ -562,10 +576,34 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     //first download zip, script and other asset files + clear before to use or reuse the slot
                     downloadManager[m_updates[foundIndex].m_downloaderIndex].clear(); // to reset count of downloaded and total of files.
                     if (installationScriptAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(installationScriptAsset.m_download_url),diretoryPath + "/" + installationScriptAsset.m_name_asset); //no set size to always download from 0
-                    if (zipAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset, zipAsset.m_size);
+                    //management of download directory only for zip package, image and its sha1
+                    if (zipAsset.m_name_asset != ""){
+                        if(downloaddirectory == "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),diretoryPath + "/" + zipAsset.m_name_asset, zipAsset.m_size);
+                        else downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(zipAsset.m_download_url),downloaddirectory + "/" + zipAsset.m_name_asset, zipAsset.m_size);
+                    }
                     //additional ones only when we ahve to update OS
-                    if (sha1Asset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(sha1Asset.m_download_url),diretoryPath + "/" + sha1Asset.m_name_asset); //no set size to always download from 0
-                    if (imgAsset.m_name_asset != "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(imgAsset.m_download_url),diretoryPath + "/" + imgAsset.m_name_asset, imgAsset.m_size);
+                    if (sha1Asset.m_name_asset != "") {
+                        if(downloaddirectory == "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(sha1Asset.m_download_url),diretoryPath + "/" + sha1Asset.m_name_asset); //no set size to always download from 0
+                        else downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(sha1Asset.m_download_url),downloaddirectory + "/" + sha1Asset.m_name_asset); //no set size to always download from 0
+                    }
+                    if (imgAsset.m_name_asset != "") {
+                        if(downloaddirectory == "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(imgAsset.m_download_url),diretoryPath + "/" + imgAsset.m_name_asset, imgAsset.m_size);
+                        else downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(imgAsset.m_download_url),downloaddirectory + "/" + imgAsset.m_name_asset, imgAsset.m_size);
+                    }
+                    //additional ones for linux kernel + os
+                    if (linuxAsset.m_name_asset != "") {
+                        if(downloaddirectory == "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(linuxAsset.m_download_url),diretoryPath + "/" + linuxAsset.m_name_asset, linuxAsset.m_size);
+                        else downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(linuxAsset.m_download_url),downloaddirectory + "/" + linuxAsset.m_name_asset, linuxAsset.m_size);
+                    }
+                    if (pixLAsset.m_name_asset != "") {
+                        if(downloaddirectory == "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(pixLAsset.m_download_url),diretoryPath + "/" + pixLAsset.m_name_asset, pixLAsset.m_size);
+                        else downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(pixLAsset.m_download_url),downloaddirectory + "/" + pixLAsset.m_name_asset, pixLAsset.m_size);
+                    }
+                    //additional ones for generic files (as other scripts, files, ressources needed for an update)
+                    for(int i = 0; i < genericAssets.count() ;i++){
+                        if(downloaddirectory == "") downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(genericAssets[i].m_download_url),diretoryPath + "/" + genericAssets[i].m_name_asset); //no set size to always download from 0
+                        else downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(genericAssets[i].m_download_url),downloaddirectory + "/" + genericAssets[i].m_name_asset); //no set size to always download from 0
+                    }
 
                     //do loop on connect to wait download in this case
                     m_updates[foundIndex].m_installationStep = 1;
@@ -689,7 +727,9 @@ int Updates::getInstallationError(QString componentName){
     for(int i = 0;i < m_updates.count();i++){
         if(m_updates[i].m_componentName == componentName){
             if(m_updates[i].m_installationStep == 1){
-                return downloadManager[m_updates[i].m_downloaderIndex].statusError;
+                if(downloadManager[m_updates[i].m_downloaderIndex].statusError > 0){
+                    return downloadManager[m_updates[i].m_downloaderIndex].statusError;
+                }
             }
             else if(m_updates[i].m_installationStep >= 2){//if we are installing...and more.
                //return content of file /tmp/componentName/install.err

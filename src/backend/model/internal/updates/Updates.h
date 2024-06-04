@@ -100,7 +100,7 @@ public:
     //function to get any version details using index
     Q_INVOKABLE UpdateEntry componentVersionDetails(QString componentName, const int versionIndex);
     //Asynchronous function to install a component
-    Q_INVOKABLE void launchComponentInstallation(QString componentName, const QString version);
+    Q_INVOKABLE void launchComponentInstallation(QString componentName, const QString version, const QString downloaddirectory = "");
     //Function to know status - as "Download", "Installation", "Completed" or "error"
     Q_INVOKABLE QString getInstallationStatus(QString componentName);
     //Fucntion to know progress of each installation steps
@@ -117,7 +117,7 @@ private slots:
     //to have thread to download JSON file from repo
     void getRepoInfo_slot(QString componentName, QString repoUrl);
     //to have thread to download ZIP file/Script and to install the new component
-    void launchComponentInstallation_slot(QString componentName, const QString version);
+    void launchComponentInstallation_slot(QString componentName, const QString version, const QString downloaddirectory);
 
 public:
 

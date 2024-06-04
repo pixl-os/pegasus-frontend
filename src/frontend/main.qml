@@ -1191,7 +1191,13 @@ Window {
                     }
                 }
                 else{// for dev testing only about updates
-                    componentsListModel.append({ componentName: "pixL-OS (Dev)", repoUrl:"https://updates.pixl-os.com/dev-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+                    //check that 'dev' updates is not selected
+                    if(api.internal.recalbox.getStringParameter("updates.format") !== "raw"){
+                        componentsListModel.append({ componentName: "pixL-OS (Dev)", repoUrl:"https://updates.pixl-os.com/dev-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false, downloaddirectory: "/recalbox/share/system/upgrade"});
+                    }
+                    else {
+                        componentsListModel.append({ componentName: "pixL-OS (Dev)", repoUrl:"https://updates.pixl-os.com/dev-raw-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false, downloaddirectory: "/boot/update"});
+                    }
                 }
             }
             //stop timer

@@ -60,7 +60,7 @@ FocusScope {
             switch (actionState) {
                     case "Update": //-> TO UPDATE
                         //launch process of udpate (including download and installation)
-                        api.internal.updates.launchComponentInstallation(componentsListModel.get(actionListIndex).componentName,componentsListModel.get(actionListIndex).versionToInstall);
+                        api.internal.updates.launchComponentInstallation(componentsListModel.get(actionListIndex).componentName,componentsListModel.get(actionListIndex).versionToInstall, (typeof(componentsListModel.get(actionListIndex).downloaddirectory) !== "undefined") ? componentsListModel.get(actionListIndex).downloaddirectory : "");
                         break;
             }
             confirmDialog.active = false;
