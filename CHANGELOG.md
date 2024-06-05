@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix ip display in settings menu
 	- reduce size of navigation.wav file sound effect to win in velocity during scrollling of sound bar
 
+- Features:
+	- add new menu for emulators configuration
+	- add dedicated qml(menu) for suyu
+	- add vsync option for suyu
+
 ## [pixL-master] - 2024-03-05 - v0.1.6
 - Features:
 	- add possibility to use 'dev' updates to help testing of OS update by developers
