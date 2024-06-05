@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- reduce size of navigation.wav file sound effect to win in velocity during scrollling of sound bar
 
 - Features:
-	- add new menu for emulators configuration :
+	- add new menu for emulators configuration
 	- add dedicated qml(menu) for suyu
 	- add vsync option for suyu
 
