@@ -323,6 +323,8 @@ bool Updates::hasAnyUpdate(){
 int Updates::hasUpdate(QString componentName, const bool betaIncluded, const bool multiVersions, const QString filter){
     //to avoid issue with directories and scripts
     componentName = cleanName(componentName);
+    //Log::debug(LOGMSG("hasUpdate - componentName : %1").arg(componentName));
+    //Log::debug(LOGMSG("hasUpdate - betaIncluded : %1").arg(betaIncluded ? "true" : "false"));
 
     QList <UpdateEntry> m_versions;
     QString existingVersion;
@@ -353,7 +355,7 @@ int Updates::hasUpdate(QString componentName, const bool betaIncluded, const boo
             //create it
             QDir().mkdir(directoryPath);
         }
-        Log::debug(LOGMSG("versionScriptAsset.m_download_url: %1").arg(versionScriptAsset.m_download_url));
+        //Log::debug(LOGMSG("hasUpdate - versionScriptAsset.m_download_url: %1").arg(versionScriptAsset.m_download_url));
         //In case of multiVersions, finally delete script systematically to avoid problem With a previous one
         if(multiVersions) QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).remove();
         //check if any script version already exists
