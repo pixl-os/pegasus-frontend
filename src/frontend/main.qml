@@ -1157,11 +1157,12 @@ Window {
         ListElement { componentName: "Nvidia driver"; repoLocal:"/recalbox/system/hardware/videocard/releases-nvidia.json";icon:"qrc:/frontend/assets/logonvidia.png"; picture: ""; multiVersions: true}
     }
 
-    //to store and know if we are running in a pixL OS in Beta (For beta testing only) or Release version (Release include pre-release/public beta)
+    //to store and know if we are running in a pixL OS in Beta (For beta testing only) or Release version (Release include pre-release/public beta) + if Dev mode is activated
+    property bool isDev: false
     property bool isBeta: false
     property bool isRelease: false
 
-    Timer{ //timer to add pixL-OS Dev, Beta or Release component
+    Timer{ //timer to add pixL-OS Dev, Beta or Release component + manage "dev" mode
         id: addUpdateTimer
         repeat: false
         running: true
@@ -1174,13 +1175,14 @@ Window {
             updates.enabled=1
             # Update type : default to stable (only dev is checked today)
             updates.type=stable
+            updates.devuser=your_personal_github_user
             */
             //running if updates activated
             if(api.internal.recalbox.getBoolParameter("updates.enabled") === true){
                 //check that 'dev' updates is not selected
                 if(api.internal.recalbox.getStringParameter("updates.type") !== "dev"){
                     //check version via recalbox.version
-                    //if "beta"/"release" terms are found
+                    //if "beta"/"release" terms are found or if "dev" is forced in updates type
                     isBeta = (api.internal.system.run("grep -i 'beta' /recalbox/recalbox.version") === "") ? false : true
                     isRelease = (api.internal.system.run("grep -i 'release' /recalbox/recalbox.version") === "") ? false : true
                     if(isRelease === true){// to propose release or pre-release in priority
@@ -1191,6 +1193,23 @@ Window {
                     }
                 }
                 else{// for dev testing only about updates
+                    isDev = true;
+                    if(api.internal.recalbox.getStringParameter("updates.devuser") !== ""){
+                        //console.log("devuser : ", api.internal.recalbox.getStringParameter("updates.devuser"))
+                        //take all existing repo and duplicate it for the devuser (especially for core/emulator updates)
+                        var existingCount = componentsListModel.count;
+                        for(var i = 0;i < existingCount; i++){
+                            if((typeof(componentsListModel.get(i).repoUrl) !== "undefined") && (componentsListModel.get(i).repoUrl !== ""))
+                            {
+                                //console.log("component created for dev purpose : ", componentsListModel.get(i).componentName + " (Dev)")
+                                componentsListModel.append({ componentName: componentsListModel.get(i).componentName + " (Dev)", repoUrl: componentsListModel.get(i).repoUrl.replace("pixl-os", api.internal.recalbox.getStringParameter("updates.devuser")) ,icon: componentsListModel.get(i).icon, picture: componentsListModel.get(i).picture, multiVersions: componentsListModel.get(i).multiVersions});
+                            }
+                            else if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
+                            {
+                                //don't replicate local repo
+                            }
+                        }
+                    }
                     //check that 'dev' updates is not selected
                     if(api.internal.recalbox.getStringParameter("updates.format") !== "raw"){
                         componentsListModel.append({ componentName: "pixL-OS (Dev)", repoUrl:"https://updates.pixl-os.com/dev-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false, downloaddirectory: "/recalbox/share/system/upgrade"});
@@ -1299,7 +1318,7 @@ Window {
                 //check all components (including pre-release for the moment and without filter)
                 numberOfUpdates = 0;
                 listOfUpdates = "";
-                var updateVersionIndexFound = api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , isBeta, (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false );
+                var updateVersionIndexFound = api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , (isBeta || isDev), (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false );
                 if(updateVersionIndexFound !== -1){
                     numberOfUpdates = numberOfUpdates + 1;
                     componentsListModel.setProperty(i,"hasUpdate", true);
