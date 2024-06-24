@@ -10,6 +10,16 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add new menu for emulators configuration
 	- add dedicated qml(menu) for suyu
 	- add vsync option for suyu
+	- pixL upgrade/update improvements:
+	    - in scriptmanager, add dedicated thread to execute script as install.sh and without UI blocking
+	    - use "shutdown -r now" command to do a full reboot now
+	    - change to well display status immediately when we load Updates view
+	    - add popup at start when full upgrade is done or failed
+	    - add management to resume download if file already exists in download directory
+	    - fix display using 'long qint64' and not just 'int' for assets size
+	    - add feature to be able to change download directory for update including size & raw format management
+	    - not count file not well downloaded now (to detect better issues)
+	    - add feature to be able to test updates from personal repo for dev purposes (using updates.devuser parameter)
 
 ## [pixL-master] - 2024-03-05 - v0.1.6
 - Features:
