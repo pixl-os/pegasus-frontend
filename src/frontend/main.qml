@@ -1149,6 +1149,7 @@ Window {
         ListElement { componentName: "Libretro FBNeo"; repoUrl:"https://api.github.com/repos/pixl-os/FBNeo/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Libretro Mame"; repoUrl:"https://api.github.com/repos/pixl-os/mame/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Xemu"; repoUrl:"https://api.github.com/repos/pixl-os/xemu/releases";icon:""; picture: ""; multiVersions: false}
+        ListElement { componentName: "Cemu"; repoUrl:"https://api.github.com/repos/pixl-os/cemu/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Supermodel"; repoUrl:"https://api.github.com/repos/pixl-os/Supermodel/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Dolphin-emu"; repoUrl:"https://api.github.com/repos/pixl-os/dolphin/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Pcsx2"; repoUrl:"https://api.github.com/repos/pixl-os/pcsx2/releases";icon:""; picture: ""; multiVersions: false}
