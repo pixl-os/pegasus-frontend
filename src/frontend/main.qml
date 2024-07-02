@@ -1204,7 +1204,8 @@ Window {
                             if((typeof(componentsListModel.get(i).repoUrl) !== "undefined") && (componentsListModel.get(i).repoUrl !== ""))
                             {
                                 //console.log("component created for dev purpose : ", componentsListModel.get(i).componentName + " (Dev)")
-                                componentsListModel.append({ componentName: componentsListModel.get(i).componentName + " (Dev)", repoUrl: componentsListModel.get(i).repoUrl.replace("pixl-os", api.internal.recalbox.getStringParameter("updates.devuser")) ,icon: componentsListModel.get(i).icon, picture: componentsListModel.get(i).picture, multiVersions: componentsListModel.get(i).multiVersions});
+                                componentsListModel.get(i).componentName = componentsListModel.get(i).componentName + " (Dev)"
+                                componentsListModel.get(i).repoUrl = componentsListModel.get(i).repoUrl.replace("pixl-os", api.internal.recalbox.getStringParameter("updates.devuser"))
                             }
                             else if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
                             {
