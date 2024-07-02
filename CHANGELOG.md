@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	    - not count file not well downloaded now (to detect better issues)
 	    - add feature to be able to test updates from personal repo for dev purposes (using updates.devuser parameter)
 	- add Cemu update online
+    - add Standalone Mame online update (mamedev-mame) + Change repo naming for libretro mame (libretro-mame) (should be change in pixL repo after pixL Beta 36 deployement)
 
 ## [pixL-master] - 2024-03-05 - v0.1.6
 - Features:

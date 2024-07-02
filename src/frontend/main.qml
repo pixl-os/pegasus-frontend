@@ -1146,8 +1146,9 @@ Window {
     ListModel {
         id: componentsListModel
         ListElement { componentName: "Pegasus-frontend"; repoUrl:"https://api.github.com/repos/pixl-os/pegasus-frontend/releases";icon: "qrc:/frontend/assets/logopegasus.png"; picture: ""; multiVersions: false}
+        ListElement { componentName: "Mame"; repoUrl:"https://api.github.com/repos/pixl-os/mamedev-mame/releases";icon:""; picture: ""; multiVersions: false}
+        ListElement { componentName: "Libretro Mame"; repoUrl:"https://api.github.com/repos/pixl-os/libretro-mame/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Libretro FBNeo"; repoUrl:"https://api.github.com/repos/pixl-os/FBNeo/releases";icon:""; picture: ""; multiVersions: false}
-        ListElement { componentName: "Libretro Mame"; repoUrl:"https://api.github.com/repos/pixl-os/mame/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Xemu"; repoUrl:"https://api.github.com/repos/pixl-os/xemu/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Cemu"; repoUrl:"https://api.github.com/repos/pixl-os/cemu/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Supermodel"; repoUrl:"https://api.github.com/repos/pixl-os/Supermodel/releases";icon:""; picture: ""; multiVersions: false}
