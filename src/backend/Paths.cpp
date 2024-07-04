@@ -165,6 +165,47 @@ QStringList romsDirs()
             paths.append("/recalbox/share_init/roms");
         }
 
+        // Define an array of directory paths (QStringList is preferred for paths)
+        QStringList romPaths = {
+            "/pixl/roms",
+            "/roms",
+            "/recalbox/roms",
+        };
+
+        //if games from USB are not hidden
+        if(!RecalboxConf::Instance().AsBool("pegasus.external.games.ignored")){
+            //add recalbox share externals for USB in romsDirs
+            for(int i=0; i <= 7; i++){
+                QString directoryPath = "/recalbox/share/externals/usb" + QString::number(i);
+                // Iterate through the directory paths
+                for (const QString& romPath : romPaths) {
+                    QString fullPath = directoryPath + romPath;
+                    QDir dir(fullPath);
+                    // Check if the directory exists
+                    if (dir.exists()) {
+                        paths.append(fullPath);
+                    }
+                }
+            }
+        }
+
+        //if games from internal DRIVE are not hidden
+        if(!RecalboxConf::Instance().AsBool("pegasus.internal.games.ignored")){
+            //add recalbox share internals for DRIVE in romsDirs
+            for(int i=0; i <= 7; i++){
+                QString directoryPath = "/recalbox/share/internals/drive" + QString::number(i);
+                // Iterate through the directory paths
+                for (const QString& romPath : romPaths) {
+                    QString fullPath = directoryPath + romPath;
+                    QDir dir(fullPath);
+                    // Check if the directory exists
+                    if (dir.exists()) {
+                        paths.append(fullPath);
+                    }
+                }
+            }
+        }
+
         paths.removeDuplicates();
         return paths;
     }();
