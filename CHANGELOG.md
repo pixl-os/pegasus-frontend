@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2024-mm-dd - v0.1.x
+## [pixL-master] - 2024-07-07 - v0.1.7
 - Fixes:
 	- fix ip display in settings menu
 	- reduce size of navigation.wav file sound effect to win in velocity during scrollling of sound bar
