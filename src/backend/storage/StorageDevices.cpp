@@ -5,103 +5,123 @@
 // http://www.recalbox.com
 //
 
-#include <utils/IniFile.h>
-#include <utils/locale/LocaleHelper.h>
-#include <hardware/Board.h>
+#include "utils/locale/LocaleHelper.h"
+#include "hardware/Board.h"
+#include "RootFolders.h"
 #include "StorageDevices.h"
 
 void StorageDevices::Initialize()
 {
   AnalyseMounts();
-  std::string current = GetStorageDevice();
+  String current = GetStorageDevice();
+
+  // Get storage sizes
+  DeviceSizeInfo sizeInfos = GetFileSystemInfo();
 
   // Ram?
   if (mShareInRAM)
   {
     current = "RAM";
-    mDevices.push_back({ Types::Ram, "",  sInMemory, "RECALBOX", "tmpfs",_("In Memory!")+ " \u26a0", true });
-    LOG(LogWarning) << "[Storage] Share is stored in memory!";
+    mDevices.push_back(Device(Types::Ram, "SHARE",  sInMemory, "RECALBOX", "tmpfs",_("In Memory!")+ " \u26a0", true, sizeInfos));
+    { LOG(LogWarning) << "[Storage] Share is stored in memory!"; }
   }
 
   // Add Internal
-  mDevices.push_back({ Types::Internal, "",  sInternal, "RECALBOX", "exfat",_("Internal Share Partition"), current == sInternal });
-
-  // // Go advance does not support external storage
-  // if ((Board::Instance().GetBoardType() == BoardType::OdroidAdvanceGo) ||
-  //     (Board::Instance().GetBoardType() == BoardType::OdroidAdvanceGoSuper)) return;
+  mDevices.push_back(Device(Types::Internal, "SHARE",  sInternal, "RECALBOX", "exfat",_("Internal Share Partition"), current == sInternal, sizeInfos));
 
   // Network
   if (mBootConfiguration.HasKeyStartingWith("sharenetwork_") || mBootConfiguration.AsString("sharedevice") == "NETWORK")
   {
-    mDevices.push_back({ Types::Internal, "", sNetwork, "", "", _("Network Share"), current == sNetwork});
-    LOG(LogDebug) << "[Storage] Network share configuration detected";
+    mDevices.push_back(Device(Types::Internal, "", sNetwork, "", "", _("Network Share"), current == sNetwork, sizeInfos));
+    { LOG(LogDebug) << "[Storage] Network share configuration detected"; }
   }
 
   // Any external
-  // Add Internal
-  mDevices.push_back({ Types::Internal, "",  sAnyExternal, "", "",_("Any External Device"), current == sAnyExternal });
+  if (mBootConfiguration.AsString("sharedevice") == "ANYEXTERNAL") {
+      mDevices.push_back(Device(Types::Internal, "",  sAnyExternal, "", "",_("Any External Device").append(_(" (Deprecated)")), current == sAnyExternal, sizeInfos));
+    { LOG(LogDebug) << "[Storage] Any external share configuration detected"; }
+  }
 
   // External Devices
-  std::string devicePath;
-  std::string propertyLine;
-  for(const std::string& line : GetRawDeviceList())
-    if (Strings::SplitAt(line, ':', devicePath, propertyLine, true))
+  String devicePath;
+  String propertyLine;
+  for(const String& line : GetRawDeviceList())
+    if (line.Extract(':', devicePath, propertyLine, true))
     {
-      // Avoid SD cards
-      if (Strings::StartsWith(devicePath, mBootRoot)) continue;
+      // Avoid boot device partitions
+      if (devicePath.StartsWith(mBootRoot)) continue;
 
       // Extract device properties
       PropertyMap properties = ExtractProperties(propertyLine);
-      std::string uuid = "DEV " + properties.get_or_return_default("UUID");
-      std::string label = properties.get_or_return_default("LABEL");
+      String uuid = "DEV " + properties.get_or_return_default("UUID");
+      String label = properties.get_or_return_default("LABEL");
       if (label.empty()) label = "Unnamed";
-      std::string filesystem = properties.get_or_return_default("TYPE");
+      String filesystem = properties.get_or_return_default("TYPE");
       if (filesystem.empty()) filesystem = "fs?";
-      std::string displayable = _("Device %d - %l (%f)");
-      Strings::ReplaceAllIn(displayable, "%d", devicePath);
-      Strings::ReplaceAllIn(displayable, "%l", label);
-      Strings::ReplaceAllIn(displayable, "%f", filesystem);
+      String displayable = _("Device %d - %l (%f)");
+      displayable.Replace("%d", Path(devicePath).Filename())
+                 .Replace("%l", label)
+                 .Replace("%f", filesystem);
 
       // Store
-      mDevices.push_back({ Types::External, devicePath, uuid, label, filesystem, displayable, current == uuid });
-      LOG(LogDebug) << "[Storage] External storage: " << devicePath << ' ' << uuid << " \"" << label << "\" " << filesystem;
+      mDevices.push_back(Device(Types::External, devicePath, uuid, label, filesystem, displayable, current == uuid, sizeInfos));
+      { LOG(LogDebug) << "[Storage] External storage: " << devicePath << ' ' << uuid << " \"" << label << "\" " << filesystem; }
     }
 }
 
-Strings::Vector StorageDevices::GetCommandOutput(const std::string& command)
+String::List StorageDevices::GetCommandOutput(const String& command)
 {
-  std::string output;
+  String output;
   char buffer[4096];
   FILE* pipe = popen(command.data(), "r");
   if (pipe != nullptr)
   {
     while (feof(pipe) == 0)
       if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
-        output.append(buffer);
+        output.Append(buffer);
     pclose(pipe);
   }
-  return Strings::Split(output, '\n');
+  return output.Split('\n');
 }
 
-Strings::Vector StorageDevices::GetRawDeviceList()
+String::List StorageDevices::GetRawDeviceList()
 {
   return GetCommandOutput("blkid");
 }
 
-Strings::Vector StorageDevices::GetMountedDeviceList()
+String::List StorageDevices::GetMountedDeviceList()
 {
   return GetCommandOutput("mount");
 }
 
-StorageDevices::PropertyMap StorageDevices::ExtractProperties(const std::string& properties)
+StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
+{
+  DeviceSizeInfo result;
+  for(const String& line : GetCommandOutput("df -kP"))
+  {
+    String::List items = line.Split(' ', true);
+    if (items.size() >= 6)
+    {
+      long long size = items[1].AsInt64();
+      long long free = items[3].AsInt64();
+      result[items[0]] = SizeInfo(size, free);
+      // Special cases
+      if (items[5] == RootFolders::DataRootFolder.ToString())
+        result["SHARE"] = SizeInfo(size, free);
+    }
+  }
+  return result;
+}
+
+StorageDevices::PropertyMap StorageDevices::ExtractProperties(const String& properties)
 {
   PropertyMap map;
 
-  std::string key;
-  std::string value;
-  for(const std::string& kv : Strings::SplitQuotted(properties, ' '))
-    if (Strings::SplitAt(kv, '=', key, value, true))
-      map[key] = Strings::Trim(value, "\"");
+  String key;
+  String value;
+  for(const String& kv : properties.SplitQuoted(' '))
+    if (kv.Extract('=', key, value, true))
+      map[key] = value.Trim('"');
 
   return map;
 }
@@ -112,24 +132,26 @@ void StorageDevices::SetStorageDevice(const StorageDevices::Device& device)
   mBootConfiguration.Save();
 }
 
-std::string StorageDevices::GetStorageDevice()
+String StorageDevices::GetStorageDevice()
 {
   return mBootConfiguration.AsString(sShareDevice, sInternal);
 }
 
 void StorageDevices::AnalyseMounts()
 {
-  for(const std::string& line : GetMountedDeviceList())
+  mBootRoot = "/dev/bootdevice";
+  for(const String& line : GetMountedDeviceList())
   {
-    Strings::Vector items = Strings::Split(line, ' ', true);
+    String::List items = line.Split(' ', true);
     if (items.size() < 6)
     {
-      LOG(LogError) << "[Storage] Uncomplete mount line: " << line;
+      { LOG(LogError) << "[Storage] Incomplete mount line: " << line; }
       continue;
     }
     if (items[2] == "/recalbox/share") mShareInRAM =  (items[4] == "tmpfs");
-    else if (items[2] == "/boot") mBootRoot = Strings::Trim(items[0], "0123456789");
+    else if (items[2] == "/boot") mBootRoot = items[0].Trim("0123456789");
   }
-  LOG(LogDebug) << "[Storage] BootRoot: " << mBootRoot << " - Is In Ram: " << mShareInRAM;
+  if (mBootRoot.empty()) mBootRoot = "/dev/boot"; // for testing purpose only :)
+  { LOG(LogDebug) << "[Storage] BootRoot: " << mBootRoot << " - Is In Ram: " << mShareInRAM; }
 }
 

@@ -17,11 +17,13 @@ HEADERS += \
     $$PWD/PathTools.h \
     $$PWD/QmlHelpers.h \
     $$PWD/rLog.h \
+    $$PWD/Sizes.h \
     $$PWD/SqliteDb.h \
     $$PWD/StdHelpers.h \
     $$PWD/StdStringHelpers.h \
     $$PWD/StrBoolConverter.h \
     $$PWD/Stringize.h \
+    $$PWD/String.h \
     $$PWD/Strings.h \
     $$PWD/Unicode.h \
     $$PWD/Xml.h \
@@ -148,6 +150,7 @@ SOURCES += \
     $$PWD/SqliteDb.cpp \
     $$PWD/StdStringHelpers.cpp \
     $$PWD/StrBoolConverter.cpp \
+    $$PWD/String.cpp \
     $$PWD/Strings.cpp \
     $$PWD/Zip.cpp \
     $$PWD/datetime/DateTime.cpp \
