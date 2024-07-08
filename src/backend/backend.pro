@@ -63,6 +63,7 @@ include(utils/utils.pri)
 include(audio/audio.pri)
 include(hardware/hardware.pri)
 include(storage/storage.pri)
+# include(mount/mount.pri)
 
 
 DEFINES *= $${COMMON_DEFINES}
