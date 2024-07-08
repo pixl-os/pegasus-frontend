@@ -6,16 +6,30 @@
 //
 #pragma once
 
-#include <string>
-#include <vector>
+#include <utils/String.h>
 #include <utils/Strings.h>
+#include <vector>
+#include "utils/Sizes.h"
 #include <utils/storage/rHashMap.h>
+#include <utils/IniFile.h>
 
 class StorageDevices
 {
+  private:
+    //! Size info
+    struct SizeInfo
+    {
+      long long Size; //!< Size in Kbyte
+      long long Free; //!< Free in Kbyte
+      SizeInfo() : Size(0), Free(0) {}
+      SizeInfo(long long s, long long f) : Size(s), Free(f) {}
+    };
+
   public:
     //! Device Property Map type
     typedef rHashMap<std::string, std::string>  PropertyMap;
+    //! Device Property Map type
+    typedef rHashMap<String, struct SizeInfo>  DeviceSizeInfo;
 
     //! Storage types
     enum class Types
@@ -29,13 +43,49 @@ class StorageDevices
     //! Storage descriptor
     struct Device
     {
-      Types       Type;          //!< Device type
-      std::string DevicePath;    //!< Device path, i.e. /dev/sda1
-      std::string UUID;          //!< Device UUID
-      std::string PartitionName; //!< Partition name
-      std::string FileSystem;    //!< Partition filesystem
-      std::string DisplayName;   //!< Displayable name
-      bool        Current;       //!< True for the current device
+      Types     Type;          //!< Device type
+      String    DevicePath;    //!< Device path, i.e. /dev/sda1
+      String    UUID;          //!< Device UUID
+      String    PartitionName; //!< Partition name
+      String    FileSystem;    //!< Partition filesystem
+      String    DisplayName;   //!< Displayable name
+      long long Size;          //!< Size in byte
+      long long Free;          //!< Free in byte
+      bool      Current;       //!< True for the current device
+
+      // Constructor
+      Device()
+        : Type(Types::Internal)
+        , Size(0)
+        , Free(0)
+        , Current(false)
+      {}
+
+      // Constructor
+      Device(Types t, const String& p, const String& u, const String& pn, const String& fs, const String& dn, bool c, const DeviceSizeInfo& i)
+        : Type(t)
+        , DevicePath(p)
+        , UUID(u)
+        , PartitionName(pn)
+        , FileSystem(fs)
+        , DisplayName(dn)
+        , Size(0)
+        , Free(0)
+        , Current(c)
+      {
+        SizeInfo* info = i.try_get(p);
+        if (info != nullptr)
+        {
+          Size = ((long long)info->Size) << 10;
+          Free = ((long long)info->Free) << 10;
+        }
+      }
+
+      [[nodiscard]] String HumanSize() const { return Sizes(Size).ToHumanSize(); }
+
+      [[nodiscard]] String HumanFree() const { return Sizes(Free).ToHumanSize(); };
+
+      [[nodiscard]] String PercentFree() const { return String((int)(((double)Free / (double)Size) * 100.0)); }
     };
 
     StorageDevices()
@@ -45,14 +95,23 @@ class StorageDevices
       Initialize();
     }
 
-    const std::vector<Device>& GetStorageDevices() const
-    {
-      return mDevices;
-    }
+    /*!
+     * @brief Get storage device list
+     * @return Storage list
+     */
+    [[nodiscard]] const std::vector<Device>& GetStorageDevices() const { return mDevices; }
 
+    /*!
+     * @brief Set storage device
+     * @param device Device to set as share device
+     */
     void SetStorageDevice(const Device& device);
 
-    std::string GetStorageDevice();
+    /*!
+     * @brief Get share device
+     * @return Device selected as share device
+     */
+    String GetStorageDevice();
 
   private:
     //! Share device key
@@ -71,7 +130,7 @@ class StorageDevices
     //! All devices
     std::vector<Device> mDevices;
     //! Boot root device name
-    std::string mBootRoot;
+    String mBootRoot;
     //! Share in ram?
     bool mShareInRAM;
 
@@ -79,16 +138,19 @@ class StorageDevices
     void Initialize();
 
     //! Get raw output of the given command
-    static Strings::Vector GetCommandOutput(const std::string& command);
+    static String::List GetCommandOutput(const String& command);
 
     //! Get raw device list from blkid command
-    static Strings::Vector GetRawDeviceList();
+    static String::List GetRawDeviceList();
 
-    //! Get raw device list from blkid command
-    static Strings::Vector GetMountedDeviceList();
+    //! Get mounted device list from mount command
+    static String::List GetMountedDeviceList();
+
+    //! Get file system info from df command
+    static DeviceSizeInfo GetFileSystemInfo();
 
     //! Extract properies from the given string
-    static PropertyMap ExtractProperties(const std::string& properties);
+    static PropertyMap ExtractProperties(const String& properties);
 
     //! Analyse mounted devices - Get boot device & check is share is in ram
     void AnalyseMounts();
