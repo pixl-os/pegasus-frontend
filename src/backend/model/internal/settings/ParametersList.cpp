@@ -644,7 +644,7 @@ QStringList GetParametersList(QString Parameter)
         #                    (this is the default)
         #   RAM           => a temporary in-memory file system (tmpfs)
         #                    (use at your own risks, specially on boards with low memory!)
-        #   ANYEXTERNAL   => any storage device other than the one the system booted on
+        #   ANYEXTERNAL (DEPREACATED)  => any storage device other than the one the system booted on
         #                    (use this when you have several USB keys/drives, but plug only one at a time)
         #   DEV [FSUUID]  => the storage device with the [FSUUID] unique identifier
         #                    (use this if you plug multiple storage devices together but want a specific one to hold SHARE)
@@ -656,7 +656,12 @@ QStringList GetParametersList(QString Parameter)
         for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
         {
             Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
-            ListOfValue.append(QString::fromStdString(device.DisplayName) + " " + QString::number(device.Free) + "/" + QString::number(device.Size));
+            if(device.Size != 0){
+                ListOfValue.append(QString::fromStdString(device.DisplayName) + " " + QString::fromStdString(device.HumanFree()) + "/" + QString::fromStdString(device.HumanSize()) + " (" + QString::fromStdString(device.PercentFree()) + "%)");
+            }
+            else{
+                ListOfValue.append(QString::fromStdString(device.DisplayName));
+            }
             Log::debug(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
             ListOfInternalValue.append(QString::fromStdString(device.UUID));
         }
