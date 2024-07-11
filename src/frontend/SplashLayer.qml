@@ -16,6 +16,7 @@
 
 
 import QtQuick 2.12
+import QtQuick.Controls 2.12
 
 Rectangle {
     id: root
@@ -26,6 +27,24 @@ Rectangle {
     property bool showDataProgressText: true
 
     Behavior on progress { NumberAnimation {} }
+
+    function shuffle(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        return array;
+    }
+
+    property var images: shuffle([
+                                     "assets/logopegasus.png",
+                                     "assets/recalbox-next.svg",
+                                     "assets/libretro-retroarch-simple-logo.png",
+                                     "assets/logonvidia.png"
+                                 ])
+    property int currentIndex: 0
 
     AnimatedImage {
         id: logo
@@ -40,30 +59,36 @@ Rectangle {
         anchors.top: parent.top
         anchors.bottom: parent.verticalCenter
     }
-
-    Image {
-        id: logoPegasus
-        width: 150
+    Rectangle {
+        id: slideshow
+        width: parent.width
         height: 50
-        source: "assets/logopegasus.png"
-        anchors.bottomMargin: 20
         anchors.bottom: parent.bottom
-        fillMode: Image.PreserveAspectFit
-        verticalAlignment: Image.AlignBottom
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: 20
+        color: "black"
+
+        Image {
+            id: slideshowImage
+            source: images[currentIndex]
+            width: parent.width
+            height: parent.height
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: parent
+            verticalAlignment: Image.AlignBottom
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            SequentialAnimation on opacity {
+                loops: Animation.Infinite
+                NumberAnimation { from: 1.0; to: 0.0; duration: 2000 }
+                ScriptAction { script: {
+                        currentIndex = (currentIndex + 1) % images.length;
+                        slideshowImage.source = images[currentIndex];
+                    }}
+                NumberAnimation { from: 0.0; to: 1.0; duration: 2000 }
+                PauseAnimation { duration: 2000 }
+            }
+        }
     }
-    //    Image {
-    //        id: logoRecalbox
-    //        width: 100
-    //        height: 35
-    //        source: "assets/recalbox-next.svg"
-    //        anchors.bottomMargin: 10
-    //        anchors.bottom: parent.bottom
-    //        anchors.left: logoPegasus.right
-    //        fillMode: Image.PreserveAspectFit
-    //        verticalAlignment: Image.AlignBottom
-    //        anchors.horizontalCenter: parent.horizontalCenter
-    //    }
 
     Rectangle {
         id: progressRoot
@@ -99,17 +124,14 @@ Rectangle {
                 PropertyAnimation { duration: 500; to: vpx(68) }
                 PropertyAnimation { duration: 0; to: 0 }
             }
-
-
-            Image {
-                source: "assets/pbar-right.png"
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
-                fillMode: Image.PreserveAspectFit
-            }
         }
-
+        Image {
+            source: "assets/pbar-right.png"
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            fillMode: Image.PreserveAspectFit
+        }
         Image {
             source: "assets/pbar-left.png"
             anchors.top: parent.top
