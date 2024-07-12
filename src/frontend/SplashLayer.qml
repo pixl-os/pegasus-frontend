@@ -15,18 +15,18 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
 
 Rectangle {
     id: root
+
     color: "#000"
     anchors.fill: parent
 
     property real progress: api.internal.meta.loadingProgress
     property bool showDataProgressText: true
 
-    Behavior on progress { NumberAnimation {} }
+    Behavior on progress { NumberAnimation { duration: 500 } }
 
     function shuffle(array) {
         for (var i = array.length - 1; i > 0; i--) {
@@ -92,68 +92,35 @@ Rectangle {
 
     Rectangle {
         id: progressRoot
-
         property int padding: vpx(5)
-
-        width: logo.width * 0.94
+        width: logo.width * 0.95
         height: vpx(30)
         radius: vpx(10)
-        color: "#000000"
+        color: themeColor.main //"#333"
 
         anchors.top: logo.bottom
         anchors.topMargin: height * 1.0
         anchors.horizontalCenter: parent.horizontalCenter
-        clip: true
 
-        Image {
-            source: "assets/pbar.png"
+        border.width: vpx(2)
 
-            property int animatedWidth: 0
-            width: parent.width + animatedWidth
-            height: parent.height - progressRoot.padding * 2
-
-            fillMode: Image.Tile
-            horizontalAlignment: Image.AlignLeft
-
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: parent.width * (1.0 - root.progress)
-
-            SequentialAnimation on animatedWidth {
-                loops: Animation.Infinite
-                PropertyAnimation { duration: 500; to: vpx(68) }
-                PropertyAnimation { duration: 0; to: 0 }
-            }
-        }
-        Image {
-            source: "assets/pbar-right.png"
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            fillMode: Image.PreserveAspectFit
-        }
-        Image {
-            source: "assets/pbar-left.png"
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            fillMode: Image.PreserveAspectFit
-        }
-        Image {
-            source: "assets/pbar-right.png"
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            fillMode: Image.PreserveAspectFit
-        }
         Rectangle {
-            // inner border above the image
-            anchors.fill: parent
-            color: "transparent"
-
+            id: progressBar
+            width: parent.width * root.progress
+            height: parent.height
             radius: vpx(10)
-            border.width: parent.padding
-            border.color: parent.color
+            color: themeColor.screenUnderline //"#ff6600"
+
+            NumberAnimation on width {
+                id: anim
+                from: 0; to: parent.width * (root.progress / 100); easing.type: Easing.InOutBounce
+                running: true
+            }
+            SequentialAnimation on color {
+                loops: Animation.Infinite
+                ColorAnimation { from: Qt.darker(themeColor.screenUnderline); to: themeColor.screenUnderline; duration: 1000 }
+                ColorAnimation { from: themeColor.screenUnderline; to: Qt.darker(themeColor.screenUnderline); duration: 1000 }
+            }
         }
     }
 
