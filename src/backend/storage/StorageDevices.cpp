@@ -6,12 +6,17 @@
 //
 
 #include "utils/locale/LocaleHelper.h"
-#include "hardware/Board.h"
 #include "RootFolders.h"
 #include "StorageDevices.h"
+#include "utils/rLog.h"
+#include "Log.h"
 
 void StorageDevices::Initialize()
 {
+  String devicePath;
+  String propertyLine;
+  long long Size;          //!< Size in byte
+
   AnalyseMounts();
   String current = GetStorageDevice();
 
@@ -26,8 +31,46 @@ void StorageDevices::Initialize()
     { LOG(LogWarning) << "[Storage] Share is stored in memory!"; }
   }
 
-  // Add Internal
-  mDevices.push_back(Device(Types::Internal, "SHARE",  sInternal, "RECALBOX", "exfat",_("Internal Share Partition"), current == sInternal, sizeInfos));
+  // Add Internal default share
+  const String& line = GetRawDeviceByLabel("SHARE");
+  if (line.Extract(':', devicePath, propertyLine, true))
+    {
+      // Extract device properties
+      PropertyMap properties = ExtractProperties(propertyLine);
+      // Avoid small partition (less than 1 Gb)
+      SizeInfo* info = sizeInfos.try_get(devicePath);
+      if (info != nullptr)
+      {
+          Size = ((long long)info->Size) << 10;
+      }
+      else
+      {
+          Size = 0;
+      }
+      String uuid = "DEV " + properties.get_or_return_default("UUID");
+      String label = properties.get_or_return_default("LABEL");
+      if (label.empty()) label = "Unnamed";
+      String filesystem = properties.get_or_return_default("TYPE");
+      if (filesystem.empty()) filesystem = "fs?";
+      String displayable = _("Internal %l - %d (%f)");
+      displayable.Replace("%d", Path(devicePath).Filename())
+          .Replace("%l", label)
+          .Replace("%f", filesystem);
+      String strSize = _("Size: %d");
+      strSize.Replace("%d", Size);
+      // Store
+      if (current == sInternal){
+        mDevices.push_back(Device(Types::Internal, devicePath, sInternal, "RECALBOX", filesystem, displayable, current == sInternal, sizeInfos));
+      }
+      else{
+        mDevices.push_back(Device(Types::Internal, devicePath, uuid, label, filesystem, displayable, false, sizeInfos));
+      }
+      { LOG(LogDebug) << "[Storage] Internal Share partition: " << devicePath << ' ' << uuid << " \"" << label << "\" " << filesystem << " size (bytes): " << Size; }
+  }
+  else{
+      //if issue to detect SHARE
+      mDevices.push_back(Device(Types::Internal, "SHARE",  sInternal, "RECALBOX", "exfat",_("Internal Share"), current == sInternal, sizeInfos));
+  }
 
   // Network
   if (mBootConfiguration.HasKeyStartingWith("sharenetwork_") || mBootConfiguration.AsString("sharedevice") == "NETWORK")
@@ -43,30 +86,50 @@ void StorageDevices::Initialize()
   }
 
   // External Devices
-  String devicePath;
-  String propertyLine;
-  for(const String& line : GetRawDeviceList())
+  for(const String& line : GetRawDeviceList()){
+    //{ LOG(LogDebug) << "[Storage] GetRawDeviceList line: " << line; }
     if (line.Extract(':', devicePath, propertyLine, true))
     {
+      //{ LOG(LogDebug) << "[Storage] propertyLine: " << propertyLine; }
+      //{ LOG(LogDebug) << "[Storage] devicePath: " << devicePath; }
+
       // Avoid boot device partitions
       if (devicePath.StartsWith(mBootRoot)) continue;
 
       // Extract device properties
       PropertyMap properties = ExtractProperties(propertyLine);
+
+      // Avoid small partition (less than 1 Gb)
+      SizeInfo* info = sizeInfos.try_get(devicePath);
+      if (info != nullptr)
+      {
+          Size = ((long long)info->Size) << 10;
+      }
+      else
+      {
+          Size = 0;
+      }
+      //to ignore partition under 1 GByte (if size is well detected for sure)
+      if ((Size <= (1024 * 1024 * 1024)) && (Size != 0)) continue;
+      //Log::debug(LOGMSG("[Storage] Size: %1").arg(Size));
+
       String uuid = "DEV " + properties.get_or_return_default("UUID");
       String label = properties.get_or_return_default("LABEL");
       if (label.empty()) label = "Unnamed";
       String filesystem = properties.get_or_return_default("TYPE");
       if (filesystem.empty()) filesystem = "fs?";
-      String displayable = _("Device %d - %l (%f)");
+      String displayable = _("%l - %d (%f)");
       displayable.Replace("%d", Path(devicePath).Filename())
                  .Replace("%l", label)
                  .Replace("%f", filesystem);
+      String strSize = _("Size: %d");
+      strSize.Replace("%d", Size);
 
       // Store
       mDevices.push_back(Device(Types::External, devicePath, uuid, label, filesystem, displayable, current == uuid, sizeInfos));
-      { LOG(LogDebug) << "[Storage] External storage: " << devicePath << ' ' << uuid << " \"" << label << "\" " << filesystem; }
+      { LOG(LogDebug) << "[Storage] External partition: " << devicePath << ' ' << uuid << " \"" << label << "\" " << filesystem << " size (bytes): " << Size; }
     }
+  }
 }
 
 String::List StorageDevices::GetCommandOutput(const String& command)
@@ -89,6 +152,14 @@ String::List StorageDevices::GetRawDeviceList()
   return GetCommandOutput("blkid");
 }
 
+String StorageDevices::GetRawDeviceByLabel(const String& label)
+{
+    String command = _("blkid | grep 'LABEL=\"%f\"'");
+    command.Replace("%f", label);
+    for(const String& line : GetCommandOutput(command))
+        return line;
+}
+
 String::List StorageDevices::GetMountedDeviceList()
 {
   return GetCommandOutput("mount");
@@ -99,9 +170,14 @@ StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
   DeviceSizeInfo result;
   for(const String& line : GetCommandOutput("df -kP"))
   {
+    //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo line: " << line ; }
     String::List items = line.Split(' ', true);
+    //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items.size(): " << items.size() ; }
+
     if (items.size() >= 6)
     {
+      //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items[1]: " << items[1] ; }
+      //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items[3]: " << items[3] ; }
       long long size = items[1].AsInt64();
       long long free = items[3].AsInt64();
       result[items[0]] = SizeInfo(size, free);

@@ -657,7 +657,7 @@ QStringList GetParametersList(QString Parameter)
         {
             Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
             if(device.Size != 0){
-                ListOfValue.append(QString::fromStdString(device.DisplayName) + " " + QString::fromStdString(device.HumanFree()) + "/" + QString::fromStdString(device.HumanSize()) + " (" + QString::fromStdString(device.PercentFree()) + "%)");
+                ListOfValue.append(QString::fromStdString(device.DisplayName) + " - " + QString::fromStdString(device.HumanFree()) + "/" + QString::fromStdString(device.HumanSize()) + " (" + QString::fromStdString(device.PercentFree()) + "%)");
             }
             else{
                 ListOfValue.append(QString::fromStdString(device.DisplayName));

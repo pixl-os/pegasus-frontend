@@ -79,6 +79,10 @@ class StorageDevices
           Size = ((long long)info->Size) << 10;
           Free = ((long long)info->Free) << 10;
         }
+        else{
+          Size = 0;
+          Free = 0;
+        }
       }
 
       [[nodiscard]] String HumanSize() const { return Sizes(Size).ToHumanSize(); }
@@ -142,6 +146,9 @@ class StorageDevices
 
     //! Get raw device list from blkid command
     static String::List GetRawDeviceList();
+
+    //! Get raw device by LABEL from blkid command
+    static String GetRawDeviceByLabel(const String& label);
 
     //! Get mounted device list from mount command
     static String::List GetMountedDeviceList();

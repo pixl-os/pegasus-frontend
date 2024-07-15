@@ -456,7 +456,7 @@ FocusScope {
                     property string parameterName : "boot.sharedevice"
 
                     label: qsTr("Storage device") + api.tr
-                    note: qsTr("change to over storage") + api.tr
+                    note: qsTr("move 'share' to an other storage") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
 
