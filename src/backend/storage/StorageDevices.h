@@ -81,7 +81,7 @@ class StorageDevices
         }
         else{
           Size = 0;
-          Free = 0;
+          Free = -1;
         }
       }
 
