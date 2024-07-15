@@ -653,11 +653,21 @@ QStringList GetParametersList(QString Parameter)
         ;sharedevice=INTERNAL
         */
 
+
+        //! Storage devices
+        //uncomment this line and comment the same at the top to see logs but it's slow in menu :-(
+        //StorageDevices mStorageDevices;
+
         for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
         {
             Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
             if(device.Size != 0){
-                ListOfValue.append(QString::fromStdString(device.DisplayName) + " - " + QString::fromStdString(device.HumanFree()) + "/" + QString::fromStdString(device.HumanSize()) + " (" + QString::fromStdString(device.PercentFree()) + "%)");
+                if(device.Free >= 0){
+                   ListOfValue.append(QString::fromStdString(device.DisplayName) + " - " + QString::fromStdString(device.HumanFree()) + "/" + QString::fromStdString(device.HumanSize()) + " (" + QString::fromStdString(device.PercentFree()) + "%)");
+                }
+                else{ //not mount (device.Free = -1)
+                    ListOfValue.append(QString::fromStdString(device.DisplayName) + " - " + QString::fromStdString(device.HumanSize()));
+                }
             }
             else{
                 ListOfValue.append(QString::fromStdString(device.DisplayName));

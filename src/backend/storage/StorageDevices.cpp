@@ -10,6 +10,7 @@
 #include "StorageDevices.h"
 #include "utils/rLog.h"
 #include "Log.h"
+#include <string>
 
 void StorageDevices::Initialize()
 {
@@ -37,7 +38,7 @@ void StorageDevices::Initialize()
     {
       // Extract device properties
       PropertyMap properties = ExtractProperties(propertyLine);
-      // Avoid small partition (less than 1 Gb)
+      // Get size for info
       SizeInfo* info = sizeInfos.try_get(devicePath);
       if (info != nullptr)
       {
@@ -165,17 +166,18 @@ String::List StorageDevices::GetMountedDeviceList()
   return GetCommandOutput("mount");
 }
 
+// size/free are in KByte in this function
 StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
 {
   DeviceSizeInfo result;
   for(const String& line : GetCommandOutput("df -kP"))
   {
-    //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo line: " << line ; }
     String::List items = line.Split(' ', true);
     //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items.size(): " << items.size() ; }
 
     if (items.size() >= 6)
     {
+      //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo line (df -kP): " << line ; }
       //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items[1]: " << items[1] ; }
       //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items[3]: " << items[3] ; }
       long long size = items[1].AsInt64();
@@ -185,6 +187,85 @@ StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
       if (items[5] == RootFolders::DataRootFolder.ToString())
         result["SHARE"] = SizeInfo(size, free);
     }
+  }
+
+  bool isDisk = false;
+  bool isDevice = false;
+  String currentDisk = "";
+  //check also by a second way for unmount disk
+  for(const String& line : GetCommandOutput("fdisk -l"))
+  {
+      String::List items = line.Split(' ', true);
+      if((items[0] == "Disk") && items[1].StartsWith("/dev/")){
+          //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) Disk: " << line ; }
+          currentDisk = items[1].Replace(":","");
+          isDisk = false;
+          isDevice = false;
+          continue;
+      }
+      if(items[0] == "Number"){
+          //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) Number: " << line ; }
+          isDisk = true;
+          isDevice = false;
+          continue;
+      }
+      if(items[0] == "Device"){
+          //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l): " << line ; }
+          currentDisk="";
+          isDisk = false;
+          isDevice = true;
+          continue;
+      }
+      if(isDisk || (items[0].StartsWith("/dev/") and isDevice)){
+          //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) : " << line ; }
+          String partition = "";
+          int sizeIndex = 0;
+          if(isDisk){
+              //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items[1] : " << items[1] ; }
+              partition = currentDisk + "p" + items[1];
+              sizeIndex = 4;
+          }
+          else {
+              partition = items[0];
+              sizeIndex = 6;
+              if (items.size() > 9){ //bood colomn not empty case
+                  sizeIndex = sizeIndex + 1;
+              }
+          }
+          //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo partition : " << partition ; }
+          //check if not already knwon/mount
+          SizeInfo* info = result.try_get(partition);
+          if (info == nullptr)
+          {
+              //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items[sizeIndex] : " << items[sizeIndex] ; }
+              char lastChar = items[sizeIndex].back();
+              String numeric = items[sizeIndex].SubString(0,items[sizeIndex].length()-1); //just remove last char
+              //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo lastChar : " << lastChar ; }
+              //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo numeric : " << numeric ; }
+              numeric = numeric.Split('.', true).at(0); // to keep only first part before . in all cases
+              long long size = 0;
+              switch (lastChar) {
+              case 'K':
+                  size = numeric.AsInt64();
+                  break;
+              case 'M':
+                  size = numeric.AsInt64() * 1024;
+                  break;
+              case 'G':
+                  size = numeric.AsInt64() * 1024 * 1024;
+                  break;
+              case 'T':
+                  size = numeric.AsInt64() * 1024 * 1024 * 1024;
+                  break;
+              default:
+                  size = numeric.AsInt64();
+                  break;
+              }
+              long long free = -1; // unknown in this case
+              //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo size : " << size ; }
+              result[partition] = SizeInfo(size, free);
+          }
+      }
   }
   return result;
 }
