@@ -1,17 +1,19 @@
 #ifndef RC_COMPAT_H
 #define RC_COMPAT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "rc_export.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+RC_BEGIN_C_DECLS
+
 #if defined(MINGW) || defined(__MINGW32__) || defined(__MINGW64__)
 
 /* MinGW redefinitions */
+
+#define RC_NO_VARIADIC_MACROS 1
 
 #elif defined(_MSC_VER)
 
@@ -31,6 +33,8 @@ extern "C" {
 
 /* C89 redefinitions */
 #define RC_C89_HELPERS 1
+
+#define RC_NO_VARIADIC_MACROS 1
 
 #ifndef snprintf
  extern int rc_snprintf(char* buffer, size_t size, const char* format, ...);
@@ -65,8 +69,29 @@ extern "C" {
  #define gmtime_s rc_gmtime_s
 #endif
 
-#ifdef __cplusplus
-}
+#ifdef RC_NO_THREADS
+ typedef int rc_mutex_t;
+
+ #define rc_mutex_init(mutex)
+ #define rc_mutex_destroy(mutex)
+ #define rc_mutex_lock(mutex)
+ #define rc_mutex_unlock(mutex)
+#else
+ #ifdef _WIN32
+  typedef struct rc_mutex_t {
+    void* handle; /* HANDLE is defined as "void*" */
+  } rc_mutex_t;
+ #else
+  #include <pthread.h>
+  typedef pthread_mutex_t rc_mutex_t;
+ #endif
+
+ void rc_mutex_init(rc_mutex_t* mutex);
+ void rc_mutex_destroy(rc_mutex_t* mutex);
+ void rc_mutex_lock(rc_mutex_t* mutex);
+ void rc_mutex_unlock(rc_mutex_t* mutex);
 #endif
+
+RC_END_C_DECLS
 
 #endif /* RC_COMPAT_H */
