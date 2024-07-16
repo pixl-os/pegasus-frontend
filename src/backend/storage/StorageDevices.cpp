@@ -11,6 +11,7 @@
 #include "utils/rLog.h"
 #include "Log.h"
 #include <string>
+#include <QFile>
 
 void StorageDevices::Initialize()
 {
@@ -150,7 +151,9 @@ String::List StorageDevices::GetCommandOutput(const String& command)
 
 String::List StorageDevices::GetRawDeviceList()
 {
-  return GetCommandOutput("blkid");
+  String command = "blkid";
+  if(QFile::exists("/tmp/blkid")) command = "cat /tmp/blkid";
+  return GetCommandOutput(command);
 }
 
 String StorageDevices::GetRawDeviceByLabel(const String& label)
@@ -163,14 +166,18 @@ String StorageDevices::GetRawDeviceByLabel(const String& label)
 
 String::List StorageDevices::GetMountedDeviceList()
 {
-  return GetCommandOutput("mount");
+    String command = "mount";
+    if(QFile::exists("/tmp/mount")) command = "cat /tmp/mount";
+    return GetCommandOutput(command);
 }
 
 // size/free are in KByte in this function
 StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
 {
   DeviceSizeInfo result;
-  for(const String& line : GetCommandOutput("df -kP"))
+  String command = "df -kP";
+  if(QFile::exists("/tmp/df-kP")) command = "cat /tmp/df-kP";
+  for(const String& line : GetCommandOutput(command))
   {
     String::List items = line.Split(' ', true);
     //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items.size(): " << items.size() ; }
@@ -193,7 +200,9 @@ StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
   bool isDevice = false;
   String currentDisk = "";
   //check also by a second way for unmount disk
-  for(const String& line : GetCommandOutput("fdisk -l"))
+  command = "fdisk -l";
+  if(QFile::exists("/tmp/fdisk-list")) command = "cat /tmp/fdisk-list";
+  for(const String& line : GetCommandOutput(command))
   {
       String::List items = line.Split(' ', true);
       if((items[0] == "Disk") && items[1].StartsWith("/dev/")){
