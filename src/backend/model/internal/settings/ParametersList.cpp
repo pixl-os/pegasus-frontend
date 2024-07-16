@@ -12,8 +12,6 @@ namespace {
 /******************************* section to initial variables used by GetParametersList in same name *************************************/
 QStringList ListOfInternalValue;
 
-//! Storage devices
-StorageDevices mStorageDevices;
 /*
 list of global and system values (example using snes system)
 global or  snes.ratio=4/3 -> RATIO
@@ -653,10 +651,8 @@ QStringList GetParametersList(QString Parameter)
         ;sharedevice=INTERNAL
         */
 
-
         //! Storage devices
-        //uncomment this line and comment the same at the top to see logs but it's slow in menu :-(
-        //StorageDevices mStorageDevices;
+        StorageDevices mStorageDevices;
 
         for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
         {
