@@ -1,13 +1,14 @@
 #include "rc_validate.h"
 
-#include "rc_compat.h"
 #include "rc_consoles.h"
 #include "rc_internal.h"
+
+#include "../rc_compat.h"
 
 #include <stddef.h>
 #include <stdlib.h>
 
-static int rc_validate_memref(const rc_memref_t* memref, char result[], const size_t result_size, int console_id, unsigned max_address)
+static int rc_validate_memref(const rc_memref_t* memref, char result[], const size_t result_size, uint32_t console_id, uint32_t max_address)
 {
   if (memref->address > max_address) {
     snprintf(result, result_size, "Address %04X out of range (max %04X)", memref->address, max_address);
@@ -41,7 +42,7 @@ static int rc_validate_memref(const rc_memref_t* memref, char result[], const si
   return 1;
 }
 
-int rc_validate_memrefs(const rc_memref_t* memref, char result[], const size_t result_size, unsigned max_address)
+int rc_validate_memrefs(const rc_memref_t* memref, char result[], const size_t result_size, uint32_t max_address)
 {
   while (memref) {
     if (!rc_validate_memref(memref, result, result_size, 0, max_address))
@@ -53,7 +54,7 @@ int rc_validate_memrefs(const rc_memref_t* memref, char result[], const size_t r
   return 1;
 }
 
-static unsigned rc_console_max_address(int console_id)
+static uint32_t rc_console_max_address(uint32_t console_id)
 {
   const rc_memory_regions_t* memory_regions;
   memory_regions = rc_console_memory_regions(console_id);
@@ -63,9 +64,9 @@ static unsigned rc_console_max_address(int console_id)
   return 0xFFFFFFFF;
 }
 
-int rc_validate_memrefs_for_console(const rc_memref_t* memref, char result[], const size_t result_size, int console_id)
+int rc_validate_memrefs_for_console(const rc_memref_t* memref, char result[], const size_t result_size, uint32_t console_id)
 {
-  const unsigned max_address = rc_console_max_address(console_id);
+  const uint32_t max_address = rc_console_max_address(console_id);
   while (memref) {
     if (!rc_validate_memref(memref, result, result_size, console_id, max_address))
       return 0;
@@ -76,7 +77,7 @@ int rc_validate_memrefs_for_console(const rc_memref_t* memref, char result[], co
   return 1;
 }
 
-static unsigned rc_max_value(const rc_operand_t* operand)
+static uint32_t rc_max_value(const rc_operand_t* operand)
 {
   if (operand->type == RC_OPERAND_CONST)
     return operand->value.num;
@@ -118,7 +119,7 @@ static unsigned rc_max_value(const rc_operand_t* operand)
   }
 }
 
-static unsigned rc_scale_value(unsigned value, char oper, const rc_operand_t* operand)
+static uint32_t rc_scale_value(uint32_t value, uint8_t oper, const rc_operand_t* operand)
 {
   switch (oper) {
     case RC_OPERATOR_MULT:
@@ -127,12 +128,12 @@ static unsigned rc_scale_value(unsigned value, char oper, const rc_operand_t* op
       if (scaled > 0xFFFFFFFF)
         return 0xFFFFFFFF;
 
-      return (unsigned)scaled;
+      return (uint32_t)scaled;
     }
 
     case RC_OPERATOR_DIV:
     {
-      const unsigned min_val = (operand->type == RC_OPERAND_CONST) ? operand->value.num : 1;
+      const uint32_t min_val = (operand->type == RC_OPERAND_CONST) ? operand->value.num : 1;
       return value / min_val;
     }
 
@@ -141,6 +142,31 @@ static unsigned rc_scale_value(unsigned value, char oper, const rc_operand_t* op
 
     case RC_OPERATOR_XOR:
       return value | rc_max_value(operand);
+
+    case RC_OPERATOR_MOD:
+    {
+      const uint32_t divisor = (operand->type == RC_OPERAND_CONST) ? operand->value.num : 1;
+      return (divisor >= value) ? (divisor - 1) : value;
+    }
+
+    case RC_OPERATOR_ADD:
+    {
+      unsigned long scaled = ((unsigned long)value) + rc_max_value(operand);
+      if (scaled > 0xFFFFFFFF)
+        return 0xFFFFFFFF;
+
+      return (uint32_t)scaled;
+    }
+
+    case RC_OPERATOR_SUB:
+    {
+      if (operand->type == RC_OPERAND_CONST)
+        return value - operand->value.num;
+      else if (value > rc_max_value(operand))
+        return value - rc_max_value(operand);
+
+      return 0xFFFFFFFF;
+    }
 
     default:
       return value;
@@ -162,7 +188,7 @@ static int rc_validate_get_condition_index(const rc_condset_t* condset, const rc
    return 0;
 }
 
-static int rc_validate_range(unsigned min_val, unsigned max_val, char oper, unsigned max, char result[], const size_t result_size)
+static int rc_validate_range(uint32_t min_val, uint32_t max_val, char oper, uint32_t max, char result[], const size_t result_size)
 {
   switch (oper) {
     case RC_OPERATOR_AND:
@@ -230,16 +256,18 @@ static int rc_validate_range(unsigned min_val, unsigned max_val, char oper, unsi
   return 1;
 }
 
-int rc_validate_condset_internal(const rc_condset_t* condset, char result[], const size_t result_size, int console_id, unsigned max_address)
+int rc_validate_condset_internal(const rc_condset_t* condset, char result[], const size_t result_size, uint32_t console_id, uint32_t max_address)
 {
   const rc_condition_t* cond;
   char buffer[128];
-  unsigned max_val;
+  uint32_t max_val;
   int index = 1;
   unsigned long long add_source_max = 0;
   int in_add_hits = 0;
   int in_add_address = 0;
   int is_combining = 0;
+  int remember_used = 0;
+  int remember_used_in_pause = 0;
 
   if (!condset) {
     *result = '\0';
@@ -247,9 +275,10 @@ int rc_validate_condset_internal(const rc_condset_t* condset, char result[], con
   }
 
   for (cond = condset->conditions; cond; cond = cond->next, ++index) {
-    unsigned max = rc_max_value(&cond->operand1);
+    uint32_t max = rc_max_value(&cond->operand1);
     const int is_memref1 = rc_operand_is_memref(&cond->operand1);
     const int is_memref2 = rc_operand_is_memref(&cond->operand2);
+    const int uses_recall = rc_operand_is_recall(&cond->operand1) || rc_operand_is_recall(&cond->operand2);
 
     if (!in_add_address) {
       if (is_memref1 && !rc_validate_memref(cond->operand1.value.memref, buffer, sizeof(buffer), console_id, max_address)) {
@@ -263,6 +292,28 @@ int rc_validate_condset_internal(const rc_condset_t* condset, char result[], con
     }
     else {
       in_add_address = 0;
+    }
+
+    if (!remember_used && uses_recall) {
+      if (!cond->pause && condset->has_pause) {
+        /* pause conditions will be processed before non-pause conditions.
+         * scan forward for any remembers in yet-to-be-processed pause conditions */
+        const rc_condition_t* cond_rem_pause_check = cond->next;
+        for (; cond_rem_pause_check; cond_rem_pause_check = cond_rem_pause_check->next) {
+          if (cond_rem_pause_check->type == RC_CONDITION_REMEMBER && cond_rem_pause_check->pause) {
+            remember_used = 1; /* do not set remember_used_in_pause here because we don't know at which poing in the pause processing this remember is occurring. */
+            break;
+          }
+        }
+      }
+      if (!remember_used) {
+        snprintf(result, result_size, "Condition %d: Recall used before Remember", index);
+        return 0;
+      }
+    }
+    else if (cond->pause && uses_recall && !remember_used_in_pause) {
+      snprintf(result, result_size, "Condition %d: Recall used in Pause processing before Remember was used in Pause processing", index);
+      return 0;
     }
 
     switch (cond->type) {
@@ -288,6 +339,12 @@ int rc_validate_condset_internal(const rc_condset_t* condset, char result[], con
         is_combining = 1;
         continue;
 
+      case RC_CONDITION_REMEMBER:
+        is_combining = 1;
+        remember_used = 1;
+        remember_used_in_pause += cond->pause;
+        continue;
+
       case RC_CONDITION_ADD_HITS:
       case RC_CONDITION_SUB_HITS:
         in_add_hits = 1;
@@ -300,6 +357,12 @@ int rc_validate_condset_internal(const rc_condset_t* condset, char result[], con
         is_combining = 1;
         break;
 
+      case RC_CONDITION_RESET_IF:
+        if (cond->required_hits == 1) {
+          snprintf(result, result_size, "Condition %d: Hit target of 1 is redundant on ResetIf", index);
+          return 0;
+        }
+        /* fallthrough */ /* to default */
       default:
         if (in_add_hits) {
           if (cond->required_hits == 0) {
@@ -330,48 +393,67 @@ int rc_validate_condset_internal(const rc_condset_t* condset, char result[], con
       return 0;
     }
 
-    /* if either side is a memref, or there's a running add source chain, check for impossible comparisons */
-    if (is_memref1 || is_memref2 || add_source_max) {
+    if (is_memref1 && rc_operand_is_float(&cond->operand1)) {
+      /* if left side is a float, right side will be converted to a float, so don't do range validation */
+    }
+    else if (is_memref1 || is_memref2 || add_source_max) {
+      /* if either side is a memref, or there's a running add source chain, check for impossible comparisons */
       const size_t prefix_length = snprintf(result, result_size, "Condition %d: ", index);
+      const rc_operand_t* operand1 = &cond->operand1;
+      const rc_operand_t* operand2 = &cond->operand2;
+      uint8_t oper = cond->oper;
+      uint32_t min_val;
 
-      unsigned min_val;
-      switch (cond->operand2.type) {
+      if (!is_memref1 && !add_source_max) {
+        /* pretend constant was on right side */
+        operand1 = &cond->operand2;
+        operand2 = &cond->operand1;
+        max = max_val;
+        switch (oper) {
+          case RC_OPERATOR_LT: oper = RC_OPERATOR_GT; break;
+          case RC_OPERATOR_LE: oper = RC_OPERATOR_GE; break;
+          case RC_OPERATOR_GT: oper = RC_OPERATOR_LT; break;
+          case RC_OPERATOR_GE: oper = RC_OPERATOR_LE; break;
+        }
+      }
+
+      switch (operand2->type) {
         case RC_OPERAND_CONST:
-          min_val = cond->operand2.value.num;
+          min_val = operand2->value.num;
           break;
 
         case RC_OPERAND_FP:
-          min_val = (int)cond->operand2.value.dbl;
+          min_val = (int)operand2->value.dbl;
 
           /* cannot compare an integer memory reference to a non-integral floating point value */
-          /* assert: is_memref1 (because operand2==FP means !is_memref2) */
-          if (!add_source_max && !rc_operand_is_float_memref(&cond->operand1) &&
-              (float)min_val != cond->operand2.value.dbl) {
-            snprintf(result + prefix_length, result_size - prefix_length, "Comparison is never true");
-            return 0;
+          if (!add_source_max && !rc_operand_is_float_memref(operand1) &&
+              (float)min_val != operand2->value.dbl) {
+            switch (oper) {
+              case RC_OPERATOR_EQ:
+                snprintf(result + prefix_length, result_size - prefix_length, "Comparison is never true");
+                return 0;
+              case RC_OPERATOR_NE:
+                snprintf(result + prefix_length, result_size - prefix_length, "Comparison is always true");
+                return 0;
+              case RC_OPERATOR_GT: /* value could be greater than floor(float) */
+              case RC_OPERATOR_LE: /* value could be less than or equal to floor(float) */
+                break;
+              case RC_OPERATOR_GE: /* value could be greater than or equal to ceil(float) */
+              case RC_OPERATOR_LT: /* value could be less than ceil(float) */
+                ++min_val;
+                break;
+            }
           }
 
           break;
 
-        default:
+        default: /* right side is memref or add source chain */
           min_val = 0;
-
-          /* cannot compare an integer memory reference to a non-integral floating point value */
-          /* assert: is_memref2 (because operand1==FP means !is_memref1) */
-          if (cond->operand1.type == RC_OPERAND_FP && !add_source_max && !rc_operand_is_float_memref(&cond->operand2) &&
-              (float)((int)cond->operand1.value.dbl) != cond->operand1.value.dbl) {
-            snprintf(result + prefix_length, result_size - prefix_length, "Comparison is never true");
-            return 0;
-          }
-
           break;
       }
 
-      if (rc_operand_is_float(&cond->operand2) && rc_operand_is_float(&cond->operand1)) {
-        /* both sides are floats, don't validate range*/
-      } else if (!rc_validate_range(min_val, max_val, cond->oper, max, result + prefix_length, result_size - prefix_length)) {
+      if (!rc_validate_range(min_val, max_val, oper, max, result + prefix_length, result_size - prefix_length))
         return 0;
-      }
     }
 
     add_source_max = 0;
@@ -386,14 +468,14 @@ int rc_validate_condset_internal(const rc_condset_t* condset, char result[], con
   return 1;
 }
 
-int rc_validate_condset(const rc_condset_t* condset, char result[], const size_t result_size, unsigned max_address)
+int rc_validate_condset(const rc_condset_t* condset, char result[], const size_t result_size, uint32_t max_address)
 {
   return rc_validate_condset_internal(condset, result, result_size, 0, max_address);
 }
 
-int rc_validate_condset_for_console(const rc_condset_t* condset, char result[], const size_t result_size, int console_id)
+int rc_validate_condset_for_console(const rc_condset_t* condset, char result[], const size_t result_size, uint32_t console_id)
 {
-  const unsigned max_address = rc_console_max_address(console_id);
+  const uint32_t max_address = rc_console_max_address(console_id);
   return rc_validate_condset_internal(condset, result, result_size, console_id, max_address);
 }
 
@@ -409,27 +491,12 @@ static int rc_validate_is_combining_condition(const rc_condition_t* condition)
     case RC_CONDITION_RESET_NEXT_IF:
     case RC_CONDITION_SUB_HITS:
     case RC_CONDITION_SUB_SOURCE:
+    case RC_CONDITION_REMEMBER:
       return 1;
 
     default:
       return 0;
   }
-}
-
-static const rc_condition_t* rc_validate_next_non_combining_condition(const rc_condition_t* condition)
-{
-  int is_combining = rc_validate_is_combining_condition(condition);
-  for (condition = condition->next; condition != NULL; condition = condition->next)
-  {
-    if (rc_validate_is_combining_condition(condition))
-      is_combining = 1;
-    else if (is_combining)
-      is_combining = 0;
-    else
-      return condition;
-  }
-
-  return NULL;
 }
 
 static int rc_validate_get_opposite_comparison(int oper)
@@ -476,7 +543,7 @@ enum {
   RC_OVERLAP_DEFER
 };
 
-static int rc_validate_comparison_overlap(int comparison1, unsigned value1, int comparison2, unsigned value2)
+static int rc_validate_comparison_overlap(int comparison1, uint32_t value1, int comparison2, uint32_t value2)
 {
   /* NOTE: this only cares if comp2 conflicts with comp1.
    * If comp1 conflicts with comp2, we'll catch that later (return RC_OVERLAP_NONE for now) */
@@ -630,15 +697,34 @@ static int rc_validate_comparison_overlap(int comparison1, unsigned value1, int 
   return RC_OVERLAP_NONE;
 }
 
+static int rc_validate_are_operands_equal(const rc_operand_t* oper1, const rc_operand_t* oper2)
+{
+  if (oper1->type != oper2->type)
+    return 0;
+
+  switch (oper1->type)
+  {
+  case RC_OPERAND_CONST:
+    return (oper1->value.num == oper2->value.num);
+  case RC_OPERAND_FP:
+    return (oper1->value.dbl == oper2->value.dbl);
+  case RC_OPERAND_RECALL:
+    return (oper2->type == RC_OPERAND_RECALL);
+  default:
+    return (oper1->value.memref->address == oper2->value.memref->address && oper1->size == oper2->size);
+  }
+}
+
 static int rc_validate_conflicting_conditions(const rc_condset_t* conditions, const rc_condset_t* compare_conditions,
     const char* prefix, const char* compare_prefix, char result[], const size_t result_size)
 {
   int comparison1, comparison2;
-  unsigned value1, value2;
+  uint32_t value1, value2;
   const rc_operand_t* operand1;
   const rc_operand_t* operand2;
   const rc_condition_t* compare_condition;
   const rc_condition_t* condition;
+  const rc_condition_t* condition_chain_start;
   int overlap;
 
   /* empty group */
@@ -646,9 +732,14 @@ static int rc_validate_conflicting_conditions(const rc_condset_t* conditions, co
     return 1;
 
   /* outer loop is the source conditions */
-  for (condition = conditions->conditions; condition != NULL;
-      condition = rc_validate_next_non_combining_condition(condition))
+  for (condition = conditions->conditions; condition != NULL; condition = condition->next)
   {
+    condition_chain_start = condition;
+    while (rc_condition_is_combining(condition))
+      condition = condition->next;
+    if (!condition)
+      break;
+
     /* hits can be captured at any time, so any potential conflict will not be conflicting at another time */
     if (condition->required_hits)
       continue;
@@ -673,11 +764,62 @@ static int rc_validate_conflicting_conditions(const rc_condset_t* conditions, co
     }
 
     /* inner loop is the potentially conflicting conditions */
-    for (compare_condition = compare_conditions->conditions; compare_condition != NULL;
-        compare_condition = rc_validate_next_non_combining_condition(compare_condition))
+    for (compare_condition = compare_conditions->conditions; compare_condition != NULL; compare_condition = compare_condition->next)
     {
-      if (compare_condition == condition)
+      if (compare_condition == condition_chain_start)
+      {
+        /* skip condition we're already looking at */
+        while (compare_condition != condition)
+          compare_condition = compare_condition->next;
+
         continue;
+      }
+
+      /* if combining conditions exist, make sure the same combining conditions exist in the
+       * compare logic. conflicts can only occur if the combinining conditions match. */
+      if (condition_chain_start != condition)
+      {
+        int chain_matches = 1;
+        const rc_condition_t* condition_chain_iter = condition_chain_start;
+        while (condition_chain_iter != condition)
+        {
+          if (compare_condition->type != condition_chain_iter->type ||
+            compare_condition->oper != condition_chain_iter->oper ||
+            compare_condition->required_hits != condition_chain_iter->required_hits ||
+            !rc_validate_are_operands_equal(&compare_condition->operand1, &condition_chain_iter->operand1))
+          {
+            chain_matches = 0;
+            break;
+          }
+
+          if (compare_condition->oper != RC_OPERATOR_NONE &&
+            !rc_validate_are_operands_equal(&compare_condition->operand2, &condition_chain_iter->operand2))
+          {
+            if (compare_condition->operand2.type != condition_chain_iter->operand2.type)
+            {
+              chain_matches = 0;
+              break;
+            }
+          }
+
+          if (!compare_condition->next)
+          {
+            chain_matches = 0;
+            break;
+          }
+
+          compare_condition = compare_condition->next;
+          condition_chain_iter = condition_chain_iter->next;
+        }
+
+        /* combining field didn't match, or there's more unmatched combining fields. ignore this condition */
+        if (!chain_matches || rc_validate_is_combining_condition(compare_condition))
+        {
+          while (compare_condition->next && rc_validate_is_combining_condition(compare_condition))
+            compare_condition = compare_condition->next;
+          continue;
+        }
+      }
 
       if (compare_condition->required_hits)
         continue;
@@ -789,13 +931,12 @@ static int rc_validate_conflicting_conditions(const rc_condset_t* conditions, co
   return 1;
 }
 
-static int rc_validate_trigger_internal(const rc_trigger_t* trigger, char result[], const size_t result_size, int console_id, unsigned max_address)
+static int rc_validate_trigger_internal(const rc_trigger_t* trigger, char result[], const size_t result_size, uint32_t console_id, uint32_t max_address)
 {
   const rc_condset_t* alt;
   int index;
 
-  if (!trigger->alternative)
-  {
+  if (!trigger->alternative) {
     if (!rc_validate_condset_internal(trigger->requirement, result, result_size, console_id, max_address))
       return 0;
 
@@ -835,13 +976,13 @@ static int rc_validate_trigger_internal(const rc_trigger_t* trigger, char result
   return 1;
 }
 
-int rc_validate_trigger(const rc_trigger_t* trigger, char result[], const size_t result_size, unsigned max_address)
+int rc_validate_trigger(const rc_trigger_t* trigger, char result[], const size_t result_size, uint32_t max_address)
 {
   return rc_validate_trigger_internal(trigger, result, result_size, 0, max_address);
 }
 
-int rc_validate_trigger_for_console(const rc_trigger_t* trigger, char result[], const size_t result_size, int console_id)
+int rc_validate_trigger_for_console(const rc_trigger_t* trigger, char result[], const size_t result_size, uint32_t console_id)
 {
-  const unsigned max_address = rc_console_max_address(console_id);
+  const uint32_t max_address = rc_console_max_address(console_id);
   return rc_validate_trigger_internal(trigger, result, result_size, console_id, max_address);
 }

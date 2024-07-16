@@ -69,16 +69,26 @@ HEADERS += \
     $$PWD/rcheevos/include/rc_api_request.h \
     $$PWD/rcheevos/include/rc_api_runtime.h \
     $$PWD/rcheevos/include/rc_api_user.h \
+    $$PWD/rcheevos/include/rc_api_client.h \
+    $$PWD/rcheevos/include/rc_api_client_raintegration.h \
     $$PWD/rcheevos/include/rc_consoles.h \
     $$PWD/rcheevos/include/rc_error.h \
+    $$PWD/rcheevos/include/rc_export.h \
     $$PWD/rcheevos/include/rc_hash.h \
     $$PWD/rcheevos/include/rc_runtime.h \
     $$PWD/rcheevos/include/rc_runtime_types.h \
     $$PWD/rcheevos/include/rc_url.h \
+    $$PWD/rcheevos/include/rc_util.h \
     $$PWD/rcheevos/include/rcheevos.h \
+    $$PWD/rcheevos/src/rc_client_external.h \
+    $$PWD/rcheevos/src/rc_client_internal.h \
+    $$PWD/rcheevos/src/rc_client_ratintegration.h \
+    $$PWD/rcheevos/src/rc_compat.h \
+    $$PWD/rcheevos/src/rc_libretro.h \
+    $$PWD/rcheevos/src/rc_version.h \
     $$PWD/rcheevos/src/rapi/rc_api_common.h \
-    $$PWD/rcheevos/src/rcheevos/rc_compat.h \
     $$PWD/rcheevos/src/rcheevos/rc_internal.h \
+    $$PWD/rcheevos/src/rhash/aes.h \
     $$PWD/rcheevos/src/rhash/md5.h \
     $$PWD/libretro-common/include/compat/strl.h \
     $$PWD/libretro-common/include/compat/posix_string.h \
@@ -162,10 +172,15 @@ SOURCES += \
     $$PWD/os/system/ProcessTree.cpp \
     $$PWD/os/system/Signal.cpp \
     $$PWD/os/system/Thread.cpp \
+    $$PWD/rcheevos/src/rc_client.c \
+    $$PWD/rcheevos/src/rc_client_raintegration.c \
+    $$PWD/rcheevos/src/rc_compat.c \
+    $$PWD/rcheevos/src/rc_libretro.c \
+    $$PWD/rcheevos/src/rc_util.c \
+    $$PWD/rcheevos/src/rc_version.c \
     $$PWD/rcheevos/src/rapi/rc_api_common.c \
     $$PWD/rcheevos/src/rapi/rc_api_runtime.c \
     $$PWD/rcheevos/src/rcheevos/alloc.c \
-    $$PWD/rcheevos/src/rcheevos/compat.c \
     $$PWD/rcheevos/src/rcheevos/condition.c \
     $$PWD/rcheevos/src/rcheevos/condset.c \
     $$PWD/rcheevos/src/rcheevos/consoleinfo.c \
@@ -178,8 +193,9 @@ SOURCES += \
     $$PWD/rcheevos/src/rcheevos/runtime_progress.c \
     $$PWD/rcheevos/src/rcheevos/trigger.c \
     $$PWD/rcheevos/src/rcheevos/value.c \
+    $$PWD/rcheevos/src/rhash/aes.c \
     $$PWD/rcheevos/src/rhash/cdreader.c \
-    $$PWD/rcheevos/src/rhash/hash.c \
+    $$PWD/rcheevos/src/rhash/hash.c \    
     $$PWD/rcheevos/src/rhash/md5.c \
     $$PWD/rcheevos/src/rurl/url.c \
     $$PWD/libretro-common/compat/compat_strl.c \
