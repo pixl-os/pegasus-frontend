@@ -54,10 +54,11 @@ void StorageDevices::Initialize()
       if (label.empty()) label = "Unnamed";
       String filesystem = properties.get_or_return_default("TYPE");
       if (filesystem.empty()) filesystem = "fs?";
-      String displayable = _("Internal %l - %d (%f)");
+      String displayable = _("%i  Internal %l - %d (%f)");
       displayable.Replace("%d", Path(devicePath).Filename())
           .Replace("%l", label)
-          .Replace("%f", filesystem);
+          .Replace("%f", filesystem)
+          .Replace("%i", GetIconByDevice(Path(devicePath).Filename()));
       String strSize = _("Size: %d");
       strSize.Replace("%d", Size);
       // Store
@@ -77,7 +78,7 @@ void StorageDevices::Initialize()
   // Network
   if (mBootConfiguration.HasKeyStartingWith("sharenetwork_") || mBootConfiguration.AsString("sharedevice") == "NETWORK")
   {
-    mDevices.push_back(Device(Types::Internal, "", sNetwork, "", "", _("Network Share"), current == sNetwork, sizeInfos));
+    mDevices.push_back(Device(Types::Internal, "", sNetwork, "", "", _("\uf086  Network Share"), current == sNetwork, sizeInfos));
     { LOG(LogDebug) << "[Storage] Network share configuration detected"; }
   }
 
@@ -120,10 +121,11 @@ void StorageDevices::Initialize()
       if (label.empty()) label = "Unnamed";
       String filesystem = properties.get_or_return_default("TYPE");
       if (filesystem.empty()) filesystem = "fs?";
-      String displayable = _("%l - %d (%f)");
+      String displayable = _("%i  %l - %d (%f)");
       displayable.Replace("%d", Path(devicePath).Filename())
                  .Replace("%l", label)
-                 .Replace("%f", filesystem);
+                 .Replace("%f", filesystem)
+                 .Replace("%i", GetIconByDevice(Path(devicePath).Filename()));
       String strSize = _("Size: %d");
       strSize.Replace("%d", Size);
 
@@ -162,6 +164,56 @@ String StorageDevices::GetRawDeviceByLabel(const String& label)
     command.Replace("%f", label);
     for(const String& line : GetCommandOutput(command))
         return line;
+}
+
+String StorageDevices::GetIconByDevice(const String& Device)
+{
+    //check device is disk finally (doesn't finish by a number in this case)
+    char lastChar = Device.back();
+    String path;
+    if(isdigit(lastChar)){
+        path = _("*/%d/..");
+    }
+    else{
+        path = _("%d");
+    }
+    path.Replace("%d", Device);
+
+
+    String command = _("cat /sys/block/%path/removable");
+    command.Replace("%path", path);
+    for(const String& line : GetCommandOutput(command))
+    {
+        if(line.Contains("0")){ //internal drive
+            if(Device.Contains("nvme")){
+                return "\uf080";
+            }
+            else if(Device.Contains("mmcblk")){
+                return "\uf084"; //SD
+            }
+            else{
+                command = _("cat /sys/block/%path/queue/rotational");
+                command.Replace("%path", path);
+                for(const String& line2 : GetCommandOutput(command)){
+                    if(line2.Contains("1")){
+                        return "\uf081"; //HDD
+                    }
+                    else{
+                        return "\uf082"; //SSD
+                    }
+                }
+            }
+        }
+        else if(line.Contains("1")){ //external device
+            if(Device.Contains("mmcblk")){
+                return "\uf084"; //SD
+            }
+            else{
+                return "\uf085"; //USB
+            }
+        }
+        return ""; //nothing found
+    }
 }
 
 String::List StorageDevices::GetMountedDeviceList()

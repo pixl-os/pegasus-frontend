@@ -147,6 +147,9 @@ class StorageDevices
     //! Get raw device list from blkid command
     static String::List GetRawDeviceList();
 
+    //! Get icon by device
+    static String GetIconByDevice(const String& device);
+
     //! Get raw device by LABEL from blkid command
     static String GetRawDeviceByLabel(const String& label);
 
