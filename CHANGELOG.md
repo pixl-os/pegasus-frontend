@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
+
 ## [pixL-master] - 2024-mm-dd - v0.1.x
+- Features:
+	- add new asset for media folder and tag
+
 ## [pixL-master] - 2024-07-07 - v0.1.7
 - Fixes:
 	- fix ip display in settings menu
@@ -173,6 +177,8 @@ All notable changes to this project will be documented in this file (focus on ch
 	- new way to have local ip for wifi/ethernet and to manage more cases of ethernet/wifi adapter naming #[50]
 
 ## [pixL-master] - 2023-05-26 - v0.1.3
+- Fixes:
+	- Asset map folder loading
 - Fixes:
 	- fix rename hostname RECALBOX to PIXL
 

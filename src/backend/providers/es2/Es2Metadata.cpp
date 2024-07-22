@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Updated and integrated for recalbox by BozoTheGeek 03/05/2021
-//
+// Update by Sebio 19/04/2023
 
 #include "Es2Metadata.h"
 
@@ -134,6 +134,7 @@ enum class MetaType : unsigned char {
     MARQUEE,
     FAVORITE,
     HASH,
+    MD5,
     GENREID,
     HIDDEN,
 };
@@ -159,6 +160,7 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
         { QStringLiteral("marquee"), MetaType::MARQUEE },
         { QStringLiteral("favorite"), MetaType::FAVORITE },
         { QStringLiteral("hash"), MetaType::HASH },
+        { QStringLiteral("md5"), MetaType::MD5 },
 		{ QStringLiteral("path"), MetaType::PATH },
 		{ QStringLiteral("genreid"), MetaType::GENREID },
         { QStringLiteral("hidden"), MetaType::HIDDEN },
@@ -169,6 +171,7 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
         { MetaType::IMAGE, AssetType::BOX_FRONT },
         { MetaType::THUMBNAIL, AssetType::SCREENSHOT },
         { MetaType::MARQUEE, AssetType::ARCADE_MARQUEE },
+        { MetaType::MARQUEE, AssetType::MARQUEE },
         { MetaType::VIDEO, AssetType::VIDEO },
     }
 {}
@@ -442,39 +445,27 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
     //Log::info(log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
     // NOTE: The entries are ordered by priority
     const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
+        // multi posibility
         { AssetType::ARCADE_MARQUEE, {
             QStringLiteral("marquee"),
             QStringLiteral("screenmarquee"),
             QStringLiteral("screenmarqueesmall"),
             QStringLiteral("steamgrid"),
         }},
-        { AssetType::ARCADE_BEZEL, {
-            QStringLiteral("bezel"),
-        }},
         { AssetType::BACKGROUND, {
             QStringLiteral("fanart"),
             QStringLiteral("screenshot"),
-        }},
-        { AssetType::BOX_BACK, {
-            QStringLiteral("box2dback"),
+            QStringLiteral("image"),
+            QStringLiteral("images"),
         }},
         { AssetType::BOX_FRONT, {
             QStringLiteral("box3d"),
             QStringLiteral("support"),
+            QStringLiteral("boxfront"),
+            QStringLiteral("boxFront"),
             QStringLiteral("box2dfront"),
             QStringLiteral("supporttexture"),
-        }},
-        { AssetType::BOX_FULL, {
-            QStringLiteral("boxtexture"),
-        }},
-        { AssetType::BOX_SPINE, {
-            QStringLiteral("box2dside"),
-        }},
-        { AssetType::CARTRIDGE, {
-            QStringLiteral("support"),
-        }},
-        { AssetType::CARTRIDGETEXTURE, {
-            QStringLiteral("supporttexture"),
+            QStringLiteral("thumbnail"),
         }},
         { AssetType::LOGO, {
             QStringLiteral("wheel"),
@@ -484,24 +475,131 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
         { AssetType::SCREENSHOT, {
             QStringLiteral("screenshot"),
             QStringLiteral("screenshottitle"),
+            QStringLiteral("image"),
+            QStringLiteral("images"),
         }},
+
+        // solo posibility
+        // for tag <bezels></bezels>
+        { AssetType::ARCADE_BEZEL, {
+            QStringLiteral("bezel"), // specific with arrm
+            QStringLiteral("bezels"), // specific with arrm
+        }},
+        // for tag <box2dback></box2dback>
+        { AssetType::BOX_BACK, {
+            QStringLiteral("boxback"),
+            QStringLiteral("boxBack"),
+            QStringLiteral("box2dback"),
+        }},
+        // for tag <box2dfront></box2dfront>
+        { AssetType::BOX_2DFRONT, {    
+            QStringLiteral("boxfront"),
+            QStringLiteral("boxFront"),
+            QStringLiteral("box2dfront"),
+        }},
+        // for tag <box2dside></box2dside>
+        { AssetType::BOX_SPINE, {
+            QStringLiteral("boxside"),
+            QStringLiteral("boxSide"),
+            QStringLiteral("box2dside"),
+        }},
+        // for tag <box3d></box3d>
+        { AssetType::BOX_3DFRONT, {
+            QStringLiteral("box3d"),
+        }},
+        // for tag <boxtexture></boxtexture>
+        { AssetType::BOX_FULL, {
+            QStringLiteral("boxfull"),
+            QStringLiteral("boxFull"),
+            QStringLiteral("boxtexture"),
+        }},
+        // for tag <extra1></extra1>
+        { AssetType::EXTRA1, {
+            QStringLiteral("extra1"), // flyer specific with arrm
+        }},
+        // for tag <fanart></fanart>
+        { AssetType::FANART, {
+            QStringLiteral("fanart"),
+        }},
+        // for tag <images></images>
+        { AssetType::IMAGES, {
+            QStringLiteral("image"),
+            QStringLiteral("images"),
+        }},
+        // for tag <manuals></manuals>
+        { AssetType::MANUAL, {
+            QStringLiteral("manual"),
+            QStringLiteral("manuals"),
+        }},
+        // for tag <map></map>
+        { AssetType::MAPS, {
+            QStringLiteral("map"),
+            QStringLiteral("maps"),            
+        }},
+        // for tag <marquee></marquee>
+        { AssetType::MARQUEE, {
+            QStringLiteral("marquee"),
+        }},
+        // for tag <mix></mix>
+        { AssetType::MIX, {
+            QStringLiteral("mix"), // specific with arrm
+        }},
+        // for tag <music></music>
+        { AssetType::MUSIC, {
+            QStringLiteral("music"), // specific with arrm
+        }},
+        // for tag <screenmarquee></screenmarquee>
+        { AssetType::SCREEN_MARQUEE, {  
+            QStringLiteral("screenmarquee"),
+        }},
+        // for tag <screenmarqueesmall></screenmarqueesmall>
+        { AssetType::SCREEN_MARQUEESMALL, {      
+            QStringLiteral("screenmarqueesmall"),
+        }},
+        // for tag <screenshot></screenshot>
+        { AssetType::SCREENSHOT_BIS, {
+            QStringLiteral("screenshot"),
+        }},
+        // for tag <screenshottitle></screenshottitle>
         { AssetType::TITLESCREEN, {
             QStringLiteral("screenshottitle"),
         }},
+        // for tag <steamgrid></steamgrid>
         { AssetType::UI_STEAMGRID, {
             QStringLiteral("steamgrid"),
         }},
+        // for tag <support></support>
+        { AssetType::CARTRIDGE, {
+            QStringLiteral("support"),
+        }},
+        // for tag <supporttexture></supporttexture>
+        { AssetType::CARTRIDGETEXTURE, {
+            QStringLiteral("supporttexture"),
+        }},
+        // for tag <thumbnail></thumbnail>
+        { AssetType::THUMBNAIL, {
+            QStringLiteral("thumbnail"),
+        }},
+        // for tag <videos></videos>
         { AssetType::VIDEO, {
+            QStringLiteral("video"),
             QStringLiteral("videos"),
         }},
-        { AssetType::MANUAL, {
-            QStringLiteral("manuals"),
+        // for tag <videomix></videomix>
+        { AssetType::VIDEOMIX, {
+            QStringLiteral("videomix"), // specific with arrm
         }},
-        { AssetType::MAPS, {
-            QStringLiteral("maps"),
+        // for tag <wheel></wheel>
+        { AssetType::WHEEL, {
+            QStringLiteral("wheel"),
         }},
-        { AssetType::MUSIC, {
-            QStringLiteral("music"),
+        // for tag <wheelcarbon></wheelcarbon>
+        { AssetType::WHEEL_CARBON, {
+            QStringLiteral("wheelcarbon"),
+        }},
+        // for tag <wheelsteel></wheelsteel>
+        { AssetType::WHEEL_STEEL, {         
+            QStringLiteral("wheelsteel"),
         }},
     };
 
@@ -626,29 +724,37 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
     QString log_tag  = sysentry.shortname + " " + m_log_tag;
     //Log::info(log_tag, LOGMSG("Start to add Assets from media.xml in addition of ES Gamelist"));
     QHash<QString, QList<AssetType>> ASSET_REFS {
-        { QStringLiteral("marquee"), {AssetType::ARCADE_MARQUEE}},
-        { QStringLiteral("screenmarquee"), {AssetType::ARCADE_MARQUEE}},
-        { QStringLiteral("screenmarqueesmall"), {AssetType::ARCADE_MARQUEE}},
         { QStringLiteral("bezel"), {AssetType::ARCADE_BEZEL}},
-        { QStringLiteral("fanart"), {AssetType::BACKGROUND}},
         { QStringLiteral("box2dback"), {AssetType::BOX_BACK}},
-        { QStringLiteral("box3d"), {AssetType::BOX_FRONT}},
-        { QStringLiteral("support"), {AssetType::BOX_FRONT, AssetType::CARTRIDGE}},
-        { QStringLiteral("box2dfront"), {AssetType::BOX_FRONT}},
-        { QStringLiteral("supporttexture"), {AssetType::BOX_FRONT}},
-        { QStringLiteral("boxtexture"), {AssetType::BOX_FULL}},
+        { QStringLiteral("box2dfront"), {AssetType::BOX_FRONT, AssetType::BOX_2DFRONT}},
         { QStringLiteral("box2dside"), {AssetType::BOX_SPINE}},
-        { QStringLiteral("supporttexture"), {AssetType::CARTRIDGETEXTURE,AssetType::BOX_FRONT}},
-        { QStringLiteral("wheel"), {AssetType::LOGO}},
-        { QStringLiteral("wheelcarbon"), {AssetType::LOGO}},
-        { QStringLiteral("wheelsteel"), {AssetType::LOGO}},
-        { QStringLiteral("screenshot"), {AssetType::SCREENSHOT, AssetType::BACKGROUND}},
+        { QStringLiteral("box3d"), {AssetType::BOX_FRONT, AssetType::BOX_3DFRONT}},
+        { QStringLiteral("boxtexture"), {AssetType::BOX_FULL}},
+        { QStringLiteral("extra1"), {AssetType::EXTRA1}},
+        { QStringLiteral("fanart"), {AssetType::BACKGROUND, AssetType::FANART}},
+        { QStringLiteral("image"), {AssetType::BACKGROUND, AssetType::SCREENSHOT}},
+        { QStringLiteral("images"), {AssetType::BACKGROUND, AssetType::SCREENSHOT}},
+        { QStringLiteral("manual"), {AssetType::MANUAL}},
+        { QStringLiteral("manuals"), {AssetType::MANUAL}},
+        { QStringLiteral("map"), {AssetType::MAPS}},
+        { QStringLiteral("maps"), {AssetType::MAPS}},        
+        { QStringLiteral("marquee"), {AssetType::ARCADE_MARQUEE, AssetType::MARQUEE}},
+        { QStringLiteral("mix"), {AssetType::MIX}}, 
+        { QStringLiteral("music"), {AssetType::MUSIC}},
+        { QStringLiteral("screenmarquee"), {AssetType::ARCADE_MARQUEE, AssetType::SCREEN_MARQUEE}},
+        { QStringLiteral("screenmarqueesmall"), {AssetType::ARCADE_MARQUEE, AssetType::SCREEN_MARQUEESMALL}},
+        { QStringLiteral("screenshot"), {AssetType::SCREENSHOT, AssetType::BACKGROUND, AssetType::SCREENSHOT_BIS}},
         { QStringLiteral("screenshottitle"), {AssetType::TITLESCREEN, AssetType::SCREENSHOT}},
         { QStringLiteral("steamgrid"), {AssetType::UI_STEAMGRID, AssetType::ARCADE_MARQUEE}},
+        { QStringLiteral("support"), {AssetType::BOX_FRONT, AssetType::CARTRIDGE}},
+        { QStringLiteral("supporttexture"), {AssetType::CARTRIDGETEXTURE, AssetType::BOX_FRONT}},
+        { QStringLiteral("thumbnail"), {AssetType::THUMBNAIL, AssetType::BOX_FRONT}},
+        { QStringLiteral("video"), {AssetType::VIDEO}},
         { QStringLiteral("videos"), {AssetType::VIDEO}},
-        { QStringLiteral("manuals"), {AssetType::MANUAL}},
-        { QStringLiteral("maps"), {AssetType::MAPS}},
-        { QStringLiteral("music"), {AssetType::MUSIC}}
+        { QStringLiteral("videomix"), {AssetType::VIDEOMIX}},
+        { QStringLiteral("wheel"), {AssetType::LOGO, AssetType::WHEEL}},
+        { QStringLiteral("wheelcarbon"), {AssetType::LOGO, AssetType::WHEEL_CARBON}},
+        { QStringLiteral("wheelsteel"), {AssetType::LOGO, AssetType::WHEEL_STEEL}}            
     };
 
     size_t found_assets_cnt = 0;
@@ -839,6 +945,7 @@ void Metadata::apply_metadata(model::GameFile& gamefile, const QDir& xml_dir, Ha
     game.setTitle(xml_props[MetaType::NAME])
         .setDescription(xml_props[MetaType::DESC])
         .setHash(xml_props[MetaType::HASH])
+        .setMd5(xml_props[MetaType::MD5])
 		.setPath(xml_props[MetaType::PATH])
 		.setGenreId(xml_props[MetaType::GENREID]);
     game.developerList().append(xml_props[MetaType::DEVELOPER]);
