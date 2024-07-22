@@ -57,39 +57,27 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
 {
     // NOTE: The entries are ordered by priority
     const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
+        // multi posibility
         { AssetType::ARCADE_MARQUEE, {
             QStringLiteral("marquee"),
             QStringLiteral("screenmarquee"),
             QStringLiteral("screenmarqueesmall"),
             QStringLiteral("steamgrid"),
         }},
-        { AssetType::ARCADE_BEZEL, {
-            QStringLiteral("bezel"),
-        }},
         { AssetType::BACKGROUND, {
             QStringLiteral("fanart"),
             QStringLiteral("screenshot"),
-        }},
-        { AssetType::BOX_BACK, {
-            QStringLiteral("box2dback"),
+            QStringLiteral("image"),
+            QStringLiteral("images"),
         }},
         { AssetType::BOX_FRONT, {
             QStringLiteral("box3d"),
             QStringLiteral("support"),
+            QStringLiteral("boxfront"),
+            QStringLiteral("boxFront"),
             QStringLiteral("box2dfront"),
             QStringLiteral("supporttexture"),
-        }},
-        { AssetType::BOX_FULL, {
-            QStringLiteral("boxtexture"),
-        }},
-        { AssetType::BOX_SPINE, {
-            QStringLiteral("box2dside"),
-        }},
-        { AssetType::CARTRIDGE, {
-            QStringLiteral("support"),
-        }},
-        { AssetType::CARTRIDGETEXTURE, {
-            QStringLiteral("supporttexture"),
+            QStringLiteral("thumbnail"),
         }},
         { AssetType::LOGO, {
             QStringLiteral("wheel"),
@@ -99,29 +87,135 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         { AssetType::SCREENSHOT, {
             QStringLiteral("screenshot"),
             QStringLiteral("screenshottitle"),
+            QStringLiteral("image"),
+            QStringLiteral("images"),
         }},
+
+        // solo posibility
+        // for tag <bezels></bezels>
+        { AssetType::ARCADE_BEZEL, {
+            QStringLiteral("bezel"), // specific with arrm
+            QStringLiteral("bezels"), // specific with arrm
+        }},
+        // for tag <box2dback></box2dback>
+        { AssetType::BOX_BACK, {
+            QStringLiteral("boxback"),
+            QStringLiteral("boxBack"),
+            QStringLiteral("box2dback"),
+        }},
+        // for tag <box2dfront></box2dfront>
+        { AssetType::BOX_2DFRONT, {    
+            QStringLiteral("boxfront"),
+            QStringLiteral("boxFront"),
+            QStringLiteral("box2dfront"),
+        }},
+        // for tag <box2dside></box2dside>
+        { AssetType::BOX_SPINE, {
+            QStringLiteral("boxside"),
+            QStringLiteral("boxSide"),
+            QStringLiteral("box2dside"),
+        }},
+        // for tag <box3d></box3d>
+        { AssetType::BOX_3DFRONT, {
+            QStringLiteral("box3d"),
+        }},
+        // for tag <boxtexture></boxtexture>
+        { AssetType::BOX_FULL, {
+            QStringLiteral("boxfull"),
+            QStringLiteral("boxFull"),
+            QStringLiteral("boxtexture"),
+        }},
+        // for tag <extra1></extra1>
+        { AssetType::EXTRA1, {
+            QStringLiteral("extra1"), // flyer specific with arrm
+        }},
+        // for tag <fanart></fanart>
+        { AssetType::FANART, {
+            QStringLiteral("fanart"),
+        }},
+        // for tag <images></images>
+        { AssetType::IMAGES, {
+            QStringLiteral("image"),
+            QStringLiteral("images"),
+        }},
+        // for tag <manuals></manuals>
+        { AssetType::MANUAL, {
+            QStringLiteral("manual"),
+            QStringLiteral("manuals"),
+        }},
+        // for tag <map></map>
+        { AssetType::MAPS, {
+            QStringLiteral("map"),
+            QStringLiteral("maps"),            
+        }},
+        // for tag <marquee></marquee>
+        { AssetType::MARQUEE, {
+            QStringLiteral("marquee"),
+        }},
+        // for tag <mix></mix>
+        { AssetType::MIX, {
+            QStringLiteral("mix"), // specific with arrm
+        }},
+        // for tag <music></music>
+        { AssetType::MUSIC, {
+            QStringLiteral("music"), // specific with arrm
+        }},
+        // for tag <screenmarquee></screenmarquee>
+        { AssetType::SCREEN_MARQUEE, {  
+            QStringLiteral("screenmarquee"),
+        }},
+        // for tag <screenmarqueesmall></screenmarqueesmall>
+        { AssetType::SCREEN_MARQUEESMALL, {      
+            QStringLiteral("screenmarqueesmall"),
+        }},
+        // for tag <screenshot></screenshot>
+        { AssetType::SCREENSHOT_BIS, {
+            QStringLiteral("screenshot"),
+        }},
+        // for tag <screenshottitle></screenshottitle>
         { AssetType::TITLESCREEN, {
             QStringLiteral("screenshottitle"),
         }},
+        // for tag <steamgrid></steamgrid>
         { AssetType::UI_STEAMGRID, {
             QStringLiteral("steamgrid"),
         }},
+        // for tag <support></support>
+        { AssetType::CARTRIDGE, {
+            QStringLiteral("support"),
+        }},
+        // for tag <supporttexture></supporttexture>
+        { AssetType::CARTRIDGETEXTURE, {
+            QStringLiteral("supporttexture"),
+        }},
+        // for tag <thumbnail></thumbnail>
+        { AssetType::THUMBNAIL, {
+            QStringLiteral("thumbnail"),
+        }},
+        // for tag <videos></videos>
         { AssetType::VIDEO, {
+            QStringLiteral("video"),
             QStringLiteral("videos"),
         }},
-        { AssetType::MANUAL, {
-            QStringLiteral("manuals"),
+        // for tag <videomix></videomix>
+        { AssetType::VIDEOMIX, {
+            QStringLiteral("videomix"), // specific with arrm
         }},
-        { AssetType::MAPS, {
-            QStringLiteral("maps"),
+        // for tag <wheel></wheel>
+        { AssetType::WHEEL, {
+            QStringLiteral("wheel"),
         }},
-        { AssetType::MUSIC, {
-            QStringLiteral("music"),
+        // for tag <wheelcarbon></wheelcarbon>
+        { AssetType::WHEEL_CARBON, {
+            QStringLiteral("wheelcarbon"),
+        }},
+        // for tag <wheelsteel></wheelsteel>
+        { AssetType::WHEEL_STEEL, {         
+            QStringLiteral("wheelsteel"),
         }},
     };
 
-    const std::array<QString, 2> MEDIA_DIRS {
-        QStringLiteral("/skraper/"),
+    const std::array<QString, 1> MEDIA_DIRS {
         QStringLiteral("/media/"),
     };
 

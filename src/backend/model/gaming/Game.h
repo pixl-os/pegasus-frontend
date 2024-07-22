@@ -57,6 +57,7 @@ struct GameData {
     QString summary;
     QString description;
     QString hash;
+    QString md5;
 	QString path;
 	QString genreid;
 
@@ -96,6 +97,7 @@ public:
     GETTER(const QString&, summary, m_data.summary)
     GETTER(const QString&, description, m_data.description)
     GETTER(const QString&, hash, m_data.hash)
+    GETTER(const QString&, md5, m_data.md5)
     GETTER(const QString&, path, m_data.path)
     GETTER(const QString&, genreid, m_data.genreid)
     GETTER(const QDate&, releaseDate, m_data.release_date)
@@ -139,6 +141,7 @@ public:
     SETTER(QString, Summary, summary)
     SETTER(QString, Description, description)
     SETTER(QString, Hash, hash)
+    SETTER(QString, Md5, md5)
 	SETTER(QString, Path, path)
 	SETTER(QString, GenreId, genreid)
     SETTER(QDate, ReleaseDate, release_date)
@@ -169,6 +172,7 @@ public:
     Q_PROPERTY(QString summary READ summary CONSTANT)
     Q_PROPERTY(QString description READ description CONSTANT)
     Q_PROPERTY(QString hash READ hash CONSTANT)
+    Q_PROPERTY(QString md5 READ md5 CONSTANT)
 	Q_PROPERTY(QString path READ path CONSTANT)
 	Q_PROPERTY(QString genreid READ genreid CONSTANT)
     Q_PROPERTY(QDate release READ releaseDate CONSTANT)
