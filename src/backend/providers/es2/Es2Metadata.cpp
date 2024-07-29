@@ -16,6 +16,7 @@
 //
 // Updated and integrated for recalbox by BozoTheGeek 03/05/2021
 // Update by Sebio 19/04/2023
+// Update by BozoTheGeek 30/07/2023 to fix media usages and media.xml generation method
 
 #include "Es2Metadata.h"
 
@@ -148,8 +149,9 @@ const QHash<QString, QList<AssetType>> DIR_ASSETS {
     { QStringLiteral("boxtexture"), {AssetType::BOX_FULL}},
     { QStringLiteral("extra1"), {AssetType::EXTRA1}},
     { QStringLiteral("fanart"), {AssetType::BACKGROUND, AssetType::FANART}},
-    { QStringLiteral("image"), {AssetType::BACKGROUND, AssetType::SCREENSHOT}},
-    { QStringLiteral("images"), {AssetType::BACKGROUND, AssetType::SCREENSHOT}},
+ // we can't use "image or images" because we can't anticipate what has been scrapped by user finally
+ //   { QStringLiteral("image"), {AssetType::BACKGROUND, AssetType::SCREENSHOT}},
+ //   { QStringLiteral("images"), {AssetType::BACKGROUND, AssetType::SCREENSHOT}},
     { QStringLiteral("manual"), {AssetType::MANUAL}},
     { QStringLiteral("manuals"), {AssetType::MANUAL}},
     { QStringLiteral("map"), {AssetType::MAPS}},
@@ -489,8 +491,9 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
         { AssetType::BACKGROUND, {
             QStringLiteral("fanart"),
             QStringLiteral("screenshot"),
-            QStringLiteral("image"),
-            QStringLiteral("images"),
+            // we can't use "image or images" because we can't anticipate what has been scrapped by user finally
+            //QStringLiteral("image"),
+            //QStringLiteral("images"),
         }},
         { AssetType::BOX_FRONT, {
             QStringLiteral("box3d"),
@@ -509,8 +512,9 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
         { AssetType::SCREENSHOT, {
             QStringLiteral("screenshot"),
             QStringLiteral("screenshottitle"),
-            QStringLiteral("image"),
-            QStringLiteral("images"),
+            // we can't use "image or images" because we can't anticipate what has been scrapped by user finally
+            //QStringLiteral("image"),
+            //QStringLiteral("images"),
         }},
 
         // solo posibility
