@@ -367,7 +367,7 @@ void Metadata::prepare_lightgun_games_metadata()
             Log::warning(log_tag, LOGMSG("No lightgun.cfg found"));
         }
         else {
-            Log::debug(LOGMSG("File Found : `%1`").arg(xml_path));
+            //Log::debug(LOGMSG("File Found : `%1`").arg(xml_path));
             //get lightgun games from xml and for a system
             size_t lightgunGamesFound = import_lightgun_games_from_xml(xml_path);
             Log::info(log_tag, LOGMSG("%1 lightgun games known as compatible with pixL").arg(lightgunGamesFound));
@@ -979,7 +979,7 @@ void Metadata::add_skraper_media_metadata_v2(const QDir& xml_dir, providers::Sea
         document.appendChild(root);
     }
 
-    Log::debug(log_tag, LOGMSG("Nb elements in MEDIA_DIRS : %1").arg(QString::number(MEDIA_DIRS.size())));
+    //Log::debug(log_tag, LOGMSG("Nb elements in MEDIA_DIRS : %1").arg(QString::number(MEDIA_DIRS.size())));
     for (const QString& media_dir_subpath : MEDIA_DIRS) {
         const QString game_media_dir = xml_dir.path() % media_dir_subpath;
         if (!QFileInfo::exists(game_media_dir))
@@ -993,13 +993,13 @@ void Metadata::add_skraper_media_metadata_v2(const QDir& xml_dir, providers::Sea
             extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map());
             gamepath_db_generated = true;
         }
-        Log::debug(log_tag, LOGMSG("%1 is the media directory !").arg(game_media_dir));
+        //Log::debug(log_tag, LOGMSG("%1 is the media directory !").arg(game_media_dir));
         QDirIterator mediadir_it(game_media_dir,QDir::Dirs | QDir::NoDotAndDotDot);
         while (mediadir_it.hasNext()) {
             const QString search_dir = mediadir_it.next();
             const QFileInfo fileInfo(search_dir);
             const QString dir_name = fileInfo.fileName();
-            Log::debug(log_tag, LOGMSG("%1 is the directory to search !").arg(search_dir));
+            //Log::debug(log_tag, LOGMSG("%1 is the directory to search !").arg(search_dir));
             const int subpath_len = media_dir_subpath.length() + dir_name.length();
             QDirIterator dir_it(search_dir, DIR_FILTERS, DIR_FLAGS);
             while (dir_it.hasNext()) {
@@ -1007,18 +1007,18 @@ void Metadata::add_skraper_media_metadata_v2(const QDir& xml_dir, providers::Sea
                 const QFileInfo finfo = dir_it.fileInfo();
                 const QString game_path = ::clean_abs_dir(finfo).remove(xml_dir.path().length(), subpath_len)
                                           % '/' % finfo.completeBaseName();
-                Log::debug(log_tag, LOGMSG("%1 is the game path !").arg(game_path));
+                //Log::debug(log_tag, LOGMSG("%1 is the game path !").arg(game_path));
                 const auto it = extless_path_to_game.find(game_path);
                 if (it == extless_path_to_game.cend())
                     continue;
                 //check if this game node already exist
                 model::Game& game = *(it->second);
                 //search in all AssetType for this media directory
-                Log::debug(log_tag, LOGMSG("%1 is the directory name to find in media directories list !").arg(dir_name));
+                //Log::debug(log_tag, LOGMSG("%1 is the directory name to find in media directories list !").arg(dir_name));
                 const QList<AssetType>& asset_types = DIR_ASSETS[dir_name];
                 for (const AssetType& asset_type : asset_types) {
                     game.assetsMut().add_file(asset_type, dir_it.filePath());
-                    Log::debug(log_tag, LOGMSG("%1 asset added !").arg(dir_it.filePath()));
+                    //Log::debug(log_tag, LOGMSG("%1 asset added !").arg(dir_it.filePath()));
                     found_assets_cnt++;
                 }
                 if(generateMediaXML){
