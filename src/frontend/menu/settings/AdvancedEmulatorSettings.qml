@@ -48,8 +48,6 @@ FocusScope {
         onOpenXemuSettings: root.openScreen("emulatorsetting/XemuSettings.qml")
         onOpenSupermodelSettings: root.openScreen("emulatorsetting/SupermodelSettings.qml")
         onOpenPpssppSettings: root.openScreen("emulatorsetting/PpssppSettings.qml")
-        onOpenYuzuSettings: root.openScreen("emulatorsetting/YuzuSettings.qml")
-        onOpenSuyuSettings: root.openScreen("emulatorsetting/SuyuSettings.qml")
     }
     Loader {
         id: modal

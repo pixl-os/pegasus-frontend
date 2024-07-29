@@ -24,8 +24,6 @@ FocusScope {
     signal openXemuSettings
     signal openSupermodelSettings
     signal openPpssppSettings
-    signal openYuzuSettings
-    signal openSuyuSettings
 
     width: parent.width
     height: parent.height
@@ -249,34 +247,6 @@ FocusScope {
                     onActivate: {
                         focus = true;
                         root.openXemuSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optYuzu
-                }
-                SimpleButton {
-                    id: optYuzu
-                    label: qsTr("Yuzu") + api.tr
-                    note: qsTr("Change Configuration for Yuzu emulator for Nintendo switch") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openYuzuSettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSuyu
-                }
-                SimpleButton {
-                    id: optSuyu
-                    label: qsTr("Suyu") + api.tr
-                    note: qsTr("Change Configuration for Suyu emulator for Nintendo switch") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openSuyuSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                 }
