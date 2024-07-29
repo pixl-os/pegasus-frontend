@@ -70,6 +70,7 @@ private:
     HashMap<MetaType, QString, EnumHash> parse_gamelist_game_node(QXmlStreamReader&) const;
     void apply_metadata(model::GameFile&, const QDir&, HashMap<MetaType, QString, EnumHash>&, const SystemEntry&) const;
     void add_skraper_media_metadata(const QDir&, providers::SearchContext&, const SystemEntry&, bool generateMediaXML = false) const;
+    void add_skraper_media_metadata_v2(const QDir&, providers::SearchContext&, const SystemEntry&, bool generateMediaXML = false) const;
     size_t import_media_from_xml(const QDir&, providers::SearchContext&, const SystemEntry&) const;
     size_t import_lightgun_games_from_xml(const QString&);
     bool isLightgunGames(model::Game*, const model::GameFile*, const SystemEntry&) const;
