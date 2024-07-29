@@ -460,14 +460,16 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, const QDir&
             if (mediaFound == 0){
                 Log::info(log_tag,  LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(system_dir.path() + "/media.xml"));
                 //set last parameter to activate or not the media.xml generation during parsing of media
-                add_skraper_media_metadata(system_dir, sctx, sysentry, true);
+                //add_skraper_media_metadata(system_dir, sctx, sysentry, true);
+                add_skraper_media_metadata_v2(system_dir, sctx, sysentry, true);
                 Log::info(log_tag, LOGMSG("Timing: Skraper media searching (with media.xml generation) took %1ms").arg(skraper_media_timer.elapsed()));
             }
             else Log::info(log_tag, LOGMSG("Timing: Skraper media.xml import took %1ms").arg(skraper_media_timer.elapsed()));
         }
         else{
             //set last parameter to activate deactivate the media.xml generation during parsing of media
-            add_skraper_media_metadata(system_dir, sctx, sysentry, false);
+            //add_skraper_media_metadata(system_dir, sctx, sysentry, false);
+            add_skraper_media_metadata_v2(system_dir, sctx, sysentry, false);
             Log::info(log_tag, LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
         }
         //*****************************************************     
@@ -744,6 +746,291 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
                     }
                     //Log::debug(log_tag, LOGMSG("%1 asset added !").arg(dir_it.filePath()));
                     found_assets_cnt++;
+                }
+            }
+        }
+    }
+    if(generateMediaXML){
+        //write xml Content
+        xmlContent << document.toString();
+        //close xml
+        xmlFile.close();
+    }
+    Log::info(log_tag, LOGMSG("%1 assets found from media directory").arg(QString::number(found_assets_cnt)));
+}
+
+void Metadata::add_skraper_media_metadata_v2(const QDir& xml_dir, providers::SearchContext& sctx, const SystemEntry& sysentry, bool generateMediaXML) const
+{
+    QString log_tag = sysentry.shortname + " " + m_log_tag;
+    //Log::info(log_tag, LOGMSG("Start to add Skraper Assets in addition of ES Gamelist"));
+    // NOTE: The entries are ordered by priority
+    const HashMap<AssetType, QStringList, EnumHash> ASSET_DIRS {
+        // multi posibility
+        { AssetType::ARCADE_MARQUEE, {
+                                        QStringLiteral("marquee"),
+                                        QStringLiteral("screenmarquee"),
+                                        QStringLiteral("screenmarqueesmall"),
+                                        QStringLiteral("steamgrid"),
+                                    }},
+        { AssetType::BACKGROUND, {
+                                    QStringLiteral("fanart"),
+                                    QStringLiteral("screenshot"),
+                                    // we can't use "image or images" because we can't anticipate what has been scrapped by user finally
+                                    //QStringLiteral("image"),
+                                    //QStringLiteral("images"),
+                                }},
+        { AssetType::BOX_FRONT, {
+                                   QStringLiteral("box3d"),
+                                   QStringLiteral("support"),
+                                   QStringLiteral("boxfront"),
+                                   QStringLiteral("boxFront"),
+                                   QStringLiteral("box2dfront"),
+                                   QStringLiteral("supporttexture"),
+                                   QStringLiteral("thumbnail"),
+                               }},
+        { AssetType::LOGO, {
+                              QStringLiteral("wheel"),
+                              QStringLiteral("wheelcarbon"),
+                              QStringLiteral("wheelsteel"),
+                          }},
+        { AssetType::SCREENSHOT, {
+                                    QStringLiteral("screenshot"),
+                                    QStringLiteral("screenshottitle"),
+                                    // we can't use "image or images" because we can't anticipate what has been scrapped by user finally
+                                    //QStringLiteral("image"),
+                                    //QStringLiteral("images"),
+                                }},
+
+        // solo posibility
+        // for tag <bezels></bezels>
+        { AssetType::ARCADE_BEZEL, {
+                                      QStringLiteral("bezel"), // specific with arrm
+                                      QStringLiteral("bezels"), // specific with arrm
+                                  }},
+        // for tag <box2dback></box2dback>
+        { AssetType::BOX_BACK, {
+                                  QStringLiteral("boxback"),
+                                  QStringLiteral("boxBack"),
+                                  QStringLiteral("box2dback"),
+                              }},
+        // for tag <box2dfront></box2dfront>
+        { AssetType::BOX_2DFRONT, {
+                                     QStringLiteral("boxfront"),
+                                     QStringLiteral("boxFront"),
+                                     QStringLiteral("box2dfront"),
+                                 }},
+        // for tag <box2dside></box2dside>
+        { AssetType::BOX_SPINE, {
+                                   QStringLiteral("boxside"),
+                                   QStringLiteral("boxSide"),
+                                   QStringLiteral("box2dside"),
+                               }},
+        // for tag <box3d></box3d>
+        { AssetType::BOX_3DFRONT, {
+                                     QStringLiteral("box3d"),
+                                 }},
+        // for tag <boxtexture></boxtexture>
+        { AssetType::BOX_FULL, {
+                                  QStringLiteral("boxfull"),
+                                  QStringLiteral("boxFull"),
+                                  QStringLiteral("boxtexture"),
+                              }},
+        // for tag <extra1></extra1>
+        { AssetType::EXTRA1, {
+                                QStringLiteral("extra1"), // flyer specific with arrm
+                            }},
+        // for tag <fanart></fanart>
+        { AssetType::FANART, {
+                                QStringLiteral("fanart"),
+                            }},
+        // for tag <images></images>
+        { AssetType::IMAGES, {
+                                QStringLiteral("image"),
+                                QStringLiteral("images"),
+                            }},
+        // for tag <manuals></manuals>
+        { AssetType::MANUAL, {
+                                QStringLiteral("manual"),
+                                QStringLiteral("manuals"),
+                            }},
+        // for tag <map></map>
+        { AssetType::MAPS, {
+                              QStringLiteral("map"),
+                              QStringLiteral("maps"),
+                          }},
+        // for tag <marquee></marquee>
+        { AssetType::MARQUEE, {
+                                 QStringLiteral("marquee"),
+                             }},
+        // for tag <mix></mix>
+        { AssetType::MIX, {
+                             QStringLiteral("mix"), // specific with arrm
+                         }},
+        // for tag <music></music>
+        { AssetType::MUSIC, {
+                               QStringLiteral("music"), // specific with arrm
+                           }},
+        // for tag <screenmarquee></screenmarquee>
+        { AssetType::SCREEN_MARQUEE, {
+                                        QStringLiteral("screenmarquee"),
+                                    }},
+        // for tag <screenmarqueesmall></screenmarqueesmall>
+        { AssetType::SCREEN_MARQUEESMALL, {
+                                             QStringLiteral("screenmarqueesmall"),
+                                         }},
+        // for tag <screenshot></screenshot>
+        { AssetType::SCREENSHOT_BIS, {
+                                        QStringLiteral("screenshot"),
+                                    }},
+        // for tag <screenshottitle></screenshottitle>
+        { AssetType::TITLESCREEN, {
+                                     QStringLiteral("screenshottitle"),
+                                 }},
+        // for tag <steamgrid></steamgrid>
+        { AssetType::UI_STEAMGRID, {
+                                      QStringLiteral("steamgrid"),
+                                  }},
+        // for tag <support></support>
+        { AssetType::CARTRIDGE, {
+                                   QStringLiteral("support"),
+                               }},
+        // for tag <supporttexture></supporttexture>
+        { AssetType::CARTRIDGETEXTURE, {
+                                          QStringLiteral("supporttexture"),
+                                      }},
+        // for tag <thumbnail></thumbnail>
+        { AssetType::THUMBNAIL, {
+                                   QStringLiteral("thumbnail"),
+                               }},
+        // for tag <videos></videos>
+        { AssetType::VIDEO, {
+                               QStringLiteral("video"),
+                               QStringLiteral("videos"),
+                           }},
+        // for tag <videomix></videomix>
+        { AssetType::VIDEOMIX, {
+                                  QStringLiteral("videomix"), // specific with arrm
+                              }},
+        // for tag <wheel></wheel>
+        { AssetType::WHEEL, {
+                               QStringLiteral("wheel"),
+                           }},
+        // for tag <wheelcarbon></wheelcarbon>
+        { AssetType::WHEEL_CARBON, {
+                                      QStringLiteral("wheelcarbon"),
+                                  }},
+        // for tag <wheelsteel></wheelsteel>
+        { AssetType::WHEEL_STEEL, {
+                                     QStringLiteral("wheelsteel"),
+                                 }},
+    };
+
+    const std::array<QString, 1> MEDIA_DIRS {
+        QStringLiteral("/media/"),
+    };
+
+    constexpr auto DIR_FILTERS = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto DIR_FLAGS = QDirIterator::Subdirectories | QDirIterator::FollowSymlinks;
+
+    //Log::debug(log_tag, LOGMSG("Nb elements in extless_path_to_game : %1").arg(QString::number(extless_path_to_game.size())));
+
+    //Log::debug(log_tag, LOGMSG("Nb elements in sctx.current_filepath_to_entry_map() : %1").arg(QString::number(sctx.current_filepath_to_entry_map().size())));
+    //Log::debug(log_tag, LOGMSG("Nb elements in sctx.current_collection_to_entry_map() : %1").arg(QString::number(sctx.current_collection_to_entry_map().size())));
+
+    size_t found_assets_cnt = 0;
+    bool gamepath_db_generated = false;
+    HashMap<QString, model::Game*> extless_path_to_game;
+
+    //***FOR TEST PURPOSE ONLY - DELETE FOR EACH RUNNING***
+    //if (QFileInfo::exists(system_dir.path() + "/media.xml")){
+    //    QFile::remove(system_dir.path() + "/media.xml");
+    //}
+    //*****************************************************
+
+    QDomDocument document;
+    QDomElement root;
+    QFile xmlFile;
+    QTextStream xmlContent(&xmlFile);
+    if(generateMediaXML){
+        //Open media.xml file to write it (we consider that media.xml doesn't exist if we call this function
+        xmlFile.setFileName(xml_dir.path() + "/media.xml");
+        if (!xmlFile.open(QFile::WriteOnly | QFile::Text ))
+        {
+            Log::error(log_tag, LOGMSG("%1 already opened or there is another issue").arg(xml_dir.path() + "/media.xml"));
+            xmlFile.close();
+            //exit function due to issue finally
+            return;
+        }
+        //Calculate media directory & gamelist size in bytes
+        //Too slow to calcculate size of directories finaly
+        //QString media_dir_size = run("du -s " + xml_dir.path() + "/media/" +
+        //                         " | head -n 1 | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        QString gamelist_size = run("ls -l " + xml_dir.path() + "/gamelist.xml"+
+                                    " | head -n 1 | awk '{print $5}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        QString gamelist_date = run("date '+%F-%H-%M-%S' -r " + xml_dir.path() + "/gamelist.xml"+
+                                    " | head -n 1 | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+
+        //make the root element
+        root = document.createElement("mediaList");
+        //root.setAttribute("media_dir_size", media_dir_size);
+        root.setAttribute("gamelist_size", gamelist_size);
+        root.setAttribute("gamelist_date", gamelist_date);
+        //add it to document
+        document.appendChild(root);
+    }
+
+    Log::debug(log_tag, LOGMSG("Nb elements in MEDIA_DIRS : %1").arg(QString::number(MEDIA_DIRS.size())));
+    for (const QString& media_dir_subpath : MEDIA_DIRS) {
+        const QString game_media_dir = xml_dir.path() % media_dir_subpath;
+        if (!QFileInfo::exists(game_media_dir))
+        {
+            //Log::debug(log_tag, LOGMSG("%1 directory not found :-(").arg(game_media_dir));
+            continue;
+        }
+        else if (!gamepath_db_generated) //first iteration only
+        {
+            //we build this db only one time and for one system now, to be able to search quickly
+            extless_path_to_game = build_gamepath_db(sctx.current_filepath_to_entry_map());
+            gamepath_db_generated = true;
+        }
+        Log::debug(log_tag, LOGMSG("%1 is the media directory !").arg(game_media_dir));
+        QDirIterator mediadir_it(game_media_dir,QDir::Dirs | QDir::NoDotAndDotDot);
+        while (mediadir_it.hasNext()) {
+            const QString search_dir = mediadir_it.next();
+            const QFileInfo fileInfo(search_dir);
+            const QString dir_name = fileInfo.fileName();
+            Log::debug(log_tag, LOGMSG("%1 is the directory to search !").arg(search_dir));
+            const int subpath_len = media_dir_subpath.length() + dir_name.length();
+            QDirIterator dir_it(search_dir, DIR_FILTERS, DIR_FLAGS);
+            while (dir_it.hasNext()) {
+                dir_it.next();
+                const QFileInfo finfo = dir_it.fileInfo();
+                const QString game_path = ::clean_abs_dir(finfo).remove(xml_dir.path().length(), subpath_len)
+                                          % '/' % finfo.completeBaseName();
+                Log::debug(log_tag, LOGMSG("%1 is the game path !").arg(game_path));
+                const auto it = extless_path_to_game.find(game_path);
+                if (it == extless_path_to_game.cend())
+                    continue;
+                //check if this game node already exist
+                model::Game& game = *(it->second);
+                //search in all AssetType for this media directory
+                Log::debug(log_tag, LOGMSG("%1 is the directory name to find in media directories list !").arg(dir_name));
+                const QList<AssetType>& asset_types = DIR_ASSETS[dir_name];
+                for (const AssetType& asset_type : asset_types) {
+                    game.assetsMut().add_file(asset_type, dir_it.filePath());
+                    Log::debug(log_tag, LOGMSG("%1 asset added !").arg(dir_it.filePath()));
+                    found_assets_cnt++;
+                }
+                if(generateMediaXML){
+                    //write asset by asset in media.xml
+                    QDomElement gamenode = document.createElement(dir_name);
+                    //add game as attribut
+                    gamenode.setAttribute("game", game_path);//game.path());
+                    //add path of the asset as value
+                    QDomText text = document.createTextNode(dir_it.filePath());
+                    gamenode.appendChild(text);
+                    //appen new asset to root
+                    root.appendChild(gamenode);
                 }
             }
         }
