@@ -149,9 +149,8 @@ const QHash<QString, QList<AssetType>> DIR_ASSETS {
     { QStringLiteral("boxtexture"), {AssetType::BOX_FULL}},
     { QStringLiteral("extra1"), {AssetType::EXTRA1}},
     { QStringLiteral("fanart"), {AssetType::BACKGROUND, AssetType::FANART}},
- // we can't use "image or images" because we can't anticipate what has been scrapped by user finally
- //   { QStringLiteral("image"), {AssetType::BACKGROUND, AssetType::SCREENSHOT}},
- //   { QStringLiteral("images"), {AssetType::BACKGROUND, AssetType::SCREENSHOT}},
+    { QStringLiteral("image"), {AssetType::IMAGES}},
+    { QStringLiteral("images"), {AssetType::IMAGES}},
     { QStringLiteral("manual"), {AssetType::MANUAL}},
     { QStringLiteral("manuals"), {AssetType::MANUAL}},
     { QStringLiteral("map"), {AssetType::MAPS}},

@@ -212,6 +212,7 @@ public:
     Q_PROPERTY(QString qmlname READ qmlname CONSTANT) \
     Q_PROPERTY(QStringList qmlname##List READ qmlname##List CONSTANT) \
 
+    GEN(box2d, BOX_2DFRONT)
     GEN(box3d, BOX_3DFRONT)
     GEN(boxFront, BOX_FRONT)
     GEN(boxBack, BOX_BACK)
@@ -242,6 +243,7 @@ public:
     GEN(background, BACKGROUND)
     GEN(music, MUSIC)
 
+    GEN(image, IMAGES)
     GEN(screenshot, SCREENSHOT)
     GEN(screenshot_bis, SCREENSHOT_BIS)
     GEN(thumbnail, THUMBNAIL)
