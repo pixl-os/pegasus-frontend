@@ -39,11 +39,11 @@ Rectangle {
     }
 
     property var images: shuffle([
-                                     "assets/logopegasus.png",
-                                     "assets/recalbox-next.svg",
-                                     "assets/libretro-retroarch-simple-logo.png",
-                                     "assets/logonvidia.png"
-                                 ])
+        "assets/logopegasus.png",
+        "assets/recalbox-next.svg",
+        "assets/libretro-retroarch-simple-logo.png",
+        "assets/logonvidia.png"
+    ])
     property int currentIndex: 0
 
     AnimatedImage {
@@ -59,6 +59,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.bottom: parent.verticalCenter
     }
+
     Rectangle {
         id: slideshow
         width: parent.width
@@ -81,9 +82,9 @@ Rectangle {
                 loops: Animation.Infinite
                 NumberAnimation { from: 1.0; to: 0.0; duration: 2000 }
                 ScriptAction { script: {
-                        currentIndex = (currentIndex + 1) % images.length;
-                        slideshowImage.source = images[currentIndex];
-                    }}
+                    currentIndex = (currentIndex + 1) % images.length;
+                    slideshowImage.source = images[currentIndex];
+                }}
                 NumberAnimation { from: 0.0; to: 1.0; duration: 2000 }
                 PauseAnimation { duration: 2000 }
             }
@@ -96,7 +97,7 @@ Rectangle {
         width: logo.width * 0.95
         height: vpx(30)
         radius: vpx(10)
-        color: themeColor.main //"#333"
+        color: themeColor.main
 
         anchors.top: logo.bottom
         anchors.topMargin: height * 1.0
@@ -109,17 +110,47 @@ Rectangle {
             width: parent.width * root.progress
             height: parent.height
             radius: vpx(10)
-            color: themeColor.screenUnderline //"#ff6600"
+            color: themeColor.screenUnderline
 
             NumberAnimation on width {
                 id: anim
-                from: 0; to: parent.width * (root.progress / 100); easing.type: Easing.InOutBounce
+                from: 0
+                to: parent.width * (root.progress / 100)
+                easing.type: Easing.InOutBounce
                 running: true
             }
             SequentialAnimation on color {
                 loops: Animation.Infinite
                 ColorAnimation { from: Qt.darker(themeColor.screenUnderline); to: themeColor.screenUnderline; duration: 1000 }
                 ColorAnimation { from: themeColor.screenUnderline; to: Qt.darker(themeColor.screenUnderline); duration: 1000 }
+            }
+        }
+
+        Rectangle {
+            id: lightningEffect
+            width: parent.width
+            height: parent.height
+            radius: vpx(10)
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.5; color: "white" }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+
+            PropertyAnimation on x {
+                from: -parent.width
+                to: parent.width
+                duration: 1000
+                loops: Animation.Infinite
+                easing.type: Easing.Linear
+            }
+
+            PropertyAnimation on opacity {
+                from: 0.8
+                to: 0.0
+                duration: 1000
+                loops: Animation.Infinite
+                easing.type: Easing.Linear
             }
         }
     }
