@@ -170,8 +170,8 @@ const QHash<QString, QList<AssetType>> DIR_ASSETS {
     { QStringLiteral("videos"), {AssetType::VIDEO}},
     { QStringLiteral("videomix"), {AssetType::VIDEOMIX}},
     { QStringLiteral("wheel"), {AssetType::LOGO, AssetType::WHEEL}},
-    { QStringLiteral("wheelcarbon"), {AssetType::LOGO, AssetType::WHEEL_CARBON}},
-    { QStringLiteral("wheelsteel"), {AssetType::LOGO, AssetType::WHEEL_STEEL}}
+    { QStringLiteral("wheelcarbon"), {AssetType::WHEEL_CARBON}},
+    { QStringLiteral("wheelsteel"), {AssetType::WHEEL_STEEL}}
 };
 
 Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
