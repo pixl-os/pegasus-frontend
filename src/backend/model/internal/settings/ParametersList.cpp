@@ -755,6 +755,74 @@ QStringList GetParametersList(QString Parameter)
 
         ListOfInternalValue << "0" << "1" << "2" << "3";
     }
+    else if (Parameter == "yuzu.resolution")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("x0.5 (360p/540p) [experimental]") << QObject::tr("x0.75 (540p/810p) [experimental]") << QObject::tr("x1 (720p/1080p) [native]") << QObject::tr("x1.5 (1080p/1620p) [experimental]")
+                    << QObject::tr("x2 (1440p/2160p)") << QObject::tr("x3 (2160p/3240p)") << QObject::tr("x4 (2880p/4320p)") << QObject::tr("x5 (3600p/5400p)")
+                    << QObject::tr("x6 (4320p/6480p)") << QObject::tr("x7 (5040p/7560p)") << QObject::tr("x8 (5760p/8640p)");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "yuzu.scaling.filter")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("Nearest Neighbor") << QObject::tr("Bilinear") << QObject::tr("Bicubic")
+                    << QObject::tr("Gaussian") << QObject::tr("Scaleforce") << QObject::tr("AMD Fidelity FX");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter == "yuzu.vsync")
+    {
+        /*
+         * use_vsync = 0
+         * no 1 value ???
+        */
+        ListOfValue << QObject::tr("Immediate (VSync Off)") << QObject::tr("FIFO (VSync On)") << QObject::tr("FIFO Relaxed");
+
+        ListOfInternalValue << "0" << "2" << "3";
+    }
+    else if (Parameter == "suyu.resolution")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("x0.5 (360p/540p) [experimental]") << QObject::tr("x0.75 (540p/810p) [experimental]") << QObject::tr("x1 (720p/1080p) [native]") << QObject::tr("x1.5 (1080p/1620p) [experimental]")
+                    << QObject::tr("x2 (1440p/2160p)") << QObject::tr("x3 (2160p/3240p)") << QObject::tr("x4 (2880p/4320p)") << QObject::tr("x5 (3600p/5400p)")
+                    << QObject::tr("x6 (4320p/6480p)") << QObject::tr("x7 (5040p/7560p)") << QObject::tr("x8 (5760p/8640p)");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "suyu.scaling.filter")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("Nearest Neighbor") << QObject::tr("Bilinear") << QObject::tr("Bicubic")
+                    << QObject::tr("Gaussian") << QObject::tr("Scaleforce") << QObject::tr("AMD Fidelity FX");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter == "suyu.vsync")
+    {
+        /*
+         * use_vsync = 0
+         * no 1 value ???
+        */
+        ListOfValue << QObject::tr("Immediate (VSync Off)") << QObject::tr("FIFO (VSync On)") << QObject::tr("FIFO Relaxed");
+
+        ListOfInternalValue << "0" << "2" << "3";
+    }
     else if (Parameter == "retroarch.color.theme.menu")
     {
         /*

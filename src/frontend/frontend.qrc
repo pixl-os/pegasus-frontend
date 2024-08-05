@@ -370,6 +370,8 @@
         <file>menu/settings/emulatorsetting/XemuSettings.qml</file>
         <file>menu/settings/emulatorsetting/SupermodelSettings.qml</file>
         <file>menu/settings/emulatorsetting/PpssppSettings.qml</file>
+        <file>menu/settings/emulatorsetting/YuzuSettings.qml</file>
+        <file>menu/settings/emulatorsetting/SuyuSettings.qml</file>
         <file>menu/settings/emulatorsetting/DolphinTriforceSettings.qml</file>
         <file>assets/sinden/SindenBorderBlue_Wide.png</file>
         <file>assets/sinden/SindenBorderCRT_Wide.png</file>
