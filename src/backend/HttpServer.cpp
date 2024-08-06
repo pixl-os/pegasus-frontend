@@ -2,6 +2,7 @@
 #include <QTcpSocket>
 #include <QTextStream>
 #include <QDateTime>
+#include <QUrl>
 #include <HttpServer.h>
 
 //For recalbox
@@ -59,6 +60,17 @@ void HttpServer::incomingConnection(qintptr socketDescriptor) {
                 //Log::debug(LOGMSG("actionName : %1").arg(actionName));
                 emit requestAction(actionName);
                 out << "<h1>" + actionName + "</h1>";
+              }
+              else if (uri.toLower().contains("/api?popup&title=")){ // format: "?popup&title={title}&message={message}&icon={icon}&delay={delay}"
+                  QUrl url(uri);
+                  QString action = url.toString(QUrl::FullyDecoded).split('?')[1];
+                  //Log::debug(LOGMSG("action : %1").arg(action));
+                  QString title = action.split('&')[1].split('=')[1];
+                  QString message = action.split('&')[2].split('=')[1];
+                  QString icon = action.split('&')[3].split('=')[1];
+                  int delay = action.split('&')[4].split('=')[1].toInt();
+                  emit displayPopup(title, message, icon, delay);
+                  out << "<h1>" + action + "</h1>";
               }
               else {
                 out << "<h1>404 Not Found</h1>";

@@ -15,6 +15,7 @@ public:
 signals:
     void confReloaded(QString parameter);
     void requestAction(QString action);
+    void displayPopup(QString title, QString message, QString icon, int displayDelay);
 };
 
 #endif // HTTPSERVER_H
