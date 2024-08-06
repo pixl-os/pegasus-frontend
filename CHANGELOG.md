@@ -7,10 +7,12 @@ All notable changes to this project will be documented in this file (focus on ch
 	- move directory <-> assets lists to be used for import but also generation of media.xml
 	- new method to add skraper media metadata and generate media.xml file
 	- add a solution to use image or images media directory as asset
+	- bump rcheevos in v11.4.0
 
 - Fixes:
 	- remove debug logs that could generate issues
 	- fix to avoid overload of logo/wheel for existing themes
+	- fix rcheevos to have "Gamecube" in iso format for RA (https://github.com/RetroAchievements/rcheevos/pull/353)
 
 ## [pixL-master] - 2024-07-07 - v0.1.7
 - Fixes:
