@@ -240,7 +240,10 @@ Backend::Backend(const CliArgs& args, char** environment)
     QObject::connect(m_httpapi, &HttpServer::confReloaded,&m_api->internal().recalbox(), &model::Recalbox::reloadParameter);
 
     //to send action to frontend from HTTP API
-    QObject::connect(m_httpapi, &HttpServer::requestAction, m_api, &ApiObject::requestAction);
+    QObject::connect(m_httpapi, &HttpServer::requestAction, m_api, &ApiObject::onRequestAction);
+
+    //to display popup to frontend from HTTP API
+    QObject::connect(m_httpapi, &HttpServer::displayPopup, m_api, &ApiObject::onShowPopup);
 
 }
 
