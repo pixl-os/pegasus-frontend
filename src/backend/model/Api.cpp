@@ -145,9 +145,9 @@ void ApiObject::onNewController(int device_idx, QString message)
     emit newController(device_idx, message);
 }
 
-void ApiObject::onRequestAction(QString action)
+void ApiObject::onRequestAction(QString action, QString parametersList)
 {
-    emit requestAction(action);
+    emit requestAction(action, parametersList);
 }
 
 void ApiObject::onGameFinished()

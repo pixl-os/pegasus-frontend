@@ -14,7 +14,7 @@ public:
     void incomingConnection(qintptr socketDescriptor) override;
 signals:
     void confReloaded(QString parameter);
-    void requestAction(QString action);
+    void requestAction(QString action, QString parametersList);
     void displayPopup(QString title, QString message, QString icon, int displayDelay);
 };
 
