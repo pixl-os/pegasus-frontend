@@ -669,6 +669,16 @@ Window {
                 powerDialog.item.message = qsTr("Pegasus will restart. Are you sure?");
                 powerDialog.focus = true;
             }
+            else if(action === "usbmount-add"){
+                powerDialog.source = "dialogs/RestartDialog.qml";
+                powerDialog.item.message = qsTr("New USB device detected with ROMS directory, do you want to parse it now ?");
+                powerDialog.focus = true;
+            }
+            else if(action === "usbmount-remove"){
+                powerDialog.source = "dialogs/RestartDialog.qml";
+                powerDialog.item.message = qsTr("USB device removed, do you want to refresh list of games ?");
+                powerDialog.focus = true;
+            }
         }
         function onEventLoadingStarted() {
             console.log("onEventLoadingStarted()");
