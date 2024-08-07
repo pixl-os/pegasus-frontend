@@ -56,9 +56,20 @@ void HttpServer::incomingConnection(qintptr socketDescriptor) {
               }
               else if (uri.toLower().contains("/api?action=")){
                 QString action = uri.split('?')[1];
-                QString actionName = action.split('=')[1];
+                QString actionName = "";
+                QString parametersList = "";
+                if (uri.toLower().contains("&")){
+                  actionName = action.split('=')[1].split('&')[0];
+                  int index = action.indexOf('&');
+                  parametersList = action.mid(index + 1);
+                }
+                else{
+                  actionName = action.split('=')[1];
+                }
                 //Log::debug(LOGMSG("actionName : %1").arg(actionName));
-                emit requestAction(actionName);
+                //Log::debug(LOGMSG("parametersList : %1").arg(parametersList));
+
+                emit requestAction(actionName, parametersList);
                 out << "<h1>" + actionName + "</h1>";
               }
               else if (uri.toLower().contains("/api?popup&title=")){ // format: "?popup&title={title}&message={message}&icon={icon}&delay={delay}"

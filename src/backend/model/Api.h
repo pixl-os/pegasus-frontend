@@ -79,7 +79,7 @@ signals:
     void eventLaunchError(QString msg);
     void showPopup(QString title, QString message, QString icon, int delay);
     void newController(int device_idx, QString message);
-    void requestAction(QString action);
+    void requestAction(QString action, QString parametersList);
 
 public slots:
     // game launch communication
@@ -88,7 +88,7 @@ public slots:
     void onGameLaunchError(QString);
     void onShowPopup(QString, QString, QString, int);
     void onNewController(int, QString);
-    void onRequestAction(QString);
+    void onRequestAction(QString, QString);
 
 private slots:
     // internal communication
