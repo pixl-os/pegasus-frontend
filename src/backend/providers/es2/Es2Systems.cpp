@@ -551,7 +551,7 @@ SystemEntry find_system(const QString& log_tag, const std::vector<QString>& poss
         }
         if (defaultsCommand == "") sysentry = read_system_entry(log_tag, xml,mCoreList);
         else sysentry = read_system_entry_v2(log_tag, xml, defaultsCommand,mCoreList);
-        if ((!sysentry.name.isEmpty()) && (sysentry.platforms == shortName)){
+        if ((!sysentry.name.isEmpty()) && (sysentry.shortname == shortName)){
             break; //to get only one system in this case
         }
     }

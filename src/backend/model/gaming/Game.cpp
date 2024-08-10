@@ -90,6 +90,9 @@ Game& Game::setLightgunGame(bool new_val)
 
 const QString Game::getEmulatorName() const
 {
+    //to manage single play
+    if(m_data.emulatorName != "") return m_data.emulatorName;
+
     QString shortname = m_collections->get(0)->shortName();
     QString emulator = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".emulator").toUtf8().constData()));
     //TO DO: add also case when we search emulator if set by game
@@ -117,6 +120,9 @@ const QString Game::getEmulatorName() const
 
 const QString Game::getEmulatorCore() const
 {
+    //to manage single play
+    if(m_data.emulatorCore != "") return m_data.emulatorCore;
+
     QString shortname = m_collections->get(0)->shortName();
     QString core = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".core").toUtf8().constData()));
     //TO DO: add also case when we search core if set by game

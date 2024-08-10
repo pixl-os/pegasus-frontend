@@ -5,6 +5,8 @@
 
 #include "Singleplay.h"
 
+#include "Log.h"
+
 namespace {
 //section to add local private function
 } // namespace
@@ -18,17 +20,19 @@ Singleplay::Singleplay(QObject* parent)
 }
 
 void Singleplay::setSystem (const QString shortName){
+    //Log::debug(LOGMSG("shortName : %1").arg(shortName));
     providers::es2::SystemEntry sysentry = Provider->find_one_system(shortName);
-	
-	//TO DO
-	//Add way to add a game unitary in a collection
+    //Log::debug(LOGMSG("sysentry.shortname : %1").arg(sysentry.shortname));
 
-/*     if(sysentry.platforms == shortName){ //system found
+    //Way added to manage a game without collection
+     if(sysentry.shortname == shortName){ //system found
        //set entry for this game
         m_game
             .setLaunchCmd(sysentry.launch_cmd)
-            .setSystemShortname(sysentry.shortname);
-
+            .setLaunchWorkdir("/recalbox/share/roms/" + sysentry.shortname)
+            .setLaunchCmdBasedir(" ")
+            .setSystemManufacturer(sysentry.manufacturer)
+            .setSystemShortName(sysentry.shortname);
         //To take into account priority=1 (or lower value) as default emulator and core
         int first_priority = 0;
         for (int n = 0;n < sysentry.emulators.count(); n++)
@@ -48,7 +52,7 @@ void Singleplay::setSystem (const QString shortName){
                     .setEmulatorCore(sysentry.emulators[n].core);
             }
         }
-    } */
+    }
 }
 
 } // namespace model
