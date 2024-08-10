@@ -234,15 +234,16 @@ SystemEntry Es2Provider::find_one_system(const QString shortName)
             : default_config_paths();
     }();
 
-    for (int i = 0; i < possible_config_dirs.size(); ++i) {
-        //Log::debug(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
-    }
+    /*for (int i = 0; i < possible_config_dirs.size(); ++i) {
+        Log::debug(display_name(), LOGMSG("ES2 Default config path : %1").arg(possible_config_dirs.at(i)));
+    }*/
 
     // Find one system
-    QElapsedTimer systems_timer;
-    systems_timer.start();
-    SystemEntry system = find_system(display_name(), possible_config_dirs, shortName);
-    Log::debug(display_name(), LOGMSG("Found %1 system").arg(system.name));
+    //QElapsedTimer systems_timer;
+    //systems_timer.start();
+    //Log::debug("ES2 Provider", LOGMSG("shortName : '%1'").arg(shortName));
+    SystemEntry system = find_system("ES2 Provider", possible_config_dirs, shortName);
+    //Log::debug("ES2 Provider", LOGMSG("Found '%1' system").arg(system.shortname));
     //Log::debug(LOGMSG("System searching took %1ms").arg(systems_timer.elapsed()));
     return system;
 }

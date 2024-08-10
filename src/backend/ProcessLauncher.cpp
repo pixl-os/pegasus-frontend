@@ -105,19 +105,25 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     const model::Game& game = *gamefile.parentGame();
     const QFileInfo& finfo = gamefile.fileinfo();
     
-    //Log::debug(LOGMSG("Param not updated: '%1'").arg(param));
-
-    //to manage cdrom case
-    if(gamefile.fileinfo().filePath().contains("cdrom://")){
-        //Log::debug(LOGMSG("PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath())): '%1'").arg(PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath()))));
-        param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath())));
+    //if not a parameter to change, we prefer to exit asap
+    if(!param.contains("{") && !param.contains("}")){
+        //Log::debug(LOGMSG("Param not updated: '%1'").arg(param));
+        return;
     }
-    else{
-        param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())));
+    //else Log::debug(LOGMSG("Param to update: '%1'").arg(param));
+
+    if(param.contains("{file.path}")){
+        //to manage cdrom case
+        if(gamefile.fileinfo().filePath().contains("cdrom://")){
+            //Log::debug(LOGMSG("PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath())): '%1'").arg(PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath()))));
+            param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath())));
+        }
+        else{
+            param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.absoluteFilePath())));
+        }
     }
 
     QString shortname = game.systemShortName();
-    
     param
         .replace(QLatin1String("{file.name}"), finfo.fileName())
         .replace(QLatin1String("{file.basename}"), finfo.completeBaseName())
@@ -322,17 +328,18 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
 
 void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 {
+    //Log::debug(LOGMSG("void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)"));
     Q_ASSERT(q_gamefile);
-    
-    const model::GameFile& gamefile = *q_gamefile;
-    const model::Game& game = *gamefile.parentGame();
+    //Log::debug(LOGMSG("Q_ASSERT(q_gamefile);"));
 
-    QString raw_launch_cmd =
-#if defined(Q_OS_LINUX) && defined(PEGASUS_INSIDE_FLATPAK)
-        QLatin1String("flatpak-spawn --host ") % game.launchCmd();
-#else
-        game.launchCmd();
-#endif
+    const model::GameFile& gamefile = *q_gamefile;
+    //Log::debug(LOGMSG("const model::GameFile& gamefile = *q_gamefile;"));
+    const model::Game& game = *gamefile.parentGame();
+    //Log::debug(LOGMSG("const model::Game& game = *gamefile.parentGame();"));
+
+    QString raw_launch_cmd = game.launchCmd();
+
+    //Log::debug(LOGMSG("raw_launch_cmd : '%1'").arg(raw_launch_cmd));
 
     QStringList args = ::utils::tokenize_command(raw_launch_cmd);
     
@@ -343,7 +350,7 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) args.append("-verbose");
 
     QString command = args.isEmpty() ? QString() : args.takeFirst();
-    if (command.isEmpty()) {
+    if (command.isEmpty()){
         const QString message = LOGMSG("Cannot launch the game `%1` because there is no launch command defined for it.")
             .arg(game.title());
         Log::warning(message);
@@ -352,18 +359,6 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     }
     command = helpers::abs_launchcmd(command, game.launchCmdBasedir());
 
-#if defined(Q_OS_WINDOWS)
-    const QFileInfo command_finfo(command);
-    if (command_finfo.isShortcut()) {
-        args = QStringList {
-            QStringLiteral("/q"),
-            QStringLiteral("/c"),
-            command,
-        } + args;
-        command = QStringLiteral("cmd");
-    }
-#endif
-
     QString default_workdir;
     //to manage cdrom case
     if(gamefile.fileinfo().filePath().contains("cdrom://")){
@@ -371,16 +366,21 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     }
     else{
         default_workdir = contains_slash(command)
-            ? QFileInfo(command).absolutePath()
-            : gamefile.fileinfo().absolutePath();
+                              ? QFileInfo(command).absolutePath()
+                              : gamefile.fileinfo().absolutePath();
     }
+    //Log::debug(LOGMSG("default_workdir: %1").arg(default_workdir));
     //Log::debug(LOGMSG("QFileInfo(command).absolutePath(): %1").arg(QFileInfo(command).absolutePath()));
     //Log::debug(LOGMSG("gamefile.fileinfo().absolutePath(): %1").arg(gamefile.fileinfo().absolutePath()));
 
     QString workdir = game.launchWorkdir();
+    //Log::debug(LOGMSG("before launchWorkdir: %1").arg(workdir));
     replace_variables(workdir, &gamefile);
-    
+    //Log::debug(LOGMSG("after launchWorkdir: %1").arg(workdir));
+
+    //Log::debug(LOGMSG("launchCmdBasedir: %1").arg(game.launchCmdBasedir()));
     workdir = helpers::abs_workdir(workdir, game.launchCmdBasedir(), default_workdir);
+    //Log::debug(LOGMSG("workdir at the end: %1").arg(workdir));
 
     //legacy script system (from pegasus)
     beforeRun(gamefile.fileinfo().absoluteFilePath());

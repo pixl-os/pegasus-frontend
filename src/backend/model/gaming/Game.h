@@ -21,6 +21,8 @@
 #include <QDateTime>
 #include <QStringList>
 
+#include "Log.h"
+
 //add here to access Assets/Collection/GameFile information from Game class also
 #include "model/gaming/Assets.h"
 #include "model/gaming/Collection.h"
@@ -81,7 +83,16 @@ struct GameData {
 
     QList <RetroAchievement> retro_achievements;
     int ra_game_id = 0;
-    QString ra_hash = 0;
+    QString ra_hash;
+
+    //for single play only / should stay empty for game in collections
+    QString launchCmd = "";
+    QString launchWorkdir = "";
+    QString launchCmdBasedir = "";
+    QString systemManufacturer = "";
+    QString systemShortName = "";
+    QString emulatorName = "";
+    QString emulatorCore = "";
 };
 
 
@@ -123,14 +134,37 @@ public:
     GETTER(int, RaGameID, m_data.ra_game_id)
     GETTER(const QString&, RaHash, m_data.ra_hash)
 
-    //new way using collection to access information from GETTER
-    GETTER(const QString&, systemManufacturer, m_collections->get(0)->manufacturer())
-    GETTER(const QString&, systemShortName, m_collections->get(0)->shortName())
-    GETTER(const QString&, launchCmd, m_collections->get(0)->commonLaunchCmd())
-    GETTER(const QString&, launchWorkdir, m_collections->get(0)->commonLaunchWorkdir())
-    GETTER(const QString&, launchCmdBasedir, m_collections->get(0)->commonLaunchCmdBasedir())
+    //new way to provide launch command to be able to manage with single play
+    const QString& systemManufacturer() const {
+        if(m_data.systemManufacturer == "") return m_collections->get(0)->manufacturer();
+        else return m_data.systemManufacturer;
+    }
+    //new way to provide launch command to be able to manage with single play
+    const QString& systemShortName() const {
+        //Log::debug(LOGMSG("Game::m_data.systemShortName : %1").arg(m_data.systemShortName));
+        if (m_data.systemShortName == "") return m_collections->get(0)->shortName();
+        else return m_data.systemShortName;
+    }
+    //new way to provide launch command to be able to manage with single play
+    const QString& launchCmd() const {
+        //Log::debug(LOGMSG("Game::m_data.launchCmd : %1").arg(m_data.launchCmd));
+        if (m_data.launchCmd == "") return m_collections->get(0)->commonLaunchCmd();
+        else return m_data.launchCmd;
+    }
+    //new way to provide launch command to be able to manage with single play
+    const QString& launchWorkdir() const {
+        if (m_data.launchWorkdir == "" ) return m_collections->get(0)->commonLaunchWorkdir();
+        else return m_data.launchWorkdir;
+    }
+    //new way to provide launch command to be able to manage with single play
+    const QString& launchCmdBasedir() const {
+        if(m_data.launchCmdBasedir == "") return m_collections->get(0)->commonLaunchCmdBasedir();
+        else return  m_data.launchCmdBasedir;
+    }
+
     GETTER(const QString, emulatorName, getEmulatorName())
     GETTER(const QString, emulatorCore, getEmulatorCore())
+
 #undef GETTER
 
 
@@ -152,6 +186,15 @@ public:
 	SETTER(QList<RetroAchievement>, RetroAchievements, retro_achievements)
     Game& setFavorite(bool val);
     Game& setLightgunGame(bool val);
+    //for single play only !
+    SETTER(QString, LaunchCmd, launchCmd)
+    SETTER(QString, LaunchWorkdir, launchWorkdir)
+    SETTER(QString, LaunchCmdBasedir, launchCmdBasedir)
+    SETTER(QString, SystemManufacturer, systemManufacturer)
+    SETTER(QString, SystemShortName, systemShortName)
+    SETTER(QString, EmulatorName, emulatorName)
+    SETTER(QString, EmulatorCore, emulatorCore)
+
 #undef SETTER
 
 
