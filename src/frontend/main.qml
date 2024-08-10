@@ -580,16 +580,18 @@ Window {
         repeat: true
         running: splashScreen.focus ? false : true
         onTriggered: {
-            gameCdRom = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf");
-            //console.log(gameCdRom)
-            if(gameCdRom.includes("system =")) {
+            var CdConf = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf | tr -d '\\n' | tr -d '\\r'");
+            console.log("CdConf : ", CdConf)
+            if(CdConf.includes("system =")) {
+                gameCdRom = CdConf.split(' ')[2];
+                console.log("gameCdRom : ", gameCdRom)
                 cdRomPopupLoader.focus = true;
                 //just set "cdrom" as title of this game (optional)
                 api.internal.singleplay.setTitle("cdrom");
                 //set rom full path
                 api.internal.singleplay.setFile("cdrom://drive1.cue");
                 //set system to select to run this rom
-                api.internal.singleplay.setSystem("psx"); //using shortName
+                api.internal.singleplay.setSystem(gameCdRom); //using shortName
             }
         }
     }
