@@ -494,8 +494,57 @@ FocusScope {
                     }
 
                     // KeyNavigation.down: optStorageCapacity
+                    KeyNavigation.down: optRomDirectories
+                }
+
+                MulticheckOption {
+                    id: optRomDirectories
+
+                    //property to manage parameter name
+                    property string parameterName : "boot.sharedevice"
+
+                    label: qsTr("Storage device") + api.tr
+                    note: qsTr("move 'share' to an other storage") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterscheckBox.parameterName = parameterName;
+                        parameterscheckBox.callerid = optRomDirectories;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterscheckBox.model = api.internal.recalbox.parameterslist;
+                        parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterscheckBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    // KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optEthernet
                 }
+
                 SectionTitle {
                     text: qsTr("Networks") + api.tr
                     first: true
@@ -827,6 +876,34 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
             }
+        }
+    }
+
+
+    MulticheckBox {
+        id: parameterscheckBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property MulticheckOption callerid
+
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+
+        onClose: content.focus = true
+        onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
 

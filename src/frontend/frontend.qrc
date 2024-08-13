@@ -269,5 +269,7 @@
         <file>assets/white_crosshair.png</file>
         <file>menu/settings/emulatorsetting/DuckstationSettings.qml</file>
         <file>menu/settings/common/SliderVertical.qml</file>
+        <file>menu/settings/common/MulticheckBox.qml</file>
+        <file>menu/settings/common/MulticheckOption.qml</file>
     </qresource>
 </RCC>
