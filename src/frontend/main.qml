@@ -745,7 +745,7 @@ Window {
 
         property alias iconfont: iconText.font.family
 
-        width:  (message.lenght > title.lenght) ? vpx(message.length * 7.5 + ((icon.length !== 0) ? 50 : 0)) + popup.titleTextSize : vpx(title.length * 7.5 + ((icon.length !== 0) ? 50 : 0) + popup.titleTextSize) //vpx(200)
+        width:  (message.length > title.length) ? vpx(message.length * 7.5 + ((icon.length !== 0) ? 50 : 0)) + popup.titleTextSize : vpx(title.length * 7.5 + ((icon.length !== 0) ? 50 : 0) + popup.titleTextSize) //vpx(200)
         height: vpx(70)
 
         background: Rectangle {
