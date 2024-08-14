@@ -501,10 +501,10 @@ FocusScope {
                     id: optRomDirectories
 
                     //property to manage parameter name
-                    property string parameterName : "boot.sharedevice"
+                    property string parameterName : "directories.roms"
 
-                    label: qsTr("Storage device") + api.tr
-                    note: qsTr("move 'share' to an other storage") + api.tr
+                    label: qsTr("ROMS directories") + api.tr
+                    note: qsTr("select ROMS directories to take into account (all selected by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
 

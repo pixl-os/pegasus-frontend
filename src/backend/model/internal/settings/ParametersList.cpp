@@ -1,6 +1,8 @@
 #include "ParametersList.h"
 #include "Log.h"
-#include "Recalbox.h"
+#include "RecalboxConf.h"
+#include "Paths.h"
+
 #include "audio/AudioController.h"
 #include "storage/StorageDevices.h"
 
@@ -719,6 +721,12 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("None") << QObject::tr("Stronger") << QObject::tr("Softer") << QObject::tr("Strong Machine Gun") << QObject::tr("Soft Machine Gun");
         ListOfInternalValue << "none" << "stronger" << "softer" << "strongmachinegun" << "softmachinegun";
     }
+    //to manage/select ROMS directories
+    else if (Parameter == "directories.roms")
+    {
+        //romsDirs
+        ListOfValue = paths::romsDirs();
+    }
     else
     {
         ListOfValue << QString("error: Parameters list for '%1' not found").arg(Parameter);
@@ -818,10 +826,10 @@ ParameterEntry::ParameterEntry(QString Name)
 
 ParametersList::ParametersList(QObject* parent)
     : QAbstractListModel(parent)
-    , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
     , m_role_names({
                     { Roles::Name, QByteArrayLiteral("name") },
                     })
+    , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
 {
     //empty constructor to be generic
 }
