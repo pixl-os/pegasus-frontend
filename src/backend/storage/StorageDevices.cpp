@@ -153,9 +153,8 @@ String::List StorageDevices::GetCommandOutput(const String& command)
 
 String::List StorageDevices::GetRawDeviceList()
 {
-  String command = "blkid";
-  if(QFile::exists("/tmp/blkid")) command = "cat /tmp/blkid";
-  return GetCommandOutput(command);
+  if(!QFile::exists("/tmp/blkid")) GetCommandOutput("blkid > /tmp/blkid");
+  return GetCommandOutput("cat /tmp/blkid");
 }
 
 String StorageDevices::GetRawDeviceByLabel(const String& label)
@@ -218,18 +217,17 @@ String StorageDevices::GetIconByDevice(const String& Device)
 
 String::List StorageDevices::GetMountedDeviceList()
 {
-    String command = "mount";
-    if(QFile::exists("/tmp/mount")) command = "cat /tmp/mount";
-    return GetCommandOutput(command);
+    if(!QFile::exists("/tmp/mount")) GetCommandOutput("mount > /tmp/mount");
+    return GetCommandOutput("cat /tmp/mount");
 }
 
 // size/free are in KByte in this function
 StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
 {
   DeviceSizeInfo result;
-  String command = "df -kP";
-  if(QFile::exists("/tmp/df-kP")) command = "cat /tmp/df-kP";
-  for(const String& line : GetCommandOutput(command))
+  //if tmp file doesn't exists, we have to create it
+  if(!QFile::exists("/tmp/df-kP")) GetCommandOutput("df -kP > /tmp/df-kP");
+  for(const String& line : GetCommandOutput("cat /tmp/df-kP"))
   {
     String::List items = line.Split(' ', true);
     //{ LOG(LogDebug) << "[Storage] GetFileSystemInfo items.size(): " << items.size() ; }
@@ -248,13 +246,13 @@ StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
     }
   }
 
+  //check also by a second way for unmount disk
   bool isDisk = false;
   bool isDevice = false;
   String currentDisk = "";
-  //check also by a second way for unmount disk
-  command = "fdisk -l";
-  if(QFile::exists("/tmp/fdisk-list")) command = "cat /tmp/fdisk-list";
-  for(const String& line : GetCommandOutput(command))
+  //if tmp file doesn't exists, we have to create it
+  if(!QFile::exists("/tmp/fdisk-list")) GetCommandOutput("fdisk -l > /tmp/fdisk-list");
+  for(const String& line : GetCommandOutput("cat /tmp/fdisk-list"))
   {
       String::List items = line.Split(' ', true);
       if((items[0] == "Disk") && items[1].StartsWith("/dev/")){

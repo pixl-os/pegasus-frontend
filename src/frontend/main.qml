@@ -57,8 +57,10 @@ Window {
         }
     }
 
-    //TIPS: property to preload shader during launch of pegasus-fe and avoid "slow" effect during loding of "Games" menu
-    property string preload: api.internal.recalbox.parameterslist.currentName("global.shaders")
+    //TIPS: properties to preload during launch of pegasus-fe and avoid "slow" effect during loading of menus
+    property string preload_global_shaders: api.internal.recalbox.parameterslist.currentName("global.shaders")
+    property string preload_boot_sharedevice: api.internal.recalbox.parameterslist.currentName("boot.sharedevice")
+    property string preload_directories_roms: api.internal.recalbox.parameterslist.currentName("directories.roms")
 
     /*onClosing: {
         theme.source = "";
@@ -581,10 +583,10 @@ Window {
         running: splashScreen.focus ? false : true
         onTriggered: {
             var CdConf = api.internal.system.run("grep -s -e 'system =' /tmp/cd.conf | tr -d '\\n' | tr -d '\\r'");
-            console.log("CdConf : ", CdConf)
+            //console.log("CdConf : ", CdConf)
             if(CdConf.includes("system =")) {
                 gameCdRom = CdConf.split(' ')[2];
-                console.log("gameCdRom : ", gameCdRom)
+                //console.log("gameCdRom : ", gameCdRom)
                 cdRomPopupLoader.focus = true;
                 //just set "cdrom" as title of this game (optional)
                 api.internal.singleplay.setTitle("cdrom");
