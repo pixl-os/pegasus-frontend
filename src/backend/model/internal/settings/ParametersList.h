@@ -17,6 +17,7 @@ class ParametersList : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY parameterChanged)
     Q_PROPERTY(int count READ rowCount NOTIFY parameterChanged)
+    Q_PROPERTY(int currentIndexChecked READ currentIndexChecked WRITE setCurrentIndexChecked NOTIFY checkedChanged)
 public:
     explicit ParametersList(QObject* parent = nullptr);
 
@@ -29,13 +30,20 @@ public:
     QHash<int, QByteArray> roleNames() const override { return m_role_names; }
 
     int currentIndex() const { return static_cast<int>(m_current_idx); }
+    int currentIndexChecked() const { return static_cast<int>(m_current_checked); }
+
     void setCurrentIndex(int);
+    //to set checked value for current index
+    void setCurrentIndexChecked(bool);
     
 	//CurrentName is used to initiate the parameters list from list define by the developer and return the existing value from recalbox.conf if exist
     Q_INVOKABLE  QString currentName (const QString& Parameter, const QString& InternalName = "");
     Q_INVOKABLE  QString currentInternalName (const QString& Parameter);
     //CurrentNameFromSystem is used to initiate the parameters list generated from a system/script command and return the existing value from recalbox.conf if exist
     Q_INVOKABLE  QString currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions);
+
+    //CurrentNameChecked to return string with number of checked values/total
+    Q_INVOKABLE  QString currentNameChecked (const QString& Parameter);
 
 //Variant examples from QML	
 /* Item {
@@ -53,6 +61,7 @@ public:
  */
 signals:
     void parameterChanged();
+    void checkedChanged();
 
 private:
     const QHash<int, QByteArray> m_role_names;
@@ -63,10 +72,17 @@ private:
     IniFile m_RecalboxBootConf;
     
     size_t m_current_idx;
+    size_t m_current_checked;
 
+    //for parameter list using one selected value
     void select_preferred_parameter(const QString&);
     bool select_parameter(const QString&);
     void save_selected_parameter();
+
+    //for parameter list using checkbox
+    void check_preferred_parameter(const QString&);
+    bool check_parameter(const QString&);
+    void save_checked_parameter(const bool);
 
 };
 } // namespace model

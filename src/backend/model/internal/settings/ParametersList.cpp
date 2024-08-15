@@ -13,6 +13,7 @@ namespace {
 
 /******************************* section to initial variables used by GetParametersList in same name *************************************/
 QStringList ListOfInternalValue;
+QList<bool> ListOfCheckedValue;
 
 /*
 list of global and system values (example using snes system)
@@ -948,6 +949,141 @@ void ParametersList::save_selected_parameter()
     }
 }
 
+
+
+
+void ParametersList::check_preferred_parameter(const QString& Parameter)
+{
+    /*
+    Log::debug(LOGMSG("void ParametersList::check_preferred_parameter(const QString& Parameter) Parameter:`%1`").arg(Parameter));
+    to get first row as default value
+    */
+    QString DefaultValue = "";
+    if (ListOfInternalValue.size() == 0){
+        for(int i = 0; i < int(m_parameterslist.size()) ; i++){
+            if(DefaultValue != "") DefaultValue = DefaultValue + "|" + m_parameterslist.at(i).name;
+            else DefaultValue = m_parameterslist.at(i).name;
+        }
+    }
+    else {
+        for(int i = 0; i < int(ListOfInternalValue.size()) ; i++){
+            if(DefaultValue != "") DefaultValue = DefaultValue + "|" + ListOfInternalValue.at(i);
+            else DefaultValue = ListOfInternalValue.at(i);
+
+        }
+    }
+
+    //Log::debug(LOGMSG("DefaultValue:`%1`").arg(DefaultValue));
+
+    if(Parameter.contains("boot.", Qt::CaseInsensitive))
+    {
+        //check in recalbox-boot.conf
+        QString ParameterBoot = Parameter;
+        ParameterBoot.replace(QString("boot."), QString(""));
+        if(m_RecalboxBootConf.HasKeyStartingWith(ParameterBoot.toUtf8().constData())){
+            check_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),"")));
+        }
+        else
+        {
+            check_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+        }
+    }
+    else
+    {
+        //check in recalbox.conf
+        //Log::debug(LOGMSG("check_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));"));
+        if(RecalboxConf::Instance().HasKeyStartingWith(Parameter.toUtf8().constData())){
+            check_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),"")));
+        }
+        else
+        {
+            check_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+        }
+
+    }
+}
+
+bool ParametersList::check_parameter(const QString& name)
+{
+    //Log::debug(LOGMSG("ParametersList::check_parameter(const QString& name) name:`%1`").arg(name));
+
+    //clean checked values if needed
+    ListOfCheckedValue.clear();
+    m_current_checked = 0;
+
+    for (size_t idx = 0; idx < m_parameterslist.size(); idx++) {
+        /*
+        Log::debug(LOGMSG("idx:`%1`").arg(idx));
+        Log::debug(LOGMSG("at(idx).name:`%1`").arg(m_parameterslist.at(idx).name));
+        */
+        if (ListOfInternalValue.size() == 0)
+        {
+            if (name.contains(m_parameterslist.at(idx).name)) {
+                ListOfCheckedValue.append(true);
+                m_current_checked = m_current_checked + 1;
+            }
+            else ListOfCheckedValue.append(false);
+        }
+        else // if internal value to check index from recalbox.conf/recalbox-boot.conf stored value
+        {
+            if (name.contains(ListOfInternalValue.at(idx))) {
+                ListOfCheckedValue.append(true);
+                m_current_checked = m_current_checked + 1;
+            }
+            else ListOfCheckedValue.append(false);
+        }
+    }
+    //Log::debug(LOGMSG("ParametersList::check_parameter(const QString& name) / return false / index is set to 0"));
+    //set index to 0 to have any value
+    m_current_idx = 0;
+    return true;
+}
+
+void ParametersList::save_checked_parameter(const bool checked)
+{
+    //set state of checked index
+    ListOfCheckedValue[m_current_idx] = checked;
+    m_current_checked = 0;
+
+    //create string with delimiter "|"
+    QString Value = "";
+
+    if (ListOfInternalValue.size() == 0){
+        for(int i = 0; i < int(m_parameterslist.size()) ; i++){
+            if(ListOfCheckedValue.at(i) == true){
+                if(Value != "") Value = Value + "|" + m_parameterslist.at(i).name;
+                else Value = m_parameterslist.at(i).name;
+                m_current_checked = m_current_checked + 1;
+            }
+        }
+    }
+    else {
+        for(int i = 0; i < int(ListOfInternalValue.size()) ; i++){
+            if(ListOfCheckedValue.at(i) == true){
+                if(Value != "") Value = Value + "|" + ListOfInternalValue.at(i);
+                else Value = ListOfInternalValue.at(i);
+                m_current_checked = m_current_checked + 1;
+            }
+        }
+    }
+
+    //check in recalbox-boot.conf
+    if(m_parameter.contains("boot.", Qt::CaseInsensitive))
+    {
+        QString ParameterBoot = m_parameter;
+        ParameterBoot.replace(QString("boot."), QString(""));
+        //write parameter in recalbox-boot.conf in all cases
+        m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
+        //write recalbox-boot.conf immediately (but don't ask to reboot systematically ;-)
+        m_RecalboxBootConf.Save();
+    }
+    else
+    {
+        //write parameter in recalbox.conf in all cases
+        RecalboxConf::Instance().SetString(m_parameter.toUtf8().constData(), Value.toUtf8().constData());
+    }
+}
+
 int ParametersList::rowCount(const QModelIndex& parent) const
 {
     if (parent.isValid())
@@ -970,6 +1106,21 @@ QVariant ParametersList::data(const QModelIndex& index, int role) const
     }
 }
 
+void ParametersList::setCurrentIndexChecked(bool checked)
+{
+    //Log::warning(LOGMSG("ParametersList::setCurrentIndex(int idx_int) : m_current_idx = %1").arg(m_current_idx));
+    /*const auto idx = static_cast<size_t>(m_current_idx);
+
+    if (m_parameterslist.size() <= idx) {
+        Log::warning(LOGMSG("Invalid parameter checked index #%1").arg(idx));
+        return;
+    }*/
+    // save
+    save_checked_parameter(checked);
+    //Log::debug(LOGMSG("emit checkedChanged();"));
+    emit checkedChanged();
+}
+
 void ParametersList::setCurrentIndex(int idx_int)
 {
     //Log::warning(LOGMSG("ParametersList::setCurrentIndex(int idx_int) : m_current_idx = %1").arg(m_current_idx));
@@ -990,6 +1141,24 @@ void ParametersList::setCurrentIndex(int idx_int)
     emit parameterChanged();
 }
 
+QString ParametersList::currentNameChecked(const QString& Parameter) {
+
+    Log::debug(LOGMSG("QString ParametersList::currentNameChecked(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+
+    if (m_parameter != Parameter)
+    {
+        Log::debug(LOGMSG("m_parameter != Parameter"));
+        //to signal refresh of model's data
+        emit QAbstractItemModel::beginResetModel();
+        m_parameter = Parameter;
+        QStringList EmptyQStringList;
+        m_parameterslist = find_available_parameterslist(Parameter,"",EmptyQStringList);
+        check_preferred_parameter(Parameter);
+        //to signal end of model's data
+        emit QAbstractItemModel::endResetModel();
+    }
+    return QString::number(m_current_checked) + "/" + QString::number(m_parameterslist.size()) + " " + QObject::tr("checked");
+}
 
 QString ParametersList::currentName(const QString& Parameter, const QString& InternalName) {
 
