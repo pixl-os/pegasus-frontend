@@ -11,8 +11,8 @@ FocusScope {
     property alias note: sublabel.text
     property alias value: valueText.text
 
-    property alias rightPointer : rightPointer
-    property alias leftPointer : leftPointer
+    //property alias rightPointer : rightPointer
+    //property alias leftPointer : leftPointer
 
     property var internalvalue
 
@@ -35,12 +35,12 @@ FocusScope {
     Component.onCompleted: {
         //if(firsttime) console.log(labeltext.text," onCurrentIndexChanged (first time)");
         //else console.log(labeltext.text," onCurrentIndexChanged (key pressed)");
-        if(currentIndex < (count - 1)){
+        /*if(currentIndex < (count - 1)){
           rightPointer.visible = true;
         } else rightPointer.visible = false;
         if(currentIndex >=1){
           leftPointer.visible = true
-        } else leftPointer.visible = false;
+        } else leftPointer.visible = false;*/
     }
 
     onCurrentIndexChanged: {
@@ -51,12 +51,12 @@ FocusScope {
             console.log(labeltext.text," onCurrentIndexChanged currentindex : ", currentIndex);
             console.log(labeltext.text," onCurrentIndexChanged value : ", value);
             console.log(labeltext.text," onCurrentIndexChanged internalvalue : ", internalvalue);*/
-            if(currentIndex < (count - 1)){
+            /*if(currentIndex < (count - 1)){
               rightPointer.visible = true;
             } else rightPointer.visible = false;
             if(currentIndex >=1){
               leftPointer.visible = true
-            } else leftPointer.visible = false;
+            } else leftPointer.visible = false;*/
             keypressed = false;
             firsttime = false;
         }
@@ -68,7 +68,7 @@ FocusScope {
             event.accepted = true;
             root.activate();
         }
-        else if (api.keys.isLeft(event) && !event.isAutoRepeat) {
+        /*else if (api.keys.isLeft(event) && !event.isAutoRepeat) {
             event.accepted = true;
             //console.log("MultivalueOption onPressed isLeft index (before) : ", currentIndex)
             //console.log("MultivalueOption onPressed isRight index (before) : ", count)
@@ -94,7 +94,7 @@ FocusScope {
                 //root.select(currentIndex);
                 //console.log("MultivalueOption onPressed isRight index (after) : ", currentIndex)
             }
-        }
+        }*/
     }
 
     Rectangle {
@@ -138,7 +138,7 @@ FocusScope {
         }
     }
 
-    Text {
+    /*Text {
         id: leftPointer
         visible: false
         anchors {
@@ -150,12 +150,12 @@ FocusScope {
         font.pixelSize: vpx(25)
         font.family: globalFonts.ion
         text : "\uf3cf"
-    }
+    }*/
 
     Text {
         id: valueText
 
-        anchors.right: rightPointer.left
+        anchors.right: parent.right
         anchors.rightMargin: vpx(10)
         anchors.top: parent.top
         anchors.topMargin: vpx(14)
@@ -165,7 +165,7 @@ FocusScope {
         property bool firsttime: true
     }
 
-    Text {
+    /*Text {
         id: rightPointer
         visible: false
         anchors {
@@ -177,7 +177,7 @@ FocusScope {
         font.pixelSize: vpx(25)
         font.family: globalFonts.ion
         text : "\uf3d1"
-    }
+    }*/
 
     MouseArea {
         id: mouseArea
