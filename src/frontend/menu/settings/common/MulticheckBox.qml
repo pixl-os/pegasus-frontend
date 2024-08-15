@@ -11,6 +11,7 @@ FocusScope {
 
     property alias model: list.model
     property alias index: list.currentIndex
+    property alias isChecked: list.isChecked
 
     readonly property int textSize: vpx(22)
     readonly property int itemHeight: 2.25 * textSize
@@ -38,10 +39,6 @@ FocusScope {
         }
         else if (api.keys.isAccept(event)) {
             event.accepted = false;
-            //select(index);
-            //triggerClose();
-            //checkbox.checked = !checkbox.checked;
-            //listItem.checkbox.checked = !list.checkbox.checked;
         }
     }
     Component.onCompleted: {
@@ -100,15 +97,15 @@ FocusScope {
                     snapMode: ListView.SnapOneItem
                     highlightMoveDuration: 150
 
+                    property var isChecked: []
+
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
                             var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
                             if (new_idx < 0)
                                 return;
-
                             list.currentIndex = new_idx;
-                            root.select(new_idx);
                         }
                         cursorShape: Qt.PointingHandCursor
                     }
@@ -120,19 +117,16 @@ FocusScope {
         id: listItem
         Rectangle {
             readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
-
             width: ListView.view.width
             height: root.itemHeight
             radius: vpx(8)
             color: highlighted ? themeColor.secondary : themeColor.main
             border.color: highlighted ? themeColor.underline : themeColor.main
 
+
             Keys.onPressed: {
                 if (api.keys.isAccept(event)) {
                     event.accepted = true;
-                    //select(index);
-                    //triggerClose();
-                    //checkbox.checked = !checkbox.checked;
                     checkbox.checked = !checkbox.checked;
                     check(index,checkbox.checked);
                 }
@@ -143,9 +137,9 @@ FocusScope {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 text: " "
-                checked: true // Optional: Set initial checked state
+                checked: list.isChecked[index] // Set initial checked state
                 onCheckedChanged: {
-                    console.log("Label: ",label.text, "Index: ",index, "Checkbox checked: ", checked)
+                    //console.log("Label: ",label.text, "Index: ",index, "Checkbox checked: ", checked)
                 }
             }
 

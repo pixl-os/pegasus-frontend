@@ -44,6 +44,8 @@ public:
 
     //CurrentNameChecked to return string with number of checked values/total
     Q_INVOKABLE  QString currentNameChecked (const QString& Parameter);
+    //to be able to set checkbox state individually
+    Q_INVOKABLE QList<bool> isChecked();
 
 //Variant examples from QML	
 /* Item {

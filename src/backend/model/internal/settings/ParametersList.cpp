@@ -1160,6 +1160,10 @@ QString ParametersList::currentNameChecked(const QString& Parameter) {
     return QString::number(m_current_checked) + "/" + QString::number(m_parameterslist.size()) + " " + QObject::tr("checked");
 }
 
+QList<bool> ParametersList::isChecked() {
+    return ListOfCheckedValue;
+}
+
 QString ParametersList::currentName(const QString& Parameter, const QString& InternalName) {
 
     //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));

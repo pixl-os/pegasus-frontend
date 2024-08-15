@@ -514,6 +514,7 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterscheckBox.parameterName = parameterName;
                         parameterscheckBox.callerid = optRomDirectories;
+                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
                         parameterscheckBox.model = api.internal.recalbox.parameterslist;
@@ -530,6 +531,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndexChecked = checked;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentCheckName(parameterName);
+                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
                     }
 
                     onFocusChanged:{
@@ -537,6 +539,7 @@ FocusScope {
                             api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
                             currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                             count = api.internal.recalbox.parameterslist.count;
+                            parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
                         }
                         container.onFocus(this)
                     }
@@ -891,6 +894,8 @@ FocusScope {
         model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
+
+        isChecked: api.internal.recalbox.parameterslist.isChecked()
 
         onClose: content.focus = true
         onCheck: {

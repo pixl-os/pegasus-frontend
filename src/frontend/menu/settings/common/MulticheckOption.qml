@@ -11,9 +11,6 @@ FocusScope {
     property alias note: sublabel.text
     property alias value: valueText.text
 
-    //property alias rightPointer : rightPointer
-    //property alias leftPointer : leftPointer
-
     property var internalvalue
 
     property bool keypressed: false
@@ -33,68 +30,21 @@ FocusScope {
     height: labelContainer.height + fontSize * 1.25
 
     Component.onCompleted: {
-        //if(firsttime) console.log(labeltext.text," onCurrentIndexChanged (first time)");
-        //else console.log(labeltext.text," onCurrentIndexChanged (key pressed)");
-        /*if(currentIndex < (count - 1)){
-          rightPointer.visible = true;
-        } else rightPointer.visible = false;
-        if(currentIndex >=1){
-          leftPointer.visible = true
-        } else leftPointer.visible = false;*/
     }
 
     onCurrentIndexChanged: {
         if(keypressed || firsttime){
-            /*if(firsttime) console.log(labeltext.text," onCurrentIndexChanged (first time)");
-            else console.log(labeltext.text," onCurrentIndexChanged (key pressed)");
-            console.log(labeltext.text," onCurrentIndexChanged count : ", count);
-            console.log(labeltext.text," onCurrentIndexChanged currentindex : ", currentIndex);
-            console.log(labeltext.text," onCurrentIndexChanged value : ", value);
-            console.log(labeltext.text," onCurrentIndexChanged internalvalue : ", internalvalue);*/
-            /*if(currentIndex < (count - 1)){
-              rightPointer.visible = true;
-            } else rightPointer.visible = false;
-            if(currentIndex >=1){
-              leftPointer.visible = true
-            } else leftPointer.visible = false;*/
             keypressed = false;
             firsttime = false;
         }
     }
 
     Keys.onPressed: {
-        //console.log("MultivalueOption onPressed of ", labeltext.text)
+        //console.log("MulticheckOption onPressed of ", labeltext.text)
         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
             event.accepted = true;
             root.activate();
         }
-        /*else if (api.keys.isLeft(event) && !event.isAutoRepeat) {
-            event.accepted = true;
-            //console.log("MultivalueOption onPressed isLeft index (before) : ", currentIndex)
-            //console.log("MultivalueOption onPressed isRight index (before) : ", count)
-            //to update index of parameterlist QAbstractList
-            if(currentIndex >=1){
-                keypressed = true;
-                //to update index of parameterlist QAbstractList
-                currentIndex = currentIndex - 1;
-                //to force update of display of selected value
-                //root.select(currentIndex);
-                //console.log("MultivalueOption onPressed isLeft index (after) : ", currentIndex)
-            }
-        }
-        else if (api.keys.isRight(event) && !event.isAutoRepeat) {
-            event.accepted = true;
-            //console.log("MultivalueOption onPressed isRight index (before) : ", currentIndex)
-            //console.log("MultivalueOption onPressed isRight count (before) : ", count)
-            if(currentIndex < (count - 1)){
-                keypressed = true;
-                //to update index of parameterlist QAbstractList
-                currentIndex = currentIndex + 1;
-                //to force update of display of selected value
-                //root.select(currentIndex);
-                //console.log("MultivalueOption onPressed isRight index (after) : ", currentIndex)
-            }
-        }*/
     }
 
     Rectangle {
@@ -138,20 +88,6 @@ FocusScope {
         }
     }
 
-    /*Text {
-        id: leftPointer
-        visible: false
-        anchors {
-            rightMargin: vpx(10)
-            right: valueText.left
-            verticalCenter: valueText.verticalCenter
-        }
-        color: themeColor.underline
-        font.pixelSize: vpx(25)
-        font.family: globalFonts.ion
-        text : "\uf3cf"
-    }*/
-
     Text {
         id: valueText
 
@@ -164,20 +100,6 @@ FocusScope {
         font.family: globalFonts.sans
         property bool firsttime: true
     }
-
-    /*Text {
-        id: rightPointer
-        visible: false
-        anchors {
-            rightMargin: horizontalPadding
-            right: parent.right
-            verticalCenter: valueText.verticalCenter
-        }
-        color: themeColor.underline
-        font.pixelSize: vpx(25)
-        font.family: globalFonts.ion
-        text : "\uf3d1"
-    }*/
 
     MouseArea {
         id: mouseArea
