@@ -16,7 +16,7 @@ FocusScope {
     readonly property int itemHeight: 2.25 * textSize
 
     signal close
-    signal select(int index)
+    signal check(int index, bool checked)
 
     onFocusChanged: if (focus) root.state = "open";
     function triggerClose() {
@@ -129,11 +129,12 @@ FocusScope {
 
             Keys.onPressed: {
                 if (api.keys.isAccept(event)) {
-                    event.accepted = false;
+                    event.accepted = true;
                     //select(index);
                     //triggerClose();
                     //checkbox.checked = !checkbox.checked;
                     checkbox.checked = !checkbox.checked;
+                    check(index,checkbox.checked);
                 }
             }
 
@@ -144,7 +145,7 @@ FocusScope {
                 text: " "
                 checked: true // Optional: Set initial checked state
                 onCheckedChanged: {
-                    console.log("Checkbox checked:", checked)
+                    console.log("Label: ",label.text, "Index: ",index, "Checkbox checked: ", checked)
                 }
             }
 

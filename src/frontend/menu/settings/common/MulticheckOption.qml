@@ -27,7 +27,7 @@ FocusScope {
     property int horizontalPadding: vpx(30)
 
     signal activate()
-    signal select(int index)
+    signal check(int index, bool checked)
 
     width: parent.width
     height: labelContainer.height + fontSize * 1.25
@@ -78,7 +78,7 @@ FocusScope {
                 //to update index of parameterlist QAbstractList
                 currentIndex = currentIndex - 1;
                 //to force update of display of selected value
-                root.select(currentIndex);
+                //root.select(currentIndex);
                 //console.log("MultivalueOption onPressed isLeft index (after) : ", currentIndex)
             }
         }
@@ -91,7 +91,7 @@ FocusScope {
                 //to update index of parameterlist QAbstractList
                 currentIndex = currentIndex + 1;
                 //to force update of display of selected value
-                root.select(currentIndex);
+                //root.select(currentIndex);
                 //console.log("MultivalueOption onPressed isRight index (after) : ", currentIndex)
             }
         }

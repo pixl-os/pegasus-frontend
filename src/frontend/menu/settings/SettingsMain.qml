@@ -493,7 +493,6 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    // KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optRomDirectories
                 }
 
@@ -506,7 +505,7 @@ FocusScope {
                     label: qsTr("ROMS directories") + api.tr
                     note: qsTr("select ROMS directories to take into account (all selected by default)") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -516,32 +515,32 @@ FocusScope {
                         parameterscheckBox.parameterName = parameterName;
                         parameterscheckBox.callerid = optRomDirectories;
                         //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
                         parameterscheckBox.model = api.internal.recalbox.parameterslist;
                         parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterscheckBox.focus = true;
                     }
 
-                    onSelect: {
+                    onCheck: {
                         //to force to be on the good parameter selected
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         //to update index of parameterlist QAbstractList
                         api.internal.recalbox.parameterslist.currentIndex = index;
+                        api.internal.recalbox.parameterslist.currentIndexChecked = checked;
                         //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        value = api.internal.recalbox.parameterslist.currentCheckName(parameterName);
                     }
 
                     onFocusChanged:{
                         if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
                             currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                             count = api.internal.recalbox.parameterslist.count;
                         }
                         container.onFocus(this)
                     }
 
-                    // KeyNavigation.down: optStorageCapacity
                     KeyNavigation.down: optEthernet
                 }
 
@@ -894,14 +893,16 @@ FocusScope {
         index: api.internal.recalbox.parameterslist.currentIndex
 
         onClose: content.focus = true
-        onSelect: {
+        onCheck: {
+            console.log("parameterscheckBox::onCheck index : ", index, " checked : ", checked);
             callerid.keypressed = true;
             //to use the good parameter
-            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
+            api.internal.recalbox.parameterslist.currentIndexChecked = checked;
             //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.value = api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
         }
