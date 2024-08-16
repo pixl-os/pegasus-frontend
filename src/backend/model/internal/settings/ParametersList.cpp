@@ -1149,11 +1149,11 @@ void ParametersList::setCurrentIndex(int idx_int)
 
 QString ParametersList::currentNameChecked(const QString& Parameter) {
 
-    Log::debug(LOGMSG("QString ParametersList::currentNameChecked(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+    //Log::debug(LOGMSG("QString ParametersList::currentNameChecked(const QString& Parameter) - parameter: `%1`").arg(Parameter));
 
     if (m_parameter != Parameter)
     {
-        Log::debug(LOGMSG("m_parameter != Parameter"));
+        //Log::debug(LOGMSG("m_parameter != Parameter"));
         //to signal refresh of model's data
         emit QAbstractItemModel::beginResetModel();
         m_parameter = Parameter;
