@@ -271,5 +271,6 @@
         <file>menu/settings/common/SliderVertical.qml</file>
         <file>menu/settings/common/MulticheckBox.qml</file>
         <file>menu/settings/common/MulticheckOption.qml</file>
+        <file>menu/settings/AdvancedDirectoriesConf.qml</file>
     </qresource>
 </RCC>

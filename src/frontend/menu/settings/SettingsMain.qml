@@ -27,10 +27,7 @@ FocusScope {
     signal openVideoSettings
     signal openInformationSystem
     signal openWifiNetworks
-    /*signal openKeySettings
-        signal openGamepadSettings
-        signal openGameDirSettings
-        signal openProviderSettings*/
+    signal openAdvancedDirectoriesConfiguration
 
     width: parent.width
     height: parent.height
@@ -493,60 +490,23 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optRomDirectories
+                    KeyNavigation.down: optAdvancedDirectories
                 }
+                SimpleButton {
+                    id: optAdvancedDirectories
 
-                MulticheckOption {
-                    id: optRomDirectories
-
-                    //property to manage parameter name
-                    property string parameterName : "directories.roms"
-
-                    label: qsTr("ROMS directories") + api.tr
-                    note: qsTr("select ROMS directories to take into account (all selected by default)") + api.tr
-
-                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    label: qsTr("Advanced directories configuration") + api.tr
+                    note: qsTr("Choose your directorires to take into account if needed") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
 
                     onActivate: {
-                        //for callback by parameterslistBox
-                        parameterscheckBox.parameterName = parameterName;
-                        parameterscheckBox.callerid = optRomDirectories;
-                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
-                        parameterscheckBox.model = api.internal.recalbox.parameterslist;
-                        parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterscheckBox.focus = true;
+                        focus = true;
+                        root.openAdvancedDirectoriesConfiguration();
                     }
-
-                    onCheck: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        api.internal.recalbox.parameterslist.currentIndexChecked = checked;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentCheckName(parameterName);
-                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                            parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
-                        }
-                        container.onFocus(this)
-                    }
-
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optEthernet
                 }
-
                 SectionTitle {
                     text: qsTr("Networks") + api.tr
                     first: true
@@ -878,38 +838,6 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
             }
-        }
-    }
-
-
-    MulticheckBox {
-        id: parameterscheckBox
-        z: 3
-
-        //properties to manage parameter
-        property string parameterName
-        property MulticheckOption callerid
-
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
-        //to use index from parameterlist QAbstractList
-        index: api.internal.recalbox.parameterslist.currentIndex
-
-        isChecked: api.internal.recalbox.parameterslist.isChecked()
-
-        onClose: content.focus = true
-        onCheck: {
-            console.log("parameterscheckBox::onCheck index : ", index, " checked : ", checked);
-            callerid.keypressed = true;
-            //to use the good parameter
-            api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
-            //to update index of parameterlist QAbstractList
-            api.internal.recalbox.parameterslist.currentIndex = index;
-            api.internal.recalbox.parameterslist.currentIndexChecked = checked;
-            //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
-            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
 
