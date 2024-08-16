@@ -107,17 +107,6 @@ FocusScope {
                         parameterscheckBox.focus = true;
                     }
 
-                    onCheck: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        api.internal.recalbox.parameterslist.currentIndexChecked = checked;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentCheckName(parameterName);
-                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
-                    }
-
                     onFocusChanged:{
                         if(focus){
                             api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
@@ -156,17 +145,6 @@ FocusScope {
                         parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterscheckBox
                         parameterscheckBox.focus = true;
-                    }
-
-                    onCheck: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        api.internal.recalbox.parameterslist.currentIndexChecked = checked;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentCheckName(parameterName);
-                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
                     }
 
                     onFocusChanged:{
@@ -217,6 +195,9 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+            //need to restart to take change into account !
+            //console.log("needRestart");
+            needRestart = true;
         }
     }
 

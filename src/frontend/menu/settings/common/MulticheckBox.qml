@@ -137,7 +137,7 @@ FocusScope {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 text: " "
-                checked: list.isChecked[index] // Set initial checked state
+                checked: typeof(list.isChecked[index]) !== "undefined" ? list.isChecked[index] : true // Set initial checked state
                 onCheckedChanged: {
                     //console.log("Label: ",label.text, "Index: ",index, "Checkbox checked: ", checked)
                 }
