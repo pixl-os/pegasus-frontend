@@ -728,6 +728,12 @@ QStringList GetParametersList(QString Parameter)
         //romsDirs
         ListOfValue = paths::romsDirs();
     }
+    //to manage/select THEMES directories
+    else if (Parameter == "directories.themes")
+    {
+        //thelesDirs
+        ListOfValue = paths::themesDirs();
+    }
     else
     {
         ListOfValue << QString("error: Parameters list for '%1' not found").arg(Parameter);
@@ -1157,7 +1163,7 @@ QString ParametersList::currentNameChecked(const QString& Parameter) {
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
     }
-    return QString::number(m_current_checked) + "/" + QString::number(m_parameterslist.size()) + " " + QObject::tr("checked");
+    return QString::number(m_current_checked) + "/" + QString::number(m_parameterslist.size()) + " " + QObject::tr("selected");
 }
 
 QList<bool> ParametersList::isChecked() {

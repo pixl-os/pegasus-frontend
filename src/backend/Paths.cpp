@@ -128,17 +128,61 @@ QStringList configDirs()
 QStringList themesDirs()
 {
     static const QStringList themes_dir_paths = [](){
-        QStringList paths(QLatin1String(""));
-        const QString local_themes_dir = QCoreApplication::applicationDirPath()
+        QStringList paths;
+
+        //depreacated
+        // (QLatin1String(""));
+        /*const QString local_themes_dir = QCoreApplication::applicationDirPath()
                                        + QStringLiteral("/themes");
         if (QFileInfo::exists(local_themes_dir))
-            paths << local_themes_dir;
+            paths << local_themes_dir;*/
 
         //add recalbox share root in themsDirs
         paths.append("/recalbox/share/themes");
 
         //add recalbox share init root in themsDirs
         paths.append("/recalbox/share_init/themes");
+
+        // Define an array of directory paths (QStringList is preferred for paths)
+        QStringList Paths = {
+            "/pixl/themes",
+            "/themes",
+            "/recalbox/themes",
+        };
+
+        //if external USB are not hidden
+        if(!RecalboxConf::Instance().AsBool("pegasus.external.themes.ignored")){
+            //add recalbox share externals for USB
+            for(int i=0; i <= 7; i++){
+                QString directoryPath = "/recalbox/share/externals/usb" + QString::number(i);
+                // Iterate through the directory paths
+                for (const QString& Path : Paths) {
+                    QString fullPath = directoryPath + Path;
+                    QDir dir(fullPath);
+                    // Check if the directory exists
+                    if (dir.exists()) {
+                        paths.append(fullPath);
+                    }
+                }
+            }
+        }
+
+        //if internal DRIVE are not hidden
+        if(!RecalboxConf::Instance().AsBool("pegasus.internal.themes.ignored")){
+            //add recalbox share internals for DRIVE
+            for(int i=0; i <= 7; i++){
+                QString directoryPath = "/recalbox/share/internals/drive" + QString::number(i);
+                // Iterate through the directory paths
+                for (const QString& Path : Paths) {
+                    QString fullPath = directoryPath + Path;
+                    QDir dir(fullPath);
+                    // Check if the directory exists
+                    if (dir.exists()) {
+                        paths.append(fullPath);
+                    }
+                }
+            }
+        }
 
         paths.removeDuplicates();
         return paths;
@@ -169,20 +213,20 @@ QStringList romsDirs()
         }
 
         // Define an array of directory paths (QStringList is preferred for paths)
-        QStringList romPaths = {
+        QStringList Paths = {
             "/pixl/roms",
             "/roms",
             "/recalbox/roms",
         };
 
-        //if games from USB are not hidden
-        if(!RecalboxConf::Instance().AsBool("pegasus.external.games.ignored")){
-            //add recalbox share externals for USB in romsDirs
+        //if external USB are not hidden
+        if(!RecalboxConf::Instance().AsBool("pegasus.external.roms.ignored")){
+            //add recalbox share externals for USB
             for(int i=0; i <= 7; i++){
                 QString directoryPath = "/recalbox/share/externals/usb" + QString::number(i);
                 // Iterate through the directory paths
-                for (const QString& romPath : romPaths) {
-                    QString fullPath = directoryPath + romPath;
+                for (const QString& Path : Paths) {
+                    QString fullPath = directoryPath + Path;
                     QDir dir(fullPath);
                     // Check if the directory exists
                     if (dir.exists()) {
@@ -192,14 +236,14 @@ QStringList romsDirs()
             }
         }
 
-        //if games from internal DRIVE are not hidden
-        if(!RecalboxConf::Instance().AsBool("pegasus.internal.games.ignored")){
-            //add recalbox share internals for DRIVE in romsDirs
+        //if internal DRIVE are not hidden
+        if(!RecalboxConf::Instance().AsBool("pegasus.internal.roms.ignored")){
+            //add recalbox share internals for DRIVE
             for(int i=0; i <= 7; i++){
                 QString directoryPath = "/recalbox/share/internals/drive" + QString::number(i);
                 // Iterate through the directory paths
-                for (const QString& romPath : romPaths) {
-                    QString fullPath = directoryPath + romPath;
+                for (const QString& Path : Paths) {
+                    QString fullPath = directoryPath + Path;
                     QDir dir(fullPath);
                     // Check if the directory exists
                     if (dir.exists()) {
