@@ -34,6 +34,9 @@
 #include <QCoreApplication>
 
 namespace {
+
+QStringList roms_dirs;
+
 std::vector<QString> default_config_paths()
 {
     QString shareInitPath = paths::homePath() % QStringLiteral("/.pegasus-frontend/");
@@ -51,7 +54,11 @@ std::vector<QString> default_config_paths()
 //additional function to manage romsDirs to keep/exclude
 QStringList roms_directories()
 {
-    QStringList roms_dirs = paths::romsDirs();
+    //to do it only one time by instance
+    if(roms_dirs.isEmpty()){
+       Log::debug(LOGMSG("Roms: parsing directories..."));
+       roms_dirs = paths::romsDirs();
+    }
     return roms_dirs;
 }
 

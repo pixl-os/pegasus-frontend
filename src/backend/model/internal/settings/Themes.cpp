@@ -30,9 +30,15 @@
 
 
 namespace {
+
+QStringList theme_dirs;
+
 QStringList theme_directories()
 {
-    QStringList theme_dirs = paths::themesDirs();
+    if(theme_dirs.isEmpty()){
+        Log::debug(LOGMSG("Themes: parsing directories..."));
+        theme_dirs = paths::themesDirs();
+    }
     return theme_dirs;
 }
 
