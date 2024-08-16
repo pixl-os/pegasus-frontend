@@ -48,6 +48,13 @@ std::vector<QString> default_config_paths()
     };
 }
 
+//additional function to manage romsDirs to keep/exclude
+QStringList roms_directories()
+{
+    QStringList roms_dirs = paths::romsDirs();
+    return roms_dirs;
+}
+
 } // namespace
 
 
@@ -101,7 +108,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
             Log::debug(display_name(), LOGMSG("System `%1` provided %2 system videos")
             .arg(sysentry.name, QString::number(found_videos)));
 
-            for(const QString& romsDir : paths::romsDirs()){
+            for(const QString& romsDir : roms_directories()){
                 QString share_path = sysentry.path ;
                 share_path = share_path.replace("%ROOT%",romsDir);
                 const QDir xml_dir(share_path);
@@ -147,7 +154,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
     assets_timer.start();
     //unlock file system temporary to permit to store updates during asset parsing (as generation of media.xml from share_init for example)
     if (system("mount -o remount,rw /") != 0) Log::error(LOGMSG("Issue to provide read/write on '/'"));
-    for(const QString& romsDir : paths::romsDirs()){
+    for(const QString& romsDir : roms_directories()){
         if(romsDir.contains("/share_init/")){
             //unlock file system temporary to permit to store updates during asset parsing (as generation of media.xml from share_init for example)
             if (system("mount -o remount,rw /") != 0) Log::error(LOGMSG("Issue to provide read/write on '/'"));
