@@ -36,6 +36,30 @@ QStringList themesDirs();
 /// Returns the directory paths where roms could be located
 QStringList romsDirs();
 
+/// Returns the directory paths where saves may be located
+QStringList savesDirs();
+
+/// Returns the directory paths where bios may be located
+QStringList biosDirs();
+
+/// Returns the directory paths where music may be located
+QStringList musicDirs();
+
+/// Returns the directory paths where bios overlays be located
+QStringList overlaysDirs();
+
+/// Returns the directory paths where screenshots may be located
+QStringList screenshotsDirs();
+
+/// Returns the directory paths where shaders may be located
+QStringList shadersDirs();
+
+/// Returns the directory paths where userscripts may be located
+QStringList userscriptsDirs();
+
+/// Returns the directory paths where videos may be located
+QStringList videosDirs();
+
 /// Returns a directory path where persistent data could be stored
 QString writableConfigDir();
 
