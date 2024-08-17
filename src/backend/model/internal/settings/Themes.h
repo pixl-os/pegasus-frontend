@@ -63,9 +63,9 @@ public:
 
     int currentIndex() const { return static_cast<int>(m_current_idx); }
     void setCurrentIndex(int);
-    QString currentName() const { return m_themes.at(m_current_idx).version.isEmpty() ? m_themes.at(m_current_idx).name : (m_themes.at(m_current_idx).name + " - " + m_themes.at(m_current_idx).version); }
-    QString currentQmlDir() const { return m_themes.at(m_current_idx).root_dir; }
-    QString currentQmlPath() const { return m_themes.at(m_current_idx).root_qml; }
+    QString currentName() const { if(m_themes.size() > 0) return m_themes.at(m_current_idx).version.isEmpty() ? m_themes.at(m_current_idx).name : (m_themes.at(m_current_idx).name + " - " + m_themes.at(m_current_idx).version); else return "";}
+    QString currentQmlDir() const { if(m_themes.size() > 0) return m_themes.at(m_current_idx).root_dir; else return "";}
+    QString currentQmlPath() const { if(m_themes.size() > 0) return m_themes.at(m_current_idx).root_qml; else return "";}
 
 signals:
     void themeChanged();
