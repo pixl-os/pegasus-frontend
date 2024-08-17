@@ -165,6 +165,19 @@ QStringList themesDirs()
                     }
                 }
             }
+            //add recalbox share externals for NETWORK
+            for(int i=0; i <= 3; i++){
+                QString directoryPath = "/recalbox/share/externals/network" + QString::number(i);
+                // Iterate through the directory paths
+                for (const QString& Path : Paths) {
+                    QString fullPath = directoryPath + Path;
+                    QDir dir(fullPath);
+                    // Check if the directory exists
+                    if (dir.exists()) {
+                        paths.append(fullPath);
+                    }
+                }
+            }
         }
 
         //if internal DRIVE are not hidden
