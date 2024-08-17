@@ -1604,6 +1604,11 @@ Window {
             return "";
         if (api.collections.count === 0)
             return "messages/NoGamesError.qml";
+        var themePath = "";
+        themePath = content.apiThemePath.toString();
+        if(!themePath.includes("theme.qml")){
+            return "messages/ThemeError.qml";
+        }
         return content.apiThemePath;
     }
 

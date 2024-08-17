@@ -54,10 +54,19 @@ std::vector<QString> default_config_paths()
 //additional function to manage romsDirs to keep/exclude
 QStringList roms_directories()
 {
-    //to do it only one time by instance
+    //to do it only one time by instance (or if empty)
     if(roms_dirs.isEmpty()){
        Log::debug(LOGMSG("Roms: parsing directories..."));
-       roms_dirs = paths::romsDirs();
+        QString Parameter = "directories.roms";
+        if(RecalboxConf::Instance().HasKeyStartingWith(Parameter.toUtf8().constData())){
+            QString ListOfValue = QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),""));
+            //if empty, nothing will be added (take care ;-)
+            for(const QString& romsDir : paths::romsDirs())
+            {
+                if(ListOfValue.contains(romsDir)) roms_dirs.append(romsDir);
+            }
+        }
+        else roms_dirs = paths::romsDirs();
     }
     return roms_dirs;
 }

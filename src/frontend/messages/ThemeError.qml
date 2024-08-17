@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+//updated for pixL: 16/08/2024
 
 import QtQuick 2.12
 
@@ -21,8 +22,11 @@ import QtQuick 2.12
 Error {
     title: qsTr("Theme loading failed :(") + api.tr
     details: qsTr("Pegasus tried to load the selected theme (%1), but failed."
-                + " This may happen when you try to load an outdated theme, or when"
-                + " there's a bug in its code.")
+                + " This may happen when you try to load an outdated theme, theme is missing/not accessible, or when"
+                + " there's a bug in its code."
+                + "<br>"
+                + " Click on 'Start' from controller buttons,"
+                + " or 'F1' from keyboard keys to load menu and change settings if necessary."  )
             .arg(api.internal.settings.themes.currentName)
             + api.tr
     instruction: qsTr("For now, please select a different theme from the main menu.") + api.tr

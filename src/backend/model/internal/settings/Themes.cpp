@@ -28,6 +28,8 @@
 #include <QStringBuilder>
 #include <QUrl>
 
+//For recalbox
+#include "RecalboxConf.h"
 
 namespace {
 
@@ -35,9 +37,19 @@ QStringList theme_dirs;
 
 QStringList theme_directories()
 {
+    //to do it only one time by instance (or if empty)
     if(theme_dirs.isEmpty()){
         Log::debug(LOGMSG("Themes: parsing directories..."));
-        theme_dirs = paths::themesDirs();
+        QString Parameter = "directories.themes";
+        if(RecalboxConf::Instance().HasKeyStartingWith(Parameter.toUtf8().constData())){
+            QString ListOfValue = QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),""));
+            //if empty, nothing will be added (take care ;-)
+            for(const QString& themesDir : paths::themesDirs())
+            {
+                if(ListOfValue.contains(themesDir)) theme_dirs.append(themesDir);
+            }
+        }
+        else theme_dirs = paths::themesDirs();
     }
     return theme_dirs;
 }
@@ -174,8 +186,6 @@ void Themes::select_preferred_theme()
     // B. Fall back to the built-in theme
     if (select_theme(AppSettings::general.DEFAULT_THEME))
         return;
-
-    Q_UNREACHABLE();
 }
 
 bool Themes::select_theme(const QString& root_dir)
@@ -191,17 +201,19 @@ bool Themes::select_theme(const QString& root_dir)
             return true;
         }
     }
-
+    m_current_idx = 0;
     Log::warning(LOGMSG("Requested theme `%1` not found, falling back to default").arg(::pretty_path(root_finfo)));
     return false;
 }
 
 void Themes::print_change() const
 {
-    const auto& current = m_themes.at(m_current_idx);
-
-    Log::info(LOGMSG("Theme set to `%1` (`%2`)")
-        .arg(current.name, current.root_dir));
+    //Log::debug(LOGMSG("void Themes::print_change() const"));
+    if(m_themes.size() >  m_current_idx){
+        const auto& current = m_themes.at(m_current_idx);
+        Log::info(LOGMSG("Theme set to `%1` (`%2`)")
+                      .arg(current.name, current.root_dir));}
+    else Log::error(LOGMSG("Theme not avaialble to index `%1`").arg(m_current_idx));
 }
 
 int Themes::rowCount(const QModelIndex& parent) const
