@@ -731,8 +731,56 @@ QStringList GetParametersList(QString Parameter)
     //to manage/select THEMES directories
     else if (Parameter == "directories.themes")
     {
-        //thelesDirs
+        //themesDirs
         ListOfValue = paths::themesDirs();
+    }
+    //to manage/select SAVES directory
+    else if (Parameter == "directory.saves")
+    {
+        //savesDirs
+        ListOfValue = paths::savesDirs();
+    }
+    //to manage/select BIOS directory
+    else if (Parameter == "directory.bios")
+    {
+        //biosDirs
+        ListOfValue = paths::biosDirs();
+    }
+    //to manage/select MUSIC directory
+    else if (Parameter == "directory.music")
+    {
+        //musicDirs
+        ListOfValue = paths::musicDirs();
+    }
+    //to manage/select OVERLAYS directory
+    else if (Parameter == "directory.overlays")
+    {
+        //overlaysDirs
+        ListOfValue = paths::overlaysDirs();
+    }
+    //to manage/select SCREENSHOTS directory
+    else if (Parameter == "directory.screenshots")
+    {
+        //screenshotsDirs
+        ListOfValue = paths::screenshotsDirs();
+    }
+    //to manage/select SHADERS directory
+    else if (Parameter == "directory.shaders")
+    {
+        //shadersDirs
+        ListOfValue = paths::shadersDirs();
+    }
+    //to manage/select USERSCRIPTS directory
+    else if (Parameter == "directory.userscripts")
+    {
+        //userscriptsDirs
+        ListOfValue = paths::userscriptsDirs();
+    }
+    //to manage/select VIDEOS directory
+    else if (Parameter == "directory.videos")
+    {
+        //videosDirs
+        ListOfValue = paths::videosDirs();
     }
     else
     {
