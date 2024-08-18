@@ -118,6 +118,12 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanlines");
         ListOfInternalValue << "none" << "retro" << "scanlines";
     }
+    //to manage/select SHADERS directory
+    else if (Parameter == "directory.shaders")
+    {
+        //shadersDirs
+        ListOfValue = paths::shadersDirs();
+    }
     else if (Parameter.endsWith(".shaders", Qt::CaseInsensitive) == true)
     {
         /*
@@ -763,12 +769,6 @@ QStringList GetParametersList(QString Parameter)
     {
         //screenshotsDirs
         ListOfValue = paths::screenshotsDirs();
-    }
-    //to manage/select SHADERS directory
-    else if (Parameter == "directory.shaders")
-    {
-        //shadersDirs
-        ListOfValue = paths::shadersDirs();
     }
     //to manage/select USERSCRIPTS directory
     else if (Parameter == "directory.userscripts")
