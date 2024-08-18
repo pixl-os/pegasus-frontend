@@ -7,7 +7,40 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 
 FocusScope {
+
     id: root
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: confirmDialog.item
+        function onAccept() {
+            //mount/remount
+            if (!isDebugEnv()){
+                //umount first in all cases
+                console.log("umount command : ","umount " + parameterslistBox.target);
+                api.internal.system.run("umount " + parameterslistBox.target);
+                //check that is not the default value
+                if(parameterslistBox.target !== parameterslistBox.callerid.value){
+                    api.internal.system.run("sleep 1");
+                    console.log("mount command : ", "mount --bind " + parameterslistBox.callerid.value + " " + parameterslistBox.target);
+                    api.internal.system.run("mount --bind " + parameterslistBox.callerid.value + " " + parameterslistBox.target);
+                }
+            }
+            else{//for debug and just see spinner
+                api.internal.system.run("sleep 2");
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
+        }
+    }
 
     signal close
 
@@ -105,6 +138,8 @@ FocusScope {
                         parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterscheckBox
                         parameterscheckBox.focus = true;
+                        //to save previous value and know if we need restart or not finally
+                        parameterscheckBox.previousValue = api.internal.recalbox.getStringParameter(parameterName)
                     }
 
                     onFocusChanged:{
@@ -145,6 +180,8 @@ FocusScope {
                         parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterscheckBox
                         parameterscheckBox.focus = true;
+                        //to save previous value and know if we need restart or not finally
+                        parameterscheckBox.previousValue = api.internal.recalbox.getStringParameter(parameterName)
                     }
 
                     onFocusChanged:{
@@ -178,21 +215,14 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optBiosDirectory;
+                        //to precise target if changed to be able to mount immediately
+                        parameterslistBox.target = "/recalbox/share/bios"
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -233,15 +263,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
 
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
                     onFocusChanged:{
                         if(focus){
                             api.internal.recalbox.parameterslist.currentName(parameterName);
@@ -278,15 +299,6 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -327,15 +339,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
 
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
                     onFocusChanged:{
                         if(focus){
                             api.internal.recalbox.parameterslist.currentName(parameterName);
@@ -374,15 +377,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
 
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
                     onFocusChanged:{
                         if(focus){
                             api.internal.recalbox.parameterslist.currentName(parameterName);
@@ -419,15 +413,6 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -469,15 +454,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
 
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
                     onFocusChanged:{
                         if(focus){
                             api.internal.recalbox.parameterslist.currentName(parameterName);
@@ -515,15 +491,6 @@ FocusScope {
                         parameterslistBox.focus = true;
                     }
 
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
                     onFocusChanged:{
                         if(focus){
                             api.internal.recalbox.parameterslist.currentName(parameterName);
@@ -550,6 +517,7 @@ FocusScope {
 
         //properties to manage parameter
         property string parameterName
+        property string previousValue
         property MulticheckOption callerid
 
         //reuse same model
@@ -559,7 +527,15 @@ FocusScope {
         //to load "checked" status for each indexes
         isChecked: api.internal.recalbox.parameterslist.isChecked()
 
-        onClose: content.focus = true
+        onClose: {
+            content.focus = true
+            //check if need to restart to take change into account !
+            if(previousValue !== api.internal.recalbox.getStringParameter(parameterName)){
+                console.log("needRestart");
+                needRestart = true;
+            }
+        }
+
         onCheck: {
             //console.log("parameterscheckBox::onCheck index : ", index, " checked : ", checked);
             callerid.keypressed = true;
@@ -572,9 +548,6 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
-            //need to restart to take change into account !
-            //console.log("needRestart");
-            needRestart = true;
         }
     }
 
@@ -585,14 +558,39 @@ FocusScope {
         //properties to manage parameter
         property string parameterName
         property MultivalueOption callerid
+        property string target
+        property string previous: ""
 
         //reuse same model
         model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
 
-        onClose: content.focus = true
+        onClose: {
+            content.focus = true
+            console.log("previous value : ", previous);
+            console.log("new value : ", callerid.value);
+            if (previous !== callerid.value ) {
+                //if different we could propose to remount this directory
+                //force save in recalbox.conf file before to execute anything in this case
+                api.internal.recalbox.saveParameters();
+                //to force change of focus
+                confirmDialog.focus = false;
+                confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                        { "title": qsTr("Mount directory") + api.tr,
+                                          "message": qsTr("Do you want to mount immediately") + "<br>'" + callerid.value + "'<br>" + qsTr("as") + "<br>" + callerid.label + " ?" + api.tr,
+                                          "symbol": "",
+                                          "symbolfont" : global.fonts.awesome,
+                                          "firstchoice": qsTr("Yes") + api.tr,
+                                          "secondchoice": "",
+                                          "thirdchoice": qsTr("No") + api.tr});
+                //to force change of focus
+                confirmDialog.focus = true;
+            }
+        }
+
         onSelect: {
+            previous = callerid.value;
             callerid.keypressed = true;
             //to use the good parameter
             api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
