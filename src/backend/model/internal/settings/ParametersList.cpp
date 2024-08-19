@@ -678,7 +678,12 @@ QStringList GetParametersList(QString Parameter)
                 ListOfValue.append(QString::fromStdString(device.DisplayName));
             }
             Log::debug(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
-            ListOfInternalValue.append(QString::fromStdString(device.UUID));
+            if(QString::fromStdString(device.DisplayName).contains("Internal SHARE")){
+                ListOfInternalValue.append(QString::fromStdString("INTERNAL"));
+            }
+            else{
+                ListOfInternalValue.append(QString::fromStdString(device.UUID));
+            }
         }
     }
     else if (Parameter.endsWith(".core", Qt::CaseInsensitive) == true) // compatible with all systems
