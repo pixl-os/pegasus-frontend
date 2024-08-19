@@ -215,6 +215,8 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optBiosDirectory;
+                        //to have previous one
+                        parameterslistBox.previous = value;
                         //to precise target if changed to be able to mount immediately
                         parameterslistBox.target = "/recalbox/share/bios"
                         //to force update of list of parameters
@@ -255,6 +257,10 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optSavesDirectory;
+                        //to have previous one
+                        parameterslistBox.previous = value;
+                        //to precise target if changed to be able to mount immediately
+                        parameterslistBox.target = "/recalbox/share/saves"
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -293,6 +299,10 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optOverlaysDirectory;
+                        //to have previous one
+                        parameterslistBox.previous = value;
+                        //to precise target if changed to be able to mount immediately
+                        parameterslistBox.target = "/recalbox/share/overlays"
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -331,6 +341,10 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optShadersDirectory;
+                        //to have previous one
+                        parameterslistBox.previous = value;
+                        //to precise target if changed to be able to mount immediately
+                        parameterslistBox.target = "/recalbox/share/shaders"
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -369,6 +383,10 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optUserscriptsDirectory;
+                        //to have previous one
+                        parameterslistBox.previous = value;
+                        //to precise target if changed to be able to mount immediately
+                        parameterslistBox.target = "/recalbox/share/userscripts"
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -407,6 +425,10 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optScreenshotsDirectory;
+                        //to have previous one
+                        parameterslistBox.previous = value;
+                        //to precise target if changed to be able to mount immediately
+                        parameterslistBox.target = "/recalbox/share/screenshots"
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -446,6 +468,10 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optVideosDirectory;
+                        //to have previous one
+                        parameterslistBox.previous = value;
+                        //to precise target if changed to be able to mount immediately
+                        parameterslistBox.target = "/recalbox/share/videos"
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -483,6 +509,10 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optMusicDirectory;
+                        //to have previous one
+                        parameterslistBox.previous = value;
+                        //to precise target if changed to be able to mount immediately
+                        parameterslistBox.target = "/recalbox/share/music"
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
