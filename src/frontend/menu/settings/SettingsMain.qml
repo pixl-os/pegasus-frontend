@@ -452,7 +452,7 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "boot.sharedevice"
                     property string previousValue : api.internal.recalbox.parameterslist.currentName(parameterName)
-
+                    property int previousIndex
                     label: qsTr("Storage device") + api.tr
                     note: qsTr("move 'share' to an other storage") + api.tr
 
@@ -464,7 +464,22 @@ FocusScope {
                     onValueChanged: {
                         //console.log("optStorageDevices - onValueChanged - value : ", value);
                         //console.log("optStorageDevices - onValueChanged - previousValue : ", previousValue);
-                        if(value !== previousValue){
+                        //console.log("optStorageDevices - onValueChanged - index : ", currentIndex);
+                        //console.log("optStorageDevices - onValueChanged - previousindex : ", previousIndex);
+                        if(value.includes("(ext4)")){
+                            //add dialogBox to alert about issue
+                            genericMessage.setSource("../../dialogs/GenericContinueDialog.qml",
+                                                     { "title": qsTr("Share compatibility"), "message": qsTr("Sorry you can't change to ") + "<br>" + value + "<br>" + qsTr("because ext4 file system format is not yet supported !")});
+                            genericMessage.focus = true;
+                            keypressed = true;
+                            //impossible to manage share on ext4, need to restore previous one
+                            //to update index of parameterlist QAbstractList
+                            currentIndex = previousIndex;
+                            api.internal.recalbox.parameterslist.currentIndex = currentIndex;
+                            //to force update of display of selected value
+                            value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        }
+                        else if(value !== previousValue){
                             //need to reboot to take change into account !
                             needReboot = true;
                         }
@@ -478,6 +493,8 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to save initial index
+                        previousIndex = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
