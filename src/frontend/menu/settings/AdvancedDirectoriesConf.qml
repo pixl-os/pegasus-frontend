@@ -19,20 +19,24 @@ FocusScope {
     Connections {
         target: confirmDialog.item
         function onAccept() {
+            var result = "";
+            //umount first in all cases
+            console.log("umount command : ","umount " + parameterslistBox.target);
+            result = api.internal.system.run("umount " + parameterslistBox.target);
+            console.log("umount result : ",result);
+            api.internal.system.run("sleep 1");
             //mount/remount
-            if (!isDebugEnv()){
-                //umount first in all cases
-                console.log("umount command : ","umount " + parameterslistBox.target);
-                api.internal.system.run("umount " + parameterslistBox.target);
-                //check that is not the default value
-                if(parameterslistBox.target !== parameterslistBox.callerid.value){
-                    api.internal.system.run("sleep 1");
-                    console.log("mount command : ", "mount --bind " + parameterslistBox.callerid.value + " " + parameterslistBox.target);
-                    api.internal.system.run("mount --bind " + parameterslistBox.callerid.value + " " + parameterslistBox.target);
+            //check that is not the default value
+            if(parameterslistBox.target !== parameterslistBox.callerid.value){
+                console.log("mount command : ", "mount --bind " + parameterslistBox.callerid.value + " " + parameterslistBox.target + " 2>&1");
+                result = api.internal.system.run("mount --bind " + parameterslistBox.callerid.value + " " + parameterslistBox.target + " 2>&1");
+                console.log("mount result : ",result);
+                if(result !== ""){
+                    //add dialogBox to alert about issue
+                    genericMessage.setSource("../../dialogs/GenericContinueDialog.qml",
+                                             { "title": qsTr("Mount error"), "message": qsTr(result)});
+                    genericMessage.focus = true;
                 }
-            }
-            else{//for debug and just see spinner
-                api.internal.system.run("sleep 2");
             }
             content.focus = true;
         }
