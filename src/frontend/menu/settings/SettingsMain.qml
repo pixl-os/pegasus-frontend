@@ -451,6 +451,7 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "boot.sharedevice"
+                    property string previousValue : api.internal.recalbox.parameterslist.currentName(parameterName)
 
                     label: qsTr("Storage device") + api.tr
                     note: qsTr("move 'share' to an other storage") + api.tr
@@ -459,6 +460,15 @@ FocusScope {
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //console.log("optStorageDevices - onValueChanged - value : ", value);
+                        //console.log("optStorageDevices - onValueChanged - previousValue : ", previousValue);
+                        if(value !== previousValue){
+                            //need to reboot to take change into account !
+                            needReboot = true;
+                        }
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
