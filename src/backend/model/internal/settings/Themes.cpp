@@ -40,13 +40,14 @@ QStringList theme_directories()
     //to do it only one time by instance (or if empty)
     if(theme_dirs.isEmpty()){
         Log::debug(LOGMSG("Themes: parsing directories..."));
-        QString Parameter = "directories.themes";
+        //now we consider paths to ignored to be able to consider new one if plugged or exists
+        QString Parameter = "directories.themes.ignored";
         if(RecalboxConf::Instance().HasKeyStartingWith(Parameter.toUtf8().constData())){
             QString ListOfValue = QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),""));
             //if empty, nothing will be added (take care ;-)
             for(const QString& themesDir : paths::themesDirs())
             {
-                if(ListOfValue.contains(themesDir)) theme_dirs.append(themesDir);
+                if(!ListOfValue.contains(themesDir)) theme_dirs.append(themesDir);
             }
         }
         else theme_dirs = paths::themesDirs();
