@@ -122,7 +122,7 @@ QStringList GetParametersList(QString Parameter)
     else if (Parameter == "directory.shaders")
     {
         //shadersDirs
-        ListOfValue = paths::shadersDirs();
+        ListOfValue = paths::shadersDirs(true);
     }
     else if (Parameter.endsWith(".shaders", Qt::CaseInsensitive) == true)
     {
@@ -737,55 +737,55 @@ QStringList GetParametersList(QString Parameter)
     else if (Parameter == "directories.roms.ignored")
     {
         //romsDirs
-        ListOfValue = paths::romsDirs();
+        ListOfValue = paths::romsDirs(true);
     }
     //to manage/unselect THEMES directories
     else if (Parameter == "directories.themes.ignored")
     {
         //themesDirs
-        ListOfValue = paths::themesDirs();
+        ListOfValue = paths::themesDirs(true);
     }
     //to manage/select SAVES directory
     else if (Parameter == "directory.saves")
     {
         //savesDirs
-        ListOfValue = paths::savesDirs();
+        ListOfValue = paths::savesDirs(true);
     }
     //to manage/select BIOS directory
     else if (Parameter == "directory.bios")
     {
         //biosDirs
-        ListOfValue = paths::biosDirs();
+        ListOfValue = paths::biosDirs(true);
     }
     //to manage/select MUSIC directory
     else if (Parameter == "directory.music")
     {
         //musicDirs
-        ListOfValue = paths::musicDirs();
+        ListOfValue = paths::musicDirs(true);
     }
     //to manage/select OVERLAYS directory
     else if (Parameter == "directory.overlays")
     {
         //overlaysDirs
-        ListOfValue = paths::overlaysDirs();
+        ListOfValue = paths::overlaysDirs(true);
     }
     //to manage/select SCREENSHOTS directory
     else if (Parameter == "directory.screenshots")
     {
         //screenshotsDirs
-        ListOfValue = paths::screenshotsDirs();
+        ListOfValue = paths::screenshotsDirs(true);
     }
     //to manage/select USERSCRIPTS directory
     else if (Parameter == "directory.userscripts")
     {
         //userscriptsDirs
-        ListOfValue = paths::userscriptsDirs();
+        ListOfValue = paths::userscriptsDirs(true);
     }
     //to manage/select VIDEOS directory
     else if (Parameter == "directory.videos")
     {
         //videosDirs
-        ListOfValue = paths::videosDirs();
+        ListOfValue = paths::videosDirs(true);
     }
     else
     {

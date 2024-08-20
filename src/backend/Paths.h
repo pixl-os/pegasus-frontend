@@ -31,34 +31,34 @@ QString homePath();
 QStringList configDirs();
 
 /// Returns the directory paths where themes may be located
-QStringList themesDirs();
+QStringList themesDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where roms could be located
-QStringList romsDirs();
+QStringList romsDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where saves may be located
-QStringList savesDirs();
+QStringList savesDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where bios may be located
-QStringList biosDirs();
+QStringList biosDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where music may be located
-QStringList musicDirs();
+QStringList musicDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where bios overlays be located
-QStringList overlaysDirs();
+QStringList overlaysDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where screenshots may be located
-QStringList screenshotsDirs();
+QStringList screenshotsDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where shaders may be located
-QStringList shadersDirs();
+QStringList shadersDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where userscripts may be located
-QStringList userscriptsDirs();
+QStringList userscriptsDirs(bool forcedRefresh = false);
 
 /// Returns the directory paths where videos may be located
-QStringList videosDirs();
+QStringList videosDirs(bool forcedRefresh = false);
 
 /// Returns a directory path where persistent data could be stored
 QString writableConfigDir();

@@ -127,9 +127,11 @@ QStringList configDirs()
 }
 
 /// Returns the directory paths where themes may be located
-QStringList themesDirs()
+QStringList themesDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "themes"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "themes"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -194,14 +196,17 @@ QStringList themesDirs()
         paths.removeDuplicates();
         return paths;
     }();
+    }
 
     return dir_paths;
 }
 
 /// Returns the directory paths where roms could be located
-QStringList romsDirs()
+QStringList romsDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "roms"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "roms"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -269,14 +274,16 @@ QStringList romsDirs()
         paths.removeDuplicates();
         return paths;
     }();
-
+    }
     return dir_paths;
 }
 
 /// Returns the directory paths where saves may be located
-QStringList savesDirs()
+QStringList savesDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "saves"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "saves"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -342,14 +349,16 @@ QStringList savesDirs()
         paths.removeDuplicates();
         return paths;
     }();
-
+    }
     return dir_paths;
 }
 
 /// Returns the directory paths where bios may be located
-QStringList biosDirs()
+QStringList biosDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "bios"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "bios"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -415,14 +424,17 @@ QStringList biosDirs()
         paths.removeDuplicates();
         return paths;
     }();
+    }
 
     return dir_paths;
 }
 
 /// Returns the directory paths where music may be located
-QStringList musicDirs()
+QStringList musicDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "music"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "music"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -488,14 +500,17 @@ QStringList musicDirs()
         paths.removeDuplicates();
         return paths;
     }();
+    }
 
     return dir_paths;
 }
 
 /// Returns the directory paths where bios overlays be located
-QStringList overlaysDirs()
+QStringList overlaysDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "overlays"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "overlays"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -561,14 +576,17 @@ QStringList overlaysDirs()
         paths.removeDuplicates();
         return paths;
     }();
+    }
 
     return dir_paths;
 }
 
 /// Returns the directory paths where screenshots may be located
-QStringList screenshotsDirs()
+QStringList screenshotsDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "screenshots"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "screenshots"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -634,14 +652,17 @@ QStringList screenshotsDirs()
         paths.removeDuplicates();
         return paths;
     }();
+    }
 
     return dir_paths;
 }
 
 /// Returns the directory paths where shaders may be located
-QStringList shadersDirs()
+QStringList shadersDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "shaders"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "shaders"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -707,14 +728,17 @@ QStringList shadersDirs()
         paths.removeDuplicates();
         return paths;
     }();
+    }
 
     return dir_paths;
 }
 
 /// Returns the directory paths where userscripts may be located
-QStringList userscriptsDirs()
+QStringList userscriptsDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "userscripts"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "userscripts"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -780,14 +804,17 @@ QStringList userscriptsDirs()
         paths.removeDuplicates();
         return paths;
     }();
+    }
 
     return dir_paths;
 }
 
 /// Returns the directory paths where videos may be located
-QStringList videosDirs()
+QStringList videosDirs(bool forcedRefresh)
 {
-    static const QStringList dir_paths = [](QString dir = "videos"){
+    static QStringList dir_paths;
+    if(forcedRefresh || dir_paths.empty()){
+    dir_paths = [](QString dir = "videos"){
         QStringList paths;
 
         paths.append("/recalbox/share/" + dir);
@@ -853,6 +880,7 @@ QStringList videosDirs()
         paths.removeDuplicates();
         return paths;
     }();
+    }
 
     return dir_paths;
 }
