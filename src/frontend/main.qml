@@ -599,6 +599,7 @@ Window {
 
     //Event from API Back-end
     Connections {
+        id: apiconnection
         target: api
 
         function onEventSelectGameFile(game) {
@@ -681,6 +682,14 @@ Window {
                 powerDialog.source = "dialogs/RestartDialog.qml";
                 powerDialog.item.message = qsTr("USB device removed, do you want to refresh list of games ?");
                 powerDialog.focus = true;
+            }
+            else if(action === "retrode-remove"){
+                apiconnection.onShowPopup("Video game cartridge reader", "RETRODE removed","",5);
+            }
+            else if(action.includes("retrode-")){
+                var retrodeDevice = action.split("-")[1];
+                var retrodeMountpoint = action.split("-")[2];
+                apiconnection.onShowPopup("Video game cartridge reader", "RETRODE mounted from " + retrodeDevice + " to " + retrodeMountpoint,"",5);
             }
         }
         function onEventLoadingStarted() {
