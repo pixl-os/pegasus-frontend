@@ -691,6 +691,14 @@ Window {
                 var retrodeMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "RETRODE mounted from " + retrodeDevice + " to " + retrodeMountpoint,"",5);
             }
+            else if(action === "usbnes-remove"){
+                apiconnection.onShowPopup("Video game cartridge reader", "USB-NES removed","",5);
+            }
+            else if(action.includes("usbnes-")){
+                var usbnesDevice = action.split("-")[1];
+                var usbnesMountpoint = action.split("-")[2];
+                apiconnection.onShowPopup("Video game cartridge reader", "USB-NES mounted from " + usbnesDevice + " to " + usbnesMountpoint,"",5);
+            }
         }
         function onEventLoadingStarted() {
             console.log("onEventLoadingStarted()");
