@@ -733,14 +733,14 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("None") << QObject::tr("Stronger") << QObject::tr("Softer") << QObject::tr("Strong Machine Gun") << QObject::tr("Soft Machine Gun");
         ListOfInternalValue << "none" << "stronger" << "softer" << "strongmachinegun" << "softmachinegun";
     }
-    //to manage/select ROMS directories
-    else if (Parameter == "directories.roms")
+    //to manage/unselect ROMS directories
+    else if (Parameter == "directories.roms.ignored")
     {
         //romsDirs
         ListOfValue = paths::romsDirs();
     }
-    //to manage/select THEMES directories
-    else if (Parameter == "directories.themes")
+    //to manage/unselect THEMES directories
+    else if (Parameter == "directories.themes.ignored")
     {
         //themesDirs
         ListOfValue = paths::themesDirs();
@@ -1018,17 +1018,21 @@ void ParametersList::check_preferred_parameter(const QString& Parameter)
     to get first row as default value
     */
     QString DefaultValue = "";
-    if (ListOfInternalValue.size() == 0){
-        for(int i = 0; i < int(m_parameterslist.size()) ; i++){
-            if(DefaultValue != "") DefaultValue = DefaultValue + "|" + m_parameterslist.at(i).name;
-            else DefaultValue = m_parameterslist.at(i).name;
-        }
-    }
-    else {
-        for(int i = 0; i < int(ListOfInternalValue.size()) ; i++){
-            if(DefaultValue != "") DefaultValue = DefaultValue + "|" + ListOfInternalValue.at(i);
-            else DefaultValue = ListOfInternalValue.at(i);
 
+    //to manage parameter managing inclusion or exclusion of any value from checklist
+    if(!m_parameter.endsWith(".ignored")){
+        if (ListOfInternalValue.size() == 0){
+            for(int i = 0; i < int(m_parameterslist.size()) ; i++){
+                if(DefaultValue != "") DefaultValue = DefaultValue + "|" + m_parameterslist.at(i).name;
+                else DefaultValue = m_parameterslist.at(i).name;
+            }
+        }
+        else {
+            for(int i = 0; i < int(ListOfInternalValue.size()) ; i++){
+                if(DefaultValue != "") DefaultValue = DefaultValue + "|" + ListOfInternalValue.at(i);
+                else DefaultValue = ListOfInternalValue.at(i);
+
+            }
         }
     }
 
@@ -1077,7 +1081,9 @@ bool ParametersList::check_parameter(const QString& name)
         */
         if (ListOfInternalValue.size() == 0)
         {
-            if (name.contains(m_parameterslist.at(idx).name)) {
+            //to manage parameter managing inclusion or exclusion of any value from checklist
+            if((name.contains(m_parameterslist.at(idx).name) && !m_parameter.endsWith(".ignored")) ||
+               (!name.contains(m_parameterslist.at(idx).name) &&  m_parameter.endsWith(".ignored"))){
                 ListOfCheckedValue.append(true);
                 m_current_checked = m_current_checked + 1;
             }
@@ -1085,7 +1091,9 @@ bool ParametersList::check_parameter(const QString& name)
         }
         else // if internal value to check index from recalbox.conf/recalbox-boot.conf stored value
         {
-            if (name.contains(ListOfInternalValue.at(idx))) {
+            //to manage parameter managing inclusion or exclusion of any value from checklist
+            if((name.contains(ListOfInternalValue.at(idx)) && !m_parameter.endsWith(".ignored")) ||
+               (!name.contains(ListOfInternalValue.at(idx)) &&  m_parameter.endsWith(".ignored"))){
                 ListOfCheckedValue.append(true);
                 m_current_checked = m_current_checked + 1;
             }
@@ -1109,7 +1117,9 @@ void ParametersList::save_checked_parameter(const bool checked)
 
     if (ListOfInternalValue.size() == 0){
         for(int i = 0; i < int(m_parameterslist.size()) ; i++){
-            if(ListOfCheckedValue.at(i) == true){
+            //to manage parameter managing inclusion or exclusion of any value from checklist
+            if((ListOfCheckedValue.at(i) == true  && !m_parameter.endsWith(".ignored")) ||
+               (ListOfCheckedValue.at(i) == false && m_parameter.endsWith(".ignored"))){
                 if(Value != "") Value = Value + "|" + m_parameterslist.at(i).name;
                 else Value = m_parameterslist.at(i).name;
                 m_current_checked = m_current_checked + 1;
@@ -1118,7 +1128,9 @@ void ParametersList::save_checked_parameter(const bool checked)
     }
     else {
         for(int i = 0; i < int(ListOfInternalValue.size()) ; i++){
-            if(ListOfCheckedValue.at(i) == true){
+            //to manage parameter managing inclusion or exclusion of any value from checklist
+            if((ListOfCheckedValue.at(i) == true  && !m_parameter.endsWith(".ignored")) ||
+                (ListOfCheckedValue.at(i) == false && m_parameter.endsWith(".ignored"))){
                 if(Value != "") Value = Value + "|" + ListOfInternalValue.at(i);
                 else Value = ListOfInternalValue.at(i);
                 m_current_checked = m_current_checked + 1;
@@ -1167,13 +1179,6 @@ QVariant ParametersList::data(const QModelIndex& index, int role) const
 
 void ParametersList::setCurrentIndexChecked(bool checked)
 {
-    //Log::warning(LOGMSG("ParametersList::setCurrentIndex(int idx_int) : m_current_idx = %1").arg(m_current_idx));
-    /*const auto idx = static_cast<size_t>(m_current_idx);
-
-    if (m_parameterslist.size() <= idx) {
-        Log::warning(LOGMSG("Invalid parameter checked index #%1").arg(idx));
-        return;
-    }*/
     // save
     save_checked_parameter(checked);
     //Log::debug(LOGMSG("emit checkedChanged();"));

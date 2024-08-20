@@ -57,13 +57,14 @@ QStringList roms_directories()
     //to do it only one time by instance (or if empty)
     if(roms_dirs.isEmpty()){
        Log::debug(LOGMSG("Roms: parsing directories..."));
-        QString Parameter = "directories.roms";
+        //now we consider paths to ignored to be able to consider new one if plugged or exists
+        QString Parameter = "directories.roms.ignored";
         if(RecalboxConf::Instance().HasKeyStartingWith(Parameter.toUtf8().constData())){
             QString ListOfValue = QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),""));
             //if empty, nothing will be added (take care ;-)
             for(const QString& romsDir : paths::romsDirs())
             {
-                if(ListOfValue.contains(romsDir)) roms_dirs.append(romsDir);
+                if(!ListOfValue.contains(romsDir)) roms_dirs.append(romsDir);
             }
         }
         else roms_dirs = paths::romsDirs();

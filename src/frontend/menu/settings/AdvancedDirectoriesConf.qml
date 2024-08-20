@@ -121,10 +121,11 @@ FocusScope {
                     id: optRomsDirectories
                     focus:  true
                     //property to manage parameter name
-                    property string parameterName : "directories.roms"
+                    //in fact, we prefer to save excluded roms directory to accept systematically all new ones by default
+                    property string parameterName : "directories.roms.ignored"
 
                     label: qsTr("ROMS directories") + api.tr
-                    note: qsTr("select directories to take into account (all selected by default)") + api.tr
+                    note: qsTr("unselect directories to ignored (all selected by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
 
@@ -163,10 +164,11 @@ FocusScope {
                     id: optThemesDirectories
 
                     //property to manage parameter name
-                    property string parameterName : "directories.themes"
+                    //in fact, we prefer to save excluded roms directory to accept systematically all new ones by default
+                    property string parameterName : "directories.themes.ignored"
 
                     label: qsTr("THEMES directories") + api.tr
-                    note: qsTr("select directories to take into account (all selected by default)") + api.tr
+                    note: qsTr("unselect directories to ignored (all selected by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
 
