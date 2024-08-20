@@ -60,7 +60,6 @@ Window {
     //TIPS: properties to preload during launch of pegasus-fe and avoid "slow" effect during loading of menus
     property string preload_global_shaders: api.internal.recalbox.parameterslist.currentName("global.shaders")
     property string preload_boot_sharedevice: api.internal.recalbox.parameterslist.currentName("boot.sharedevice")
-    property string preload_directories_roms: api.internal.recalbox.parameterslist.currentName("directories.roms")
 
     /*onClosing: {
         theme.source = "";
