@@ -527,6 +527,7 @@ Window {
         function onClose() { content.focus = true; }
     }
 
+    //cdRomPopup loader/connection/component/timer
     Loader {
         id: cdRomPopupLoader
         anchors.fill: parent
@@ -578,6 +579,7 @@ Window {
         id: popupCdromDelay
 
         interval: 5000
+        triggeredOnStart: false
         repeat: true
         running: splashScreen.focus ? false : true
         onTriggered: {
@@ -593,6 +595,73 @@ Window {
                 api.internal.singleplay.setFile("cdrom://drive1.cue");
                 //set system to select to run this rom
                 api.internal.singleplay.setSystem(gameCdRom); //using shortName
+            }
+        }
+    }
+
+    //cartridge loader/connection/component/timer
+    Loader {
+        id: cartridgePopupLoader
+        anchors.fill: parent
+        sourceComponent: cartridgePopup
+    }
+    Connections {
+        target: cartridgePopupLoader.item
+
+        function onAccept() {
+            content.focus = true;
+            // connect game to launcher
+            api.connectGameFiles(api.internal.singleplay.game);
+            // launch this Game
+            api.internal.singleplay.game.launch();
+        }
+        function onCancel() {
+            // return back and remove tmp file
+            content.focus = true;
+        }
+    }
+    Component {
+        id: cartridgePopup
+        CartridgeDialog
+        {
+            focus: true
+            message:qsTr("A game is in the cartridge reader")
+            firstchoice: qsTr("Launch")
+            secondchoice: ""
+            thirdchoice: qsTr("Back")
+            system: "nes"
+        }
+    }
+
+    // Timer to show the popup for cartridge
+    Timer {
+        id: popupUSBNESDelay
+        interval: 5000
+        triggeredOnStart: false
+        repeat: true
+        running: splashScreen.focus ? false : true
+        property bool cartridge_plugged: false
+        onTriggered: {
+            var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint | tr -d '\\n' | tr -d '\\r'");
+            console.log("USB-NES mountpoint : ", mountpoint)
+            if(mountpoint.includes("/usb")) {
+                var romsize = api.internal.system.run("wc -c "+ mountpoint + "/rom.nes  | tr -d '\\n' | tr -d '\\r'");
+                console.log("USB-NES romsize: ", romsize)
+                console.log("USB-NES cartridge_plugged: ", cartridge_plugged)
+                if((parseInt(romsize) > 16) && (cartridge_plugged === false)){
+                    cartridge_plugged = true;
+                    //just set "cartridge" as title of this game (optional)
+                    api.internal.singleplay.setTitle("cartridge");
+                    //set rom full path
+                    api.internal.singleplay.setFile(mountpoint + "/rom.nes");
+                    //set system to select to run this rom
+                    api.internal.singleplay.setSystem("nes"); //using shortName
+                    cartridgePopupLoader.focus = true;
+                }
+                else if((parseInt(romsize) <= 16) && (cartridge_plugged === true)){
+                    cartridge_plugged = false;
+                    apiconnection.onShowPopup("Video game cartridge reader", "USB-NES cartridge unplugged","",3);
+                }
             }
         }
     }
@@ -689,15 +758,23 @@ Window {
             else if(action.includes("retrode-")){
                 var retrodeDevice = action.split("-")[1];
                 var retrodeMountpoint = action.split("-")[2];
-                apiconnection.onShowPopup("Video game cartridge reader", "RETRODE mounted from " + retrodeDevice + " to " + retrodeMountpoint,"",5);
+                apiconnection.onShowPopup("Video game cartridge reader", "RETRODE mounted from " + retrodeDevice + " to " + retrodeMountpoint,"",3);
+                //run timer to find roms/saves from any dumper
+                //TO DO
             }
             else if(action === "usbnes-remove"){
-                apiconnection.onShowPopup("Video game cartridge reader", "USB-NES removed","",5);
+                apiconnection.onShowPopup("Video game cartridge reader", "USB-NES removed","",3);
+                //stop timer to find roms/saves from USBNES
+                popupUSBNESDelay.cartridge_plugged = false;
+                popupUSBNESDelay.stop();
             }
             else if(action.includes("usbnes-")){
                 var usbnesDevice = action.split("-")[1];
                 var usbnesMountpoint = action.split("-")[2];
-                apiconnection.onShowPopup("Video game cartridge reader", "USB-NES mounted from " + usbnesDevice + " to " + usbnesMountpoint,"",5);
+                apiconnection.onShowPopup("Video game cartridge reader", "USB-NES mounted from " + usbnesDevice + " to " + usbnesMountpoint,"",3);
+                //run timer to find roms/saves from USBNES
+                popupUSBNESDelay.cartridge_plugged = false;
+                popupUSBNESDelay.start();
             }
         }
         function onEventLoadingStarted() {

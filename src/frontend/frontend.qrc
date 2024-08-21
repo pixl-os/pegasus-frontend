@@ -272,5 +272,6 @@
         <file>menu/settings/common/MulticheckBox.qml</file>
         <file>menu/settings/common/MulticheckOption.qml</file>
         <file>menu/settings/AdvancedDirectoriesConf.qml</file>
+        <file>dialogs/CartridgeDialog.qml</file>
     </qresource>
 </RCC>
