@@ -601,12 +601,12 @@ Window {
 
     //cartridge loader/connection/component/timer
     Loader {
-        id: cartridgePopupLoader
+        id: cartridgeDialogBoxLoader
         anchors.fill: parent
-        sourceComponent: cartridgePopup
+        sourceComponent: cartridgeDialogBox
     }
     Connections {
-        target: cartridgePopupLoader.item
+        target: cartridgeDialogBoxLoader.item
 
         function onAccept() {
             content.focus = true;
@@ -621,7 +621,7 @@ Window {
         }
     }
     Component {
-        id: cartridgePopup
+        id: cartridgeDialogBox
         CartridgeDialog
         {
             focus: true
@@ -633,9 +633,9 @@ Window {
         }
     }
 
-    // Timer to show the popup for cartridge
+    // Timer to show the dialog box for cartridge
     Timer {
-        id: popupUSBNESDelay
+        id: dialogBoxUSBNESDelay
         interval: 5000
         triggeredOnStart: false
         repeat: true
@@ -648,18 +648,32 @@ Window {
                 var romsize = api.internal.system.run("wc -c "+ mountpoint + "/rom.nes  | tr -d '\\n' | tr -d '\\r'");
                 console.log("USB-NES romsize: ", romsize)
                 console.log("USB-NES cartridge_plugged: ", cartridge_plugged)
-                if((parseInt(romsize) > 16) && (cartridge_plugged === false)){
+                if( (parseInt(romsize) > 16) && (cartridge_plugged === false)){
                     cartridge_plugged = true;
-                    //just set "cartridge" as title of this game (optional)
-                    api.internal.singleplay.setTitle("cartridge");
-                    //set rom full path
-                    api.internal.singleplay.setFile(mountpoint + "/rom.nes");
-                    //set system to select to run this rom
-                    api.internal.singleplay.setSystem("nes"); //using shortName
-                    cartridgePopupLoader.focus = true;
+                    //generate crc32 (including complete path of rom) to be able to compare it with previous one
+                    var romcrc32 = api.internal.system.run("crc32 " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r'");
+                    var previousromcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                    if(romcrc32 !== previousromcrc32){ //new game inserted for sure
+                        //just set "cartridge" as title of this game (optional)
+                        api.internal.singleplay.setTitle("cartridge");
+                        //set rom full path
+                        api.internal.singleplay.setFile(mountpoint + "/rom.nes");
+                        //set system to select to run this rom
+                        api.internal.singleplay.setSystem("nes"); //using shortName
+                        //store new crc32 (including complete path of rom) and store it for the moment
+                        api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.romcrc32");
+                        //generate md5 (including complete path of rom) and store it for the moment
+                        api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.rommd5");
+                        //propose cartridge dialog box in this case
+                        cartridgeDialogBoxLoader.focus = true;
+                    }
                 }
                 else if((parseInt(romsize) <= 16) && (cartridge_plugged === true)){
                     cartridge_plugged = false;
+                    //remove potential previous files about rom
+                    api.internal.system.run("rm /tmp/USBNES.romcrc32");
+                    api.internal.system.run("rm /tmp/USBNES.rommd5");
+                    //show popup to alert
                     apiconnection.onShowPopup("Video game cartridge reader", "USB-NES cartridge unplugged","",3);
                 }
             }
@@ -753,7 +767,7 @@ Window {
                 powerDialog.focus = true;
             }
             else if(action === "retrode-remove"){
-                apiconnection.onShowPopup("Video game cartridge reader", "RETRODE removed","",5);
+                apiconnection.onShowPopup("Video game cartridge reader", "RETRODE removed","",3);
             }
             else if(action.includes("retrode-")){
                 var retrodeDevice = action.split("-")[1];
@@ -764,17 +778,20 @@ Window {
             }
             else if(action === "usbnes-remove"){
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES removed","",3);
-                //stop timer to find roms/saves from USBNES
-                popupUSBNESDelay.cartridge_plugged = false;
-                popupUSBNESDelay.stop();
+                //remove potential previous files about rom
+                api.internal.system.run("rm /tmp/USBNES.romcrc32");
+                api.internal.system.run("rm /tmp/USBNES.rommd5");
+                //remove cartridge also and stop timer to find roms/saves from USBNES
+                dialogBoxUSBNESDelay.cartridge_plugged = false;
+                dialogBoxUSBNESDelay.stop();
             }
             else if(action.includes("usbnes-")){
                 var usbnesDevice = action.split("-")[1];
                 var usbnesMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES mounted from " + usbnesDevice + " to " + usbnesMountpoint,"",3);
                 //run timer to find roms/saves from USBNES
-                popupUSBNESDelay.cartridge_plugged = false;
-                popupUSBNESDelay.start();
+                dialogBoxUSBNESDelay.cartridge_plugged = false;
+                dialogBoxUSBNESDelay.start();
             }
         }
         function onEventLoadingStarted() {
