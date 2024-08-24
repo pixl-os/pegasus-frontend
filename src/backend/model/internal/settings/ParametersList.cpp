@@ -1122,7 +1122,7 @@ void ParametersList::save_checked_parameter(const bool checked)
                (ListOfCheckedValue.at(i) == false && m_parameter.endsWith(".ignored"))){
                 if(Value != "") Value = Value + "|" + m_parameterslist.at(i).name;
                 else Value = m_parameterslist.at(i).name;
-                m_current_checked = m_current_checked + 1;
+                if(ListOfCheckedValue.at(i) == true) m_current_checked = m_current_checked + 1;
             }
         }
     }
@@ -1133,7 +1133,7 @@ void ParametersList::save_checked_parameter(const bool checked)
                 (ListOfCheckedValue.at(i) == false && m_parameter.endsWith(".ignored"))){
                 if(Value != "") Value = Value + "|" + ListOfInternalValue.at(i);
                 else Value = ListOfInternalValue.at(i);
-                m_current_checked = m_current_checked + 1;
+                if(ListOfCheckedValue.at(i) == true) m_current_checked = m_current_checked + 1;
             }
         }
     }
@@ -1208,18 +1208,20 @@ void ParametersList::setCurrentIndex(int idx_int)
 QString ParametersList::currentNameChecked(const QString& Parameter) {
 
     //Log::debug(LOGMSG("QString ParametersList::currentNameChecked(const QString& Parameter) - parameter: `%1`").arg(Parameter));
-
+    QStringList EmptyQStringList;
     if (m_parameter != Parameter)
     {
         //Log::debug(LOGMSG("m_parameter != Parameter"));
         //to signal refresh of model's data
         emit QAbstractItemModel::beginResetModel();
         m_parameter = Parameter;
-        QStringList EmptyQStringList;
         m_parameterslist = find_available_parameterslist(Parameter,"",EmptyQStringList);
         check_preferred_parameter(Parameter);
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
+    }
+    else{
+        check_preferred_parameter(Parameter);
     }
     return QString::number(m_current_checked) + "/" + QString::number(m_parameterslist.size()) + " " + QObject::tr("selected");
 }
