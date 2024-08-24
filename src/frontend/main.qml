@@ -620,12 +620,15 @@ Window {
             content.focus = true;
         }
     }
+
+    property string gameCartridge: ""
+
     Component {
         id: cartridgeDialogBox
         CartridgeDialog
         {
             focus: true
-            message:qsTr("A game is in the cartridge reader")
+            message:qsTr("A game is in the cartridge reader") + " : " + gameCartridge
             firstchoice: qsTr("Launch")
             secondchoice: ""
             thirdchoice: qsTr("Back")
@@ -639,7 +642,8 @@ Window {
         interval: 5000
         triggeredOnStart: false
         repeat: true
-        running: (splashScreen.focus || isDebugEnv()) ? false : true
+        //running: (splashScreen.focus || isDebugEnv()) ? false : true
+        running: (splashScreen.focus) ? false : true
         property bool cartridge_plugged: false
         onTriggered: {
             var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint | tr -d '\\n' | tr -d '\\r'");
@@ -662,7 +666,7 @@ Window {
                     if((parseInt(romsize) > 16)){
                         if(romcrc32 === previousromcrc32){
                             //show popup to say that is a reset
-                            apiconnection.onShowPopup("Video game cartridge reader", "USB-NES cartridge reloaded","",2);
+                            apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("USB-NES cartridge reloaded"),"",2);
                         }
                         cartridge_plugged = true;
                         //just set "cartridge" as title of this game (optional)
@@ -675,6 +679,20 @@ Window {
                         api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.romcrc32");
                         //RFU: generate md5 (including complete path of rom) and store it for the moment
                         //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.rommd5");
+                        //calculate sha1 for PRG-ROM/SHR-ROM
+                        var romsha1=api.internal.system.run("python3 /recalbox/scripts/nes_tools/nes_header_tools.py " + mountpoint + " rom.nes | tr -d '\\n' | tr -d '\\r'");
+                        console.log("USB-NES romsha1: ", romsha1);
+                        //get info from nes 2.0 DB xml file
+                        var rominfo=api.internal.system.run("grep -i " + romsha1 + " /recalbox/scripts/nes_tools/nes20db.xml -A4 -B3 | grep -i '<game>' | sed -n 's/.*<!-- \\(.*\\).nes.*/\\1/p' | tr -d '\\n' | tr -d '\\r'");
+                        console.log("USB-NES rominfo: ", rominfo);
+                        if(rominfo !== ""){
+                            gameCartridge = rominfo;
+                            //rominfo.split('\\')[1] + " (" + rominfo.split('\\')[0].split(" ")[1] + ")" + " - " + rominfo.split('\\')[0].split(" ")[0];
+                        }
+                        else{
+                            gameCartridge = qsTr("unknown game / not recognized");
+                        }
+
                         //propose cartridge dialog box in this case
                         cartridgeDialogBoxLoader.focus = false; //to force switching
                         cartridgeDialogBoxLoader.visible = true; //to show
@@ -688,13 +706,13 @@ Window {
                         cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
                         cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                         //show popup to say that game has been removed
-                        apiconnection.onShowPopup("Video game cartridge reader", "USB-NES cartridge unplugged","",3);
+                        apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("USB-NES cartridge unplugged"),"",3);
                     }
                     else if((parseInt(romsize) <= 16)){
                         cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
                         cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                         //show popup to alert that we didn't detected the game
-                        apiconnection.onShowPopup("Video game cartridge reader", "USB-NES no cartridge detected","",3);
+                        apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("USB-NES no cartridge detected"),"",3);
                     }
                     //set read.flag to "true"
                     api.internal.system.run("echo '" + true + "' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/pixl-read.flag");
