@@ -573,7 +573,7 @@ FocusScope {
         }
 
         onCheck: {
-            //console.log("parameterscheckBox::onCheck index : ", index, " checked : ", checked);
+            //console.log("parameterscheckBox::onCheck index : ", index, " checked : ", checked, " callerid.parameterName : ", callerid.parameterName);
             callerid.keypressed = true;
             //to use the good parameter
             api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
