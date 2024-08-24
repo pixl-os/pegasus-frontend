@@ -639,7 +639,7 @@ Window {
         interval: 5000
         triggeredOnStart: false
         repeat: true
-        running: splashScreen.focus ? false : true
+        running: (splashScreen.focus || isDebugEnv()) ? false : true
         property bool cartridge_plugged: false
         onTriggered: {
             var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint | tr -d '\\n' | tr -d '\\r'");
