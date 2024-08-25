@@ -65,15 +65,18 @@ Item {
 	//	"nes|snes"
 	
     property string filename: ""
+    property bool filenameToFind: false
     property string filenameRegEx: ""
     property var filenameToFilter:  ((filenameRegEx !== "") && (filename !== "")) ? true : false
 
     Component.onCompleted:{
-        //change filename to any regex (to repplace ()[] characters)
-        var filenameRegExTemp = filename.replace(/\(/g, '.*');//to replace ( by .*
-        filenameRegExTemp = filenameRegExTemp.replace(/\)/g, ".*"); //to remove ) by .*
-        filenameRegExTemp = filenameRegExTemp.replace(/\[/g, '.*');//to replace [ by .*
-        filenameRegEx = filenameRegExTemp.replace(/\]/g, ".*"); //to remove ] by .*
+        if(!filenameToFind){
+            //change filename to any regex (to replace ()[] characters)
+            var filenameRegExTemp = filename.replace(/\(/g, '.*');//to replace ( by .*
+            filenameRegExTemp = filenameRegExTemp.replace(/\)/g, ".*"); //to remove ) by .*
+            filenameRegExTemp = filenameRegExTemp.replace(/\[/g, '.*');//to replace [ by .*
+            filenameRegEx = filenameRegExTemp.replace(/\]/g, ".*"); //to remove ] by .*
+        }
     }
 
     property string release: ""
@@ -96,7 +99,7 @@ Item {
         filters:
             [
             AnyOf{ // to propose to search by path or crc in some cases
-                 enabled: activated
+                 enabled: crcToFind || filenameToFilter
                  ValueFilter { roleName: "hash"; value: crc ; enabled: crcToFind}
                  RegExpFilter { roleName: "path"; pattern: filenameRegEx ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter}
             },

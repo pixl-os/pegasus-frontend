@@ -2,6 +2,7 @@
 // created by BozoTheGeek 20/08/2024
 
 import QtQuick 2.12
+import "../search"
 
 FocusScope {
     id: root
@@ -11,7 +12,15 @@ FocusScope {
     property alias firstchoice: okButtonText.text
     property alias secondchoice: secondButtonText.text
     property alias thirdchoice: cancelButtonText.text
-    property var system;
+
+    //game info
+    property string game_system: ""
+    property string game_name: ""
+    property string game_region: ""
+    property string game_licence: ""
+    property string game_picture: ""
+    //to manage max for search (could be tune from experience)
+    readonly property int iNB_RESULTS_MAX : 50
 
     property int textSize: vpx(18)
     property int titleTextSize: vpx(20)
@@ -24,12 +33,93 @@ FocusScope {
     ListModel {
         id: mySystemIcons
 
-        ListElement { icon: "\uf275"; system: "psx"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-psx.png"}
-        ListElement { icon: "\uf26e"; system: "dreamcast"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-dreamcast.png"}
-        ListElement { icon: "\uf26b"; system: "segacd"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-segacd.png"}
-        ListElement { icon: "\uf271"; system: "pcenginecd"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-pcenginecd.png"}
-        ListElement { icon: "\uf28d"; system: "3do"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-3do.png"}
-        ListElement { icon: "\uf26c"; system: "saturn"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-saturn.png"}
+        //ListElement { icon: "\uf275"; system: "psx"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-psx.png"}
+        //ListElement { icon: "\uf26e"; system: "dreamcast"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-dreamcast.png"}
+        //ListElement { icon: "\uf26b"; system: "segacd"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-segacd.png"}
+        //ListElement { icon: "\uf271"; system: "pcenginecd"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-pcenginecd.png"}
+        //ListElement { icon: "\uf28d"; system: "3do"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-3do.png"}
+        //ListElement { icon: "\uf26c"; system: "saturn"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-saturn.png"}
+        ListElement { icon: "\uf25c"; system: "nes"; picture:"qrc:/frontend/assets/cartridge/nes_cartridge.png"}
+    }
+
+    SearchGame {
+        id: searchByName;
+        property bool titleMatched : false
+        property int resultIndex: -1
+        activated: false
+
+        onMaxChanged:{
+            console.log("onMaxChanged - enabled :",searchByName.enabled);
+            console.log("onMaxChanged - activated :",searchByName.activated);
+            console.log("onMaxChanged - max :",searchByName.max);
+            //console.log("onMaxChanged - game_crc :",game_crc);
+            console.log("onMaxChanged - game_name :",game_name);
+            console.log("onMaxChanged - crc :",searchByName.crc);
+            console.log("onMaxChanged - crcToFind :",searchByName.crcToFind);
+            console.log("onMaxChanged - filename :",searchByName.filename);
+            console.log("onMaxChanged - filenameRegEx :",searchByName.filenameRegEx);
+            console.log("onMaxChanged - filenameToFilter :",searchByName.filenameToFilter);
+            console.log("onMaxChanged - system :",searchByName.system);
+            console.log("onMaxChanged - sytemToFind :",searchByName.systemToFilter);
+            console.log("onMaxChanged - filter :",searchByName.filter);
+            console.log("onMaxChanged - titleToFilter :",searchByName.titleToFilter);
+            console.log("onMaxChanged - region :",searchByName.region);
+            console.log("onMaxChanged - regionToFilter :",searchByName.regionToFilter);
+
+            //init before
+            //picture = "";
+            //icon2 = "";
+            searchByName.titleMatched = false;
+
+            if((game_system === "") || (game_name === "") || (activated === false)) {
+                //do nothing to go quickly when it's not significant to proceed
+            }
+            //parse only nb_results_max to avoid saturation of system if not found
+            else if (searchByName.max >= 1 && searchByName.max <= iNB_RESULTS_MAX) { //Title search and match
+                //init index
+                searchByName.resultIndex = -1;
+                //check if found by title
+                if(searchByName.titleMatched !== true){
+                    for(var j = 0;(j < searchByName.result.games.count) && (j < iNB_RESULTS_MAX);j++)
+                    {
+                        console.log("game title found:",result.games.get(j).title);
+                        console.log("game name to find:",game_name);
+
+                        if(result.games.get(j).title.includes(game_name)){
+                            searchByName.resultIndex = j;
+                            searchByName.titleMatched = true;
+                            break;
+                        }
+                    }
+                    //if we don't match exactly, we will take the first one
+                    if(searchByName.resultIndex === -1) {
+                        searchByName.resultIndex = 0;
+                    }
+                }
+                console.log("game found/selected !!!");
+                //console.log("searchByName.resultIndex : ", searchByName.resultIndex);
+                //console.log("result.games.get(searchByName.resultIndex).title : ", result.games.get(searchByName.resultIndex).title)
+                game_picture = cartArt(result.games.get(searchByName.resultIndex));
+                console.log("game picture found: ", game_picture)
+                //start animation
+                animation.running = true;
+                //play sound if available
+                //TO DO
+            }
+        }
+    }
+
+    //provide cartArt
+    function cartArt(data) {
+        if (data !== null) {
+            if (data.assets.cartridge !== "")
+            return data.assets.cartridge;
+            if (data.assets.boxFront !== "")
+            return data.assets.boxFront;
+            //else if (data.assets.image !== "")
+            //return data.assets.image;
+        }
+        return "";
     }
 
     //function to get icon from system
@@ -66,13 +156,37 @@ FocusScope {
     focus: true
     onActiveFocusChanged: {
         state = activeFocus ? "open" : "";
-        if (activeFocus)
+        if (activeFocus){
             cancelButton.focus = true;
+            //start search after focus
+            //check if both are not empty as deleted one
+            if(game_name !== "" && game_system !== ""){
+                //deactivate during setup of search
+                searchByName.activated = false;
+                //we search by name and we clean it before if needed
+                var regex = RegExp("[^a-zA-Z0-9\\s]"); // Matches non-alphanumeric characters and spaces
+                var outputString = game_name.replace(regex, " "); //replace other parameters by spaces
+                console.log("game name cleaned : ",outputString);
+                //change filename to any regex (to replace spaces)
+                //replace space for regex expression
+                var nameRegExTemp = ".*" + outputString.replace(/\ /g, '.*');//to replace space by .* to convert to regex filter
+                console.log("game name filter(regex) : ",nameRegExTemp);
+                searchByName.filter  = nameRegExTemp;
+                //hardcoded value for testing
+                //searchByName.filter = ".*Super.*Mario.*.*Bros.*.*3.*"
+                searchByName.system = game_system;
+                searchByName.region = game_region;
+                //activate search at the end
+                searchByName.activated = true;
+            }
+        }
     }
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
+            focus = false;
+            visible = false;
             root.cancel();
         }
     }
@@ -100,26 +214,47 @@ FocusScope {
         // image area
         Item {
             width: parent.width
-            height: pngCdrom.height + vpx("5") * root.textSize
+            height: picture.height + vpx("5") * root.textSize
             Image {
-                id: pngCdrom
-                source: getPicture(root.system)
+                id: picture
+                source: game_picture //getPicture(root.system)
                 antialiasing: true
                 fillMode: Image.PreserveAspectFit
                 width: vpx(400); height: vpx(400)
                 asynchronous: true
-                sourceSize { width: vpx(400); height: vpx(400) }
+                //sourceSize { width: vpx(400); height: vpx(400) }
+                visible: true
+                opacity: 1
+
+                //for cart animation
+                y: -picture.height*1.25
                 anchors {
+                    horizontalCenter: parent.horizontalCenter
+                }
+
+                NumberAnimation on y {
+                    id: animation
+                    from: -picture.height*1.25
+                    to: messageText.y
+                    running: false
+                    duration: 2000
+                    easing.type: Easing.InOutQuart
+                }
+
+                //cdrom animation example
+                /*anchors {
                     verticalCenter: parent.verticalCenter
                     horizontalCenter: parent.horizontalCenter
                 }
+
                 NumberAnimation on rotation {
+                    id: animation
                     from: 0; to: 1080 * 6
-                    running: cdRomPopupLoader.visible === true
+                    running: false
                     loops: Animation.Infinite
                     duration: 12000
                     easing.type: Easing.InOutQuart
-                }
+                }*/
             }
         }
 

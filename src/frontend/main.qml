@@ -622,6 +622,10 @@ Window {
     }
 
     property string gameCartridge: ""
+    property string gameCartridge_name: ""
+    property string gameCartridge_system: ""
+    property string gameCartridge_type: ""
+    property string gameCartridge_region: ""
 
     Component {
         id: cartridgeDialogBox
@@ -632,8 +636,32 @@ Window {
             firstchoice: qsTr("Launch")
             secondchoice: ""
             thirdchoice: qsTr("Back")
-            system: "nes"
+            game_name: gameCartridge_name
+            game_system: gameCartridge_system
+            game_region: gameCartridge_region
         }
+    }
+
+    //list model to manage regions (example from NES 2.0 DB xml to NoIntro ones)... bu we can't manage 'exotic ones' ;-)
+    ListModel {
+        id: regionSSModel
+        ListElement { region: "eu"; regex: "\\(.*europe.*\\)|\\[.*europe.*\\]"; nes20db: "PAL"}
+        ListElement { region: "jp"; regex: "\\(.*japan.*\\)|\\[.*japan.*\\]"; nes20db: "Japan"}
+        ListElement { region: "us"; regex: "\\(.*usa.*\\)|\\[.*usa.*\\]"; nes20db: "North America"}
+        ListElement { region: "ch"; regex: "\\(.*china.*\\)|\\[.*china.*\\]"; nes20db: "China"}
+        ListElement { region: "wor"; regex: "\\(.*world.*\\)|\\[.*world.*\\]"; nes20db: "Elsewhere"}
+    }
+
+    function getRegionIndex(nes20dbname){
+        var regex = RegExp("^\\s*(.*?)\\s*$");
+        var trimmedString = nes20dbname.replace(regex, "$1");
+        console.log("trimmedString : '",trimmedString,"'");
+        for(var i = 0; i < regionSSModel.count; i++){
+            if(trimmedString === regionSSModel.get(i).nes20db){
+                return i;
+            }
+        }
+        return -1; //return if not found
     }
 
     // Timer to show the dialog box for cartridge
@@ -688,6 +716,25 @@ Window {
                         if(rominfo !== ""){
                             gameCartridge = rominfo;
                             //rominfo.split('\\')[1] + " (" + rominfo.split('\\')[0].split(" ")[1] + ")" + " - " + rominfo.split('\\')[0].split(" ")[0];
+                            gameCartridge_name = rominfo.split('\\')[1];
+                            gameCartridge_system = "nes";
+                            //to take first part that could contain type (licenced/playchoise/Vs. System/unlicensed...) and region (optionaly: PAL, North America, Japan, China, Taiwan & HongKong, ElseWhere, South Korea...)
+                            //we will manage only cartdridge format and what we ahve with no-intro ;-)
+                            var type_region = rominfo.split('\\')[0];
+                            console.log("USB-NES type_region: ", type_region);
+                            gameCartridge_type = type_region.split(' ')[0];
+                            console.log("USB-NES gameCartridge_type: ", gameCartridge_type);
+                            var region = type_region.replace(gameCartridge_type,"");
+                            console.log("USB-NES region: '", region,"'");
+                            if(region !== ""){
+                                var region_index = getRegionIndex(region);
+                                if(region_index !== -1){
+                                    gameCartridge_region = regionSSModel.get(region_index).regex;
+                                }
+                                else gameCartridge_region = "";
+                            }
+                            else gameCartridge_region = "";
+                            console.log("USB-NES gameCartridge_region : ", gameCartridge_region);
                         }
                         else{
                             gameCartridge = qsTr("unknown game / not recognized");
