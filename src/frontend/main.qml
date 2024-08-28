@@ -623,6 +623,7 @@ Window {
 
     property string gameCartridge: ""
     property string gameCartridge_name: ""
+    property string gameCartridge_state: "" //as "unknown","identified","reloaded","unplugged" and "disconnected"
     property string gameCartridge_system: ""
     property string gameCartridge_type: ""
     property string gameCartridge_region: ""
@@ -632,13 +633,15 @@ Window {
         CartridgeDialog
         {
             focus: true
-            message:qsTr("A game is in the cartridge reader") + " : " + gameCartridge
+            message: qsTr("A game is in the cartridge reader") + ":<br>" + gameCartridge //on 2 lines now
             firstchoice: qsTr("Launch")
             secondchoice: ""
             thirdchoice: qsTr("Back")
-            game_name: gameCartridge_name
-            game_system: gameCartridge_system
             game_region: gameCartridge_region
+            game_system: gameCartridge_system
+            game_type: gameCartridge_type
+            game_state: gameCartridge_state
+            game_name: gameCartridge_name
         }
     }
 
@@ -655,7 +658,7 @@ Window {
     function getRegionIndex(nes20dbname){
         var regex = RegExp("^\\s*(.*?)\\s*$");
         var trimmedString = nes20dbname.replace(regex, "$1");
-        console.log("trimmedString : '",trimmedString,"'");
+        //console.log("trimmedString : '",trimmedString,"'");
         for(var i = 0; i < regionSSModel.count; i++){
             if(trimmedString === regionSSModel.get(i).nes20db){
                 return i;
@@ -675,28 +678,29 @@ Window {
         property bool cartridge_plugged: false
         onTriggered: {
             var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint | tr -d '\\n' | tr -d '\\r'");
-            console.log("USB-NES mountpoint : ", mountpoint)
+            //console.log("USB-NES mountpoint : ", mountpoint)
             if(mountpoint.includes("/usb")) {
-                console.log("USB-NES cartridge plugged: ", cartridge_plugged)
+                //console.log("USB-NES cartridge plugged: ", cartridge_plugged)
                 //check any change ?
                 var readflag = api.internal.system.run("cat " + mountpoint + "/pixl-read.flag" + " | tr -d '\\n' | tr -d '\\r'");
-                console.log("USB-NES readflag: ", readflag);
+                //console.log("USB-NES readflag: ", readflag);
                 if(readflag !== "true"){
                     //get size of the rom detected
                     var romsize = api.internal.system.run("wc -c "+ mountpoint + "/rom.nes  | tr -d '\\n' | tr -d '\\r'");
-                    console.log("USB-NES romsize: ", romsize)
+                    //console.log("USB-NES romsize: ", romsize)
                     //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
                     var previousromcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                    console.log("USB-NES previousromcrc32: ", previousromcrc32)
+                    //console.log("USB-NES previousromcrc32: ", previousromcrc32)
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                     var romcrc32 = api.internal.system.run("crc32 " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r'");
-                    console.log("USB-NES romcrc32: ", romcrc32)
+                    //console.log("USB-NES romcrc32: ", romcrc32)
                     if((parseInt(romsize) > 16)){
+                        cartridge_plugged = true;
                         if(romcrc32 === previousromcrc32){
+                            gameCartridge_state = "reloaded";
                             //show popup to say that is a reset
                             apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("USB-NES cartridge reloaded"),"",2);
                         }
-                        cartridge_plugged = true;
                         //just set "cartridge" as title of this game (optional)
                         api.internal.singleplay.setTitle("cartridge");
                         //set rom full path
@@ -709,23 +713,22 @@ Window {
                         //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.rommd5");
                         //calculate sha1 for PRG-ROM/SHR-ROM
                         var romsha1=api.internal.system.run("python3 /recalbox/scripts/nes_tools/nes_header_tools.py " + mountpoint + " rom.nes | tr -d '\\n' | tr -d '\\r'");
-                        console.log("USB-NES romsha1: ", romsha1);
+                        //console.log("USB-NES romsha1: ", romsha1);
                         //get info from nes 2.0 DB xml file
                         var rominfo=api.internal.system.run("grep -i " + romsha1 + " /recalbox/scripts/nes_tools/nes20db.xml -A4 -B3 | grep -i '<game>' | sed -n 's/.*<!-- \\(.*\\).nes.*/\\1/p' | tr -d '\\n' | tr -d '\\r'");
-                        console.log("USB-NES rominfo: ", rominfo);
+                        //console.log("USB-NES rominfo: ", rominfo);
                         if(rominfo !== ""){
+                            gameCartridge_state = "identified";
                             gameCartridge = rominfo;
                             //rominfo.split('\\')[1] + " (" + rominfo.split('\\')[0].split(" ")[1] + ")" + " - " + rominfo.split('\\')[0].split(" ")[0];
-                            gameCartridge_name = rominfo.split('\\')[1];
-                            gameCartridge_system = "nes";
                             //to take first part that could contain type (licenced/playchoise/Vs. System/unlicensed...) and region (optionaly: PAL, North America, Japan, China, Taiwan & HongKong, ElseWhere, South Korea...)
                             //we will manage only cartdridge format and what we ahve with no-intro ;-)
                             var type_region = rominfo.split('\\')[0];
-                            console.log("USB-NES type_region: ", type_region);
+                            //console.log("USB-NES type_region: ", type_region);
                             gameCartridge_type = type_region.split(' ')[0];
-                            console.log("USB-NES gameCartridge_type: ", gameCartridge_type);
+                            //console.log("USB-NES gameCartridge_type: ", gameCartridge_type);
                             var region = type_region.replace(gameCartridge_type,"");
-                            console.log("USB-NES region: '", region,"'");
+                            //console.log("USB-NES region: '", region,"'");
                             if(region !== ""){
                                 var region_index = getRegionIndex(region);
                                 if(region_index !== -1){
@@ -734,14 +737,21 @@ Window {
                                 else gameCartridge_region = "";
                             }
                             else gameCartridge_region = "";
-                            console.log("USB-NES gameCartridge_region : ", gameCartridge_region);
+                            gameCartridge_system = "nes";
+                            //to do last because will trig changes++
+                            gameCartridge_name = rominfo.split('\\')[1];
                         }
                         else{
+                            //for message in dialog box
                             gameCartridge = qsTr("unknown game / not recognized");
+                            //to set data of game
+                            gameCartridge_region = "";
+                            gameCartridge_system = "nes";
+                            gameCartridge_state = "unknown";
+                            gameCartridge_name = "";
                         }
 
                         //propose cartridge dialog box in this case
-                        cartridgeDialogBoxLoader.focus = false; //to force switching
                         cartridgeDialogBoxLoader.visible = true; //to show
                         cartridgeDialogBoxLoader.focus = true; //to have focus
                     }
@@ -754,13 +764,26 @@ Window {
                         cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                         //show popup to say that game has been removed
                         apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("USB-NES cartridge unplugged"),"",3);
+                        gameCartridge_region = "";
+                        gameCartridge_system = "";
+                        gameCartridge_state = "unplugged"
+                        gameCartridge = "";
+
                     }
                     else if((parseInt(romsize) <= 16)){
                         cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
                         cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                         //show popup to alert that we didn't detected the game
                         apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("USB-NES no cartridge detected"),"",3);
+                        gameCartridge_region = "";
+                        gameCartridge_system = "";
+                        gameCartridge_state = ""
+                        gameCartridge = "";
                     }
+                    //console.log("USB-NES gameCartridge_region : ", gameCartridge_region);
+                    //console.log("USB-NES gameCartridge_system : ", gameCartridge_system);
+                    //console.log("USB-NES gameCartridge_state : ", gameCartridge_state);
+                    //console.log("USB-NES gameCartridge_name : ", gameCartridge_name);
                     //set read.flag to "true"
                     api.internal.system.run("echo '" + true + "' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/pixl-read.flag");
                 }
@@ -872,6 +895,13 @@ Window {
                 //remove cartridge also and stop timer to find roms/saves from USBNES
                 dialogBoxUSBNESDelay.cartridge_plugged = false;
                 dialogBoxUSBNESDelay.stop();
+                //for message in dialog box
+                gameCartridge = qsTr("usb-nes removed");
+                //to set data of game
+                gameCartridge_region = "";
+                gameCartridge_system = "nes";
+                gameCartridge_state = "disconnected";
+                gameCartridge_name = "";
             }
             else if(action.includes("usbnes-")){
                 var usbnesDevice = action.split("-")[1];
@@ -883,7 +913,7 @@ Window {
             }
         }
         function onEventLoadingStarted() {
-            console.log("onEventLoadingStarted()");
+            //console.log("onEventLoadingStarted()");
             splashScreen.focus = true;
             loadingState = true;
         }
