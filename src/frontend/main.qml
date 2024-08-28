@@ -655,6 +655,9 @@ Window {
         ListElement { region: "wor"; regex: "\\(.*world.*\\)|\\[.*world.*\\]"; nes20db: "Elsewhere"}
     }
 
+    //List of RETRODE SYSTEM (order is important, should be like in RETRODE.CFG
+    property string retrode_systems_list : "snes,megadrive,n64,gb,gba,mastersystem,gamegear"
+
     function getRegionIndex(nes20dbname){
         var regex = RegExp("^\\s*(.*?)\\s*$");
         var trimmedString = nes20dbname.replace(regex, "$1");
@@ -667,9 +670,9 @@ Window {
         return -1; //return if not found
     }
 
-    // Timer to show the dialog box for cartridge
+    // Timer to show the dialog box for cartridge (USB-NES)
     Timer {
-        id: dialogBoxUSBNESDelay
+        id: dialogBoxUSBNESTimer
         interval: 5000
         triggeredOnStart: false
         repeat: true
@@ -678,22 +681,22 @@ Window {
         property bool cartridge_plugged: false
         onTriggered: {
             var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint | tr -d '\\n' | tr -d '\\r'");
-            //console.log("USB-NES mountpoint : ", mountpoint)
+            console.log("USB-NES mountpoint : ", mountpoint)
             if(mountpoint.includes("/usb")) {
-                //console.log("USB-NES cartridge plugged: ", cartridge_plugged)
+                console.log("USB-NES cartridge plugged: ", cartridge_plugged)
                 //check any change ?
                 var readflag = api.internal.system.run("cat " + mountpoint + "/pixl-read.flag" + " | tr -d '\\n' | tr -d '\\r'");
-                //console.log("USB-NES readflag: ", readflag);
+                console.log("USB-NES readflag: ", readflag);
                 if(readflag !== "true"){
                     //get size of the rom detected
                     var romsize = api.internal.system.run("wc -c "+ mountpoint + "/rom.nes  | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("USB-NES romsize: ", romsize)
+                    console.log("USB-NES romsize: ", romsize)
                     //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
                     var previousromcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("USB-NES previousromcrc32: ", previousromcrc32)
+                    console.log("USB-NES previousromcrc32: ", previousromcrc32)
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                     var romcrc32 = api.internal.system.run("crc32 " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("USB-NES romcrc32: ", romcrc32)
+                    console.log("USB-NES romcrc32: ", romcrc32)
                     if((parseInt(romsize) > 16)){
                         cartridge_plugged = true;
                         if(romcrc32 === previousromcrc32){
@@ -793,6 +796,130 @@ Window {
         }
     }
 
+    // Timer to show the dialog box for cartridge (RETRODE)
+    Timer {
+        id: dialogBoxRETRODETimer
+        interval: 5000
+        triggeredOnStart: false
+        repeat: true
+        //running: (splashScreen.focus || isDebugEnv()) ? false : true
+        running: (splashScreen.focus) ? false : true
+        property bool cartridge_plugged: false
+        onTriggered: {
+            var mountpoint = api.internal.system.run("cat /tmp/RETRODE.mountpoint | tr -d '\\n' | tr -d '\\r'");
+            console.log("RETRODE mountpoint : ", mountpoint)
+            if(mountpoint.includes("/usb")) {
+                console.log("RETRODE cartridge plugged: ", cartridge_plugged)
+                //get list of extensions from RETRODE.CFG (always with this order in this file after restart and conf : snes,megadrive,n64,gb,gba,mastersystem,gamegear)
+                console.log("grep -i 'RomExt' "+ mountpoint + "/RETRODE.CFG  | awk -F' ' '{print $2}' | paste -s -d ',' | tr -d '\\n' | tr -d '\\r'");
+                var romsExt = api.internal.system.run("grep -i 'RomExt' "+ mountpoint + "/RETRODE.CFG  | awk -F' ' '{print $2}' | paste -s -d ',' | tr -d '\\n' | tr -d '\\r'");
+                console.log("RETRODE romsExt ",romsExt);
+                //find rom using existing extension
+                var fileFound = "";
+                var systemFound = "";
+                for(var i=0; i<7; i++){
+                    console.log("ls " + mountpoint + "/*." + romsExt.split(",")[i] + " 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
+                    fileFound = api.internal.system.run("ls " + mountpoint + "/*." + romsExt.split(",")[i] + " 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                    console.log("RETRODE fileFound for ",retrode_systems_list.split(",")[i], " : ", fileFound)
+                    if(fileFound !== ""){
+                        systemFound = retrode_systems_list.split(",")[i];
+                        console.log("RETRODE systemFound ",systemFound)
+                        break;
+                    }
+                }
+                //check if flag available
+                var readflag = api.internal.system.run("ls " + mountpoint + "/*.flag 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                if(fileFound !== "" && !readflag.includes("pixl-read")){
+                    //get size of the rom detected
+                    var romsize = api.internal.system.run("wc -c "+ fileFound + "  | tr -d '\\n' | tr -d '\\r'");
+                    console.log("RETRODE romsize: ", romsize)
+                    //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
+                    var previousromcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                    console.log("RETRODE previousromcrc32: ", previousromcrc32)
+                    //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
+                    var romcrc32 = api.internal.system.run("crc32 " + fileFound + " | tr -d '\\n' | tr -d '\\r'");
+                    console.log("RETRODE romcrc32: ", romcrc32)
+                    if(romcrc32 === previousromcrc32){
+                        gameCartridge_state = "reloaded";
+                        //show popup to say that is a reset
+                        apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("RETRODE cartridge reloaded"),"",2);
+                    }
+                    //just set "cartridge" as title of this game (optional)
+                    api.internal.singleplay.setTitle("cartridge");
+                    //set rom full path
+                    api.internal.singleplay.setFile(fileFound);
+                    //set system to select to run this rom
+                    api.internal.singleplay.setSystem(systemFound); //using shortName
+                    //store new crc32 (including complete path of rom) and store it for the moment
+                    api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.romcrc32");
+                    //RFU: generate md5 (including complete path of rom) and store it for the moment
+                    //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.rommd5");
+                    //get info from file name (first part)
+                    var rominfo=fileFound.replace(mountpoint + "/","");
+                    console.log("RETRODE rominfo: ", rominfo);
+                    if(rominfo !== ""){
+                        gameCartridge_state = "identified";
+                        //console.log("RETRODE gameCartridge_state: ", gameCartridge_state);
+                        gameCartridge = rominfo;
+                        //console.log("USB-RETRODE gameCartridge: ", gameCartridge);
+                        gameCartridge_type = ""; //empty for RETRODE
+                        //console.log("RETRODE gameCartridge_type: ", gameCartridge_type);
+                        gameCartridge_region = "";
+                        //console.log("RETRODE gameCartridge_region: ", gameCartridge_region);
+                        gameCartridge_system = systemFound;
+                        //to do last because will trig changes++
+                        gameCartridge_name = rominfo.split('.')[0];
+                    }
+                    else{
+                        //for message in dialog box
+                        gameCartridge = qsTr("unknown game / not recognized");
+                        //to set data of game
+                        gameCartridge_region = "";
+                        gameCartridge_system = systemFound;
+                        gameCartridge_state = "unknown";
+                        gameCartridge_name = "";
+                    }
+                    //propose cartridge dialog box in this case
+                    cartridgeDialogBoxLoader.visible = true; //to show
+                    cartridgeDialogBoxLoader.focus = true; //to have focus
+                }
+                else if(fileFound === "" && cartridge_plugged === true && readflag.includes("pixl-read")){
+                    cartridge_plugged = false;
+                    //remove potential previous files about rom
+                    api.internal.system.run("rm /tmp/RETRODE.romcrc32");
+                    //RFU: api.internal.system.run("rm /tmp/RETRODE.rommd5");
+                    cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
+                    cartridgeDialogBoxLoader.visible = false; //to hide if displayed
+                    //show popup to say that game has been removed
+                    apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("RETRODE cartridge unplugged"),"",3);
+                    gameCartridge = "";
+                    gameCartridge_region = "";
+                    gameCartridge_system = "";
+                    gameCartridge_state = "unplugged";
+                    gameCartridge_name = "";
+                }
+                else if(!readflag.includes("pixl-read")){
+                    cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
+                    cartridgeDialogBoxLoader.visible = false; //to hide if displayed
+                    //show popup to alert that we didn't detected the game
+                    apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("RETRODE no cartridge detected"),"",3);
+                    gameCartridge = "";
+                    gameCartridge_region = "";
+                    gameCartridge_system = "";
+                    gameCartridge_state = ""
+                    gameCartridge_name = "";
+                }
+                console.log("RETRODE gameCartridge (from file name) : ", gameCartridge);
+                console.log("RETRODE gameCartridge_region (no-intro regions) : ", gameCartridge_region);
+                console.log("RETRODE gameCartridge_system (pixL system shortname): ", gameCartridge_system);
+                console.log("RETRODE gameCartridge_state : ", gameCartridge_state);
+                console.log("RETRODE gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
+                //set read.flag but empty
+                api.internal.system.run("echo '' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/pixl-read.flag");
+            }
+        }
+    }
+
     //Event from API Back-end
     Connections {
         id: apiconnection
@@ -881,13 +1008,26 @@ Window {
             }
             else if(action === "retrode-remove"){
                 apiconnection.onShowPopup("Video game cartridge reader", "RETRODE removed","",3);
+                //remove potential previous files about rom
+                api.internal.system.run("rm /tmp/RETRODE.romcrc32");
+                api.internal.system.run("rm /tmp/RETRODE.rommd5");
+                //remove cartridge also and stop timer to find roms/saves from RETRODE
+                dialogBoxRETRODETimer.cartridge_plugged = false;
+                dialogBoxRETRODETimer.stop();
+                //for message in dialog box
+                gameCartridge = qsTr("retrode removed");
+                //to set data of game
+                gameCartridge_region = "";
+                gameCartridge_state = "disconnected";
+                gameCartridge_name = "";
             }
             else if(action.includes("retrode-")){
                 var retrodeDevice = action.split("-")[1];
                 var retrodeMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "RETRODE mounted from " + retrodeDevice + " to " + retrodeMountpoint,"",3);
-                //run timer to find roms/saves from any dumper
-                //TO DO
+                //run timer to find roms/saves from RETRODE
+                dialogBoxRETRODETimer.cartridge_plugged = false;
+                dialogBoxRETRODETimer.start();
             }
             else if(action === "usbnes-remove"){
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES removed","",3);
@@ -895,8 +1035,8 @@ Window {
                 api.internal.system.run("rm /tmp/USBNES.romcrc32");
                 api.internal.system.run("rm /tmp/USBNES.rommd5");
                 //remove cartridge also and stop timer to find roms/saves from USBNES
-                dialogBoxUSBNESDelay.cartridge_plugged = false;
-                dialogBoxUSBNESDelay.stop();
+                dialogBoxUSBNESTimer.cartridge_plugged = false;
+                dialogBoxUSBNESTimer.stop();
                 //for message in dialog box
                 gameCartridge = qsTr("usb-nes removed");
                 //to set data of game
@@ -910,8 +1050,8 @@ Window {
                 var usbnesMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES mounted from " + usbnesDevice + " to " + usbnesMountpoint,"",3);
                 //run timer to find roms/saves from USBNES
-                dialogBoxUSBNESDelay.cartridge_plugged = false;
-                dialogBoxUSBNESDelay.start();
+                dialogBoxUSBNESTimer.cartridge_plugged = false;
+                dialogBoxUSBNESTimer.start();
             }
         }
         function onEventLoadingStarted() {
