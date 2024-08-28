@@ -764,26 +764,28 @@ Window {
                         cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                         //show popup to say that game has been removed
                         apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("USB-NES cartridge unplugged"),"",3);
+                        gameCartridge = "";
                         gameCartridge_region = "";
                         gameCartridge_system = "";
-                        gameCartridge_state = "unplugged"
-                        gameCartridge = "";
-
+                        gameCartridge_state = "unplugged";
+                        gameCartridge_name = "";
                     }
                     else if((parseInt(romsize) <= 16)){
                         cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
                         cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                         //show popup to alert that we didn't detected the game
                         apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("USB-NES no cartridge detected"),"",3);
+                        gameCartridge = "";
                         gameCartridge_region = "";
                         gameCartridge_system = "";
                         gameCartridge_state = ""
-                        gameCartridge = "";
+                        gameCartridge_name = "";
                     }
-                    //console.log("USB-NES gameCartridge_region : ", gameCartridge_region);
-                    //console.log("USB-NES gameCartridge_system : ", gameCartridge_system);
-                    //console.log("USB-NES gameCartridge_state : ", gameCartridge_state);
-                    //console.log("USB-NES gameCartridge_name : ", gameCartridge_name);
+                    console.log("USB-NES gameCartridge (full description from NESDB 2.0) : ", gameCartridge);
+                    console.log("USB-NES gameCartridge_region (no-intro regions) : ", gameCartridge_region);
+                    console.log("USB-NES gameCartridge_system (pixL system shortname): ", gameCartridge_system);
+                    console.log("USB-NES gameCartridge_state : ", gameCartridge_state);
+                    console.log("USB-NES gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
                     //set read.flag to "true"
                     api.internal.system.run("echo '" + true + "' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/pixl-read.flag");
                 }

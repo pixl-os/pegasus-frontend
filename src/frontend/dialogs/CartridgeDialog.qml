@@ -199,7 +199,7 @@ FocusScope {
 
     onActiveFocusChanged: {
         //console.log("onActiveFocusChanged: ", activeFocus);
-        state = activeFocus ? "open" : "";
+        state = activeFocus ? "open" : "close";
         if (activeFocus){
             cancelButton.focus = true;
         }
@@ -228,6 +228,11 @@ FocusScope {
             //searchByName.filter = ".*Super.*Mario.*.*Bros.*.*3.*"
             searchByName.system = game_system;
             searchByName.region = game_region;
+            //reset picture in all cases
+            game_picture = "";
+            //force showing is needed
+            root.visible = true;
+            root.focus = true;
             //activate search at the end
             searchByName.activated = true;
         }
@@ -240,15 +245,12 @@ FocusScope {
             animation.running = false;
             //no animation
             animation.stop();
-            //show if needed
+            //force showing is needed
             root.visible = true;
             root.focus = true;
         }
         else if((game_name === "") && ((game_state === "unplugged") || (game_state === "disconnected"))){
-            //hide if needed
-            root.visible = false;
-            root.focus = false;
-            //console.log("gameChanged() : game ", game_state);
+            console.log("gameChanged() : game ", game_state);
             //deactivate search
             searchByName.activated = false;
             //keep empty in this case
@@ -256,6 +258,13 @@ FocusScope {
             animation.running = false;
             //no animation
             animation.stop();
+            //force hidding if needed
+            if(root.focus === true || root.visible === true)
+            {
+                root.cancel();
+            }
+            root.focus = false;
+            root.visible = false;
         }
     }
 
@@ -497,6 +506,12 @@ FocusScope {
             name: "open"
             PropertyChanges { target: shade; opacity: 0.8 }
             PropertyChanges { target: dialogBox; scale: 1 }
+        },
+        State {
+            name: "close"
+            PropertyChanges { target: shade; opacity: 0 }
+            PropertyChanges { target: dialogBox; scale: 0.5 }
         }
+
     ]
 }
