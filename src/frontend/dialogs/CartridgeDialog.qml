@@ -231,7 +231,7 @@ FocusScope {
             //activate search at the end
             searchByName.activated = true;
         }
-        else if(game_name === "" && (game_state === "unknown" || game_state === "unplugged" || game_state === "disconnected")){
+        else if((game_name === "") && (game_state === "unknown")){
             //console.log("gameChanged() : game Unknown");
             //deactivate search
             searchByName.activated = false;
@@ -240,8 +240,22 @@ FocusScope {
             animation.running = false;
             //no animation
             animation.stop();
+            //show if needed
             root.visible = true;
             root.focus = true;
+        }
+        else if((game_name === "") && ((game_state === "unplugged") || (game_state === "disconnected"))){
+            //hide if needed
+            root.visible = false;
+            root.focus = false;
+            //console.log("gameChanged() : game ", game_state);
+            //deactivate search
+            searchByName.activated = false;
+            //keep empty in this case
+            game_picture = "";
+            animation.running = false;
+            //no animation
+            animation.stop();
         }
     }
 
