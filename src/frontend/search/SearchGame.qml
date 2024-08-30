@@ -89,7 +89,8 @@ Item {
 
     //filter on CRC
     property string crc: ""
-    property var crcToFind: (crc === "" || crc === "00000000") ? false : true
+    property string crcUpperCase: crc.toUpperCase();
+    property var crcToFind: (crcUpperCase === "" || crcUpperCase === "00000000") ? false : true
 
     //FILTERING
     SortFilterProxyModel {
@@ -100,7 +101,7 @@ Item {
             [
             AnyOf{ // to propose to search by path or crc in some cases
                  enabled: crcToFind || filenameToFilter
-                 ValueFilter { roleName: "hash"; value: crc ; enabled: crcToFind}
+                 ValueFilter { roleName: "hash"; value: crcUpperCase ; enabled: crcToFind}
                  RegExpFilter { roleName: "path"; pattern: filenameRegEx ; caseSensitivity: Qt.CaseInsensitive; enabled: filenameToFilter}
             },
             ValueFilter { roleName: "favorite"; value: favoriteToFind ; enabled: favoriteToFind},
