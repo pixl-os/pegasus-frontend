@@ -14,6 +14,7 @@ FocusScope {
     property alias thirdchoice: cancelButtonText.text
 
     //game info
+    property string game_crc32: "" //contain the crc32 hash as in gamelist (working for SNES for the moment)
     property string game_system: "" //contain the shortname
     property string game_region: "" //contain region (no-intro format)
     property string game_type: "" //could contain the licence or type of cardridge
@@ -45,44 +46,47 @@ FocusScope {
     }
 
     SearchGame {
-        id: searchByName;
-        property bool titleMatched : false
+        id: searchGame;
+        property bool titleMatched : false // by default
+        property bool crc32Matched : false // by default
         property int resultIndex: -1
         activated: false
 
         onMaxChanged:{
-            //console.log("onMaxChanged - enabled :",searchByName.enabled);
-            //console.log("onMaxChanged - activated :",searchByName.activated);
-            //console.log("onMaxChanged - max :",searchByName.max);
+            //console.log("onMaxChanged - enabled :",searchGame.enabled);
+            //console.log("onMaxChanged - activated :",searchGame.activated);
+            //console.log("onMaxChanged - max :",searchGame.max);
             //console.log("onMaxChanged - game_name :",game_name);
-            //console.log("onMaxChanged - crc :",searchByName.crc);
-            //console.log("onMaxChanged - crcToFind :",searchByName.crcToFind);
-            //console.log("onMaxChanged - filename :",searchByName.filename);
-            //console.log("onMaxChanged - filenameRegEx :",searchByName.filenameRegEx);
-            //console.log("onMaxChanged - filenameToFilter :",searchByName.filenameToFilter);
-            //console.log("onMaxChanged - system :",searchByName.system);
-            //console.log("onMaxChanged - sytemToFind :",searchByName.systemToFilter);
-            //console.log("onMaxChanged - filter :",searchByName.filter);
-            //console.log("onMaxChanged - titleToFilter :",searchByName.titleToFilter);
-            //console.log("onMaxChanged - region :",searchByName.region);
-            //console.log("onMaxChanged - regionToFilter :",searchByName.regionToFilter);
+            //console.log("onMaxChanged - crc :",searchGame.crc);
+            //console.log("onMaxChanged - crcToFind :",searchGame.crcToFind);
+            //console.log("onMaxChanged - filename :",searchGame.filename);
+            //console.log("onMaxChanged - filenameRegEx :",searchGame.filenameRegEx);
+            //console.log("onMaxChanged - filenameToFilter :",searchGame.filenameToFilter);
+            //console.log("onMaxChanged - system :",searchGame.system);
+            //console.log("onMaxChanged - sytemToFind :",searchGame.systemToFilter);
+            //console.log("onMaxChanged - filter :",searchGame.filter);
+            //console.log("onMaxChanged - titleToFilter :",searchGame.titleToFilter);
+            //console.log("onMaxChanged - region :",searchGame.region);
+            //console.log("onMaxChanged - regionToFilter :",searchGame.regionToFilter);
 
             //init before
             //picture = "";
             //icon2 = "";
-            searchByName.titleMatched = false;
 
-            if((game_system === "") || (game_name === "") || (activated === false)) {
+            if((game_system === "") || ((game_name === "") && (game_crc32 === ""))  || (activated === false)) {
                 //do nothing to go quickly when it's not significant to proceed
+                //just reset for later
+                if(game_name === "") titleMatched = false;
+                if(game_crc32 === "") crc32Matched = false;
             }
             //parse only nb_results_max to avoid saturation of system if not found
-            else if (searchByName.max >= 1 && searchByName.max <= iNB_RESULTS_MAX) { //Title search and match
+            else if (searchGame.max >= 1 && searchGame.max <= iNB_RESULTS_MAX && (activated === true)) { //Title search and match
                 //init index
-                searchByName.resultIndex = -1;
-                //check if found by title
-                if(searchByName.titleMatched !== true){
+                searchGame.resultIndex = -1;
+                //check if not already found by title
+                if(searchGame.titleMatched !== true && searchGame.crc === ""){
                     var bestTitleFound = ""; // to track the best one found
-                    for(var j = 0;(j < searchByName.result.games.count) && (j < iNB_RESULTS_MAX);j++)
+                    for(var j = 0;(j < searchGame.result.games.count) && (j < iNB_RESULTS_MAX);j++)
                     {
                         //console.log("game title found:",result.games.get(j).title);
                         //console.log("game name to find:",game_name);
@@ -104,31 +108,49 @@ FocusScope {
                         //console.log("gameToCheck - step 2: ",gameToCheck);
                         //the idea is to compare game name/title lenghts and take the best one or matching exactly
                         if(gameToCheck.length === titleToCheck.length){ //best case ;-)
-                            searchByName.resultIndex = j;
-                            searchByName.titleMatched = true;
+                            searchGame.resultIndex = j;
+                            searchGame.titleMatched = true;
                             break;
                         }
                         else{ //else we will save the best one found
                             if(bestTitleFound === ""){ //first iteration (save first found)
                                bestTitleFound = titleToCheck;
-                               searchByName.resultIndex = j;
+                               searchGame.resultIndex = j;
                             }
                             else if((bestTitleFound.length - gameToCheck.length) > (titleToCheck.length - gameToCheck.length)){
                                 bestTitleFound = titleToCheck;
-                                searchByName.resultIndex = j;
+                                searchGame.resultIndex = j;
                             }
                         }
                     }
                     //if we don't match any , we will take the first one
-                    if(searchByName.resultIndex === -1) {
-                        searchByName.resultIndex = 0;
+                    if(searchGame.resultIndex === -1) {
+                        searchGame.resultIndex = 0;
+                    }
+                }
+                if(searchGame.crcMatched !== true && searchGame.crc !== ""){
+                    for(var j = 0;(j < searchGame.result.games.count) && (j < iNB_RESULTS_MAX);j++)
+                    {
+                        //console.log("game title found:",result.games.get(j).title);
+                        var crcToCheck = result.games.get(j).hash;
+                        //console.log("game crc to check:",crcToCheck);
+                        //console.log("searGame crc:",searchGame.crc);
+                        if(crcToCheck.toUpperCase() === searchGame.crc.toUpperCase()){ //best case ;-)
+                            searchGame.resultIndex = j;
+                            searchGame.crc32Matched = true;
+                            break;
+                        }
+                    }
+                    //if we don't match any , we will take the first one
+                    if(searchGame.resultIndex === -1) {
+                        searchGame.resultIndex = 0;
                     }
                 }
                 //console.log("game found/selected !!!");
-                //console.log("searchByName.resultIndex : ", searchByName.resultIndex);
-                //console.log("result.games.get(searchByName.resultIndex).title : ", result.games.get(searchByName.resultIndex).title)
-                if(searchByName.resultIndex !== -1) {
-                    game_picture = cartArt(result.games.get(searchByName.resultIndex));
+                //console.log("searchGame.resultIndex : ", searchGame.resultIndex);
+                //console.log("result.games.get(searchGame.resultIndex).title : ", result.games.get(searchGame.resultIndex).title)
+                if(searchGame.resultIndex !== -1) {
+                    game_picture = cartArt(result.games.get(searchGame.resultIndex));
                     if(game_state !== "reloaded"){
                         animation.running = true;
                         //start animation
@@ -197,6 +219,10 @@ FocusScope {
 
     focus: true
 
+    onFocusChanged: {
+        //console.log("onFocusChanged: ", focus);
+    }
+
     onActiveFocusChanged: {
         //console.log("onActiveFocusChanged: ", activeFocus);
         state = activeFocus ? "open" : "close";
@@ -206,40 +232,52 @@ FocusScope {
     }
 
     function gameChanged(){
-        //start search after focus
-        //check if both are not empty as deleted one
-        if(game_name !== "" && game_system !== "" && game_state !== "unknown"){
+        var game_criteria = "";
+        if(game_name !== "") game_criteria = game_name;
+        else if(game_crc32 !== "") game_criteria = game_crc32;
+
+        //start search after focus (by crc32 or name)
+        if(game_criteria !==""  && game_system !== "" && game_state !== "unknown"){
             //console.log("gameChanged() : game Changed");
             //deactivate during setup of search
-            searchByName.activated = false;
-            //we search by name and we clean it before if needed
-            var regex = RegExp("[^a-zA-Z0-9&.;\\s]");
-            // Matches non-alphanumeric characters, spaces and keep special characters: "&.;"
-            var outputString = game_name.replace(regex, " "); //replace other characters by spaces
-            //console.log("game name cleaned - step 1 : ",outputString);
-            outputString = outputString.replace("&amp;", "&"); //&amp; to &
-            //console.log("game name cleaned - step 2 : ",outputString);
-            //change filename to any regex (to replace spaces)
-            //replace space for regex expression
-            var nameRegExTemp = ".*" + outputString.replace(/\ /g, '.*');//to replace space by .* to convert to regex filter
-            //console.log("game name filter(regex) : ",nameRegExTemp);
-            searchByName.filter  = nameRegExTemp;
-            //hardcoded value for testing
-            //searchByName.filter = ".*Super.*Mario.*.*Bros.*.*3.*"
-            searchByName.system = game_system;
-            searchByName.region = game_region;
+            searchGame.activated = false;
+            if(game_crc32 === ""){ // search by name/region
+                //we search by name and we clean it before if needed
+                var regex = RegExp("[^a-zA-Z0-9&.;\\s]");
+                // Matches non-alphanumeric characters, spaces and keep special characters: "&.;"
+                var outputString = game_name.replace(regex, " "); //replace other characters by spaces
+                //console.log("game name cleaned - step 1 : ",outputString);
+                outputString = outputString.replace("&amp;", "&"); //&amp; to &
+                //console.log("game name cleaned - step 2 : ",outputString);
+                //change filename to any regex (to replace spaces)
+                //replace space for regex expression
+                var nameRegExTemp = ".*" + outputString.replace(/\ /g, '.*');//to replace space by .* to convert to regex filter
+                //console.log("game name filter(regex) : ",nameRegExTemp);
+                searchGame.filter  = nameRegExTemp;
+                //hardcoded value for testing
+                //searchGame.filter = ".*Super.*Mario.*.*Bros.*.*3.*"
+                searchGame.system = game_system;
+                searchGame.region = game_region;
+            }
+            else{ //search by crc32
+                //we search by crc32 and we clean it before if needed
+                searchGame.filter  = "";
+                searchGame.system = game_system;
+                searchGame.region = "";
+                searchGame.crc = game_crc32;
+            }
             //reset picture in all cases
             game_picture = "";
             //force showing is needed
             root.visible = true;
             root.focus = true;
             //activate search at the end
-            searchByName.activated = true;
+            searchGame.activated = true;
         }
-        else if((game_name === "") && (game_state === "unknown")){
+        else if((game_criteria === "") && (game_state === "unknown")){
             //console.log("gameChanged() : game Unknown");
             //deactivate search
-            searchByName.activated = false;
+            searchGame.activated = false;
             //keep empty in this case
             game_picture = "";
             animation.running = false;
@@ -249,10 +287,10 @@ FocusScope {
             root.visible = true;
             root.focus = true;
         }
-        else if((game_name === "") && ((game_state === "unplugged") || (game_state === "disconnected"))){
-            console.log("gameChanged() : game ", game_state);
+        else if((game_criteria === "") && ((game_state === "unplugged") || (game_state === "disconnected"))){
+            //console.log("gameChanged() : game ", game_state);
             //deactivate search
-            searchByName.activated = false;
+            searchGame.activated = false;
             //keep empty in this case
             game_picture = "";
             animation.running = false;
@@ -266,6 +304,11 @@ FocusScope {
             root.focus = false;
             root.visible = false;
         }
+    }
+
+    onGame_crc32Changed : {
+        //console.log("onGame_crc32Changed : ", game_crc32);
+        gameChanged();
     }
 
     onGame_stateChanged : {
@@ -303,7 +346,7 @@ FocusScope {
 
         width: parent.height * 0.8
         anchors.centerIn: parent
-        scale: 0.5
+        scale: 1 //0.5
 
         Behavior on scale { NumberAnimation { duration: 125 } }
 
