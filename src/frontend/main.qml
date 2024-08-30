@@ -598,6 +598,7 @@ Window {
                 api.internal.singleplay.setSystem(gameCdRom); //using shortName
             }
             else{
+                gameCdRom = "";
                 cdRomDialogBoxLoader.focus = false;
                 cdRomDialogBoxLoader.visible = false;
             }
@@ -1061,6 +1062,7 @@ Window {
             else if(action === "cdrom-eject"){
                 apiconnection.onShowPopup("Video game CD-ROM reader", "CD-ROM ejected","",3);
                 cdRomDialogBoxTimer.stop();
+                gameCdRom = "";
             }
             else if(action.includes("cdrom-")){
                 var cdromDevice = action.split("-")[1];

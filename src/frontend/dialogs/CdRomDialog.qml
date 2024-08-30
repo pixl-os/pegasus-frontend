@@ -78,22 +78,51 @@ FocusScope {
     visible: shade.opacity > 0
 
     focus: true
+
+    onFocusChanged: {
+        //console.log("onFocusChanged: ", focus);
+    }
+
     onActiveFocusChanged: {
-        state = activeFocus ? "open" : "";
-        if (activeFocus)
+        //console.log("onActiveFocusChanged: ", activeFocus);
+        state = activeFocus ? "open" : "close";
+        if (activeFocus){
             cancelButton.focus = true;
+        }
+    }
+
+    onSystemChanged: {
+        if (system === ""){
+            //stop animation
+            animation.running = false;
+            animation.stop();
+            if(root.focus === true || root.visible === true){
+                root.cancel();
+            }
+            root.focus = false;
+            root.visible = false;
+        }
+        else{
+            //start animation
+            animation.running = true;
+            animation.start();
+            root.focus = true;
+            root.visible = true;
+        }
     }
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
+            root.visible = false;
+            root.focus = false;
             root.cancel();
         }
     }
 
     Shade {
         id: shade
-        onCancel: root.cancel()
+        onCancel: root.cancel();
     }
 
     // actual dialog
@@ -107,7 +136,7 @@ FocusScope {
 
         width: parent.height * 0.8
         anchors.centerIn: parent
-        scale: 0.5
+        scale: 1 //0.5
 
         Behavior on scale { NumberAnimation { duration: 125 } }
 
@@ -128,6 +157,7 @@ FocusScope {
                     horizontalCenter: parent.horizontalCenter
                 }
                 NumberAnimation on rotation {
+                    id: animation
                     from: 0; to: 1080 * 6
                     running: cdRomPopupLoader.visible === true
                     loops: Animation.Infinite
@@ -269,6 +299,8 @@ FocusScope {
                 Keys.onPressed: {
                     if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                         event.accepted = true;
+                        root.visible = false;
+                        root.focus = false;
                         root.cancel();
                     }
                 }
@@ -302,6 +334,12 @@ FocusScope {
             name: "open"
             PropertyChanges { target: shade; opacity: 0.8 }
             PropertyChanges { target: dialogBox; scale: 1 }
+        },
+        State {
+            name: "close"
+            PropertyChanges { target: shade; opacity: 0 }
+            PropertyChanges { target: dialogBox; scale: 0.5 }
         }
+
     ]
 }
