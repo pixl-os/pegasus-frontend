@@ -627,6 +627,8 @@ Window {
     property string gameCartridge_system: ""
     property string gameCartridge_type: ""
     property string gameCartridge_region: ""
+    property string gameCartridge_crc32: "" //use for SNES/SFC for the moment
+
 
     Component {
         id: cartridgeDialogBox
@@ -637,6 +639,7 @@ Window {
             firstchoice: qsTr("Launch")
             secondchoice: ""
             thirdchoice: qsTr("Back")
+            game_crc32: gameCartridge_crc32
             game_region: gameCartridge_region
             game_system: gameCartridge_system
             game_type: gameCartridge_type
@@ -681,22 +684,22 @@ Window {
         property bool cartridge_plugged: false
         onTriggered: {
             var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint | tr -d '\\n' | tr -d '\\r'");
-            console.log("USB-NES mountpoint : ", mountpoint)
+            //console.log("USB-NES mountpoint : ", mountpoint)
             if(mountpoint.includes("/usb")) {
-                console.log("USB-NES cartridge plugged: ", cartridge_plugged)
+                //console.log("USB-NES cartridge plugged: ", cartridge_plugged)
                 //check any change ?
                 var readflag = api.internal.system.run("cat " + mountpoint + "/pixl-read.flag" + " | tr -d '\\n' | tr -d '\\r'");
-                console.log("USB-NES readflag: ", readflag);
+                //console.log("USB-NES readflag: ", readflag);
                 if(readflag !== "true"){
                     //get size of the rom detected
                     var romsize = api.internal.system.run("wc -c "+ mountpoint + "/rom.nes  | tr -d '\\n' | tr -d '\\r'");
-                    console.log("USB-NES romsize: ", romsize)
+                    //console.log("USB-NES romsize: ", romsize)
                     //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
                     var previousromcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                    console.log("USB-NES previousromcrc32: ", previousromcrc32)
+                    //console.log("USB-NES previousromcrc32: ", previousromcrc32)
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                     var romcrc32 = api.internal.system.run("crc32 " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r'");
-                    console.log("USB-NES romcrc32: ", romcrc32)
+                    //console.log("USB-NES romcrc32: ", romcrc32)
                     if((parseInt(romsize) > 16)){
                         cartridge_plugged = true;
                         if(romcrc32 === previousromcrc32){
@@ -807,23 +810,23 @@ Window {
         property bool cartridge_plugged: false
         onTriggered: {
             var mountpoint = api.internal.system.run("cat /tmp/RETRODE.mountpoint | tr -d '\\n' | tr -d '\\r'");
-            console.log("RETRODE mountpoint : ", mountpoint)
+            //console.log("RETRODE mountpoint : ", mountpoint)
             if(mountpoint.includes("/usb")) {
-                console.log("RETRODE cartridge plugged: ", cartridge_plugged)
+                //console.log("RETRODE cartridge plugged: ", cartridge_plugged)
                 //get list of extensions from RETRODE.CFG (always with this order in this file after restart and conf : snes,megadrive,n64,gb,gba,mastersystem,gamegear)
-                console.log("grep -i 'RomExt' "+ mountpoint + "/RETRODE.CFG  | awk -F' ' '{print $2}' | paste -s -d ',' | tr -d '\\n' | tr -d '\\r'");
+                //console.log("grep -i 'RomExt' "+ mountpoint + "/RETRODE.CFG  | awk -F' ' '{print $2}' | paste -s -d ',' | tr -d '\\n' | tr -d '\\r'");
                 var romsExt = api.internal.system.run("grep -i 'RomExt' "+ mountpoint + "/RETRODE.CFG  | awk -F' ' '{print $2}' | paste -s -d ',' | tr -d '\\n' | tr -d '\\r'");
-                console.log("RETRODE romsExt ",romsExt);
+                //console.log("RETRODE romsExt ",romsExt);
                 //find rom using existing extension
                 var fileFound = "";
                 var systemFound = "";
                 for(var i=0; i<7; i++){
-                    console.log("ls " + mountpoint + "/*." + romsExt.split(",")[i] + " 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
+                    //console.log("ls " + mountpoint + "/*." + romsExt.split(",")[i] + " 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
                     fileFound = api.internal.system.run("ls " + mountpoint + "/*." + romsExt.split(",")[i] + " 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                    console.log("RETRODE fileFound for ",retrode_systems_list.split(",")[i], " : ", fileFound)
+                    //console.log("RETRODE fileFound for ",retrode_systems_list.split(",")[i], " : ", fileFound)
                     if(fileFound !== ""){
                         systemFound = retrode_systems_list.split(",")[i];
-                        console.log("RETRODE systemFound ",systemFound)
+                        //console.log("RETRODE systemFound : ",systemFound)
                         break;
                     }
                 }
@@ -832,13 +835,13 @@ Window {
                 if(fileFound !== "" && !readflag.includes("pixl-read")){
                     //get size of the rom detected
                     var romsize = api.internal.system.run("wc -c "+ fileFound + "  | tr -d '\\n' | tr -d '\\r'");
-                    console.log("RETRODE romsize: ", romsize)
+                    //console.log("RETRODE romsize: ", romsize)
                     //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
                     var previousromcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                    console.log("RETRODE previousromcrc32: ", previousromcrc32)
+                    //console.log("RETRODE previousromcrc32: ", previousromcrc32)
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                     var romcrc32 = api.internal.system.run("crc32 " + fileFound + " | tr -d '\\n' | tr -d '\\r'");
-                    console.log("RETRODE romcrc32: ", romcrc32)
+                    //console.log("RETRODE romcrc32: ", romcrc32)
                     if(romcrc32 === previousromcrc32){
                         gameCartridge_state = "reloaded";
                         //show popup to say that is a reset
@@ -856,28 +859,22 @@ Window {
                     //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.rommd5");
                     //get info from file name (first part)
                     var rominfo=fileFound.replace(mountpoint + "/","");
-                    console.log("RETRODE rominfo: ", rominfo);
+                    //console.log("RETRODE rominfo: ", rominfo);
                     if(rominfo !== ""){
                         gameCartridge_state = "identified";
                         //console.log("RETRODE gameCartridge_state: ", gameCartridge_state);
                         gameCartridge = rominfo;
-                        //console.log("USB-RETRODE gameCartridge: ", gameCartridge);
+                        //console.log("RETRODE gameCartridge: ", gameCartridge);
                         gameCartridge_type = ""; //empty for RETRODE
                         //console.log("RETRODE gameCartridge_type: ", gameCartridge_type);
                         gameCartridge_region = "";
                         //console.log("RETRODE gameCartridge_region: ", gameCartridge_region);
+                        gameCartridge_name = ""; //let it empty to search only by crc32
+                        //console.log("RETRODE gameCartridge_name: ", gameCartridge_name);
                         gameCartridge_system = systemFound;
-                        //to do last because will trig changes++
-                        gameCartridge_name = rominfo.split('.')[0];
-                    }
-                    else{
-                        //for message in dialog box
-                        gameCartridge = qsTr("unknown game / not recognized");
-                        //to set data of game
-                        gameCartridge_region = "";
-                        gameCartridge_system = systemFound;
-                        gameCartridge_state = "unknown";
-                        gameCartridge_name = "";
+                        //to do last because will trig changes
+                        gameCartridge_crc32 = romcrc32.split(" ")[0];//need to take first part only because file name/path is inlcuded in result of CRC32 calculation
+                        //console.log("RETRODE gameCartridge_crc32: ", gameCartridge_crc32);
                     }
                     //propose cartridge dialog box in this case
                     cartridgeDialogBoxLoader.visible = true; //to show
@@ -895,6 +892,7 @@ Window {
                     gameCartridge = "";
                     gameCartridge_region = "";
                     gameCartridge_system = "";
+                    gameCartridge_crc32 = "";
                     gameCartridge_state = "unplugged";
                     gameCartridge_name = "";
                 }
@@ -906,12 +904,14 @@ Window {
                     gameCartridge = "";
                     gameCartridge_region = "";
                     gameCartridge_system = "";
+                    gameCartridge_crc32 = "";
                     gameCartridge_state = ""
                     gameCartridge_name = "";
                 }
                 console.log("RETRODE gameCartridge (from file name) : ", gameCartridge);
                 console.log("RETRODE gameCartridge_region (no-intro regions) : ", gameCartridge_region);
                 console.log("RETRODE gameCartridge_system (pixL system shortname): ", gameCartridge_system);
+                console.log("RETRODE gameCartridge_crc32 (as in gamelist for snes): ", gameCartridge_crc32);
                 console.log("RETRODE gameCartridge_state : ", gameCartridge_state);
                 console.log("RETRODE gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
                 //set read.flag but empty
