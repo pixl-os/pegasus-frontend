@@ -527,14 +527,14 @@ Window {
         function onClose() { content.focus = true; }
     }
 
-    //cdRomPopup loader/connection/component/timer
+    //cdRomDialogBox loader/connection/component/timer
     Loader {
-        id: cdRomPopupLoader
+        id: cdRomDialogBoxLoader
         anchors.fill: parent
-        sourceComponent: cdRomPopup
+        sourceComponent: cdRomDialogBox
     }
     Connections {
-        target: cdRomPopupLoader.item
+        target: cdRomDialogBoxLoader.item
 
         function onAccept() {
             content.focus = true;
@@ -560,7 +560,7 @@ Window {
     property string gameCdRom: ""
 
     Component {
-        id: cdRomPopup
+        id: cdRomDialogBox
         CdRomDialog
         {
             focus: true
@@ -576,7 +576,7 @@ Window {
 
     // Timer to show the popup cdrom
     Timer {
-        id: popupCdromDelay
+        id: cdRomDialogBoxTimer
 
         interval: 5000
         triggeredOnStart: false
@@ -588,13 +588,18 @@ Window {
             if(CdConf.includes("system =")) {
                 gameCdRom = CdConf.split(' ')[2];
                 //console.log("gameCdRom : ", gameCdRom)
-                cdRomPopupLoader.focus = true;
+                cdRomDialogBoxLoader.visible = true;
+                cdRomDialogBoxLoader.focus = true;
                 //just set "cdrom" as title of this game (optional)
                 api.internal.singleplay.setTitle("cdrom");
                 //set rom full path
                 api.internal.singleplay.setFile("cdrom://drive1.cue");
                 //set system to select to run this rom
                 api.internal.singleplay.setSystem(gameCdRom); //using shortName
+            }
+            else{
+                cdRomDialogBoxLoader.focus = false;
+                cdRomDialogBoxLoader.visible = false;
             }
         }
     }
@@ -1052,6 +1057,16 @@ Window {
                 //run timer to find roms/saves from USBNES
                 dialogBoxUSBNESTimer.cartridge_plugged = false;
                 dialogBoxUSBNESTimer.start();
+            }
+            else if(action === "cdrom-eject"){
+                apiconnection.onShowPopup("Video game CD-ROM reader", "CD-ROM ejected","",3);
+                cdRomDialogBoxTimer.stop();
+            }
+            else if(action.includes("cdrom-")){
+                var cdromDevice = action.split("-")[1];
+                var cdromMountpoint = action.split("-")[2];
+                apiconnection.onShowPopup("Video game CD-ROM reader", "CD-ROM mounted from " + cdromDevice + " to " + cdromMountpoint,"",3);
+                cdRomDialogBoxTimer.start();
             }
         }
         function onEventLoadingStarted() {
