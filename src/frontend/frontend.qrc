@@ -273,5 +273,6 @@
         <file>menu/settings/common/MulticheckOption.qml</file>
         <file>menu/settings/AdvancedDirectoriesConf.qml</file>
         <file>dialogs/CartridgeDialog.qml</file>
+        <file>menu/settings/GameDumperReaderSettings.qml</file>
     </qresource>
 </RCC>

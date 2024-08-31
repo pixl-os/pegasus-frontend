@@ -692,7 +692,11 @@ Window {
         running: (splashScreen.focus) ? false : true
         property bool cartridge_plugged: false
         onTriggered: {
-            var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint | tr -d '\\n' | tr -d '\\r'");
+            if (!api.internal.recalbox.getBoolParameter("dumpers.usbnes.enabled",false)){
+                //do nothing if not enabled but we keep timer running for detection
+                return;
+            }
+            var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
             //console.log("USB-NES mountpoint : ", mountpoint)
             if(mountpoint.includes("/usb")) {
                 //console.log("USB-NES cartridge plugged: ", cartridge_plugged)
@@ -818,7 +822,11 @@ Window {
         running: (splashScreen.focus) ? false : true
         property bool cartridge_plugged: false
         onTriggered: {
-            var mountpoint = api.internal.system.run("cat /tmp/RETRODE.mountpoint | tr -d '\\n' | tr -d '\\r'");
+            if (!api.internal.recalbox.getBoolParameter("dumpers.retrode.enabled",false)){
+                //do nothing if not enabled but we keep timer running for detection
+                return;
+            }
+            var mountpoint = api.internal.system.run("cat /tmp/RETRODE.mountpoint 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
             //console.log("RETRODE mountpoint : ", mountpoint)
             if(mountpoint.includes("/usb")) {
                 //console.log("RETRODE cartridge plugged: ", cartridge_plugged)
@@ -1015,7 +1023,7 @@ Window {
                 powerDialog.item.message = qsTr("USB device removed, do you want to refresh list of games ?");
                 powerDialog.focus = true;
             }
-            else if(action === "retrode-remove"){
+            else if(action === "retrode-remove" && api.internal.recalbox.getBoolParameter("dumpers.retrode.enabled",false)){
                 apiconnection.onShowPopup("Video game cartridge reader", "RETRODE removed","",3);
                 //remove potential previous files about rom
                 api.internal.system.run("rm /tmp/RETRODE.romcrc32");
@@ -1030,7 +1038,7 @@ Window {
                 gameCartridge_state = "disconnected";
                 gameCartridge_name = "";
             }
-            else if(action.includes("retrode-")){
+            else if(action.includes("retrode-") && api.internal.recalbox.getBoolParameter("dumpers.retrode.enabled",false)){
                 var retrodeDevice = action.split("-")[1];
                 var retrodeMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "RETRODE mounted from " + retrodeDevice + " to " + retrodeMountpoint,"",3);
@@ -1038,7 +1046,7 @@ Window {
                 dialogBoxRETRODETimer.cartridge_plugged = false;
                 dialogBoxRETRODETimer.start();
             }
-            else if(action === "usbnes-remove"){
+            else if(action === "usbnes-remove"  && api.internal.recalbox.getBoolParameter("dumpers.usbnes.enabled",false)){
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES removed","",3);
                 //remove potential previous files about rom
                 api.internal.system.run("rm /tmp/USBNES.romcrc32");
@@ -1054,7 +1062,7 @@ Window {
                 gameCartridge_state = "disconnected";
                 gameCartridge_name = "";
             }
-            else if(action.includes("usbnes-")){
+            else if(action.includes("usbnes-")  && api.internal.recalbox.getBoolParameter("dumpers.usbnes.enabled",false)){
                 var usbnesDevice = action.split("-")[1];
                 var usbnesMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES mounted from " + usbnesDevice + " to " + usbnesMountpoint,"",3);

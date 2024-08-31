@@ -1,0 +1,184 @@
+// Pegasus Frontend
+// Created by BozoTheGeek 31/08/2024
+
+import "common"
+import "qrc:/qmlutils" as PegasusUtils
+import QtQuick 2.12
+import QtQuick.Window 2.12
+
+FocusScope {
+    id: root
+
+    signal close
+
+    anchors.fill: parent
+    enabled: focus
+    visible: 0 < (x + width) && x < Window.window.width
+
+    Keys.onPressed: {
+        if (api.keys.isCancel(event) && !event.isAutoRepeat) {
+            event.accepted = true;
+            root.close();
+        }
+    }
+    PegasusUtils.HorizontalSwipeArea {
+        anchors.fill: parent
+        onSwipeRight: root.close()
+    }
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: root.close()
+    }
+    ScreenHeader {
+        id: header
+        text: qsTr("Games > Game Reader/Dumper settings") + api.tr
+        z: 2
+    }
+
+    Flickable {
+        id: container
+
+        width: content.width
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: header.bottom
+        anchors.bottom: parent.bottom
+
+        contentWidth: content.width
+        contentHeight: content.height
+
+        Behavior on contentY { PropertyAnimation { duration: 100 } }
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
+
+        readonly property int yBreakpoint: height * 0.7
+        readonly property int maxContentY: contentHeight - height
+
+        function onFocus(item) {
+            if (item.focus)
+                contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
+        }
+        FocusScope {
+            id: content
+
+            focus: true
+            enabled: focus
+
+            width: contentColumn.width
+            height: contentColumn.height
+
+            Column {
+                id: contentColumn
+                spacing: vpx(5)
+
+                width: root.width * 0.7
+                height: implicitHeight
+
+                Item {
+                    width: parent.width
+                    height: implicitHeight + vpx(30)
+                }
+
+                ToggleOption {
+                    id: optUSBNESDumper
+                    //dumpers.usbnes.enabled=0
+                    // set focus only on first item
+                    focus: true
+                    SectionTitle {
+                        text: qsTr("USB-NES dumper") + api.tr
+                        first: true
+                    }
+
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.enabled",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.enabled",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.usbnes.enabled",checked);
+                        }
+                    }
+                    symbol: "\uf29a"
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optUSBNESReadSave
+                }
+                ToggleOption {
+                    id: optUSBNESReadSave
+                    //dumpers.usbnes.readsave=0 by default
+                    label: qsTr("'Save' file reading from cartridge") + api.tr
+                    note: qsTr("Enable read of your 'Save' from cartridge\n(USB-NES should connected/resetted after configuration change)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.readsave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.readsave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.usbnes.readsave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optUSBNESWriteSave
+                    visible: optUSBNESDumper.checked
+                }
+                ToggleOption {
+                    id: optUSBNESWriteSave
+                    //dumpers.usbnes.writesave=0 by default
+                    label: qsTr("'Save' file writing to cartridge") + api.tr
+                    note: qsTr("Enable write of save to cartridge\n(USB-NES should connected/resetted after configuration change)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.writesave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.writesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.usbnes.writesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRETRODEDumper
+                    visible: optUSBNESDumper.checked
+                }
+                ToggleOption {
+                    id: optRETRODEDumper
+                    //dumpers.retrode.enabled=0
+                    SectionTitle {
+                        text: qsTr("RETRODE dumper") + api.tr
+                        first: true
+                    }
+
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.enabled",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.enabled",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.enabled",checked);
+                        }
+                    }
+                    symbol: "\uf29a"
+                    onFocusChanged: container.onFocus(this)
+                    //KeyNavigation.down: optUSBNESReadSave
+                }
+                Item {
+                    width: parent.width
+                    height: implicitHeight + vpx(30)
+                }
+            }
+        }
+    }
+
+    MultivalueBox {
+        id: parameterslistBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
+
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+
+        onClose: content.focus = true
+        onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+}

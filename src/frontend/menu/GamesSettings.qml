@@ -51,6 +51,7 @@ FocusScope {
         onOpenBiosCheckingSettings: root.openScreen("settings/BiosChecking.qml")
         onOpenSystemsAdvancedEmulatorSettings: root.openScreen("settings/SystemsAdvancedEmulatorSettings.qml")
         onOpenAdvancedEmulatorSettings: root.openScreen("settings/AdvancedEmulatorSettings.qml")
+        onOpenGameDumperReaderSettings: root.openScreen("settings/GameDumperReaderSettings.qml")
     }
     Loader {
         id: modal
