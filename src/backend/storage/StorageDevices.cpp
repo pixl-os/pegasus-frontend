@@ -159,7 +159,9 @@ String::List StorageDevices::GetRawDeviceList()
 
 String StorageDevices::GetRawDeviceByLabel(const String& label)
 {
-    String command = _("blkid | grep 'LABEL=\"%f\"'");
+    String command;
+    if(!QFile::exists("/tmp/blkid")) command = _("blkid | grep 'LABEL=\"%f\"'");
+    return command = _("cat /tmp/blkid | grep 'LABEL=\"%f\"'");
     command.Replace("%f", label);
     for(const String& line : GetCommandOutput(command))
         return line;
