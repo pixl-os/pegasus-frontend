@@ -758,6 +758,7 @@ Window {
                             else gameCartridge_region = "";
                             gameCartridge_system = "nes";
                             //to do last because will trig changes++
+                            gameCartridge_crc32 = "";
                             gameCartridge_name = rominfo.split('\\')[1];
                         }
                         else{
@@ -767,6 +768,7 @@ Window {
                             gameCartridge_region = "";
                             gameCartridge_system = "nes";
                             gameCartridge_state = "unknown";
+                            gameCartridge_crc32 = "";
                             gameCartridge_name = "";
                         }
 
@@ -787,6 +789,7 @@ Window {
                         gameCartridge_region = "";
                         gameCartridge_system = "";
                         gameCartridge_state = "unplugged";
+                        gameCartridge_crc32 = "";
                         gameCartridge_name = "";
                     }
                     else if((parseInt(romsize) <= 16)){
@@ -797,7 +800,8 @@ Window {
                         gameCartridge = "";
                         gameCartridge_region = "";
                         gameCartridge_system = "";
-                        gameCartridge_state = ""
+                        gameCartridge_state = "";
+                        gameCartridge_crc32 = "";
                         gameCartridge_name = "";
                     }
                     console.log("USB-NES gameCartridge (full description from NESDB 2.0) : ", gameCartridge);
