@@ -170,6 +170,14 @@ FocusScope {
                 }
                 //console.log("game picture to use: ", game_picture)
             }
+            //to remove image/stop animation if no game found
+            else if (searchGame.max === 0){
+                //keep empty in this case
+                game_picture = "";
+                animation.running = false;
+                //no animation
+                animation.stop();
+            }
         }
     }
 
@@ -237,11 +245,11 @@ FocusScope {
         else if(game_crc32 !== "") game_criteria = game_crc32;
 
         //start search after focus (by crc32 or name)
-        if(game_criteria !==""  && game_system !== "" && game_state !== "unknown"){
+        if(game_criteria !==""  && game_system !== "" && game_state !== "unknown" && game_state !== "unplugged" && game_state !== "disconnected"){
             //console.log("gameChanged() : game Changed");
             //deactivate during setup of search
             searchGame.activated = false;
-            if(game_crc32 === ""){ // search by name/region
+            if(game_crc32 === ""){ // search by name/region/system
                 //we search by name and we clean it before if needed
                 var regex = RegExp("[^a-zA-Z0-9&.;\\s]");
                 // Matches non-alphanumeric characters, spaces and keep special characters: "&.;"
@@ -253,13 +261,14 @@ FocusScope {
                 //replace space for regex expression
                 var nameRegExTemp = ".*" + outputString.replace(/\ /g, '.*');//to replace space by .* to convert to regex filter
                 //console.log("game name filter(regex) : ",nameRegExTemp);
+                searchGame.crc = "";
                 searchGame.filter  = nameRegExTemp;
                 //hardcoded value for testing
                 //searchGame.filter = ".*Super.*Mario.*.*Bros.*.*3.*"
                 searchGame.system = game_system;
                 searchGame.region = game_region;
             }
-            else{ //search by crc32
+            else{ //search by crc32/system
                 //we search by crc32 and we clean it before if needed
                 searchGame.filter  = "";
                 searchGame.system = game_system;
@@ -287,7 +296,8 @@ FocusScope {
             root.visible = true;
             root.focus = true;
         }
-        else if((game_criteria === "") && ((game_state === "unplugged") || (game_state === "disconnected"))){
+        //else if((game_criteria === "") && ((game_state === "unplugged") || (game_state === "disconnected"))){
+        else if((game_state === "unplugged") || (game_state === "disconnected")){
             //console.log("gameChanged() : game ", game_state);
             //deactivate search
             searchGame.activated = false;
