@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+// Update by Sebio 30/08/2024
 
 #include "SkraperAssetsProvider.h"
 
@@ -89,6 +89,28 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
             QStringLiteral("screenshottitle"),
             QStringLiteral("image"),
             QStringLiteral("images"),
+        }},
+        { AssetType::FULLMEDIA, {         
+            QStringLiteral("mix"),
+            QStringLiteral("fanart"),
+            QStringLiteral("screenshot"),
+            QStringLiteral("screenshottitle"),
+            QStringLiteral("image"),
+            QStringLiteral("images"),
+            QStringLiteral("thumbnail"),
+            QStringLiteral("extra1"),
+            QStringLiteral("box3d"),
+            QStringLiteral("boxfront"),
+            QStringLiteral("boxFront"),
+            QStringLiteral("box2dfront"),
+            QStringLiteral("support"),
+            QStringLiteral("supporttexture"),
+            QStringLiteral("boxback"),
+            QStringLiteral("boxBack"),
+            QStringLiteral("box2dback"),
+            QStringLiteral("boxfull"),
+            QStringLiteral("boxFull"),
+            QStringLiteral("boxtexture"),
         }},
 
         // solo posibility
