@@ -592,8 +592,11 @@ Window {
                 cdRomDialogBoxLoader.focus = true;
                 //just set "cdrom" as title of this game (optional)
                 api.internal.singleplay.setTitle("cdrom");
+                //read CDROM.device file to know last drive index inserted + add 1 for retroarch indexes
+                var driveIndex = parseInt(api.internal.system.run("grep -i '/sr' /tmp/CDROM.device | tr -d '\\n' | tr -d '\\r'").split('r')[1]) + 1;
+                //console.log("File: cdrom://drive" + driveIndex.toString() + ".cue");
                 //set rom full path
-                api.internal.singleplay.setFile("cdrom://drive1.cue");
+                api.internal.singleplay.setFile("cdrom://drive" + driveIndex.toString() + ".cue");
                 //set system to select to run this rom
                 api.internal.singleplay.setSystem(gameCdRom); //using shortName
             }
