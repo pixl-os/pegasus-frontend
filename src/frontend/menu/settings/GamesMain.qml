@@ -28,6 +28,8 @@ FocusScope {
     signal openBiosCheckingSettings
     signal openSystemsAdvancedEmulatorSettings
     signal openAdvancedEmulatorSettings
+    signal openGameDumperReaderSettings
+
 
     width: parent.width
     height: parent.height
@@ -318,7 +320,22 @@ FocusScope {
                         root.openAdvancedEmulatorSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optSystemsAdvancedEmulator
+                    KeyNavigation.down: optGameDumperReaderSettings
+                }
+                SimpleButton {
+                    id: optGameDumperReaderSettings
+
+                    label: qsTr("Game Reader/Dumper settings") + api.tr
+                    note: qsTr("Configure device(s) to read/dump your game") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openGameDumperReaderSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    // KeyNavigation.down: RFU
                 }
                 Item {
                     width: parent.width
