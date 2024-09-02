@@ -638,6 +638,7 @@ Window {
     property string gameCartridge_region: ""
     property string gameCartridge_crc32: "" //use for SNES/SFC for the moment
 
+    property string usbnesVersion: "" //to store version at mount
 
     Component {
         id: cartridgeDialogBox
@@ -671,11 +672,8 @@ Window {
     property string retrode_systems_list : "snes,megadrive,n64,gb,gba,mastersystem,gamegear"
 
     function getRegionIndex(nes20dbname){
-        var regex = RegExp("^\\s*(.*?)\\s*$");
-        var trimmedString = nes20dbname.replace(regex, "$1");
-        //console.log("trimmedString : '",trimmedString,"'");
         for(var i = 0; i < regionSSModel.count; i++){
-            if(trimmedString === regionSSModel.get(i).nes20db){
+            if(nes20dbname === regionSSModel.get(i).nes20db){
                 return i;
             }
         }
@@ -747,6 +745,9 @@ Window {
                             gameCartridge_type = type_region.split(' ')[0];
                             //console.log("USB-NES gameCartridge_type: ", gameCartridge_type);
                             var region = type_region.replace(gameCartridge_type,"");
+                            //finally we trim region here for later
+                            var regex = RegExp("^\\s*(.*?)\\s*$");
+                            region = region.replace(regex, "$1");
                             //console.log("USB-NES region: '", region,"'");
                             if(region !== ""){
                                 var region_index = getRegionIndex(region);
@@ -756,6 +757,23 @@ Window {
                                 else gameCartridge_region = "";
                             }
                             else gameCartridge_region = "";
+                            //check if option to save rominfo/sha1 is requested
+                            if(api.internal.recalbox.getBoolParameter("dumpers.usbnes.romlist",false)){
+                                var existingRom = ""
+                                existingRom = api.internal.system.run("grep -i " + romsha1 + " /recalbox/share/roms/usb-nes.romlist.csv | tr -d '\\n' | tr -d '\\r'");
+                                //console.log("existingRom : ",existingRom);
+                                if(existingRom === ""){
+                                    //format GAME TITLE,REGION,TYPE,WORKS,SHA1 for PRG-ROM/SHR-ROM,DUMPER VERSION,WHEN,FIX COMMENT
+                                    var now = new Date();
+                                    var formattedDateTime = now.toString("yyyy-MM-dd hh:mm:ss");
+                                    //console.log("Formatted date and time:", formattedDateTime);
+                                    if(usbnesVersion === ""){
+                                        //read USB-NES version and store it in global variable
+                                        usbnesVersion = api.internal.system.run("cat " + mountpoint + "/version.txt | grep -o '[^[:space:]]*' | tr '\\n' ' '");
+                                    }
+                                    api.internal.system.run("echo '\"" + rominfo.split('\\')[1] + "\";\"" + region + "\";\"" + gameCartridge_type + "\";" +  "Y" + ";" +  romsha1 + ";\"" + usbnesVersion  + "\";" + formattedDateTime + ";\"" + "no comment for the moment" + "\"' >> /recalbox/share/roms/usb-nes.romlist.csv");
+                                }
+                            }
                             gameCartridge_system = "nes";
                             //to do last because will trig changes++
                             gameCartridge_crc32 = "";
@@ -1070,6 +1088,8 @@ Window {
                 var usbnesDevice = action.split("-")[1];
                 var usbnesMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES mounted from " + usbnesDevice + " to " + usbnesMountpoint,"",3);
+                //read USB-NES version and store it in global variable
+                usbnesVersion = api.internal.system.run("cat " + mountpoint + "/version.txt | grep -o '[^[:space:]]*' | tr '\\n' ' '");
                 //run timer to find roms/saves from USBNES
                 dialogBoxUSBNESTimer.cartridge_plugged = false;
                 dialogBoxUSBNESTimer.start();

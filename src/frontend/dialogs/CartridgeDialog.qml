@@ -1,7 +1,7 @@
 // Pegasus Frontend
 // created by BozoTheGeek 20/08/2024
 
-import QtQuick 2.12
+import QtQuick 2.15
 import "../search"
 
 FocusScope {
@@ -69,15 +69,11 @@ FocusScope {
             //console.log("onMaxChanged - region :",searchGame.region);
             //console.log("onMaxChanged - regionToFilter :",searchGame.regionToFilter);
 
-            //init before
-            //picture = "";
-            //icon2 = "";
-
             if((game_system === "") || ((game_name === "") && (game_crc32 === ""))  || (activated === false)) {
                 //do nothing to go quickly when it's not significant to proceed
                 //just reset for later
-                if(game_name === "") titleMatched = false;
-                if(game_crc32 === "") crc32Matched = false;
+                titleMatched = false;
+                crc32Matched = false;
             }
             //parse only nb_results_max to avoid saturation of system if not found
             else if (searchGame.max >= 1 && searchGame.max <= iNB_RESULTS_MAX && (activated === true)) { //Title search and match
@@ -95,12 +91,14 @@ FocusScope {
                         var regex = /\([^()]*\)|\[[^\]]*\]/;
                         titleToCheck = titleToCheck.replace(regex, "");
                         //console.log("titleToCheck - step 1: ",titleToCheck);
-                        //keep only alpha numeric characters and in lowercases
-                        regex = RegExp("[^a-zA-Z0-9&.;]"); // Matches non-alphanumeric characters + some special characters
-                        titleToCheck = titleToCheck.replace(regex, "");
+                        titleToCheck = titleToCheck.replace("&amp;", "&");
                         //console.log("titleToCheck - step 2: ",titleToCheck);
-                        titleToCheck = titleToCheck.toLowerCase();
+                        //keep only alpha numeric characters and in lowercases
+                        regex = /[^a-zA-Z0-9&]/g; // Matches non-alphanumeric characters + '&' special character
+                        titleToCheck = titleToCheck.replace(regex, "");
                         //console.log("titleToCheck - step 3: ",titleToCheck);
+                        titleToCheck = titleToCheck.toLowerCase();
+                        //console.log("titleToCheck - step 4: ",titleToCheck);
                         //also adapat game_name to improve the matching (keep alphanumeric also) and remove spaces
                         var gameToCheck = game_name.replace(regex, "");
                         //console.log("gameToCheck - step 1: ",gameToCheck);
@@ -238,6 +236,86 @@ FocusScope {
             cancelButton.focus = true;
         }
     }
+    //list model to manage specific cases where we should replace value by an other one to filter search by name
+    //this type of model help to complete limitation of some regex
+    ListModel {
+        id: specificValue //order is important to avoid issue especially with "roman" numbers
+        /*ListElement { toFind: " 100|C"; toReplaceBy: "*.100|C" }
+        ListElement { toFind: " 90|XC"; toReplaceBy: "*.90|XC" }
+        ListElement { toFind: " 80|LXXX"; toReplaceBy: "*.80|LXXX" }
+        ListElement { toFind: " 70|LXX"; toReplaceBy: "*.70|LXX" }
+        ListElement { toFind: " 60|LX"; toReplaceBy: "*.60|LX" }
+        ListElement { toFind: " 50|L"; toReplaceBy: "*.50|L" }
+        ListElement { toFind: " 49|XLIX"; toReplaceBy: "*.49|XLIX" }
+        ListElement { toFind: " 48|XLVIII"; toReplaceBy: "*.48|XLVIII" }
+        ListElement { toFind: " 47|XLVII"; toReplaceBy: "*.47|XLVII" }
+        ListElement { toFind: " 46|XLVI"; toReplaceBy: "*.46|XLVI" }
+        ListElement { toFind: " 45|XLV"; toReplaceBy: "*.45|XLV" }
+        ListElement { toFind: " 44|XLIV"; toReplaceBy: "*.44|XLIV" }
+        ListElement { toFind: " 43|XLIII"; toReplaceBy: "*.43|XLIII" }
+        ListElement { toFind: " 42|XLII"; toReplaceBy: "*.42|XLII" }
+        ListElement { toFind: " 41|XLI"; toReplaceBy: "*.41|XLI" }
+        ListElement { toFind: " 40|XL"; toReplaceBy: "*.40|XL" }
+        ListElement { toFind: " 39|XXXIX"; toReplaceBy: "*.39|XXXIX" }
+        ListElement { toFind: " 38|XXXVIII"; toReplaceBy: "*.38|XXXVIII" }
+        ListElement { toFind: " 37|XXXVII"; toReplaceBy: "*.37|XXXVII" }
+        ListElement { toFind: " 36|XXXVI"; toReplaceBy: "*.36|XXXVI" }
+        ListElement { toFind: " 35|XXXV"; toReplaceBy: "*.35|XXXV" }
+        ListElement { toFind: " 34|XXXIV"; toReplaceBy: "*.34|XXXIV" }
+        ListElement { toFind: " 33|XXXIII"; toReplaceBy: "*.33|XXXIII" }
+        ListElement { toFind: " 32|XXXII"; toReplaceBy: "*.32|XXXII" }
+        ListElement { toFind: " 31|XXXI"; toReplaceBy: "*.31|XXXI" }
+        ListElement { toFind: " 30|XXX"; toReplaceBy: "*.30|XXX" }
+        ListElement { toFind: " 29|XXIX"; toReplaceBy: "*.29|XXIX" }
+        ListElement { toFind: " 28|XXVIII"; toReplaceBy: "*.28|XXVIII" }
+        ListElement { toFind: " 27|XXVII"; toReplaceBy: "*.27|XXVII" }
+        ListElement { toFind: " 26|XXVI"; toReplaceBy: "*.26|XXVI" }
+        ListElement { toFind: " 25|XXV"; toReplaceBy: "*.25|XXV" }
+        ListElement { toFind: " 24|XXIV"; toReplaceBy: "*.24|XXIV" }
+        ListElement { toFind: " 23|XXIII"; toReplaceBy: "*.23|XXIII" }
+        ListElement { toFind: " 22|XXII"; toReplaceBy: "*.22|XXII" }
+        ListElement { toFind: " 21|XXI"; toReplaceBy: "*.21|XXI" }*/
+        ListElement { toFind: " XX";    toReplaceBy: " 20" }
+        ListElement { toFind: " XIX";   toReplaceBy: " 19" }
+        ListElement { toFind: " XVIII"; toReplaceBy: " 18" }
+        ListElement { toFind: " XVII";  toReplaceBy: " 17" }
+        ListElement { toFind: " XVI";   toReplaceBy: " 16" }
+        ListElement { toFind: " XV";    toReplaceBy: " 15" }
+        ListElement { toFind: " XIV";   toReplaceBy: " 14" }
+        ListElement { toFind: " XIII";  toReplaceBy: " 13" }
+        ListElement { toFind: " XII";   toReplaceBy: " 12" }
+        ListElement { toFind: " XI";    toReplaceBy: " 11" }
+        ListElement { toFind: " X";     toReplaceBy: " 10" }
+        ListElement { toFind: " IX";    toReplaceBy: " 9" }
+        ListElement { toFind: " VIII";  toReplaceBy: " 8" }
+        ListElement { toFind: " VII";   toReplaceBy: " 7" }
+        ListElement { toFind: " VI";    toReplaceBy: " 6" }
+        ListElement { toFind: " V";     toReplaceBy: " 5" }
+        ListElement { toFind: " IV";    toReplaceBy: " 4" }
+        ListElement { toFind: " III";   toReplaceBy: " 3" }
+        ListElement { toFind: " II";    toReplaceBy: " 2" }
+        ListElement { toFind: " I";     toReplaceBy: " 1" }
+        ListElement { toFind: " 20";    toReplaceBy: " XX" }
+        ListElement { toFind: " 19";    toReplaceBy: " XIX" }
+        ListElement { toFind: " 18";    toReplaceBy: " XVIII" }
+        ListElement { toFind: " 17";    toReplaceBy: " XVII" }
+        ListElement { toFind: " 16";    toReplaceBy: " XVI" }
+        ListElement { toFind: " 15";    toReplaceBy: " XV" }
+        ListElement { toFind: " 14";    toReplaceBy: " XIV" }
+        ListElement { toFind: " 13";    toReplaceBy: " XIII" }
+        ListElement { toFind: " 12";    toReplaceBy: " XII" }
+        ListElement { toFind: " 11";    toReplaceBy: " XI" }
+        ListElement { toFind: " 10";    toReplaceBy: " X" }
+        ListElement { toFind: " 9";     toReplaceBy: " IX" }
+        ListElement { toFind: " 8";     toReplaceBy: " VIII" }
+        ListElement { toFind: " 7";     toReplaceBy: " VII" }
+        ListElement { toFind: " 6";     toReplaceBy: " VI" }
+        ListElement { toFind: " 5";     toReplaceBy: " V" }
+        ListElement { toFind: " 4";     toReplaceBy: " IV" }
+        ListElement { toFind: " 3";     toReplaceBy: " III" }
+        ListElement { toFind: " 2";     toReplaceBy: " II" }
+        ListElement { toFind: " 1";     toReplaceBy: " I" }
+    }
 
     function gameChanged(){
         var game_criteria = "";
@@ -251,18 +329,34 @@ FocusScope {
             searchGame.activated = false;
             if(game_crc32 === ""){ // search by name/region/system
                 //we search by name and we clean it before if needed
-                var regex = RegExp("[^a-zA-Z0-9&.;\\s]");
-                // Matches non-alphanumeric characters, spaces and keep special characters: "&.;"
-                var outputString = game_name.replace(regex, " "); //replace other characters by spaces
+                //finally we start by replace '&amp;' to '&'
+                var outputString = game_name.replace("&amp;", "&");
                 //console.log("game name cleaned - step 1 : ",outputString);
-                outputString = outputString.replace("&amp;", "&"); //&amp; to &
+                var regex =  /[^a-zA-Z0-9&\s]/g;
+                // Matches non-alphanumeric characters, spaces and keep the special character: "&"
+                outputString = outputString.replace(regex, " "); //replace other characters by spaces
                 //console.log("game name cleaned - step 2 : ",outputString);
+                //try to replace numbers to be able to seach by arab or roman ones (could be extend to other expression if needed in the future using the listmodel)
+                var newOutputString = "";
+                for(var i = 0; i < specificValue.count; i++){
+                    var alternativeOutputString = outputString.replace(specificValue.get(i).toFind, specificValue.get(i).toReplaceBy);
+                    if(alternativeOutputString !== outputString){
+                        if(newOutputString === ""){
+                            newOutputString = outputString + "|.*" + alternativeOutputString;
+                        }
+                        else{
+                            newOutputString = newOutputString + "|.*" + alternativeOutputString;
+                        }
+                    }
+                }
+                if(newOutputString !== "") outputString = newOutputString;
+                //console.log("game name cleaned - step 3 : ",outputString);
                 //change filename to any regex (to replace spaces)
                 //replace space for regex expression
                 var nameRegExTemp = ".*" + outputString.replace(/\ /g, '.*');//to replace space by .* to convert to regex filter
                 //console.log("game name filter(regex) : ",nameRegExTemp);
                 searchGame.crc = "";
-                searchGame.filter  = nameRegExTemp;
+                searchGame.filter  = nameRegExTemp + ".*"; //add also .* at the end
                 //hardcoded value for testing
                 //searchGame.filter = ".*Super.*Mario.*.*Bros.*.*3.*"
                 searchGame.system = game_system;
@@ -296,7 +390,6 @@ FocusScope {
             root.visible = true;
             root.focus = true;
         }
-        //else if((game_criteria === "") && ((game_state === "unplugged") || (game_state === "disconnected"))){
         else if((game_state === "unplugged") || (game_state === "disconnected")){
             //console.log("gameChanged() : game ", game_state);
             //deactivate search

@@ -126,6 +126,21 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optUSBNESSaveROMInfo
+                    visible: optUSBNESDumper.checked
+                }
+                ToggleOption {
+                    id: optUSBNESSaveROMInfo
+                    //dumpers.usbnes.romlist=0 by default
+                    label: qsTr("Save rom information in file") + api.tr
+                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'usb-nes.romlist.txt')") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.romlist",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.romlist",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.usbnes.romlist",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRETRODEDumper
                     visible: optUSBNESDumper.checked
                 }
