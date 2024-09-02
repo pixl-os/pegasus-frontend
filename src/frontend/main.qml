@@ -735,6 +735,14 @@ Window {
                         var rominfo=api.internal.system.run("grep -i " + romsha1 + " /recalbox/scripts/nes_tools/nes20db.xml -A4 -B3 | grep -i '<game>' | sed -n 's/.*<!-- \\(.*\\).nes.*/\\1/p' | tr -d '\\n' | tr -d '\\r'");
                         //console.log("USB-NES rominfo: ", rominfo);
                         if(rominfo !== ""){
+                            //check also if sav game exist
+                            var savinfo=api.internal.system.run("ls "+ mountpoint + "/rom.sav 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                            console.log("USB-NES savinfo: ", savinfo);
+                            var savinfoflag = "N";
+                            if(savinfo !== ""){
+                                savinfoflag = "Y";
+                                //TO DO : action here to move/save/rename .sav file
+                            }
                             gameCartridge_state = "identified";
                             gameCartridge = rominfo;
                             //rominfo.split('\\')[1] + " (" + rominfo.split('\\')[0].split(" ")[1] + ")" + " - " + rominfo.split('\\')[0].split(" ")[0];
@@ -759,11 +767,18 @@ Window {
                             else gameCartridge_region = "";
                             //check if option to save rominfo/sha1 is requested
                             if(api.internal.recalbox.getBoolParameter("dumpers.usbnes.romlist",false)){
+                                var existingFile = ""
+                                existingFile = api.internal.system.run("ls /recalbox/share/roms/usb-nes.romlist.csv 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
+                                if(!existingFile.includes("usb-nes.romlist.csv")){
+                                    //if no file exists, let create it with column titles
+                                    api.internal.system.run("echo 'GAME TITLE;REGION;TYPE;WORKS;SAVE FOUND;SHA1 for PRG-ROM/SHR-ROM;DUMPER VERSION;WHEN;COMMENT' >> /recalbox/share/roms/usb-nes.romlist.csv");
+                                }
+
                                 var existingRom = ""
                                 existingRom = api.internal.system.run("grep -i " + romsha1 + " /recalbox/share/roms/usb-nes.romlist.csv | tr -d '\\n' | tr -d '\\r'");
                                 //console.log("existingRom : ",existingRom);
                                 if(existingRom === ""){
-                                    //format GAME TITLE,REGION,TYPE,WORKS,SHA1 for PRG-ROM/SHR-ROM,DUMPER VERSION,WHEN,FIX COMMENT
+                                    //format GAME TITLE,REGION,TYPE,WORKS,SAVE FOUND;SHA1 for PRG-ROM/SHR-ROM,DUMPER VERSION,WHEN,COMMENT
                                     var now = new Date();
                                     var formattedDateTime = now.toString("yyyy-MM-dd hh:mm:ss");
                                     //console.log("Formatted date and time:", formattedDateTime);
@@ -771,7 +786,9 @@ Window {
                                         //read USB-NES version and store it in global variable
                                         usbnesVersion = api.internal.system.run("cat " + mountpoint + "/version.txt | grep -o '[^[:space:]]*' | tr '\\n' ' '");
                                     }
-                                    api.internal.system.run("echo '\"" + rominfo.split('\\')[1] + "\";\"" + region + "\";\"" + gameCartridge_type + "\";" +  "Y" + ";" +  romsha1 + ";\"" + usbnesVersion  + "\";" + formattedDateTime + ";\"" + "no comment for the moment" + "\"' >> /recalbox/share/roms/usb-nes.romlist.csv");
+                                    //console.log('echo "' + rominfo.split('\\')[1] + ';' + region + ';' + gameCartridge_type + ';' +  'Y' + ';' + savinfoflag + ';' +  romsha1 + ';' + usbnesVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/usb-nes.romlist.csv');
+                                    api.internal.system.run('echo "' + rominfo.split('\\')[1] + ';' + region + ';' + gameCartridge_type + ';' +  'Y' + ';' + savinfoflag + ';' +  romsha1 + ';' + usbnesVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/usb-nes.romlist.csv');
+
                                 }
                             }
                             gameCartridge_system = "nes";
@@ -1089,7 +1106,7 @@ Window {
                 var usbnesMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES mounted from " + usbnesDevice + " to " + usbnesMountpoint,"",3);
                 //read USB-NES version and store it in global variable
-                usbnesVersion = api.internal.system.run("cat " + mountpoint + "/version.txt | grep -o '[^[:space:]]*' | tr '\\n' ' '");
+                usbnesVersion = api.internal.system.run("cat " + usbnesMountpoint + "/version.txt | grep -o '[^[:space:]]*' | tr '\\n' ' '");
                 //run timer to find roms/saves from USBNES
                 dialogBoxUSBNESTimer.cartridge_plugged = false;
                 dialogBoxUSBNESTimer.start();
