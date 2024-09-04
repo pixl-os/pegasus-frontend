@@ -794,7 +794,9 @@ Window {
                             gameCartridge_system = "nes";
                             //to do last because will trig changes++
                             gameCartridge_crc32 = "";
-                            gameCartridge_name = rominfo.split('\\')[1];
+                            //remove data between [] and () in name as: (rev 1), (rev 2)
+                            regex = /\([^()]*\)|\[[^\]]*\]/;
+                            gameCartridge_name = rominfo.split('\\')[1].replace(regex, "");
                         }
                         else{
                             //for message in dialog box
