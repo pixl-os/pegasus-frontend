@@ -102,8 +102,8 @@ FocusScope {
                 ToggleOption {
                     id: optUSBNESReadSave
                     //dumpers.usbnes.readsave=0 by default
-                    label: qsTr("'Save' file reading from cartridge") + api.tr
-                    note: qsTr("Enable read of your 'Save' from cartridge\n(USB-NES should connected/resetted after configuration change)") + api.tr
+                    label: qsTr("Copy SRAM from cartridge in your saves") + api.tr
+                    note: qsTr("Enable read of your 'Save' from cartridge to play with it") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.readsave",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.readsave",false)){
@@ -111,10 +111,11 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optUSBNESWriteSave
+                    KeyNavigation.down: optUSBNESSaveROMInfo
                     visible: optUSBNESDumper.checked
                 }
-                ToggleOption {
+                //NOT STABLE IN LINUX with USBNES :-(
+                /*ToggleOption {
                     id: optUSBNESWriteSave
                     //dumpers.usbnes.writesave=0 by default
                     label: qsTr("'Save' file writing to cartridge") + api.tr
@@ -128,7 +129,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optUSBNESSaveROMInfo
                     visible: optUSBNESDumper.checked
-                }
+                }*/
                 ToggleOption {
                     id: optUSBNESSaveROMInfo
                     //dumpers.usbnes.romlist=0 by default

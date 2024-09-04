@@ -619,6 +619,12 @@ Window {
 
         function onAccept() {
             content.focus = true;
+            //copy save game from cartridge to saves "share" directory
+            if(gameCartridge_save !== "" && api.internal.recalbox.getBoolParameter("dumpers.usbnes.readsave",false)){
+                api.internal.system.run("cp " + gameCartridge_save + " /recalbox/share/saves/" + gameCartridge_system + "/");
+                // TO DO: add mechanism to compare if already exists and how to store previous ones, especially for usb-nes
+                // where the name of game is always "rom.nes" and save "rom.sav"
+            }
             // connect game to launcher
             api.connectGameFiles(api.internal.singleplay.game);
             // launch this Game
@@ -637,6 +643,7 @@ Window {
     property string gameCartridge_type: ""
     property string gameCartridge_region: ""
     property string gameCartridge_crc32: "" //use for SNES/SFC for the moment
+    property string gameCartridge_save: "" //to be propose and used from cartridge dialog box
 
     property string usbnesVersion: "" //to store version at mount
 
@@ -655,6 +662,7 @@ Window {
             game_type: gameCartridge_type
             game_state: gameCartridge_state
             game_name: gameCartridge_name
+            game_save: gameCartridge_save
         }
     }
 
@@ -739,9 +747,11 @@ Window {
                             var savinfo=api.internal.system.run("ls "+ mountpoint + "/rom.sav 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                             console.log("USB-NES savinfo: ", savinfo);
                             var savinfoflag = "N";
+                            gameCartridge_save = "";
                             if(savinfo !== ""){
                                 savinfoflag = "Y";
-                                //TO DO : action here to move/save/rename .sav file
+                                //just communicate that sav is available
+                                gameCartridge_save = mountpoint + "/rom.sav";
                             }
                             gameCartridge_state = "identified";
                             gameCartridge = rominfo;

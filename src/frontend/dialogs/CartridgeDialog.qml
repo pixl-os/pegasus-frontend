@@ -21,6 +21,7 @@ FocusScope {
     property string game_picture: "" //contains the picture found for this cartridge
     property string game_state: "" //contains status/state
     property string game_name: "" //contain the name provided intially
+    property string game_save:"" //contains the 'save' file reference for usage
 
     //to manage max for search (could be tune from experience)
     readonly property int iNB_RESULTS_MAX : 50
