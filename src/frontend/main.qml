@@ -624,8 +624,8 @@ Window {
                 //get crc32 to ahve it in name of files as reference to improve unicity
                 var romcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
                 //rename .sav to .srm to be compatible with retroarch cores and need to have same name than rom ;-)
-                var targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") " + romcrc32 + ".srm";
-                var targetedRom = "/recalbox/share/extractions/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") " + romcrc32 + ".nes";
+                var targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].srm";
+                var targetedRom = "/recalbox/share/extractions/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].nes";
                 var existingSave = api.internal.system.run("ls '"+ targetedSave + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                 //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
                 //manual move/erase to do in share saves directory in this case
@@ -733,6 +733,7 @@ Window {
                     var previousromcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
                     //console.log("USB-NES previousromcrc32: ", previousromcrc32)
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
+                    //(don't try to match with screenscrapper one where header is added and/or done on zip file)
                     var romcrc32 = api.internal.system.run("crc32 " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r'");
                     //console.log("USB-NES romcrc32: ", romcrc32)
                     if((parseInt(romsize) > 16)){
@@ -753,7 +754,7 @@ Window {
                         api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.romcrc32");
                         //RFU: generate md5 (including complete path of rom) and store it for the moment
                         //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.rommd5");
-                        //calculate sha1 for PRG-ROM/SHR-ROM
+                        //calculate sha1 for PRG-ROM/SHR-ROM (don't try to match with screenscrapper one where it's done on full .nes/.zip file and including header)
                         var romsha1=api.internal.system.run("python3 /recalbox/scripts/nes_tools/nes_header_tools.py " + mountpoint + " rom.nes | tr -d '\\n' | tr -d '\\r'");
                         //console.log("USB-NES romsha1: ", romsha1);
                         //get info from nes 2.0 DB xml file
@@ -762,7 +763,7 @@ Window {
                         if(rominfo !== ""){
                             //check also if sav game exist
                             var savinfo=api.internal.system.run("ls "+ mountpoint + "/rom.sav 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                            console.log("USB-NES savinfo: ", savinfo);
+                            //console.log("USB-NES savinfo: ", savinfo);
                             var savinfoflag = "N";
                             gameCartridge_save = "";
                             if(savinfo !== ""){
@@ -826,13 +827,15 @@ Window {
                             gameCartridge_name = rominfo.split('\\')[1].replace(regex, "");
                             //dump of rom if request
                             if(api.internal.recalbox.getBoolParameter("dumpers.usbnes.savedump",false)){
-                                var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") " + romcrc32 + ".nes";
+                                var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].nes";
+                                //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                                 var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                                 //console.log("existingDump : ",existingDump);
                                 //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
                                 //manual move/erase to do in share dumps directory in this case
                                 if(!existingDump.includes("/recalbox/share/dumps/")){
                                     //copy of rom as dump
+                                    //console.log("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
                                     api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
                                 }
                             }
