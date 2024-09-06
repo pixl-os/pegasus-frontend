@@ -25,9 +25,11 @@ FocusScope {
     property alias note: sublabel.text
     property alias checked: toggle.checked
     property alias symbol: symbolSubMenu.text
+    property alias symbolFontSize: symbolSubMenu.font.pixelSize
+    property alias symbolFontFamily: symbolSubMenu.font.family
 
     property int fontSize: vpx(22)
-    property int horizontalPadding: vpx(30)
+    property int horizontalPadding: vpx(20)
 
     width: parent.width
     height: labelContainer.height + fontSize * 1.25
@@ -46,9 +48,10 @@ FocusScope {
     Text {
         id: symbolSubMenu
         anchors {
-            verticalCenter: parent.verticalCenter
+            //deactivate vertical centering to be better centralize for symbol finally
+            //verticalCenter: parent.verticalCenter
             left: parent.left
-            leftMargin: - fontSize * 2
+            leftMargin: - font.pixelSize * 1.5
         }
         color: themeColor.textTitle
         font {
