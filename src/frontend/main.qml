@@ -618,12 +618,26 @@ Window {
         target: cartridgeDialogBoxLoader.item
 
         function onAccept() {
-            content.focus = true;
+            content.focus = true;            
             //copy save game from cartridge to saves "share" directory
-            if(gameCartridge_save !== "" && api.internal.recalbox.getBoolParameter("dumpers.usbnes.readsave",false)){
-                api.internal.system.run("cp " + gameCartridge_save + " /recalbox/share/saves/" + gameCartridge_system + "/");
-                // TO DO: add mechanism to compare if already exists and how to store previous ones, especially for usb-nes
-                // where the name of game is always "rom.nes" and save "rom.sav"
+            if(gameCartridge_save.includes("rom.sav") && api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false)){
+                //get crc32 to ahve it in name of files as reference to improve unicity
+                var romcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                //rename .sav to .srm to be compatible with retroarch cores and need to have same name than rom ;-)
+                var targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") " + romcrc32 + ".srm";
+                var targetedRom = "/recalbox/share/extractions/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") " + romcrc32 + ".nes";
+                var existingSave = api.internal.system.run("ls '"+ targetedSave + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
+                //manual move/erase to do in share saves directory in this case
+                if(!existingSave.includes("/recalbox/share/saves/")){
+                    //copy of save
+                    api.internal.system.run("cp '" + gameCartridge_save + "' '" + targetedSave + "'");
+                }
+                //mandatory copy of rom in /extractions to be able to rename rom (.nes) and to match with targeted save file (.srm) (we will erase in this case if already exists)
+                //copy of rom
+                api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedRom + "'");
+                //need to reset rom full path in this case
+                api.internal.singleplay.setFile(targetedRom);
             }
             // connect game to launcher
             api.connectGameFiles(api.internal.singleplay.game);
@@ -641,9 +655,11 @@ Window {
     property string gameCartridge_state: "" //as "unknown","identified","reloaded","unplugged" and "disconnected"
     property string gameCartridge_system: ""
     property string gameCartridge_type: ""
-    property string gameCartridge_region: ""
+    property string gameCartridge_region: "" //contains initial region identified from rom
+    property string gameCartridge_region_regex: "" //contains the regex to search by region in collections (especially for NESDB 2.0 for the moment)
     property string gameCartridge_crc32: "" //use for SNES/SFC for the moment
-    property string gameCartridge_save: "" //to be propose and used from cartridge dialog box
+    property string gameCartridge_save: "" //to know file path of save file
+    property string gameCartridge_rom: "" //to know file path of rom file
 
     property string usbnesVersion: "" //to store version at mount
 
@@ -657,7 +673,7 @@ Window {
             secondchoice: ""
             thirdchoice: qsTr("Back")
             game_crc32: gameCartridge_crc32
-            game_region: gameCartridge_region
+            game_region: gameCartridge_region_regex
             game_system: gameCartridge_system
             game_type: gameCartridge_type
             game_state: gameCartridge_state
@@ -729,7 +745,8 @@ Window {
                         //just set "cartridge" as title of this game (optional)
                         api.internal.singleplay.setTitle("cartridge");
                         //set rom full path
-                        api.internal.singleplay.setFile(mountpoint + "/rom.nes");
+                        gameCartridge_rom = mountpoint + "/rom.nes";
+                        api.internal.singleplay.setFile(gameCartridge_rom);
                         //set system to select to run this rom
                         api.internal.singleplay.setSystem("nes"); //using shortName
                         //store new crc32 (including complete path of rom) and store it for the moment
@@ -762,19 +779,19 @@ Window {
                             //console.log("USB-NES type_region: ", type_region);
                             gameCartridge_type = type_region.split(' ')[0];
                             //console.log("USB-NES gameCartridge_type: ", gameCartridge_type);
-                            var region = type_region.replace(gameCartridge_type,"");
+                            gameCartridge_region = type_region.replace(gameCartridge_type,"");
                             //finally we trim region here for later
                             var regex = RegExp("^\\s*(.*?)\\s*$");
-                            region = region.replace(regex, "$1");
-                            //console.log("USB-NES region: '", region,"'");
-                            if(region !== ""){
-                                var region_index = getRegionIndex(region);
+                            gameCartridge_region = gameCartridge_region.replace(regex, "$1");
+                            //console.log("USB-NES region: '",gameCartridge_region,"'");
+                            if(gameCartridge_region !== ""){
+                                var region_index = getRegionIndex(gameCartridge_region);
                                 if(region_index !== -1){
-                                    gameCartridge_region = regionSSModel.get(region_index).regex;
+                                    gameCartridge_region_regex = regionSSModel.get(region_index).regex;
                                 }
-                                else gameCartridge_region = "";
+                                else gameCartridge_region_regex = "";
                             }
-                            else gameCartridge_region = "";
+                            else gameCartridge_region_regex = "";
                             //check if option to save rominfo/sha1 is requested
                             if(api.internal.recalbox.getBoolParameter("dumpers.usbnes.romlist",false)){
                                 var existingFile = ""
@@ -802,11 +819,23 @@ Window {
                                 }
                             }
                             gameCartridge_system = "nes";
-                            //to do last because will trig changes++
+                            //to do last because will trig changes
                             gameCartridge_crc32 = "";
                             //remove data between [] and () in name as: (rev 1), (rev 2)
                             regex = /\([^()]*\)|\[[^\]]*\]/;
                             gameCartridge_name = rominfo.split('\\')[1].replace(regex, "");
+                            //dump of rom if request
+                            if(api.internal.recalbox.getBoolParameter("dumpers.usbnes.savedump",false)){
+                                var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") " + romcrc32 + ".nes";
+                                var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                                //console.log("existingDump : ",existingDump);
+                                //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
+                                //manual move/erase to do in share dumps directory in this case
+                                if(!existingDump.includes("/recalbox/share/dumps/")){
+                                    //copy of rom as dump
+                                    api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
+                                }
+                            }
                         }
                         else{
                             //for message in dialog box
