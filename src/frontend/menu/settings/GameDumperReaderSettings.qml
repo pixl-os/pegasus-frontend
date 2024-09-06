@@ -97,17 +97,32 @@ FocusScope {
                     }
                     symbol: "\uf29a"
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optUSBNESReadSave
+                    KeyNavigation.down: optUSBNESMoveSave
                 }
                 ToggleOption {
-                    id: optUSBNESReadSave
-                    //dumpers.usbnes.readsave=0 by default
-                    label: qsTr("Copy SRAM from cartridge in your saves") + api.tr
-                    note: qsTr("Enable read of your 'Save' from cartridge to play with it") + api.tr
-                    checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.readsave",false);
+                    id: optUSBNESMoveSave
+                    //dumpers.usbnes.movesave=0 by default
+                    label: qsTr("Cartridge SRAM in your saves") + api.tr
+                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly we can't write USB-NES save securely from Linux - known bug)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false);
                     onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.readsave",false)){
-                            api.internal.recalbox.setBoolParameter("dumpers.usbnes.readsave",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.usbnes.movesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optUSBNESSaveDump
+                    visible: optUSBNESDumper.checked
+                }
+                ToggleOption {
+                    id: optUSBNESSaveDump
+                    //dumpers.usbnes.savedump=0 by default
+                    label: qsTr("Cartridge ROM in your dumps") + api.tr
+                    note: qsTr("Copy and rename 'Rom' from cartridge to keep it\n(will be in 'dumps' share directory)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.savedump",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.savedump",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.usbnes.savedump",checked);
                         }
                     }
                     onFocusChanged: container.onFocus(this)
