@@ -36,14 +36,14 @@ FocusScope {
     //list model to manage icons of devices
     ListModel {
         id: mySystemIcons
-
-        //ListElement { icon: "\uf275"; system: "psx"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-psx.png"}
-        //ListElement { icon: "\uf26e"; system: "dreamcast"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-dreamcast.png"}
-        //ListElement { icon: "\uf26b"; system: "segacd"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-segacd.png"}
-        //ListElement { icon: "\uf271"; system: "pcenginecd"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-pcenginecd.png"}
-        //ListElement { icon: "\uf28d"; system: "3do"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-3do.png"}
-        //ListElement { icon: "\uf26c"; system: "saturn"; picture:"qrc:/frontend/assets/project-cd/retroarch-cd-saturn.png"}
-        ListElement { icon: "\uf25c"; system: "nes"; picture:"qrc:/frontend/assets/cartridge/nes_cartridge.png"}
+        ListElement { icon: "\uf26a"; system: "mastersystem"}
+        ListElement { icon: "\uf26b"; system: "megadrive"}
+        ListElement { icon: "\uf25c"; system: "nes"}
+        ListElement { icon: "\uf25e"; system: "snes"}
+        ListElement { icon: "\uf260"; system: "n64"}
+        ListElement { icon: "\uf264"; system: "gb"}
+        ListElement { icon: "\uf265"; system: "gbc"}
+        ListElement { icon: "\uf266"; system: "gba"}
     }
 
     SearchGame {

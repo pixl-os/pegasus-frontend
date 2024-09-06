@@ -87,6 +87,9 @@ FocusScope {
                     SectionTitle {
                         text: qsTr("USB-NES dumper") + api.tr
                         first: true
+                        symbol: "\uf25c"
+                        symbolFontFamily: globalFonts.awesome
+                        symbolFontSize: vpx(40)
                     }
 
                     checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.enabled",false);
@@ -95,7 +98,6 @@ FocusScope {
                             api.internal.recalbox.setBoolParameter("dumpers.usbnes.enabled",checked);
                         }
                     }
-                    symbol: "\uf29a"
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optUSBNESMoveSave
                 }
@@ -165,6 +167,9 @@ FocusScope {
                     //dumpers.retrode.enabled=0
                     SectionTitle {
                         text: qsTr("RETRODE dumper") + api.tr
+                        symbol: "\uf25e / \uf26b"
+                        symbolFontFamily: globalFonts.awesome
+                        symbolFontSize: vpx(40)
                         first: true
                     }
 
