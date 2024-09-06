@@ -22,14 +22,15 @@ import QtQuick 2.12
 Text {
     property bool first: false
     property alias symbol: symbolTitle.text
+    property alias symbolFontSize: symbolTitle.font.pixelSize
     property alias symbolFontFamily: symbolTitle.font.family
     property int fontSize: vpx(22)
+    property int horizontalPadding: vpx(20)
 
     color: themeColor.textSectionTitle
     font {
         pixelSize: fontSize
         family: globalFonts.sans
-//        capitalization: Font.AllUppercase
         italic: true
     }
     topPadding: font.pixelSize * (first ? 0.25 : 2.25)
@@ -38,8 +39,8 @@ Text {
         id: symbolTitle
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left
-            leftMargin: - fontSize * 2
+            right: parent.left
+            rightMargin: horizontalPadding
         }
         color: themeColor.textTitle
         font {
