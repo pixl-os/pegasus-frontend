@@ -787,13 +787,33 @@ QStringList GetParametersList(QString Parameter)
         //videosDirs
         ListOfValue = paths::videosDirs(true);
     }
+    //******************************************************** RETRODE PARAMETERS ************************************************************
+    //to manage retrode controller ports mode
+    else if (Parameter == "dumpers.retrode.hid.mode")
+    {
+        ListOfValue << QObject::tr("off") << QObject::tr("4 Gamepads + Mouse") << QObject::tr("2 Gamepads") << QObject::tr("Keyboard mode") << QObject::tr("Arcade mode");
+        ListOfInternalValue << "0" << "1" << "2" << "3" << "4";
+    }
+    //to manage retrode system detection forcing
+    else if (Parameter == "dumpers.retrode.force.system")
+    {
+        ListOfValue << QObject::tr("auto") << QObject::tr("Super Nintendo/Super Famicom") << QObject::tr("Megadrive/Genesis") << QObject::tr("Nintendo 64") << QObject::tr("Gameboy Advance") << QObject::tr("Gameboy/Gameboy Color") << QObject::tr("TurboGraphX/PC Engine");
+        ListOfInternalValue << "auto" << "snes" << "mdrv" << "n64" << "gba" << "gboy" << "tg16";
+    }
+    //to manage retrode size detection forcing
+    else if (Parameter == "dumpers.retrode.force.size")
+    {
+        ListOfValue << QObject::tr("auto") << "1" << "2" << "4" << "8" << "16" << "32" << "64" << "128";
+        ListOfInternalValue << "0" << "1" << "2" << "4" << "8" << "16" << "32" << "64" << "128";
+    }
+    //*****************************************************************************************************************************************
     else
     {
         ListOfValue << QString("error: Parameters list for '%1' not found").arg(Parameter);
         //not a parameter using list !
         Log::warning(LOGMSG("'%1' parameter is not a parameters list").arg(Parameter));
     }
-    //Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
+   //Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
     //Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
     return ListOfValue;
 }
