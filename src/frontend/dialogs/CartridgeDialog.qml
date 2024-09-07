@@ -199,7 +199,7 @@ FocusScope {
         let i = 0;
         //search Icon using the good system
         do{
-            if (mySystem.includes(mySystemIcons.get(i).system)){
+            if ( mySystem.toLowerCase() === mySystemIcons.get(i).system.toLowerCase() ){
                     icon = mySystemIcons.get(i).icon;
             }
             i = i + 1;
