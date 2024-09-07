@@ -131,7 +131,7 @@ FocusScope {
                     KeyNavigation.down: optUSBNESSaveROMInfo
                     visible: optUSBNESDumper.checked
                 }
-                //NOT STABLE IN LINUX with USBNES :-(
+                //NOT USED FINALLY, NOT STABLE IN LINUX with USBNES :-(
                 /*ToggleOption {
                     id: optUSBNESWriteSave
                     //dumpers.usbnes.writesave=0 by default
@@ -179,9 +179,275 @@ FocusScope {
                             api.internal.recalbox.setBoolParameter("dumpers.retrode.enabled",checked);
                         }
                     }
-                    symbol: "\uf29a"
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.down: optUSBNESReadSave
+                    KeyNavigation.down: optRETRODEMoveSave
+                }
+                ToggleOption {
+                    id: optRETRODEMoveSave
+                    //dumpers.retrode.movesave=0 by default
+                    label: qsTr("Cartridge SRAM in your saves") + api.tr
+                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(see also RETRODE documentation to know 'save support' by system)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.movesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRETRODESaveDump
+                    visible: optRETRODEDumper.checked
+                }
+                ToggleOption {
+                    id: optRETRODESaveDump
+                    //dumpers.retrode.savedump=0 by default
+                    label: qsTr("Cartridge ROM in your dumps") + api.tr
+                    note: qsTr("Copy and rename 'Rom' from cartridge to keep it\n(will be in 'dumps' share directory)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.savedump",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.savedump",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.savedump",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRETRODESaveReadOnly
+                    visible: optRETRODEDumper.checked
+                }
+                ToggleOption {
+                    id: optRETRODESaveReadOnly
+                    //dumpers.retrode.save.readonly=1 by default
+                    label: qsTr("Cartridge SRAM readonly") + api.tr
+                    note: qsTr("Deactivate readonly to save directly in cartridge\n(see also RETRODE documentation to know 'save support' by system)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.save.readonly",true);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.save.readonly",true)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.save.readonly",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRETRODEfilenameChecksum
+                    visible: optRETRODEDumper.checked && !optRETRODEMoveSave.checked
+                }
+                ToggleOption {
+                    id: optRETRODEfilenameChecksum
+                    //dumpers.retrode.filename.checksum=1 by default
+                    label: qsTr("Checksum/Game Code in file name") + api.tr
+                    note: qsTr("Add 4-digit checksum or game code in rom file name\n(see RETRODE documentation for more details on this parameter)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.filename.checksum",true);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.filename.checksum",true)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.filename.checksum",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRETRODESaveROMInfo
+                    visible: optRETRODEDumper.checked
+                }
+                ToggleOption {
+                    id: optRETRODESaveROMInfo
+                    //dumpers.retrode.romlist=0 by default
+                    label: qsTr("Save rom information in file") + api.tr
+                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'retrode.romlist.txt')") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.romlist",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.romlist",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.romlist",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRETRODEHidMode
+                    visible: optRETRODEDumper.checked
+                }
+                MultivalueOption {
+                    id: optRETRODEHidMode
+
+                    //property to manage parameter name
+                    property string parameterName :"dumpers.retrode.hid.mode"
+
+                    label: qsTr("Controllers mode") + api.tr
+                    note: qsTr("Select a mode to manage Retrode controller ports\n(see RETRODE documentation for more details on this parameter)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optRETRODEHidMode;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onValueChanged: {
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: optRETRODEDumper.checked
+                    KeyNavigation.down: optRETRODEdetectionDelay
+                }
+                SliderOption {
+                    id: optRETRODEdetectionDelay
+
+                    //property to manage parameter name
+                    property string parameterName : "dumpers.retrode.detection.delay"
+
+                    //property of SliderOption to set
+                    label: qsTr("Detection delay") + api.tr
+                    note: qsTr("Specifies the lag between insertion/removal and the triggering of re-detection routine\n(set to 5 usually)") + api.tr
+                    // in slider object
+                    max : 255
+                    min : 0
+                    slidervalue: api.internal.recalbox.getIntParameter(parameterName,5);
+                    value: api.internal.recalbox.getIntParameter(parameterName,5)
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue;
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue;
+                        sfxNav.play();
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    visible: optRETRODEDumper.checked
+                    KeyNavigation.down: optRETRODEforceSystem
+                }
+                MultivalueOption {
+                    id: optRETRODEforceSystem
+
+                    //property to manage parameter name
+                    property string parameterName :"dumpers.retrode.force.system"
+
+                    label: qsTr("Force System") + api.tr
+                    note: qsTr("Select a system to force rom detection or leave 'auto' (default value)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optRETRODEforceSystem;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onValueChanged: {
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: optRETRODEDumper.checked
+                    KeyNavigation.down: optRETRODEforceSize
+                }
+                MultivalueOption {
+                    id: optRETRODEforceSize
+
+                    //property to manage parameter name
+                    property string parameterName :"dumpers.retrode.force.size"
+
+                    label: qsTr("Force Size") + api.tr
+                    note: qsTr("Select a size to force rom size or leave 'auto' (default value)\n(see RETRODE documentation for more details on this parameter)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optRETRODEforceSize;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onValueChanged: {
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: optRETRODEDumper.checked && optRETRODEforceSystem.value != "auto"
+                    KeyNavigation.down: optRETRODEforceMapper
+                }
+                ToggleOption {
+                    id: optRETRODEforceMapper
+                    //dumpers.retrode.force.mapper=0 by default
+                    label: qsTr("Force Mapper") + api.tr
+                    note: qsTr("to select alternative mapper (0 is default value)\n(see RETRODE documentation for more details on this parameter)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.force.mapper",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.force.mapper",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.force.mapper",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    //KeyNavigation.down: RFU
+                    visible: optRETRODEDumper.checked && optRETRODEforceSystem.value != "auto"
                 }
                 Item {
                     width: parent.width
