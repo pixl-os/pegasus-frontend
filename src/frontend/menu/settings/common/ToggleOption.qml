@@ -29,7 +29,7 @@ FocusScope {
     property alias symbolFontFamily: symbolSubMenu.font.family
 
     property int fontSize: vpx(22)
-    property int horizontalPadding: vpx(20)
+    property int horizontalPadding: vpx(30)
 
     width: parent.width
     height: labelContainer.height + fontSize * 1.25
