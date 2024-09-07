@@ -130,17 +130,17 @@ void Recalbox::setBoolParameter(const QString& Parameter, const bool& Value)
     }
 }
 
-int Recalbox::getIntParameter(const QString& Parameter)
+int Recalbox::getIntParameter(const QString& Parameter, const int& defaultValue)
 {
     if(Parameter.contains("boot.", Qt::CaseInsensitive))
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        return m_RecalboxBootConf.AsInt(ParameterBoot.toUtf8().constData());
+        return m_RecalboxBootConf.AsInt(ParameterBoot.toUtf8().constData(),defaultValue);
     }
     else
     {
-        return RecalboxConf::Instance().AsInt(Parameter.toUtf8().constData());
+        return RecalboxConf::Instance().AsInt(Parameter.toUtf8().constData(),defaultValue);
     }
 }
 
