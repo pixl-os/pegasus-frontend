@@ -9,6 +9,48 @@ import QtQuick.Window 2.12
 FocusScope {
     id: root
 
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: confirmDialog.item
+        function onAccept() {
+            //update configuration in RETRODE.CFG
+            //to see spinner
+            api.internal.system.run("sleep 2");
+            //to force change of focus
+            var mountpoint = api.internal.system.run("cat /tmp/RETRODE.mountpoint 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
+            //console.log("RETRODE mountpoint : ", mountpoint)
+            if(mountpoint.includes("/usb")) {
+                //copy RETRODE.CFG first in tmp to modify it
+                api.internal.system.run("cp " + mountpoint + "/RETRODE.CFG /tmp/RETRODE.CFG");
+                //update HID MODE (with comments ;-)
+                api.internal.system.run("sed -i 's/\\[HIDMode\\].*/\\[HIDMode\\] " + api.internal.recalbox.getIntParameter("dumpers.retrode.hid.mode",0) + " ; 0: Off; 1: 4Joy+Mouse; 2: 2Joy; 3: KB; 4: iCade/g' /tmp/RETRODE.CFG");
+                //update Blink controllers
+                api.internal.system.run("sed -i 's/\\[blinkControllers\\].*/\\[blinkControllers\\] " + api.internal.recalbox.getIntParameter("dumpers.retrode.blink.controllers",1) + "/g' /tmp/RETRODE.CFG");
+                //update Detection Delay (with comments ;-)
+                api.internal.system.run("sed -i 's/\\[detectionDelay\\].*/\\[detectionDelay\\] " + api.internal.recalbox.getIntParameter("dumpers.retrode.detection.delay",5) + "  ; how long to wait after cart insertion\\/removal/g' /tmp/RETRODE.CFG");
+                //update Force System
+                api.internal.system.run("sed -i 's/\\[forceSystem\\].*/\\[forceSystem\\] " + api.internal.recalbox.getStringParameter("dumpers.retrode.force.system","auto") + "/g' /tmp/RETRODE.CFG");
+                //update Force Size
+                api.internal.system.run("sed -i 's/\\[forceSize\\].*/\\[forceSize\\] " + api.internal.recalbox.getIntParameter("dumpers.retrode.force.size",0) + "/g' /tmp/RETRODE.CFG");
+                //update Force Mapper
+                api.internal.system.run("sed -i 's/\\[forceMapper\\].*/\\[forceMapper\\] " + api.internal.recalbox.getIntParameter("dumpers.retrode.force.mapper",0) + "/g' /tmp/RETRODE.CFG");
+                //recopy now from TMP to mountPoint and sync to be sure about udpate ;-)
+                api.internal.system.run("dd if=/tmp/RETRODE.CFG of=" + mountpoint + "/RETRODE.CFG");
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
+        }
+    }
+
     signal close
 
     anchors.fill: parent
@@ -105,7 +147,7 @@ FocusScope {
                     id: optUSBNESMoveSave
                     //dumpers.usbnes.movesave=0 by default
                     label: qsTr("Cartridge SRAM in your saves") + api.tr
-                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly we can't write USB-NES save securely from Linux - known bug)") + api.tr
+                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly retroach/usb-nes are not compatible to update SRAM directly)") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false)){
@@ -131,7 +173,7 @@ FocusScope {
                     KeyNavigation.down: optUSBNESSaveROMInfo
                     visible: optUSBNESDumper.checked
                 }
-                //NOT USED FINALLY, NOT STABLE IN LINUX with USBNES :-(
+                //NOT USED FINALLY, NOT STABLE IN LINUX with USBNES and RETROACH is not really able like for RETRODE :-(
                 /*ToggleOption {
                     id: optUSBNESWriteSave
                     //dumpers.usbnes.writesave=0 by default
@@ -186,7 +228,7 @@ FocusScope {
                     id: optRETRODEMoveSave
                     //dumpers.retrode.movesave=0 by default
                     label: qsTr("Cartridge SRAM in your saves") + api.tr
-                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(see also RETRODE documentation to know 'save support' by system)") + api.tr
+                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly retroach/retrode are not compatible to update SRAM directly)") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false)){
@@ -209,10 +251,11 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optRETRODESaveReadOnly
+                    KeyNavigation.down: optRETRODESaveROMInfo
                     visible: optRETRODEDumper.checked
                 }
-                ToggleOption {
+                //RFU: paremeter finally not use (retroarch can't manage sav directly from cartrideg (need to rename to .srm and can't focus one file :()
+                /*ToggleOption {
                     id: optRETRODESaveReadOnly
                     //dumpers.retrode.save.readonly=1 by default
                     label: qsTr("Cartridge SRAM readonly") + api.tr
@@ -226,8 +269,9 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRETRODEfilenameChecksum
                     visible: optRETRODEDumper.checked && !optRETRODEMoveSave.checked
-                }
-                ToggleOption {
+                }*/
+                //RFU: no usage of this feature for the moment
+                /*ToggleOption {
                     id: optRETRODEfilenameChecksum
                     //dumpers.retrode.filename.checksum=1 by default
                     label: qsTr("Checksum/Game Code in file name") + api.tr
@@ -241,7 +285,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRETRODESaveROMInfo
                     visible: optRETRODEDumper.checked
-                }
+                }*/
                 ToggleOption {
                     id: optRETRODESaveROMInfo
                     //dumpers.retrode.romlist=0 by default
@@ -304,7 +348,22 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: optRETRODEDumper.checked
+                    KeyNavigation.down: optRETRODEBlinkControllers
+                }
+                ToggleOption {
+                    id: optRETRODEBlinkControllers
+                    //dumpers.retrode.blink.controllers=1 by default
+                    label: qsTr("Blink controllers") + api.tr
+                    note: qsTr("to blink green led when we press on gamepad controls (activated by default)\n(see RETRODE documentation for more details on this parameter)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.blink.controllers",true);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.blink.controllers",true)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.blink.controllers",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRETRODEdetectionDelay
+                    visible: optRETRODEDumper.checked
                 }
                 SliderOption {
                     id: optRETRODEdetectionDelay
@@ -446,9 +505,62 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.down: RFU
+                    KeyNavigation.down: optRETRODESettingsApply
                     visible: optRETRODEDumper.checked && optRETRODEforceSystem.value != "auto"
                 }
+                // to apply settings
+                SimpleButton {
+                    id: optRETRODESettingsApply
+                    Rectangle {
+                        id: containerValidate
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Update RETRODE.CFG (apply changes)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //force save in recalbox.conf file before to execute script
+                        api.internal.recalbox.saveParameters();
+                        //check if retrode available
+
+                        //to force change of focus
+                        var mountpoint = api.internal.system.run("cat /tmp/RETRODE.mountpoint 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
+                        //console.log("RETRODE mountpoint : ", mountpoint)
+                        if(mountpoint.includes("/usb")) {
+                            confirmDialog.focus = false;
+                            confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                    { "title": "RETRODE",
+                                                      "message": qsTr("Are you ready to change settings of your device now ?<br>(After, it's adviced to re-plug retrode device to fully apply new settings)") + api.tr,
+                                                      "symbol": "",
+                                                      "symbolfont" : global.fonts.awesome,
+                                                      "firstchoice": qsTr("Yes") + api.tr,
+                                                      "secondchoice": "",
+                                                      "thirdchoice": qsTr("No") + api.tr});
+                            //to force change of focus
+                            confirmDialog.focus = true;
+                        }
+                        else{
+                            //no retrode connected
+                            //add dialogBox to alert about the issue
+                            genericMessage.setSource("../../dialogs/GenericContinueDialog.qml",
+                                                     { "title": qsTr("RETRODE not connected ?"), "message": qsTr("Sorry, we can't update now the configuration<br>Your RETRODE device seems not connected to your pixL !")});
+                            genericMessage.focus = true;
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optRETRODEDumper.checked
+                }
+
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
