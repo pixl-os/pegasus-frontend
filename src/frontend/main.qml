@@ -620,13 +620,18 @@ Window {
         function onAccept() {
             content.focus = true;            
             //copy save game from cartridge to saves "share" directory
+            //For usbnes case (using nes system only and one file name for sav)
+            var romcrc32 = "";
+            var targetedSave = "";
+            var targetedRom = "";
+            var existingSave = "";
             if(gameCartridge_save.includes("rom.sav") && api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false)){
                 //get crc32 to ahve it in name of files as reference to improve unicity
-                var romcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                romcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
                 //rename .sav to .srm to be compatible with retroarch cores and need to have same name than rom ;-)
-                var targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].srm";
-                var targetedRom = "/recalbox/share/extractions/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].nes";
-                var existingSave = api.internal.system.run("ls '"+ targetedSave + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].srm";
+                targetedRom = "/recalbox/share/extractions/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].nes";
+                existingSave = api.internal.system.run("ls '"+ targetedSave + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                 //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
                 //manual move/erase to do in share saves directory in this case
                 if(!existingSave.includes("/recalbox/share/saves/")){
@@ -634,6 +639,53 @@ Window {
                     api.internal.system.run("cp '" + gameCartridge_save + "' '" + targetedSave + "'");
                 }
                 //mandatory copy of rom in /extractions to be able to rename rom (.nes) and to match with targeted save file (.srm) (we will erase in this case if already exists)
+                //copy of rom
+                api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedRom + "'");
+                //need to reset rom full path in this case
+                api.internal.singleplay.setFile(targetedRom);
+            }
+            //For retrode case (using multiple systems) and not as usbnes ;-)
+            else if((gameCartridge_save !== "") & !gameCartridge_save.includes("rom.sav") && api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false)){
+                //get crc32 to ahve it in name of files as reference to improve unicity
+                romcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                //copy with existing extension for the moment to retroarch cores and need to have same name than rom but just adding CRC32 ;-)
+                var resultArray = gameCartridge_rom.split("/");
+                var filename = resultArray[resultArray.length -1]; // Get the last component of the path
+                // Regular expression to match file name and extension
+                var regex = new RegExp("(.+?)(\.[^\.]+)$");
+                // Apply the regular expression to the file name
+                var match = regex.exec(filename);
+                // If a match is found, extract the file name and extension
+                var romExt = "";
+                var romName = "";
+                if (match) {
+                    romName = match[1];
+                    romExt = match[2];
+                }
+                resultArray = gameCartridge_save.split("/");
+                filename = resultArray[resultArray.length -1]; // Get the last component of the path
+                //force every save file to use .srm extension for the moment when we move it and use it with in retroarch
+                var savExt = ".srm";
+                //RFU
+                // Apply the regular expression to the file name
+                //match = regex.exec(filename);
+                // If a match is found, extract the file name and extension
+                //var savExt = "";
+                //var savName = "";
+                //if (match) {
+                //    savName = match[1];
+                //    savExt = match[2];
+                //}
+                targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + romName + " [" + romcrc32.split(' ')[0] + "]" + savExt;
+                targetedRom = "/recalbox/share/extractions/" + romName + " [" + romcrc32.split(' ')[0] + "]" + romExt;
+                existingSave = api.internal.system.run("ls '"+ targetedSave + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
+                //manual move/erase to do in share saves directory in this case
+                if(!existingSave.includes("/recalbox/share/saves/")){
+                    //copy of save
+                    api.internal.system.run("cp '" + gameCartridge_save + "' '" + targetedSave + "'");
+                }
+                //mandatory copy of rom in /extractions to be able to rename rom nd to match with targeted save file (we will erase in this case if already exists)
                 //copy of rom
                 api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedRom + "'");
                 //need to reset rom full path in this case
@@ -662,6 +714,7 @@ Window {
     property string gameCartridge_rom: "" //to know file path of rom file
 
     property string usbnesVersion: "" //to store version at mount
+    property string retrodeVersion: "" //to store version at mount
 
     Component {
         id: cartridgeDialogBox
@@ -950,7 +1003,8 @@ Window {
                     //just set "cartridge" as title of this game (optional)
                     api.internal.singleplay.setTitle("cartridge");
                     //set rom full path
-                    api.internal.singleplay.setFile(fileFound);
+                    gameCartridge_rom = fileFound;
+                    api.internal.singleplay.setFile(gameCartridge_rom);
                     //set system to select to run this rom
                     api.internal.singleplay.setSystem(systemFound); //using shortName
                     //store new crc32 (including complete path of rom) and store it for the moment
@@ -958,23 +1012,77 @@ Window {
                     //RFU: generate md5 (including complete path of rom) and store it for the moment
                     //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.rommd5");
                     //get info from file name (first part)
-                    var rominfo=fileFound.replace(mountpoint + "/","");
-                    //console.log("RETRODE rominfo: ", rominfo);
+                    var romfilename=fileFound.replace(mountpoint + "/","");
+                    var rominfo=romfilename.replace("." + romsExt.split(",")[i],"");
+                    console.log("RETRODE rominfo: ", rominfo);
                     if(rominfo !== ""){
+                        //check also if sav game exist
+                        //but we should exclude 3 files for that
+                        var value1 = "pixl-read.flag";
+                        var value2 = romfilename;
+                        var value3 = "RETRODE.CFG"
+                        console.log("ls -1 "+ mountpoint + " 2>/dev/null | grep -vE '^(" + value1 +"|" + value2 + "|" + value3 + ")$' | tr -d '\\n' | tr -d '\\r'");
+                        var savinfo=api.internal.system.run("ls -1 "+ mountpoint + " 2>/dev/null | grep -vE '^(" + value1 +"|" + value2 + "|" + value3 + ")$' | tr -d '\\n' | tr -d '\\r'");
+                        console.log("RETRODE savinfo: ", savinfo);
+                        var savinfoflag = "N";
+                        gameCartridge_save = "";
+                        if(savinfo !== ""){
+                            savinfoflag = "Y";
+                            //just communicate that sav is available
+                            gameCartridge_save = mountpoint + "/" + savinfo;
+                        }
                         gameCartridge_state = "identified";
                         //console.log("RETRODE gameCartridge_state: ", gameCartridge_state);
                         gameCartridge = rominfo;
                         //console.log("RETRODE gameCartridge: ", gameCartridge);
                         gameCartridge_type = ""; //empty for RETRODE
                         //console.log("RETRODE gameCartridge_type: ", gameCartridge_type);
-                        gameCartridge_region = "";
+                        gameCartridge_region = ""; //empty for RETRODE
                         //console.log("RETRODE gameCartridge_region: ", gameCartridge_region);
                         gameCartridge_name = ""; //let it empty to search only by crc32
                         //console.log("RETRODE gameCartridge_name: ", gameCartridge_name);
+                        //check if option to save rominfo/crc32 is requested
+                        if(api.internal.recalbox.getBoolParameter("dumpers.retrode.romlist",false)){
+                            var existingFile = ""
+                            existingFile = api.internal.system.run("ls /recalbox/share/roms/retrode.romlist.csv 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
+                            if(!existingFile.includes("retrode.romlist.csv")){
+                                //if no file exists, let create it with column titles
+                                api.internal.system.run("echo 'GAME TITLE;SYSTEM;WORKS;SAVE FOUND;CRC32 FILE CHECKSUM;DUMPER VERSION;WHEN;COMMENT' >> /recalbox/share/roms/retrode.romlist.csv");
+                            }
+                            var existingRom = ""
+                            existingRom = api.internal.system.run("grep -i " + romcrc32 + " /recalbox/share/roms/retrode.romlist.csv | tr -d '\\n' | tr -d '\\r'");
+                            //console.log("existingRom : ",existingRom);
+                            if(existingRom === ""){
+                                //format GAME TITLE,SYSTEM,WORKS,SAVE FOUND;CRC32 FILE CHECKSUM,DUMPER VERSION,WHEN,COMMENT
+                                var now = new Date();
+                                var formattedDateTime = now.toString("yyyy-MM-dd hh:mm:ss");
+                                //console.log("Formatted date and time:", formattedDateTime);
+                                if(retrodeVersion === ""){
+                                    //read RETRODE version and store it in global variable
+                                    retrodeVersion = api.internal.system.run("cat " + mountpoint + "/RETRODE.CFG | awk 'NR == 1 {print}' | awk -F ' ' '{print $2$3}' | grep -o '[^[:space:]]*' | tr '\\n' ' '");
+                                }
+                                //console.log('echo "' + rominfo + ';' + systemFound + ';' + 'Y' + ';' + savinfo + ';' +  romcrc32.split(" ")[0] + ';' + retrodeVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/retrode.romlist.csv');
+                                api.internal.system.run('echo "' + rominfo + ';' + systemFound + ';' +  'Y' + ';' + savinfo + ';' +  romcrc32.split(" ")[0] + ';' + retrodeVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/retrode.romlist.csv');
+                            }
+                        }
                         gameCartridge_system = systemFound;
                         //to do last because will trig changes
                         gameCartridge_crc32 = romcrc32.split(" ")[0];//need to take first part only because file name/path is inlcuded in result of CRC32 calculation
                         //console.log("RETRODE gameCartridge_crc32: ", gameCartridge_crc32);
+                        //dump of rom if request
+                        if(api.internal.recalbox.getBoolParameter("dumpers.retrode.savedump",false)){
+                            var targetedDump = "/recalbox/share/dumps/" + rominfo + " [" + gameCartridge_crc32 + "]." + romsExt.split(",")[i];
+                            //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                            var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                            //console.log("existingDump : ",existingDump);
+                            //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
+                            //manual move/erase to do in share dumps directory in this case
+                            if(!existingDump.includes("/recalbox/share/dumps/")){
+                                //copy of rom as dump
+                                //console.log("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
+                                api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
+                            }
+                        }
                     }
                     //propose cartridge dialog box in this case
                     cartridgeDialogBoxLoader.visible = true; //to show
@@ -1125,6 +1233,8 @@ Window {
                 var retrodeDevice = action.split("-")[1];
                 var retrodeMountpoint = action.split("-")[2];
                 apiconnection.onShowPopup("Video game cartridge reader", "RETRODE mounted from " + retrodeDevice + " to " + retrodeMountpoint,"",3);
+                //read RETRODE version and store it in global variable
+                retrodeVersion = api.internal.system.run("cat " + retrodeMountpoint + "/RETRODE.CFG | awk 'NR == 1 {print}' | awk -F ' ' '{print $2$3}' | grep -o '[^[:space:]]*' | tr '\\n' ' '");
                 //run timer to find roms/saves from RETRODE
                 dialogBoxRETRODETimer.cartridge_plugged = false;
                 dialogBoxRETRODETimer.start();
@@ -2181,6 +2291,7 @@ Window {
                       sindenInnerBorderRectangle.border.width = parseInt(appWindow.width*2 / 100);
                       //1 % of width: 1280
                       sindenOuterBorderRectangle.border.width = parseInt(appWindow.width*1 / 100);
+                    break;
                   default:
                 }
                 switch (bordercolor) {
