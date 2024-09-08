@@ -151,7 +151,7 @@ FocusScope {
                     id: optUSBNESSaveROMInfo
                     //dumpers.usbnes.romlist=0 by default
                     label: qsTr("Save rom information in file") + api.tr
-                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'usb-nes.romlist.txt')") + api.tr
+                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'usb-nes.romlist.csv')") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.usbnes.romlist",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.usbnes.romlist",false)){
@@ -246,7 +246,7 @@ FocusScope {
                     id: optRETRODESaveROMInfo
                     //dumpers.retrode.romlist=0 by default
                     label: qsTr("Save rom information in file") + api.tr
-                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'retrode.romlist.txt')") + api.tr
+                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'retrode.romlist.csv')") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.romlist",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.romlist",false)){
