@@ -746,7 +746,7 @@ Window {
     }
 
     //List of RETRODE SYSTEM (order is important, should be like in RETRODE.CFG
-    property string retrode_systems_list : "snes,megadrive,n64,gb,gba,mastersystem,gamegear"
+    property string retrode_systems_list : "snes,megadrive,n64,gb|gbc,gba,mastersystem,gamegear"
 
     function getRegionIndex(nes20dbname){
         for(var i = 0; i < regionSSModel.count; i++){
@@ -1076,7 +1076,7 @@ Window {
                 gameCartridge_rom = fileFound;
                 api.internal.singleplay.setFile(gameCartridge_rom);
                 //set system to select to run this rom
-                api.internal.singleplay.setSystem(systemFound); //using shortName
+                api.internal.singleplay.setSystem(systemFound.split("|")[0]); //using shortName or take first one if several use the same extension
                 //store new crc32 (including complete path of rom) and store it for the moment
                 api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.romcrc32");
                 //RFU: generate md5 (including complete path of rom) and store it for the moment

@@ -150,6 +150,16 @@ FocusScope {
                 //console.log("result.games.get(searchGame.resultIndex).title : ", result.games.get(searchGame.resultIndex).title)
                 if(searchGame.resultIndex !== -1) {
                     game_picture = cartArt(result.games.get(searchGame.resultIndex));
+                    // set a new time the system in singleplay if finally found an alternative (case of gb and gbc in pixl) and if contain "|"
+                    if(searchGame.system.includes("|")){
+                        var systemFoundFinally = result.games.get(searchGame.resultIndex).collections.get(0).shortName.toLowerCase();
+                        //console.log("systemFound from gamelists :", systemFoundFinally);
+                        api.internal.singleplay.setSystem(systemFoundFinally); //using the shortName found finally
+                        //set icon also
+                        symbolText.text = getIcon(systemFoundFinally);
+                        //finally set also global variable to avoid issue (especially when we will manage save at launch time)
+                        gameCartridge_system = systemFoundFinally;
+                    }
                     if(game_state !== "reloaded"){
                         animation.running = true;
                         //start animation
