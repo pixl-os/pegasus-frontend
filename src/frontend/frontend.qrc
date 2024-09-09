@@ -274,5 +274,6 @@
         <file>menu/settings/AdvancedDirectoriesConf.qml</file>
         <file>dialogs/CartridgeDialog.qml</file>
         <file>menu/settings/GameDumperReaderSettings.qml</file>
+        <file>dialogs/GenericWaitDialog.qml</file>
     </qresource>
 </RCC>

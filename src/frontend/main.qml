@@ -763,7 +763,6 @@ Window {
         interval: 5000
         triggeredOnStart: false
         repeat: true
-        //running: (splashScreen.focus || isDebugEnv()) ? false : true
         running: (splashScreen.focus) ? false : true
         property bool cartridge_plugged: false
         onTriggered: {
@@ -936,11 +935,11 @@ Window {
                         gameCartridge_crc32 = "";
                         gameCartridge_name = "";
                     }
-                    console.log("USB-NES gameCartridge (full description from NESDB 2.0) : ", gameCartridge);
-                    console.log("USB-NES gameCartridge_region (no-intro regions) : ", gameCartridge_region);
-                    console.log("USB-NES gameCartridge_system (pixL system shortname): ", gameCartridge_system);
-                    console.log("USB-NES gameCartridge_state : ", gameCartridge_state);
-                    console.log("USB-NES gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
+                    //console.log("USB-NES gameCartridge (full description from NESDB 2.0) : ", gameCartridge);
+                    //console.log("USB-NES gameCartridge_region (no-intro regions) : ", gameCartridge_region);
+                    //console.log("USB-NES gameCartridge_system (pixL system shortname): ", gameCartridge_system);
+                    //console.log("USB-NES gameCartridge_state : ", gameCartridge_state);
+                    //console.log("USB-NES gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
                     //set read.flag to "true"
                     api.internal.system.run("echo '" + true + "' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/pixl-read.flag");
                 }
@@ -954,7 +953,6 @@ Window {
         interval: 5000
         triggeredOnStart: false
         repeat: true
-        //running: (splashScreen.focus || isDebugEnv()) ? false : true
         running: (splashScreen.focus) ? false : true
         property bool cartridge_plugged: false
         onTriggered: {
@@ -986,107 +984,16 @@ Window {
                 //check if flag available
                 var readflag = api.internal.system.run("ls " + mountpoint + "/*.flag 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                 if(fileFound !== "" && !readflag.includes("pixl-read")){
-                    //get size of the rom detected
-                    var romsize = api.internal.system.run("wc -c "+ fileFound + "  | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("RETRODE romsize: ", romsize)
-                    //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
-                    var previousromcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("RETRODE previousromcrc32: ", previousromcrc32)
-                    //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
-                    var romcrc32 = api.internal.system.run("crc32 " + fileFound + " | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("RETRODE romcrc32: ", romcrc32)
-                    if(romcrc32 === previousromcrc32){
-                        gameCartridge_state = "reloaded";
-                        //show popup to say that is a reset
-                        apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("RETRODE cartridge reloaded"),"",2);
-                    }
-                    //just set "cartridge" as title of this game (optional)
-                    api.internal.singleplay.setTitle("cartridge");
-                    //set rom full path
-                    gameCartridge_rom = fileFound;
-                    api.internal.singleplay.setFile(gameCartridge_rom);
-                    //set system to select to run this rom
-                    api.internal.singleplay.setSystem(systemFound); //using shortName
-                    //store new crc32 (including complete path of rom) and store it for the moment
-                    api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.romcrc32");
-                    //RFU: generate md5 (including complete path of rom) and store it for the moment
-                    //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.rommd5");
-                    //get info from file name (first part)
-                    var romfilename=fileFound.replace(mountpoint + "/","");
-                    var rominfo=romfilename.replace("." + romsExt.split(",")[i],"");
-                    console.log("RETRODE rominfo: ", rominfo);
-                    if(rominfo !== ""){
-                        //check also if sav game exist
-                        //but we should exclude 3 files for that
-                        var value1 = "pixl-read.flag";
-                        var value2 = romfilename;
-                        var value3 = "RETRODE.CFG"
-                        console.log("ls -1 "+ mountpoint + " 2>/dev/null | grep -vE '^(" + value1 +"|" + value2 + "|" + value3 + ")$' | tr -d '\\n' | tr -d '\\r'");
-                        var savinfo=api.internal.system.run("ls -1 "+ mountpoint + " 2>/dev/null | grep -vE '^(" + value1 +"|" + value2 + "|" + value3 + ")$' | tr -d '\\n' | tr -d '\\r'");
-                        console.log("RETRODE savinfo: ", savinfo);
-                        var savinfoflag = "N";
-                        gameCartridge_save = "";
-                        if(savinfo !== ""){
-                            savinfoflag = "Y";
-                            //just communicate that sav is available
-                            gameCartridge_save = mountpoint + "/" + savinfo;
-                        }
-                        gameCartridge_state = "identified";
-                        //console.log("RETRODE gameCartridge_state: ", gameCartridge_state);
-                        gameCartridge = rominfo;
-                        //console.log("RETRODE gameCartridge: ", gameCartridge);
-                        gameCartridge_type = ""; //empty for RETRODE
-                        //console.log("RETRODE gameCartridge_type: ", gameCartridge_type);
-                        gameCartridge_region = ""; //empty for RETRODE
-                        //console.log("RETRODE gameCartridge_region: ", gameCartridge_region);
-                        gameCartridge_name = ""; //let it empty to search only by crc32
-                        //console.log("RETRODE gameCartridge_name: ", gameCartridge_name);
-                        //check if option to save rominfo/crc32 is requested
-                        if(api.internal.recalbox.getBoolParameter("dumpers.retrode.romlist",false)){
-                            var existingFile = ""
-                            existingFile = api.internal.system.run("ls /recalbox/share/roms/retrode.romlist.csv 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
-                            if(!existingFile.includes("retrode.romlist.csv")){
-                                //if no file exists, let create it with column titles
-                                api.internal.system.run("echo 'GAME TITLE;SYSTEM;WORKS;SAVE FOUND;CRC32 FILE CHECKSUM;DUMPER VERSION;WHEN;COMMENT' >> /recalbox/share/roms/retrode.romlist.csv");
-                            }
-                            var existingRom = ""
-                            existingRom = api.internal.system.run("grep -i " + romcrc32 + " /recalbox/share/roms/retrode.romlist.csv | tr -d '\\n' | tr -d '\\r'");
-                            //console.log("existingRom : ",existingRom);
-                            if(existingRom === ""){
-                                //format GAME TITLE,SYSTEM,WORKS,SAVE FOUND;CRC32 FILE CHECKSUM,DUMPER VERSION,WHEN,COMMENT
-                                var now = new Date();
-                                var formattedDateTime = now.toString("yyyy-MM-dd hh:mm:ss");
-                                //console.log("Formatted date and time:", formattedDateTime);
-                                if(retrodeVersion === ""){
-                                    //read RETRODE version and store it in global variable
-                                    retrodeVersion = api.internal.system.run("cat " + mountpoint + "/RETRODE.CFG | awk 'NR == 1 {print}' | awk -F ' ' '{print $2$3}' | grep -o '[^[:space:]]*' | tr '\\n' ' '");
-                                }
-                                //console.log('echo "' + rominfo + ';' + systemFound + ';' + 'Y' + ';' + savinfo + ';' +  romcrc32.split(" ")[0] + ';' + retrodeVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/retrode.romlist.csv');
-                                api.internal.system.run('echo "' + rominfo + ';' + systemFound + ';' +  'Y' + ';' + savinfo + ';' +  romcrc32.split(" ")[0] + ';' + retrodeVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/retrode.romlist.csv');
-                            }
-                        }
-                        gameCartridge_system = systemFound;
-                        //to do last because will trig changes
-                        gameCartridge_crc32 = romcrc32.split(" ")[0];//need to take first part only because file name/path is inlcuded in result of CRC32 calculation
-                        //console.log("RETRODE gameCartridge_crc32: ", gameCartridge_crc32);
-                        //dump of rom if request
-                        if(api.internal.recalbox.getBoolParameter("dumpers.retrode.savedump",false)){
-                            var targetedDump = "/recalbox/share/dumps/" + rominfo + " [" + gameCartridge_crc32 + "]." + romsExt.split(",")[i];
-                            //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                            var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                            //console.log("existingDump : ",existingDump);
-                            //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
-                            //manual move/erase to do in share dumps directory in this case
-                            if(!existingDump.includes("/recalbox/share/dumps/")){
-                                //copy of rom as dump
-                                //console.log("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
-                                api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
-                            }
-                        }
-                    }
-                    //propose cartridge dialog box in this case
-                    cartridgeDialogBoxLoader.visible = true; //to show
-                    cartridgeDialogBoxLoader.focus = true; //to have focus
+                    //add dialogBox to show spinner
+                    genericMessage.setSource("dialogs/GenericWaitDialog.qml",
+                                             { "title": qsTr("RETRODE"), "message": qsTr("ROM is loading from reader/dumper...")});
+                    genericMessage.focus = true;
+                    //run step 2 to let display the MessageBox
+                    dialogBoxRETRODETimer_step2.mountpoint=mountpoint;
+                    dialogBoxRETRODETimer_step2.fileFound=fileFound;
+                    dialogBoxRETRODETimer_step2.romExt=romsExt.split(",")[i];
+                    dialogBoxRETRODETimer_step2.systemFound=systemFound;
+                    dialogBoxRETRODETimer_step2.start();
                 }
                 else if(fileFound === "" && cartridge_plugged === true && readflag.includes("pixl-read")){
                     cartridge_plugged = false;
@@ -1116,14 +1023,146 @@ Window {
                     gameCartridge_state = ""
                     gameCartridge_name = "";
                 }
-                console.log("RETRODE gameCartridge (from file name) : ", gameCartridge);
-                console.log("RETRODE gameCartridge_region (no-intro regions) : ", gameCartridge_region);
-                console.log("RETRODE gameCartridge_system (pixL system shortname): ", gameCartridge_system);
-                console.log("RETRODE gameCartridge_crc32 (as in gamelist for snes): ", gameCartridge_crc32);
-                console.log("RETRODE gameCartridge_state : ", gameCartridge_state);
-                console.log("RETRODE gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
+                //console.log("RETRODE gameCartridge (from file name) : ", gameCartridge);
+                //console.log("RETRODE gameCartridge_region (no-intro regions) : ", gameCartridge_region);
+                //console.log("RETRODE gameCartridge_system (pixL system shortname): ", gameCartridge_system);
+                //console.log("RETRODE gameCartridge_crc32 (as in gamelist for snes): ", gameCartridge_crc32);
+                //console.log("RETRODE gameCartridge_state : ", gameCartridge_state);
+                //console.log("RETRODE gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
                 //set read.flag but empty
                 api.internal.system.run("echo '' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/pixl-read.flag");
+            }
+        }
+    }
+
+    // Timer to show the dialog box for cartridge (RETRODE)
+    Timer {
+        id: dialogBoxRETRODETimer_step2
+        interval: 500
+        triggeredOnStart: false
+        repeat: false
+        running: false
+        property bool cartridge_plugged: false
+        //see after property coming from previous step
+        property string mountpoint: ""
+        property string fileFound: ""
+        property string systemFound: ""
+        property string romExt: ""
+        onTriggered: {
+            //console.log("RETRODE mountpoint : ", mountpoint)
+            if(mountpoint.includes("/usb")) {
+                //console.log("RETRODE cartridge plugged: ", cartridge_plugged)
+                //console.log("RETRODE romExt ",romExt);
+                //console.log("RETRODE fileFound for ",systemFound, " : ", fileFound)
+                //get size of the rom detected
+                var romsize = api.internal.system.run("wc -c "+ fileFound + "  | tr -d '\\n' | tr -d '\\r'");
+                if(isDebugEnv()) api.internal.system.run("sleep 4"); //to simulate slownness when we read rom file for the first time
+                genericMessage.focus = false;
+                //console.log("RETRODE romsize: ", romsize)
+                //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
+                var previousromcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                //console.log("RETRODE previousromcrc32: ", previousromcrc32)
+                //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
+                var romcrc32 = api.internal.system.run("crc32 " + fileFound + " | tr -d '\\n' | tr -d '\\r'");
+                //console.log("RETRODE romcrc32: ", romcrc32)
+                if(romcrc32 === previousromcrc32){
+                    gameCartridge_state = "reloaded";
+                    //show popup to say that is a reset
+                    apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("RETRODE cartridge reloaded"),"",2);
+                }
+                //just set "cartridge" as title of this game (optional)
+                api.internal.singleplay.setTitle("cartridge");
+                //set rom full path
+                gameCartridge_rom = fileFound;
+                api.internal.singleplay.setFile(gameCartridge_rom);
+                //set system to select to run this rom
+                api.internal.singleplay.setSystem(systemFound); //using shortName
+                //store new crc32 (including complete path of rom) and store it for the moment
+                api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.romcrc32");
+                //RFU: generate md5 (including complete path of rom) and store it for the moment
+                //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.rommd5");
+                //get info from file name (first part)
+                var romfilename=fileFound.replace(mountpoint + "/","");
+                var rominfo=romfilename.replace("." + romExt,"");
+                //console.log("RETRODE rominfo: ", rominfo);
+                if(rominfo !== ""){
+                    //check also if sav game exist
+                    //but we should exclude 3 files for that
+                    var value1 = "pixl-read.flag";
+                    var value2 = romfilename;
+                    var value3 = "RETRODE.CFG"
+                    //console.log("ls -1 "+ mountpoint + " 2>/dev/null | grep -vE '^(" + value1 +"|" + value2 + "|" + value3 + ")$' | tr -d '\\n' | tr -d '\\r'");
+                    var savinfo=api.internal.system.run("ls -1 "+ mountpoint + " 2>/dev/null | grep -vE '^(" + value1 +"|" + value2 + "|" + value3 + ")$' | tr -d '\\n' | tr -d '\\r'");
+                    //console.log("RETRODE savinfo: ", savinfo);
+                    var savinfoflag = "N";
+                    gameCartridge_save = "";
+                    if(savinfo !== ""){
+                        savinfoflag = "Y";
+                        //just communicate that sav is available
+                        gameCartridge_save = mountpoint + "/" + savinfo;
+                    }
+                    gameCartridge_state = "identified";
+                    //console.log("RETRODE gameCartridge_state: ", gameCartridge_state);
+                    gameCartridge = rominfo;
+                    //console.log("RETRODE gameCartridge: ", gameCartridge);
+                    gameCartridge_type = ""; //empty for RETRODE
+                    //console.log("RETRODE gameCartridge_type: ", gameCartridge_type);
+                    gameCartridge_region = ""; //empty for RETRODE
+                    //console.log("RETRODE gameCartridge_region: ", gameCartridge_region);
+                    gameCartridge_name = ""; //let it empty to search only by crc32
+                    //console.log("RETRODE gameCartridge_name: ", gameCartridge_name);
+                    //check if option to save rominfo/crc32 is requested
+                    if(api.internal.recalbox.getBoolParameter("dumpers.retrode.romlist",false)){
+                        var existingFile = ""
+                        existingFile = api.internal.system.run("ls /recalbox/share/roms/retrode.romlist.csv 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
+                        if(!existingFile.includes("retrode.romlist.csv")){
+                            //if no file exists, let create it with column titles
+                            api.internal.system.run("echo 'GAME TITLE;SYSTEM;WORKS;SAVE FOUND;CRC32 FILE CHECKSUM;DUMPER VERSION;WHEN;COMMENT' >> /recalbox/share/roms/retrode.romlist.csv");
+                        }
+                        var existingRom = ""
+                        existingRom = api.internal.system.run("grep -i " + romcrc32 + " /recalbox/share/roms/retrode.romlist.csv | tr -d '\\n' | tr -d '\\r'");
+                        //console.log("existingRom : ",existingRom);
+                        if(existingRom === ""){
+                            //format GAME TITLE,SYSTEM,WORKS,SAVE FOUND;CRC32 FILE CHECKSUM,DUMPER VERSION,WHEN,COMMENT
+                            var now = new Date();
+                            var formattedDateTime = now.toString("yyyy-MM-dd hh:mm:ss");
+                            //console.log("Formatted date and time:", formattedDateTime);
+                            if(retrodeVersion === ""){
+                                //read RETRODE version and store it in global variable
+                                retrodeVersion = api.internal.system.run("cat " + mountpoint + "/RETRODE.CFG | awk 'NR == 1 {print}' | awk -F ' ' '{print $2$3}' | grep -o '[^[:space:]]*' | tr '\\n' ' '");
+                            }
+                            //console.log('echo "' + rominfo + ';' + systemFound + ';' + 'Y' + ';' + savinfo + ';' +  romcrc32.split(" ")[0] + ';' + retrodeVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/retrode.romlist.csv');
+                            api.internal.system.run('echo "' + rominfo + ';' + systemFound + ';' +  'Y' + ';' + savinfo + ';' +  romcrc32.split(" ")[0] + ';' + retrodeVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/retrode.romlist.csv');
+                        }
+                    }
+                    gameCartridge_system = systemFound;
+                    //to do last because will trig changes
+                    gameCartridge_crc32 = romcrc32.split(" ")[0];//need to take first part only because file name/path is inlcuded in result of CRC32 calculation
+                    //console.log("RETRODE gameCartridge_crc32: ", gameCartridge_crc32);
+                    //dump of rom if request
+                    if(api.internal.recalbox.getBoolParameter("dumpers.retrode.savedump",false)){
+                        var targetedDump = "/recalbox/share/dumps/" + rominfo + " [" + gameCartridge_crc32 + "]." + romExt;
+                        //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                        var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                        //console.log("existingDump : ",existingDump);
+                        //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
+                        //manual move/erase to do in share dumps directory in this case
+                        if(!existingDump.includes("/recalbox/share/dumps/")){
+                            //copy of rom as dump
+                            //console.log("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
+                            api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
+                        }
+                    }
+                }
+                //propose cartridge dialog box in this case
+                cartridgeDialogBoxLoader.visible = true; //to show
+                cartridgeDialogBoxLoader.focus = true; //to have focus
+                //console.log("RETRODE gameCartridge (from file name) : ", gameCartridge);
+                //console.log("RETRODE gameCartridge_region (no-intro regions) : ", gameCartridge_region);
+                //console.log("RETRODE gameCartridge_system (pixL system shortname): ", gameCartridge_system);
+                //console.log("RETRODE gameCartridge_crc32 (as in gamelist for snes): ", gameCartridge_crc32);
+                //console.log("RETRODE gameCartridge_state : ", gameCartridge_state);
+                //console.log("RETRODE gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
             }
         }
     }
@@ -1177,7 +1216,7 @@ Window {
             popupDelay.restart();
         }
         function onNewController(idx, msg) {
-            console.log("New controller detected: #", idx," - ", msg);
+            //console.log("New controller detected: #", idx," - ", msg);
             subscreen.setSource("menu/settings/GamepadEditor.qml", {"newControllerIndex": idx, "isNewController": true});
             subscreen.focus = true;
             content.state = "sub";
@@ -1188,8 +1227,8 @@ Window {
             genericMessage.focus = true;
         }
         function onRequestAction(action, parameterList) {
-            console.log("New action requested : ", action);
-            console.log("parameterList content : ", parameterList);
+            //console.log("New action requested : ", action);
+            //console.log("parameterList content : ", parameterList);
             if(action === "shutdown"){
                 powerDialog.source = "dialogs/ShutdownDialog.qml"
                 powerDialog.focus = true;
@@ -1882,7 +1921,7 @@ Window {
         triggeredOnStart: true
         onTriggered: {
             //only if updates are enabled from recalbox.conf
-            console.log("updates.enabled : ",api.internal.recalbox.getBoolParameter("updates.enabled"));
+            //console.log("updates.enabled : ",api.internal.recalbox.getBoolParameter("updates.enabled"));
             if(api.internal.recalbox.getBoolParameter("updates.enabled") === true){
                 var before = api.internal.recalbox.getStringParameter("updates.lastchecktime")
                 //console.log("updates.lastchecktime read: ", before);
@@ -2024,7 +2063,7 @@ Window {
         running: api.internal.recalbox.getBoolParameter("controllers.bluetooth.startreset")  && loadingState
         triggeredOnStart: false
         onTriggered: {
-            console.log("bluetoothRestartTimer triggered !");
+            //console.log("bluetoothRestartTimer triggered !");
             if (!isDebugEnv()){
                 api.internal.system.run("/etc/init.d/S40bluetoothd restart");
                 api.internal.system.run("bluetoothctl power on");
@@ -2265,8 +2304,8 @@ Window {
                 //to reload source if conf changed and if already visible
                 let bordersize = api.internal.recalbox.getStringParameter("lightgun.sinden.bordersize","superthin");
                 let bordercolor = api.internal.recalbox.getStringParameter("lightgun.sinden.bordercolor","white");
-                console.log("bordersize : ", bordersize);
-                console.log("bordercolor : ", bordercolor);
+                //console.log("bordersize : ", bordersize);
+                //console.log("bordercolor : ", bordercolor);
                 switch (bordersize) {
                   case 'superthin':
                       //0.5 % of width: 1280
