@@ -24,22 +24,21 @@ FocusScope {
     onActiveFocusChanged: state = activeFocus ? "open" : ""
 
     Keys.onPressed: {
-        if (api.keys.isCancel(event) && !event.isAutoRepeat) {
+        //if (!event.isAutoRepeat) {
             event.accepted = true;
-            root.close();
-        }
+            //accept but do nothing ;-)
+        //}
     }
 
     Shade {
         id: shade
-        onCancel: root.close()
-    }
-
-    // actual dialog
-    MouseArea {
-        anchors.centerIn: parent
-        width: dialogBox.width
-        height: dialogBox.height
+        //onCancel: root.close()
+        Keys.onPressed: {
+            //if (!event.isAutoRepeat) {
+                event.accepted = true;
+                //accept but do nothing ;-)
+            //}
+        }
     }
 
     Column {
@@ -101,9 +100,8 @@ FocusScope {
             }
         }
 
-        // button row
+        // bottom row
         Rectangle {
-            id: closeButton
             width: parent.width
             height: root.textSize * 2.25
             color: (focus || closeMouseArea.containsMouse) ? "#4ae" : "#666"
@@ -111,29 +109,20 @@ FocusScope {
             focus: true
 
             Keys.onPressed: {
-                if (api.keys.isAccept(event) && !event.isAutoRepeat) {
+                //if (!event.isAutoRepeat) {
                     event.accepted = true;
-                    root.close();
-                }
+                    //accept but do nothing ;-)
+                //}
             }
 
             Text {
-                id: okButtonText
                 anchors.centerIn: parent
-
-                text: qsTr("Ok") + api.tr
+                text: qsTr("Please wait...") + api.tr
                 color: themeColor.textTitle
                 font {
                     pixelSize: root.textSize
                     family: globalFonts.sans
                 }
-            }
-
-            MouseArea {
-                id: closeMouseArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: root.close()
             }
 
             //Spinner Loader to wait (if needed and if UI blocked)
@@ -146,10 +135,6 @@ FocusScope {
                 }
                 active: true //by default, for this one, we activate by default !
                 sourceComponent: spinner
-                onActiveChanged: {
-                    //change text to ask to wait if needed
-                    okButtonText.text = qsTr("Please wait...") + api.tr
-                }
             }
 
             Component {
