@@ -15,7 +15,7 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Updated and integrated for recalbox by BozoTheGeek 03/05/2021
-// Update by Sebio 19/04/2023
+// Update by Sebio 30/08/2024
 // Update by BozoTheGeek 30/07/2023 to fix media usages and media.xml generation method
 
 #include "Es2Metadata.h"
@@ -142,30 +142,30 @@ enum class MetaType : unsigned char {
 
 const QHash<QString, QList<AssetType>> DIR_ASSETS {
     { QStringLiteral("bezel"), {AssetType::ARCADE_BEZEL}},
-    { QStringLiteral("box2dback"), {AssetType::BOX_BACK}},
-    { QStringLiteral("box2dfront"), {AssetType::BOX_FRONT, AssetType::BOX_2DFRONT}},
+    { QStringLiteral("box2dback"), {AssetType::BOX_BACK, AssetType::FULLMEDIA}},
+    { QStringLiteral("box2dfront"), {AssetType::BOX_FRONT, AssetType::BOX_2DFRONT, AssetType::FULLMEDIA}},
     { QStringLiteral("box2dside"), {AssetType::BOX_SPINE}},
-    { QStringLiteral("box3d"), {AssetType::BOX_FRONT, AssetType::BOX_3DFRONT}},
-    { QStringLiteral("boxtexture"), {AssetType::BOX_FULL}},
-    { QStringLiteral("extra1"), {AssetType::EXTRA1}},
-    { QStringLiteral("fanart"), {AssetType::BACKGROUND, AssetType::FANART}},
-    { QStringLiteral("image"), {AssetType::IMAGES}},
-    { QStringLiteral("images"), {AssetType::IMAGES}},
+    { QStringLiteral("box3d"), {AssetType::BOX_FRONT, AssetType::BOX_3DFRONT, AssetType::FULLMEDIA}},
+    { QStringLiteral("boxtexture"), {AssetType::BOX_FULL, AssetType::FULLMEDIA}},
+    { QStringLiteral("extra1"), {AssetType::EXTRA1, AssetType::FULLMEDIA}},
+    { QStringLiteral("fanart"), {AssetType::BACKGROUND, AssetType::FANART, AssetType::FULLMEDIA}},
+    { QStringLiteral("image"), {AssetType::IMAGES, AssetType::FULLMEDIA}},
+    { QStringLiteral("images"), {AssetType::IMAGES, AssetType::FULLMEDIA}},
     { QStringLiteral("manual"), {AssetType::MANUAL}},
     { QStringLiteral("manuals"), {AssetType::MANUAL}},
     { QStringLiteral("map"), {AssetType::MAPS}},
     { QStringLiteral("maps"), {AssetType::MAPS}},
     { QStringLiteral("marquee"), {AssetType::ARCADE_MARQUEE, AssetType::MARQUEE}},
-    { QStringLiteral("mix"), {AssetType::MIX}},
+    { QStringLiteral("mix"), {AssetType::MIX, AssetType::FULLMEDIA}},
     { QStringLiteral("music"), {AssetType::MUSIC}},
     { QStringLiteral("screenmarquee"), {AssetType::ARCADE_MARQUEE, AssetType::SCREEN_MARQUEE}},
     { QStringLiteral("screenmarqueesmall"), {AssetType::ARCADE_MARQUEE, AssetType::SCREEN_MARQUEESMALL}},
-    { QStringLiteral("screenshot"), {AssetType::SCREENSHOT, AssetType::BACKGROUND, AssetType::SCREENSHOT_BIS}},
-    { QStringLiteral("screenshottitle"), {AssetType::TITLESCREEN, AssetType::SCREENSHOT}},
+    { QStringLiteral("screenshot"), {AssetType::SCREENSHOT, AssetType::BACKGROUND, AssetType::SCREENSHOT_BIS, AssetType::FULLMEDIA}},
+    { QStringLiteral("screenshottitle"), {AssetType::TITLESCREEN, AssetType::SCREENSHOT, AssetType::FULLMEDIA}},
     { QStringLiteral("steamgrid"), {AssetType::UI_STEAMGRID, AssetType::ARCADE_MARQUEE}},
-    { QStringLiteral("support"), {AssetType::BOX_FRONT, AssetType::CARTRIDGE}},
-    { QStringLiteral("supporttexture"), {AssetType::CARTRIDGETEXTURE, AssetType::BOX_FRONT}},
-    { QStringLiteral("thumbnail"), {AssetType::THUMBNAIL, AssetType::BOX_FRONT}},
+    { QStringLiteral("support"), {AssetType::BOX_FRONT, AssetType::CARTRIDGE, AssetType::FULLMEDIA}},
+    { QStringLiteral("supporttexture"), {AssetType::CARTRIDGETEXTURE, AssetType::BOX_FRONT, AssetType::FULLMEDIA}},
+    { QStringLiteral("thumbnail"), {AssetType::THUMBNAIL, AssetType::BOX_FRONT, AssetType::FULLMEDIA}},
     { QStringLiteral("video"), {AssetType::VIDEO}},
     { QStringLiteral("videos"), {AssetType::VIDEO}},
     { QStringLiteral("videomix"), {AssetType::VIDEOMIX}},
@@ -517,6 +517,28 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
             //QStringLiteral("image"),
             //QStringLiteral("images"),
         }},
+        { AssetType::FULLMEDIA, {         
+            QStringLiteral("mix"),
+            QStringLiteral("fanart"),
+            QStringLiteral("screenshot"),
+            QStringLiteral("screenshottitle"),
+            QStringLiteral("image"),
+            QStringLiteral("images"),
+            QStringLiteral("thumbnail"),
+            QStringLiteral("extra1"),
+            QStringLiteral("box3d"),
+            QStringLiteral("boxfront"),
+            QStringLiteral("boxFront"),
+            QStringLiteral("box2dfront"),
+            QStringLiteral("support"),
+            QStringLiteral("supporttexture"),
+            QStringLiteral("boxback"),
+            QStringLiteral("boxBack"),
+            QStringLiteral("box2dback"),
+            QStringLiteral("boxfull"),
+            QStringLiteral("boxFull"),
+            QStringLiteral("boxtexture"),
+        }},
 
         // solo posibility
         // for tag <bezels></bezels>
@@ -798,6 +820,26 @@ void Metadata::add_skraper_media_metadata_v2(const QDir& xml_dir, providers::Sea
                                     // we can't use "image or images" because we can't anticipate what has been scrapped by user finally
                                     //QStringLiteral("image"),
                                     //QStringLiteral("images"),
+                                }},
+        { AssetType::FULLMEDIA, {         
+                                    QStringLiteral("fullmedia"),
+                                    QStringLiteral("mix"),
+                                    QStringLiteral("fanart"),
+                                    QStringLiteral("screenshot"),
+                                    QStringLiteral("screenshottitle"),
+                                    QStringLiteral("image"),
+                                    QStringLiteral("images"),
+                                    QStringLiteral("thumbnail"),
+                                    QStringLiteral("extra1"),
+                                    QStringLiteral("box3d"),
+                                    QStringLiteral("boxfront"),
+                                    QStringLiteral("boxFront"),
+                                    QStringLiteral("box2dfront"),
+                                    QStringLiteral("support"),
+                                    QStringLiteral("supporttexture"),
+                                    QStringLiteral("boxback"),
+                                    QStringLiteral("boxBack"),
+                                    QStringLiteral("box2dback"),
                                 }},
 
         // solo posibility

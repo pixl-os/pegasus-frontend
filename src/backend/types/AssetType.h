@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
-// update by Sebio 19/04/2023
+// update by Sebio 30/08/2024
 
 
 #pragma once
@@ -111,6 +111,9 @@ enum class AssetType : unsigned char {
     
     // for tag <wheelsteel></wheelsteel>
     WHEEL_STEEL,
+
+    // for asset fullmedia
+    FULLMEDIA,
 
     POSTER,    
     ARCADE_PANEL,

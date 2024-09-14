@@ -1,9 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2024-mm-dd - v0.1.8
+## [pixL-master] - 2024-09-16 - v0.1.8
 - Features:
 	- add new asset for media folder and tag
+	- add "fullmedia" for obtain many media with multi-resultat-scrape
 	- move directory <-> assets lists to be used for import but also generation of media.xml
 	- new method to add skraper media metadata and generate media.xml file
 	- add a solution to use image or images media directory as asset
