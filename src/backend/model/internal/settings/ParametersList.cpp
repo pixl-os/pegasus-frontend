@@ -406,6 +406,13 @@ QStringList GetParametersList(QString Parameter)
             ListOfInternalValue << "0x00000001" << "0x00000002" << "0x00000004" << "0x00000008" ;
         }
     }
+    else if (Parameter == "wii.emulatedwiimotes.buttons.mapping")
+    {
+        //A/B is mapped on A/B (as new super mario bros) or 1/2 are on B/A (as super mario all stars)
+        ListOfValue << QObject::tr("1->East/2->North/A->West/B->South") << QObject::tr("B->East/A->North/2->West/1->South");
+        //mode 1 or 2
+        ListOfInternalValue << "1" << "2";
+    }
     else if (Parameter == "duckstation.resolution")
     {
         /*

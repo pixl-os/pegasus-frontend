@@ -226,7 +226,114 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("dolphin.cheats",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optAutoSave
+                    KeyNavigation.down: optWiiSensorsBars
+                }
+                SectionTitle {
+                    text: qsTr("Controllers") + api.tr
+                    first: true
+                    symbol:"\uf262 / \uf263"
+                    symbolFontFamily: globalFonts.awesome
+                    symbolFontSize: vpx(40)
+                }
+                ToggleOption {
+                    id: optWiiSensorsBars
+                    //wii.sensorbar.position=1
+                    label: qsTr("Wiimote sensor bar position") + api.tr
+                    note: qsTr("set position to 1 for the sensor bar at the top of the screen, to 0 for the sensor bar at the bottom") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("wii.sensorbar.position")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("wii.sensorbar.position",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRealWiimotes
+                }
+                ToggleOption {
+                    id: optRealWiimotes
+                    //wii.realwiimotes=0
+                    label: qsTr("Use authentics Wiimotes controllers") + api.tr
+                    note: qsTr("Use authentics Wiimotes pads in Wii games") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("wii.realwiimotes")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("wii.realwiimotes",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optEmulatedWiimotesNunchuk
+                }
+                ToggleOption {
+                    id: optEmulatedWiimotesNunchuk
+                    //wii.emulatedwiimotes.nunchuck=1
+                    label: qsTr("Activate nunchuck") + api.tr
+                    note: qsTr("For emulated Wiimotes using gamepads") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("wii.emulatedwiimotes.nunchuck",true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("wii.emulatedwiimotes.nunchuck",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: !optRealWiimotes.checked
+                    KeyNavigation.down: optEmulatedWiimotesButtonsMapping
+                }
+                MultivalueOption {
+                    id: optEmulatedWiimotesButtonsMapping
+
+                    //property to manage parameter name
+                    property string parameterName :"wii.emulatedwiimotes.buttons.mapping"
+                    label: qsTr("Buttons mapping") + api.tr
+                    note: qsTr("A/B/1/2 buttons position for emulated Wiimotes using gamepads") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optEmulatedWiimotesButtonsMapping;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optGcControllers
+                    visible: !optRealWiimotes.checked
+                }
+
+                ToggleOption {
+                    id: optGcControllers
+                    //gamecube.realgamecubepads=0
+                    label: qsTr("Use authentics Gamecube pads") + api.tr
+                    note: qsTr("Use authentics Gamecube pads in Gamecube emulator") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("gamecube.realgamecubepads")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("gamecube.realgamecubepads",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    //KeyNavigation.down: RFU
                 }
                 Item {
                     width: parent.width
