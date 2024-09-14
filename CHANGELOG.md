@@ -8,11 +8,60 @@ All notable changes to this project will be documented in this file (focus on ch
 	- new method to add skraper media metadata and generate media.xml file
 	- add a solution to use image or images media directory as asset
 	- bump rcheevos in v11.4.0
+	- copy controllers parameters in Dolphin Advanced Menu (wii & gamecube system) for wiimote/gamecube controllers emulation
+	- add buttons mapping/nunchuk activation in Dolphin Advanced Menu (wii)
+	- "mount" devices features:
+		- add externals usb and internals drive
+		- add info about on "share" sizes in settings menu
+		- add details/purcentages on INTERNAL/EXFAT/NTFS
+		- display storage/label for internal "share" also
+		- to display size for device not mount also (no free size in this case)
+		- using tmp files now to be quicker and refresh quickly in menu
+		- add usb/ssd/hdd/sd/nvme/network icons and manage icons about types of storage
+		- add show popup from http api from Pegasus
+		- add optional parameterList for 'action' request
+		- add usbmount-add/remove interaction and to parse new ROMS directories if needed
+		- add features for list using check boxes
+		- add themes directories configuration including internal/external devices
+		- move in specific menu/qml the advanced directories configuration
+		- manage restart if needed for themes/roms directories
+		- reduce number of roms/themes directories check now
+		- add "exeternals" directories mount also from "network" using ROMS0 to ROMS3
+		- add management of the 10 paths targeted now ;-)
+		- introduce "bind" mounts of BIOS directory
+		- propose reboot now if share configuration changed
+		- add alert message for ext4 partition
+		- for paths possibility now to force refresh of dirs especially for parametersList
+		- single play (cd-rom):
+			- fix game loading and parameters (tested with psx cd-rom ;-)
+			- use dynamic shortname setting now and not only psx case
+			- add additional notifications (mount,eject) for cd-rom
+			- improve way to display/close cdrom dialog box
+			- to manage several cdrom drive when retroatch is called
+		- dumper/reader cartridge roms/saves:
+			- retrode rom dumper introduction/detection
+			- usb-nes rom dumper introduction/detection
+			- improve cardridge switch/change + remove md5sum for the moment
+			- add sha1 calculation for NES 2.0 xml DB usage + extraction of info
+			- detect/identify/search and animate cartridge picture from sha-1/naming
+			- stable implementation to manage reload, unplugged, unknown, identified and disconnected states
+			- add crc32 search for retrode cases
+			- add a first menu and configuration for Game Reader/Dumper
+			- add possibility to save info about rom identified by pixL in .csv file
+			- start to manage save usage for usbnes
+			- manage usb-nes dumps of rom + sync name for rom/save launched
+			- add crc32 in name to insure unicity (but not similar to screenscaper or no-intro)
+			- add icons for supported systems in dialog box
+			- add significant retrode parameters in dumper/reader settings
+			- add management of RETRODE.CFG update for 'advanced' parameters
+			- introduction of Wait Dialog in case of retrode rom loading that block UI
 
 - Fixes:
 	- remove debug logs that could generate issues
 	- fix to avoid overload of logo/wheel for existing themes
 	- fix rcheevos to have "Gamecube" in iso format for RA (https://github.com/RetroAchievements/rcheevos/pull/353)
+	- add tmp files generation if missing to improve performance
+	- set as INTERNAL value for Internal SHARE
 
 ## [pixL-master] - 2024-07-07 - v0.1.7
 - Fixes:
@@ -34,9 +83,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	    - not count file not well downloaded now (to detect better issues)
 	    - add feature to be able to test updates from personal repo for dev purposes (using updates.devuser parameter)
 	- add Cemu update online
-    - add Standalone Mame online update (mamedev-mame) + Change repo naming for libretro mame (libretro-mame) (should be change in pixL repo after pixL Beta 36 deployement)
-    - copy controllers parameters in Dolphin Advanced Menu (wii & gamecube system) for wiimote/gamecube controllers emulation
-    - add buttons mapping/nunchuk activation in Dolphin Advanced Menu (wii)
+	- add Standalone Mame online update (mamedev-mame) + Change repo naming for libretro mame (libretro-mame) (should be change in pixL repo after pixL Beta 36 deployement)
 
 ## [pixL-master] - 2024-03-05 - v0.1.6
 - Features:
