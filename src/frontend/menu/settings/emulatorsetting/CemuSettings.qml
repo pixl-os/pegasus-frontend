@@ -272,7 +272,54 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("cemu.async.compile",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optAutoSave
+                    KeyNavigation.down: optGamepadActivated
+                }
+                SectionTitle {
+                    text: qsTr("Gamepad screen") + api.tr
+                    first: true
+                    symbol: "\uf2ea"
+                    symbolFontFamily: globalFonts.awesome
+                    symbolFontSize: vpx(45)
+                }
+                ToggleOption {
+                    id: optGamepadActivated
+
+                    label: qsTr("Enable Wii U Gamepad") + api.tr
+                    note: qsTr("Activate Wii U Gamepad usage in game") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("cemu.gamepad.activated",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("cemu.gamepad.activated",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGamepadAtStart
+                }
+                ToggleOption {
+                    id: optGamepadAtStart
+
+                    label: qsTr("Show Gamepad at start") + api.tr
+                    note: qsTr("Show gamepad window at front of game window and at start\n(else could be show/hide using HOTKEY+R1)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("cemu.gamepad.at.start",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("cemu.gamepad.at.start",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optGamepadActivated.checked
+                    KeyNavigation.down: optGamepadOnSecondDisplay
+                }
+                ToggleOption {
+                    id: optGamepadOnSecondDisplay
+
+                    label: qsTr("Show Gamepad on second display") + api.tr
+                    note: qsTr("Need to have a second display (physical or virtual) connected\nand activated from 'video configuration' to work") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("cemu.gamepad.on.second.display",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("cemu.gamepad.on.second.display",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optGamepadActivated.checked
                 }
                 Item {
                     width: parent.width
