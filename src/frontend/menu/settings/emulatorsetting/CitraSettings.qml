@@ -181,8 +181,71 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    KeyNavigation.down: optBottomSreenPosition
+                }
+                SectionTitle {
+                    text: qsTr("Bottom screen") + api.tr
+                    first: true
+                    symbol: "\uf28e"
+                    symbolFontFamily: globalFonts.awesome
+                    symbolFontSize: vpx(45)
+                }
+                MultivalueOption {
+                    id: optBottomSreenPosition
 
-//                    KeyNavigation.down: optCheats
+                    //property to manage parameter name
+                    property string parameterName : "citra.bottom.screen.position"
+
+                    label: qsTr("Bottom Screen position") + api.tr
+                    note: qsTr("To set position of bottom screen at start on primary dislpay") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optBottomSreenPosition;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    KeyNavigation.down: optOnSecondDisplay
+                }
+                ToggleOption {
+                    id: optOnSecondDisplay
+
+                    label: qsTr("Show 3DS bottom screen on a second display") + api.tr
+                    note: qsTr("Need to have a second display (physical or virtual) connected\nand activated from 'video configuration' to work") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("citra.bottom.screen.on.second.display",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("citra.bottom.screen.on.second.display",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
