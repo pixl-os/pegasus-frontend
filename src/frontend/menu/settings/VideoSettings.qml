@@ -816,7 +816,7 @@ FocusScope {
                     }
                     onActivate: {
                         //for display mode
-                        api.internal.recalbox.setBoolParameter(optDisplayMode.parameterName,optDisplayMode.internalvalue);
+                        api.internal.recalbox.setStringParameter(optDisplayMode.parameterName,optDisplayMode.internalvalue);
                         //for first screen (if activated)
                         api.internal.recalbox.setBoolParameter(optPrimaryScreenActivate.parameterName,optPrimaryScreenActivate.checked);
                         if(optPrimaryScreenActivate.checked){
