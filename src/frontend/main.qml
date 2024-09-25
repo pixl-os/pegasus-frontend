@@ -1377,7 +1377,7 @@ Window {
 
         property alias iconfont: iconText.font.family
 
-        width:  (message.length > title.length) ? vpx(message.length * 7.5 + ((icon.length !== 0) ? 50 : 0)) + popup.titleTextSize : vpx(title.length * 7.5 + ((icon.length !== 0) ? 50 : 0) + popup.titleTextSize) //vpx(200)
+        width: (messageText.text.length > titleText.text.length ? messageText.text.length * vpx(5) : titleText.text.length * vpx(7.5)) + ((icon.length !== 0) ? iconSize : vpx(20)) + vpx(15)
         height: vpx(70)
 
         background: Rectangle {
@@ -1426,10 +1426,7 @@ Window {
                         top: parent.top
                         left: parent.left
                         right:  parent.right;
-                        leftMargin: popup.titleTextSize * 0.5
-                        rightMargin: popup.titleTextSize * 0.5
                     }
-                    width: parent.width - (2 * anchors.leftMargin)
                     height: popup.titleTextSize * 1.2
                     color: themeColor.textTitle
                     fontSizeMode: Text.Fit
@@ -1448,7 +1445,8 @@ Window {
                         top: titleText.bottom
                         bottom: parent.bottom
                         right:  parent.right;
-                        rightMargin: popup.titleTextSize * 0.1
+                        rightMargin: vpx(5)
+                        bottomMargin: vpx(5)
                     }
                     width: height
                     color: themeColor.textTitle
@@ -1472,10 +1470,9 @@ Window {
                         bottom: parent.bottom
                         left: parent.left
                         right: (popup.icon !== "") ? iconText.left : parent.right
-                        leftMargin: popup.titleTextSize * 0.5
-                        rightMargin: popup.titleTextSize * 0.5
+                        rightMargin: vpx(3)
+                        bottomMargin: vpx(2)
                     }
-                    width: parent.width - (2 * anchors.leftMargin)
                     verticalAlignment: Text.AlignVCenter
                     color: themeColor.textLabel
                     fontSizeMode: Text.Fit
