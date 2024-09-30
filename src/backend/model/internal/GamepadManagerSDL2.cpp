@@ -1051,6 +1051,7 @@ void GamepadManagerSDL2::start_recording(int device_idx, GamepadAxis axis, QStri
     m_recording.reset();
     m_recording.device = device_idx;
     m_recording.target_axis = axis;
+    m_recording.previous_axis_value = 0;
     m_recording.target_sign = QString(sign).toStdString();
 }
 
@@ -1077,6 +1078,7 @@ void GamepadManagerSDL2::reset(int device_idx, GamepadAxis axis)
     m_recording.reset();
     m_recording.device = device_idx;
     m_recording.target_axis = axis;
+    m_recording.previous_axis_value = 0;
     m_recording.target_sign = "";
     m_recording.sign = "";
     m_recording.value = "";
@@ -1126,8 +1128,22 @@ void GamepadManagerSDL2::poll()
                 break;
             case SDL_CONTROLLERAXISMOTION:
                 //Log::debug(LOGMSG("SDL: SDL_CONTROLLERAXISMOTION - instance_id: %1 - axis: %2 - value: %3").arg(QString::number(event.caxis.which),QString::number(event.caxis.axis),QString::number(event.caxis.value)));
-                if (!m_recording.is_active())
-                    fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
+                if (!m_recording.is_active()){
+                    //add deadzone also here to avoid issue in menu of pegasus
+                    //we use deadzone at 50% of values between +/-32767/2 ~ +/-16394
+                    constexpr Sint16 deadzone = std::numeric_limits<Sint16>::max() / 2;
+                    //Log::debug(m_log_tag, LOGMSG("deadzone: %1").arg(QString::number(deadzone)));
+                    //Log::debug(m_log_tag, LOGMSG("event.caxis.value: %1").arg(QString::number(event.caxis.value)));
+                    if (!(-deadzone < event.caxis.value && event.caxis.value < deadzone))
+                    {
+                        fwd_axis_event(event.caxis.which, event.caxis.axis, event.caxis.value);
+                    }
+                    else{
+                        //Log::debug(m_log_tag, LOGMSG("-deadzone < axis_value && axis_value < deadzone"));
+                        //we return 0 to ignore !
+                        fwd_axis_event(event.caxis.which, event.caxis.axis, 0);
+                    }
+                }
                 break;
             case SDL_JOYBUTTONUP:
                 //Log::debug(LOGMSG("SDL: SDL_JOYBUTTONUP"));
@@ -1615,6 +1631,12 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
         if (m_recording.device != device_idx)
             return;
 
+        //if deadzone is not enough to detect changes / we save previous value to detect change of sign
+        if (m_recording.previous_axis_value == 0){
+            m_recording.previous_axis_value = axis_value;
+        }
+
+        //we use deadzone at 50% of values between +/-32767/2 ~ +/-16394
         constexpr Sint16 deadzone = std::numeric_limits<Sint16>::max() / 2;
         Log::debug(m_log_tag, LOGMSG("deadzone: %1").arg(QString::number(deadzone)));
         Log::debug(m_log_tag, LOGMSG("axis_value: %1").arg(QString::number(axis_value)));
@@ -1623,7 +1645,9 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
             Log::debug(m_log_tag, LOGMSG("-deadzone < axis_value && axis_value < deadzone"));       
             return;
         }
-                
+
+
+        //Depreacated: to work like that, axis could be inverted !!!
         // constexpr Sint16 mini = std::numeric_limits<Sint16>::min();
         // Log::debug(m_log_tag, LOGMSG("mini: %1").arg(QString::number(mini)));
         // if (axis_value == mini) // some triggers start from negative
@@ -1639,6 +1663,15 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
         && (m_recording.target_axis != GamepadAxis::RIGHTY)) \
         || (m_recording.target_sign != "")) // if sign is finally requested as +/- right/left x/y (ex: "-rightx" need "sign and value" but "rightx" just need "value")
         {
+            //we check if we change sign or not
+            if((axis_value > 0 ? '+' : '-') == (m_recording.previous_axis_value > 0 ? '+' : '-')){
+                if(abs(axis_value) != std::numeric_limits<Sint16>::max()){
+                    //if no change of sign or no reach maximum (in positive or negative)
+                    //we prefer to continue to scan new values
+                    m_recording.previous_axis_value = axis_value;
+                    return;
+                }
+            }
             m_recording.sign = axis_value > 0 ? '+' : '-';
         }
         else m_recording.sign = "";

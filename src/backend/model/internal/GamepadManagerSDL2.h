@@ -71,6 +71,7 @@ private:
 		std::string target_sign = "";
         std::string value;
         std::string sign;
+        Sint16 previous_axis_value = 0; //to be reset to 0 at each recording
 
         bool is_active() const;
         void reset();
