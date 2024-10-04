@@ -12,6 +12,8 @@
 #include "Log.h"
 #include <string>
 #include <QFile>
+#include <iostream>
+#include <stdexcept>
 
 //tool functions
 bool isNumeric(const std::string& str) {
@@ -36,6 +38,7 @@ void StorageDevices::Initialize()
   // Get storage sizes
   { LOG(LogDebug) << "[Storage] GetFileSystemInfo() function to launch"; }
   DeviceSizeInfo sizeInfos = GetFileSystemInfo();
+  { LOG(LogDebug) << "[Storage] GetFileSystemInfo() done"; }
 
   // Ram?
   if (mShareInRAM)
@@ -227,6 +230,7 @@ String StorageDevices::GetIconByDevice(const String& Device)
         }
         return ""; //nothing found
     }
+    return "";
 }
 
 String::List StorageDevices::GetMountedDeviceList()
@@ -238,119 +242,138 @@ String::List StorageDevices::GetMountedDeviceList()
 // size/free are in KByte in this function
 StorageDevices::DeviceSizeInfo StorageDevices::GetFileSystemInfo()
 {
-  { LOG(LogDebug) << "[Storage] GetFileSystemInfo() function launched !"; }
-  DeviceSizeInfo result;
-  //if tmp file doesn't exists, we have to create it
-  { LOG(LogDebug) << "[Storage] GetFileSystemInfo() step 1"; }
-  if(!QFile::exists("/tmp/df-kP")) GetCommandOutput("df -kP > /tmp/df-kP");
-  { LOG(LogDebug) << "[Storage] GetFileSystemInfo() step 2"; }
-  for(const String& line : GetCommandOutput("cat /tmp/df-kP"))
-  {
-    { LOG(LogDebug) << "[Storage] GetFileSystemInfo() step 3"; }
-    String::List items = line.Split(' ', true);
-    { LOG(LogDebug) << "[Storage] GetFileSystemInfo items.size(): " << items.size() ; }
+    DeviceSizeInfo result;
+    try{
+        //potential crash if problem during parsing
+        { LOG(LogDebug) << "[Storage] GetFileSystemInfo() function launched !"; }
+        //if tmp file doesn't exists, we have to create it
+        { LOG(LogDebug) << "[Storage] GetFileSystemInfo() step 1"; }
+        if(!QFile::exists("/tmp/df-kP")) GetCommandOutput("df -kP > /tmp/df-kP");
+        { LOG(LogDebug) << "[Storage] GetFileSystemInfo() step 2"; }
+        for(const String& line : GetCommandOutput("cat /tmp/df-kP"))
+        {
+            { LOG(LogDebug) << "[Storage] GetFileSystemInfo() step 3"; }
+            String::List items = line.Split(' ', true);
+            { LOG(LogDebug) << "[Storage] GetFileSystemInfo items.size(): " << items.size() ; }
+            if (items.size() >= 6)
+            {
+              { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (df -kP): " << line ; }
+              { LOG(LogDebug) << "[Storage] GetFileSystemInfo items[1]: " << items[1] ; }
+              { LOG(LogDebug) << "[Storage] GetFileSystemInfo items[3]: " << items[3] ; }
+              long long size = items[1].AsInt64();
+              long long free = items[3].AsInt64();
+              result[items[0]] = SizeInfo(size, free);
+              // Special cases
+              if (items[5] == RootFolders::DataRootFolder.ToString())
+                result["SHARE"] = SizeInfo(size, free);
+            }
+        }
 
-    if (items.size() >= 6)
-    {
-      { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (df -kP): " << line ; }
-      { LOG(LogDebug) << "[Storage] GetFileSystemInfo items[1]: " << items[1] ; }
-      { LOG(LogDebug) << "[Storage] GetFileSystemInfo items[3]: " << items[3] ; }
-      long long size = items[1].AsInt64();
-      long long free = items[3].AsInt64();
-      result[items[0]] = SizeInfo(size, free);
-      // Special cases
-      if (items[5] == RootFolders::DataRootFolder.ToString())
-        result["SHARE"] = SizeInfo(size, free);
+        //check also by a second way for unmount disk
+        bool isDisk = false;
+        bool isDevice = false;
+        String currentDisk = "";
+        //if tmp file doesn't exists, we have to create it
+        if(!QFile::exists("/tmp/fdisk-list")) GetCommandOutput("fdisk -l > /tmp/fdisk-list");
+        for(const String& line : GetCommandOutput("cat /tmp/fdisk-list"))
+        {
+          String::List items = line.Split(' ', true);
+          { LOG(LogDebug) << "[Storage] GetFileSystemInfo items size: " << items.size() ; }
+            if(items.size() >= 1){ //at minimum, we need 2 items per line to manage it during this parsing and avoid crash
+              if(items[0] == "Number"){
+                  { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) Number: " << line ; }
+                  isDisk = true;
+                  isDevice = false;
+                  continue;
+              }
+              if(items[0] == "Device"){
+                  { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) Device: " << line ; }
+                  currentDisk="";
+                  isDisk = false;
+                  isDevice = true;
+                  continue;
+              }
+            }
+            if(items.size() >= 2){ //at minimum, we need 2 items per line to manage it during this parsing and avoid crash
+              if((items[0] == "Disk") && items[1].StartsWith("/dev/")){
+                  { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) Disk: " << line ; }
+                  currentDisk = items[1].Replace(":","");
+                  isDisk = false;
+                  isDevice = false;
+                  continue;
+              }
+              if((isDisk and isNumeric(items[1])) || (items[0].StartsWith("/dev/") and isDevice)){
+                  { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) isDisk or isDevice: " << line ; }
+                  String partition = "";
+                  int sizeIndex = 0;
+                  if(isDisk){
+                      { LOG(LogDebug) << "[Storage] GetFileSystemInfo items[1] : " << items[1] ; }
+                      partition = currentDisk + "p" + items[1];
+                      sizeIndex = 4;
+                  }
+                  else {
+                      partition = items[0];
+                      sizeIndex = 6;
+                      if (items.size() > 9){ //bood colomn not empty case
+                          sizeIndex = sizeIndex + 1;
+                      }
+                  }
+                  { LOG(LogDebug) << "[Storage] GetFileSystemInfo partition : " << partition ; }
+                  //check if not already knwon/mount
+                  SizeInfo* info = result.try_get(partition);
+                  if ((info == nullptr) && (int(items.size()) > sizeIndex)) //check size of items to avoid crash
+                  {
+                      { LOG(LogDebug) << "[Storage] GetFileSystemInfo items[sizeIndex] : " << items[sizeIndex] ; }
+                      char lastChar = items[sizeIndex].back();
+                      String numeric = items[sizeIndex].SubString(0,items[sizeIndex].length()-1); //just remove last char
+                      { LOG(LogDebug) << "[Storage] GetFileSystemInfo lastChar : " << lastChar ; }
+                      { LOG(LogDebug) << "[Storage] GetFileSystemInfo numeric : " << numeric ; }
+                      numeric = numeric.Split('.', true).at(0); // to keep only first part before . in all cases
+                      long long size = 0;
+                      switch (lastChar) {
+                      case 'K':
+                          size = numeric.AsInt64();
+                          break;
+                      case 'M':
+                          size = numeric.AsInt64() * 1024;
+                          break;
+                      case 'G':
+                          size = numeric.AsInt64() * 1024 * 1024;
+                          break;
+                      case 'T':
+                          size = numeric.AsInt64() * 1024 * 1024 * 1024;
+                          break;
+                      default:
+                          size = numeric.AsInt64();
+                          break;
+                      }
+                      long long free = -1; // unknown in this case
+                      { LOG(LogDebug) << "[Storage] GetFileSystemInfo size : " << size ; }
+                      result[partition] = SizeInfo(size, free);
+                      { LOG(LogDebug) << "[Storage] GetFileSystemInfo result[partition] completed"; }
+                  }
+              }
+              else if((isDisk and !isNumeric(items[1])) || (!items[0].StartsWith("/dev/") and isDevice)){
+                  isDisk = false;
+                  isDevice = false;
+                  continue;
+              }
+            }
+        }
+        return result;
     }
-  }
-
-  //check also by a second way for unmount disk
-  bool isDisk = false;
-  bool isDevice = false;
-  String currentDisk = "";
-  //if tmp file doesn't exists, we have to create it
-  if(!QFile::exists("/tmp/fdisk-list")) GetCommandOutput("fdisk -l > /tmp/fdisk-list");
-  for(const String& line : GetCommandOutput("cat /tmp/fdisk-list"))
-  {
-      String::List items = line.Split(' ', true);
-      if((items[0] == "Disk") && items[1].StartsWith("/dev/")){
-          { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) Disk: " << line ; }
-          currentDisk = items[1].Replace(":","");
-          isDisk = false;
-          isDevice = false;
-          continue;
-      }
-      if(items[0] == "Number"){
-          { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) Number: " << line ; }
-          isDisk = true;
-          isDevice = false;
-          continue;
-      }
-      if(items[0] == "Device"){
-          { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) Device: " << line ; }
-          currentDisk="";
-          isDisk = false;
-          isDevice = true;
-          continue;
-      }
-      if((isDisk and isNumeric(items[1])) || (items[0].StartsWith("/dev/") and isDevice)){
-          { LOG(LogDebug) << "[Storage] GetFileSystemInfo line (fdisk -l) isDisk or isDevice: " << line ; }
-          String partition = "";
-          int sizeIndex = 0;
-          if(isDisk){
-              { LOG(LogDebug) << "[Storage] GetFileSystemInfo items[1] : " << items[1] ; }
-              partition = currentDisk + "p" + items[1];
-              sizeIndex = 4;
-          }
-          else {
-              partition = items[0];
-              sizeIndex = 6;
-              if (items.size() > 9){ //bood colomn not empty case
-                  sizeIndex = sizeIndex + 1;
-              }
-          }
-          { LOG(LogDebug) << "[Storage] GetFileSystemInfo partition : " << partition ; }
-          //check if not already knwon/mount
-          SizeInfo* info = result.try_get(partition);
-          if (info == nullptr)
-          {
-              { LOG(LogDebug) << "[Storage] GetFileSystemInfo items[sizeIndex] : " << items[sizeIndex] ; }
-              char lastChar = items[sizeIndex].back();
-              String numeric = items[sizeIndex].SubString(0,items[sizeIndex].length()-1); //just remove last char
-              { LOG(LogDebug) << "[Storage] GetFileSystemInfo lastChar : " << lastChar ; }
-              { LOG(LogDebug) << "[Storage] GetFileSystemInfo numeric : " << numeric ; }
-              numeric = numeric.Split('.', true).at(0); // to keep only first part before . in all cases
-              long long size = 0;
-              switch (lastChar) {
-              case 'K':
-                  size = numeric.AsInt64();
-                  break;
-              case 'M':
-                  size = numeric.AsInt64() * 1024;
-                  break;
-              case 'G':
-                  size = numeric.AsInt64() * 1024 * 1024;
-                  break;
-              case 'T':
-                  size = numeric.AsInt64() * 1024 * 1024 * 1024;
-                  break;
-              default:
-                  size = numeric.AsInt64();
-                  break;
-              }
-              long long free = -1; // unknown in this case
-              { LOG(LogDebug) << "[Storage] GetFileSystemInfo size : " << size ; }
-              result[partition] = SizeInfo(size, free);
-          }
-      }
-      else if((isDisk and !isNumeric(items[1])) || (!items[0].StartsWith("/dev/") and isDevice)){
-          isDisk = false;
-          isDevice = false;
-          continue;
-      }
-
-  }
-  return result;
+    catch (const std::runtime_error& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return result;
+    }
+    catch ( const std::exception & Exp ){
+        std::cout << "Exception catched : " << Exp.what() << std::endl;
+        return result;
+    }
+    catch (...) {
+        std::cerr << "Caught an unknown exception" << std::endl;
+        return result;
+    }
 }
 
 StorageDevices::PropertyMap StorageDevices::ExtractProperties(const String& properties)
