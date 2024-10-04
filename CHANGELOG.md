@@ -67,6 +67,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix on save of value using previous values in some cases
 	- find the best compromising for popup resize depending of content
 	- add deadzone for pegasus + manage better sign detection during configuration of controllers
+	- add more checks and exceptions management to avoid crash at start during parsing of information about partitions
 
 ## [pixL-master] - 2024-07-07 - v0.1.7
 - Fixes:
