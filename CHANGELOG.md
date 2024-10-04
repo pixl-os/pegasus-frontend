@@ -63,6 +63,10 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix rcheevos to have "Gamecube" in iso format for RA (https://github.com/RetroAchievements/rcheevos/pull/353)
 	- add tmp files generation if missing to improve performance
 	- set as INTERNAL value for Internal SHARE
+	- fix on save of value for system.video.screens.mode
+	- fix on save of value using previous values in some cases
+	- find the best compromising for popup resize depending of content
+	- add deadzone for pegasus + manage better sign detection during configuration of controllers
 
 ## [pixL-master] - 2024-07-07 - v0.1.7
 - Fixes:

@@ -816,7 +816,7 @@ FocusScope {
                     }
                     onActivate: {
                         //for display mode
-                        api.internal.recalbox.setBoolParameter(optDisplayMode.parameterName,optDisplayMode.internalvalue);
+                        api.internal.recalbox.setStringParameter(optDisplayMode.parameterName,optDisplayMode.internalvalue);
                         //for first screen (if activated)
                         api.internal.recalbox.setBoolParameter(optPrimaryScreenActivate.parameterName,optPrimaryScreenActivate.checked);
                         if(optPrimaryScreenActivate.checked){
@@ -903,7 +903,7 @@ FocusScope {
         function onCancel() {
             //restore previous value
             //for display mode
-            api.internal.recalbox.setStringParameter(optDisplayMode.parameterName,optDisplayMode.previousvalue);
+            api.internal.recalbox.setStringParameter(optDisplayMode.parameterName,optDisplayMode.previousinternalvalue);
             optDisplayMode.value = optDisplayMode.previousvalue;
             //for first screen (if activated)
             api.internal.recalbox.setBoolParameter(optPrimaryScreenActivate.parameterName,optPrimaryScreenActivate.previousvalue);
@@ -924,7 +924,7 @@ FocusScope {
             optDisplaySecondaryOutput.value = optDisplaySecondaryOutput.previousvalue;
             api.internal.recalbox.setStringParameter(optDisplaySecondaryResolution.parameterName, optDisplaySecondaryResolution.previousvalue);
             optDisplaySecondaryResolution.value = optDisplaySecondaryResolution.previousvalue;
-            api.internal.recalbox.setStringParameter(optDisplaySecondaryFrequency.parameterName, optDisplaySecondaryFrequency.previous);
+            api.internal.recalbox.setStringParameter(optDisplaySecondaryFrequency.parameterName, optDisplaySecondaryFrequency.previousvalue);
             optDisplaySecondaryFrequency.value = optDisplaySecondaryFrequency.previousvalue;
             api.internal.recalbox.setStringParameter(optDisplaySecondaryRotation.parameterName, optDisplaySecondaryRotation.previousinternalvalue);
             optDisplaySecondaryRotation.value = optDisplaySecondaryRotation.previousvalue;
