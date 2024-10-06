@@ -128,6 +128,60 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    KeyNavigation.down: optVirtualDisplay
+                }
+
+                MulticheckOption {
+                    id: optVirtualDisplay
+                    //property to manage parameter name
+                    property string parameterName : "system.video.screens.virtual"
+
+                    label: qsTr("Virtual Screens (for remote display)") + api.tr
+                    note: qsTr("Select output(s) available to connect any virtual screen (need reboot)") + api.tr
+
+                    //to keep initial value and before to apply new one (to know if need reboot more than restart)
+                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
+
+                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterscheckBox.parameterName = parameterName;
+                        parameterscheckBox.callerid = optVirtualDisplay;
+                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
+                        parameterscheckBox.model = api.internal.recalbox.parameterslist;
+                        parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterscheckBox
+                        parameterscheckBox.focus = true;
+                        //to save previous value and know if we need restart or not finally
+                        parameterscheckBox.previousValue = api.internal.recalbox.getStringParameter(parameterName)
+                    }
+
+                    onValueChanged: {
+                        //console.log("previousvalue: ", previousvalue);
+                        //console.log("api.internal.recalbox.getStringParameter(parameterName): ", api.internal.recalbox.getStringParameter(parameterName));
+                        if(previousvalue !== api.internal.recalbox.getStringParameter(parameterName)){
+                            //need to reboot (or restart Xorg if possible in the future)
+                            console.log("Need reboot");
+                            needReboot = true;
+                        }
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                            parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optPrimaryScreenActivate
                 }
                 // primary screen
@@ -858,7 +912,27 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    //KeyNavigation.down: optRemoteScreenActivate
                 }
+
+                // "remote" screen activation (for test purpose only)
+                /*ToggleOption {
+                    id: optRemoteScreenActivate
+
+                    //property to manage parameter name
+                    property string parameterName : "system.screens.remote"
+
+                    label: qsTr("Remote screens access") + api.tr
+                    note: qsTr("to access screens display from any web browser") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter(parameterName)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName)){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                }*/
+
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
@@ -943,6 +1017,46 @@ FocusScope {
             //and move pegasus-frontend in connected and primary screen
             api.internal.system.runBoolResult("WINDOWPID=$(xdotool search --class 'pegasus-frontend'); xdotool windowmove $WINDOWPID $(xrandr | grep -e ' connected' | grep -e 'primary' | awk '{print $4}' | awk -F'+' '{print $2, $3}');", false);
             content.focus = true;
+        }
+    }
+
+    MulticheckBox {
+        id: parameterscheckBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property string previousValue
+        property MulticheckOption callerid
+
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+        //to load "checked" status for each indexes
+        isChecked: api.internal.recalbox.parameterslist.isChecked()
+
+        onClose: {
+            content.focus = true
+            //check if need to restart to take change into account !
+            if(previousValue !== api.internal.recalbox.getStringParameter(parameterName)){
+                console.log("needRestart");
+                needRestart = true;
+            }
+        }
+
+        onCheck: {
+            //console.log("parameterscheckBox::onCheck index : ", index, " checked : ", checked, " callerid.parameterName : ", callerid.parameterName);
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            api.internal.recalbox.parameterslist.currentIndexChecked = checked;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
 
