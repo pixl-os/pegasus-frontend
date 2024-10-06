@@ -92,6 +92,7 @@ FocusScope {
                     note: qsTr("Choose any mode to manage behavior when you plug/unplug any screen") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -816,9 +817,10 @@ FocusScope {
                     }
                     onActivate: {
                         //for display mode
-                        api.internal.recalbox.setStringParameter(optDisplayMode.parameterName,optDisplayMode.internalvalue);
+                        //console.log("optDisplayMode.parameterName: ", optDisplayMode.parameterName, "optDisplayMode.internalvalue: ", optDisplayMode.internalvalue)
+                        api.internal.recalbox.setStringParameter(optDisplayMode.parameterName, optDisplayMode.internalvalue);
                         //for first screen (if activated)
-                        api.internal.recalbox.setBoolParameter(optPrimaryScreenActivate.parameterName,optPrimaryScreenActivate.checked);
+                        api.internal.recalbox.setBoolParameter(optPrimaryScreenActivate.parameterName, optPrimaryScreenActivate.checked);
                         if(optPrimaryScreenActivate.checked){
                             api.internal.recalbox.setStringParameter(optDisplayOutput.parameterName, optDisplayOutput.value)
                             api.internal.recalbox.setStringParameter(optDisplayResolution.parameterName, optDisplayResolution.value)
@@ -880,6 +882,7 @@ FocusScope {
             //for display mode
             optDisplayMode.previousvalue = optDisplayMode.value
             optDisplayMode.previousinternalvalue = api.internal.recalbox.getStringParameter(optDisplayMode.parameterName)
+            //console.log("optDisplayMode.previousvalue: ", optDisplayMode.previousvalue, "optDisplayMode.previousinternalvalue: ", optDisplayMode.previousinternalvalue)
             //for first screen (if activated)
             optPrimaryScreenActivate.previousvalue = optPrimaryScreenActivate.checked
             if(optPrimaryScreenActivate.checked){
