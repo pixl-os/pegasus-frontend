@@ -17,6 +17,7 @@
 
 #include "System.h"
 #include <QProcess>
+#include "Log.h"
 
 
 namespace model {
@@ -92,6 +93,7 @@ bool System::runBoolResult(const QString& Command, bool escaped)
       Strings::ReplaceAllIn(escapedCommand, "'", "\\'");
       Strings::ReplaceAllIn(escapedCommand, "\"", "\\\"");
   }
+  //Log::debug(LOGMSG("runBoolResult escaped Command : '%1'").arg(escapedCommand.c_str()));
   int exitcode = system(escapedCommand.c_str());
   return exitcode == 0;
 }
