@@ -838,6 +838,8 @@ FocusScope {
                         api.internal.recalbox.saveParameters();
                         //Execute script to udpate screen settings in real-time
                         api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
+                        //and move pegasus-frontend in connected and primary screen
+                        api.internal.system.runBoolResult("WINDOWPID=$(xdotool search --class 'pegasus-frontend'); xdotool windowmove $WINDOWPID $(xrandr | grep -e ' connected' | grep -e 'primary' | awk '{print $4}' | awk -F'+' '{print $2, $3}');", false);
 
                         //to confirm change or not
                         confirmDialog.focus = false;
@@ -935,6 +937,8 @@ FocusScope {
             api.internal.recalbox.saveParameters();
             //Execute script to restore screen openVideoSettings
             api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
+            //and move pegasus-frontend in connected and primary screen
+            api.internal.system.runBoolResult("WINDOWPID=$(xdotool search --class 'pegasus-frontend'); xdotool windowmove $WINDOWPID $(xrandr | grep -e ' connected' | grep -e 'primary' | awk '{print $4}' | awk -F'+' '{print $2, $3}');", false);
             content.focus = true;
         }
     }
