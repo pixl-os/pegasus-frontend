@@ -325,13 +325,14 @@ FocusScope {
                     pointerIcon: true
 
                     onActivate: {
+                        //line after could be deactivated for testing to test with a specifix xrandr.tmp file not updated
                         api.internal.system.run("/usr/bin/xrandr > /tmp/xrandr.tmp");
                         focus = true;
                         root.openVideoSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     //                    KeyNavigation.up: optBiosChecking
-                    KeyNavigation.down: optBrightness.visible ? optBrightness : optVideoFiltrer
+                    KeyNavigation.down: (optBrightness.visible || isDebugEnv()) ? optBrightness : optVideoFiltrer
                 }
                 SliderOption {
                     id: optBrightness
