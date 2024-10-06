@@ -40,7 +40,7 @@ public:
     Q_INVOKABLE  QString currentName (const QString& Parameter, const QString& InternalName = "");
     Q_INVOKABLE  QString currentInternalName (const QString& Parameter);
     //CurrentNameFromSystem is used to initiate the parameters list generated from a system/script command and return the existing value from recalbox.conf if exist
-    Q_INVOKABLE  QString currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions);
+    Q_INVOKABLE  QString currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions = {});
 
     //CurrentNameChecked to return string with number of checked values/total
     Q_INVOKABLE  QString currentNameChecked (const QString& Parameter);

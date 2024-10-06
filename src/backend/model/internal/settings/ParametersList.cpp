@@ -40,6 +40,56 @@ QString GetCommandOutput(const std::string& command)
     return QString::fromStdString(output);
 }
 
+QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, QStringList SysOptions = {})
+{
+    QStringList ListOfValue;
+
+    //clean global internal values if needed
+    ListOfInternalValue.clear();
+
+    //replace from '%1' to '%i' parameters from SysCommand by SysOptions
+    if (!SysOptions.empty())
+    {
+        for(int i = 0; i < SysOptions.count(); i++)
+        {
+            SysCommand.replace("%"+QString::number(i+1), SysOptions.at(i));
+        }
+    }
+
+    //launch command using Qprocess to get output
+    //Log::debug(LOGMSG("%2 SysCommand.toUtf8().constData(): '%1'").arg(SysCommand.toUtf8().constData(),Parameter));
+    QString stdout = GetCommandOutput(SysCommand.toUtf8().constData());
+    //Log::debug(LOGMSG("%2 GetCommandOutput(SysCommand.toUtf8().constData()): '%1'").arg(stdout,Parameter));
+
+    //get list of value from stdout
+    if (stdout.isEmpty())
+    {
+        ListOfValue.clear();
+    }
+    //search delimitor using semi-column
+    else if (stdout.count(";") >= 1)
+    {
+        ListOfValue = stdout.split(";");
+    }
+    else // or search end of line
+    {
+        ListOfValue = stdout.split("\n");
+    }
+    //remove empty ones for cleaning
+    ListOfValue.removeAll(QString(""));
+
+    Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
+
+    //to avoid crash when there is no value return by command/script
+    if(ListOfValue.isEmpty())
+    {
+        ListOfValue.append(QObject::tr("no value"));
+        ListOfInternalValue.append(""); //to empty parameter
+    }
+
+    return ListOfValue;
+}
+
 QStringList GetParametersList(QString Parameter)
 {
     QStringList ListOfValue;
@@ -94,6 +144,13 @@ QStringList GetParametersList(QString Parameter)
         */
         ListOfValue << QObject::tr("switch") << QObject::tr("clone") << QObject::tr("extended");
         ListOfInternalValue << "switch" << "clone" << "extended";
+    }
+    else if (Parameter == "system.video.screens.virtual")
+    {
+        //need to list all existing outputs and store it in list of check boxes
+        // command to get all lines with "connected" and "disconnected" + remove "primary" screen
+        QString SysCommand = "grep -v 'primary' /tmp/xrandr.tmp | awk '$2 ~ \"connected\" {print $1}'";
+        ListOfValue = GetParametersListFromSystem(Parameter, SysCommand);
     }
     else if (Parameter == "system.secondary.screen.position")
     {
@@ -873,56 +930,6 @@ QStringList GetParametersList(QString Parameter)
     }
    //Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
     //Log::debug(LOGMSG("The list of internal value for '%1' is '%2'.").arg(Parameter,ListOfInternalValue.join(",")));
-    return ListOfValue;
-}
-
-QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, QStringList SysOptions)
-{
-    QStringList ListOfValue;
-
-    //clean global internal values if needed
-    ListOfInternalValue.clear();
-
-    //replace from '%1' to '%i' parameters from SysCommand by SysOptions
-    if (!SysOptions.empty())
-    {
-        for(int i = 0; i < SysOptions.count(); i++)
-        {
-            SysCommand.replace("%"+QString::number(i+1), SysOptions.at(i));
-        }
-    }
-
-    //launch command using Qprocess to get output
-    //Log::debug(LOGMSG("%2 SysCommand.toUtf8().constData(): '%1'").arg(SysCommand.toUtf8().constData(),Parameter));
-    QString stdout = GetCommandOutput(SysCommand.toUtf8().constData());
-    //Log::debug(LOGMSG("%2 GetCommandOutput(SysCommand.toUtf8().constData()): '%1'").arg(stdout,Parameter));
-
-    //get list of value from stdout
-    if (stdout.isEmpty())
-    {
-        ListOfValue.clear();
-    }
-    //search delimitor using semi-column
-    else if (stdout.count(";") >= 1)
-    {
-        ListOfValue = stdout.split(";");
-    }
-    else // or search end of line
-    {
-        ListOfValue = stdout.split("\n");
-    }
-    //remove empty ones for cleaning
-    ListOfValue.removeAll(QString(""));
-
-    Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
-
-    //to avoid crash when there is no value return by command/script
-    if(ListOfValue.isEmpty())
-    {
-        ListOfValue.append(QObject::tr("no value"));
-        ListOfInternalValue.append(""); //to empty parameter
-    }
-
     return ListOfValue;
 }
 
