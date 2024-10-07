@@ -262,6 +262,26 @@
         <file>assets/gamepad/snes30proplus/start_sn30proplus.png</file>
         <file>assets/gamepad/snes30proplus/x_sn30proplus.png</file>
         <file>assets/gamepad/snes30proplus/y_sn30proplus.png</file>
+        <file>assets/gamepad/arcadestick/1_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/2_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/a_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/b_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/base_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/bt2.png</file>
+        <file>assets/gamepad/arcadestick/heart_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/lb_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/lt_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/p1_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/p2_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/rb_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/rt_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/select_stickarcade.png</file>
+        <file>assets/gamepad/arcadestick/star_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/start_stickarcade.png</file>
+        <file>assets/gamepad/arcadestick/stick_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/wifi_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/x_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/y_arcadestick.png</file>
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
         <file>menu/settings/AdvancedEmulatorMain.qml</file>

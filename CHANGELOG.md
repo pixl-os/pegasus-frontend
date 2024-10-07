@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file (focus on ch
 - Features:
 	- Add auto change disc option on dolphin
 	- add snes 30 pro + controller layout
+	- add 8bitdo arcade stick controller layout
 
 ## [pixL-master] - 2024-10-19 - v0.1.8
 - Features:
