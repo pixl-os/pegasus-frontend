@@ -4,11 +4,11 @@ All notable changes to this project will be documented in this file (focus on ch
 ## [pixL-master] - 2024-mm-dd - v0.1.x
 - Features:
 	- Add auto change disc option on dolphin
-	- add snes 30 pro + controller layout
-	- add 8bitdo arcade stick controller layout
-	- add stadia controller layout
-	- add snes 30 pro controller layout
-	- add wiimote controller layout
+	- add 8bitdo sn30 pro+ controller layout
+	- add 8bitdo arcade stick controller layout and icon
+	- add Google stadia controller layout and icon
+	- add 8bitdo sn30 pro controller layout and icon
+	- add Nintendo wiimote controller layout
 
 ## [pixL-master] - 2024-10-19 - v0.1.8
 - Features:
