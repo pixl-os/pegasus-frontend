@@ -282,6 +282,24 @@
         <file>assets/gamepad/arcadestick/wifi_arcadestick.png</file>
         <file>assets/gamepad/arcadestick/x_arcadestick.png</file>
         <file>assets/gamepad/arcadestick/y_arcadestick.png</file>
+        <file>assets/gamepad/stadia/a_stadia.png</file>
+        <file>assets/gamepad/stadia/base_stadia.png</file>
+        <file>assets/gamepad/stadia/b_stadia.png</file>
+        <file>assets/gamepad/stadia/dpad_stadia.png</file>
+        <file>assets/gamepad/stadia/home_stadia.png</file>
+        <file>assets/gamepad/stadia/hotkey_stadia.png</file>
+        <file>assets/gamepad/stadia/l2_stadia.png</file>
+        <file>assets/gamepad/stadia/leftstick_stadia.png</file>
+        <file>assets/gamepad/stadia/l_stadia.png</file>
+        <file>assets/gamepad/stadia/original.png</file>
+        <file>assets/gamepad/stadia/r2_stadia.png</file>
+        <file>assets/gamepad/stadia/rightstick_stadia.png</file>
+        <file>assets/gamepad/stadia/r_stadia.png</file>
+        <file>assets/gamepad/stadia/screenshot_stadia.png</file>
+        <file>assets/gamepad/stadia/select_stadia.png</file>
+        <file>assets/gamepad/stadia/start_stadia.png</file>
+        <file>assets/gamepad/stadia/x_stadia.png</file>
+        <file>assets/gamepad/stadia/y_stadia.png</file>
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
         <file>menu/settings/AdvancedEmulatorMain.qml</file>
