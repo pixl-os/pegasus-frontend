@@ -1427,6 +1427,134 @@ FocusScope {
 
             } //As Nintendo 64 pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
 
+            ListElement {   name: "wii"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: true;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: false;
+                            hasY: false;
+                            hasNintendoPad : false;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : true;
+                            hasL3 : false; hasR3 : false;
+
+                            hadDpad : true;
+                            hasButtonsForDpad : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.6; padBaseSourceSizeWidth : 858 ; padBaseSourceSizeHeight : 752;
+
+                            //parameters for start
+                            padStartWidth : 63;
+                            padStartHeight : 56;
+                            padStartTopY: 333;
+                            padStartLeftX: 399;
+
+                            //parameters for guide/hotkey (Home of Nintendo Wii controller)
+                            padGuideWidth : 36;
+                            padGuideHeight : 17;
+                            padGuideTopY: 61;
+                            padGuideLeftX: 527;
+
+                            //parameters for A/B (X/Y not used for the moment)
+                            padAWidth : 66;
+                            padAHeight : 61;
+                            padATopY: 375;
+                            padALeftX: 620;
+
+                            padBWidth : 69;
+                            padBHeight : 64;
+                            padBTopY: 325;
+                            padBLeftX: 559;
+
+                            padXWidth : 0;
+                            padXHeight : 0;
+                            padXTopY: 0;
+                            padXLeftX: 0;
+
+                            padYWidth : 0;
+                            padYHeight : 0;
+                            padYTopY: 0;
+                            padYLeftX: 0;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 267;
+                            dpadAreaBottomY: 391;
+                            dpadAreaLeftX: 97;
+                            dpadAreaRightX: 227;
+
+                            //parameter for L1 (L)
+                            padL1Width : 187;
+                            padL1Height : 89;
+                            padL1TopY: 91;
+                            padL1LeftX: 73;
+
+                            //parameter for R1 (R)
+                            padR1Width : 186;
+                            padR1Height : 89;
+                            padR1TopY: 91;
+                            padR1LeftX: 603;
+
+                            //parameter for L2 (Z)
+                            padL2Width : 73;
+                            padL2Height : 86;
+                            padL2TopY: 605;
+                            padL2LeftX: 178;
+
+                            //parameter for R2 (ZR on nintendo wii controller)
+                            padR2Width : 49;
+                            padR2Height : 21;
+                            padR2TopY: 82;
+                            padR2LeftX: 522;
+
+                            //parameter for Left stick
+                            lStickWidth : 81;
+                            lStickHeight : 71;
+                            lStickTopY: 477;
+                            lStickLeftX: 390;
+
+                            //parameter for Right stick
+                            //need to set the area as when we have a stick to display green lines
+                            rStickWidth : 157;
+                            rStickHeight : 146;
+                            rStickTopY: 230;
+                            rStickLeftX: 643;
+
+                            //parameters to manage C buttons
+                            rStickUpWidth : 52;
+                            rStickUpHeight : 56;
+                            rStickUpTopY: 232;
+                            rStickUpLeftX: 698;
+
+                            rStickDownWidth : 51;
+                            rStickDownHeight : 50;
+                            rStickDownTopY: 327;
+                            rStickDownLeftX: 696;
+
+                            rStickLeftWidth : 53;
+                            rStickLeftHeight : 55;
+                            rStickLeftTopY: 281;
+                            rStickLeftLeftX: 643;
+
+                            rStickRightWidth : 52;
+                            rStickRightHeight : 55;
+                            rStickRightTopY: 273;
+                            rStickRightLeftX: 748;
+
+                            //to adapt contrast/brightness
+                            contrast : 0.1
+                            brightness: 0.2
+
+            } //As Nintendo WII pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
+
             ListElement {   name: "switchpro"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;

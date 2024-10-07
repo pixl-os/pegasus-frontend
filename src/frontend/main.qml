@@ -2095,15 +2095,17 @@ Window {
 
         ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,md/gen,sega genesis"; type:"controller"; iconfont: "awesome"}
+        
         //8bitdo sfc30 and snes30 added to be considered as SNES controller
         ListElement { icon: "\uf25e"; keywords: "snes,super nintendo,sfc30,snes30"; type:"controller"; iconfont: "awesome"; layout: "snes"}
         ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
 
         //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
-        //other hujia devices exists for NES, SNES and gamecube, but will be detected upper if needed.
+        //other hujia devices exists for NES, SNES, gamecube, Wii, but will be detected upper if needed.
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; type:"controller" ; iconfont: "awesome"; layout: "n64"}
         ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"; iconfont: "awesome"}
+        
         //need to keep only 'pro controller' in case of nintendo switch pro controller as it is the HID name (internal name)
         //in the future, we have other controller as "pro controller", the layout detection should be complexified
         ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
