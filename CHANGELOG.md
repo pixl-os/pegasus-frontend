@@ -1,9 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2024-xx-xx - v0.1.x
+## [pixL-master] - 2024-mm-dd - v0.1.x
 - Features:
 	- Add auto change disc option on dolphin
+	- add snes 30 pro + controller layout
 
 ## [pixL-master] - 2024-10-19 - v0.1.8
 - Features:

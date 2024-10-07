@@ -246,6 +246,22 @@
         <file>assets/gamepad/switchpro/y_switchpro.png</file>
         <file>assets/gamepad/switchpro/l2_switchpro.png</file>
         <file>assets/gamepad/switchpro/r2_switchpro.png</file>
+        <file>assets/gamepad/snes30proplus/a_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/base_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/b_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/dpad_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/heart_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/l2_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/leftstick_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/l_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/r2_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/rightstick_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/r_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/select_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/star_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/start_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/x_sn30proplus.png</file>
+        <file>assets/gamepad/snes30proplus/y_sn30proplus.png</file>
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
         <file>menu/settings/AdvancedEmulatorMain.qml</file>
