@@ -539,6 +539,100 @@ FocusScope {
 
             } //As SNES30PRO+ pad (but with L2/R2 to be compatible with switch online ones)
 
+            ListElement {   name: "snes30pro"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: false;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: true;
+                            hasY: true;
+                            hasNintendoPad : true;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : false; hasRightStick : false;
+                            hasL3 : false; hasR3 : false;
+
+                            hadDpad : true;
+                            hasButtonsForDpad : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
+                            
+                            //parameters for select
+                            padSelectWidth : 69;
+                            padSelectHeight : 59;
+                            padSelectTopY: 205;
+                            padSelectLeftX: 334;
+
+                            //parameters for start
+                            padStartWidth : 69;
+                            padStartHeight : 59;
+                            padStartTopY: 205;
+                            padStartLeftX: 432;
+
+                            //parameters for A/B/X/Y
+                            //As B -> A
+                            padAWidth : 71;
+                            padAHeight : 70;
+                            padATopY: 170;
+                            padALeftX: 763;
+
+                            //As A -> B
+                            padBWidth : 71;
+                            padBHeight : 71;
+                            padBTopY: 237;
+                            padBLeftX: 677;
+
+                            //As Y -> X
+                            padXWidth : 71;
+                            padXHeight : 71;
+                            padXTopY: 103;
+                            padXLeftX: 677;
+
+                            //As X -> Y
+                            padYWidth : 73;
+                            padYHeight : 72;
+                            padYTopY: 170;
+                            padYLeftX: 590;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 126;
+                            dpadAreaBottomY: 285;
+                            dpadAreaLeftX: 112;
+                            dpadAreaRightX: 270;
+
+                            //parameter for L1
+                            padL1Width : 198;
+                            padL1Height : 37;
+                            padL1TopY: 0;
+                            padL1LeftX: 97;
+
+                            //parameter for R1
+                            padR1Width : 198;
+                            padR1Height : 36;
+                            padR1TopY: 1;
+                            padR1LeftX: 612;
+
+                            //parameter for L2
+                            padL2Width : 48;
+                            padL2Height : 5;
+                            padL2TopY: 4;
+                            padL2LeftX: 350;
+
+                            //parameter for R2
+                            padR2Width : 54;
+                            padR2Height : 6;
+                            padR2TopY: 4;
+                            padR2LeftX: 509;
+
+            } //As SNES 30 PRO pad (but with L2/R2 to be compatible with switch online ones)
+
             ListElement {   name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: false;

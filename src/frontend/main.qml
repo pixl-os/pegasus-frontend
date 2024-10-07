@@ -2099,6 +2099,7 @@ Window {
         ListElement { icon: "\uf25e"; keywords: "snes,super nintendo,sfc30,snes30"; type:"controller"; iconfont: "awesome"; layout: "snes"}
         ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
+
         //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
         //other hujia devices exists for NES, SNES and gamecube, but will be detected upper if needed.
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; type:"controller" ; iconfont: "awesome"; layout: "n64"}
@@ -2114,6 +2115,7 @@ Window {
         ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0cc"; keywords: "8bitdo sn30 pro+,8bitdo sn30 pro plus,8bitdo pro 2"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0cd"; keywords: "8bitdo arcade stick"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf25e"; keywords: "8bitdo sn30 pro,8bitdo sn30 pro,8bitdo pro"; type:"controller"; iconfont: "awesome"}
 
         //28/02/2022 to add wheels/cockpit devices
         ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}

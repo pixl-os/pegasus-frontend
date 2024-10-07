@@ -300,6 +300,22 @@
         <file>assets/gamepad/stadia/start_stadia.png</file>
         <file>assets/gamepad/stadia/x_stadia.png</file>
         <file>assets/gamepad/stadia/y_stadia.png</file>
+        <file>assets/gamepad/snes30pro/a_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/base_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/b_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/dpad_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/hk_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/L2_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/leftstick_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/l_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/r2_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/rightstick_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/r_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/select_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/star_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/start_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/x_sn30pro.png</file>
+        <file>assets/gamepad/snes30pro/y_sn30pro.png</file>
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
         <file>menu/settings/AdvancedEmulatorMain.qml</file>
