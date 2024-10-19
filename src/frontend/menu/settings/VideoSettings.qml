@@ -169,6 +169,11 @@ FocusScope {
                             //need to reboot (or restart Xorg if possible in the future)
                             console.log("Need reboot");
                             needReboot = true;
+                            //write configuration file for virtual screens
+                            //save conf
+                            api.internal.recalbox.saveParameters();
+                            //Execute script to configure X11 conf
+                            api.internal.system.runBoolResult("/recalbox/scripts/pixl-virtual-screen-conf.sh");
                         }
                     }
 
