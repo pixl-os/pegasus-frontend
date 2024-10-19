@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2024-09-16 - v0.1.8
+## [pixL-master] - 2024-10-19 - v0.1.8
 - Features:
 	- add new asset for media folder and tag
 	- add "fullmedia" for obtain many media with multi-resultat-scrape
@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- bump rcheevos in v11.4.0
 	- copy controllers parameters in Dolphin Advanced Menu (wii & gamecube system) for wiimote/gamecube controllers emulation
 	- add buttons mapping/nunchuk activation in Dolphin Advanced Menu (wii)
+	- french translations for new features and advanced emulator settings
 	- "mount" devices features:
 		- add externals usb and internals drive
 		- add info about on "share" sizes in settings menu
