@@ -70,6 +70,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add more checks and exceptions management to avoid crash at start during parsing of information about partitions
 	- move pegasus-frontend window to well reasign current applications on primary screen when it's needed
 	- fix video mode internalvalue not well set in some times
+	- remove initial tag line from pixL background (used for "updates" list)
 
 ## [pixL-master] - 2024-07-07 - v0.1.7
 - Fixes:
