@@ -166,8 +166,14 @@ FocusScope {
                         //console.log("previousvalue: ", previousvalue);
                         //console.log("api.internal.recalbox.getStringParameter(parameterName): ", api.internal.recalbox.getStringParameter(parameterName));
                         if(previousvalue !== api.internal.recalbox.getStringParameter(parameterName)){
+                            if(api.internal.recalbox.getStringParameter(parameterName).includes("|")){
+                                //add dialogBox to alert about issue if we have more than one virtual
+                                genericMessage.setSource("../../dialogs/GenericContinueDialog.qml",
+                                                         { "title": qsTr("Virtual screens alert"), "message": qsTr("Take care! Some GPU can't support multiple virtual screens") + "<br>" + qsTr("It could crash at launch (select only if you know what you do !)")});
+                                genericMessage.focus = true;
+                            }
                             //need to reboot (or restart Xorg if possible in the future)
-                            console.log("Need reboot");
+                            //console.log("Need reboot");
                             needReboot = true;
                             //write configuration file for virtual screens
                             //save conf
@@ -1045,7 +1051,7 @@ FocusScope {
             content.focus = true
             //check if need to restart to take change into account !
             if(previousValue !== api.internal.recalbox.getStringParameter(parameterName)){
-                console.log("needRestart");
+                //console.log("needRestart");
                 needRestart = true;
             }
         }
