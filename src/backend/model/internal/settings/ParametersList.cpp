@@ -543,6 +543,14 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << "0" << "1" << "2"
                             << "3" << "4" << "5";
     }
+    else if(Parameter == "citra.screens.layout")
+    {
+        ListOfValue << QObject::tr("Default") << QObject::tr("Single Screen") << QObject::tr("Large Screen")
+                    << QObject::tr("Hybrid Screen") << QObject::tr("Side by Side") << QObject::tr("Separated Windows");
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "5" << "3" << "4";
+
+    }
     else if (Parameter.startsWith("cemu.", Qt::CaseInsensitive) == true)
     {
         if (Parameter.endsWith(".filter", Qt::CaseInsensitive) == true)

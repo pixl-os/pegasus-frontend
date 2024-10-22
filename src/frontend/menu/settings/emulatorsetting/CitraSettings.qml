@@ -181,23 +181,36 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optBottomSreenPosition
+                    KeyNavigation.down: optOnSecondDisplay
                 }
                 SectionTitle {
-                    text: qsTr("Bottom screen") + api.tr
+                    text: qsTr("Screens") + api.tr
                     first: true
                     symbol: "\uf28e"
                     symbolFontFamily: globalFonts.awesome
                     symbolFontSize: vpx(45)
                 }
+                ToggleOption {
+                    id: optOnSecondDisplay
+
+                    label: qsTr("Show 3DS bottom screen on a second display") + api.tr
+                    note: qsTr("Need to have a second display (physical or virtual) connected\nand activated from 'video configuration' to work") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("citra.bottom.screen.on.second.display",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("citra.bottom.screen.on.second.display",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optBottomScreenPosition
+                }
                 MultivalueOption {
-                    id: optBottomSreenPosition
+                    id: optBottomScreenPosition
 
                     //property to manage parameter name
-                    property string parameterName : "citra.bottom.screen.position"
+                    property string parameterName : "citra.screens.layout"
 
-                    label: qsTr("Bottom Screen position") + api.tr
-                    note: qsTr("To set position of bottom screen at start on primary dislpay") + api.tr
+                    label: qsTr("Screens layout") + api.tr
+                    note: qsTr("To set position of screens at start on primary display") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
 
@@ -207,7 +220,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optBottomSreenPosition;
+                        parameterslistBox.callerid = optBottomScreenPosition;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -233,19 +246,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optOnSecondDisplay
-                }
-                ToggleOption {
-                    id: optOnSecondDisplay
-
-                    label: qsTr("Show 3DS bottom screen on a second display") + api.tr
-                    note: qsTr("Need to have a second display (physical or virtual) connected\nand activated from 'video configuration' to work") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("citra.bottom.screen.on.second.display",false)
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("citra.bottom.screen.on.second.display",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
+                    visible: !optOnSecondDisplay.checked
                 }
                 Item {
                     width: parent.width
