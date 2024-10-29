@@ -286,6 +286,40 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(parameterName,checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRumblePower
+                }
+                SliderOption {
+                    id: optRumblePower
+
+                    //property to manage parameter name
+                    property string parameterName : "cemu.rumble"
+
+                    //property of SliderOption to set
+                    label: qsTr("Rumble power") + api.tr
+                    note: qsTr("Set power of rumble use in cemu") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,0)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName) + "%"
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+
                     KeyNavigation.down: optGamepadActivated
                 }
                 SectionTitle {
