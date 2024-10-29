@@ -348,6 +348,8 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 
     //to add Verbose arg in debug mode
     if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) args.append("-verbose");
+    //to have a log of "configgen" launched now
+    args.append("> /recalbox/share/system/logs/lastgamelaunch.log 2>&1");
 
     QString command = args.isEmpty() ? QString() : args.takeFirst();
     if (command.isEmpty()){
