@@ -296,7 +296,7 @@ FocusScope {
 
                     //property of SliderOption to set
                     label: qsTr("Rumble power") + api.tr
-                    note: qsTr("Set power of rumble use in cemu") + api.tr
+                    note: qsTr("Set power of rumble used in cemu") + api.tr
                     // in slider object
                     max : 100
                     min : 0
@@ -311,11 +311,13 @@ FocusScope {
                     Keys.onLeftPressed: {
                         api.internal.recalbox.setIntParameter(parameterName,slidervalue);
                         value = slidervalue + "%";
+                        if(!isDebugEnv()) api.internal.system.runAsync("python /recalbox/scripts/pixl-rumble-test.py " + slidervalue + " " + slidervalue + " 300");
                     }
 
                     Keys.onRightPressed: {
                         api.internal.recalbox.setIntParameter(parameterName,slidervalue);
                         value = slidervalue + "%";
+                        if(!isDebugEnv()) api.internal.system.runAsync("python /recalbox/scripts/pixl-rumble-test.py " + slidervalue + " " + slidervalue + " 300");
                     }
 
                     onFocusChanged: container.onFocus(this)
