@@ -272,6 +272,20 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("cemu.async.compile",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSDLUseButtonLabels
+                }
+                ToggleOption {
+                    id: optSDLUseButtonLabels
+
+                    property string parameterName :"cemu.use.sdl.button.labels"
+                    label: qsTr("Use SDL button labels for mappings") + api.tr
+                    note: qsTr("Feature to match button letters as requested on screen\nElse XBOX mapping will be used for all controllers") + api.tr
+                    //set env variable to SDL_GAMECONTROLLER_USE_BUTTON_LABELS=1 by default
+                    checked: api.internal.recalbox.getBoolParameter(parameterName, true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(parameterName,checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamepadActivated
                 }
                 SectionTitle {
