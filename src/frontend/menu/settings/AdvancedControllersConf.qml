@@ -16,7 +16,6 @@
 
 
 import "common"
-//import "keyeditor"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
@@ -26,13 +25,36 @@ FocusScope {
 
     //loader to load confirm dialog
     Loader {
-        id: confirmDialog
+        id: restartBluetoothDialog
         anchors.fill: parent
         z:10
     }
 
     Connections {
-        target: confirmDialog.item
+        target: restartBluetoothDialog.item
+        function onAccept() {
+            if (!isDebugEnv()){
+                api.internal.system.run("/etc/init.d/S40bluetoothd restart");
+                api.internal.system.run("bluetoothctl power on");
+            }
+            api.internal.system.run("sleep 2");
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
+        }
+    }
+
+    //loader to load confirm dialog
+    Loader {
+        id: restartSindenDialog
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: restartSindenDialog.item
         function onAccept() {
             //restart service
             if (!isDebugEnv()){
@@ -136,10 +158,6 @@ FocusScope {
                         text: qsTr("Bluetooth controlers") + api.tr
                         first: true
                     }
-                    // label: qsTr("Enable bluetooth") + api.tr
-                    // note: qsTr("Enable support for bluetooth controllers") + api.tr
-
-
                     checked: api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled",true);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("controllers.bluetooth.enabled",true)){
@@ -364,10 +382,46 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("controllers.bluetooth.startreset",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRestartBluetoothStack
+                    visible: optBluetoothControllers.checked
+                }
+                // to restart bluetooth stack if needed
+                SimpleButton {
+                    id: optRestartBluetoothStack
+                    Rectangle {
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Restart Bluetooth stack") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        restartBluetoothDialog.focus = false;
+                        restartBluetoothDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "Bluetooth stack",
+                                                  "message": qsTr("Are you ready to restart Bluetooth stack ?\n(Bluetooth controller(s) will be disconnected)") + api.tr,
+                                                  "symbol" : "\uf29a",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        restartBluetoothDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPs3Controllers
                     visible: optBluetoothControllers.checked
                 }
-
                 ToggleOption {
                     id: optPs3Controllers
                     SectionTitle {
@@ -430,7 +484,7 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optArcadeStick //optDB9Controllers
+                    KeyNavigation.down: optArcadeStick
                     visible: optPs3Controllers.checked && optBluetoothControllers.checked
                 }
 
@@ -801,7 +855,6 @@ FocusScope {
                 SimpleButton {
                     id: optSindenLightgunSettingsApply
                     Rectangle {
-                        id: containerValidate
                         width: parent.width
                         height: parent.height
                         anchors.verticalCenter: parent.verticalCenter
@@ -821,8 +874,8 @@ FocusScope {
                         //force save in recalbox.conf file before to execute script
                         api.internal.recalbox.saveParameters();
                         //to force change of focus
-                        confirmDialog.focus = false;
-                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                        restartSindenDialog.focus = false;
+                        restartSindenDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                 { "title": "Sinden lightgun service",
                                                   "message": qsTr("Are you ready to restart service\nand change settings ?") + api.tr,
                                                   "symbol": "\uf0d0",
@@ -831,7 +884,7 @@ FocusScope {
                                                   "secondchoice": "",
                                                   "thirdchoice": qsTr("No") + api.tr});
                         //to force change of focus
-                        confirmDialog.focus = true;
+                        restartSindenDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                 }
