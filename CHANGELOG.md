@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2024-11-02 - v0.1.8.1
+- Quick fixes:
+    - add new log for last  game launch useful for debug (from /recalbox/share/system/logs/lastgamelaunch.log)
+    - add restart button for bluetooth stack from menu
+    - fix media.xml paths of media/game when games are moved or using other ways (share vs directory)
+
 ## [pixL-master] - 2024-10-19 - v0.1.8
 - Features:
 	- add new asset for media folder and tag
