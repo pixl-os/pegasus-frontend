@@ -708,12 +708,13 @@ void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::Search
                                  " | head -n 1 | awk '{print $5}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
         QString gamelist_date = run("date '+%F-%H-%M-%S' -r " + xml_dir.path() + "/gamelist.xml"+
                                  " | head -n 1 | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
-
+        QString gamelist_path = xml_dir.path() + "/gamelist.xml";
         //make the root element
         root = document.createElement("mediaList");
         //root.setAttribute("media_dir_size", media_dir_size);
         root.setAttribute("gamelist_size", gamelist_size);
         root.setAttribute("gamelist_date", gamelist_date);
+        root.setAttribute("gamelist_path", gamelist_path);
         //add it to document
         document.appendChild(root);
     }
@@ -1010,12 +1011,14 @@ void Metadata::add_skraper_media_metadata_v2(const QDir& xml_dir, providers::Sea
                                     " | head -n 1 | awk '{print $5}' | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
         QString gamelist_date = run("date '+%F-%H-%M-%S' -r " + xml_dir.path() + "/gamelist.xml"+
                                     " | head -n 1 | tr -d '\\n' | tr -d '\\r'"); //To keep only one line without CR or LF or hidden char
+        QString gamelist_path = xml_dir.path() + "/gamelist.xml";
 
         //make the root element
         root = document.createElement("mediaList");
         //root.setAttribute("media_dir_size", media_dir_size);
         root.setAttribute("gamelist_size", gamelist_size);
         root.setAttribute("gamelist_date", gamelist_date);
+        root.setAttribute("gamelist_path", gamelist_path);
         //add it to document
         document.appendChild(root);
     }
@@ -1132,6 +1135,10 @@ size_t Metadata::import_media_from_xml(const QDir& xml_dir, providers::SearchCon
     //exit function if difference of size for gamelist to request to regenerate media.xml
     if(gamelist_date != gamelist_date_from_xml) return 0;
 
+    QString gamelist_path = xml_dir.path() + "/gamelist.xml";
+    QString gamelist_path_from_xml = root.attribute("gamelist_path");
+    //exit function if difference of gamelist path to request to regenerate media.xml
+    if(gamelist_path != gamelist_path_from_xml) return 0;
 
     // Get the first child of the root (Markup COMPONENT is expected)
     QDomElement asset=root.firstChild().toElement();
