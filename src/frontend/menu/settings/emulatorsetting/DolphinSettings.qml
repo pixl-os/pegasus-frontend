@@ -226,6 +226,19 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("dolphin.cheats",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optAutoDiscChange
+                }
+                ToggleOption {
+                    id: optAutoDiscChange
+
+                    label: qsTr("Enable Auto Disc Change") + api.tr
+                    note: qsTr("Automatically changes discs in game.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("dolphin.disc.change")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("dolphin.disc.change",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWiiSensorsBars
                 }
                 SectionTitle {
