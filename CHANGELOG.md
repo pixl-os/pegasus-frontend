@@ -21,6 +21,11 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix brightness/contrast during dpad rotations
 	- fix to navigate between left/right x/y axis in gamepad editor
 
+## [pixL-master] - 2024-11-02 - v0.1.8.2
+- Quick fixes:
+    - clarify log tags for ESInput "controllers" functions
+    - fix to change way to detect "triggers" configuration using signs changing (for issue with some steam deck and some new controller firmwares) 
+
 ## [pixL-master] - 2024-11-02 - v0.1.8.1
 - Quick fixes:
     - add new log for last  game launch useful for debug (from /recalbox/share/system/logs/lastgamelaunch.log)
