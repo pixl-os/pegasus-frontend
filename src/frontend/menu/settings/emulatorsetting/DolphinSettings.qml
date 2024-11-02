@@ -232,7 +232,7 @@ FocusScope {
                     id: optAutoDiscChange
 
                     label: qsTr("Enable Auto Disc Change") + api.tr
-                    note: qsTr("Automatically changes discs in game.") + api.tr
+                    note: qsTr("Automatically changes discs in game. \nnote: this option only works if the disks are in the same folder.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("dolphin.disc.change")
                     onCheckedChanged: {

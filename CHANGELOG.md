@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2024-xx-xx - v0.1.x
+- Features:
+	- Add auto change disc option on dolphin
+
 ## [pixL-master] - 2024-10-19 - v0.1.8
 - Features:
 	- add new asset for media folder and tag
