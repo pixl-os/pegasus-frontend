@@ -207,10 +207,10 @@ inputConfigEntry Es2Provider::load_input_data(const QString& DeviceName, const Q
 
     // Find input with CRC and Without if needed
     // since 25/02/24 - with new buildroot and new SDL2 version
-    providers::es2::inputConfigEntry inputentry = find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUID);
+    providers::es2::inputConfigEntry inputentry = find_input("Controller", possible_config_dirs,DeviceName, DeviceGUID);
     if((inputentry.inputConfigAttributs.deviceGUID != DeviceGUID) && (DeviceGUID.mid(4,4) != "0000")){
         QString DeviceGUIDWithoutCRC = DeviceGUID.mid(0,4) + "0000" + DeviceGUID.mid(8);
-        inputentry = find_input(display_name(), possible_config_dirs,DeviceName, DeviceGUIDWithoutCRC);
+        inputentry = find_input("Controller", possible_config_dirs,DeviceName, DeviceGUIDWithoutCRC);
         if(inputentry.inputConfigAttributs.deviceGUID == DeviceGUIDWithoutCRC){
             //save conf with DeviceGUID with CRC
             inputentry.inputConfigAttributs.deviceGUID = DeviceGUID;
@@ -230,7 +230,7 @@ inputConfigEntry Es2Provider::load_any_input_data_by_guid(const QString& DeviceG
     }();
 
     // Find input
-    return find_any_input_by_guid(display_name(), possible_config_dirs,DeviceGUID);
+    return find_any_input_by_guid("Controller", possible_config_dirs,DeviceGUID);
 
 }
 
@@ -244,7 +244,7 @@ bool Es2Provider::save_input_data(const inputConfigEntry& input)
     }();
     const inputConfigEntry& input_to_save = input;
     // save input
-    return save_input(display_name(), possible_config_dirs, input_to_save);
+    return save_input("Controller", possible_config_dirs, input_to_save);
 
 }
 
