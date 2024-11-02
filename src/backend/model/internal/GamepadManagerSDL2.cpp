@@ -1631,30 +1631,9 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
         if (m_recording.device != device_idx)
             return;
 
-        //if deadzone is not enough to detect changes / we save previous value to detect change of sign
-        if (m_recording.previous_axis_value == 0){
-            m_recording.previous_axis_value = axis_value;
-        }
-
         //we use deadzone at 50% of values between +/-32767/2 ~ +/-16394
         constexpr Sint16 deadzone = std::numeric_limits<Sint16>::max() / 2;
-        Log::debug(m_log_tag, LOGMSG("deadzone: %1").arg(QString::number(deadzone)));
-        Log::debug(m_log_tag, LOGMSG("axis_value: %1").arg(QString::number(axis_value)));
-        if (-deadzone < axis_value && axis_value < deadzone)
-        {
-            Log::debug(m_log_tag, LOGMSG("-deadzone < axis_value && axis_value < deadzone"));       
-            return;
-        }
-
-
-        //Depreacated: to work like that, axis could be inverted !!!
-        // constexpr Sint16 mini = std::numeric_limits<Sint16>::min();
-        // Log::debug(m_log_tag, LOGMSG("mini: %1").arg(QString::number(mini)));
-        // if (axis_value == mini) // some triggers start from negative
-        // {
-            // Log::debug(m_log_tag, LOGMSG("axis_value == mini"));
-            // return;
-        // }
+        //Log::debug(m_log_tag, LOGMSG("deadzone: %1").arg(QString::number(deadzone)));
 
         //no sign necessary if stick left or right
         if (((m_recording.target_axis != GamepadAxis::LEFTX) \
@@ -1663,19 +1642,39 @@ void GamepadManagerSDL2::record_joy_axis_maybe(SDL_JoystickID instance_id, Uint8
         && (m_recording.target_axis != GamepadAxis::RIGHTY)) \
         || (m_recording.target_sign != "")) // if sign is finally requested as +/- right/left x/y (ex: "-rightx" need "sign and value" but "rightx" just need "value")
         {
+            //exclude asap if in deadzone
+            if (-deadzone < axis_value && axis_value < deadzone)
+            {
+                //Log::debug(m_log_tag, LOGMSG("TRIGGER / deadzone: %1").arg(QString::number(deadzone)));
+                //Log::debug(m_log_tag, LOGMSG("TRIGGER / -deadzone < axis_value && axis_value < deadzone"));
+                return;
+            }
+            //if deadzone is not enough to detect changes / we save previous value to detect change of sign
+            if ((m_recording.previous_axis_value == 0) && (axis_value != 0)){
+                Log::debug(m_log_tag, LOGMSG("TRIGGER / initial axis_value: %1").arg(QString::number(axis_value)));
+                m_recording.previous_axis_value = axis_value;
+            }
+            else{
+                Log::debug(m_log_tag, LOGMSG("TRIGGER / axis_value: %1").arg(QString::number(axis_value)));
+            }
             //we check if we change sign or not
             if((axis_value > 0 ? '+' : '-') == (m_recording.previous_axis_value > 0 ? '+' : '-')){
-                if(abs(axis_value) != std::numeric_limits<Sint16>::max()){
-                    //if no change of sign or no reach maximum (in positive or negative)
-                    //we prefer to continue to scan new values
-                    m_recording.previous_axis_value = axis_value;
-                    return;
-                }
+                m_recording.previous_axis_value = axis_value;
+                return;
             }
             m_recording.sign = axis_value > 0 ? '+' : '-';
         }
-        else m_recording.sign = "";
-        
+        else{
+            //exclude asap if in deadzone
+            if (-deadzone < axis_value && axis_value < deadzone)
+            {
+                //Log::debug(m_log_tag, LOGMSG("STICK / deadzone: %1").arg(QString::number(deadzone)));
+                //Log::debug(m_log_tag, LOGMSG("STICK / -deadzone < axis_value && axis_value < deadzone"));
+                return;
+            }
+            Log::debug(m_log_tag, LOGMSG("STICK / axis_value: %1").arg(QString::number(axis_value)));
+            m_recording.sign = "";
+        }
         m_recording.value = generate_axis_str(axis);
         
         finish_recording();
