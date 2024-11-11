@@ -136,6 +136,108 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: optSupersampling
+                }
+                SliderOption {
+                    id: optSupersampling
+                    property string parameterName : "supermodel.supersampling"
+
+                    label: qsTr("Supersampling anti-aliasing") + api.tr
+                    note: qsTr("Supersampling is very much a brute force solution, \nrender the scene at a higher resolution and mipmap it. \n3 gives a very good balance between speed and quality, 8 will make your GPU bleed.") + api.tr
+                    max : 8
+                    min : 1
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+                    value: api.internal.recalbox.getIntParameter(parameterName) + "x"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "x";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "x";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optUpscaleMode
+                }
+                MultivalueOption {
+                    id: optUpscaleMode
+
+                    property string parameterName : "supermodel.upscalemode"
+                    label: qsTr("Upscale filters Mode") + api.tr
+                    note: qsTr("Upscale filter used for the 2D layers.") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optInternalResolution;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optCRTColors
+                }
+                MultivalueOption {
+                    id: optCRTColors
+
+                    property string parameterName : "supermodel.crtcolors"
+                    label: qsTr("CRT-like color adaption") + api.tr
+                    note: qsTr("so not scanlines or the other CRT aspects, \njust the differences in the region-specific TV color standards.") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optInternalResolution;
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optCrosshairs
                 }
                 ToggleOption {
@@ -200,7 +302,7 @@ FocusScope {
                     id: optQuadRendering
 
                     label: qsTr("Quad Rendering") + api.tr
-                    note: qsTr("Enable proper quad rendering. \nEnable by default.") + api.tr
+                    note: qsTr("Enable proper quad rendering.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("supermodel.quad.rendering")
                     onCheckedChanged: {
@@ -209,37 +311,37 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetwork
                 }
-//                SliderOption {
-//                    id: optPowerPcFrequency
+               // SliderOption {
+               //     id: optPowerPcFrequency
 
-//                    //property to manage parameter name
-//                    property string parameterName : "supermodel.powerpc.frequency"
+               //     //property to manage parameter name
+               //     property string parameterName : "supermodel.powerpc.frequency"
 
-//                    //property of SliderOption to set
-//                    label: qsTr("PowerPC frequency") + api.tr
-//                    note: qsTr("Many games can be run at as low as 25 MHz,\nbut others require higher clock frequencies.\nOptimal values will differ from game to game.") + api.tr
-//                    // in slider object
-//                    max : 145
-//                    min : 25
-//                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
-//                    // in text object
-//                    value: api.internal.recalbox.getIntParameter(parameterName) + "MHz"
-//                    onActivate: {
-//                        focus = true;
-//                    }
-//                    Keys.onLeftPressed: {
-//                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-//                        value = slidervalue + "MHz";
-//                        sfxNav.play();
-//                    }
-//                    Keys.onRightPressed: {
-//                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-//                        value = slidervalue + "MHz";
-//                        sfxNav.play();
-//                    }
-//                    onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optNetwork
-//                }
+               //     //property of SliderOption to set
+               //     label: qsTr("PowerPC frequency") + api.tr
+               //     note: qsTr("Many games can be run at as low as 66 MHz,\nbut others require higher clock frequencies.\nOptimal values will differ from game to game.") + api.tr
+               //     // in slider object
+               //     max : 166
+               //     min : 66
+               //     slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+               //     // in text object
+               //     value: api.internal.recalbox.getIntParameter(parameterName) + "MHz"
+               //     onActivate: {
+               //         focus = true;
+               //     }
+               //     Keys.onLeftPressed: {
+               //         api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+               //         value = slidervalue + "MHz";
+               //         sfxNav.play();
+               //     }
+               //     Keys.onRightPressed: {
+               //         api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+               //         value = slidervalue + "MHz";
+               //         sfxNav.play();
+               //     }
+               //     onFocusChanged: container.onFocus(this)
+               //     KeyNavigation.down: optNetwork
+               // }
                 SectionTitle {
                     text: qsTr("Netplay") + api.tr
                     first: true
