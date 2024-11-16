@@ -1328,15 +1328,28 @@ Window {
         focus: true
         enabled: false
         visible: focus
-
+        z: 10
         property bool dataLoading: api.internal.meta.loading
         property bool skinLoading: theme.status === Loader.Null || theme.status === Loader.Loading
         showDataProgressText: dataLoading
 
         function hideMaybe() {
+            console.log("Splashcreen hiding by focus/z level");
             if (focus && !dataLoading && !skinLoading) {
+                //focus on theme content
                 content.focus = true;
+                //put splashscreen behind
+                z = -1
+                //remove focus from splashcreen
+                focus = false;
+                //reset splashscreen loading bar
                 api.internal.meta.resetLoadingState();
+            }
+            else if (focus){
+                //set in front
+                z = 10;
+                //remove focus from theme content
+                content.focus = false;
             }
         }
         onSkinLoadingChanged: hideMaybe()
