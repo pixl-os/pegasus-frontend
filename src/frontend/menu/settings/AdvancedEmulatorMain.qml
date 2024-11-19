@@ -14,6 +14,7 @@ FocusScope {
 
     signal close
     signal openRetroarchSettings
+    signal openRpcs3Settings
     signal openModel2emuSettings
     signal openDolphinSettings
     signal openDolphinTriforceSettings
@@ -221,8 +222,22 @@ FocusScope {
                         root.openRetroarchSettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRpcs3
+                }
+                SimpleButton {
+                    id: optRpcs3
+
+                    label: qsTr("Rpcs3") + api.tr
+                    note: qsTr("Change Configuration for Rpcs3 Sony PS3 emulator !") + api.tr
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openRpcs3Settings();
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSupermodel
-                } 
+                }
                 SimpleButton {
                     id: optSupermodel
                     label: qsTr("Supermodel") + api.tr
