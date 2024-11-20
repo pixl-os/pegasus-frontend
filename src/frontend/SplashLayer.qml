@@ -14,20 +14,125 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
 import QtQuick 2.15
 
 Rectangle {
     id: root
 
-    color: "#000"
+    color: "#101010"
     anchors.fill: parent
 
     property real progress: api.internal.meta.loadingProgress
     property bool showDataProgressText: true
 
-    Behavior on progress { NumberAnimation { duration: 500 } }
+    Behavior on progress { NumberAnimation { duration: 500; easing.type: Easing.OutQuad } }
 
+    // Logo animé principal
+    AnimatedImage {
+        id: logo
+        source: "assets/pixLAnime.gif"
+        width: parent.width * 0.4
+        height: parent.width * 0.4
+        fillMode: Image.PreserveAspectFit
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: vpx(40)
+        opacity: 1.0
+
+        SequentialAnimation on opacity {
+            loops: Animation.Infinite
+            NumberAnimation { from: 0.8; to: 1.0; duration: 1500; easing.type: Easing.InOutQuad }
+        }
+    }
+
+    // Barre de progression
+    Rectangle {
+        id: progressRoot
+        width: logo.width * 0.95
+        height: vpx(30)
+        radius: vpx(15)
+        color: "#333"
+        border.color: "#555"
+        border.width: vpx(2)
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: logo.bottom
+        anchors.topMargin: vpx(20)
+
+        // Barre intérieure animée
+        Rectangle {
+            id: progressBar
+            width: parent.width * root.progress
+            height: parent.height
+            radius: vpx(15)
+            color: themeColor.screenUnderline
+
+            NumberAnimation on width {
+                duration: 800
+                easing.type: Easing.InOutQuad
+            }
+
+            SequentialAnimation on color {
+                loops: Animation.Infinite
+                ColorAnimation {
+                    from: Qt.lighter(themeColor.screenUnderline, 1.5)
+                    to: Qt.darker(themeColor.screenUnderline, 1.5)
+                    duration: 1000
+                }
+                ColorAnimation {
+                    from: Qt.darker(themeColor.screenUnderline, 1.5)
+                    to: Qt.lighter(themeColor.screenUnderline, 1.5)
+                    duration: 1000
+                }
+            }
+        }
+    }
+
+    // Texte de progression
+    Text {
+        id: gameCounter
+        visible: showDataProgressText
+
+        text: api.internal.meta.loadingStage
+        color: "#CCCCCC"
+        font.pixelSize: vpx(16)
+        font.family: global.fonts.sans
+        anchors.top: progressRoot.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: vpx(8)
+    }
+
+    // Diaporama
+    Rectangle {
+        id: slideshow
+        width: parent.width
+        height: vpx(50)
+        color: "black"
+        opacity: 0.7
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: vpx(10)
+
+        Image {
+            id: slideshowImage
+            source: images[currentIndex]
+            width: parent.width * 0.8
+            height: parent.height
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: parent
+
+            SequentialAnimation on opacity {
+                loops: Animation.Infinite
+                NumberAnimation { from: 1.0; to: 0.0; duration: 1500 }
+                ScriptAction { script: {
+                        currentIndex = (currentIndex + 1) % images.length;
+                        slideshowImage.source = images[currentIndex];
+                    }}
+                NumberAnimation { from: 0.0; to: 1.0; duration: 1500 }
+            }
+        }
+    }
+
+    // Helper pour le diaporama
     function shuffle(array) {
         for (var i = array.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
@@ -39,135 +144,10 @@ Rectangle {
     }
 
     property var images: shuffle([
-        "assets/logopegasus.png",
-        "assets/recalbox-next.svg",
-        "assets/libretro-retroarch-simple-logo.png",
-        "assets/logonvidia.png"
-    ])
+                                     "assets/logopegasus.png",
+                                     "assets/recalbox-next.svg",
+                                     "assets/libretro-retroarch-simple-logo.png",
+                                     "assets/logonvidia.png"
+                                 ])
     property int currentIndex: 0
-
-    AnimatedImage {
-        id: logo
-        source: "assets/pixLAnime.gif"
-        width: Math.min(parent.width, parent.height)
-        speed: 1.6
-        anchors.horizontalCenterOffset: 0
-        anchors.topMargin: 100
-        fillMode: Image.PreserveAspectFit
-        verticalAlignment: Image.AlignBottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.bottom: parent.verticalCenter
-    }
-
-    Rectangle {
-        id: slideshow
-        width: parent.width
-        height: 50
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
-        color: "black"
-
-        Image {
-            id: slideshowImage
-            source: images[currentIndex]
-            width: parent.width
-            height: parent.height
-            fillMode: Image.PreserveAspectFit
-            anchors.centerIn: parent
-            verticalAlignment: Image.AlignBottom
-            anchors.horizontalCenter: parent.horizontalCenter
-
-            SequentialAnimation on opacity {
-                loops: Animation.Infinite
-                NumberAnimation { from: 1.0; to: 0.0; duration: 2000 }
-                ScriptAction { script: {
-                    currentIndex = (currentIndex + 1) % images.length;
-                    slideshowImage.source = images[currentIndex];
-                }}
-                NumberAnimation { from: 0.0; to: 1.0; duration: 2000 }
-                PauseAnimation { duration: 2000 }
-            }
-        }
-    }
-
-    Rectangle {
-        id: progressRoot
-        property int padding: vpx(5)
-        width: logo.width * 0.95
-        height: vpx(30)
-        radius: vpx(10)
-        color: themeColor.main
-
-        anchors.top: logo.bottom
-        anchors.topMargin: height * 1.0
-        anchors.horizontalCenter: parent.horizontalCenter
-
-        border.width: vpx(2)
-
-        Rectangle {
-            id: progressBar
-            width: parent.width * root.progress
-            height: parent.height
-            radius: vpx(10)
-            color: themeColor.screenUnderline
-
-            NumberAnimation on width {
-                id: anim
-                from: 0
-                to: parent.width * (root.progress / 100)
-                easing.type: Easing.InOutBounce
-                running: true
-            }
-            SequentialAnimation on color {
-                loops: Animation.Infinite
-                ColorAnimation { from: Qt.darker(themeColor.screenUnderline); to: themeColor.screenUnderline; duration: 1000 }
-                ColorAnimation { from: themeColor.screenUnderline; to: Qt.darker(themeColor.screenUnderline); duration: 1000 }
-            }
-        }
-
-        Rectangle {
-            id: lightningEffect
-            width: parent.width
-            height: parent.height
-            radius: vpx(10)
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: "transparent" }
-                GradientStop { position: 0.5; color: "white" }
-                GradientStop { position: 1.0; color: "transparent" }
-            }
-
-            PropertyAnimation on x {
-                from: -parent.width
-                to: parent.width
-                duration: 1000
-                loops: Animation.Infinite
-                easing.type: Easing.Linear
-            }
-
-            PropertyAnimation on opacity {
-                from: 0.8
-                to: 0.0
-                duration: 1000
-                loops: Animation.Infinite
-                easing.type: Easing.Linear
-            }
-        }
-    }
-
-    Text {
-        id: gameCounter
-        visible: showDataProgressText
-
-        text: api.internal.meta.loadingStage
-        color: "#999"
-        font.pixelSize: vpx(16)
-        font.family: global.fonts.sans
-        font.italic: true
-
-        anchors.top: progressRoot.bottom
-        anchors.topMargin: vpx(8)
-        anchors.right: progressRoot.right
-        anchors.rightMargin: vpx(5)
-    }
 }
