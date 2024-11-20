@@ -168,7 +168,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optInternalResolution;
+                        parameterslistBox.callerid = optScanline;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -176,7 +176,6 @@ FocusScope {
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
-
                     onSelect: {
                         //to force to be on the good parameter selected
                         api.internal.recalbox.parameterslist.currentName(parameterName);
@@ -185,7 +184,6 @@ FocusScope {
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
                     }
-
                     onFocusChanged:{
                         if(focus){
                             api.internal.recalbox.parameterslist.currentName(parameterName);
@@ -194,8 +192,194 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    KeyNavigation.down: optFidelityFx
+                }
+                SliderOption {
+                    id: optFidelityFx
 
-                    // KeyNavigation.down: optVsync
+                    //property to manage parameter name
+                    property string parameterName : "rpcs3.fidelityfx"
+
+                    //property of SliderOption to set
+                    label: qsTr("Set Fidelity FX level") + api.tr
+                    note: qsTr("Fidelity super resolution enhances upscaled images\nThe default value is 50%.") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName) + "%"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optScanline.value === "FidelityFX Super Resolution"
+                    KeyNavigation.down: optNetworkStatut
+                }
+                SectionTitle {
+                    text: qsTr("Network") + api.tr
+                    first: true
+                    symbol: "\uf17f"
+                }
+                ToggleOption {
+                    id: optNetworkStatut
+
+                    label: qsTr("Network Statut") + api.tr
+                    note: qsTr("If set to Connected, RPCS3 will alow programs to use internet connection.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("rpcs3.network")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("rpcs3.network",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optUpnp
+                }
+                ToggleOption {
+                    id: optUpnp
+
+                    label: qsTr("Enable UPNP protocol") + api.tr
+                    note: qsTr("This will automactically forward ports bound on 0.0.0.0 if your router has UPNP enabled.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("rpcs3.upnp")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("rpcs3.upnp",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optNetworkStatut.checked
+                    KeyNavigation.down: optRpcnStatut
+                }
+                ToggleOption {
+                    id: optRpcnStatut
+
+                    label: qsTr("PSN Statut") + api.tr
+                    note: qsTr("If set enable RPCS3 will use the RPCN server as PSN connection if the game is supported.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("rpcs3.rpcn")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("rpcs3.rpcn",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optNetworkStatut.checked
+                    KeyNavigation.down: optRpcs3RpcnUsername
+                }
+                SimpleButton {
+                    id: optRpcs3RpcnUsername
+
+                    label: qsTr("Username") + api.tr
+                    note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
+
+                    TextFieldOption {
+                        id: rpcnUsername
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Username") + api.tr
+                        text: api.internal.recalbox.getStringParameter("rpcs3.rpcn.username")
+                        echoMode: TextInput.Normal
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("rpcs3.rpcn.username", rpcnUsername.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRpcs3RpcnPassword
+                    visible: optRpcnStatut.checked && optNetworkStatut.checked
+                }
+                SimpleButton {
+                    id: optRpcs3RpcnPassword
+
+                    label: qsTr("Password") + api.tr
+                    note: qsTr("then login with your username and password") + api.tr
+
+                    TextFieldOption {
+                        id: rpcnPassword
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        placeholderText: qsTr("Password") + api.tr
+                        text: api.internal.recalbox.getStringParameter("rpcs3.rpcn.password")
+                        horizontalAlignment: TextInput.AlignRight
+                        echoMode: TextInput.PasswordEchoOnEdit
+                        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("rpcs3.rpcn.password", rpcnPassword.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRpcs3RpcnToken
+                    visible: optRpcnStatut.checked && optNetworkStatut.checked
+                }
+                SimpleButton {
+                    id: optRpcs3RpcnToken
+
+                    label: qsTr("Token") + api.tr
+                    note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
+
+                    TextFieldOption {
+                        id: rpcnToken
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        horizontalAlignment: TextInput.AlignRight
+                        placeholderText: qsTr("Token") + api.tr
+                        text: api.internal.recalbox.getStringParameter("rpcs3.rpcn.token")
+                        echoMode: TextInput.PasswordEchoOnEdit
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onEditingFinished: api.internal.recalbox.setStringParameter("rpcs3.rpcn.token", rpcnToken.text)
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRpcs3Theme
+                    visible: optRpcnStatut.checked && optNetworkStatut.checked
+                }
+                SectionTitle {
+                    text: qsTr("Menu options") + api.tr
+                    first: true
+                    symbol: "\uf412"
+                }
+                MultivalueOption {
+                    id: optRpcs3Theme
+                    //property to manage parameter name
+                    property string parameterName : "rpcs3.theme"
+
+                    label: qsTr("Changes theme menu") + api.tr
+                    note: qsTr("Changes the overall look of RPCS3") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optRpcs3Theme;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
                 }
                 Item {
                     width: parent.width

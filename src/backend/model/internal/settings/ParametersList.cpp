@@ -531,6 +531,21 @@ QStringList GetParametersList(QString Parameter)
 
         ListOfInternalValue << "Nearest" << "Bilinear" << "FidelityFX Super Resolution";
     }
+    else if (Parameter == "rpcs3.theme")
+    {
+        /*
+         * currentStylesheet=none
+        */
+        ListOfValue << QObject::tr("None") << QObject::tr("Native (Windows)") << QObject::tr("Native (Fusion)") << QObject::tr("Default (Bright)")
+                    << QObject::tr("Classic (Bright)") << QObject::tr("Darker Style by TheMitoSan") << QObject::tr("Envy")
+                    << QObject::tr("Kuroi (Dark) by Ani") << QObject::tr("ModernBlue Theme by TheMitoSan") << QObject::tr("Nekotekina by GooseWing")
+                    << QObject::tr("Skyline") << QObject::tr("Skyline (Nightfall)") << QObject::tr("YoRHa by Ani");
+
+        ListOfInternalValue << "none" << "native (Windows)" << "native (Fusion)" << "default"
+                            << "Classic (Bright)" << "Darker Style by TheMitoSan" << "Envy"
+                            << "Kuroi (Dark) by Ani" << "ModernBlue Theme by TheMitoSan" << "Nekotekina by GooseWing"
+                            << "Skyline" << "Skyline (Nightfall)" << "YoRHa by Ani";
+    }
     else if (Parameter == "supermodel.resolution")
     {
         /*
