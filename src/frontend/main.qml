@@ -2107,13 +2107,14 @@ Window {
         
         //need to keep only 'pro controller' in case of nintendo switch pro controller as it is the HID name (internal name)
         //in the future, we have other controller as "pro controller", the layout detection should be complexified
-        ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
+        ListElement { icon: "\uf0ca"; keywords: "pro controller,switchpro"; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
         ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"; iconfont: "awesome"}
 
         //27/02/2022 2 controllers added snakebyte idroid:con, 8bitdo sn30 pro+ and 8bitdo pro 2
         ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0cc"; keywords: "8bitdo sn30 pro+,8bitdo sn30 pro plus,8bitdo pro 2"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cc"; keywords: "8bitdo sn30 pro+,8bitdo sn30 pro plus,8bitdo pro 2,sn30proplus"; type:"controller"; iconfont: "awesome"; layout: "sn30proplus
+        "}
         //07/10/2024 2 controllers added 8bitdo arcade stick, 8bitdo sf30/sn30 pro and google stadia
         ListElement { icon: "\uf0d1"; keywords: "stadia"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0d2"; keywords: "8bitdo arcade stick"; type:"controller"; iconfont: "awesome"} //match only in bluetooth else detected as xbox :-(
