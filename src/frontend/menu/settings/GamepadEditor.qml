@@ -345,7 +345,7 @@ FocusScope {
                 hasLeftStick : true; hasRightStick : true;
                 hasL3 : true; hasR3 : true;
 
-                hadDpad : true;
+                hasDpad : true;
                 hasButtonsForDpad : false;
                 hasScreenshotButton : false;
 
@@ -369,7 +369,7 @@ FocusScope {
                             hasLeftStick : false; hasRightStick : false;
                             hasL3 : false; hasR3 : false;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -463,7 +463,7 @@ FocusScope {
                             hasLeftStick : false; hasRightStick : false;
                             hasL3 : false; hasR3 : false;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -557,7 +557,7 @@ FocusScope {
                             hasLeftStick : false; hasRightStick : false;
                             hasL3 : false; hasR3 : false;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -651,7 +651,7 @@ FocusScope {
                             hasLeftStick : false; hasRightStick : false;
                             hasL3 : false; hasR3 : false;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -725,7 +725,7 @@ FocusScope {
                             hasLeftStick : false; hasRightStick : false;
                             hasL3 : false; hasR3 : false;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -819,7 +819,7 @@ FocusScope {
                             hasLeftStick : true; hasRightStick : true;
                             hasL3 : true; hasR3 : true;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -931,7 +931,7 @@ FocusScope {
                             hasLeftStick : true; hasRightStick : true;
                             hasL3 : true; hasR3 : true;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -1049,7 +1049,7 @@ FocusScope {
                             hasLeftStick : true; hasRightStick : true;
                             hasL3 : true; hasR3 : true;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : true;
 
                             hasScreenshotButton : false;
@@ -1180,7 +1180,7 @@ FocusScope {
                             hasLeftStick : true; hasRightStick : true;
                             hasL3 : true; hasR3 : true;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : true;
 
                             hasScreenshotButton : false;
@@ -1311,7 +1311,7 @@ FocusScope {
                             hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : true;
                             hasL3 : false; hasR3 : false;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -1445,7 +1445,7 @@ FocusScope {
                             hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : true;
                             hasL3 : false; hasR3 : false;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -1573,7 +1573,7 @@ FocusScope {
                             hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : false;
                             hasL3 : true; hasR3 : true;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -1691,99 +1691,99 @@ FocusScope {
                             hasLeftStick : true; hasRightStick : true;
                             hasL3 : true; hasR3 : true;
 
-                            hadDpad : true;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.36; padBaseSourceSizeWidth : 1447 ; padBaseSourceSizeHeight : 1264;
-
+                            ratio: 0.7; padBaseSourceSizeWidth : 824 ; padBaseSourceSizeHeight : 680;
+                            
                             //parameters for select
-                            padSelectWidth : 63;
-                            padSelectHeight : 64;
-                            padSelectTopY: 504;
-                            padSelectLeftX: 584;
+                            padSelectWidth : 41;
+                            padSelectHeight : 19;
+                            padSelectTopY: 196;
+                            padSelectLeftX: 296;
 
                             //parameters for start
-                            padStartWidth : 65;
-                            padStartHeight : 66;
-                            padStartTopY: 504;
-                            padStartLeftX: 795;
+                            padStartWidth : 41;
+                            padStartHeight : 21;
+                            padStartTopY: 195;
+                            padStartLeftX: 486;
 
                             //parameters for guide/hotkey
-                            padGuideWidth : 113;
-                            padGuideHeight : 113;
-                            padGuideTopY: 333;
-                            padGuideLeftX: 664;
+                            padGuideWidth : 55;
+                            padGuideHeight : 54;
+                            padGuideTopY: 335;
+                            padGuideLeftX: 383;
+                            
+                            //parameters for screenshot -> share //RFU
+                            /*padShareWidth : 32;
+                            padShareHeight : 29;
+                            padShareTopY: 242;
+                            padShareLeftX: 455;*/
 
-                            //parameters for share //RFU
-                            /*padSelectWidth : 78;
-                            padSelectHeight : 48;
-                            padSelectTopY: 592;
-                            padSelectLeftX: 684;*/
+                            //parameters for B/A/Y/X
+                            padBWidth : 51;
+                            padBHeight : 50;
+                            padBTopY: 234;
+                            padBLeftX: 673;
 
-                            //parameters for A/B/X/Y
-                            padAWidth : 97;
-                            padAHeight : 96;
-                            padATopY: 589;
-                            padALeftX: 1046;
+                            padAWidth : 51;
+                            padAHeight : 45;
+                            padATopY: 283;
+                            padALeftX: 620;
 
-                            padBWidth : 96;
-                            padBHeight : 97;
-                            padBTopY: 495;
-                            padBLeftX: 1144;
+                            padYWidth : 51;
+                            padYHeight : 48;
+                            padYTopY: 186;
+                            padYLeftX: 618;
 
-                            padXWidth : 100;
-                            padXHeight : 100;
-                            padXTopY: 489;
-                            padXLeftX: 947;
-
-                            padYWidth : 97;
-                            padYHeight : 96;
-                            padYTopY: 394;
-                            padYLeftX: 1046;
+                            padXWidth : 53;
+                            padXHeight : 45;
+                            padXTopY: 234;
+                            padXLeftX: 566;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 665;
-                            dpadAreaBottomY: 887;
-                            dpadAreaLeftX: 421;
-                            dpadAreaRightX: 641;
+                            dpadAreaTopY: 202;
+                            dpadAreaBottomY: 322;
+                            dpadAreaLeftX: 116;
+                            dpadAreaRightX: 250;
 
                             //parameter for L1
-                            padL1Width : 289;
-                            padL1Height : 111;
-                            padL1TopY: 260;
-                            padL1LeftX: 215;
+                            padL1Width : 119;
+                            padL1Height : 39;
+                            padL1TopY: 144;
+                            padL1LeftX: 118;
 
                             //parameter for R1
-                            padR1Width : 289;
-                            padR1Height : 115;
-                            padR1TopY: 260;
-                            padR1LeftX: 939;
+                            padR1Width : 116;
+                            padR1Height : 39;
+                            padR1TopY: 144;
+                            padR1LeftX: 583;
 
                             //parameter for L2
-                            padL2Width : 185;
-                            padL2Height : 237;
-                            padL2TopY: 0;
-                            padL2LeftX: 279;
+                            padL2Width : 132;
+                            padL2Height : 130;
+                            padL2TopY: 2;
+                            padL2LeftX: 106;
 
                             //parameter for R2
-                            padR2Width : 189;
-                            padR2Height : 240;
-                            padR2TopY: 0;
-                            padR2LeftX: 985;
+                            padR2Width : 131;
+                            padR2Height : 118;
+                            padR2TopY: 2;
+                            padR2LeftX: 577;
 
                             //parameter for Left stick
-                            lStickWidth : 166;
-                            lStickHeight : 166;
-                            lStickTopY: 455;
-                            lStickLeftX: 269;
+                            lStickWidth : 91;
+                            lStickHeight : 86;
+                            lStickTopY: 300;
+                            lStickLeftX: 235;
 
                             //parameter for Right stick
-                            rStickWidth : 166;
-                            rStickHeight : 172;
-                            rStickTopY: 671;
-                            rStickLeftX: 832;
+                            rStickWidth : 94;
+                            rStickHeight : 83;
+                            rStickTopY: 301;
+                            rStickLeftX: 496;
 
                             //to adapt contrast/brightness
                             contrast : 0.1
