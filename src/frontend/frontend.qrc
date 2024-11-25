@@ -286,16 +286,16 @@
         <file>assets/gamepad/stadia/base_stadia.png</file>
         <file>assets/gamepad/stadia/b_stadia.png</file>
         <file>assets/gamepad/stadia/dpad_stadia.png</file>
-        <file>assets/gamepad/stadia/home_stadia.png</file>
-        <file>assets/gamepad/stadia/hotkey_stadia.png</file>
+        <file>assets/gamepad/stadia/guidebis_stadia.png</file>
+        <file>assets/gamepad/stadia/guide_stadia.png</file>
+        <file>assets/gamepad/stadia/l1_stadia.png</file>
         <file>assets/gamepad/stadia/l2_stadia.png</file>
-        <file>assets/gamepad/stadia/leftstick_stadia.png</file>
-        <file>assets/gamepad/stadia/l_stadia.png</file>
+        <file>assets/gamepad/stadia/lstick_stadia.png</file>
+        <file>assets/gamepad/stadia/r1_stadia.png</file>
         <file>assets/gamepad/stadia/r2_stadia.png</file>
-        <file>assets/gamepad/stadia/rightstick_stadia.png</file>
-        <file>assets/gamepad/stadia/r_stadia.png</file>
-        <file>assets/gamepad/stadia/screenshot_stadia.png</file>
+        <file>assets/gamepad/stadia/rstick_stadia.png</file>
         <file>assets/gamepad/stadia/select_stadia.png</file>
+        <file>assets/gamepad/stadia/share_stadia.png</file>
         <file>assets/gamepad/stadia/start_stadia.png</file>
         <file>assets/gamepad/stadia/x_stadia.png</file>
         <file>assets/gamepad/stadia/y_stadia.png</file>
