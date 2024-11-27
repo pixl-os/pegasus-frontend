@@ -22,9 +22,6 @@ static int rc_hash_whole_file(char hash[33], const char* path);
 
 /* ===================================================== */
 
-static rc_hash_message_callback error_message_callback = NULL;
-rc_hash_message_callback verbose_message_callback = NULL;
-
 void rc_hash_init_error_message_callback(rc_hash_message_callback callback)
 {
   error_message_callback = callback;
@@ -2520,6 +2517,14 @@ static int rc_hash_pcfx_cd(char hash[33], const char* path)
 
 static int rc_hash_dreamcast(char hash[33], const char* path)
 {
+
+  if (verbose_message_callback)
+  {
+      char message[128];
+      snprintf(message, sizeof(message), "Call rc_hash_dreamcast");
+      verbose_message_callback(message);
+  }
+
   uint8_t buffer[256] = "";
   void* track_handle;
   char exe_file[32] = "";
@@ -2529,13 +2534,33 @@ static int rc_hash_dreamcast(char hash[33], const char* path)
   md5_state_t md5;
   int i = 0;
 
+  if (verbose_message_callback)
+  {
+      char message[128];
+      snprintf(message, sizeof(message), "Path : %s", path);
+      verbose_message_callback(message);
+  }
+
   /* track 03 is the data track that contains the TOC and IP.BIN */
   track_handle = rc_cd_open_track(path, 3);
   if (track_handle)
   {
-    /* first 256 bytes from first sector should have IP.BIN structure that stores game meta information
+      if (verbose_message_callback)
+      {
+          char message[128];
+          snprintf(message, sizeof(message), "track_handle niot empty");
+          verbose_message_callback(message);
+      }
+      /* first 256 bytes from first sector should have IP.BIN structure that stores game meta information
      * https://mc.pp.se/dc/ip.bin.html */
     rc_cd_read_sector(track_handle, rc_cd_first_track_sector(track_handle), buffer, sizeof(buffer));
+  }
+
+  if (verbose_message_callback)
+  {
+      char message[128];
+      snprintf(message, sizeof(message), "Buffer content=%.32s", &buffer[0]);
+      verbose_message_callback(message);
   }
 
   if (memcmp(&buffer[0], "SEGA SEGAKATANA ", 16) != 0)
@@ -2549,6 +2574,14 @@ static int rc_hash_dreamcast(char hash[33], const char* path)
       return rc_hash_error("Could not open track");
 
     rc_cd_read_sector(track_handle, rc_cd_first_track_sector(track_handle), buffer, sizeof(buffer));
+
+    if (verbose_message_callback)
+    {
+        char message[128];
+        snprintf(message, sizeof(message), "Buffer content=%.32s", &buffer[0]);
+        verbose_message_callback(message);
+    }
+
     if (memcmp(&buffer[0], "SEGA SEGAKATANA ", 16) != 0)
     {
       /* did not find marker on track 3 or first data track */
@@ -2995,6 +3028,13 @@ static int rc_hash_file_from_buffer(char hash[33], uint32_t console_id, const ui
 
 int rc_hash_generate_from_buffer(char hash[33], uint32_t console_id, const uint8_t* buffer, size_t buffer_size)
 {
+    if (verbose_message_callback)
+    {
+        char message[128];
+        snprintf(message, sizeof(message), "Call rc_hash_generate_from_buffer");
+        verbose_message_callback(message);
+    }
+
   switch (console_id)
   {
     default:
@@ -3299,6 +3339,13 @@ static int rc_hash_generate_from_playlist(char hash[33], uint32_t console_id, co
 
 int rc_hash_generate_from_file(char hash[33], uint32_t console_id, const char* path)
 {
+  if (verbose_message_callback)
+  {
+      char message[128];
+      snprintf(message, sizeof(message), "Call rc_hash_generate_from_file");
+      verbose_message_callback(message);
+  }
+
   switch (console_id)
   {
     default:

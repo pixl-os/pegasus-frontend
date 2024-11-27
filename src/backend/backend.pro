@@ -13,7 +13,12 @@ isEmpty(USE_SDL_GAMEPAD): QT += gamepad
 !isEmpty(INSIDE_FLATPAK): DEFINES *= PEGASUS_INSIDE_FLATPAK
 msvc: DEFINES *= _USE_MATH_DEFINES
 
+#for libcheevos (without FLAC due to issue of compatibility - seems not used for CHD decompression for hashing)
 DEFINES *= HAVE_CDROM
+DEFINES *= HAVE_CHD
+DEFINES *= HAVE_ZLIB
+DEFINES *=_7ZIP_ST
+DEFINES *= HAVE_7ZIP
 
 SOURCES += \
     Backend.cpp \

@@ -1,8 +1,28 @@
 #to find include files of rcheevos/libretro-common parts for QT
 INCLUDEPATH += . utils/rcheevos/include
 INCLUDEPATH += . utils/libretro-common/include
+#to find include files of 7zip & zlib parts for QT
+INCLUDEPATH += . utils/7zip
+INCLUDEPATH += . utils/zlib
 
 HEADERS += \
+    $$PWD/7zip/7z.h \
+    $$PWD/7zip/7zBuf.h \
+    $$PWD/7zip/7zCrc.h \
+    $$PWD/7zip/7zFile.h \
+    $$PWD/7zip/7zTypes.h \
+    $$PWD/7zip/7zVersion.h \
+    $$PWD/7zip/Bcj2.h \
+    $$PWD/7zip/Bra.h \
+    $$PWD/7zip/Compiler.h \
+    $$PWD/7zip/CpuArch.h \
+    $$PWD/7zip/Delta.h \
+    $$PWD/7zip/LzFind.h \
+    $$PWD/7zip/LzHash.h \
+    $$PWD/7zip/Lzma2Dec.h \
+    $$PWD/7zip/LzmaDec.h \
+    $$PWD/7zip/LzmaEnc.h \
+    $$PWD/7zip/Precomp.h \
     $$PWD/CommandTokenizer.h \
     $$PWD/DiskCachedNAM.h \
     $$PWD/FakeQKeyEvent.h \
@@ -16,6 +36,11 @@ HEADERS += \
     $$PWD/NoCopyNoMove.h \
     $$PWD/PathTools.h \
     $$PWD/QmlHelpers.h \
+    $$PWD/libretro-common/include/libchdr/bitstream.h \
+    $$PWD/libretro-common/include/libchdr/cdrom.h \
+    $$PWD/libretro-common/include/libchdr/huffman.h \
+    $$PWD/libretro-common/include/libchdr/lzma.h \
+    $$PWD/libretro-common/include/libchdr/minmax.h \
     $$PWD/rLog.h \
     $$PWD/Sizes.h \
     $$PWD/SqliteDb.h \
@@ -134,9 +159,39 @@ HEADERS += \
     $$PWD/libretro-common/include/lists/file_list.h \
     $$PWD/libretro-common/include/lists/string_list.h \
     $$PWD/liboping/src/config.h \
-    $$PWD/liboping/src/oping.h
+    $$PWD/liboping/src/oping.h \
+    $$PWD/zlib/crc32.h \
+    $$PWD/zlib/deflate.h \
+    $$PWD/zlib/gzguts.h \
+    $$PWD/zlib/inffast.h \
+    $$PWD/zlib/inffixed.h \
+    $$PWD/zlib/inflate.h \
+    $$PWD/zlib/inftrees.h \
+    $$PWD/zlib/trees.h \
+    $$PWD/zlib/zconf.h \
+    $$PWD/zlib/zconf.h.cmakein \
+    $$PWD/zlib/zconf.h.in \
+    $$PWD/zlib/zlib.h \
+    $$PWD/zlib/zutil.h
     
 SOURCES += \
+    $$PWD/7zip/7zArcIn.c \
+    $$PWD/7zip/7zBuf.c \
+    $$PWD/7zip/7zCrc.c \
+    $$PWD/7zip/7zCrcOpt.c \
+    $$PWD/7zip/7zDec.c \
+    $$PWD/7zip/7zFile.c \
+    $$PWD/7zip/7zStream.c \
+    $$PWD/7zip/Bcj2.c \
+    $$PWD/7zip/Bra.c \
+    $$PWD/7zip/Bra86.c \
+    $$PWD/7zip/BraIA64.c \
+    $$PWD/7zip/CpuArch.c \
+    $$PWD/7zip/Delta.c \
+    $$PWD/7zip/LzFind.c \
+    $$PWD/7zip/Lzma2Dec.c \
+    $$PWD/7zip/LzmaDec.c \
+    $$PWD/7zip/LzmaEnc.c \
     $$PWD/CommandTokenizer.cpp \
     $$PWD/DiskCachedNAM.cpp \
     $$PWD/FakeQKeyEvent.cpp \
@@ -146,6 +201,12 @@ SOURCES += \
     $$PWD/IniFile.cpp \
     $$PWD/KeySequenceTools.cpp \
     $$PWD/PathTools.cpp \
+    $$PWD/libretro-common/formats/libchdr/libchdr_bitstream.c \
+    $$PWD/libretro-common/formats/libchdr/libchdr_cdrom.c \
+    $$PWD/libretro-common/formats/libchdr/libchdr_chd.c \
+    $$PWD/libretro-common/formats/libchdr/libchdr_huffman.c \
+    $$PWD/libretro-common/formats/libchdr/libchdr_lzma.c \
+    $$PWD/libretro-common/formats/libchdr/libchdr_zlib.c \
     $$PWD/rLog.cpp \
     $$PWD/SqliteDb.cpp \
     $$PWD/StdStringHelpers.cpp \
@@ -199,6 +260,21 @@ SOURCES += \
     $$PWD/rcheevos/src/rhash/aes.c \
     $$PWD/rcheevos/src/rhash/cdreader.c \
     $$PWD/rcheevos/src/rhash/hash.c \    
+    $$PWD/zlib/adler32.c \
+    $$PWD/zlib/compress.c \
+    $$PWD/zlib/crc32.c \
+    $$PWD/zlib/deflate.c \
+    $$PWD/zlib/gzclose.c \
+    $$PWD/zlib/gzlib.c \
+    $$PWD/zlib/gzread.c \
+    $$PWD/zlib/gzwrite.c \
+    $$PWD/zlib/infback.c \
+    $$PWD/zlib/inffast.c \
+    $$PWD/zlib/inflate.c \
+    $$PWD/zlib/inftrees.c \
+    $$PWD/zlib/trees.c \
+    $$PWD/zlib/uncompr.c \
+    $$PWD/zlib/zutil.c \
     $$PWD/rcheevos/src/rhash/md5.c \
     $$PWD/rcheevos/src/rurl/url.c \
     $$PWD/libretro-common/compat/compat_strl.c \

@@ -12,9 +12,6 @@
 #define __RARCH_CHEEVOS_UTIL_H
 
 #define CHEEVOS_FREE(p) do { void* q = (void*)p; if (q) free(q); } while (0)
-#define HAVE_CHD
-
-#include "utils/libretro-common/include/retro_common_api.h"
 
 #endif /* __RARCH_CHEEVOS_UTIL_H */
 
