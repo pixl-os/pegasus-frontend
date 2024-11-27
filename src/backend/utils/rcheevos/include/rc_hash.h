@@ -56,7 +56,10 @@ RC_BEGIN_C_DECLS
   RC_EXPORT void RC_CCONV rc_hash_init_error_message_callback(rc_hash_message_callback callback);
 
   /* specifies a function to call for verbose logging */
-  RC_EXPORT void rc_hash_init_verbose_message_callback(rc_hash_message_callback callback);
+  RC_EXPORT void RC_CCONV rc_hash_init_verbose_message_callback(rc_hash_message_callback callback);
+
+  static rc_hash_message_callback error_message_callback = NULL;
+  static rc_hash_message_callback verbose_message_callback = NULL;
 
   /* ===================================================== */
 
