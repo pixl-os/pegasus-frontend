@@ -106,27 +106,29 @@ FocusScope {
 
     // define plain JS object list
     property var model: [
-        { name: qsTr("Linux Kernel :"), cmd: api.internal.system.run("echo $(uname -s) $(uname -r)")},
-        { name: qsTr("Architecture :"), cmd: api.internal.system.run("uname -m")},
-        { name: qsTr("CPU :"), cmd: api.internal.system.run("grep 'model name' /proc/cpuinfo | cut -d ':' -f 2 | cut -c 2- | uniq")},
-        { name: qsTr("CPU Thread Number :"),cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l | grep '\\S'")},
-        { name: qsTr("CPU Maximum Frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz")},
-        { name: qsTr("RAM (free/total):"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB")},
-        { name: qsTr("GPU(s) :"), cmd: "\n" + api.internal.system.run("lspci | grep -i 'vga\\|3d\\|2d' | cut -d ':' -f 3 | grep '\\S'")}, //could be one several lines
-        { name: qsTr("Video RAM :"), cmd: api.internal.system.run("grep -i 'video memory' /tmp/glxinfo.tmp | cut -d ':' -f 2")},
-        { name: qsTr("OpenGL ES :"), cmd: api.internal.system.run("grep 'OpenGL ES profile version string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Core :"), cmd: api.internal.system.run("grep 'OpenGL core profile version string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Vendor/Driver :"), cmd: api.internal.system.run("grep 'OpenGL vendor string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-")},
-        { name: qsTr("OpenGL Renderer :"), cmd: api.internal.system.run("grep 'OpenGL renderer' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2- | grep '\\S'")},
-        { name: qsTr("Vulkan Renderer version :"), cmd: api.internal.system.run("grep 'Vulkan Instance Version:' /tmp/vulkaninfo.tmp | cut -d ':' -f2")},
+        { name: qsTr("Linux Kernel :"), cmd: api.internal.system.run("echo $(uname -s) $(uname -r)") || "N/A" },
+        { name: qsTr("Architecture :"), cmd: api.internal.system.run("uname -m") || "N/A" },
+        { name: qsTr("CPU :"), cmd: api.internal.system.run("grep 'model name' /proc/cpuinfo | cut -d ':' -f 2 | cut -c 2- | uniq") || "N/A" },
+        { name: qsTr("CPU Thread Number :"), cmd: api.internal.system.run("grep processor /proc/cpuinfo | wc -l | grep '\\S'") || "N/A" },
+        { name: qsTr("CPU Maximum Frequency :"), cmd: api.internal.system.run("cpu_freq_max=$(cat /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | uniq); echo $(($cpu_freq_max/1000000)).$((($cpu_freq_max/100000) % 10)) GHz") || "N/A" },
+        { name: qsTr("RAM (free/total):"), cmd: api.internal.system.run("mem_total=$(free --mega -t | awk 'NR>3{total+=$2}END{print total}'); mem_free=$(free --mega -t | awk 'NR>3{free+=$4}END{print free}'); echo $mem_free/$mem_total MB") || "N/A" },
+        { name: qsTr("GPU(s) :"), cmd: "\n" + api.internal.system.run("lspci | grep -i 'vga\\|3d\\|2d' | cut -d ':' -f 3 | grep '\\S'") || "N/A" },
+        { name: qsTr("Video RAM :"), cmd: api.internal.system.run("grep -i 'video memory' /tmp/glxinfo.tmp | cut -d ':' -f 2") || "N/A" },
+        { name: qsTr("OpenGL ES :"), cmd: api.internal.system.run("grep 'OpenGL ES profile version string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-") || "N/A" },
+        { name: qsTr("OpenGL Core :"), cmd: api.internal.system.run("grep 'OpenGL core profile version string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-") || "N/A" },
+        { name: qsTr("OpenGL Vendor/Driver :"), cmd: api.internal.system.run("grep 'OpenGL vendor string' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2-") || "N/A" },
+        { name: qsTr("OpenGL Renderer :"), cmd: api.internal.system.run("grep 'OpenGL renderer' /tmp/glxinfo.tmp | cut -d ':' -f 2 | cut -c 2- | grep '\\S'") || "N/A" },
+        { name: qsTr("Vulkan Renderer version :"), cmd: api.internal.system.run("grep 'Vulkan Instance Version:' /tmp/vulkaninfo.tmp | cut -d ':' -f 2") || "N/A" },
     ]
 
     property var model2: [
         //{ name: qsTr("System Disk Usage :"), cmd: api.internal.system.run("df -mT | awk \'NR>1 && ($7 == \'/\' || $7 == \'/dev\' || $7 == \'/boot\' || $7 == \'/tmp\' || $7 == \'/var\' || $7 == \'/overlay/lower\')\' | awk \'NF-=2\' | uniq | awk \'{total+=$3;used+=$4;free+=$5}END{if(total>1048576){total_out=total\/1048576;used_out=used\/1048576;unit_out=\'TB\';} else {total_out=total\/1024;used_out=used\/1024;unit_out=\'GB\'};percentage=used*100\/total;printf(\'%.2f\/%.2f %s (%.1f %)\n\',used_out,total_out,unit_out,percentage)}\'") },
-        { name: qsTr("Wifi Local IP :"), cmd: api.internal.system.run("ifconfig 2> /dev/null | grep -A1 '^w'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2") },
-        { name: qsTr("Ethernet Local IP :"), cmd: api.internal.system.run("ifconfig 2> /dev/null | grep -A1 '^e'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2") },
-        { name: qsTr("External IP :"), cmd: api.internal.system.run("curl -4 'http://icanhazip.com/' 2> /dev/null") },
-        { name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("sensors -A '*-isa-*' | cut -d '(' -f 1 | sed -e 's/C  /C/g' ")}, // sed -e 's/C  /C/g' " remove empty space for force right alignement
+        { name: qsTr("Wifi Local IP :"), cmd: api.internal.system.run("ifconfig 2> /dev/null | grep -A1 '^w'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2") || "N/A" },
+        { name: qsTr("Ethernet Local IP :"), cmd: api.internal.system.run("ifconfig 2> /dev/null | grep -A1 '^e'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2") || "N/A" },
+        { name: qsTr("External IP :"), cmd: api.internal.system.run("curl -4 'http://icanhazip.com/' 2> /dev/null") || "N/A" },
+        { name: qsTr("CPU Temperature :"), cmd: api.internal.system.run("sensors -A '*-isa-*' | cut -d '(' -f 1 | sed -e 's/C  /C/g'") || "N/A" },
+        { name: qsTr("Number of system(s) :"), cmd: api.collections.count || "N/A" },
+        { name: qsTr("Number of game(s) :"), cmd: api.allGames.count || "N/A" },
         //{ name: qsTr("GPU Temperature :"), cmd: api.internal.system.run("gpu_temp=$(vcgencmd measure_temp | cut -d '=' -f 2 | cut -d \' -f 1); echo '$gpu_temp'$'\xc2\xb0'C")},
         //New Method using generique way for buildroot and multi-indexes
         //{ name: qsTr("All System Temperature(s) :"), cmd: "\n"
@@ -135,8 +137,6 @@ FocusScope {
         //other methods but not working on all PCs
         //{ name: qsTr("                           "), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
         //{ name: qsTr("GPU Temperature(s) :"), cmd: api.internal.system.run("paste <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/name) <(cat /sys/class/hwmon/hwmon*/device/graphics/fb*/device/hwmon/hwmon*/temp*_input) | sed 's/\\(.\\)..$/.\\1°C/'")},
-        { name: qsTr("Number of system(s) :"), cmd: api.collections.count },
-        { name: qsTr("Number of game(s) :"), cmd: api.allGames.count }
     ]
 
     PegasusUtils.HorizontalSwipeArea {
