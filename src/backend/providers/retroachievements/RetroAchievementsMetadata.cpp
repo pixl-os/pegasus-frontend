@@ -664,37 +664,48 @@ static void rc_hash_handle_file_close(void* file_handle)
 static void* rc_hash_handle_chd_open_track(
       const char* path, uint32_t track)
 {
+   //Log::debug("Cheevos", LOGMSG("rc_hash_handle_chd_open_track"));
    cdfs_track_t* cdfs_track;
 
    switch (track)
    {
-      case RC_HASH_CDTRACK_FIRST_DATA:
-         cdfs_track = cdfs_open_data_track(path);
-         break;
+   case RC_HASH_CDTRACK_FIRST_DATA:{
+       //Log::debug("Cheevos", LOGMSG("cdfs_open_data_track(path)"));
+       cdfs_track = cdfs_open_data_track(path);
+       break;
+   }
 
-      case RC_HASH_CDTRACK_LAST:
-         cdfs_track = cdfs_open_track(path, CHDSTREAM_TRACK_LAST);
+   case RC_HASH_CDTRACK_LAST:{
+          //Log::debug("Cheevos", LOGMSG("cdfs_open_track(path, CHDSTREAM_TRACK_LAST)"));
+          cdfs_track = cdfs_open_track(path, CHDSTREAM_TRACK_LAST);
          break;
+   }
 
-      case RC_HASH_CDTRACK_LARGEST:
-         cdfs_track = cdfs_open_track(path, CHDSTREAM_TRACK_PRIMARY);
+   case RC_HASH_CDTRACK_LARGEST:{
+          //Log::debug("Cheevos", LOGMSG("cdfs_open_track(path, CHDSTREAM_TRACK_PRIMARY)"));
+          cdfs_track = cdfs_open_track(path, CHDSTREAM_TRACK_PRIMARY);
          break;
+   }
 
-      default:
-         cdfs_track = cdfs_open_track(path, track);
-         break;
+      default:{
+          //Log::debug("Cheevos", LOGMSG("cdfs_open_track(path, track)"));
+          cdfs_track = cdfs_open_track(path, track);
+          break;}
    }
 
    if (cdfs_track)
    {
+      //Log::debug("Cheevos", LOGMSG("rc_hash_handle_chd_open_track: cdfs_track not empty"));
       cdfs_file_t* file = (cdfs_file_t*)malloc(sizeof(cdfs_file_t));
-      if (cdfs_open_file(file, cdfs_track, NULL))
-         return file; /* ASSERT: file owns cdfs_track now */
+      if (cdfs_open_file(file, cdfs_track, NULL)){
+        //Log::debug("Cheevos", LOGMSG("rc_hash_handle_chd_open_track: return file"));
+        return file; /* ASSERT: file owns cdfs_track now */
+      }
 
       CHEEVOS_FREE(file);
       cdfs_close_track(cdfs_track); /* ASSERT: this free()s cdfs_track */
    }
-
+   //Log::debug("Cheevos", LOGMSG("rc_hash_handle_chd_open_track: return NULL"));
    return NULL;
 }
 
@@ -735,12 +746,12 @@ static void rc_hash_handle_chd_close_track(void* track_handle)
 
 static void rc_hash_handle_error_log_message(const char* message)
 {
-   Log::error("Cheevos", LOGMSG("%1").arg(QString::fromStdString(message))); 
+   Log::error("Cheevos", LOGMSG("%1").arg(QString::fromLatin1(message)));
 }
 
 static void rc_hash_handle_debug_log_message(const char* message)
 {
-   Log::debug("Cheevos", LOGMSG("%1").arg(QString::fromStdString(message))); 
+   Log::debug("Cheevos", LOGMSG("%1").arg(QString::fromLatin1(message)));
 }
 
 static void rc_hash_reset_cdreader_hooks(void);
@@ -753,15 +764,15 @@ static void* rc_hash_handle_cd_open_track(
    if (string_is_equal_noncase(path_get_extension(path), "chd"))
    {
 #ifdef HAVE_CHD
+      //Log::debug("Cheevos", LOGMSG("special handlers for CHD file used"));
       /* special handlers for CHD file */
       memset(&cdreader, 0, sizeof(cdreader));
-      cdreader.open_track = rc_hash_handle_cd_open_track;
+      cdreader.open_track = rc_hash_handle_chd_open_track;
       cdreader.read_sector = rc_hash_handle_chd_read_sector;
       cdreader.close_track = rc_hash_handle_chd_close_track;
       cdreader.first_track_sector = rc_hash_handle_chd_first_track_sector;
       rc_hash_init_custom_cdreader(&cdreader);
-
-      return rc_hash_handle_chd_open_track(path, track);
+      return cdreader.open_track(path, track);
 #else
       Log::debug("Cheevos", LOGMSG("Cannot generate hash from CHD without HAVE_CHD compile flag"));
       return NULL;
@@ -845,7 +856,7 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
     rc_hash_init_error_message_callback(rc_hash_handle_error_log_message);
 
     //Take care: verbose mode could be bugguy as for arcade .zip file hash calculation due to snprintf no-secured function used in logs :-(
-    //rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
+    rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
 
     rc_hash_reset_cdreader_hooks();
     const char* path = targetfile.toUtf8().data(); //for testing //toLocal8Bit().data(); //.toUtf8().data();

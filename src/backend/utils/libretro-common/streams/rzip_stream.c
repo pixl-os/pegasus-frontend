@@ -391,8 +391,8 @@ rzipstream_t* rzipstream_open(const char *path, unsigned mode)
       return NULL;
 
    /* If opening in read mode, ensure file exists */
-   if ((mode == RETRO_VFS_FILE_ACCESS_READ) &&
-       !path_is_valid(path))
+   if (mode == RETRO_VFS_FILE_ACCESS_READ) /* &&
+       !path_is_valid(path))*/
       return NULL;
 
    /* Allocate stream object */

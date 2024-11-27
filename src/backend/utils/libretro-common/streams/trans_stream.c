@@ -71,7 +71,8 @@ bool trans_stream_trans_full(
 const struct trans_stream_backend* trans_stream_get_zlib_deflate_backend(void)
 {
 #if HAVE_ZLIB
-   return &zlib_deflate_backend;
+   //return &zlib_deflate_backend;
+   return NULL;
 #else
    return NULL;
 #endif
@@ -80,7 +81,8 @@ const struct trans_stream_backend* trans_stream_get_zlib_deflate_backend(void)
 const struct trans_stream_backend* trans_stream_get_zlib_inflate_backend(void)
 {
 #if HAVE_ZLIB
-   return &zlib_inflate_backend;
+   //return &zlib_inflate_backend;
+   return NULL;
 #else
    return NULL;
 #endif
@@ -88,5 +90,6 @@ const struct trans_stream_backend* trans_stream_get_zlib_inflate_backend(void)
 
 const struct trans_stream_backend* trans_stream_get_pipe_backend(void)
 {
-   return &pipe_backend;
+   //return &pipe_backend;
+    return NULL;
 }
