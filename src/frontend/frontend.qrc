@@ -306,16 +306,14 @@
         <file>assets/gamepad/sn30pro/start_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/x_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/y_sn30pro.png</file>
-        <file>assets/gamepad/wiimote/1_wiimote.png</file>
-        <file>assets/gamepad/wiimote/2_wiimote.png</file>
         <file>assets/gamepad/wiimote/a_wiimote.png</file>
-        <file>assets/gamepad/wiimote/back_wiimote.png</file>
         <file>assets/gamepad/wiimote/base_wiimote.png</file>
         <file>assets/gamepad/wiimote/b_wiimote.png</file>
-        <file>assets/gamepad/wiimote/home_wiimote.png</file>
-        <file>assets/gamepad/wiimote/power_wiimote.png</file>
+        <file>assets/gamepad/wiimote/guide_wiimote.png</file>
         <file>assets/gamepad/wiimote/select_wiimote.png</file>
         <file>assets/gamepad/wiimote/start_wiimote.png</file>
+        <file>assets/gamepad/wiimote/x_wiimote.png</file>
+        <file>assets/gamepad/wiimote/y_wiimote.png</file>
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
         <file>menu/settings/AdvancedEmulatorMain.qml</file>

@@ -468,7 +468,7 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
+                            ratio: 0.7; padBaseSourceSizeWidth : 759 ; padBaseSourceSizeHeight : 604;
                             
                             //parameters for select
                             padSelectWidth : 69;
@@ -562,7 +562,7 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
+                            ratio: 1.0; padBaseSourceSizeWidth : 653 ; padBaseSourceSizeHeight : 350;
                             
                             //parameters for select
                             padSelectWidth : 69;
@@ -656,7 +656,7 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.8; padBaseSourceSizeWidth : 778 ; padBaseSourceSizeHeight : 347;
+                            ratio: 1.0; padBaseSourceSizeWidth : 778 ; padBaseSourceSizeHeight : 347;
                             
                             //parameters for select
                             padSelectWidth : 62;
@@ -695,6 +695,7 @@ FocusScope {
                             padL1Height : 12;
                             padL1TopY: 7;
                             padL1LeftX: 213;
+
                             //parameter for R1
                             padR1Width : 52;
                             padR1Height : 12;
@@ -868,10 +869,10 @@ FocusScope {
                             padYLeftX: 730;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 665;
-                            dpadAreaBottomY: 887;
-                            dpadAreaLeftX: 421;
-                            dpadAreaRightX: 641;
+                            dpadAreaTopY: 350;
+                            dpadAreaBottomY: 525;
+                            dpadAreaLeftX: 245;
+                            dpadAreaRightX: 420;
 
                             //parameter for L1
                             padL1Width : 171;
@@ -938,7 +939,7 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.36; padBaseSourceSizeWidth : 1447 ; padBaseSourceSizeHeight : 1264;
+                            ratio: 0.3; padBaseSourceSizeWidth : 1447 ; padBaseSourceSizeHeight : 1264;
 
                             //parameters for select
                             padSelectWidth : 63;
@@ -1187,7 +1188,7 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.39; padBaseSourceSizeWidth : 1496 ; padBaseSourceSizeHeight : 1201;
+                            ratio: 0.3; padBaseSourceSizeWidth : 1496 ; padBaseSourceSizeHeight : 1201;
 
                             //parameters for select
                             padSelectWidth : 44;
@@ -1318,7 +1319,7 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.6; padBaseSourceSizeWidth : 858 ; padBaseSourceSizeHeight : 752;
+                            ratio: 0.6; padBaseSourceSizeWidth : 858 ; padBaseSourceSizeHeight : 751;
 
                             //parameters for select (Screenshot button on Nintendo Switch one)
                             padSelectWidth : 34;
@@ -1429,7 +1430,7 @@ FocusScope {
 
             } //As Nintendo 64 pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
 
-            ListElement {   name: "wii"; qml: "gamepad/preview/ContainerCustom.qml";
+            ListElement {   name: "wiimote"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -1437,101 +1438,107 @@ FocusScope {
 
                             hasA: true;
                             hasB: true;
-                            hasX: false;
-                            hasY: false;
+                            hasX: true;
+                            hasY: true;
                             hasNintendoPad : false;
 
-                            hasL1 : true; hasR1 : true;
-                            hasL2 : true; hasR2 : true;
+                            hasL1 : false; hasR1 : false;
+                            hasL2 : false; hasR2 : false;
 
-                            hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : true;
+                            hasLeftStick : false; hasRightStick : false; hasButtonsForRightStick : false;
                             hasL3 : false; hasR3 : false;
 
-                            hasDpad : true;
+                            hasDpad : false;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.6; padBaseSourceSizeWidth : 858 ; padBaseSourceSizeHeight : 752;
+                            ratio: 0.9; padBaseSourceSizeWidth : 290 ; padBaseSourceSizeHeight : 502;
+
+                            //parameters for select
+                            padSelectWidth : 21;
+                            padSelectHeight : 21;
+                            padSelectTopY: 229;
+                            padSelectLeftX: 184;
 
                             //parameters for start
-                            padStartWidth : 63;
-                            padStartHeight : 56;
-                            padStartTopY: 333;
-                            padStartLeftX: 399;
+                            padStartWidth : 21;
+                            padStartHeight : 21;
+                            padStartTopY: 229;
+                            padStartLeftX: 252;
 
-                            //parameters for guide/hotkey (Home of Nintendo Wii controller)
-                            padGuideWidth : 36;
-                            padGuideHeight : 17;
-                            padGuideTopY: 61;
-                            padGuideLeftX: 527;
+                            //parameters for guide/hotkey (Home of Nintendo Wiimote controller)
+                            padGuideWidth : 19;
+                            padGuideHeight : 20;
+                            padGuideTopY: 230;
+                            padGuideLeftX: 218;
 
-                            //parameters for A/B (X/Y not used for the moment)
-                            padAWidth : 66;
-                            padAHeight : 61;
-                            padATopY: 375;
-                            padALeftX: 620;
+                            //parameters for A/B/X(1)/Y(2)
+                            padAWidth : 39;
+                            padAHeight : 40;
+                            padATopY: 136;
+                            padALeftX: 208;
 
-                            padBWidth : 69;
-                            padBHeight : 64;
-                            padBTopY: 325;
-                            padBLeftX: 559;
+                            padBWidth : 49;
+                            padBHeight : 67;
+                            padBTopY: 77;
+                            padBLeftX: 37;
 
-                            padXWidth : 0;
-                            padXHeight : 0;
-                            padXTopY: 0;
-                            padXLeftX: 0;
+                            padXWidth : 27;
+                            padXHeight : 26;
+                            padXTopY: 356;
+                            padXLeftX: 214;
 
-                            padYWidth : 0;
-                            padYHeight : 0;
-                            padYTopY: 0;
-                            padYLeftX: 0;
+                            padYWidth : 28;
+                            padYHeight : 27;
+                            padYTopY: 400;
+                            padYLeftX: 214;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 267;
+                            /*dpadAreaTopY: 267;
                             dpadAreaBottomY: 391;
                             dpadAreaLeftX: 97;
-                            dpadAreaRightX: 227;
+                            dpadAreaRightX: 227;*/
 
                             //parameter for L1 (L)
-                            padL1Width : 187;
+                            /*padL1Width : 187;
                             padL1Height : 89;
                             padL1TopY: 91;
-                            padL1LeftX: 73;
+                            padL1LeftX: 73;*/
 
                             //parameter for R1 (R)
-                            padR1Width : 186;
+                            /*padR1Width : 186;
                             padR1Height : 89;
                             padR1TopY: 91;
-                            padR1LeftX: 603;
+                            padR1LeftX: 603;*/
 
                             //parameter for L2 (Z)
-                            padL2Width : 73;
+                            /*padL2Width : 73;
                             padL2Height : 86;
                             padL2TopY: 605;
-                            padL2LeftX: 178;
+                            padL2LeftX: 178;*/
 
-                            //parameter for R2 (ZR on nintendo wii controller)
-                            padR2Width : 49;
+                            //parameter for R2 (ZR on nintendo wiimote controller)
+                            /*padR2Width : 49;
                             padR2Height : 21;
                             padR2TopY: 82;
-                            padR2LeftX: 522;
+                            padR2LeftX: 522;*/
 
                             //parameter for Left stick
-                            lStickWidth : 81;
+                            /*lStickWidth : 81;
                             lStickHeight : 71;
                             lStickTopY: 477;
-                            lStickLeftX: 390;
+                            lStickLeftX: 390;*/
 
                             //parameter for Right stick
                             //need to set the area as when we have a stick to display green lines
-                            rStickWidth : 157;
+                            /*rStickWidth : 157;
                             rStickHeight : 146;
                             rStickTopY: 230;
-                            rStickLeftX: 643;
+                            rStickLeftX: 643;*/
 
                             //parameters to manage C buttons
-                            rStickUpWidth : 52;
+                            /*rStickUpWidth : 52;
                             rStickUpHeight : 56;
                             rStickUpTopY: 232;
                             rStickUpLeftX: 698;
@@ -1549,13 +1556,13 @@ FocusScope {
                             rStickRightWidth : 52;
                             rStickRightHeight : 55;
                             rStickRightTopY: 273;
-                            rStickRightLeftX: 748;
+                            rStickRightLeftX: 748;*/
 
                             //to adapt contrast/brightness
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Nintendo WII pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
+            } //As Nintendo WIImote pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
 
             ListElement {   name: "switchpro"; qml: "gamepad/preview/ContainerCustom.qml";
 
