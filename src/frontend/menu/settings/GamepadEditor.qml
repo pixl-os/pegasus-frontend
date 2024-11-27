@@ -1710,8 +1710,8 @@ FocusScope {
                             //parameters for select
                             padSelectWidth : 41;
                             padSelectHeight : 19;
-                            padSelectTopY: 196;
-                            padSelectLeftX: 296;
+                            padSelectTopY: 195;
+                            padSelectLeftX: 297;
 
                             //parameters for start
                             padStartWidth : 41;
@@ -1722,8 +1722,8 @@ FocusScope {
                             //parameters for guide/hotkey
                             padGuideWidth : 55;
                             padGuideHeight : 54;
-                            padGuideTopY: 335;
-                            padGuideLeftX: 383;
+                            padGuideTopY: 336;
+                            padGuideLeftX: 384;
                             
                             //parameters for screenshot -> share //RFU
                             /*padShareWidth : 32;
@@ -1731,56 +1731,55 @@ FocusScope {
                             padShareTopY: 242;
                             padShareLeftX: 455;*/
 
-                            //parameters for B/A/Y/X
-                            padBWidth : 51;
-                            padBHeight : 50;
-                            padBTopY: 234;
-                            padBLeftX: 673;
-
+                            //parameters for A/B/X/Y
                             padAWidth : 51;
-                            padAHeight : 45;
-                            padATopY: 283;
+                            padAHeight : 50;
+                            padATopY: 282;
                             padALeftX: 620;
 
-                            padYWidth : 51;
-                            padYHeight : 48;
-                            padYTopY: 186;
-                            padYLeftX: 618;
+                            padBWidth : 51;
+                            padBHeight : 45;
+                            padBTopY: 237;
+                            padBLeftX: 673;
 
-                            padXWidth : 53;
-                            padXHeight : 45;
-                            padXTopY: 234;
-                            padXLeftX: 566;
+                            padXWidth : 51;
+                            padXHeight : 48;
+                            padXTopY: 233;
+                            padXLeftX: 565;
+
+                            padYWidth : 53;
+                            padYHeight : 45;
+                            padYTopY: 188;
+                            padYLeftX: 617;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 202;
-                            dpadAreaBottomY: 322;
-                            dpadAreaLeftX: 116;
-                            dpadAreaRightX: 250;
+                            dpadAreaTopY: 199;
+                            dpadAreaBottomY: 319;
+                            dpadAreaLeftX: 115;
+                            dpadAreaRightX: 249;
 
-                            //parameter for L1
                             padL1Width : 119;
                             padL1Height : 39;
-                            padL1TopY: 144;
-                            padL1LeftX: 118;
+                            padL1TopY: 143;
+                            padL1LeftX: 121;
 
                             //parameter for R1
                             padR1Width : 116;
                             padR1Height : 39;
-                            padR1TopY: 144;
-                            padR1LeftX: 583;
+                            padR1TopY: 143;
+                            padR1LeftX: 587;
 
                             //parameter for L2
                             padL2Width : 132;
-                            padL2Height : 130;
-                            padL2TopY: 2;
-                            padL2LeftX: 106;
+                            padL2Height : 128;
+                            padL2TopY: 0;
+                            padL2LeftX: 107;
 
                             //parameter for R2
                             padR2Width : 131;
-                            padR2Height : 118;
-                            padR2TopY: 2;
-                            padR2LeftX: 577;
+                            padR2Height : 122;
+                            padR2TopY: 0;
+                            padR2LeftX: 575;
 
                             //parameter for Left stick
                             lStickWidth : 91;
