@@ -262,31 +262,23 @@
         <file>assets/gamepad/sn30proplus/start_sn30proplus.png</file>
         <file>assets/gamepad/sn30proplus/x_sn30proplus.png</file>
         <file>assets/gamepad/sn30proplus/y_sn30proplus.png</file>
-        <file>assets/gamepad/arcadestick/1_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/2_arcadestick.png</file>
         <file>assets/gamepad/arcadestick/a_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/b_arcadestick.png</file>
         <file>assets/gamepad/arcadestick/base_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/bt2.png</file>
-        <file>assets/gamepad/arcadestick/heart_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/lb_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/lt_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/p1_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/p2_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/rb_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/rt_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/select_stickarcade.png</file>
-        <file>assets/gamepad/arcadestick/star_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/start_stickarcade.png</file>
-        <file>assets/gamepad/arcadestick/stick_arcadestick.png</file>
-        <file>assets/gamepad/arcadestick/wifi_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/b_arcadestick.png</file>        
+        <file>assets/gamepad/arcadestick/dpad_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/guide_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/l1_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/l2_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/r1_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/r2_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/select_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/start_arcadestick.png</file>        
         <file>assets/gamepad/arcadestick/x_arcadestick.png</file>
         <file>assets/gamepad/arcadestick/y_arcadestick.png</file>
         <file>assets/gamepad/stadia/a_stadia.png</file>
         <file>assets/gamepad/stadia/base_stadia.png</file>
         <file>assets/gamepad/stadia/b_stadia.png</file>
         <file>assets/gamepad/stadia/dpad_stadia.png</file>
-        <file>assets/gamepad/stadia/guidebis_stadia.png</file>
         <file>assets/gamepad/stadia/guide_stadia.png</file>
         <file>assets/gamepad/stadia/l1_stadia.png</file>
         <file>assets/gamepad/stadia/l2_stadia.png</file>
@@ -295,7 +287,6 @@
         <file>assets/gamepad/stadia/r2_stadia.png</file>
         <file>assets/gamepad/stadia/rstick_stadia.png</file>
         <file>assets/gamepad/stadia/select_stadia.png</file>
-        <file>assets/gamepad/stadia/share_stadia.png</file>
         <file>assets/gamepad/stadia/start_stadia.png</file>
         <file>assets/gamepad/stadia/x_stadia.png</file>
         <file>assets/gamepad/stadia/y_stadia.png</file>

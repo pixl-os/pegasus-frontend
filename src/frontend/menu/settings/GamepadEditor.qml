@@ -709,7 +709,7 @@ FocusScope {
 
             ListElement {   name: "arcadestick"; qml: "gamepad/preview/ContainerCustom.qml";
 
-                            hasDedicatedGuide: false;
+                            hasDedicatedGuide: true;
                             hasSelect: true;
                             hasStart: true;
 
@@ -730,74 +730,76 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.8; padBaseSourceSizeWidth : 906 ; padBaseSourceSizeHeight : 398;
+                            ratio: 0.9; padBaseSourceSizeWidth : 760 ; padBaseSourceSizeHeight : 507;
                             
                             //parameters for select
-                            padSelectWidth : 69;
-                            padSelectHeight : 59;
-                            padSelectTopY: 205;
-                            padSelectLeftX: 334;
+                            padSelectWidth : 41;
+                            padSelectHeight : 21;
+                            padSelectTopY: 95;
+                            padSelectLeftX: 184;
 
                             //parameters for start
-                            padStartWidth : 69;
-                            padStartHeight : 59;
-                            padStartTopY: 205;
-                            padStartLeftX: 432;
+                            padStartWidth : 41;
+                            padStartHeight : 21;
+                            padStartTopY: 95;
+                            padStartLeftX: 229;
+
+                            //parameters for guide/hotkey
+                            padGuideWidth : 31;
+                            padGuideHeight : 30;
+                            padGuideTopY: 41;
+                            padGuideLeftX: 188;
 
                             //parameters for A/B/X/Y
-                            //As B -> A
-                            padAWidth : 71;
-                            padAHeight : 70;
-                            padATopY: 170;
-                            padALeftX: 763;
+                            padAWidth : 60;
+                            padAHeight : 62;
+                            padATopY: 263;
+                            padALeftX: 418;
 
-                            //As A -> B
-                            padBWidth : 71;
-                            padBHeight : 71;
-                            padBTopY: 237;
-                            padBLeftX: 677;
+                            padBWidth : 62;
+                            padBHeight : 63;
+                            padBTopY: 295;
+                            padBLeftX: 335;
 
-                            //As Y -> X
-                            padXWidth : 71;
-                            padXHeight : 71;
-                            padXTopY: 103;
-                            padXLeftX: 677;
+                            padXWidth : 62;
+                            padXHeight : 62;
+                            padXTopY: 165;
+                            padXLeftX: 434;
 
-                            //As X -> Y
-                            padYWidth : 73;
-                            padYHeight : 72;
-                            padYTopY: 170;
-                            padYLeftX: 590;
+                            padYWidth : 61;
+                            padYHeight : 60;
+                            padYTopY: 202;
+                            padYLeftX: 353;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 126;
-                            dpadAreaBottomY: 285;
-                            dpadAreaLeftX: 112;
-                            dpadAreaRightX: 270;
+                            dpadAreaTopY: 208;
+                            dpadAreaBottomY: 306;
+                            dpadAreaLeftX: 106;
+                            dpadAreaRightX: 200;
 
                             //parameter for L1
-                            padL1Width : 198;
-                            padL1Height : 37;
-                            padL1TopY: 0;
-                            padL1LeftX: 97;
+                            padL1Width : 65;
+                            padL1Height : 61;
+                            padL1TopY: 167;
+                            padL1LeftX: 613;
 
                             //parameter for R1
-                            padR1Width : 198;
-                            padR1Height : 36;
-                            padR1TopY: 1;
-                            padR1LeftX: 612;
+                            padR1Width : 60;
+                            padR1Height : 62;
+                            padR1TopY: 166;
+                            padR1LeftX: 525;
 
                             //parameter for L2
-                            padL2Width : 48;
-                            padL2Height : 5;
-                            padL2TopY: 4;
-                            padL2LeftX: 350;
+                            padL2Width : 62;
+                            padL2Height : 62;
+                            padL2TopY: 264;
+                            padL2LeftX: 598;
 
                             //parameter for R2
-                            padR2Width : 54;
-                            padR2Height : 6;
-                            padR2TopY: 4;
-                            padR2LeftX: 509;
+                            padR2Width : 63;
+                            padR2Height : 61;
+                            padR2TopY: 265;
+                            padR2LeftX: 508;
 
             } //As 8bitdo Arcade stick pad
 
@@ -866,10 +868,10 @@ FocusScope {
                             padYLeftX: 730;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 357;
-                            dpadAreaBottomY: 516;
-                            dpadAreaLeftX: 253;
-                            dpadAreaRightX: 411;
+                            dpadAreaTopY: 665;
+                            dpadAreaBottomY: 887;
+                            dpadAreaLeftX: 421;
+                            dpadAreaRightX: 641;
 
                             //parameter for L1
                             padL1Width : 171;
