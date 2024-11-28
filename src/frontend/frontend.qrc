@@ -232,8 +232,8 @@
         <file>assets/gamepad/xboxone/x_xboxone.png</file>
         <file>assets/gamepad/xboxone/y_xboxone.png</file>
         <file>assets/gamepad/switchpro/a_switchpro.png</file>
-        <file>assets/gamepad/switchpro/b_switchpro.png</file>
         <file>assets/gamepad/switchpro/base_switchpro.png</file>
+        <file>assets/gamepad/switchpro/b_switchpro.png</file>        
         <file>assets/gamepad/switchpro/dpad_switchpro.png</file>
         <file>assets/gamepad/switchpro/guide_switchpro.png</file>
         <file>assets/gamepad/switchpro/l1_switchpro.png</file>
@@ -250,18 +250,17 @@
         <file>assets/gamepad/sn30proplus/base_sn30proplus.png</file>
         <file>assets/gamepad/sn30proplus/b_sn30proplus.png</file>
         <file>assets/gamepad/sn30proplus/dpad_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/heart_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/guide_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/l1_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/lstick_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/r1_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/rstick_sn30proplus.png</file>
         <file>assets/gamepad/sn30proplus/l2_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/leftstick_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/l_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/r2_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/rightstick_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/r_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/select_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/star_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/start_sn30proplus.png</file>
         <file>assets/gamepad/sn30proplus/x_sn30proplus.png</file>
-        <file>assets/gamepad/sn30proplus/y_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/y_sn30proplus.png</file>        
+        <file>assets/gamepad/sn30proplus/r2_sn30proplus.png</file>        
+        <file>assets/gamepad/sn30proplus/select_sn30proplus.png</file>        
+        <file>assets/gamepad/sn30proplus/start_sn30proplus.png</file>        
         <file>assets/gamepad/arcadestick/a_arcadestick.png</file>
         <file>assets/gamepad/arcadestick/base_arcadestick.png</file>
         <file>assets/gamepad/arcadestick/b_arcadestick.png</file>        
@@ -294,15 +293,14 @@
         <file>assets/gamepad/sn30pro/base_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/b_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/dpad_sn30pro.png</file>
-        <file>assets/gamepad/sn30pro/hk_sn30pro.png</file>
-        <file>assets/gamepad/sn30pro/L2_sn30pro.png</file>
-        <file>assets/gamepad/sn30pro/leftstick_sn30pro.png</file>
-        <file>assets/gamepad/sn30pro/l_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/guide_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/l2_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/lstick_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/l1_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/r2_sn30pro.png</file>
-        <file>assets/gamepad/sn30pro/rightstick_sn30pro.png</file>
-        <file>assets/gamepad/sn30pro/r_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/rstick_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/r1_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/select_sn30pro.png</file>
-        <file>assets/gamepad/sn30pro/star_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/start_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/x_sn30pro.png</file>
         <file>assets/gamepad/sn30pro/y_sn30pro.png</file>
