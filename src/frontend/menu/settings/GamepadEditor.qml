@@ -825,10 +825,10 @@ FocusScope {
                             padYLeftX: 435;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 208;
-                            dpadAreaBottomY: 306;
-                            dpadAreaLeftX: 105;
-                            dpadAreaRightX: 200;
+                            dpadAreaTopY: 216;
+                            dpadAreaBottomY: 305;
+                            dpadAreaLeftX: 109;
+                            dpadAreaRightX: 196;
 
                             //parameter for L1/LB/L
                             padL1Width : 65;
@@ -853,6 +853,12 @@ FocusScope {
                             padR2Height : 61;
                             padR2TopY: 265;
                             padR2LeftX: 507;
+
+                            //parameter for Left stick
+                            /*lStickWidth : 88;
+                            lStickHeight : 90;
+                            lStickTopY: 216;
+                            lStickLeftX: 189;*/
 
                             //to adapt contrast/brightness
                             contrast : 0.1
