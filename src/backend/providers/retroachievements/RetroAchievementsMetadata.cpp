@@ -12,7 +12,6 @@
 #include "model/gaming/GameFile.h"
 #include "providers/JsonCacheUtils.h"
 #include "providers/SearchContext.h"
-#include "utils/CommandTokenizer.h"
 #include "utils/Zip.h"
 
 //for retroachievements management coming from libretro and rcheevos
@@ -44,8 +43,16 @@
 #include <RecalboxConf.h>
 #include <QCryptographicHash>
 
+//for CRC32 calculation
+#include <zlib.h>
+
 namespace {
 //***********************UTILS FUNCTIONS***********************************//
+QString calculateCRC32(const QByteArray& data) {
+    uLong crc = crc32(0, reinterpret_cast<const Bytef*>(data.data()), data.size());
+    return QString::number(crc, 16);
+}
+
 QString PathMakeEscaped(QString param)
 {
   std::string escaped = param.toUtf8().constData();
@@ -984,12 +991,19 @@ int Metadata::set_RaHash_And_GameID(model::Game& game, bool ForceUpdate) const
         QString romfile = QDir::toNativeSeparators(finfo.absoluteFilePath());
         Log::debug(m_log_tag, LOGMSG("The rom file to hash is '%1'").arg(romfile));
         QString md5_hash = "";
-
+        QString crc32_hash_used = "";
         //Try to get md5 hash from json in cache using crc32 hash
         if(game_ptr->hash().length() > 1){
-            QJsonDocument json_from_cache = providers::read_json_from_cache(m_log_tag + " - cache", m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash());
-            md5_hash = apply_ra_hash_json(m_log_tag + " - cache", json_from_cache);
+            crc32_hash_used = game_ptr->hash().toUpper();
         }
+        //but if no hash (CRC32) (let try to calculate a fake one quikcly from "rom absolute file path" if doesn't exists for cache saving)
+        else{
+            //calculate hash (using crc32) if missing
+            crc32_hash_used =  calculateCRC32(romfile.toUtf8()).toUpper();
+        }
+        QJsonDocument json_from_cache = providers::read_json_from_cache(m_log_tag + " - cache", m_json_cache_dir, game_ptr->collections().shortName() + "_" + crc32_hash_used);
+        md5_hash = apply_ra_hash_json(m_log_tag + " - cache", json_from_cache);
+
         //Calculate md5 hash if not found from cache
         if (md5_hash == ""){
             //wait that previous hash has been calculated by other thread
@@ -1000,11 +1014,11 @@ int Metadata::set_RaHash_And_GameID(model::Game& game, bool ForceUpdate) const
             md5_hash = calculate_hash_from_file(romfile, m_log_tag);
             //save hash for this rom in cache for next reboot
             QJsonObject recordObject;
-            recordObject.insert("crc32", QJsonValue::fromVariant(game_ptr->hash()));
+            recordObject.insert("crc32", QJsonValue::fromVariant(crc32_hash_used));
             recordObject.insert("ra_md5", QJsonValue::fromVariant(md5_hash));
             QJsonDocument json(recordObject);
             //saved in cache
-            providers::cache_json(m_log_tag, m_json_cache_dir, game_ptr->collections().shortName() + "_" + game_ptr->hash(), json.toJson(QJsonDocument::Compact));
+            providers::cache_json(m_log_tag, m_json_cache_dir, game_ptr->collections().shortName() + "_" + crc32_hash_used, json.toJson(QJsonDocument::Compact));
             Metadata::HashProcessingInProgress = false;
         }
         //save hash to avoid to recalculate during the same session/lauching of Pegasus (as a cache ;-)
