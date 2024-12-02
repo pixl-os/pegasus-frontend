@@ -1005,25 +1005,25 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.3; padBaseSourceSizeWidth : 1447 ; padBaseSourceSizeHeight : 1264;
+                            ratio: 0.5; padBaseSourceSizeWidth : 961 ; padBaseSourceSizeHeight : 832;
 
                             //parameters for select
-                            padSelectWidth : 63;
-                            padSelectHeight : 64;
-                            padSelectTopY: 504;
-                            padSelectLeftX: 584;
+                            padSelectWidth : 43;
+                            padSelectHeight : 41;
+                            padSelectTopY: 327;
+                            padSelectLeftX: 387;
 
                             //parameters for start
-                            padStartWidth : 65;
-                            padStartHeight : 66;
-                            padStartTopY: 504;
-                            padStartLeftX: 795;
+                            padStartWidth : 42;
+                            padStartHeight : 42;
+                            padStartTopY: 327;
+                            padStartLeftX: 530;
 
                             //parameters for home/guide/hotkey
-                            padGuideWidth : 113;
-                            padGuideHeight : 113;
-                            padGuideTopY: 333;
-                            padGuideLeftX: 664;
+                            padGuideWidth : 76;
+                            padGuideHeight : 73;
+                            padGuideTopY: 215;
+                            padGuideLeftX: 442;
 
                             //parameters for share //RFU
                             /*padSelectWidth : 78;
@@ -1033,76 +1033,76 @@ FocusScope {
 
                             //parameters for A/B/X/Y
                             //As cross/A
-                            padAWidth : 97;
-                            padAHeight : 96;
-                            padATopY: 589;
-                            padALeftX: 1046;
+                            padAWidth : 69;
+                            padAHeight : 70;
+                            padATopY: 382;
+                            padALeftX: 695;
 
                             //As cycle/B
-                            padBWidth : 96;
-                            padBHeight : 97;
-                            padBTopY: 495;
-                            padBLeftX: 1144;
+                            padBWidth : 65;
+                            padBHeight : 68;
+                            padBTopY: 321;
+                            padBLeftX: 761;
 
                             //As square/X
-                            padXWidth : 100;
-                            padXHeight : 100;
-                            padXTopY: 489;
-                            padXLeftX: 947;
+                            padXWidth : 66;
+                            padXHeight : 68;
+                            padXTopY: 316;
+                            padXLeftX: 631;
 
                             //As Triangle/Y
-                            padYWidth : 97;
-                            padYHeight : 96;
-                            padYTopY: 394;
-                            padYLeftX: 1046;
+                            padYWidth : 66;
+                            padYHeight : 68;
+                            padYTopY: 253;
+                            padYLeftX: 695;
 
                             //parameter for Dpad
-                            dpadAreaTopY: 665;
-                            dpadAreaBottomY: 887;
-                            dpadAreaLeftX: 421;
-                            dpadAreaRightX: 641;
+                            dpadAreaTopY: 432;
+                            dpadAreaBottomY: 586;
+                            dpadAreaLeftX: 277;
+                            dpadAreaRightX: 429;
 
                             //parameter for L1/LB/L
-                            padL1Width : 289;
-                            padL1Height : 111;
-                            padL1TopY: 260;
-                            padL1LeftX: 215;
+                            padL1Width : 188;
+                            padL1Height : 74;
+                            padL1TopY: 167;
+                            padL1LeftX: 147;
 
                             //parameter for R1/RB/R
-                            padR1Width : 289;
-                            padR1Height : 115;
-                            padR1TopY: 260;
-                            padR1LeftX: 939;
+                            padR1Width : 186;
+                            padR1Height : 75;
+                            padR1TopY: 167;
+                            padR1LeftX: 631;
 
                             //parameter for L2/LT/ZL/Z
-                            padL2Width : 185;
-                            padL2Height : 237;
+                            padL2Width : 120;
+                            padL2Height : 154;
                             padL2TopY: 0;
-                            padL2LeftX: 279;
+                            padL2LeftX: 184;
 
                             //parameter for R2/RT/ZR
-                            padR2Width : 189;
-                            padR2Height : 240;
+                            padR2Width : 123;
+                            padR2Height : 156;
                             padR2TopY: 0;
-                            padR2LeftX: 985;
+                            padR2LeftX: 665;
 
                             //parameter for Left stick
-                            lStickWidth : 166;
-                            lStickHeight : 166;
-                            lStickTopY: 455;
-                            lStickLeftX: 269;
+                            lStickWidth : 107;
+                            lStickHeight : 110;
+                            lStickTopY: 294;
+                            lStickLeftX: 179;
 
                             //parameter for Right stick
-                            rStickWidth : 166;
-                            rStickHeight : 172;
-                            rStickTopY: 671;
-                            rStickLeftX: 832;
+                            rStickWidth : 107;
+                            rStickHeight : 108;
+                            rStickTopY: 441;
+                            rStickLeftX: 555;
 
                             //to adapt contrast/brightness
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Microsoft XBOX ONE SERIE 20 years pad
+            } //As Microsoft XBOX ONE
 
             ListElement {   name: "xboxseries"; qml: "gamepad/preview/ContainerCustom.qml";
 
@@ -1225,6 +1225,128 @@ FocusScope {
                             brightness: 0.2
 
             } //As Microsoft XBOX SERIE pad
+
+            ListElement {   name: "xboxseries20years"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: true;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: true;
+                            hasY: true;
+                            hasNintendoPad : false;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : true; hasRightStick : true;
+                            hasL3 : true; hasR3 : true;
+
+                            hasDpad : true;
+                            hasButtonsForDpad : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.3; padBaseSourceSizeWidth : 1447 ; padBaseSourceSizeHeight : 1264;
+
+                            //parameters for select
+                            padSelectWidth : 63;
+                            padSelectHeight : 64;
+                            padSelectTopY: 504;
+                            padSelectLeftX: 584;
+
+                            //parameters for start
+                            padStartWidth : 65;
+                            padStartHeight : 66;
+                            padStartTopY: 504;
+                            padStartLeftX: 795;
+
+                            //parameters for home/guide/hotkey
+                            padGuideWidth : 113;
+                            padGuideHeight : 113;
+                            padGuideTopY: 333;
+                            padGuideLeftX: 664;
+
+                            //parameters for share //RFU
+                            /*padSelectWidth : 78;
+                            padSelectHeight : 48;
+                            padSelectTopY: 592;
+                            padSelectLeftX: 684;*/
+
+                            //parameters for A/B/X/Y
+                            //As cross/A
+                            padAWidth : 97;
+                            padAHeight : 96;
+                            padATopY: 589;
+                            padALeftX: 1046;
+
+                            //As cycle/B
+                            padBWidth : 96;
+                            padBHeight : 97;
+                            padBTopY: 495;
+                            padBLeftX: 1144;
+
+                            //As square/X
+                            padXWidth : 100;
+                            padXHeight : 100;
+                            padXTopY: 489;
+                            padXLeftX: 947;
+
+                            //As Triangle/Y
+                            padYWidth : 97;
+                            padYHeight : 96;
+                            padYTopY: 394;
+                            padYLeftX: 1046;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 665;
+                            dpadAreaBottomY: 887;
+                            dpadAreaLeftX: 421;
+                            dpadAreaRightX: 641;
+
+                            //parameter for L1/LB/L
+                            padL1Width : 289;
+                            padL1Height : 111;
+                            padL1TopY: 260;
+                            padL1LeftX: 215;
+
+                            //parameter for R1/RB/R
+                            padR1Width : 289;
+                            padR1Height : 115;
+                            padR1TopY: 260;
+                            padR1LeftX: 939;
+
+                            //parameter for L2/LT/ZL/Z
+                            padL2Width : 185;
+                            padL2Height : 237;
+                            padL2TopY: 0;
+                            padL2LeftX: 279;
+
+                            //parameter for R2/RT/ZR
+                            padR2Width : 189;
+                            padR2Height : 240;
+                            padR2TopY: 0;
+                            padR2LeftX: 985;
+
+                            //parameter for Left stick
+                            lStickWidth : 166;
+                            lStickHeight : 166;
+                            lStickTopY: 455;
+                            lStickLeftX: 269;
+
+                            //parameter for Right stick
+                            rStickWidth : 166;
+                            rStickHeight : 172;
+                            rStickTopY: 671;
+                            rStickLeftX: 832;
+
+                            //to adapt contrast/brightness
+                            contrast : 0.1
+                            brightness: 0.2
+
+            } //As Microsoft XBOX SERIE S/X 20 years pad
 
             ListElement {   name: "ps4"; qml: "gamepad/preview/ContainerCustom.qml";
 
