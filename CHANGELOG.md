@@ -21,6 +21,13 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix brightness/contrast during dpad rotations
 	- fix to navigate between left/right x/y axis in gamepad editor
 
+## [pixL-master] - 2024-12-02 - v0.1.8.3
+- Quick fixes:
+	- add CHD support for retroachievements display
+	- add 7zip and libz for CHD decompression 
+	- remove "buggy" RA debug logs part
+    - generate a crc for RA cache if crc32 is missing/not scrapped
+
 ## [pixL-master] - 2024-11-02 - v0.1.8.2
 - Quick fixes:
     - clarify log tags for ESInput "controllers" functions
