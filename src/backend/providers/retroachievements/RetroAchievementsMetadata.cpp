@@ -855,8 +855,8 @@ QString calculate_hash_from_file(QString rom_file, QString log_tag)
     //to uncomment to activate logs
     rc_hash_init_error_message_callback(rc_hash_handle_error_log_message);
 
-    //Take care: verbose mode could be bugguy as for arcade .zip file hash calculation due to snprintf no-secured function used in logs :-(
-    rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
+    //Take care: verbose mode could be bugguy as for arcade .zip (see also on .nes rom file ?!) hash calculation due to snprintf no-secured function used in logs :-(
+    //rc_hash_init_verbose_message_callback(rc_hash_handle_debug_log_message);
 
     rc_hash_reset_cdreader_hooks();
     const char* path = targetfile.toUtf8().data(); //for testing //toLocal8Bit().data(); //.toUtf8().data();
