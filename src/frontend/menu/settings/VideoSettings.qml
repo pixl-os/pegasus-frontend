@@ -178,6 +178,8 @@ FocusScope {
                             //write configuration file for virtual screens
                             //save conf
                             api.internal.recalbox.saveParameters();
+                            //change previous value
+                            previousvalue = api.internal.recalbox.getStringParameter(parameterName);
                             //Execute script to configure X11 conf
                             api.internal.system.runBoolResult("/recalbox/scripts/pixl-virtual-screen-conf.sh");
                         }
