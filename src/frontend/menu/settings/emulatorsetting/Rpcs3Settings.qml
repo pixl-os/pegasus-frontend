@@ -276,7 +276,7 @@ FocusScope {
                     id: optRpcs3RpcnUsername
 
                     label: qsTr("Username") + api.tr
-                    note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
+                    note: qsTr("If you don't have an account go to setting emulator and create on menu") + api.tr
 
                     TextFieldOption {
                         id: rpcnUsername
@@ -318,7 +318,7 @@ FocusScope {
                     id: optRpcs3RpcnToken
 
                     label: qsTr("Token") + api.tr
-                    note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
+                    note: qsTr("If you don't have an token check your mail after create an acount") + api.tr
 
                     TextFieldOption {
                         id: rpcnToken
