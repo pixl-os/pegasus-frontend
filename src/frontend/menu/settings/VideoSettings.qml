@@ -128,75 +128,9 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optVirtualDisplay
-                }
-
-                MulticheckOption {
-                    id: optVirtualDisplay
-                    //property to manage parameter name
-                    property string parameterName : "system.video.screens.virtual"
-
-                    label: qsTr("Virtual Screens (for remote display)") + api.tr
-                    note: qsTr("Select output(s) available to connect any virtual screen (need reboot)") + api.tr
-
-                    //to keep initial value and before to apply new one (to know if need reboot more than restart)
-                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
-
-                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
-
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterscheckBox.parameterName = parameterName;
-                        parameterscheckBox.callerid = optVirtualDisplay;
-                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
-                        parameterscheckBox.model = api.internal.recalbox.parameterslist;
-                        parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterscheckBox
-                        parameterscheckBox.focus = true;
-                        //to save previous value and know if we need restart or not finally
-                        parameterscheckBox.previousValue = api.internal.recalbox.getStringParameter(parameterName)
-                    }
-
-                    onValueChanged: {
-                        //console.log("previousvalue: ", previousvalue);
-                        //console.log("api.internal.recalbox.getStringParameter(parameterName): ", api.internal.recalbox.getStringParameter(parameterName));
-                        if(previousvalue !== api.internal.recalbox.getStringParameter(parameterName)){
-                            if(api.internal.recalbox.getStringParameter(parameterName).includes("|")){
-                                //add dialogBox to alert about issue if we have more than one virtual
-                                genericMessage.setSource("../../dialogs/GenericContinueDialog.qml",
-                                                         { "title": qsTr("Virtual screens alert"), "message": qsTr("Take care! Some GPU can't support multiple virtual screens") + "<br>" + qsTr("It could crash at launch (select only if you know what you do !)")});
-                                genericMessage.focus = true;
-                            }
-                            //need to reboot (or restart Xorg if possible in the future)
-                            //console.log("Need reboot");
-                            needReboot = true;
-                            //write configuration file for virtual screens
-                            //save conf
-                            api.internal.recalbox.saveParameters();
-                            //change previous value
-                            previousvalue = api.internal.recalbox.getStringParameter(parameterName);
-                            //Execute script to configure X11 conf
-                            api.internal.system.runBoolResult("/recalbox/scripts/pixl-virtual-screen-conf.sh");
-                        }
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                            parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
-                        }
-                        container.onFocus(this)
-                    }
-
                     KeyNavigation.down: optPrimaryScreenActivate
                 }
+
                 // primary screen
                 ToggleOption {
                     id: optPrimaryScreenActivate
@@ -925,7 +859,141 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.down: optRemoteScreenActivate
+                    KeyNavigation.down: optRemoteDisplayActivate
+                }
+
+                ToggleOption {
+                    id: optRemoteDisplayActivate
+
+                    //Remote display settings
+                    SectionTitle {
+                        text: qsTr("Remote display settings") + api.tr
+                        first: true
+                    }
+
+                    //property to manage parameter name
+                    property string parameterName : "system.remote.display.enabled"
+                    checked: api.internal.recalbox.getBoolParameter(parameterName)
+                    onCheckedChanged: {
+                            if(checked !== api.internal.recalbox.getBoolParameter(parameterName)){
+                                api.internal.recalbox.setBoolParameter(parameterName,checked);
+                                api.internal.recalbox.saveParameters();
+                            }
+                    }
+                    symbol: "\uf38c"
+                    symbolFontFamily: global.fonts.ion
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optVirtualDisplay
+                }
+
+                //virtual screens
+                MulticheckOption {
+                    id: optVirtualDisplay
+                    visible: optRemoteDisplayActivate.checked
+                    //property to manage parameter name
+                    property string parameterName : "system.video.screens.virtual"
+
+                    label: qsTr("Virtual Screens selection") + api.tr
+                    note: qsTr("Select output(s) available to connect any virtual screen (need reboot)") + api.tr
+
+                    //to keep initial value and before to apply new one (to know if need reboot more than restart)
+                    property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
+
+                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterscheckBox.parameterName = parameterName;
+                        parameterscheckBox.callerid = optVirtualDisplay;
+                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
+                        parameterscheckBox.model = api.internal.recalbox.parameterslist;
+                        parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterscheckBox
+                        parameterscheckBox.focus = true;
+                        //to save previous value and know if we need restart or not finally
+                        parameterscheckBox.previousValue = api.internal.recalbox.getStringParameter(parameterName)
+                    }
+
+                    onValueChanged: {
+                        //console.log("previousvalue: ", previousvalue);
+                        //console.log("api.internal.recalbox.getStringParameter(parameterName): ", api.internal.recalbox.getStringParameter(parameterName));
+                        if(previousvalue !== api.internal.recalbox.getStringParameter(parameterName)){
+                            if(api.internal.recalbox.getStringParameter(parameterName).includes("|")){
+                                //add dialogBox to alert about issue if we have more than one virtual
+                                genericMessage.setSource("../../dialogs/GenericContinueDialog.qml",
+                                                         { "title": qsTr("Virtual screens alert"), "message": qsTr("Take care! Some GPU can't support multiple virtual screens") + "<br>" + qsTr("It could crash at launch (select only if you know what you do !)")});
+                                genericMessage.focus = true;
+                            }
+                            //need to reboot (or restart Xorg if possible in the future)
+                            //console.log("Need reboot");
+                            needReboot = true;
+                            //write configuration file for virtual screens
+                            //save conf
+                            api.internal.recalbox.saveParameters();
+                            //change previous value
+                            previousvalue = api.internal.recalbox.getStringParameter(parameterName);
+                            //Execute script to configure X11 conf
+                            api.internal.system.runBoolResult("/recalbox/scripts/pixl-virtual-screen-conf.sh");
+                        }
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                            parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optStartWeylusService
+                }
+
+                // to validate first and second screen
+                SimpleButton {
+                    id: optStartWeylusService
+                    visible: optRemoteDisplayActivate.checked
+                    Rectangle {
+                        id: containerWeylusService
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("(Re)start remote display service") + api.tr
+                        }
+                    }
+
+                    onActivate: {
+                        //force save in recalbox.conf file before to execute script
+                        api.internal.recalbox.saveParameters();
+                        //to force change of focus
+                        confirmRestartWeylus.focus = false;
+                        confirmRestartWeylus.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "Weylus service",
+                                                  "message": qsTr("Are you ready to (re)start service\nand change settings ?") + api.tr,
+                                                  "symbol": "\uf38c",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmRestartWeylus.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
 
                 // "remote" screen activation (for test purpose only)
@@ -1029,6 +1097,31 @@ FocusScope {
             api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
             //and move pegasus-frontend in connected and primary screen
             api.internal.system.runBoolResult("WINDOWPID=$(xdotool search --class 'pegasus-frontend'); xdotool windowmove $WINDOWPID $(xrandr | grep -e ' connected' | grep -e 'primary' | awk '{print $4}' | awk -F'+' '{print $2, $3}');", false);
+            content.focus = true;
+        }
+    }
+
+    //loader to load confirm dialog for Weylus service
+    Loader {
+        id: confirmRestartWeylus
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: confirmRestartWeylus.item
+        function onAccept() {
+            //restart service
+            if (!isDebugEnv()){
+                api.internal.system.run("/etc/init.d/S99weylus restart");
+            }
+            else{//for debug and see spinner
+                api.internal.system.run("sleep 5; /etc/init.d/S99weylus restart");
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
             content.focus = true;
         }
     }
