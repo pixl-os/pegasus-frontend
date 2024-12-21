@@ -523,6 +523,29 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << "auto" << "640,480" << "1280,720"
                             << "1920,1080" << "2560,1440" << "3840,2160";
     }
+    else if (Parameter == "supermodel.crtcolors")
+    {
+        /*
+        ; CRT-like color adaption: 0=none, 1=ARI/D93 (recommended for all JP developed games),
+        ; 2=PVM_20M2U/D93, 3=BT601_525/D93, 4=BT601_525/D65 (recommended for all US developed games)
+        ; 5=BT601_625/D65 (recommended for all EUR/AUS developed games)
+        */
+        ListOfValue << QObject::tr("None") << QObject::tr("ARI/D93 (JP developed games)") << QObject::tr("PVM_20M2U/D93")
+                    << QObject::tr("BT601_525/D93") << QObject::tr("BT601_525/D65 (US developed games)") << QObject::tr("BT601_625/D65 (EUR/AUS developed games)");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter == "supermodel.upscalemode")
+    {
+        /*
+        : 0=none/sharp pixels, 1=biquintic,
+        ; 2=bilinear, 3=bicubic
+        */
+        ListOfValue << QObject::tr("None/Sharp") << QObject::tr("Biquintic") << QObject::tr("Bilinear") << QObject::tr("Bicubic");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3";
+    }
     else if (Parameter == "xemu.resolution")
     {
         /*
