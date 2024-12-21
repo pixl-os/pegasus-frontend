@@ -199,8 +199,41 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.challenge.indicators")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.challenge.indicators",checked);
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optRAIconsInLists
+                    KeyNavigation.down: optLeaderboardIndicators
                     visible: optRetroachievementActivate.checked
+                }
+                ToggleOption {
+                    id: optLeaderboardIndicators
+                    label: qsTr("Leaderboard indicators") + api.tr
+                    note: qsTr("Shows a message when a leaderboard activates..") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.leaderboard.indicators")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.leaderboard.indicators",checked);
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optLeaderboardSubmitted
+                    visible: optRetroachievementActivate.checked
+                }
+                ToggleOption {
+                    id: optLeaderboardSubmitted
+                    label: qsTr("Leaderboard submitted") + api.tr
+                    note: qsTr("Shows a message with your score when a leaderboard is submitted to the server.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.leaderboard.submitted")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.leaderboard.submitted",checked);
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optLeaderboardTrackers
+                    visible: optRetroachievementActivate.checked && optLeaderboardIndicators.checked
+                }
+                ToggleOption {
+                    id: optLeaderboardTrackers
+                    label: qsTr("Leaderboard trackers") + api.tr
+                    note: qsTr("Shows an on-screen tracker with the current value of active leaderboards.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.leaderboard.trackers")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.leaderboard.trackers",checked);
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRAIconsInLists
+                    visible: optRetroachievementActivate.checked && optLeaderboardIndicators.checked
                 }
                 ToggleOption {
                     id: optRAIconsInLists
