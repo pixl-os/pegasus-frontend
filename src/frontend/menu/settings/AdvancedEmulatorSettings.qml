@@ -38,6 +38,7 @@ FocusScope {
 
         onClose: root.close()
         onOpenRetroarchSettings: root.openScreen("emulatorsetting/RetroarchSettings.qml")
+        onOpenRpcs3Settings: root.openScreen("emulatorsetting/Rpcs3Settings.qml")
         onOpenModel2emuSettings: root.openScreen("emulatorsetting/Model2emuSettings.qml")
         onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
         onOpenDolphinTriforceSettings: root.openScreen("emulatorsetting/DolphinTriforceSettings.qml")

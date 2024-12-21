@@ -275,5 +275,6 @@
         <file>dialogs/CartridgeDialog.qml</file>
         <file>menu/settings/GameDumperReaderSettings.qml</file>
         <file>dialogs/GenericWaitDialog.qml</file>
+        <file>menu/settings/emulatorsetting/Rpcs3Settings.qml</file>
     </qresource>
 </RCC>

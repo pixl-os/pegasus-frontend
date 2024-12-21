@@ -511,6 +511,41 @@ QStringList GetParametersList(QString Parameter)
             ListOfInternalValue << "0" << "1" << "2";
         }
     }
+    else if (Parameter == "rpcs3.resolution")
+    {
+        /*
+         *   Resolution Scale: 100
+        */
+        ListOfValue << QObject::tr("25% (320x180)") << QObject::tr("50% (640x360)") << QObject::tr("75% (960x540") << QObject::tr("100% (1280x720) (default)")
+                    << QObject::tr("125% (1600x900)") << QObject::tr("150% (1920x1080)") << QObject::tr("175% (2240x1260)") << QObject::tr("200% (2560x1440)");
+
+        ListOfInternalValue << "25" << "50" << "75" << "100"
+                            << "125" << "150" << "175" << "200" ;
+    }
+    else if (Parameter == "rpcs3.scanline")
+    {
+        /*
+         *  Output Scaling Mode: Nearest
+        */
+        ListOfValue << QObject::tr("Nearest") << QObject::tr("Bilinear") << QObject::tr("FidelityFX Super Resolution");
+
+        ListOfInternalValue << "Nearest" << "Bilinear" << "FidelityFX Super Resolution";
+    }
+    else if (Parameter == "rpcs3.theme")
+    {
+        /*
+         * currentStylesheet=none
+        */
+        ListOfValue << QObject::tr("None") << QObject::tr("Native (Windows)") << QObject::tr("Native (Fusion)") << QObject::tr("Default (Bright)")
+                    << QObject::tr("Classic (Bright)") << QObject::tr("Darker Style by TheMitoSan") << QObject::tr("Envy")
+                    << QObject::tr("Kuroi (Dark) by Ani") << QObject::tr("ModernBlue Theme by TheMitoSan") << QObject::tr("Nekotekina by GooseWing")
+                    << QObject::tr("Skyline") << QObject::tr("Skyline (Nightfall)") << QObject::tr("YoRHa by Ani");
+
+        ListOfInternalValue << "none" << "native (Windows)" << "native (Fusion)" << "default"
+                            << "Classic (Bright)" << "Darker Style by TheMitoSan" << "Envy"
+                            << "Kuroi (Dark) by Ani" << "ModernBlue Theme by TheMitoSan" << "Nekotekina by GooseWing"
+                            << "Skyline" << "Skyline (Nightfall)" << "YoRHa by Ani";
+    }
     else if (Parameter == "supermodel.resolution")
     {
         /*
