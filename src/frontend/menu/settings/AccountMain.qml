@@ -202,38 +202,50 @@ FocusScope {
                     KeyNavigation.down: optLeaderboardIndicators
                     visible: optRetroachievementActivate.checked
                 }
-                ToggleOption {
+                MultivalueOption {
                     id: optLeaderboardIndicators
+                    //property to manage parameter name
+                    property string parameterName : "global.retroachievements.leaderboard.indicators"
+
                     label: qsTr("Leaderboard indicators") + api.tr
                     note: qsTr("Shows a message when a leaderboard activates..") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.leaderboard.indicators")
-                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.leaderboard.indicators",checked);
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optLeaderboardSubmitted
-                    visible: optRetroachievementActivate.checked
-                }
-                ToggleOption {
-                    id: optLeaderboardSubmitted
-                    label: qsTr("Leaderboard submitted") + api.tr
-                    note: qsTr("Shows a message with your score when a leaderboard is submitted to the server.") + api.tr
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
 
-                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.leaderboard.submitted")
-                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.leaderboard.submitted",checked);
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optLeaderboardTrackers
-                    visible: optRetroachievementActivate.checked && optLeaderboardIndicators.checked
-                }
-                ToggleOption {
-                    id: optLeaderboardTrackers
-                    label: qsTr("Leaderboard trackers") + api.tr
-                    note: qsTr("Shows an on-screen tracker with the current value of active leaderboards.") + api.tr
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
 
-                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.leaderboard.trackers")
-                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.leaderboard.trackers",checked);
-                    onFocusChanged: container.onFocus(this)
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optLeaderboardIndicators;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optRAIconsInLists
-                    visible: optRetroachievementActivate.checked && optLeaderboardIndicators.checked
+                    visible: optRetroachievementActivate.checked
                 }
                 ToggleOption {
                     id: optRAIconsInLists
