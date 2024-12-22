@@ -783,7 +783,7 @@ FocusScope {
                             
                             //parameters for select
                             padSelectWidth : 41;
-                            padSelectHeight : 19;
+                            padSelectHeight : 21;
                             padSelectTopY: 95;
                             padSelectLeftX: 185;
 
