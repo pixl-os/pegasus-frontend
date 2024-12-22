@@ -766,7 +766,7 @@ FocusScope {
                             hasB: true;
                             hasX: true;
                             hasY: true;
-                            hasNintendoPad : true;
+                            hasNintendoPad : false;
 
                             hasL1 : true; hasR1 : true;
                             hasL2 : true; hasR2 : true;
