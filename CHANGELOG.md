@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add xbox series s/x controller layout
 	- bump xbox series s/x 20 years controller layout
 	- add Nintendo wiimote controller layout
+- Fixes:
+	- fix brightness/contrast during dpad rotations
 
 ## [pixL-master] - 2024-10-19 - v0.1.8
 - Features:
