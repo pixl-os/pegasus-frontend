@@ -794,10 +794,10 @@ FocusScope {
                             padStartLeftX: 230;
 
                             //parameters for home/guide/hotkey
-                            padGuideWidth : 31;
+                            padGuideWidth : 30;
                             padGuideHeight : 30;
                             padGuideTopY: 40;
-                            padGuideLeftX: 188 ;
+                            padGuideLeftX: 239 ;
 
                             //parameters for A/B/X/Y
                             //As A
