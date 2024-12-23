@@ -193,7 +193,7 @@ FocusScope {
                 ToggleOption {
                     id: optOnSecondDisplay
 
-                    label: qsTr("Show 3DS bottom screen on a second display") + api.tr
+                    label: qsTr("Show 3DS bottom screen on a second display (Beta)") + api.tr
                     note: qsTr("Need to have a second display (physical or virtual) connected\nand activated from 'video configuration' to work") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("citra.bottom.screen.on.second.display",false)

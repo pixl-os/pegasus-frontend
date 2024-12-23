@@ -867,7 +867,7 @@ FocusScope {
 
                     //Remote display settings
                     SectionTitle {
-                        text: qsTr("Remote display settings") + api.tr
+                        text: qsTr("Remote display settings (Beta)") + api.tr
                         first: true
                     }
 

@@ -361,7 +361,7 @@ FocusScope {
                 ToggleOption {
                     id: optGamepadOnSecondDisplay
 
-                    label: qsTr("Show Gamepad on second display") + api.tr
+                    label: qsTr("Show Gamepad on second display (Beta)") + api.tr
                     note: qsTr("Need to have a second display (physical or virtual) connected\nand activated from 'video configuration' to work") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("cemu.gamepad.on.second.display",false)
