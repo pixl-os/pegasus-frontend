@@ -12,7 +12,12 @@ Item {
     property string name: "" //used to find file named as "dpad_name.jpg" : dpad_nes.png or dpad_snes.png for example
     property alias brightness: animation.brightness
     property alias contrast: animation.contrast
-    visible: name ? true : false
+    visible: name ? (gamepad ? (
+                               //now we have to hide also if dpad as same place than sticks if we touch its.
+                               !((hasLeftStick  && (dpadAreaLeftX == lStickLeftX) && (dpadAreaTopY == lStickTopY)) && (gamepad.axisLeftX || gamepad.axisLeftY)) &&
+                               !((hasRightStick && (dpadAreaLeftX == rStickLeftX) && (dpadAreaTopY == rStickTopY)) && (gamepad.axisRightX || gamepad.axisRightY))
+                               )
+                               : true) : false
     Image {
         id:initialImage
         z: 50

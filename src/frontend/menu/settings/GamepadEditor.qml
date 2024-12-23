@@ -771,7 +771,7 @@ FocusScope {
                             hasL1 : true; hasR1 : true;
                             hasL2 : true; hasR2 : true;
 
-                            hasLeftStick : false; hasRightStick : false;
+                            hasLeftStick : true; hasRightStick : true; hasButtonsForRightStick : false;
                             hasL3 : false; hasR3 : false;
 
                             hasDpad : true;
@@ -854,11 +854,17 @@ FocusScope {
                             padR2TopY: 265;
                             padR2LeftX: 507;
 
-                            //parameter for Left stick
-                            /*lStickWidth : 88;
-                            lStickHeight : 90;
+                            //parameter for Left stick - same as dpad
+                            lStickWidth : 87;
+                            lStickHeight : 89;
                             lStickTopY: 216;
-                            lStickLeftX: 189;*/
+                            lStickLeftX: 109;
+
+                            //parameter for right stick - same as dpad
+                            rStickWidth : 87;
+                            rStickHeight : 89;
+                            rStickTopY: 216;
+                            rStickLeftX: 109;
 
                             //to adapt contrast/brightness
                             contrast : 0.1
