@@ -2488,7 +2488,9 @@ FocusScope {
 				input: GamepadManager.GMAxis.LeftX
 				inputType: "axis"
  
-                KeyNavigation.right: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? configRightStickPlusX : configRightStickX) : configRightStickX
+                KeyNavigation.right: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ?
+                                     ((root.padPreview.hasButtonsForRightStick === true) ? configRightStickPlusX : configRightStickX) : configRightStickX)
+                                     : configRightStickX
                 KeyNavigation.down: configLeftStickY
             }
             ConfigField {
@@ -2501,7 +2503,9 @@ FocusScope {
  				input: GamepadManager.GMAxis.LeftY
 				inputType: "axis"
  
-                KeyNavigation.right: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ? configRightStickMinusY : configRightStickY) : configRightStickY
+                KeyNavigation.right: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasButtonsForRightStick) !== 'undefined') ?
+                                     ((root.padPreview.hasButtonsForRightStick === true) ? configRightStickMinusY : configRightStickY) : configRightStickY)
+                                     : configRightStickY
                 KeyNavigation.down: configL3
             }
             ConfigField {
