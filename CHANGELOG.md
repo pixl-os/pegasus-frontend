@@ -13,13 +13,30 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add Nintendo wiimote controller layout
 	- add auto change disc option in menu advanced settings emulator for dolphin
 	- add crt colors, upscale mode and supersampling options in menu advanced settings emulator for supermodel
-	- add new options in menu advanced settings emulator for RCPS3 as Resolution Scale, Output Scaling Mode, 
-	CurrentStylesheet (themes setting emulator), VSync, UPNP, Network Statut, RPCN Statut, Username, Password and Token
+	- add new options in menu advanced settings emulator for RCPS3 as: 
+		- Resolution Scale, Output Scaling Mode, CurrentStylesheet (themes setting emulator)
+		- VSync, UPNP, Network Statut, RPCN Statut, Username, Password and Token
 	- add capacity to have a multi-usage of same stick as DPAD/LSTICK/RSTICK in 8bitdo arcade stick
-
+	- "Second Screen" in game features (Beta):
+		- add parameter to select virtual screen(s)
+		- add script called after configuration change to prepare conf before reboot
+		- alert for more than one virtual screen
+		- finalize parameters to manage layout/second display
+		- add menu for remote display and weylus service (re)start
+		- add "(Beta)" annotations for some advanced features for the moment 
+		- For cemu:
+			- add parameters to manage wii u gamepad display
+			- add advanced parameter to manage mapping using SDL Button labels
+			- add rumble power to manage rumble for controllers compatible
+			- add rumble simulation from menu using a script
+		- For Citra:
+			- add parameters to manage 3ds bottom screen display
+			- finalize parameters to manage layout/second display
 - Fixes:
 	- fix brightness/contrast during dpad rotations
 	- fix to navigate between left/right x/y axis in gamepad editor
+	- fix to change theme loading way
+	- fix to update "previous value" after each changes/saves in video settings
 
 ## [pixL-master] - 2024-12-02 - v0.1.8.3
 - Quick fixes:
