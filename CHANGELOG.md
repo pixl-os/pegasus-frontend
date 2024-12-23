@@ -1,9 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2024-xx-xx - v0.1.x
+## [pixL-master] - 2024-12-24 - v0.1.9
 - Features:
-	- Add auto change disc option on dolphin
+	- add auto change disc option on dolphin
+	- add 8bitdo sn30 pro+ controller layout
+	- add 8bitdo arcade stick controller layout and icon
+	- add Google stadia controller layout and icon
+	- add 8bitdo sn30 pro controller layout and icon
+	- add xbox series s/x controller layout
+	- bump xbox series s/x 20 years controller layout
+	- add Nintendo wiimote controller layout
+	- add auto change disc option in menu advanced settings emulator for dolphin
+	- add crt colors, upscale mode and supersampling options in menu advanced settings emulator for supermodel
+	- add new options in menu advanced settings emulator for RCPS3 as Resolution Scale, Output Scaling Mode, 
+	CurrentStylesheet (themes setting emulator), VSync, UPNP, Network Statut, RPCN Statut, Username, Password and Token
+	- add capacity to have a multi-usage of same stick as DPAD/LSTICK/RSTICK in 8bitdo arcade stick
+
+- Fixes:
+	- fix brightness/contrast during dpad rotations
+	- fix to navigate between left/right x/y axis in gamepad editor
 
 ## [pixL-master] - 2024-10-19 - v0.1.8
 - Features:

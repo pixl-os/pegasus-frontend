@@ -17,6 +17,19 @@ Item {
 
     height: width
 
+    //now we have to hide also if stick as same place than other stick/dpad if we touch its.
+    visible: name ? (gamepad ? (side === "l" ?
+                               (
+                               !(hasDpad && (dpadAreaLeftX == lStickLeftX) && (dpadAreaTopY == lStickTopY) && (gamepad.buttonLeft || gamepad.buttonRight || gamepad.buttonUp || gamepad.buttonDown)) &&
+                               !(hasRightStick && (lStickLeftX == rStickLeftX) && (lStickTopY == rStickTopY) && (gamepad.axisRightX || gamepad.axisRightY))
+                               )
+                               :
+                               (
+                               !(hasDpad && (dpadAreaLeftX == rStickLeftX) && (dpadAreaTopY == rStickTopY) && (gamepad.buttonLeft || gamepad.buttonRight || gamepad.buttonUp || gamepad.buttonDown)) &&
+                               !(hasLeftStick && (rStickLeftX == lStickLeftX) && (rStickTopY == lStickTopY) && (gamepad.axisLeftX || gamepad.axisLeftY))
+                               )
+                               )
+                               :true) : false
     Image {
         id: initialImage
         z:65

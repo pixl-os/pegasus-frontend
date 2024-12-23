@@ -217,8 +217,8 @@
         <file>assets/gamepad/ps5/x_ps5.png</file>
         <file>assets/gamepad/ps5/y_ps5.png</file>
         <file>assets/gamepad/xboxone/a_xboxone.png</file>
-        <file>assets/gamepad/xboxone/b_xboxone.png</file>
         <file>assets/gamepad/xboxone/base_xboxone.png</file>
+        <file>assets/gamepad/xboxone/b_xboxone.png</file>
         <file>assets/gamepad/xboxone/dpad_xboxone.png</file>
         <file>assets/gamepad/xboxone/guide_xboxone.png</file>
         <file>assets/gamepad/xboxone/l1_xboxone.png</file>
@@ -231,9 +231,39 @@
         <file>assets/gamepad/xboxone/start_xboxone.png</file>
         <file>assets/gamepad/xboxone/x_xboxone.png</file>
         <file>assets/gamepad/xboxone/y_xboxone.png</file>
+        <file>assets/gamepad/xboxseries/a_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/base_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/b_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/dpad_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/guide_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/l1_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/l2_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/lstick_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/r1_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/r2_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/rstick_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/select_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/start_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/x_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries/y_xboxseries.png</file>
+        <file>assets/gamepad/xboxseries20years/a_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/base_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/b_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/dpad_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/guide_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/l1_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/l2_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/lstick_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/r1_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/r2_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/rstick_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/select_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/start_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/x_xboxseries20years.png</file>
+        <file>assets/gamepad/xboxseries20years/y_xboxseries20years.png</file>
         <file>assets/gamepad/switchpro/a_switchpro.png</file>
-        <file>assets/gamepad/switchpro/b_switchpro.png</file>
         <file>assets/gamepad/switchpro/base_switchpro.png</file>
+        <file>assets/gamepad/switchpro/b_switchpro.png</file>
         <file>assets/gamepad/switchpro/dpad_switchpro.png</file>
         <file>assets/gamepad/switchpro/guide_switchpro.png</file>
         <file>assets/gamepad/switchpro/l1_switchpro.png</file>
@@ -246,6 +276,72 @@
         <file>assets/gamepad/switchpro/y_switchpro.png</file>
         <file>assets/gamepad/switchpro/l2_switchpro.png</file>
         <file>assets/gamepad/switchpro/r2_switchpro.png</file>
+        <file>assets/gamepad/sn30proplus/a_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/base_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/b_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/dpad_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/guide_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/l1_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/lstick_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/r1_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/rstick_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/l2_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/x_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/y_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/r2_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/select_sn30proplus.png</file>
+        <file>assets/gamepad/sn30proplus/start_sn30proplus.png</file>
+        <file>assets/gamepad/arcadestick/a_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/base_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/b_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/dpad_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/guide_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/l1_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/l2_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/r1_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/r2_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/select_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/start_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/x_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/y_arcadestick.png</file>
+        <file>assets/gamepad/stadia/a_stadia.png</file>
+        <file>assets/gamepad/stadia/base_stadia.png</file>
+        <file>assets/gamepad/stadia/b_stadia.png</file>
+        <file>assets/gamepad/stadia/dpad_stadia.png</file>
+        <file>assets/gamepad/stadia/guide_stadia.png</file>
+        <file>assets/gamepad/stadia/l1_stadia.png</file>
+        <file>assets/gamepad/stadia/l2_stadia.png</file>
+        <file>assets/gamepad/stadia/lstick_stadia.png</file>
+        <file>assets/gamepad/stadia/r1_stadia.png</file>
+        <file>assets/gamepad/stadia/r2_stadia.png</file>
+        <file>assets/gamepad/stadia/rstick_stadia.png</file>
+        <file>assets/gamepad/stadia/select_stadia.png</file>
+        <file>assets/gamepad/stadia/start_stadia.png</file>
+        <file>assets/gamepad/stadia/x_stadia.png</file>
+        <file>assets/gamepad/stadia/y_stadia.png</file>
+        <file>assets/gamepad/sn30pro/a_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/base_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/b_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/dpad_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/guide_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/l2_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/lstick_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/l1_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/r2_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/rstick_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/r1_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/select_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/start_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/x_sn30pro.png</file>
+        <file>assets/gamepad/sn30pro/y_sn30pro.png</file>
+        <file>assets/gamepad/wiimote/a_wiimote.png</file>
+        <file>assets/gamepad/wiimote/base_wiimote.png</file>
+        <file>assets/gamepad/wiimote/b_wiimote.png</file>
+        <file>assets/gamepad/wiimote/guide_wiimote.png</file>
+        <file>assets/gamepad/wiimote/select_wiimote.png</file>
+        <file>assets/gamepad/wiimote/start_wiimote.png</file>
+        <file>assets/gamepad/wiimote/x_wiimote.png</file>
+        <file>assets/gamepad/wiimote/y_wiimote.png</file>
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
         <file>menu/settings/AdvancedEmulatorMain.qml</file>
@@ -276,5 +372,7 @@
         <file>menu/settings/GameDumperReaderSettings.qml</file>
         <file>dialogs/GenericWaitDialog.qml</file>
         <file>menu/settings/emulatorsetting/Rpcs3Settings.qml</file>
+        <file>assets/gamepad/arcadestick/lstick_arcadestick.png</file>
+        <file>assets/gamepad/arcadestick/rstick_arcadestick.png</file>
     </qresource>
 </RCC>

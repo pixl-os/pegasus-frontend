@@ -12,7 +12,12 @@ Item {
     property string name: "" //used to find file named as "dpad_name.jpg" : dpad_nes.png or dpad_snes.png for example
     property alias brightness: animation.brightness
     property alias contrast: animation.contrast
-    visible: name ? true : false
+    visible: name ? (gamepad ? (
+                               //now we have to hide also if dpad as same place than sticks if we touch its.
+                               !((hasLeftStick  && (dpadAreaLeftX == lStickLeftX) && (dpadAreaTopY == lStickTopY)) && (gamepad.axisLeftX || gamepad.axisLeftY)) &&
+                               !((hasRightStick && (dpadAreaLeftX == rStickLeftX) && (dpadAreaTopY == rStickTopY)) && (gamepad.axisRightX || gamepad.axisRightY))
+                               )
+                               : true) : false
     Image {
         id:initialImage
         z: 50
@@ -45,8 +50,6 @@ Item {
         anchors.horizontalCenterOffset: (parent.width/2) * -(pressAngle/1000)
 
         source: initialImage
-        brightness: 0.5
-        contrast: 0.5
         transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 0; y: 1; z: 0 } angle: -pressAngle }
     }
 
@@ -73,8 +76,6 @@ Item {
         anchors.horizontalCenterOffset: (parent.width/2) * (pressAngle/1000)
 
         source: initialImage
-        brightness: 0.5
-        contrast: 0.5
         transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 0; y: 1; z: 0 } angle: pressAngle }
     }
 
@@ -101,8 +102,6 @@ Item {
         anchors.verticalCenterOffset: (parent.height/2) * -(pressAngle/1000)
 
         source: initialImage
-        brightness: 0.5
-        contrast: 0.5
         transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 1; y: 0; z: 0 } angle: pressAngle }
     }
 
@@ -128,8 +127,6 @@ Item {
         anchors.verticalCenterOffset: (parent.height/2) * (pressAngle/1000)
 
         source: initialImage
-        brightness: 0.5
-        contrast: 0.5
         transform: Rotation { origin.x: initialImage.width/2; origin.y: initialImage.height/2; axis { x: 1; y: 0; z: 0 } angle: -pressAngle }
     }
 

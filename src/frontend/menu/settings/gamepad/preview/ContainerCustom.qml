@@ -387,6 +387,8 @@ Item {
 
     DpadCustom {
         id: padDpadArea
+        //to manage better when sticks are on the same place as for 8bitdo arcade Stick using a circle switch to manage different mode (LS,DP,RS)
+        z:  gamepad && (gamepad.buttonLeft || gamepad.buttonRight || gamepad.buttonUp || gamepad.buttonDown) ? 200 : 100
 
         width: vpx((dpadAreaRightX-dpadAreaLeftX) * ratio)
         height: vpx((dpadAreaBottomY-dpadAreaTopY) * ratio)
@@ -478,6 +480,10 @@ Item {
 
     StickCustom {
         id: padLeftStick
+
+        //to better manage when sticks are on the same place as for 8bitdo arcade Stick using a circle switch to manage different mode (LS,DP,RS)
+        z: (padContainer.currentButton === (side + "x")) || (padContainer.currentButton === (side + "y")) ? 200 : 100
+
         width: vpx(lStickWidth * ratio)
         anchors {
             verticalCenter: padBase.verticalCenter
@@ -579,6 +585,10 @@ Item {
 
     StickCustom {
         id: padRightStick
+
+        //to manage better when sticks are on the same place as for 8bitdo arcade Stick using a circle switch to manage different mode (LS,DP,RS)
+        z: (padContainer.currentButton === (side + "x")) || (padContainer.currentButton === (side + "y")) ? 200 : 100
+
         width: vpx(rStickWidth * ratio)
         anchors {
             verticalCenter: padBase.verticalCenter

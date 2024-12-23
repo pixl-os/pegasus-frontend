@@ -2082,8 +2082,9 @@ Window {
 
         //CONTROLLERS PART
         ListElement { icon: "\uf2ef"; keywords: "x360,xbox360,xbox 360,x-box 360"; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
-        ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one,xbox wireless"; type:"controller"; iconfont: "awesome"; layout: "xboxone"}
-        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"; iconfont: "awesome"} //as XBOX one for the moment, need icon for series
+        ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one,xbox wireless"; type:"controller"; iconfont: "awesome"; layout: "xboxone"} //as layout XBOX SERIES, need layout XBOX ONE
+        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"; iconfont: "awesome"; layout: "xboxseries"} //as XBOX one for the moment, need icon for series
+        ListElement { icon: "\uf2f0"; keywords: "xbox series 20 years"; type:"controller"; iconfont: "awesome"; layout: "xboxseries20years"} //as XBOX one for icon, need icon for series and layout defined in input.cfg so that it can be used only for this controller
         ListElement { icon: "\uf2ee"; keywords: "xbox,microsoft"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment
 
         ListElement { icon: "\uf0cf"; keywords: "ps5,playstation 5,dualsense"; type:"controller"; iconfont: "awesome"; layout: "ps5"} // add wireless controller as usual PS name used by Sony
@@ -2094,24 +2095,31 @@ Window {
 
         ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,md/gen,sega genesis"; type:"controller"; iconfont: "awesome"}
+        
         //8bitdo sfc30 and snes30 added to be considered as SNES controller
         ListElement { icon: "\uf25e"; keywords: "snes,super nintendo,sfc30,snes30"; type:"controller"; iconfont: "awesome"; layout: "snes"}
         ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
         ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
+
         //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
-        //other hujia devices exists for NES, SNES and gamecube, but will be detected upper if needed.
+        //other hujia devices exists for NES, SNES, gamecube, Wii, but will be detected upper if needed.
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; type:"controller" ; iconfont: "awesome"; layout: "n64"}
         ListElement { icon: "\uf263"; keywords: "wii"; type:"controller"; iconfont: "awesome"}
+        
         //need to keep only 'pro controller' in case of nintendo switch pro controller as it is the HID name (internal name)
         //in the future, we have other controller as "pro controller", the layout detection should be complexified
-        ListElement { icon: "\uf0ca"; keywords: "pro controller"; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
+        ListElement { icon: "\uf0ca"; keywords: "switch pro,pro controller"; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
         ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"; iconfont: "awesome"}
 
-
-        //27/02/2022 2 controllers added snakebyte idroid:con and 8bitdo sn30 pro+
+        //27/02/2022 2 controllers added snakebyte idroid:con, 8bitdo sn30 pro+ and 8bitdo pro 2
         ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0cc"; keywords: "8bitdo sn30 pro+,8bitdo sn30 pro plus,8bitdo pro 2"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+,8bitdo sn30 pro+,8bitdo sn30 pro plus,8bitdo pro 2"; type:"controller"; iconfont: "awesome"; layout: "sn30proplus
+        "}
+        //07/10/2024 2 controllers added 8bitdo arcade stick, 8bitdo sf30/sn30 pro and google stadia
+        ListElement { icon: "\uf0d1"; keywords: "stadia"; type:"controller"; iconfont: "awesome"; layout: "stadia"}
+        ListElement { icon: "\uf0d2"; keywords: "8bitdo arcade stick,n30 Arcade Stick"; type:"controller"; iconfont: "awesome"; layout: "arcadestick"} //match only in bluetooth else detected as xbox :-(
+        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro,8bitdo sf30 pro,8bitdo sn30 pro"; type:"controller"; iconfont: "awesome"}
 
         //28/02/2022 to add wheels/cockpit devices
         ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}
