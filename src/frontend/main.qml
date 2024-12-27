@@ -2141,6 +2141,9 @@ Window {
         //2 codes exists "\uf0cd" & "\uf0ce", respectivelly fill and transparent version
         ListElement { icon: "\uf0cd"; keywords: "dragonrise,xinmo,xin-mo,j-pac,jpac"; type:"controller"; iconfont: "awesome"}
 
+        //27/12/2024 1 controller added amazon luna
+        ListElement { icon: "\uf2f0"; keywords: "amazon,luna"; type:"controller"; iconfont: "awesome"; layout: "luna"} //icon as XBOX one for the moment, need icon for luna
+
         //AUDIO PART
         //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
         //04/10/21: add 'plt focus'
