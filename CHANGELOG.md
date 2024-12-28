@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2025-mm-dd - v0.x.x
+- Features:
+	- add Amazon Luna controller layout
+
 ## [pixL-master] - 2024-12-24 - v0.1.9
 - Features:
 	- add auto change disc option on dolphin

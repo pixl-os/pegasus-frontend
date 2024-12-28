@@ -1354,6 +1354,128 @@ FocusScope {
 
             } //As Microsoft XBOX SERIE S/X 20 years pad
 
+            ListElement {   name: "luna"; qml: "gamepad/preview/ContainerCustom.qml";
+
+                            hasDedicatedGuide: true;
+                            hasSelect: true;
+                            hasStart: true;
+
+                            hasA: true;
+                            hasB: true;
+                            hasX: true;
+                            hasY: true;
+                            hasNintendoPad : false;
+
+                            hasL1 : true; hasR1 : true;
+                            hasL2 : true; hasR2 : true;
+
+                            hasLeftStick : true; hasRightStick : true;
+                            hasL3 : true; hasR3 : true;
+
+                            hasDpad : true;
+                            hasButtonsForDpad : false;
+
+                            hasScreenshotButton : false;
+
+                            ratio: 0.5; padBaseSourceSizeWidth : 1123 ; padBaseSourceSizeHeight : 949;
+
+                            //parameters for select
+                            padSelectWidth : 48;
+                            padSelectHeight : 49;
+                            padSelectTopY: 313;
+                            padSelectLeftX: 435;
+
+                            //parameters for start
+                            padStartWidth : 46;
+                            padStartHeight : 46;
+                            padStartTopY: 316;
+                            padStartLeftX: 642;
+
+                            //parameters for home/guide/hotkey
+                            padGuideWidth : 106;
+                            padGuideHeight : 105;
+                            padGuideTopY: 287;
+                            padGuideLeftX: 509;
+
+                            //parameters for share (screenshot) //RFU
+                            /*padSelectWidth : 78;
+                            padSelectHeight : 48;
+                            padSelectTopY: 592;
+                            padSelectLeftX: 684;*/
+
+                            //parameters for A/B/X/Y
+                            //As A
+                            padAWidth : 74;
+                            padAHeight : 75;
+                            padATopY: 437;
+                            padALeftX: 822;
+
+                            //As B
+                            padBWidth : 73;
+                            padBHeight : 75;
+                            padBTopY: 357;
+                            padBLeftX: 900;
+
+                            //As X
+                            padXWidth : 75;
+                            padXHeight : 74;
+                            padXTopY: 357;
+                            padXLeftX: 741;
+
+                            //As Y
+                            padYWidth : 73;
+                            padYHeight : 74;
+                            padYTopY: 277;
+                            padYLeftX: 821;
+
+                            //parameter for Dpad
+                            dpadAreaTopY: 473;
+                            dpadAreaBottomY: 662;
+                            dpadAreaLeftX: 319;
+                            dpadAreaRightX: 495;
+
+                            //parameter for LB
+                            padL1Width : 197;
+                            padL1Height : 116;
+                            padL1TopY: 180;
+                            padL1LeftX: 125;
+
+                            //parameter for RB
+                            padR1Width : 196;
+                            padR1Height : 116;
+                            padR1TopY: 181;
+                            padR1LeftX: 807;
+
+                            //parameter for LT
+                            padL2Width : 201;
+                            padL2Height : 185;
+                            padL2TopY: 4;
+                            padL2LeftX: 122;
+
+                            //parameter for RT
+                            padR2Width : 202;
+                            padR2Height : 183;
+                            padR2TopY: 2;
+                            padR2LeftX: 802;
+
+                            //parameter for Left stick
+                            lStickWidth : 132;
+                            lStickHeight : 130;
+                            lStickTopY: 312;
+                            lStickLeftX: 198;
+
+                            //parameter for Right stick
+                            rStickWidth : 131;
+                            rStickHeight : 131;
+                            rStickTopY: 503;
+                            rStickLeftX: 647;
+
+                            //to adapt contrast/brightness
+                            contrast : 0.1
+                            brightness: 0.2
+
+            } //As Amazon luna
+
             ListElement {   name: "ps4"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
