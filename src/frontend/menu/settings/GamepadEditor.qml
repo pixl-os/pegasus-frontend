@@ -2126,7 +2126,7 @@ FocusScope {
 
                             hasScreenshotButton : false;
 
-                            ratio: 0.7; padBaseSourceSizeWidth : 824 ; padBaseSourceSizeHeight : 680;
+                            ratio: 0.6; padBaseSourceSizeWidth : 824 ; padBaseSourceSizeHeight : 680;
                             
                             //parameters for select
                             padSelectWidth : 41;
