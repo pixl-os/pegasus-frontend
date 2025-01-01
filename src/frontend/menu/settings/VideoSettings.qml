@@ -843,8 +843,8 @@ FocusScope {
                         }
                         //force save in recalbox.conf file before to execute script
                         api.internal.recalbox.saveParameters();
-                        //Execute script to udpate screen settings in real-time
-                        api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
+                        //Execute script to udpate screen settings in real-time + update xrandr info just after
+                        api.internal.system.runBoolResult("/usr/bin/externalscreen.sh;xrandr>/tmp/xrandr.tmp");
                         //and move pegasus-frontend in connected and primary screen
                         api.internal.system.runBoolResult("WINDOWPID=$(xdotool search --class 'pegasus-frontend'); xdotool windowmove $WINDOWPID $(xrandr | grep -e ' connected' | grep -e 'primary' | awk '{print $4}' | awk -F'+' '{print $2, $3}');", false);
 
@@ -941,8 +941,8 @@ FocusScope {
                             api.internal.recalbox.saveParameters();
                             //change previous value
                             previousvalue = api.internal.recalbox.getStringParameter(parameterName);
-                            //Execute script to configure X11 conf
-                            api.internal.system.runBoolResult("/recalbox/scripts/pixl-virtual-screen-conf.sh");
+                            //Execute script to configure X11 conf + update xrandr info just after
+                            api.internal.system.runBoolResult("/recalbox/scripts/pixl-virtual-screen-conf.sh;xrandr>/tmp/xrandr.tmp");
                         }
                     }
 
@@ -1097,8 +1097,8 @@ FocusScope {
 
             //re-save conf
             api.internal.recalbox.saveParameters();
-            //Execute script to restore screen openVideoSettings
-            api.internal.system.runBoolResult("/usr/bin/externalscreen.sh");
+            //Execute script to restore screen openVideoSettings + update xrandr info just after
+            api.internal.system.runBoolResult("/usr/bin/externalscreen.sh;xrandr>/tmp/xrandr.tmp");
             //and move pegasus-frontend in connected and primary screen
             api.internal.system.runBoolResult("WINDOWPID=$(xdotool search --class 'pegasus-frontend'); xdotool windowmove $WINDOWPID $(xrandr | grep -e ' connected' | grep -e 'primary' | awk '{print $4}' | awk -F'+' '{print $2, $3}');", false);
             content.focus = true;
