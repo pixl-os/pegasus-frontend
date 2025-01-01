@@ -236,7 +236,8 @@ FocusScope {
                     property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
 
                     property variant optionsList : [optDisplayOutput.value]
-                    property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'"
+                    //31/12/2024: command changed to get "disconnected" ones also with modeline added as for virtul screens
+                    property string command : "awk -v monitor=\"^%1 \" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'"
 
                     label: qsTr("Resolution") + api.tr
                     note: qsTr("Choose resolution for your primary screen.") + api.tr
@@ -314,7 +315,8 @@ FocusScope {
                     property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
 
                     property variant optionsList : [optDisplayOutput.value, optDisplayResolution.value]
-                    property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'"
+                    //31/12/2024: command changed to get "disconnected" ones also with modeline added as for virtul screens
+                    property string command : "awk -v monitor=\"^%1 \" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'"
                     label: qsTr("Frequency") + api.tr
                     note: qsTr("Choose frequency for your primary screen.") + api.tr
 
@@ -541,7 +543,8 @@ FocusScope {
                     property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
 
                     property variant optionsList : [optDisplaySecondaryOutput.value]
-                    property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'"
+                    //31/12/2024: command changed to get "disconnected" ones also with modeline added as for virtul screens
+                    property string command : "awk -v monitor=\"^%1 \" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1)print $1}'"
 
                     label: qsTr("Resolution") + api.tr
                     note: qsTr("Choose resolution for secondary screen.") + api.tr
@@ -616,7 +619,8 @@ FocusScope {
                     property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
 
                     property variant optionsList : [optDisplaySecondaryOutput.value, optDisplaySecondaryResolution.value]
-                    property string command : "awk -v monitor=\"^%1 connected\" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'"
+                    //31/12/2024: command changed to get "disconnected" ones also with modeline added as for virtul screens
+                    property string command : "awk -v monitor=\"^%1 \" '/connected/ {p = 0} $0 ~ monitor {p = 1} p' /tmp/xrandr.tmp | awk '{if(NR>1) print}' | awk '$1 == \"%2\" {print}' | awk '{for (i=2; i<=NF; i++) print $i}' | tr -d '+*'"
 
                     label: qsTr("Frequency") + api.tr
                     note: qsTr("Choose frequency for secondary screen.") + api.tr
