@@ -149,7 +149,8 @@ QStringList GetParametersList(QString Parameter)
     {
         //need to list all existing outputs and store it in list of check boxes
         // command to get all lines with "connected" and "disconnected" + remove "primary" screen
-        QString SysCommand = "grep -v 'primary' /tmp/xrandr.tmp | awk '$2 ~ \"connected\" {print $1}'";
+        //QString SysCommand = "grep -v 'primary' /tmp/xrandr.tmp | awk '$2 ~ \"connected\" {print $1}'";
+        QString SysCommand = "grep -v 'primary' /tmp/xrandr.tmp | grep -q 'VIRTUAL' && xrandr | grep 'VIRTUAL' | grep 'connected' | awk '{print $1}' || xrandr | grep ' disconnected' | awk '{print $1}'";
         ListOfValue = GetParametersListFromSystem(Parameter, SysCommand);
     }
     else if (Parameter == "system.secondary.screen.position")
