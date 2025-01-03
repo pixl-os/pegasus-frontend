@@ -933,9 +933,11 @@ FocusScope {
                                                          { "title": qsTr("Virtual screens alert"), "message": qsTr("Take care! Some GPU can't support multiple virtual screens") + "<br>" + qsTr("It could crash at launch (select only if you know what you do !)")});
                                 genericMessage.focus = true;
                             }
-                            //need to reboot (or restart Xorg if possible in the future)
-                            //console.log("Need reboot");
-                            needReboot = true;
+                            //need to reboot for Nvidia changes for the moment (or restart Xorg if possible in the future)
+                            if(api.internal.system.run("lspci | grep -i 'VGA' | grep -i 'nvidia' | wc -l | tr -d '\\n' | tr -d '\\r'") === "1") {
+                                //console.log("Need reboot");
+                                needReboot = true;
+                            }
                             //write configuration file for virtual screens
                             //save conf
                             api.internal.recalbox.saveParameters();
@@ -1148,11 +1150,6 @@ FocusScope {
 
         onClose: {
             content.focus = true
-            //check if need to restart to take change into account !
-            if(previousValue !== api.internal.recalbox.getStringParameter(parameterName)){
-                //console.log("needRestart");
-                needRestart = true;
-            }
         }
 
         onCheck: {
