@@ -898,7 +898,7 @@ FocusScope {
                     property string parameterName : "system.video.screens.virtual"
 
                     label: qsTr("Virtual Screens selection") + api.tr
-                    note: qsTr("Select output(s) available to connect any virtual screen (need reboot)") + api.tr
+                    note: qsTr("Select output(s) available to connect any virtual screen\n(need reboot for NVIDIA GPU)") + api.tr
 
                     //to keep initial value and before to apply new one (to know if need reboot more than restart)
                     property string previousvalue: api.internal.recalbox.getStringParameter(parameterName)
