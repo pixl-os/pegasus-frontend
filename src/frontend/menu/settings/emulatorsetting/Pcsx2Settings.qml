@@ -241,6 +241,19 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: optCrosshairs
+                }
+                ToggleOption {
+                    id: optCrosshairs
+
+                    label: qsTr("Crosshairs") + api.tr
+                    note: qsTr("Active crosshairs on lightgun games.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.crosshairs")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pcsx2.crosshairs",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optCheats
                 }
                 SectionTitle {
@@ -259,7 +272,6 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("pcsx2.cheats",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-//                    KeyNavigation.down: optAutoSave
                 }
                 Item {
                     width: parent.width
