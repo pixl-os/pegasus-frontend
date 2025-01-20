@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2025-01.20 - v0.1.8.4
+- Features:
+    - add "pixL patches" repository for updates
+
 ## [pixL-master] - 2024-12-02 - v0.1.8.3
 - Quick fixes:
 	- add CHD support for retroachievements display
