@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file (focus on ch
 ## [pixL-master] - 2025-mm-dd - v0.x.x
 - Features:
 	- add Amazon Luna controller layout
+    - add "pixL patches" repository for updates
 
 ## [pixL-master] - 2024-12-24 - v0.1.9
 - Features:
@@ -41,6 +42,10 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix to navigate between left/right x/y axis in gamepad editor
 	- fix to change theme loading way
 	- fix to update "previous value" after each changes/saves in video settings
+
+## [pixL-master] - 2025-01.20 - v0.1.8.4
+- Features:
+    - add "pixL patches" repository for updates
 
 ## [pixL-master] - 2024-12-02 - v0.1.8.3
 - Quick fixes:
