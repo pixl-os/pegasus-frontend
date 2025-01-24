@@ -243,6 +243,12 @@ FocusScope {
 
                     KeyNavigation.down: optCrosshairs
                 }
+                SectionTitle {
+                    text: qsTr("Lightguns") + api.tr
+                    first: true
+                    symbol: "\uf0d0"
+                    symbolFontFamily: global.fonts.awesome //global.fonts.ion is used by default
+                }
                 ToggleOption {
                     id: optCrosshairs
 
@@ -252,6 +258,32 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("pcsx2.crosshairs")
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("pcsx2.crosshairs",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSplitscreenHack
+                }
+                ToggleOption {
+                    id: optSplitscreenHack
+
+                    label: qsTr("Split screen hack (Beta)") + api.tr
+                    note: qsTr("Hack to be able to play to split screen games as Time Crisis games\n(will be activated only if 2 guns connected)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.splitscreen.hack")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pcsx2.splitscreen.hack",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSplitscreenFullStretch
+                }
+                ToggleOption {
+                    id: optSplitscreenFullStretch
+                    visible: optSplitscreenHack.checked
+                    label: qsTr("Split screen full stretch (Beta)") + api.tr
+                    note: qsTr("To maximize high of game view for split screen games\n(but not adviced to keep good ratio)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.splitscreen.fullstretch")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pcsx2.splitscreen.fullstretch",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optCheats

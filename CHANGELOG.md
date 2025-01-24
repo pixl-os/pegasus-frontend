@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file (focus on ch
 		- filter better NVIDIA vs INTEL/AMD outputs
 	- add overlay suppport option in menu for Sony PS2 including libretro core and PCSX2 sandalone emulator 
 	- add crosshairs option in menu for PCSX2 standalone emulator
+	- add split screen hack/fullstretch options in menu for PCSX2 standalone emulator
 
 ## [pixL-master] - 2024-12-24 - v0.1.9
 - Features:
