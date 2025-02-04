@@ -566,7 +566,7 @@ FocusScope {
                             else wifiIP = "192.168.1.254"; //for test purpose
                             //get wifi ssid if exists
                             var ssid = "";
-                            if(!isDebugEnv()) ssid = api.internal.system.run("timeout 1 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}' | tr -d '\\n' | tr -d '\\r' | tr -d [:space:]");
+                            if(!isDebugEnv()) ssid = api.internal.system.run("timeout 1 wpa_cli status | grep -E 'ssid' | grep -v 'bssid' | awk -v FS='(=)' '{print $2}' | tr -d '\\n' | tr -d '\\r'").trim();
                             else ssid = "lesv2-5G-3"; //for test purpose
 
                             if(wifiIP !== ""){
@@ -648,7 +648,8 @@ FocusScope {
                         api.internal.recalbox.saveParameters();
                         if(checked){
                             var wifiIP = "";
-                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'");
+                            if(!isDebugEnv()) wifiIP = api.internal.system.run("timeout 1 ifconfig 2> /dev/null | grep -A1 '^w'| grep 'inet addr:' | grep -v 127.0.0.1 | sed -e 's/Bcast//' | cut -d: -f2 | tr -d '\\n' | tr -d '\\r' | tr -d [:space:]");
+                            else wifiIP = "192.168.1.254"; //for test purpose
                             console.log("wifiIP : '", wifiIP,"'")
                             //activate wifi by restarting only if a wifi is not already connected
                             if(wifiIP === ""){
