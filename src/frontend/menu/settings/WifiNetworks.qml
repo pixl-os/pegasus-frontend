@@ -244,7 +244,7 @@ FocusScope {
         let icon = "";
         if(!isDebugEnv()){
             //command to read scan, need to lauch scan before with command: 'wpa_cli -i wlan0 scan'
-            result = api.internal.system.run("timeout 1 wpa_cli -i wlan0 scan_results | sed \"1 d\" | awk '{print $1\"|\"$2\"|\"$3\"|\"$4\"|\"$5}'");
+            result = api.internal.system.run("timeout 1 wpa_cli -i wlan0 scan_results | sed \"1 d\" | awk '{print $1\"|\"$2\"|\"$3\"|\"$4\"|\"$5\" \"$6\" \"$7\" \"$8\" \"$9\" \"$10}'").trim();
         }
         else{
             // bssid / frequency / signal level / flags / ssid
