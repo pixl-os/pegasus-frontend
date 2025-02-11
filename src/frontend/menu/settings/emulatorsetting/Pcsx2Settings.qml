@@ -240,7 +240,19 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    KeyNavigation.down: optGUI
+                }
+                ToggleOption {
+                    id: optGUI
 
+                    label: qsTr("Enable Graphical User Interface at start") + api.tr
+                    note: qsTr("To access PCSX2 GUI at start") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.gui",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pcsx2.gui",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optCrosshairs
                 }
                 SectionTitle {
@@ -255,7 +267,7 @@ FocusScope {
                     label: qsTr("Crosshairs") + api.tr
                     note: qsTr("Active crosshairs on lightgun games.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.crosshairs")
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.crosshairs",true)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("pcsx2.crosshairs",checked);
                     }
@@ -268,7 +280,7 @@ FocusScope {
                     label: qsTr("Split screen hack (Beta)") + api.tr
                     note: qsTr("Hack to be able to play to split screen games as Time Crisis games\n(will be activated only if 2 guns connected)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.splitscreen.hack")
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.splitscreen.hack",true)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("pcsx2.splitscreen.hack",checked);
                     }
@@ -281,7 +293,7 @@ FocusScope {
                     label: qsTr("Split screen full stretch (Beta)") + api.tr
                     note: qsTr("To maximize high of game view for split screen games\n(but not adviced to keep good ratio)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.splitscreen.fullstretch")
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.splitscreen.fullstretch",false)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("pcsx2.splitscreen.fullstretch",checked);
                     }
@@ -299,9 +311,35 @@ FocusScope {
                     label: qsTr("Enable Cheats") + api.tr
                     note: qsTr("Ingames cheats enable.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.cheats")
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.cheats",false)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("pcsx2.cheats",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optFastBoot
+                }
+                ToggleOption {
+                    id: optFastBoot
+
+                    label: qsTr("Fast Boot") + api.tr
+                    note: qsTr("To start game direclty without Bios loading introduction") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.fastboot",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pcsx2.fastboot",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optInjectSystemLanguage
+                }
+                ToggleOption {
+                    id: optInjectSystemLanguage
+
+                    label: qsTr("Inject System Language in BIOS") + api.tr
+                    note: qsTr("Set PS2 BIOS System language from pixL's one") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pcsx2.injectsystemlanguage",true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pcsx2.injectsystemlanguage",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                 }
