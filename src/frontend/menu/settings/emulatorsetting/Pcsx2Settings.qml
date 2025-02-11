@@ -12,6 +12,38 @@ import QtQuick.Window 2.12
 FocusScope {
     id: root
 
+    //to be able to have region selected
+    property string region : ""
+
+    //loader to load confirm dialog
+    Loader {
+        id: launchPS2BIOS
+        anchors.fill: parent
+        z:10
+    }
+
+    Connections {
+        target: launchPS2BIOS.item
+        function onAccept() {
+            //launch "game" to use BIOS
+            //just set "bios" as title of this game (optional)
+            api.internal.singleplay.setTitle("bios(" + region + ")");
+            //set rom full path (fake rom with "bios(region)" in this case)
+            api.internal.singleplay.setFile("/recalbox/share/roms/ps2/bios(" + region + ")");
+            //set system to select to run this rom
+            api.internal.singleplay.setSystem("ps2"); //using shortName
+            //connect game to launcher
+            api.connectGameFiles(api.internal.singleplay.game);
+            //launch this Game
+            api.internal.singleplay.game.launch();
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
+        }
+    }
+
     signal close
 
     width: parent.width
@@ -342,7 +374,161 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("pcsx2.injectsystemlanguage",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnLaunchEuropeBIOS
                 }
+                // to apply settings
+                SimpleButton {
+                    id: btnLaunchEuropeBIOS
+                    Rectangle {
+                        //id: containerValidate
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Launch PS2 BIOS - Europe (to configure)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        launchPS2BIOS.focus = false;
+                        launchPS2BIOS.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "PS2 BIOS (Europe)",
+                                                  "message": qsTr("Do you want to launch this BIOS now ?") + api.tr,
+                                                  "symbol": "\uf412",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //Save region selected for later
+                        region = "europe";
+                        //to force change of focus
+                        launchPS2BIOS.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnLaunchJapanBIOS
+                }
+                SimpleButton {
+                    id: btnLaunchJapanBIOS
+                    Rectangle {
+                        //id: containerValidate
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Launch PS2 BIOS - Japan (to configure)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        launchPS2BIOS.focus = false;
+                        launchPS2BIOS.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "PS2 BIOS (Japan)",
+                                                  "message": qsTr("Do you want to launch this BIOS now ?") + api.tr,
+                                                  "symbol": "\uf412",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //Save region selected for later
+                        region = "japan";
+                        //to force change of focus
+                        launchPS2BIOS.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnLaunchUsaBIOS
+                }
+                SimpleButton {
+                    id: btnLaunchUsaBIOS
+                    Rectangle {
+                        //id: containerValidate
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Launch PS2 BIOS - USA (to configure)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        launchPS2BIOS.focus = false;
+                        launchPS2BIOS.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "PS2 BIOS (USA)",
+                                                  "message": qsTr("Do you want to launch this BIOS now ?") + api.tr,
+                                                  "symbol": "\uf412",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //Save region selected for later
+                        region = "usa";
+                        //to force change of focus
+                        launchPS2BIOS.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnLaunchHongKongBIOS
+                }
+                SimpleButton {
+                    id: btnLaunchHongKongBIOS
+                    Rectangle {
+                        id: containerValidate
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Launch PS2 BIOS - Hong Kong (to configure)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        launchPS2BIOS.focus = false;
+                        launchPS2BIOS.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "PS2 BIOS (Hong Kong)",
+                                                  "message": qsTr("Do you want to launch this BIOS now ?") + api.tr,
+                                                  "symbol": "\uf412",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //Save region selected for later
+                        region = "china";
+                        //to force change of focus
+                        launchPS2BIOS.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                }
+
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
