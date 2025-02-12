@@ -355,7 +355,7 @@ FocusScope {
                     id: optFastBoot
 
                     label: qsTr("Fast Boot") + api.tr
-                    note: qsTr("To start game direclty without Bios loading introduction") + api.tr
+                    note: qsTr("To start game directly without Bios loading introduction\n(Not compatible with all games/hacks)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("pcsx2.fastboot",false)
                     onCheckedChanged: {
