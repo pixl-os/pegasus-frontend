@@ -29,6 +29,7 @@ FocusScope {
             //just set "bios" as title of this game (optional)
             api.internal.singleplay.setTitle("bios(" + region + ")");
             //set rom full path (fake rom with "bios(region)" in this case)
+            //important to have paranthesis around the region and the "bios" term to be well detected by configgen
             api.internal.singleplay.setFile("/recalbox/share/roms/ps2/bios(" + region + ")");
             //set system to select to run this rom
             api.internal.singleplay.setSystem("ps2"); //using shortName
@@ -489,10 +490,10 @@ FocusScope {
                         launchPS2BIOS.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: btnLaunchHongKongBIOS
+                    KeyNavigation.down: btnLaunchAsiaBIOS
                 }
                 SimpleButton {
-                    id: btnLaunchHongKongBIOS
+                    id: btnLaunchAsiaBIOS
                     Rectangle {
                         id: containerValidate
                         width: parent.width
@@ -507,14 +508,14 @@ FocusScope {
                             color: themeColor.textValue
                             font.pixelSize: vpx(30)
                             font.family: globalFonts.ion
-                            text : "\uf2ba  " + qsTr("Launch PS2 BIOS - Hong Kong (to configure)") + api.tr
+                            text : "\uf2ba  " + qsTr("Launch PS2 BIOS - Asia (to configure)") + api.tr
                         }
                     }
                     onActivate: {
                         //to force change of focus
                         launchPS2BIOS.focus = false;
                         launchPS2BIOS.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": "PS2 BIOS (Hong Kong)",
+                                                { "title": "PS2 BIOS (Asia)",
                                                   "message": qsTr("Do you want to launch this BIOS now ?") + api.tr,
                                                   "symbol": "\uf412",
                                                   "symbolfont" : global.fonts.ion,
@@ -522,7 +523,7 @@ FocusScope {
                                                   "secondchoice": "",
                                                   "thirdchoice": qsTr("No") + api.tr});
                         //Save region selected for later
-                        region = "china";
+                        region = "asia";
                         //to force change of focus
                         launchPS2BIOS.focus = true;
                     }
