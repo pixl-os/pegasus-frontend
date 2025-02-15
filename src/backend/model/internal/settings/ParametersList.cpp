@@ -172,8 +172,8 @@ QStringList GetParametersList(QString Parameter)
         ## (none, retro, scanlines)
         global.shaderset=none
         */
-        ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanlines");
-        ListOfInternalValue << "none" << "retro" << "scanlines";
+        ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanlines") << QObject::tr("mega bezel (under overlay)") << QObject::tr("mega bezel (above overlay)");
+        ListOfInternalValue << "none" << "retro" << "scanlines" << "megabezel_under_overlay" << "megabezel_above_overlay";
     }
     //to manage/select SHADERS directory
     else if (Parameter == "directory.shaders")
