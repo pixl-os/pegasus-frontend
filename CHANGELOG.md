@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file (focus on ch
 - Features:
 	- add Amazon Luna controller layout
     - add "pixL patches" repository for updates
+	- add usage of MegaBezel shaders using our overlays (reflections, glass ...) by system/custom overlays
 
 ## [pixL-master] - 2024-12-24 - v0.1.9
 - Features:
