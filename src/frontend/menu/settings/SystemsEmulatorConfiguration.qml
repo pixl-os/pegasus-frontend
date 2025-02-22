@@ -168,9 +168,15 @@ FocusScope {
                     note: qsTr("Set predefined Shader effect for this system") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -202,12 +208,51 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optGlobalShader
+                    KeyNavigation.down: optSystemShaderBorderCoverage
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
+
+                SliderOption {
+                    id: optSystemShaderBorderCoverage
+
+                    //property to manage parameter name
+                    property string parameterName : system.shortName + ".shaderbordercoverage"
+                    //property of SliderOption to set
+                    label: qsTr("Overlay Shader Border Coverage") + api.tr
+                    note: qsTr("Additional Border Coverage to manage shader above overlay as Mega Bezel") + api.tr
+                    // in slider object
+                    max : 15
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,4)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,4) + "%"
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+
+                    KeyNavigation.down: optSystemShader
+                    // not visible if not libretro Core
+                    visible : isLibretroCore && (optSystemShaderSet.internalvalue === "megabezel_above_overlay" ? true : false)
+                }
+
                 MultivalueOption {
-                    id: optGlobalShader
+                    id: optSystemShader
 
                     //property to manage parameter name
                     property string parameterName : system.shortName + ".shaders"
@@ -223,7 +268,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalShader;
+                        parameterslistBox.callerid = optSystemShader;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
