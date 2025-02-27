@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2025-mm-dd - v0.x.x
+## [pixL-master] - 2025-03-01 - v0.1.10
 - Features:
 	- add Amazon Luna controller layout
 	- update ratio Google Stadia
@@ -15,9 +15,14 @@ All notable changes to this project will be documented in this file (focus on ch
 		- fix to reboot only for nvidia GPU to setup virtual screens for the moment 
 		- fix to propose to reboot only for nvidia GPU to setup virtual screens for the moment
 		- filter better NVIDIA vs INTEL/AMD outputs
-	- add overlay suppport option in menu for Sony PS2 including libretro core and PCSX2 sandalone emulator 
-	- add crosshairs option in menu for PCSX2 standalone emulator
-	- add split screen hack/fullstretch options in menu for PCSX2 standalone emulator
+	- PS2 features:
+		- add overlay support option in menu for Sony PS2 including libretro core and PCSX2 sandalone emulator 
+		- add crosshairs option in menu for PCSX2 standalone emulator
+		- add split screen hack/fullstretch options in menu for PCSX2 standalone emulator
+		- add "GUI at start", "fast boot" and "inject system language in BIOS" from PCSX2 menu
+		- add possibility to launch PS2 BIOS from Pegasus menu
+		- clarify asia BIOS usage + add more comments
+		- add more comment/warning about "fast boot" feature
 
 ## [pixL-master] - 2024-12-24 - v0.1.9
 - Features:
