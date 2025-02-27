@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file (focus on ch
 ## [pixL-master] - 2025-mm-dd - v0.x.x
 - Features:
 	- add Amazon Luna controller layout
+	- update ratio Google Stadia
     - add "pixL patches" repository for updates
 	- add usage of MegaBezel shaders using our overlays (reflections, glass ...) by system/custom overlays
 	- fix to add possibility to use SSID in parts separated with spaces (until 6)
