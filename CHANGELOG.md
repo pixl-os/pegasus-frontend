@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add Amazon Luna controller layout
     - add "pixL patches" repository for updates
 	- add usage of MegaBezel shaders using our overlays (reflections, glass ...) by system/custom overlays
+	- fix to add possibility to use SSID in parts separated with spaces (until 6)
 
 ## [pixL-master] - 2024-12-24 - v0.1.9
 - Features:
