@@ -8,7 +8,14 @@ All notable changes to this project will be documented in this file (focus on ch
     - add "pixL patches" repository for updates
 	- add usage of MegaBezel shaders using our overlays (reflections, glass ...) by system/custom overlays
 	- fix to add possibility to use SSID in parts separated with spaces (until 6)
-
+	- second/virtual screen feature (Beta feature):
+		- add feature to take into account also disconnected screens with resolutions/frequences
+		- fix to add more tmp file generation during changes to improve refresh of info in UI
+		- for virtual, return now only virtual (for intel) or disconnected ones (for nvidia/amd) in case of virtual outputs
+		- fix to reboot only for nvidia GPU to setup virtual screens for the moment 
+		- fix to propose to reboot only for nvidia GPU to setup virtual screens for the moment
+		- filter better NVIDIA vs INTEL/AMD outputs
+		
 ## [pixL-master] - 2024-12-24 - v0.1.9
 - Features:
 	- add auto change disc option on dolphin
