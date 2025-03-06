@@ -33,7 +33,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add 8bitdo sn30 pro controller layout and icon
 	- add xbox series s/x controller layout
 	- bump xbox series s/x 20 years controller layout
-	- add Nintendo wiimote controller layout
+	- add Nintendo wiimote controller layout (not yet activated, because not completed finally)
 	- add auto change disc option in menu advanced settings emulator for dolphin
 	- add crt colors, upscale mode and supersampling options in menu advanced settings emulator for supermodel
 	- add new options in menu advanced settings emulator for RCPS3 as: 
