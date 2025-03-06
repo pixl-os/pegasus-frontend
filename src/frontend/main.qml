@@ -2126,14 +2126,15 @@ Window {
         ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
         ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"; iconfont: "awesome"}
 
-        //27/02/2022 2 controllers added snakebyte idroid:con, 8bitdo sn30 pro+ and 8bitdo pro 2
+        //27/02/2022 2 controllers added snakebyte idroid:con, 8bitdo sn30 pro+
         ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+,8bitdo sn30 pro+,8bitdo sn30 pro plus,8bitdo pro 2"; type:"controller"; iconfont: "awesome"; layout: "sn30proplus
-        "}
+        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+,sn30 pro plus"; type:"controller"; iconfont: "awesome"; layout: "sn30proplus"}
+        //27/02/2022 2 controllers added 8bitdo pro 2
+        ListElement { icon: "\uf0cc"; keywords: "8bitdo pro 2"; type:"controller"; iconfont: "awesome"}
         //07/10/2024 2 controllers added 8bitdo arcade stick, 8bitdo sf30/sn30 pro and google stadia
         ListElement { icon: "\uf0d1"; keywords: "stadia"; type:"controller"; iconfont: "awesome"; layout: "stadia"}
         ListElement { icon: "\uf0d2"; keywords: "8bitdo arcade stick,n30 Arcade Stick"; type:"controller"; iconfont: "awesome"; layout: "arcadestick"} //match only in bluetooth else detected as xbox :-(
-        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro,8bitdo sf30 pro,8bitdo sn30 pro"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro"; type:"controller"; iconfont: "awesome"}
 
         //28/02/2022 to add wheels/cockpit devices
         ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}
