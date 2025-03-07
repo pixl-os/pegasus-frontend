@@ -2134,7 +2134,7 @@ Window {
         //07/10/2024 2 controllers added 8bitdo arcade stick, 8bitdo sf30/sn30 pro and google stadia
         ListElement { icon: "\uf0d1"; keywords: "stadia"; type:"controller"; iconfont: "awesome"; layout: "stadia"}
         ListElement { icon: "\uf0d2"; keywords: "8bitdo arcade stick,n30 Arcade Stick"; type:"controller"; iconfont: "awesome"; layout: "arcadestick"} //match only in bluetooth else detected as xbox :-(
-        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro"; type:"controller"; iconfont: "awesome"; layout: "sn30pro"}
 
         //28/02/2022 to add wheels/cockpit devices
         ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}
