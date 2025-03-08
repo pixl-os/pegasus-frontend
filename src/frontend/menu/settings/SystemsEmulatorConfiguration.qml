@@ -62,6 +62,8 @@ FocusScope {
         boundsBehavior: Flickable.StopAtBounds
         boundsMovement: Flickable.StopAtBounds
 
+        clip: true
+
         readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
 

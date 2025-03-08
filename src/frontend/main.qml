@@ -313,9 +313,13 @@ Window {
                 else if (api.keys.isNetplay(event) && !event.isAutoRepeat && !global.guideButtonPressed && !global.buttonLongPress){
                     //console.log("Keys.onReleased: api.keys.isNetplay(event)");
                     event.accepted = true;
-                    subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
-                    subscreen.focus = true;
-                    content.state = "sub";
+
+                    subdialog.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
+                    subdialog.focus = true;
+                    //subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
+                    //subscreen.focus = true;
+                    //content.state = "sub";
+
                     //stop longpress timer also to avoid border effect
                     timerButtonPressed.stop()
                     global.guideButtonPressed = false;
@@ -358,7 +362,15 @@ Window {
                 else if (api.keys.isMenu(event) && !event.isAutoRepeat) {
                     //console.log("Keys.onPressed: api.keys.isMenu(event)");
                     event.accepted = true;
-                    mainMenu.focus = true;
+
+                    //deacvtivated for test only
+                    //mainMenu.focus = true;
+
+                    //test to use a qml file as dialog box
+                    //get collection shortname from game
+                    var system = api.collections.get(0);
+                    subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": system});
+                    subdialog.focus = true;
                 }
                 //To refresh theme
                 else if (event.key === Qt.Key_F5) {
@@ -435,6 +447,38 @@ Window {
                     mainMenu.focus = true;
             }
         }
+
+        Loader {
+            id: subdialog
+            asynchronous: true
+            opacity: 1
+
+            width: parent.width * 0.95
+            height: parent.height * 0.95
+            scale: 0.95
+
+            anchors.centerIn: parent
+
+            Rectangle {
+                anchors.fill: parent
+                color: themeColor.main
+                z: -1
+            }
+            visible: focus
+            enabled: focus
+            onLoaded: item.focus = focus
+            onFocusChanged: if (item) item.focus = focus
+        }
+        Connections {
+            target: subdialog.item
+            function onClose() {
+                content.focus = true;
+                content.state = "";
+                theme.visible = true;
+                theme.focus = true;
+            }
+        }
+
         Loader {
             id: subscreen
             asynchronous: true
@@ -443,6 +487,13 @@ Window {
             height: parent.height
             anchors.left: content.right
 
+            Rectangle {
+                anchors.fill: parent
+                color: themeColor.main
+                z: -1
+            }
+
+            visible: focus
             enabled: focus
             onLoaded: item.focus = focus
             onFocusChanged: if (item) item.focus = focus
