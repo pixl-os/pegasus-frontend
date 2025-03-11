@@ -1,9 +1,11 @@
 //
 // Created by bkg2k on 08/11/2019.
 //
+// adapted by BozoTheGeek for pixL 11/03/2025
+
 #pragma once
 
-#include <pugixml/pugixml.hpp>
+#include <utils/pugixml/pugixml.hpp>
 #include <utils/Strings.h>
 
 typedef pugi::xml_document     XmlDocument;

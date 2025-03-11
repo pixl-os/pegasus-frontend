@@ -172,7 +172,9 @@ HEADERS += \
     $$PWD/zlib/zconf.h.cmakein \
     $$PWD/zlib/zconf.h.in \
     $$PWD/zlib/zlib.h \
-    $$PWD/zlib/zutil.h
+    $$PWD/zlib/zutil.h \
+    $$PWD/pugixml/pugixml.hpp \
+    $$PWD/pugixml/pugiconfig.hpp
     
 SOURCES += \
     $$PWD/7zip/7zArcIn.c \
@@ -305,9 +307,8 @@ SOURCES += \
     $$PWD/libretro-common/memmap/memmap.c \
     $$PWD/libretro-common/memmap/memalign.c \
     $$PWD/liboping/src/liboping.c \
-    $$PWD/liboping/src/oping.c
-    
-    
+    $$PWD/liboping/src/oping.c \
+    $$PWD/pugixml/pugixml.cpp
 
 !isEmpty(USE_SDL_GAMEPAD) {
     HEADERS += $$PWD/sdl2/ISynchronousEvent.h
