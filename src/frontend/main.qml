@@ -364,13 +364,13 @@ Window {
                     event.accepted = true;
 
                     //deacvtivated for test only
-                    //mainMenu.focus = true;
+                    mainMenu.focus = true;
 
                     //test to use a qml file as dialog box
                     //get collection shortname from game
-                    var system = api.collections.get(0);
-                    subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": system});
-                    subdialog.focus = true;
+                    //var system = api.collections.get(0);
+                    //subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": system});
+                    //subdialog.focus = true;
                 }
                 //To refresh theme
                 else if (event.key === Qt.Key_F5) {

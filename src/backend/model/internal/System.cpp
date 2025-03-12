@@ -17,8 +17,9 @@
 
 #include "System.h"
 #include <QProcess>
-#include "Log.h"
 
+//added to manage action notifications provided by script manager
+#include "ScriptManager.h"
 
 namespace model {
 
@@ -96,6 +97,23 @@ bool System::runBoolResult(const QString& Command, bool escaped)
   //Log::debug(LOGMSG("runBoolResult escaped Command : '%1'").arg(escapedCommand.c_str()));
   int exitcode = system(escapedCommand.c_str());
   return exitcode == 0;
+}
+
+void System::notify(const QString& Action, model::Game* game)
+{
+    if(game == nullptr){
+        //Log::debug(LOGMSG("NotifyFromString(Action.toUtf8().constData())"));
+        ScriptManager::Instance().NotifyFromString(Action.toUtf8().constData());
+    }
+    else{
+        //Log::debug(LOGMSG("NotifyFromString(game, Action.toUtf8().constData())"));
+        ScriptManager::Instance().NotifyFromString(game, Action.toUtf8().constData());
+    }
+}
+
+QString System::currentAction()
+{
+    return QString::fromStdString(ScriptManager::Instance().LastAction());
 }
 
 } // namespace model

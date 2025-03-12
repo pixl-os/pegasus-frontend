@@ -79,6 +79,33 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
     //void NotifyKodi() { Notify(nullptr, nullptr, Notification::RunKodi, ""); }
 
     /*!
+     * @brief
+     * @return string containing last/previous Action
+     */
+    std::string LastAction() { return ActionToString(mPreviousParamBag.mAction); }
+
+    /*!
+     * @brief
+     * @param action Action to notify from string
+     */
+    void NotifyFromString(const std::string& action) {
+        Notification event = ActionFromString(action);
+        Notify(nullptr, event, std::string());
+    }
+
+    /*!
+     * @brief
+     * @param model::Game game to set game
+     * @param std::string action to notify from string
+     */
+    void NotifyFromString(const model::Game* game, const std::string& action) {
+        Notification event = ActionFromString(action);
+        const model::GameFile& gamefile = *game->filesConst().first();
+        const QFileInfo& finfo = gamefile.fileinfo();
+        Notify(game, event, QDir::toNativeSeparators(finfo.absoluteFilePath()).toUtf8().constData());
+    }
+
+    /*!
      * @brief Update EmulationStation status file with game information
      * @param game Target game
      * @param action Action to notify

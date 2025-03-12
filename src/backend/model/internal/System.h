@@ -21,6 +21,9 @@
 #include <utils/Strings.h>
 #include <QObject>
 
+#include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
+
 
 namespace model {
 
@@ -42,6 +45,11 @@ public:
     Q_INVOKABLE QString getRunAsyncResult();
 
     Q_INVOKABLE bool runBoolResult(const QString& Command, bool escaped = true);
+
+    //to set Action in /tmp/es_state.inf
+    Q_INVOKABLE void notify(const QString& Action, model::Game* game = nullptr);
+    //to get Action as set in /tmp/es_state.ingf
+    Q_INVOKABLE QString currentAction();
 
 private slots:
     void runAsync_slot();
