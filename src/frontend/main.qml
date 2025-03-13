@@ -342,7 +342,6 @@ Window {
             Keys.onPressed: {
                 //if (api.keys.isGuide(event)) console.log("Keys.onPressed: saw as guide");
                 //if (api.keys.isNetplay(event)) console.log("Keys.onPressed: saw as netplay");
-
                 //start timer to detect button long press
                 if((global.buttonLongPress == false) && (timerButtonPressed.running  == false))  timerButtonPressed.restart();
                 // Guide
@@ -363,14 +362,21 @@ Window {
                     //console.log("Keys.onPressed: api.keys.isMenu(event)");
                     event.accepted = true;
 
-                    //deacvtivated for test only
-                    mainMenu.focus = true;
-
-                    //test to use a qml file as dialog box
-                    //get collection shortname from game
-                    //var system = api.collections.get(0);
-                    //subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": system});
-                    //subdialog.focus = true;
+                    var lastAction = api.internal.system.LastAction();
+                    if(lastAction === "GamelistBrowsing"){
+                        var lastGame = api.internal.system.LastGame();
+                        
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": system});
+                        subdialog.focus = true;
+                    }
+                    else if(lastAction === "GameviewSelected"){
+                        var lastGame = api.internal.system.LastGame();
+                        //case when we select a view focus on a game (not in listview/gridview or other collections)
+                        
+                    }
+                    else{ //by default
+                        mainMenu.focus = true;
+                    }
                 }
                 //To refresh theme
                 else if (event.key === Qt.Key_F5) {
