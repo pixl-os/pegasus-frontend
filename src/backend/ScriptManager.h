@@ -32,14 +32,15 @@ enum class Notification
     Reboot               = 0x00008, //!< The whole system is required to reboot
     Relaunch             = 0x00010, //!< ES is going to relaunch
     Quit                 = 0x00020, //!< ES is going to quit (ex: GPI case power button)
-    SystemBrowsing       = 0x00040, //!< The user is browsing system list and selected a new system. Parameter: system short name
-    GamelistBrowsing     = 0x00080, //!< The user is browsing the game list and selected a new game. Parameter: game path
-    RunGame              = 0x00100, //!< A game is going to launch. Parameter: game path
-    RunDemo              = 0x00200, //!< A game is going to launch in demo mode. Parameter: game path
-    EndGame              = 0x00400, //!< Game session end. Parameter: game path
-    EndDemo              = 0x00800, //!< Game demo session end. Parameter: game path
-    Sleep                = 0x01000, //!< EmulationStation is entering sleep state.
-    WakeUp               = 0x02000, //!< EmulationStation is waking up
+    SystemBrowsing       = 0x00040, //!< The user is browsing system list and selected a new system. Parameter: collection
+    GamelistBrowsing     = 0x00080, //!< The user is browsing the game list and selected a new game. Parameter: game, collection
+    GameviewSelected     = 0x00090, //!< The user is selecting a view where game is described/focus. Parameter: game
+    RunGame              = 0x00100, //!< A game is going to launch. Parameter: game
+    RunDemo              = 0x00200, //!< A game is going to launch in demo mode. Parameter: game
+    EndGame              = 0x00400, //!< Game session end. Parameter: game
+    EndDemo              = 0x00800, //!< Game demo session end. Parameter: game
+    Sleep                = 0x01000, //!< Pegasus-Frontend is entering sleep state.
+    WakeUp               = 0x02000, //!< Pegasus-Frontend is waking up
     ScrapStart           = 0x04000, //!< A multiple game scrapping session starts
     ScrapStop            = 0x08000, //!< Scrapping session end. Parameter: scrapped game count
     ScrapGame            = 0x10000, //!< A game has been scrapped. Parameter: game path
@@ -86,61 +87,79 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
 
     /*!
      * @brief
+     * @return const model::Game containing last/previous Game
+     */
+    model::Game* LastGame() { return const_cast<model::Game*>(mPreviousParamBag.mGame); }
+
+    /*!
+     * @brief
+     * @return const model::Collection containing last/previous Collection
+     */
+    model::Collection* LastCollection() { return const_cast<model::Collection*>(mPreviousParamBag.mCollection); }
+
+    /*!
+     * @brief
      * @param action Action to notify from string
      */
     void NotifyFromString(const std::string& action) {
         Notification event = ActionFromString(action);
-        Notify(nullptr, event, std::string());
+        Notify(event, std::string());
     }
 
     /*!
      * @brief
+     * @param model::Collection collection to set collection
+     * @param std::string action to notify from string
+     */
+    void NotifyFromString(const model::Collection* collection, const std::string& action) {
+        Notification event = ActionFromString(action);
+        Notify(collection, event);
+    }
+
+    /*!
+     * @brief
+     * @param model::Collection collection to set collection
      * @param model::Game game to set game
      * @param std::string action to notify from string
      */
-    void NotifyFromString(const model::Game* game, const std::string& action) {
+    void NotifyFromString(const model::Collection* collection, const model::Game* game, const std::string& action) {
         Notification event = ActionFromString(action);
         const model::GameFile& gamefile = *game->filesConst().first();
         const QFileInfo& finfo = gamefile.fileinfo();
-        Notify(game, event, QDir::toNativeSeparators(finfo.absoluteFilePath()).toUtf8().constData());
+        Notify(collection, game, event, QDir::toNativeSeparators(finfo.absoluteFilePath()).toUtf8().constData());
     }
 
     /*!
-     * @brief Update EmulationStation status file with game information
+     * @brief Update Pegasus-Frontend status file with game information
      * @param game Target game
      * @param action Action to notify
      */
-    //RFU
     void Notify(const model::GameFile* q_gamefile, Notification action) { 
-    
-                    const model::GameFile& gamefile = *q_gamefile;
-                    const model::Game& game = *gamefile.parentGame();
-                    const QFileInfo& finfo = gamefile.fileinfo();
-                
-                    Notify(&game, action, QDir::toNativeSeparators(finfo.absoluteFilePath()).toUtf8().constData()); 
-                
-                }
+        const model::GameFile& gamefile = *q_gamefile;
+        const model::Game& game = *gamefile.parentGame();
+        const QFileInfo& finfo = gamefile.fileinfo();
+        Notify(nullptr,&game, action, QDir::toNativeSeparators(finfo.absoluteFilePath()).toUtf8().constData());
+    }
 
     /*!
-     * @brief Update EmulationStation status file with system information
+     * @brief Update Pegasus-Frontend status file with system information
      * @param system Target system
      * @param action Action to notify
      */
-    //RFU
-    //void Notify(const SystemData& system, Notification action) { Notify(&system, nullptr, action, system.getFullName()); }
+    void Notify(const model::Collection* collection, Notification action) { Notify(collection, nullptr, action, collection->name().toUtf8().constData()); }
 
     /*!
      * @brief
      * @param action Action to notify
      */
-    void Notify(Notification action) { Notify(nullptr, action, std::string()); }
+    void Notify(Notification action) { Notify(nullptr, nullptr, action, std::string()); }
 
     /*!
      * @brief
      * @param action Action to notify
      * @param actionParameters Optional action parameters
      */
-    void Notify(Notification action, const std::string& actionParameters) { Notify(nullptr, action, actionParameters); }
+    void Notify(Notification action, const std::string& actionParameters) { Notify(nullptr, nullptr, action, actionParameters); }
 
     /*!
      * @brief Run the target using the given arguments.
@@ -172,6 +191,8 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      */
     struct ParamBag
     {
+      // Collection/System
+      const model::Collection* mCollection;
       // Game
       const model::Game* mGame;
       // Action
@@ -179,42 +200,29 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
       //! Action parameters
       std::string mActionParameters;
 
-      
-      //RFU
-      //! System
-      // const SystemData* mSystemData;
-      // Game
-      //const FileData* mFileData;
-
-
       /*!
        * @brief Default constructor
        */
       ParamBag()
-        : mGame(nullptr),
-          mActionParameters(),
-          mAction(Notification::None)
-          //RFU
-          //mSystemData(nullptr),
-          //mFileData(nullptr),
+        : mCollection(nullptr),
+          mGame(nullptr),
+          mAction(Notification::None),
+          mActionParameters()
       {
       }
 
       /*!
        * @brief Full constructor
-       * @param systemData System
-       * @param fileData Game
-       * @param action Action
-       * @param actionParameters Optional action parameters
+       * @param model::Collection* collection
+       * @param model::Game* game
+       * @param Notification action
+       * @param std::string& actionParameters
        */
-      //ParamBag(const SystemData* systemData, const FileData* fileData, Notification action, const std::string& actionParameters)
-      ParamBag(const model::Game* game, Notification action, const std::string& actionParameters)
-        : mGame(game),
-          mActionParameters(actionParameters),
-          mAction(action)
-          //RFU
-          //mSystemData(systemData),
-          //mFileData(fileData),
+      ParamBag(const model::Collection* collection, const model::Game* game, Notification action, const std::string& actionParameters)
+        : mCollection(collection),
+          mGame(game),
+          mAction(action),
+          mActionParameters(actionParameters)
       {
       }
 
@@ -225,11 +233,8 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
        */
       bool operator != (const ParamBag& compareTo) const
       {
-      //RFU    
-      //(mSystemData != compareTo.mSystemData) ||
-      //(mFileData != compareTo.mFileData) ||
-                
-        return ((mGame != compareTo.mGame) ||
+        return ((mCollection != compareTo.mCollection) ||
+                (mGame != compareTo.mGame) ||
                 (mAction != compareTo.mAction) ||
                 (mActionParameters != compareTo.mActionParameters));
       }
@@ -240,7 +245,7 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
 
     //RFU
     //! MQTT Topic
-    //static constexpr const char* sEventTopic = "Recalbox/EmulationStation/Event";
+    //static constexpr const char* sEventTopic = "Recalbox/Pegasus-Frontend/Event";
     // MQTT client
     //MqttClient mMQTTClient;
 
@@ -308,16 +313,13 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
     RefScriptList FilteredScriptList(Notification action);
 
     /*!
-     * @brief Update EmulationStation status file
-     * @param system Target System (may be null)
+     * @brief Update Pegasus-Frontend status file
+     * @param collection Target System (may be null)
      * @param game Target game (may be null)
      * @param play True if the target game is going to be launched
      * @param demo True if the target game is going ot be launched as demo
      */
-    void Notify(const model::Game* game, Notification action, const std::string& actionParameters);
-    
-    //RFU 
-    //void Notify(const SystemData* system, const FileData* game, Notification action, const std::string& actionParameters);
+    void Notify(const model::Collection* collection, const model::Game* game, Notification action, const std::string& actionParameters);
     
     /*!
      * @brief Run all script associated to the given action
@@ -329,13 +331,12 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
     /*!
      * @brief Build es_state.info Common information into output string
      * @param output Output string
-     * @param system System or nullptr
+     * @param collection Collection or nullptr
      * @param game Game or nullptr
      * @param action Notification
      * @param actionParameters Notification parameters or empty string
      */
-    //static void BuildStateCommons(std::string& output, Notification action, const std::string& actionParameters);
-    static void BuildStateCommons(std::string& output, const model::Game* game, Notification action, const std::string& actionParameters);
+    static void BuildStateCommons(std::string& output, const model::Collection* collection, const model::Game* game, Notification action, const std::string& actionParameters);
 
     /*!
      * @brief Build es_state.info game information into output string
@@ -347,10 +348,9 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
     /*!
      * @brief Build es_state.info system information into output string
      * @param output Output string
-     * @param game System or nullptr
+     * @param collection Collection or nullptr
      */
-    //RFU
-    //static void BuildStateSystem(std::string& output, const SystemData* system);
+    static void BuildStateSystem(std::string& output, const model::Collection* collection);
 
     /*!
      * @brief Build es_state.info compatibility key/values

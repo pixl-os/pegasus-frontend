@@ -99,21 +99,35 @@ bool System::runBoolResult(const QString& Command, bool escaped)
   return exitcode == 0;
 }
 
-void System::notify(const QString& Action, model::Game* game)
+void System::notify(const QString& Action, model::Collection* collection, model::Game* game)
 {
-    if(game == nullptr){
+    if(game == nullptr && collection == nullptr){
         //Log::debug(LOGMSG("NotifyFromString(Action.toUtf8().constData())"));
         ScriptManager::Instance().NotifyFromString(Action.toUtf8().constData());
     }
-    else{
-        //Log::debug(LOGMSG("NotifyFromString(game, Action.toUtf8().constData())"));
-        ScriptManager::Instance().NotifyFromString(game, Action.toUtf8().constData());
+    else if (game == nullptr) {
+        //Log::debug(LOGMSG("NotifyFromString(collection, Action.toUtf8().constData())"));
+        ScriptManager::Instance().NotifyFromString(collection, Action.toUtf8().constData());
+    }
+    else if (collection != nullptr){
+        //Log::debug(LOGMSG("NotifyFromString(collection, game, Action.toUtf8().constData())"));
+        ScriptManager::Instance().NotifyFromString(collection, game, Action.toUtf8().constData());
     }
 }
 
 QString System::currentAction()
 {
     return QString::fromStdString(ScriptManager::Instance().LastAction());
+}
+
+model::Game* System::currentGame()
+{
+    return ScriptManager::Instance().LastGame();
+}
+
+model::Collection* System::currentCollection()
+{
+    return ScriptManager::Instance().LastCollection();
 }
 
 } // namespace model

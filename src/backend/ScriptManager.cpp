@@ -62,6 +62,7 @@ const char* ScriptManager::ActionToString(Notification action)
     case Notification::Quit:                 return "quit";
     case Notification::SystemBrowsing:       return "systembrowsing";
     case Notification::GamelistBrowsing:     return "gamelistbrowsing";
+    case Notification::GameviewSelected:     return "gameviewselected";
     case Notification::RunKodi:              return "runkodi";
     case Notification::RunGame:              return "rungame";
     case Notification::RunDemo:              return "rundemo";
@@ -92,6 +93,7 @@ Notification ScriptManager::ActionFromString(const std::string& action)
 	{ "quit"                , Notification::Quit                 },
     { "systembrowsing"      , Notification::SystemBrowsing       },
     { "gamelistbrowsing"    , Notification::GamelistBrowsing     },
+    { "gameviewselected"    , Notification::GameviewSelected     },
     { "runkodi"             , Notification::RunKodi              },
     { "rungame"             , Notification::RunGame              },
     { "rundemo"             , Notification::RunDemo              },
@@ -202,18 +204,18 @@ void ScriptManager::RunScripts(Notification action, const std::string& param)
   }
 }
 
-void ScriptManager::BuildStateCommons(std::string& output, const model::Game* game, Notification action, const std::string& actionParameters)
-//RFU
-//void ScriptManager::BuildStateCommons(std::string& output, const SystemData* system, const FileData* game, Notification action, const std::string& actionParameters)
+void ScriptManager::BuildStateCommons(std::string& output, const model::Collection* collection, const model::Game* game, Notification action, const std::string& actionParameters)
 {
   // Build status file
   output.append("Action=").append(ActionToString(action)).append(eol)
         .append("ActionData=").append(actionParameters).append(eol);
 
-  //RFU
   // System
   if (game != nullptr)
-    output.append("System=").append(eol) //empty for the moment
+      output.append("System=").append(game->collections().name().toUtf8().constData()).append(eol)
+          .append("SystemId=").append(game->systemShortName().toUtf8().constData()).append(eol);
+  else if (collection != nullptr)
+      output.append("System=").append(collection->name().toUtf8().constData()).append(eol)
           .append("SystemId=").append(game->systemShortName().toUtf8().constData()).append(eol);
   // else if (action == Notification::RunKodi)
     // output.append("System=kodi").append(eol)
@@ -250,25 +252,28 @@ void ScriptManager::BuildStateGame(std::string& output, const model::Game* game)
         .append("GenreId=").append(game->genreid().toUtf8().constData()).append(eol)
         .append("Favorite=").append((game->isFavorite() ? "1" : "0")).append(eol)
         .append("Hidden=").append(eol) //empty for the moment
-        .append("Adult=").append(eol); //empty for the moment;
+        .append("Adult=").append(eol); //empty for the moment
 
-  if ((game->emulatorName() != "") && (game->emulatorCore() != ""))
-      output.append("Emulator=").append(game->emulatorName().toUtf8().constData()).append(eol)
-      .append("Core=").append(game->emulatorCore().toUtf8().constData()).append(eol);
+  if (game->emulatorName() != "")
+      output.append("Emulator=").append(game->emulatorName().toUtf8().constData()).append(eol);
+  else
+      output.append("Emulator=").append(eol);
+  if (game->emulatorCore() != "")
+      output.append("Core=").append(game->emulatorCore().toUtf8().constData()).append(eol);
+  else
+      output.append("Core=").append(eol);
 }
 
-/* void ScriptManager::BuildStateSystem(std::string& output, const SystemData* system)
+void ScriptManager::BuildStateSystem(std::string& output, const model::Collection* collection)
 {
-  std::string emulator;
-  std::string core;
+  std::string emulator = "";
+  std::string core = "";
 
-  if (system == nullptr) return;
-
-  if (!system->IsVirtual())
-    if (system->Manager().Emulators().GetDefaultEmulator(*system, emulator, core))
-      output.append("DefaultEmulator=").append(emulator).append(eol)
-            .append("DefaultCore=").append(core).append(eol);
-} */
+  if (collection == nullptr) return;
+      //TO DO - provide default emulator/core
+      output.append("DefaultEmulator=").append(emulator).append(eol) //empty for the moment
+            .append("DefaultCore=").append(core).append(eol); //empty for the moment
+}
 
 void ScriptManager::BuildStateCompatibility(std::string& output, Notification action)
 {
@@ -288,6 +293,7 @@ void ScriptManager::BuildStateCompatibility(std::string& output, Notification ac
     case Notification::Quit:
     case Notification::SystemBrowsing:
     case Notification::GamelistBrowsing:
+    case Notification::GameviewSelected:
     case Notification::EndGame:
     case Notification::EndDemo:
     case Notification::Sleep:
@@ -302,9 +308,7 @@ void ScriptManager::BuildStateCompatibility(std::string& output, Notification ac
   }
 }
 
-void ScriptManager::Notify(const model::Game* game, Notification action, const std::string& actionParameters)
-//RFU
-//void ScriptManager::Notify(const SystemData* system, const FileData* game, Notification action, const std::string& actionParameters)
+void ScriptManager::Notify(const model::Collection* collection, const model::Game* game, Notification action, const std::string& actionParameters)
 {
   //RFU
   //const std::string& notificationParameter = (game != nullptr) ? game->getPath().ToString() :
@@ -314,25 +318,18 @@ void ScriptManager::Notify(const model::Game* game, Notification action, const s
 
   // Check if it is the same event than in previous call
   //
-  //ParamBag newBag(system, game, action, actionParameters);
-  ParamBag newBag(game, action, actionParameters);
+  ParamBag newBag(collection, game, action, actionParameters);
   
   if (newBag != mPreviousParamBag)
   {
     // Build all
     std::string output("Version=2.0"); output.append(eol);
-    BuildStateCommons(output, game, action, actionParameters);
-    
-    
-    //RFU
-    //BuildStateCommons(output, system, game, action, actionParameters);
-    
+    BuildStateCommons(output, collection, game, action, actionParameters);
+
     BuildStateGame(output, game);
     
-    //BuildStateSystem(output, system);
-    
-    
-    
+    BuildStateSystem(output, collection);
+
     BuildStateCompatibility(output, action);
 
     // Save

@@ -357,24 +357,25 @@ Window {
                     timerButtonPressed.stop()
                     global.buttonLongPress = false;
                 }
-                // Menu
+                // Menu(s)
                 else if (api.keys.isMenu(event) && !event.isAutoRepeat) {
                     //console.log("Keys.onPressed: api.keys.isMenu(event)");
                     event.accepted = true;
 
-                    var lastAction = api.internal.system.LastAction();
-                    if(lastAction === "GamelistBrowsing"){
-                        var lastGame = api.internal.system.LastGame();
-                        
+                    var lastAction = api.internal.system.currentAction();
+                    //var currentGame;
+                    if(lastAction === "gamelistbrowsing"){ //to open a "system" menu (with selected game included)
+                        //don't set local currentGame variable - seesm to have a conflict with gameOS finally
+                        var lastGame = api.internal.system.currentGame();
+                        var system = lastGame.collections.get(0);
                         subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": system});
                         subdialog.focus = true;
                     }
-                    else if(lastAction === "GameviewSelected"){
-                        var lastGame = api.internal.system.LastGame();
+                    else if(lastAction === "gameviewselected"){ //to open a "game" menu
                         //case when we select a view focus on a game (not in listview/gridview or other collections)
-                        
+                        //TO DO
                     }
-                    else{ //by default
+                    else{ //default "general" menu by default
                         mainMenu.focus = true;
                     }
                 }
