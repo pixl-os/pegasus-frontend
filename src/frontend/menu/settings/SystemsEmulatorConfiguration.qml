@@ -22,6 +22,7 @@ FocusScope {
 
     enabled: focus
 
+    property var game;
     property var system;
     // check if is a libretro emulator for dynamic entry
     property bool isLibretroCore
@@ -44,6 +45,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
+        //text: typeof(system) !== "undefined" ? (qsTr("Settings systems > ") + api.tr + system.name) : (qsTr("Settings game > ") + api.tr + game.title)
         text: qsTr("Settings systems > ") + api.tr + system.name
         z: 2
     }

@@ -363,17 +363,20 @@ Window {
                     event.accepted = true;
 
                     var lastAction = api.internal.system.currentAction();
-                    //var currentGame;
+                    var lastGame;
+                    var lastCollection;
                     if(lastAction === "gamelistbrowsing"){ //to open a "system" menu (with selected game included)
-                        //don't set local currentGame variable - seesm to have a conflict with gameOS finally
-                        var lastGame = api.internal.system.currentGame();
-                        var system = lastGame.collections.get(0);
-                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": system});
+                        //case when we browse in a listview/gridview
+                        lastGame = api.internal.system.currentGame();
+                        lastCollection = api.internal.system.currentCollection();
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "game": lastGame});
                         subdialog.focus = true;
                     }
-                    else if(lastAction === "gameviewselected"){ //to open a "game" menu
+                    else if(lastAction === "gameviewselected"){ //to open a "game" menu only (to update override .cfg file)
                         //case when we select a view focus on a game (not in listview/gridview or other collections)
-                        //TO DO
+                        lastGame = api.internal.system.currentGame();
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"game": lastGame});
+                        subdialog.focus = true;
                     }
                     else{ //default "general" menu by default
                         mainMenu.focus = true;

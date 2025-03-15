@@ -48,7 +48,14 @@ public:
     Q_INVOKABLE bool runBoolResult(const QString& Command, bool escaped = true);
 
     //to set Action in /tmp/es_state.inf
-    Q_INVOKABLE void notify(const QString& Action, model::Collection* collection = nullptr, model::Game* game = nullptr);
+    Q_INVOKABLE void notify(const QString& Action){
+        notify(Action, nullptr, nullptr);
+    }
+    Q_INVOKABLE void notify(const QString& Action, model::Collection* collection){
+        notify(Action, collection, nullptr);
+    }
+    Q_INVOKABLE void notify(const QString& Action, model::Collection* collection, model::Game* game);
+
     //to get Action as set in /tmp/es_state.inf
     Q_INVOKABLE QString currentAction();
     //to get current Game
