@@ -1833,10 +1833,10 @@ Window {
                     isBeta = (api.internal.system.run("grep -i 'beta' /recalbox/recalbox.version") === "") ? false : true
                     isRelease = (api.internal.system.run("grep -i 'release' /recalbox/recalbox.version") === "") ? false : true
                     if(isRelease === true){// to propose release or pre-release in priority
-                        componentsListModel.append({ componentName: "pixL-OS", repoUrl:"https://updates.pixl-os.com/release-pixl-os.json",icon: "qrc:/frontend/assets/logo.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+                        componentsListModel.append({ componentName: "pixL-OS", repoUrl:"https://updates.pixl-os.com/release-pixl-os.json",icon: "qrc:/frontend/assets/logo.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false, downloaddirectory: "/recalbox/share/system/upgrade"});
                     }
                     else if(isBeta === true){ // to propose beta only if we have already a beta version installed
-                        componentsListModel.append({ componentName: "pixL-OS (Beta)", repoUrl:"https://updates.pixl-os.com/beta-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false});
+                        componentsListModel.append({ componentName: "pixL-OS (Beta)", repoUrl:"https://updates.pixl-os.com/beta-pixl-os.json",icon: "qrc:/frontend/assets/logobeta.png", picture: "qrc:/frontend/assets/backgroundpixl.png", multiVersions: false, downloaddirectory: "/recalbox/share/system/upgrade"});
                     }
                 }
                 else{// for dev testing only about updates
