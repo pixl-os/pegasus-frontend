@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2025-03-01 - v0.1.10
+## [pixL-master] - 2025-03-16 - v0.1.10
 - Features:
 	- add Amazon Luna controller layout
 	- update ratio Google Stadia
@@ -61,7 +61,11 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix to change theme loading way
 	- fix to update "previous value" after each changes/saves in video settings
 
-## [pixL-master] - 2025-01.20 - v0.1.8.4
+## [pixL-master] - 2025-03-15 - v0.1.8.5
+- Fixes:
+    - fix download directories for pixL-OS updates (mandatory to upgrade to pixL-OS v1.38)
+
+## [pixL-master] - 2025-01-20 - v0.1.8.4
 - Features:
     - add "pixL patches" repository for updates
 
