@@ -608,7 +608,7 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     }
 
                     //do loop on connect to wait download in this case
-                    m_updates[foundIndex].m_installationStep = 1;
+                    /*m_updates[foundIndex].m_installationStep = 1;
                     QEventLoop loop;
                     QObject::connect(&downloadManager[m_updates[foundIndex].m_downloaderIndex], &DownloadManager::finished, &loop, &QEventLoop::quit);
                     loop.exec();
@@ -616,7 +616,67 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     if(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError > 0){
                         Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: finished with error - exit status: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
                         return; //exit function now
-                    }
+                    }*/
+
+                    //refactored code
+                    // ... inside your thread ...
+                    m_updates[foundIndex].m_installationStep = 1;
+                    QObject::connect(&downloadManager[m_updates[foundIndex].m_downloaderIndex], &DownloadManager::finished,
+                                     this, [this, foundIndex, existingVersion, newVersion, componentName, diretoryPath, installationScriptAsset]() { // Use a lambda to capture variables
+                                         Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
+                                         if (downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError > 0) {
+                                             Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: finished with error - exit status: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
+                                             // Handle the error (e.g., emit a signal to notify the UI)
+                                             // If neccesary, return from the calling function.
+                                             return;
+                                         }
+                                         // Continue processing after download completion (e.g., installation)
+                                         // ...
+                                         // Example of UI update from non-UI thread
+                                         QMetaObject::invokeMethod(this, [this, foundIndex, existingVersion, newVersion, componentName, diretoryPath, installationScriptAsset]() {
+                                                 // update UI here.
+                                                 Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: Example of UI update from non-UI thread: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
+                                                 //launch installation after download
+                                                 m_updates[foundIndex].m_installationStep = 2;
+
+                                                 //launch installation script
+                                                 // Build parameters
+                                                 Strings::Vector args;
+                                                 args.push_back("-e");
+                                                 args.push_back(QString(existingVersion).toStdString());
+                                                 args.push_back("-n");
+                                                 args.push_back(QString(newVersion).toStdString());
+                                                 args.push_back("-c");
+                                                 args.push_back(QString(componentName).toStdString());
+
+                                                 //prepare script to run
+                                                 const Path path = Path(QString(diretoryPath + "/" + installationScriptAsset.m_name_asset).toStdString());
+
+                                                 //sync to wait end of script in this slot
+                                                 const ScriptManager::ScriptData script = { path, Notification::None , true };
+                                                 ScriptManagerThread *MyThread = new ScriptManagerThread(script.mPath,args,script.mSync,ScriptManager::Instance().mEnvironment);
+
+                                                 //connect to Thread
+                                                 connect(MyThread, &ScriptManagerThread::finished, [this, foundIndex, componentName](int exit_status)->void{
+                                                     //Check if OK and no error during installation
+                                                     if((exit_status == 0) && (this->getInstallationError(componentName) <= 0)){
+                                                         Log::debug(log_tag, LOGMSG("Thread finished without error - exit status: %1").arg(QString::number(exit_status)));
+                                                         this->m_updates[foundIndex].m_installationStep = 3; //installation finish
+                                                     }
+                                                     else{
+                                                         Log::debug(log_tag, LOGMSG("Thread finished with error - exit status: %1").arg(QString::number(exit_status)));
+                                                         this->m_updates[foundIndex].m_installationStep = 4; //installation finish on error
+                                                     }
+                                                 });
+                                                 MyThread->start();
+                                                 QThread::msleep(200); // sleep temporary to let thread start and show changes else it could crash :-(
+                                             }, Qt::QueuedConnection);
+
+                                     });
+
+                    // Do not block here. The download will happen asynchronously.
+                    // ... continue with other tasks in the thread ...
+                    Log::debug(log_tag, LOGMSG("continue with other tasks in the thread ..."));
                 }
                 else if(installationScriptAsset.m_download_url.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
                 {
@@ -626,43 +686,42 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     //save script content in a file in /tmp/'Componenet Name' directory
                     saveScript(installationScriptContent, directoryPath + "/" + installationScriptAsset.m_name_asset);
                     //no package downloaded in this case for the moment.
+
+                    //launch installation after download
+                    m_updates[foundIndex].m_installationStep = 2;
+
+                    //launch installation script
+                    // Build parameters
+                    Strings::Vector args;
+                    args.push_back("-e");
+                    args.push_back(QString(existingVersion).toStdString());
+                    args.push_back("-n");
+                    args.push_back(QString(newVersion).toStdString());
+                    args.push_back("-c");
+                    args.push_back(QString(componentName).toStdString());
+
+                    //prepare script to run
+                    const Path path = Path(QString(diretoryPath + "/" + installationScriptAsset.m_name_asset).toStdString());
+
+                    //sync to wait end of script in this slot
+                    const ScriptManager::ScriptData script = { path, Notification::None , true };
+                    ScriptManagerThread *MyThread = new ScriptManagerThread(script.mPath,args,script.mSync,ScriptManager::Instance().mEnvironment);
+
+                    //connect to Thread
+                    connect(MyThread, &ScriptManagerThread::finished, [this, foundIndex, componentName](int exit_status)->void{
+                        //Check if OK and no error during installation
+                        if((exit_status == 0) && (this->getInstallationError(componentName) <= 0)){
+                            Log::debug(log_tag, LOGMSG("Thread finished without error - exit status: %1").arg(QString::number(exit_status)));
+                            this->m_updates[foundIndex].m_installationStep = 3; //installation finish
+                        }
+                        else{
+                            Log::debug(log_tag, LOGMSG("Thread finished with error - exit status: %1").arg(QString::number(exit_status)));
+                            this->m_updates[foundIndex].m_installationStep = 4; //installation finish on error
+                        }
+                    });
+                    MyThread->start();
+                    QThread::msleep(200); // sleep temporary to let thread start and show changes else it could crash :-(
                 }
-
-
-                //launch installation after download
-                m_updates[foundIndex].m_installationStep = 2;
-
-                //launch installation script
-                // Build parameters
-                Strings::Vector args;
-                args.push_back("-e");
-                args.push_back(QString(existingVersion).toStdString());
-                args.push_back("-n");
-                args.push_back(QString(newVersion).toStdString());
-                args.push_back("-c");
-                args.push_back(QString(componentName).toStdString());
-
-                //prepare script to run
-                const Path path = Path(QString(diretoryPath + "/" + installationScriptAsset.m_name_asset).toStdString());
-
-                //sync to wait end of script in this slot
-                const ScriptManager::ScriptData script = { path, Notification::None , true };
-                ScriptManagerThread *MyThread = new ScriptManagerThread(script.mPath,args,script.mSync,ScriptManager::Instance().mEnvironment);
-
-                //connect to Thread
-                connect(MyThread, &ScriptManagerThread::finished, [this, foundIndex, componentName](int exit_status)->void{
-                    //Check if OK and no error during installation
-                    if((exit_status == 0) && (this->getInstallationError(componentName) <= 0)){
-                        Log::debug(log_tag, LOGMSG("Thread finished without error - exit status: %1").arg(QString::number(exit_status)));
-                        this->m_updates[foundIndex].m_installationStep = 3; //installation finish
-                    }
-                    else{
-                        Log::debug(log_tag, LOGMSG("Thread finished with error - exit status: %1").arg(QString::number(exit_status)));
-                        this->m_updates[foundIndex].m_installationStep = 4; //installation finish on error
-                    }
-                });
-                MyThread->start();
-                QThread::msleep(200); // sleep temporary to let thread start and show changes else it could crash :-(
             }
         }
     }
