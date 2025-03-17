@@ -48,6 +48,7 @@
 **
 ****************************************************************************/
 //Adapted by BozoTheGeek 29/01/2022
+//Refactored by BozoTheGeek 18/03/2025 (to avoid UI stuck/with a new FileIOWriter class)
 
 #include <QtNetwork>
 #include <QtCore>
@@ -93,7 +94,6 @@ private:
     QQueue<QString> filenameQueue;
     QQueue<qint64> filesizeQueue;
     QNetworkReply *currentDownload = nullptr;
-    QFile output;
     qint64 outputTargetedSize;
     QElapsedTimer downloadTimer;
 
@@ -104,11 +104,7 @@ private:
     QString log_tag = "DownloadManager";
 
     // for file download and write
-    //QFile m_file;
-    //QMutex m_fileMutex;
+    QFile m_file;
     QByteArray m_buffer;
     FileIOWriter *m_fileWriter = nullptr;
-    //QWaitCondition m_writeFinishedCondition;
-    //qint64 m_pendingWrites = 0;
-
 };
