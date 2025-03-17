@@ -83,8 +83,8 @@ private:
     void setSpeed(const QString &m);
     void setStatus(qint64 val, qint64 max);
     void setError(qint64 val);
-    bool isHttpRedirect() const;
-    QUrl reportRedirect();
+    bool isHttpRedirect(QNetworkReply *reply) const;
+    QUrl reportRedirect(QNetworkReply *reply);
 
     QNetworkAccessManager manager;
     QQueue<QUrl> downloadQueue;
