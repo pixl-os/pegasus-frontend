@@ -48,9 +48,11 @@
 **
 ****************************************************************************/
 //Adapted by BozoTheGeek 29/01/2022
+//Refactored by BozoTheGeek 18/03/2025 (to avoid UI stuck/with a new FileIOWriter class)
 
 #include <QtNetwork>
 #include <QtCore>
+#include "FileIOWriter.h"
 
 class DownloadManager: public QObject
 {
@@ -77,21 +79,21 @@ private slots:
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void downloadFinished();
     void downloadReadyRead();
+    void writeFinished();
 
 private:
     void setMessage(const QString &m);
     void setSpeed(const QString &m);
     void setStatus(qint64 val, qint64 max);
     void setError(qint64 val);
-    bool isHttpRedirect() const;
-    QUrl reportRedirect();
+    bool isHttpRedirect(QNetworkReply *reply) const;
+    QUrl reportRedirect(QNetworkReply *reply);
 
     QNetworkAccessManager manager;
     QQueue<QUrl> downloadQueue;
     QQueue<QString> filenameQueue;
     QQueue<qint64> filesizeQueue;
     QNetworkReply *currentDownload = nullptr;
-    QFile output;
     qint64 outputTargetedSize;
     QElapsedTimer downloadTimer;
 
@@ -101,4 +103,8 @@ private:
 
     QString log_tag = "DownloadManager";
 
+    // for file download and write
+    QFile m_file;
+    QByteArray m_buffer;
+    FileIOWriter *m_fileWriter = nullptr;
 };
