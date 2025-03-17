@@ -1,9 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2025-03-15 - v0.1.8.5
+## [pixL-master] - 2025-03-18 - v0.1.8.5
 - Fixes:
     - fix download directories for pixL-OS updates (mandatory to upgrade to pixL-OS v1.38)
+    - wait now download asynchronously and launch install script only after
+    - manage dynamically network reply/sender for updates
+    - adding fileIOWriter thread to avoid to be stuck during download/saving of files + cleaning/refactoring
 
 ## [pixL-master] - 2025-01-20 - v0.1.8.4
 - Features:
