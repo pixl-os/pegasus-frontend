@@ -612,19 +612,7 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                         else downloadManager[m_updates[foundIndex].m_downloaderIndex].append(QUrl(genericAssets[i].m_download_url),downloaddirectory + "/" + genericAssets[i].m_name_asset); //no set size to always download from 0
                     }
 
-                    //do loop on connect to wait download in this case
-                    /*m_updates[foundIndex].m_installationStep = 1;
-                    QEventLoop loop;
-                    QObject::connect(&downloadManager[m_updates[foundIndex].m_downloaderIndex], &DownloadManager::finished, &loop, &QEventLoop::quit);
-                    loop.exec();
-                    Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
-                    if(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError > 0){
-                        Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: finished with error - exit status: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
-                        return; //exit function now
-                    }*/
-
                     //refactored code
-                    // ... inside your thread ...
                     m_updates[foundIndex].m_installationStep = 1;
                     QObject::connect(&downloadManager[m_updates[foundIndex].m_downloaderIndex], &DownloadManager::finished,
                                      this, [this, foundIndex, existingVersion, newVersion, componentName, diretoryPath, installationScriptAsset]() { // Use a lambda to capture variables
@@ -636,8 +624,6 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                                              return;
                                          }
                                          // Continue processing after download completion (e.g., installation)
-                                         // ...
-                                         // Example of UI update from non-UI thread
                                          QMetaObject::invokeMethod(this, [this, foundIndex, existingVersion, newVersion, componentName, diretoryPath, installationScriptAsset]() {
                                                  // update UI here.
                                                  Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: Example of UI update from non-UI thread: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
@@ -678,10 +664,6 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                                              }, Qt::QueuedConnection);
 
                                      });
-
-                    // Do not block here. The download will happen asynchronously.
-                    // ... continue with other tasks in the thread ...
-                    Log::debug(log_tag, LOGMSG("continue with other tasks in the thread ..."));
                 }
                 else if(installationScriptAsset.m_download_url.startsWith("/",Qt::CaseInsensitive)) //to check if it's a local repo using path
                 {
