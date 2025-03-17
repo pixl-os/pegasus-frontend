@@ -23,6 +23,7 @@ DEFINES *= HAVE_7ZIP
 SOURCES += \
     Backend.cpp \
     DownloadManager.cpp \
+    FileIOWriter.cpp \
     FrontendLayer.cpp \
     GamepadAxisNavigation.cpp \
     HttpServer.cpp \
@@ -42,6 +43,7 @@ HEADERS += \
     Backend.h \
     CliArgs.h \
     DownloadManager.h \
+    FileIOWriter.h \
     FrontendLayer.h \
     GamepadAxisNavigation.h \
     HttpServer.h \
