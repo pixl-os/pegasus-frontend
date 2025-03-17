@@ -514,6 +514,11 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
             //get script content from url
             QString scriptContent;
 
+            //delete log/err files to avoid border effect
+            QFile(directoryPath + "/install.err").remove();
+            QFile(directoryPath + "/install.log").remove();
+            QFile(directoryPath + "/progress.log").remove();
+
             //delete script to avoid problem of existing or corrupted file
             QFile(directoryPath + "/" + versionScriptAsset.m_name_asset).remove();
 

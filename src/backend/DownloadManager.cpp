@@ -280,7 +280,8 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 
     setMessage(QString("%1 ...").arg(output.fileName()));
 
-    setStatus(bytesReceived, bytesTotal);
+    setStatus(static_cast<qint64>(bytesReceived * 0.99), bytesTotal); //-1% just to avoid to be at 100% when download is finish
+                                              // because file could be not saved yet ;-)
 
     // calculate the download speed
     double speed = bytesReceived * 1000.0 / downloadTimer.elapsed();
@@ -301,6 +302,9 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 
 void DownloadManager::downloadFinished(){
     Log::debug("DownloadManager", LOGMSG("downloadFinished !!!"));
+
+    setSpeed(""); //stop speed
+    setMessage(QString("%1 saving...").arg(output.fileName()));
 
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     if (!reply){
