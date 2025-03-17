@@ -51,6 +51,7 @@
 
 #include <QtNetwork>
 #include <QtCore>
+#include "FileIOWriter.h"
 
 class DownloadManager: public QObject
 {
@@ -77,6 +78,7 @@ private slots:
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void downloadFinished();
     void downloadReadyRead();
+    void writeFinished();
 
 private:
     void setMessage(const QString &m);
@@ -100,5 +102,13 @@ private:
     int iteration = 0;
 
     QString log_tag = "DownloadManager";
+
+    // for file download and write
+    //QFile m_file;
+    //QMutex m_fileMutex;
+    QByteArray m_buffer;
+    FileIOWriter *m_fileWriter = nullptr;
+    //QWaitCondition m_writeFinishedCondition;
+    //qint64 m_pendingWrites = 0;
 
 };
