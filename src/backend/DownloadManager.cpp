@@ -252,7 +252,21 @@ void DownloadManager::startNextDownload()
     //set timeout if no reply/transfer stop to 15 seconds
     request.setTransferTimeout(15000);
 
-    currentDownload = manager.get(request);
+
+    QNetworkReply *reply = manager.get(request); // Only call get() once
+
+    currentDownload = reply; // store the reply in currentDownload
+
+    QObject::connect(reply, &QNetworkReply::downloadProgress,
+                     this, &DownloadManager::downloadProgress);
+    QObject::connect(reply, &QNetworkReply::readyRead,
+                     this, &DownloadManager::downloadReadyRead);
+    QObject::connect(reply, &QNetworkReply::finished,
+                     this, &DownloadManager::downloadFinished);
+
+    downloadTimer.start();
+
+    /*currentDownload = manager.get(request);
     connect(currentDownload, &QNetworkReply::downloadProgress,
             this, &DownloadManager::downloadProgress);
     connect(currentDownload, &QNetworkReply::finished,
@@ -263,7 +277,7 @@ void DownloadManager::startNextDownload()
     // prepare the output
     //Log::debug("DownloadManager", LOGMSG("Downloading %1...\n").arg(url.toEncoded().constData()));
 
-    downloadTimer.start();
+    downloadTimer.start();*/
 }
 
 void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
@@ -298,17 +312,23 @@ void DownloadManager::downloadFinished()
     Log::debug("DownloadManager", LOGMSG("downloadFinished() of %1 Bytes ").arg(QString::number(output.size())));
     output.close();
 
-    if (currentDownload->error()) {
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (!reply){
+        Log::error("DownloadManager", LOGMSG("Failed: no sender reply retreived when downloadFinished !!!"));
+        return;
+    }
+
+    if (reply->error()) {
         // download failed
-        setMessage(QString("Failed: %1").arg(qPrintable(currentDownload->errorString())));
-        Log::error("DownloadManager", LOGMSG("Failed: %1").arg(qPrintable(currentDownload->errorString())));
+        setMessage(QString("Failed: %1").arg(qPrintable(reply->errorString())));
+        Log::error("DownloadManager", LOGMSG("Failed: %1").arg(qPrintable(reply->errorString())));
         //don't remove to be able to manage retry in case of slow download, stop to remove output file to be able to complete it with retry.
         //set error of download
         setError(1);
     } else {
         // let's check if it was actually a redirect
-        if (isHttpRedirect()) {
-            QUrl redirectUrl = reportRedirect();
+        if (isHttpRedirect(reply)) {
+            QUrl redirectUrl = reportRedirect(reply);
             output.remove();
             --totalCount;//remove the initial redirect one
             //append it to tentative to download it
@@ -331,31 +351,36 @@ void DownloadManager::downloadFinished()
             }
         }
     }
-    currentDownload->deleteLater();
+    reply->deleteLater();
     startNextDownload();
 }
 
 void DownloadManager::downloadReadyRead()
 {
-    output.write(currentDownload->readAll());
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (!reply){
+        Log::error("DownloadManager", LOGMSG("Failed: no sender reply retreived when downloadReadyRead !!!"));
+        return;
+    }
+    output.write(reply->readAll());
 }
 
-bool DownloadManager::isHttpRedirect() const
+bool DownloadManager::isHttpRedirect(QNetworkReply *reply) const
 {
-    int statusCode = currentDownload->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     return statusCode == 301 || statusCode == 302 || statusCode == 303
            || statusCode == 305 || statusCode == 307 || statusCode == 308;
 }
 
-QUrl DownloadManager::reportRedirect()
+QUrl DownloadManager::reportRedirect(QNetworkReply *reply)
 {
-    int statusCode = currentDownload->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    QUrl requestUrl = currentDownload->request().url();
+    int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QUrl requestUrl = reply->request().url();
     /*QTextStream(stderr) << "Request: " << requestUrl.toDisplayString()
                         << " was redirected with code: " << statusCode
                         << '\n';*/
 
-    QVariant target = currentDownload->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    QVariant target = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
     if (!target.isValid()){
         QUrl empty;
         return empty;
