@@ -54,7 +54,7 @@
 
 #include <QTextStream>
 
-#include <cstdio>
+//#include <cstdio>
 
 using namespace std;
 
@@ -246,12 +246,18 @@ void DownloadManager::startNextDownload()
         rangeHeaderValue = "bytes=" + QByteArray::number(existingFileSize) + "-";
     }
 
+    m_fileWriter = new FileIOWriter(&output, this);
+    connect(m_fileWriter, &FileIOWriter::finished, this, [this](){
+        Log::debug("DownloadManager", LOGMSG("m_fileWriter finished !!!"));
+        DownloadManager::writeFinished();
+    });
+    m_fileWriter->start();
+
     QNetworkRequest request(url);
     //to restart download from existing file (if needed)
     if(existingFileSize != 0) request.setRawHeader("Range",rangeHeaderValue);
     //set timeout if no reply/transfer stop to 15 seconds
     request.setTransferTimeout(15000);
-
 
     QNetworkReply *reply = manager.get(request); // Only call get() once
 
@@ -265,19 +271,6 @@ void DownloadManager::startNextDownload()
                      this, &DownloadManager::downloadFinished);
 
     downloadTimer.start();
-
-    /*currentDownload = manager.get(request);
-    connect(currentDownload, &QNetworkReply::downloadProgress,
-            this, &DownloadManager::downloadProgress);
-    connect(currentDownload, &QNetworkReply::finished,
-            this, &DownloadManager::downloadFinished);
-    connect(currentDownload, &QNetworkReply::readyRead,
-            this, &DownloadManager::downloadReadyRead);
-
-    // prepare the output
-    //Log::debug("DownloadManager", LOGMSG("Downloading %1...\n").arg(url.toEncoded().constData()));
-
-    downloadTimer.start();*/
 }
 
 void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
@@ -306,11 +299,8 @@ void DownloadManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
                            .arg(speed, 3, 'f', 1).arg(unit));
 }
 
-void DownloadManager::downloadFinished()
-{
-    //Log::debug("DownloadManager", LOGMSG("downloadFinished()"));
-    Log::debug("DownloadManager", LOGMSG("downloadFinished() of %1 Bytes ").arg(QString::number(output.size())));
-    output.close();
+void DownloadManager::downloadFinished(){
+    Log::debug("DownloadManager", LOGMSG("downloadFinished !!!"));
 
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     if (!reply){
@@ -325,7 +315,8 @@ void DownloadManager::downloadFinished()
         //don't remove to be able to manage retry in case of slow download, stop to remove output file to be able to complete it with retry.
         //set error of download
         setError(1);
-    } else {
+    }
+    else {
         // let's check if it was actually a redirect
         if (isHttpRedirect(reply)) {
             QUrl redirectUrl = reportRedirect(reply);
@@ -333,25 +324,30 @@ void DownloadManager::downloadFinished()
             --totalCount;//remove the initial redirect one
             //append it to tentative to download it
             append(redirectUrl,output.fileName());
-        } else {
-            setMessage(QString("%1 downloaded").arg(output.fileName()));
-            Log::debug("DownloadManager", LOGMSG("%1 downloaded").arg(output.fileName()));
-            Log::debug("DownloadManager", LOGMSG("outputTargetedSize : %1").arg(QString::number(outputTargetedSize)));
-            Log::debug("DownloadManager", LOGMSG("output.size() : %1").arg(QString::number(output.size())));
-            if((outputTargetedSize != 0) && (outputTargetedSize != output.size())){
-                setMessage(QString("%1 has wrong size downloaded !").arg(output.fileName()));
-                Log::debug("DownloadManager", LOGMSG("%1 has wrong size downloaded !").arg(output.fileName()));
-                //set error of wrong size downloaded
-                setError(4);
-                //we remove in this case to retry
-                output.remove();
-            }
-            else{
-                ++downloadedCount;
-            }
         }
     }
     reply->deleteLater();
+    m_fileWriter->stop();
+}
+
+void DownloadManager::writeFinished(){
+    Log::debug("DownloadManager", LOGMSG("writeFinished() of %1 Bytes ").arg(QString::number(output.size())));
+
+    setMessage(QString("%1 downloaded").arg(output.fileName()));
+    Log::debug("DownloadManager", LOGMSG("%1 downloaded").arg(output.fileName()));
+    Log::debug("DownloadManager", LOGMSG("outputTargetedSize : %1").arg(QString::number(outputTargetedSize)));
+    Log::debug("DownloadManager", LOGMSG("output.size() : %1").arg(QString::number(output.size())));
+    if((outputTargetedSize != 0) && (outputTargetedSize != output.size())){
+        setMessage(QString("%1 has wrong size downloaded !").arg(output.fileName()));
+        Log::debug("DownloadManager", LOGMSG("%1 has wrong size downloaded !").arg(output.fileName()));
+        //set error of wrong size downloaded
+        setError(4);
+        //we remove in this case to retry
+        output.remove();
+    }
+    else{
+        ++downloadedCount;
+    }
     startNextDownload();
 }
 
@@ -362,7 +358,9 @@ void DownloadManager::downloadReadyRead()
         Log::error("DownloadManager", LOGMSG("Failed: no sender reply retreived when downloadReadyRead !!!"));
         return;
     }
-    output.write(reply->readAll());
+    QByteArray data = reply->readAll();
+    //Log::debug("DownloadManager", LOGMSG("data.size(): %1 Bytes").arg(QString::number(data.size())));
+    m_fileWriter->writeData(data);
 }
 
 bool DownloadManager::isHttpRedirect(QNetworkReply *reply) const
