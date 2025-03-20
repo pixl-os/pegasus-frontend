@@ -160,14 +160,12 @@ QString DownloadManager::saveFileName(const QUrl &url)
 
         basename += QString::number(i);
     }
-    //Log::debug("DownloadManager", LOGMSG("basename: %1").arg(basename));
+    Log::debug("DownloadManager", LOGMSG("basename: %1").arg(basename));
     return basename;
 }
 
 void DownloadManager::startNextDownload()
 {
-    //Log::debug("DownloadManager", LOGMSG("startNextDownload()"));
-
     if (downloadQueue.isEmpty()) {
         setMessage(QString(" %1/%2 files downloaded successfully").arg(QString::number(downloadedCount),QString::number(totalCount)));
         Log::debug("DownloadManager", LOGMSG(" %1 / %2 files downloaded successfully\n").arg(QString::number(downloadedCount),QString::number(totalCount)));
@@ -176,13 +174,15 @@ void DownloadManager::startNextDownload()
         return;
     }
 
+    //Log::debug("DownloadManager", LOGMSG("startNextDownload()"));
+
     QUrl url = downloadQueue.dequeue();
     QString filename = filenameQueue.dequeue();
     outputTargetedSize = filesizeQueue.dequeue();
-    Log::debug("DownloadManager", LOGMSG("initial outputTargetedSize:  %1 \n").arg(QString::number(outputTargetedSize)));
     if(filename == ""){
         filename = saveFileName(url);
     }
+    //Log::debug("DownloadManager", LOGMSG("outputTargetedSize of %2:  %1").arg(QString::number(outputTargetedSize),filename));
     // Check if the directory exists
     QDir directory(QFileInfo(filename).dir());  // Get directory from file path
     if (!directory.exists()) {
@@ -195,37 +195,15 @@ void DownloadManager::startNextDownload()
     m_file.setFileName(filename);
     QByteArray rangeHeaderValue;
     qint64 existingFileSize = 0;
-
-    if (!QFile::exists(filename) || (outputTargetedSize == 0)) {
-        if (!m_file.open(QIODevice::WriteOnly)) {
-            setMessage(QString("Problem to write %1 : %2").arg(qPrintable(filename),
-                                                              qPrintable(m_file.errorString())));
-
-            Log::error("DownloadManager", LOGMSG("Problem to write %1 : %2").arg(qPrintable(filename),
-                                                              qPrintable(m_file.errorString())));
-            //set error to save file
-            setError(2);
-
-            startNextDownload();
-            return;                 // skip this download
-        }
+    bool fileExists = QFile::exists(filename);
+    if (!fileExists || (outputTargetedSize == 0)) {
+        Log::debug("DownloadManager", LOGMSG("File doesn't exist or should be erase !"));
+        if(fileExists) m_file.remove(); //remove it if exists before to open it !
     }
     else {
-        if (!m_file.open(QIODevice::Append)) {
-            setMessage(QString("Problem to append %1 : %2").arg(qPrintable(filename),
-                                                              qPrintable(m_file.errorString())));
-
-            Log::error("DownloadManager", LOGMSG("Problem to append %1 : %2").arg(qPrintable(filename),
-                                                                                qPrintable(m_file.errorString())));
-            //set error to append file
-            setError(3);
-
-            startNextDownload();
-            return;                 // skip this download
-        }
-        else {
-            existingFileSize = m_file.size();
-        }
+        Log::debug("DownloadManager", LOGMSG("File already exists and could be completed !"));
+        existingFileSize = m_file.size();
+        Log::debug("DownloadManager", LOGMSG("Existing File size : %1").arg(QString::number(existingFileSize)));
     }
 
     if(existingFileSize == 0) {
@@ -236,7 +214,6 @@ void DownloadManager::startNextDownload()
         downloadedCount++; //we consider it as already downloaded
         setMessage(QString("%1 already downloaded").arg(m_file.fileName()));
         Log::debug("DownloadManager", LOGMSG("%1 already downloaded").arg(m_file.fileName()));
-        m_file.close();
         startNextDownload();
         return; // skip this download
     }
@@ -259,7 +236,7 @@ void DownloadManager::startNextDownload()
     //set timeout if no reply/transfer stop to 15 seconds
     request.setTransferTimeout(15000);
 
-    QNetworkReply *reply = manager.get(request); // Only call get() once
+    QNetworkReply* reply = manager.get(request); // Only call get() once
 
     currentDownload = reply; // store the reply in currentDownload
 
@@ -309,29 +286,34 @@ void DownloadManager::downloadFinished(){
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     if (!reply){
         Log::error("DownloadManager", LOGMSG("Failed: no sender reply retreived when downloadFinished !!!"));
-        return;
+        m_fileWriter->stop();
     }
-
-    if (reply->error()) {
+    else if (reply->error()) {
         // download failed
         setMessage(QString("Failed: %1").arg(qPrintable(reply->errorString())));
         Log::error("DownloadManager", LOGMSG("Failed: %1").arg(qPrintable(reply->errorString())));
         //don't remove to be able to manage retry in case of slow download, stop to remove output file to be able to complete it with retry.
         //set error of download
         setError(1);
+        m_fileWriter->stop();
     }
-    else {
-        // let's check if it was actually a redirect
-        if (isHttpRedirect(reply)) {
-            QUrl redirectUrl = reportRedirect(reply);
-            m_file.remove();
-            --totalCount;//remove the initial redirect one
-            //append it to tentative to download it
-            append(redirectUrl,m_file.fileName());
-        }
+    // let's check if it was actually a redirect
+    else if (isHttpRedirect(reply)) {
+        QUrl redirectUrl = reportRedirect(reply);
+        Log::debug("DownloadManager", LOGMSG("redirect Url detected: %1").arg(redirectUrl.toString()));
+        //append it to tentative to download it
+        append(redirectUrl,m_file.fileName());
+        //stop writer before to delete file
+        m_fileWriter->stop();
+        //remove the initial redirect one
+        m_file.remove();
+        --totalCount;
+        //reset error of download if needed
+        setError(0);
     }
-    reply->deleteLater();
-    m_fileWriter->stop();
+    else{
+        m_fileWriter->stop();
+    }
 }
 
 void DownloadManager::writeFinished(){
@@ -339,19 +321,21 @@ void DownloadManager::writeFinished(){
 
     setMessage(QString("%1 downloaded").arg(m_file.fileName()));
     Log::debug("DownloadManager", LOGMSG("%1 downloaded").arg(m_file.fileName()));
-    Log::debug("DownloadManager", LOGMSG("outputTargetedSize : %1").arg(QString::number(outputTargetedSize)));
-    Log::debug("DownloadManager", LOGMSG("m_file.size() : %1").arg(QString::number(m_file.size())));
-    if((outputTargetedSize != 0) && (outputTargetedSize != m_file.size())){
+    Log::debug("DownloadManager", LOGMSG("initial 'Targeted' Size : %1 (if 0, it's to reset download if file already exists)").arg(QString::number(outputTargetedSize)));
+    Log::debug("DownloadManager", LOGMSG("final 'Saved' Size: %1").arg(QString::number(m_file.size())));
+    if(((outputTargetedSize != 0) && (outputTargetedSize != m_file.size())) || (m_file.size() == 0)){
         setMessage(QString("%1 has wrong size downloaded !").arg(m_file.fileName()));
         Log::debug("DownloadManager", LOGMSG("%1 has wrong size downloaded !").arg(m_file.fileName()));
-        //set error of wrong size downloaded
-        setError(4);
-        //we remove in this case to retry
+        //set error of wrong size downloaded (but not if redirected)
+        if(!isHttpRedirect(currentDownload)) setError(4);
+        //we remove in this case to retry later
         m_file.remove();
     }
     else{
         ++downloadedCount;
     }
+    Log::debug(" "); //to separate "downloads" in logs ;-)
+    currentDownload->deleteLater();
     startNextDownload();
 }
 

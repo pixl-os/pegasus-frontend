@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
 ## [pixL-master] - 2025-04-XX - v0.1.11
+- Fixes:
+	- open(write/append)file directly in classes for robustness of updates/downloads
 - Features:
 	- add overlay support for xemu + fix for dolphin
 	- add vsync, scanlines and dsp emulation parameters in XEMU advanced emulator settings
