@@ -1,5 +1,5 @@
 #include "FileIOWriter.h"
-//#include "Log.h"
+#include "Log.h"
 
 FileIOWriter::FileIOWriter(QFile *file, QObject *parent) : QThread(parent), m_file(file) {}
 
@@ -22,6 +22,30 @@ void FileIOWriter::stop() {
 }
 
 void FileIOWriter::run() {
+    //in case that file is not yet open, we are trying to open it in the thread
+    if(!m_file->isOpen()){
+        //Log::debug("FileIOWriter", LOGMSG("file not opened in thread, still to do..."));
+        if(m_file->size() == 0){
+            if (!m_file->open(QIODevice::WriteOnly)) {
+                Log::error("FileIOWriter", LOGMSG("Problem to write %1 : %2 \n").arg(qPrintable(m_file->fileName()),
+                                                                                        qPrintable(m_file->errorString())));
+                emit finished();
+                return;
+            }
+        }
+        else if (!m_file->open(QIODevice::Append)) {
+            Log::error("FileIOWriter", LOGMSG("Problem to append %1 : %2 \n").arg(qPrintable(m_file->fileName()),
+                                                                                     qPrintable(m_file->errorString())));
+            emit finished();
+            return;
+        }
+        /*if(m_file->isOpen()){
+            Log::debug("FileIOWriter", LOGMSG("file seems opened now !"));
+        }*/
+    }
+    //else Log::debug("FileIOWriter", LOGMSG("file seems already opened !"));
+
+    //file opened will could start to run file writing
     while (m_running) {
         QByteArray dataToWrite;
         {
@@ -33,7 +57,10 @@ void FileIOWriter::run() {
             dataToWrite = m_buffer;
             m_buffer.clear();
         }
+        //Log::debug("FileIOWriter", LOGMSG("before data To Write"));
         m_file->write(dataToWrite);
+        //Log::debug("FileIOWriter", LOGMSG("after data To Write"));
+
     }
     // Write any remaining data in the buffer
     QByteArray remainingData;
@@ -41,7 +68,10 @@ void FileIOWriter::run() {
         QMutexLocker locker(&m_mutex);
         remainingData = m_buffer;
     }
+    //Log::debug("FileIOWriter", LOGMSG("before remaining Data"));
     m_file->write(remainingData);
+    //Log::debug("FileIOWriter", LOGMSG("after remaining Data"));
+
     m_file->flush(); //Ensure the data is written to disk.
     m_file->close();
     emit finished();
