@@ -365,7 +365,8 @@ FocusScope {
                         // system.getCoreAt(index) not visible if not libretro Core for standalone just show emulator name
                         label: system.getNameAt(index) !== system.getCoreAt(index) ? system.getNameAt(index) + " " + system.getCoreAt(index) : system.getNameAt(index) ;
                         // '-' character between long name and version only if version is not empty
-                        note: system.getCoreLongNameAt(index) + ((system.getCoreVersionAt(index) !== "") ? (" - " + system.getCoreVersionAt(index)) : "") ;
+                        note: system.getCoreLongNameAt(index) + ((system.getCoreVersionAt(index) !== "") ? (" - " + system.getCoreVersionAt(index)) : "") + "\n" +
+                              qsTr("rom extensions") + ": " + system.getCoreExtensionsAt(index);
 
                         onActivate: {
                             focus = true;
