@@ -97,6 +97,50 @@ QString PathMakeEscaped(QString param)
   return QString::fromStdString(escaped);
 }
 
+int getAutoSelectedEmulatorIndex(const model::Game& game)
+{
+    QString core = "";
+    QString emulator = "";
+    QString suffix = game.filesConst().first()->fileinfo().suffix();
+    int bestEmulatorIndex = -1;
+    int bestEmulatorPriority = -1;
+    //find emulator by priority/extension
+    for(int i = 0; i < game.collections().getEmulatorsCount(); i++){
+        //if only one or to initialize with one value
+        //manage priority
+        if (i == 0)
+        {
+            if(game.collections().commonEmulators().at(i).coreextensions.contains(suffix)){
+                bestEmulatorIndex = 0;
+                bestEmulatorPriority = game.collections().commonEmulators().at(i).priority;
+            }
+        }
+        else if((bestEmulatorIndex > game.collections().commonEmulators().at(i).priority) || (bestEmulatorIndex == -1)) //else we check if previous priority is lower
+        {
+            if(game.collections().commonEmulators().at(i).coreextensions.contains(suffix)){
+                bestEmulatorIndex = i;
+                bestEmulatorPriority = game.collections().commonEmulators().at(i).priority;
+            }
+        }
+    }
+    Log::debug(LOGMSG("Emulator/Core Autoselected: '%1/%2'").arg(game.collections().commonEmulators().at(bestEmulatorIndex).name,
+                                                                 game.collections().commonEmulators().at(bestEmulatorIndex).core));
+    Log::debug(LOGMSG("Emulator/Core Autoselected priority: '%1'").arg(bestEmulatorPriority));
+
+    return bestEmulatorIndex;
+}
+
+int getIndexFromEmulatorCore(const model::Game& game, QString& emulator,QString& core)
+{
+    for(int i = 0; i < game.collections().getEmulatorsCount(); i++){
+        if((game.collections().commonEmulators().at(i).name == emulator) &&
+           (game.collections().commonEmulators().at(i).core == core)){
+            return i;
+        }
+    }
+    return -1;
+}
+
 void replace_variables(QString& param, const model::GameFile* q_gamefile)
 {
     Q_ASSERT(q_gamefile);
@@ -114,7 +158,7 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
 
     if(param.contains("{file.path}")){
         //to manage cdrom case
-        if(gamefile.fileinfo().filePath().contains("cdrom://")){
+        if(finfo.filePath().contains("cdrom://")){
             //Log::debug(LOGMSG("PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath())): '%1'").arg(PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath()))));
             param.replace(QLatin1String("{file.path}"), PathMakeEscaped(QDir::toNativeSeparators(finfo.filePath())));
         }
@@ -131,7 +175,7 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         .replace(QLatin1String("{system.shortname}"),shortname)
         .replace(QLatin1String("{emulator.ratio}"),QString::fromStdString(RecalboxConf::Instance().AsString("global.ratio")));
 
-	if(param == "{emulator.netplay}"){
+    if(param.contains("{emulator.netplay}")){
 	//info about netplay parameters
         if(gamefile.netplayMode() == 0) param.replace(QLatin1String("{emulator.netplay}"),"");
         else if(gamefile.netplayMode() == 1){
@@ -166,39 +210,70 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
         }
 	}
 
-    if(param == "{emulator.name}")
-    {   
-    //IF NETPLAY activated, replace EMULATOR from what is proposed by server
+    QString emulator = "";
+    QString core = "";
+
+    if(param.contains("{emulator.name}"))
+    {
+        //IF NETPLAY activated, replace EMULATOR from what is proposed by server
         if(gamefile.netplayMode() == 1){
-            param.replace(QLatin1String("{emulator.name}"),gamefile.netplayEmulator());
+            emulator = gamefile.netplayEmulator();
         }
         else{
-            QString emulator = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".emulator").toUtf8().constData()));
-            if(emulator != "")
+            //get one selected from System Emulator Configuration
+            emulator = QString::fromStdString(RecalboxConf::Instance().AsString(QString(shortname + ".emulator").toUtf8().constData()));
+            if(emulator == "")
             {
-                param.replace(QLatin1String("{emulator.name}"),emulator);
+                emulator = game.emulatorName(); //get default one
             }
-            else  param.replace(QLatin1String("{emulator.name}"),game.emulatorName());
         }
     }
 
-    if(param == "{emulator.core}")
+    if(param.contains("{emulator.core}"))
     {
-    //IF NETPLAY activated, replace CORE from what is proposed by server
+        //IF NETPLAY activated, replace CORE from what is proposed by server
         if(gamefile.netplayMode() == 1){
             param.replace(QLatin1String("{emulator.core}"),gamefile.netplayCore());
         }
         else{
-            QString core = QString::fromStdString(RecalboxConf::Instance().AsString(shortname.append(".core").toUtf8().constData()));
-            if(core != "")
+            //get one selected from System Emulator Configuration
+            core = QString::fromStdString(RecalboxConf::Instance().AsString(QString(shortname + ".core").toUtf8().constData()));
+            if(core == "")
             {
-                param.replace(QLatin1String("{emulator.core}"),core);
+                core = game.emulatorCore();
             }
-            else  param.replace(QLatin1String("{emulator.core}"),game.emulatorCore());
         }
     }
-    
-    if(param == "{controllers.config}")
+
+    Log::debug(LOGMSG("Emulator/Core configured: '%1/%2'").arg(emulator, core));
+    Log::debug(LOGMSG("Autoselection Parameter: '%1'").arg(QString(shortname + ".autoselection")));
+    //get info about autoselection if needed
+    bool autoselection = RecalboxConf::Instance().AsBool(QString(shortname + ".autoselection").toUtf8().constData());
+    Log::debug(LOGMSG("Autoselection value: '%1'").arg(autoselection));
+    if(autoselection == true){
+        Log::debug(LOGMSG("AutoSelection activated"));
+        //get current emulator/core index
+        int emulatorIndex = getIndexFromEmulatorCore(game, emulator, core);
+        QString suffix = game.filesConst().first()->fileinfo().suffix();
+        Log::debug(LOGMSG("Emulator index identified: '%1'").arg(emulatorIndex));
+        Log::debug(LOGMSG("Suffix identified: '%1'").arg(suffix));
+        //check if emulator/core is compliant with extension used
+        if(!game.collections().commonEmulators().at(emulatorIndex).coreextensions.contains(suffix)){
+            //if selected one is not compatible with rom extension, we have to try to find one
+            emulatorIndex = getAutoSelectedEmulatorIndex(game);
+            Log::debug(LOGMSG("Emulator index autoselected: '%1'").arg(emulatorIndex));
+            if(emulatorIndex != -1){//if any emulator found by rom extensions and priorities
+                emulator = game.collections().commonEmulators().at(emulatorIndex).name;
+                core = game.collections().commonEmulators().at(emulatorIndex).core;
+                Log::debug(LOGMSG("Emulator/Core autoselected: '%1/%2'").arg(emulator, core));
+            }
+        }
+    }
+
+    param.replace(QLatin1String("{emulator.name}"),emulator);
+    param.replace(QLatin1String("{emulator.core}"),core);
+
+    if(param.contains("{controllers.config}"))
     {
         // Fill from ES/Recalbox configuration methods
         std::string uuid, name, path, sdlidx, udevidx, index;
@@ -338,13 +413,15 @@ void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
     //Log::debug(LOGMSG("const model::Game& game = *gamefile.parentGame();"));
 
     QString raw_launch_cmd = game.launchCmd();
-
     //Log::debug(LOGMSG("raw_launch_cmd : '%1'").arg(raw_launch_cmd));
+    //new method to launch in one time (quicker)
+    replace_variables(raw_launch_cmd, &gamefile);
 
-    QStringList args = ::utils::tokenize_command(raw_launch_cmd);
+    QStringList args = ::utils::tokenize_command(raw_launch_cmd, true);
     
-    for (QString& arg : args)
-        replace_variables(arg, &gamefile);
+    //previous method using loop
+    //for (QString& arg : args)
+    //    replace_variables(arg, &gamefile);
 
     //to add Verbose arg in debug mode
     if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) args.append("-verbose");

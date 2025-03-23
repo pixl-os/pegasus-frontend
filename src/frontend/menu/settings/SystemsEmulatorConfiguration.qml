@@ -355,7 +355,19 @@ FocusScope {
                     first: true
                     symbol: "\uf179"
                 }
-                
+                ToggleOption {
+                    id: optAutoCoreSelection
+
+                    label: qsTr("Auto emulator/core selection") + api.tr
+                    note: qsTr("To select the best ones to use from rom extensions (if needed)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".autoselection")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(system.shortName + ".autoselection",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                }
+
                 ButtonGroup  { id: radioGroup }
                 
                 Repeater {

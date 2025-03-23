@@ -47,7 +47,7 @@ bool char_is_space(const QChar c) {
 
 
 namespace utils {
-QStringList tokenize_command(const QString& str)
+QStringList tokenize_command(const QString& str, bool take_quote = false)
 {
     QStringList results;
     int o_start = 0;
@@ -72,8 +72,8 @@ QStringList tokenize_command(const QString& str)
         const int len = o_end - o_start;
         const bool starts_with_quote = len > 1 && (char_is_singlequote(ch) || char_is_doublequote(ch));
         const bool fully_quoted = starts_with_quote && (ch == str.at(o_end - 1));
-        const int mid_from = starts_with_quote ? o_start + 1 : o_start;
-        const int mid_len = fully_quoted ? len - 2 : len;
+        const int mid_from = (starts_with_quote & !take_quote) ? o_start + 1 : o_start;
+        const int mid_len = (fully_quoted & !take_quote) ? len - 2 : len;
         results.append(str.midRef(mid_from, mid_len).trimmed().toString());
 
         o_start = o_end;
