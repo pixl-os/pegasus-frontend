@@ -123,9 +123,9 @@ int getAutoSelectedEmulatorIndex(const model::Game& game)
             }
         }
     }
-    Log::debug(LOGMSG("Emulator/Core Autoselected: '%1/%2'").arg(game.collections().commonEmulators().at(bestEmulatorIndex).name,
-                                                                 game.collections().commonEmulators().at(bestEmulatorIndex).core));
-    Log::debug(LOGMSG("Emulator/Core Autoselected priority: '%1'").arg(bestEmulatorPriority));
+    //Log::debug(LOGMSG("Emulator/Core Autoselected: '%1/%2'").arg(game.collections().commonEmulators().at(bestEmulatorIndex).name,
+    //                                                             game.collections().commonEmulators().at(bestEmulatorIndex).core));
+    //Log::debug(LOGMSG("Emulator/Core Autoselected priority: '%1'").arg(bestEmulatorPriority));
 
     return bestEmulatorIndex;
 }
@@ -246,22 +246,22 @@ void replace_variables(QString& param, const model::GameFile* q_gamefile)
     }
 
     Log::debug(LOGMSG("Emulator/Core configured: '%1/%2'").arg(emulator, core));
-    Log::debug(LOGMSG("Autoselection Parameter: '%1'").arg(QString(shortname + ".autoselection")));
+    //Log::debug(LOGMSG("Autoselection Parameter: '%1'").arg(QString(shortname + ".autoselection")));
     //get info about autoselection if needed
     bool autoselection = RecalboxConf::Instance().AsBool(QString(shortname + ".autoselection").toUtf8().constData());
-    Log::debug(LOGMSG("Autoselection value: '%1'").arg(autoselection));
+    //Log::debug(LOGMSG("Autoselection value: '%1'").arg(autoselection));
     if(autoselection == true){
-        Log::debug(LOGMSG("AutoSelection activated"));
+        //Log::debug(LOGMSG("AutoSelection activated"));
         //get current emulator/core index
         int emulatorIndex = getIndexFromEmulatorCore(game, emulator, core);
         QString suffix = game.filesConst().first()->fileinfo().suffix();
-        Log::debug(LOGMSG("Emulator index identified: '%1'").arg(emulatorIndex));
-        Log::debug(LOGMSG("Suffix identified: '%1'").arg(suffix));
+        //Log::debug(LOGMSG("Emulator index identified: '%1'").arg(emulatorIndex));
+        //Log::debug(LOGMSG("Suffix identified: '%1'").arg(suffix));
         //check if emulator/core is compliant with extension used
         if(!game.collections().commonEmulators().at(emulatorIndex).coreextensions.contains(suffix)){
             //if selected one is not compatible with rom extension, we have to try to find one
             emulatorIndex = getAutoSelectedEmulatorIndex(game);
-            Log::debug(LOGMSG("Emulator index autoselected: '%1'").arg(emulatorIndex));
+            //Log::debug(LOGMSG("Emulator index autoselected: '%1'").arg(emulatorIndex));
             if(emulatorIndex != -1){//if any emulator found by rom extensions and priorities
                 emulator = game.collections().commonEmulators().at(emulatorIndex).name;
                 core = game.collections().commonEmulators().at(emulatorIndex).core;
