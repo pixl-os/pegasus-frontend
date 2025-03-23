@@ -347,6 +347,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: emulatorButtons.count > 1 ? optAutoCoreSelection : emulatorButtons.itemAt(0)
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
@@ -366,6 +367,7 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(system.shortName + ".autoselection",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    visible: emulatorButtons.count > 1 ? true : false
                 }
 
                 ButtonGroup  { id: radioGroup }
@@ -388,7 +390,7 @@ FocusScope {
                         }
                         
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : optSystemAutoSave
+                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : (emulatorButtons.count > 1) ? optAutoCoreSelection : optSystemAutoSave
                         KeyNavigation.down: (index < emulatorButtons.count) ? emulatorButtons.itemAt(index+1) : emulatorButtons.itemAt(emulatorButtons.count - 1)
                         
                         RadioButton {
