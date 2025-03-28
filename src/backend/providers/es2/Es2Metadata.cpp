@@ -231,21 +231,59 @@ HashMap<MetaType, QString, EnumHash> Metadata::parse_gamelist_game_node(QXmlStre
     return xml_props;
 }
 
-QString Metadata::find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry& sysentry) const
+//New function to parse and take into account several gamelist.xml in root and first level of subdirectories
+//this function can also go in subdirectories (one level only for performance issue and ignore "media" directories)
+std::vector<QString> Metadata::find_gamelist_xml_files(const QDir& system_dir) const
+{
+    std::vector<QString> found_files;
+    QStringList directories_to_ignore;
+    directories_to_ignore << "media";
+    constexpr auto filters = QDir::Files | QDir::Readable | QDir::NoDotAndDotDot;
+    constexpr auto dir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+
+    // Search in the main system directory (as before)
+    QDir system_dir_obj(system_dir.path());
+    QFileInfoList first_level_files = system_dir_obj.entryInfoList(
+        QStringList() << "gamelist.xml",
+        filters
+        );
+
+    for (const QFileInfo& fileInfo : first_level_files) {
+        found_files.emplace_back(fileInfo.absoluteFilePath());
+    }
+
+    // Get the list of first-level subdirectories
+    QFileInfoList first_level_subdirs = system_dir_obj.entryInfoList(
+        QStringList(), // No name filter, we want all directories
+        dir_filters
+        );
+
+    // Iterate through the first-level subdirectories
+    for (const QFileInfo& subdirInfo : first_level_subdirs) {
+        QString subdir_name = subdirInfo.fileName();
+        if (!directories_to_ignore.contains(subdir_name)) {
+            QDir subdir_obj(subdirInfo.absoluteFilePath());
+            QFileInfoList gamelist_in_subdir = subdir_obj.entryInfoList(
+                QStringList() << "gamelist.xml",
+                filters
+                );
+
+            // Add any found gamelist.xml files from the subdirectory
+            for (const QFileInfo& fileInfo : gamelist_in_subdir) {
+                found_files.emplace_back(fileInfo.absoluteFilePath());
+            }
+        }
+    }
+
+    return found_files;
+}
+
+QString Metadata::find_gamelist_xml(const QDir& system_dir, const SystemEntry& sysentry) const
 {
     const QString GAMELISTFILE = QStringLiteral("/gamelist.xml");
 
     std::vector<QString> possible_files { system_dir.path() % GAMELISTFILE };
 
-    if (!sysentry.name.isEmpty()) {
-        for (const QString& dir_path : possible_config_dirs) {
-            possible_files.emplace_back(dir_path
-                % QStringLiteral("/gamelists/")
-                % sysentry.name
-                % GAMELISTFILE);
-        }
-    }
-
     for (const auto& path : possible_files) {
         if (QFileInfo::exists(path))
             return path;
@@ -254,21 +292,12 @@ QString Metadata::find_gamelist_xml(const std::vector<QString>& possible_config_
     return {};
 }
 
-QString Metadata::find_media_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry& sysentry) const
+QString Metadata::find_media_xml(const QDir& system_dir, const SystemEntry& sysentry) const
 {
     const QString MEDIAFILE = QStringLiteral("/media.xml");
 
     std::vector<QString> possible_files { system_dir.path() % MEDIAFILE };
 
-    if (!sysentry.name.isEmpty()) {
-        for (const QString& dir_path : possible_config_dirs) {
-            possible_files.emplace_back(dir_path
-                % QStringLiteral("/media/")
-                % sysentry.name
-                % MEDIAFILE);
-        }
-    }
-
     for (const auto& path : possible_files) {
         if (QFileInfo::exists(path))
             return path;
@@ -277,24 +306,38 @@ QString Metadata::find_media_xml(const std::vector<QString>& possible_config_dir
     return {};
 }
 
-void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, providers::SearchContext& sctx, const SystemEntry& sysentry) const
+void Metadata::process_gamelist_xml(const QString& gamelist_file_path, providers::SearchContext& sctx, const SystemEntry& sysentry) const
 {
     QString log_tag = sysentry.shortname + " " + m_log_tag;
-    // find the root <gameList> element
-    if (!xml.readNextStartElement()) {
-        xml.raiseError(LOGMSG("could not parse `%1`")
-                       .arg(static_cast<QFile*>(xml.device())->fileName()));
-        return;
-    }
-    if (xml.name() != QLatin1String("gameList")) {
-        xml.raiseError(LOGMSG("`%1` does not have a `<gameList>` root node!")
-                       .arg(static_cast<QFile*>(xml.device())->fileName()));
+
+    QFile file(gamelist_file_path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        Log::warning(log_tag, LOGMSG("Failed to open gamelist file: `%1`").arg(gamelist_file_path));
         return;
     }
 
+    QXmlStreamReader xml(&file);
+
+    // find the root <gameList> element
+    if (!xml.readNextStartElement()) {
+        Log::warning(log_tag, LOGMSG("Could not parse `%1`: %2").arg(gamelist_file_path, xml.errorString()));
+        return;
+    }
+    if (xml.name() != QLatin1String("gameList")) {
+        Log::warning(log_tag, LOGMSG("`%1` does not have a `<gameList>` root node!").arg(gamelist_file_path));
+        return;
+    }
+
+    //to get xml dir from gamelist.xml path
+    QFileInfo fileInfo(gamelist_file_path);
+    QString directoryPath = fileInfo.path();
+    const QDir xml_dir(directoryPath);
+
+    Log::info(log_tag, LOGMSG("Start parsing `%1`...").arg(gamelist_file_path));
+
     //need collection for gamelist only activated
     model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
-	
+
     size_t found_games = 0;
     // read all <game> nodes
     while (xml.readNextStartElement()) {
@@ -307,52 +350,49 @@ void Metadata::process_gamelist_xml(const QDir& xml_dir, QXmlStreamReader& xml, 
 
         // process node
         HashMap<MetaType, QString, EnumHash> xml_props = parse_gamelist_game_node(xml);
-        if (xml_props.empty() || (xml_props[MetaType::HIDDEN] == "true") )
+        if (xml_props.empty() || (xml_props[MetaType::HIDDEN] == "true"))
             continue;
 
         const QString shell_filepath = xml_props[MetaType::PATH];
         if (shell_filepath.isEmpty()) {
             Log::warning(log_tag, LOGMSG("The `<game>` node in `%1` at line %2 has no valid `<path>` entry")
-                .arg(static_cast<QFile*>(xml.device())->fileName(), QString::number(linenum)));
+                                      .arg(gamelist_file_path, QString::number(linenum)));
             continue;
         }
 
         const QFileInfo finfo = shell_to_finfo(xml_dir, shell_filepath);
         const QString path = ::clean_abs_path(finfo);
-        
-        if(RecalboxConf::Instance().AsBool("pegasus.gamelistonly") || RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
-        {
+
+        if (RecalboxConf::Instance().AsBool("pegasus.gamelistonly") || RecalboxConf::Instance().AsBool("pegasus.gamelistfirst")) {
             // create game now in this case (don't care if exist or not on file system to go quicker)
             model::Game* game_ptr = sctx.game_by_filepath(path);
             if (!game_ptr) {
                 game_ptr = sctx.create_game_for(collection);
                 sctx.game_add_filepath(*game_ptr, std::move(path));
-            }    
+            }
             sctx.game_add_to(*game_ptr, collection);
-			found_games++;
-        }
-        else
-        {    
+            found_games++;
+        } else {
             // get the Game, if exists, and apply the properties
             if (!finfo.exists())
                 continue;
         }
         model::GameFile* const entry_ptr = sctx.gamefile_by_filepath(path);
-        if (!entry_ptr)  // ie. the file was not picked up by the system's extension list
+        if (!entry_ptr) // ie. the file was not picked up by the system's extension list
             continue;
         apply_metadata(*entry_ptr, xml_dir, xml_props, sysentry);
     }
 
-    if(RecalboxConf::Instance().AsBool("pegasus.gamelistonly") || RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
-    {
-        Log::info(log_tag, LOGMSG("System `%1` gamelist provided %2 games")
-        .arg(sysentry.name, QString::number(found_games)));
+    if (RecalboxConf::Instance().AsBool("pegasus.gamelistonly") || RecalboxConf::Instance().AsBool("pegasus.gamelistfirst")) {
+        Log::info(log_tag, LOGMSG("System `%1` gamelist provided %2 games from file `%3`")
+                               .arg(sysentry.name, QString::number(found_games), gamelist_file_path));
     }
-    
+
     if (xml.error()) {
-        Log::warning(log_tag, xml.errorString());
-        return;
+        Log::warning(log_tag, LOGMSG("Error parsing `%1`: %2").arg(gamelist_file_path, xml.errorString()));
     }
+
+    file.close();
 }
 
 void Metadata::prepare_lightgun_games_metadata()
@@ -411,7 +451,7 @@ bool Metadata::isLightgunGames(model::Game* game, const model::GameFile* gamefil
     }
 }
 
-void Metadata::find_metadata_for_system(const SystemEntry& sysentry, const QDir& system_dir, providers::SearchContext& sctx) const
+size_t Metadata::find_metadata_for_system(const SystemEntry& sysentry, const QDir& system_dir, providers::SearchContext& sctx) const
 {
     Q_ASSERT(!sysentry.name.isEmpty());
     Q_ASSERT(!sysentry.path.isEmpty());
@@ -419,61 +459,54 @@ void Metadata::find_metadata_for_system(const SystemEntry& sysentry, const QDir&
     QString log_tag = sysentry.shortname + " " + m_log_tag;
     if (sysentry.shortname == QLatin1String("steam")) {
         Log::info(log_tag, LOGMSG("Ignoring the `steam` system in favor of the built-in Steam support"));
-        return;
+        return 0;
     }
 
     QElapsedTimer gamelist_timer;
     gamelist_timer.start();
     
-    //Log::debug(log_tag, LOGMSG("sysentry.path:  %1").arg(sysentry.path));
-      
-    const QString gamelist_path = find_gamelist_xml(m_config_dirs, system_dir, sysentry);
-    if (gamelist_path.isEmpty()) {
-        Log::warning(log_tag, LOGMSG("No gamelist file found for system `%1`").arg(sysentry.shortname));
-        return;
-    }
-    Log::info(log_tag, LOGMSG("Found `%1`").arg(gamelist_path));
+    std::vector<QString> gamelist_files = find_gamelist_xml_files(system_dir);
 
-    QFile xml_file(gamelist_path);
-    if (!xml_file.open(QIODevice::ReadOnly)) {
-        Log::error(log_tag, LOGMSG("Could not open `%1`").arg(gamelist_path));
-        return;
-    }
+    for (const QString& gamelist_file_path : gamelist_files) {
 
-    QXmlStreamReader xml(&xml_file);
-    process_gamelist_xml(system_dir, xml, sctx, sysentry);
-    Log::info(log_tag, LOGMSG("Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));
+        process_gamelist_xml(gamelist_file_path, sctx, sysentry);
+        Log::info(log_tag, LOGMSG("Timing: Gamelist processing took %1ms").arg(gamelist_timer.elapsed()));
 
-    //part after is dedicated to add additional media from skraper and not referenced in "gamelist.xml" files
-    if(!RecalboxConf::Instance().AsBool("pegasus.deactivateskrapermedia", false))
-    {
-        //to add images stored by skraper and linked to gamelist/system of ES
-        QElapsedTimer skraper_media_timer;
-        skraper_media_timer.start();
-        //Log::info(LOGMSG("media.xml path: %1").arg(xml_dir.path() + "/media.xml"));
-        //use media.xml or not
-        if(RecalboxConf::Instance().AsBool("pegasus.usemedialist", true)){
-            //Log::info(LOGMSG("media.xml to use: %1").arg(xml_dir.path() + "/media.xml"));
-            //add media from xml (to see if it's quicker or not ?!)
-            size_t mediaFound = import_media_from_xml(system_dir, sctx, sysentry);
-            if (mediaFound == 0){
-                Log::info(log_tag,  LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(system_dir.path() + "/media.xml"));
-                //set last parameter to activate or not the media.xml generation during parsing of media
-                //add_skraper_media_metadata(system_dir, sctx, sysentry, true);
-                add_skraper_media_metadata_v2(system_dir, sctx, sysentry, true);
-                Log::info(log_tag, LOGMSG("Timing: Skraper media searching (with media.xml generation) took %1ms").arg(skraper_media_timer.elapsed()));
+        //part after is dedicated to add additional media from skraper and not referenced in "gamelist.xml" files
+        if(!RecalboxConf::Instance().AsBool("pegasus.deactivateskrapermedia", false))
+        {
+            //to get directory of gamelist.xml where the media.xml should be created/stored
+            //to manage case when we ahve several gamelist.xml with subdirectories
+            QFileInfo fileInfo(gamelist_file_path);
+            QString directoryPath = fileInfo.path();
+            const QDir gamelist_dir(directoryPath);
+            //to add images stored by skraper and linked to gamelist/system of ES
+            QElapsedTimer skraper_media_timer;
+            skraper_media_timer.start();
+            //Log::info(LOGMSG("media.xml path: %1").arg(gamelist_dir.path() + "/media.xml"));
+            //use media.xml or not
+            if(RecalboxConf::Instance().AsBool("pegasus.usemedialist", true)){
+                //Log::info(LOGMSG("media.xml to use: %1").arg(gamelist_dir.path() + "/media.xml"));
+                //add media from xml (to see if it's quicker or not ?!)
+                size_t mediaFound = import_media_from_xml(system_dir, sctx, sysentry);
+                if (mediaFound == 0){
+                    Log::info(log_tag,  LOGMSG("media.xml not found, empty or to regenerate due to change(s): %1").arg(gamelist_dir.path() + "/media.xml"));
+                    //set last parameter to activate or not the media.xml generation during parsing of media
+                    add_skraper_media_metadata_v2(gamelist_dir, sctx, sysentry, true);
+                    Log::info(log_tag, LOGMSG("Timing: Skraper media searching (with media.xml generation) took %1ms").arg(skraper_media_timer.elapsed()));
+                }
+                else Log::info(log_tag, LOGMSG("Timing: Skraper media.xml import took %1ms").arg(skraper_media_timer.elapsed()));
             }
-            else Log::info(log_tag, LOGMSG("Timing: Skraper media.xml import took %1ms").arg(skraper_media_timer.elapsed()));
+            else{
+                //set last parameter to activate deactivate the media.xml generation during parsing of media
+                add_skraper_media_metadata_v2(gamelist_dir, sctx, sysentry, false);
+                Log::info(log_tag, LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
+            }
+            //*****************************************************
         }
-        else{
-            //set last parameter to activate deactivate the media.xml generation during parsing of media
-            //add_skraper_media_metadata(system_dir, sctx, sysentry, false);
-            add_skraper_media_metadata_v2(system_dir, sctx, sysentry, false);
-            Log::info(log_tag, LOGMSG("Timing: Skraper media searching took %1ms").arg(skraper_media_timer.elapsed()));
-        }
-        //*****************************************************     
     }
 
+    return gamelist_files.size();
 }
 
 void Metadata::add_skraper_media_metadata(const QDir& xml_dir, providers::SearchContext& sctx, const SystemEntry& sysentry, bool generateMediaXML) const
