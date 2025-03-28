@@ -107,53 +107,9 @@ Provider& Es2Provider::run(SearchContext& sctx)
         return *this;
     Log::info(display_name(), LOGMSG("Stats: Found %1 systems").arg(QString::number(systems.size())));
 
-    const float progress_step = 1.f / (systems.size() * 2);
+    const float progress_step = 1.f / (systems.size() * roms_directories().count());
     float progress = 0.f;
     Log::info(LOGMSG("Global Timing: Systems searching took %1ms").arg(systems_timer.elapsed()));
-
-    // Find games (file by file) - take bios files also or other file hide
-    QElapsedTimer games_timer;
-    games_timer.start();
-    for (const SystemEntry& sysentry : systems) {
-            const size_t found_cores = create_collection_for(sysentry, sctx);
-            Log::info(display_name(), LOGMSG("System `%1` has %2 emulator/cores")
-                .arg(sysentry.name, QString::number(found_cores)));
-            emit progressStage(sysentry.name);
-
-            // Find system videos
-            const size_t found_videos = find_system_videos_for(sysentry, sctx);
-            Log::debug(display_name(), LOGMSG("System `%1` provided %2 system videos")
-            .arg(sysentry.name, QString::number(found_videos)));
-
-            for(const QString& romsDir : roms_directories()){
-                QString share_path = sysentry.path ;
-                share_path = share_path.replace("%ROOT%",romsDir);
-                const QDir xml_dir(share_path);
-
-                //if gamelistfist activated we propose to search games if no gamelist in this system
-                if(RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
-                {
-                    //check if no gamelist exists
-                    if(metahelper.find_gamelist_xml(possible_config_dirs, xml_dir,sysentry).isEmpty()){
-                        const size_t found_games = find_games_for(sysentry, xml_dir, sctx);
-                        Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from share init")
-                        .arg(sysentry.name, QString::number(found_games)));
-                    }
-                }
-                // Find games if not Gamelist Only activated
-                else if(!RecalboxConf::Instance().AsBool("pegasus.gamelistonly"))
-                {
-                    //check if game exists
-                    size_t found_games = find_games_for(sysentry, xml_dir, sctx);
-                    Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from share init")
-                    .arg(sysentry.name, QString::number(found_games)));
-                }
-
-                progress += progress_step;
-                emit progressChanged(progress);
-            }
-    }
-    Log::info(LOGMSG("Global Timing: Game files searching took %1ms").arg(games_timer.elapsed()));
 
     // prepare and parse lightgun games from lightgun.cfg
     QElapsedTimer lightgun_games_timer;
@@ -169,24 +125,66 @@ Provider& Es2Provider::run(SearchContext& sctx)
     // Find assets and games in case of gamelist only (+ add info for lightgun games)
     QElapsedTimer assets_timer;
     assets_timer.start();
-    //unlock file system temporary to permit to store updates during asset parsing (as generation of media.xml from share_init for example)
-    if (system("mount -o remount,rw /") != 0) Log::error(LOGMSG("Issue to provide read/write on '/'"));
+
     for(const QString& romsDir : roms_directories()){
+
         if(romsDir.contains("/share_init/")){
             //unlock file system temporary to permit to store updates during asset parsing (as generation of media.xml from share_init for example)
             if (system("mount -o remount,rw /") != 0) Log::error(LOGMSG("Issue to provide read/write on '/'"));
         }
+
         for (const SystemEntry& sysentry : systems) {
+            const size_t found_cores = create_collection_for(sysentry, sctx);
+            Log::info(display_name(), LOGMSG("System `%1` has %2 emulator/cores")
+                                          .arg(sysentry.name, QString::number(found_cores)));
+            emit progressStage(sysentry.name);
+
+            // Find system videos
+            const size_t found_videos = find_system_videos_for(sysentry, sctx);
+            Log::debug(display_name(), LOGMSG("System `%1` provided %2 system videos")
+                                           .arg(sysentry.name, QString::number(found_videos)));
+
             QString share_path = sysentry.path ;
             share_path = share_path.replace("%ROOT%",romsDir);
             const QDir xml_dir(share_path);
+
+            //if 'gamelist first' activated we propose to search gamelist (and games after in this system if no gamelist found)
+            if(RecalboxConf::Instance().AsBool("pegasus.gamelistfirst"))
+            {
+                //read metadata first
+                const size_t found_gamelists = metahelper.find_metadata_for_system(sysentry, xml_dir, sctx);
+
+                //check if games exists only if no gamelist exists
+                if(found_gamelists == 0){
+                    const size_t found_games = find_games_for(sysentry, xml_dir, sctx);
+                    Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from %3")
+                                                   .arg(sysentry.name, QString::number(found_games), romsDir));
+                }
+            }
+            // Find games if no Gamelist First or Only are activated
+            else if(!RecalboxConf::Instance().AsBool("pegasus.gamelistonly"))
+            {
+                //check if game exists
+                size_t found_games = find_games_for(sysentry, xml_dir, sctx);
+                Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from %3")
+                                               .arg(sysentry.name, QString::number(found_games), romsDir));
+            }
+            // Gamelist only
+            else{
+                //read metadata only
+                metahelper.find_metadata_for_system(sysentry, xml_dir, sctx);
+            }
+
+            //to update status bar and message
             emit progressStage(sysentry.name);
             progress += progress_step;
             emit progressChanged(progress);
+
             //Process event in the queue
             QCoreApplication::processEvents();
-            metahelper.find_metadata_for_system(sysentry, xml_dir, sctx);
+
         }
+
         if(romsDir.contains("/share_init/")){
             //unlock file system after asset parsing/updates from share_init
             if (system("mount -o remount,ro /") != 0) Log::error(LOGMSG("Issue to provide read only on '/'"));

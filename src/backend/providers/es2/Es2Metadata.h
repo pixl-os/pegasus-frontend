@@ -51,10 +51,11 @@ struct lightgunGameData {
 
 public:
     explicit Metadata(QString, std::vector<QString>);
-    void find_metadata_for_system(const SystemEntry&, const QDir&, providers::SearchContext&) const;
+    size_t find_metadata_for_system(const SystemEntry&, const QDir&, providers::SearchContext&) const;
     void prepare_lightgun_games_metadata();
-    QString find_gamelist_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry&) const;
-    QString find_media_xml(const std::vector<QString>& possible_config_dirs, const QDir& system_dir, const SystemEntry&) const;
+    QString find_gamelist_xml(const QDir& system_dir, const SystemEntry&) const;
+    std::vector<QString> find_gamelist_xml_files(const QDir& system_dir) const;
+    QString find_media_xml(const QDir& system_dir, const SystemEntry&) const;
 
 private:
     const QString m_log_tag;
@@ -66,7 +67,7 @@ private:
 
     QList <lightgunGameData> m_lightgun_games;
 
-    void process_gamelist_xml(const QDir&, QXmlStreamReader&, providers::SearchContext&, const SystemEntry&) const;
+    void process_gamelist_xml(const QString& gamelist_file_path, providers::SearchContext&, const SystemEntry&) const;
     HashMap<MetaType, QString, EnumHash> parse_gamelist_game_node(QXmlStreamReader&) const;
     void apply_metadata(model::GameFile&, const QDir&, HashMap<MetaType, QString, EnumHash>&, const SystemEntry&) const;
     void add_skraper_media_metadata(const QDir&, providers::SearchContext&, const SystemEntry&, bool generateMediaXML = false) const;
