@@ -1815,6 +1815,8 @@ Window {
         ListElement { componentName: "Citra-emu"; repoUrl:"https://api.github.com/repos/pixl-os/citra-nightly/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "shinretro"; repoUrl:"https://api.github.com/repos/pixl-os/shinretro/releases";icon:""; picture: ""; multiVersions: false}
         ListElement { componentName: "Nvidia driver"; repoLocal:"/recalbox/system/hardware/videocard/releases-nvidia.json";icon:"qrc:/frontend/assets/logonvidia.png"; picture: ""; multiVersions: true}
+        //to install local plugin ;-) from /recalbox/share/plugin
+        ListElement { componentName: "Plugin"; repoLocal:"/recalbox/share/plugin/plugin.json";icon:""; picture: ""; multiVersions: false}
     }
 
     //to store and know if we are running in a pixL OS in Beta (For beta testing only) or Release version (Release include pre-release/public beta) + if Dev mode is activated
@@ -1883,7 +1885,8 @@ Window {
             //stop timer
             addUpdateTimer.stop();
             //start other timers
-            repoStatusRefreshTimer.start();
+            repoStatusRefreshTimer.start(); //for "remote" update/repo
+            localStatusRefreshTimer.start(); //for "local" update/plugin
             updatePopupTimer.start();
             checkUpgradeTimer.start();
 
@@ -1924,7 +1927,7 @@ Window {
         }
     }
 
-    Timer {//timer to download last versions
+    Timer {//timer to download last versions (from online repo only)
         id: repoStatusRefreshTimer
         interval: 60000 * 30 // Check every 30 minutes and at start
         repeat: true
@@ -1953,24 +1956,22 @@ Window {
                         {
                             api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoUrl);
                         }
-                        else if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
-                        {
-                            api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoLocal);
-                        }
                     }
                 }
-                //start timer to check one minute later the result
-                jsonStatusRefreshTimer.running = false;
-                jsonStatusRefreshTimer.running = true;
+                //start timer to check 30s later the result
+                //check if not already run finally
+                if(jsonStatusRefreshTimer.running !== true){
+                    jsonStatusRefreshTimer.running = true;
+                }
             }
         }
     }
 
-    property int numberOfUpdates: 0
+    property int numberOfUpdates : 0
     property string listOfUpdates : ""
     Timer {//timer to check json after download
         id: jsonStatusRefreshTimer
-        interval: 20000 // check after 20 seconds now
+        interval: 30000 // check after 30 seconds now
         repeat: false // no need to repeat
         running: false
         triggeredOnStart: false
@@ -1979,14 +1980,18 @@ Window {
                 //check all components (including pre-release for the moment and without filter)
                 numberOfUpdates = 0;
                 listOfUpdates = "";
-                var updateVersionIndexFound = api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , (isBeta || isDev), (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false );
-                if(updateVersionIndexFound !== -1){
-                    numberOfUpdates = numberOfUpdates + 1;
-                    componentsListModel.setProperty(i,"hasUpdate", true);
-                    componentsListModel.setProperty(i,"hasInstallNotified", false);
-                    componentsListModel.setProperty(i,"UpdateVersionIndex", updateVersionIndexFound);
-                    //contruct string about all udpates
-                    listOfUpdates = listOfUpdates + (listOfUpdates !== "" ? " / " : "") + componentsListModel.get(i).componentName;
+                //to check only remote update/repo
+                if((typeof(componentsListModel.get(i).repoUrl) !== "undefined") && (componentsListModel.get(i).repoUrl !== ""))
+                {
+                    var updateVersionIndexFound = api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , (isBeta || isDev), (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false );
+                    if(updateVersionIndexFound !== -1){
+                        numberOfUpdates = numberOfUpdates + 1;
+                        componentsListModel.setProperty(i,"hasUpdate", true);
+                        componentsListModel.setProperty(i,"hasInstallNotified", false);
+                        componentsListModel.setProperty(i,"UpdateVersionIndex", updateVersionIndexFound);
+                        //contruct string about all udpates
+                        listOfUpdates = listOfUpdates + (listOfUpdates !== "" ? " / " : "") + componentsListModel.get(i).componentName;
+                    }
                 }
             }
             if(numberOfUpdates !== 0){
@@ -2005,6 +2010,84 @@ Window {
                 //start timer to close popup automatically
                 popupDelay.restart();
             }
+            //just to be sure that variable is set to false at the end
+            jsonStatusRefreshTimer.running = false;
+        }
+    }
+
+    Timer {//timer to download last versions (from "local" / "plugin" only)
+        id: localStatusRefreshTimer
+        interval: 5000 // Check every 5 seconds and at start
+        repeat: true
+        running: false
+        triggeredOnStart: true
+        onTriggered: {
+            //only if updates are enabled from recalbox.conf
+            //console.log("updates.enabled : ",api.internal.recalbox.getBoolParameter("updates.enabled"));
+            if(api.internal.recalbox.getBoolParameter("updates.enabled") === true){
+                //loop to check all json from lcoal "repository" files
+                for(var i = 0;i < componentsListModel.count; i++){
+                    if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
+                    {
+                        api.internal.updates.getRepoInfo(componentsListModel.get(i).componentName,componentsListModel.get(i).repoLocal);
+                    }
+                }
+                //start timer to check 10s later the result
+                //check if not already run finally
+                if(jsonLocalStatusRefreshTimer.running !== true){
+                    jsonLocalStatusRefreshTimer.running = true;
+                }
+            }
+        }
+    }
+
+    property int numberOfLocalUpdates : 0
+    property string listOfLocalUpdates : ""
+    Timer {//timer to check json after download
+        id: jsonLocalStatusRefreshTimer
+        interval: 5000 // check after 5 seconds now
+        repeat: false // no need to repeat
+        running: false
+        triggeredOnStart: false
+        onTriggered: {
+
+            for(var i = 0;i < componentsListModel.count; i++){
+                //check all components (including pre-release for the moment and without filter)
+                numberOfLocalUpdates = 0;
+                listOfLocalUpdates = "";
+                //to check only local update/plugin
+                if((typeof(componentsListModel.get(i).repoLocal) !== "undefined") && (componentsListModel.get(i).repoLocal !== ""))
+                {
+                    var updateVersionIndexFound = api.internal.updates.hasUpdate(componentsListModel.get(i).componentName , (isBeta || isDev), (typeof(componentsListModel.get(i).multiVersions) !== "undefined") ? componentsListModel.get(i).multiVersions : false );
+                    if(updateVersionIndexFound !== -1){
+                        numberOfLocalUpdates = numberOfLocalUpdates + 1;
+                        componentsListModel.setProperty(i,"hasUpdate", true);
+                        componentsListModel.setProperty(i,"hasInstallNotified", false);
+                        componentsListModel.setProperty(i,"UpdateVersionIndex", updateVersionIndexFound);
+                        //contruct string about all udpates
+                        listOfLocalUpdates = listOfLocalUpdates + (listOfLocalUpdates !== "" ? " / " : "") + componentsListModel.get(i).componentName;
+                    }
+                }
+            }
+
+            if(numberOfLocalUpdates !== 0){
+                //to popup to alert about all udpates
+                //init parameters
+                popup.title = (numberOfLocalUpdates === 1) ?  (qsTr("Update available") + api.tr) : (qsTr("Updates available") + api.tr);
+                popup.message = listOfLocalUpdates;
+                //icon is optional but should be set to empty string if not use
+                popup.icon = "\uf2c6";
+                popup.iconfont = global.fonts.ion;
+                //delay provided in second and interval is in ms
+                popupDelay.interval = 5 * 1000;
+                //Open popup and set it as showable to have animation
+                popup.open();
+                popup.showing = true;
+                //start timer to close popup automatically
+                popupDelay.restart();
+            }
+            //just to be sure that variable is set to false at the end
+            jsonLocalStatusRefreshTimer.running = false;
         }
     }
 
