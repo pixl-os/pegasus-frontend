@@ -96,9 +96,9 @@ QString getVersionString(const QString rawVersion){
     QRegularExpression regex("(-v|v|-V|V)(\\d+.*?)(-|\\s|$)");// to get between "v" or "-v" and ("-" or end of line or space) and in upper case also now.
 
     QRegularExpressionMatch match = regex.match(rawVersion);
-    Log::debug("getVersionNumbers", LOGMSG("versionString: %1").arg(rawVersion));
+    //Log::debug("getVersionNumbers", LOGMSG("versionString: %1").arg(rawVersion));
     if (match.hasMatch()) {
-        Log::debug("getVersionString", LOGMSG("match.captured(2): %1").arg(match.captured(2)));
+        //Log::debug("getVersionString", LOGMSG("match.captured(2): %1").arg(match.captured(2)));
         return match.captured(2);
     }
     else return ""; // return empty string if not matching
@@ -109,7 +109,7 @@ QString getVersionString(const QString rawVersion){
 QList<int> getVersionNumbers(const QString rawVersion){
     QString versionString = getVersionString(rawVersion);
     QList<int> versionNumbers = {};
-    Log::debug("getVersionNumbers", LOGMSG("versionString: %1").arg(versionString));
+    //Log::debug("getVersionNumbers", LOGMSG("versionString: %1").arg(versionString));
     QStringList splits = versionString.split(".");
     for(int i = 0; i < splits.count(); i++){
         versionNumbers.append(splits.at(i).toInt());
@@ -181,7 +181,7 @@ void saveJson(QJsonDocument document, QString fileName) {
 QString get_script_from_path(QString path_str, QString log_tag)
 {
     //read file content
-    Log::debug(log_tag, LOGMSG("Script path_str: %1").arg(path_str));
+    //Log::debug(log_tag, LOGMSG("Script path_str: %1").arg(path_str));
     QFile f(path_str);
     QString raw_data;
     if (f.open(QFile::ReadOnly | QFile::Text)){
@@ -430,7 +430,7 @@ void Updates::launchComponentInstallation(QString componentName, const QString v
     //to avoid issue with directories and scripts
     componentName = cleanName(componentName);
 
-    Log::debug(log_tag, LOGMSG("launchComponentInstallation for: %1 in version: %2\n").arg(componentName,version));
+    //Log::debug(log_tag, LOGMSG("launchComponentInstallation for: %1 in version: %2\n").arg(componentName,version));
     //launch installation
     QMetaObject::invokeMethod(this,"launchComponentInstallation_slot", Qt::QueuedConnection,
                               Q_ARG(QString,componentName),Q_ARG(QString,version),Q_ARG(QString,downloaddirectory));
@@ -454,7 +454,7 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                break;// to stop search
             }
         }
-        Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot , version index: %1\n").arg(QString::number(versionIndex)));
+        //Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot , version index: %1\n").arg(QString::number(versionIndex)));
         if(versionIndex != -1){
             //get urls
             UpdateAssets zipAsset;
@@ -616,9 +616,9 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     m_updates[foundIndex].m_installationStep = 1;
                     QObject::connect(&downloadManager[m_updates[foundIndex].m_downloaderIndex], &DownloadManager::finished,
                                      this, [this, foundIndex, existingVersion, newVersion, componentName, diretoryPath, installationScriptAsset]() { // Use a lambda to capture variables
-                                         Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
+                                         //Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: %1").arg(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusMessage));
                                          if (downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError > 0) {
-                                             Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: finished with error - exit status: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
+                                             //Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: finished with error - exit status: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
                                              // Handle the error (e.g., emit a signal to notify the UI)
                                              // If neccesary, return from the calling function.
                                              return;
@@ -626,7 +626,7 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                                          // Continue processing after download completion (e.g., installation)
                                          QMetaObject::invokeMethod(this, [this, foundIndex, existingVersion, newVersion, componentName, diretoryPath, installationScriptAsset]() {
                                                  // update UI here.
-                                                 Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: Example of UI update from non-UI thread: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
+                                                 //Log::debug(log_tag, LOGMSG("launchComponentInstallation_slot: Example of UI update from non-UI thread: %1").arg(QString::number(downloadManager[m_updates[foundIndex].m_downloaderIndex].statusError)));
                                                  //launch installation after download
                                                  m_updates[foundIndex].m_installationStep = 2;
 
@@ -651,11 +651,11 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                                                  connect(MyThread, &ScriptManagerThread::finished, [this, foundIndex, componentName](int exit_status)->void{
                                                      //Check if OK and no error during installation
                                                      if((exit_status == 0) && (this->getInstallationError(componentName) <= 0)){
-                                                         Log::debug(log_tag, LOGMSG("Thread finished without error - exit status: %1").arg(QString::number(exit_status)));
+                                                         //Log::debug(log_tag, LOGMSG("Thread finished without error - exit status: %1").arg(QString::number(exit_status)));
                                                          this->m_updates[foundIndex].m_installationStep = 3; //installation finish
                                                      }
                                                      else{
-                                                         Log::debug(log_tag, LOGMSG("Thread finished with error - exit status: %1").arg(QString::number(exit_status)));
+                                                         //Log::debug(log_tag, LOGMSG("Thread finished with error - exit status: %1").arg(QString::number(exit_status)));
                                                          this->m_updates[foundIndex].m_installationStep = 4; //installation finish on error
                                                      }
                                                  });
@@ -698,11 +698,11 @@ void Updates::launchComponentInstallation_slot(QString componentName, const QStr
                     connect(MyThread, &ScriptManagerThread::finished, [this, foundIndex, componentName](int exit_status)->void{
                         //Check if OK and no error during installation
                         if((exit_status == 0) && (this->getInstallationError(componentName) <= 0)){
-                            Log::debug(log_tag, LOGMSG("Thread finished without error - exit status: %1").arg(QString::number(exit_status)));
+                            //Log::debug(log_tag, LOGMSG("Thread finished without error - exit status: %1").arg(QString::number(exit_status)));
                             this->m_updates[foundIndex].m_installationStep = 3; //installation finish
                         }
                         else{
-                            Log::debug(log_tag, LOGMSG("Thread finished with error - exit status: %1").arg(QString::number(exit_status)));
+                            //Log::debug(log_tag, LOGMSG("Thread finished with error - exit status: %1").arg(QString::number(exit_status)));
                             this->m_updates[foundIndex].m_installationStep = 4; //installation finish on error
                         }
                     });
@@ -809,13 +809,13 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
 
         if (json.isNull())
         {
-            Log::debug(log_tag, LOGMSG("%1 : json.isNull()").arg(componentName));
+            //Log::debug(log_tag, LOGMSG("%1 : json.isNull()").arg(componentName));
             return m_versions;
         }
         const auto json_root = json.array();
         if (json_root.isEmpty())
         {
-            Log::debug(log_tag, LOGMSG("json_root.isEmpty()"));
+            //Log::debug(log_tag, LOGMSG("json_root.isEmpty()"));
             return m_versions;
         }
         else Log::debug(log_tag, LOGMSG("nb version found: %1").arg(json_root.count()));
@@ -849,10 +849,20 @@ QList <UpdateEntry> Updates::parseJsonComponentFile(QString componentName)
                                                 qint64(asset_entry[QL1("size")].toDouble()),
                                                 asset_entry[QL1("browser_download_url")].toString()});
                 if(asset_entry[QL1("browser_download_url")].toString().contains("icon.png")){
-                    m_versions[i].m_icon = asset_entry[QL1("browser_download_url")].toString();
+                    QString prefix = "";
+                    if(asset_entry[QL1("browser_download_url")].toString().startsWith("/",Qt::CaseInsensitive)) //to check if it's a local image using path
+                    {
+                        prefix = "file:/";
+                    }
+                    m_versions[i].m_icon = prefix + asset_entry[QL1("browser_download_url")].toString();
                 }
                 else if(asset_entry[QL1("browser_download_url")].toString().contains("picture.png")){
-                    m_versions[i].m_picture = asset_entry[QL1("browser_download_url")].toString();
+                    QString prefix = "";
+                    if(asset_entry[QL1("browser_download_url")].toString().startsWith("/",Qt::CaseInsensitive)) //to check if it's a local image using path
+                    {
+                        prefix = "file:/";
+                    }
+                    m_versions[i].m_picture = prefix + asset_entry[QL1("browser_download_url")].toString();
                 }
                 //Log::info(log_tag, LOGMSG("asset_entry[QL1('name')].toString(): %1").arg(asset_entry[QL1("name")].toString()));
                 //Log::info(log_tag, LOGMSG("asset_entry[QL1('size')].ToDouble(): %1").arg(QString::number(qint64(asset_entry[QL1("size")].toDouble()))));
