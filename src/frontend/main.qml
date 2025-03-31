@@ -1887,6 +1887,7 @@ Window {
             //start other timers
             repoStatusRefreshTimer.start(); //for "remote" update/repo
             localStatusRefreshTimer.start(); //for "local" update/plugin
+            pluginFileCheckTimer.start(); //for check of plugin availability/unzip
             updatePopupTimer.start();
             checkUpgradeTimer.start();
 
@@ -2012,6 +2013,19 @@ Window {
             }
             //just to be sure that variable is set to false at the end
             jsonStatusRefreshTimer.running = false;
+        }
+    }
+
+    property bool hasPlugin : false
+    Timer {//timer to detect .plugin "zip compressed" file
+        id: pluginFileCheckTimer
+        interval: 3000 // Check every 3 seconds and at start
+        repeat: true
+        running: false
+        triggeredOnStart: true
+        onTriggered: {
+            hasPlugin = api.internal.updates.hasPlugin();
+            console.log("hasPlugin: " + hasPlugin);
         }
     }
 

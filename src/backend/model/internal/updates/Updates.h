@@ -90,6 +90,9 @@ public:
     Q_INVOKABLE void getRepoInfo(QString componentName, const QString repoUrl);
     //function to check if any updates is available using /tmp
     Q_INVOKABLE bool hasAnyUpdate(); //deprecated
+    //function to check if any '.plugin' file is available using /recalbox/share/plugin
+    //and unzip it if possible in all cases
+    Q_INVOKABLE bool hasPlugin();
     //function to check information about updates of any componants and confirm quickly if update using /tmp
     //and return index of update found
     Q_INVOKABLE int hasUpdate(QString componentName, const bool betaIncluded = false, const bool multiversions = false, const QString filter = "");
@@ -127,6 +130,7 @@ private:
     DownloadManager downloadManager[MAX_DOWNLOADER];
     int downloaderIndex = 0;
     bool m_hasanyupdate = false; //deprecated
+    bool m_hasplugin = false;
     QString log_tag = "Updates";
 };
 } // namespace model

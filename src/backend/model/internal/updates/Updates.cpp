@@ -28,6 +28,8 @@
 #include <utils/Files.h>
 #include "ScriptManager.h"
 
+#include "UnzipThreadZlib.h"
+
 
 namespace {
 
@@ -398,6 +400,64 @@ int Updates::hasUpdate(QString componentName, const bool betaIncluded, const boo
         }
     }
     return -1;//no file or issue or no update ;-)
+}
+
+bool Updates::hasPlugin(){
+
+    //if has plugin under unzipping
+    if(m_hasplugin) return true;
+
+    QString directoryPath = "/recalbox/share/plugin";
+    QDir directory(directoryPath);
+    if (!directory.exists()) {
+        Log::debug(log_tag, LOGMSG("Directory does not exist: %1.\n").arg(directoryPath));
+        return false;
+    }
+
+    QStringList filters;
+    filters << "*.plugin"; // Filter for files with the ".plugin" extension
+
+    QStringList entries = directory.entryList(filters, QDir::Files);
+
+    if (entries.isEmpty()) {
+        Log::debug(log_tag, LOGMSG("No .plugin file found !"));
+        return false;
+    }
+
+    //check file plugin
+    QString zipFilePath = directory.absoluteFilePath(entries.first());
+    QString destinationPath = directoryPath; // Replace with your destination path
+
+    UnzipThreadZlib* unzipThread = new UnzipThreadZlib(zipFilePath, destinationPath);
+
+    QObject::connect(unzipThread, &UnzipThreadZlib::finishedUnzipping, [&]() {
+        Log::debug(log_tag, LOGMSG("Unzipping finished."));
+        // Unzip successful and files exist, now remove the zip.
+        QFile zipFile(zipFilePath);
+        if(zipFile.remove()) {
+            Log::debug(log_tag, LOGMSG("Zip file removed."));
+        }
+        else {
+            Log::debug(log_tag, LOGMSG("Failed to remove zip file."));
+        }
+        unzipThread->deleteLater();
+        m_hasplugin = false;
+    });
+
+    QObject::connect(unzipThread, &UnzipThreadZlib::fileUnzipped, [&](const QString& fileName) {
+        Log::debug(log_tag, LOGMSG("Unzipped file: %1").arg(fileName));
+    });
+
+    QObject::connect(unzipThread, &UnzipThreadZlib::errorOccurred, [&](const QString& errorMessage){
+        Log::error(log_tag, LOGMSG("Error: %1").arg(errorMessage));
+        unzipThread->deleteLater();
+        //remove .plugin file in case of issue also
+        m_hasplugin = false;
+    });
+
+    unzipThread->start();
+    m_hasplugin = true;
+    return true;
 }
 
 //function to get details from last "available" update (and only if available)
