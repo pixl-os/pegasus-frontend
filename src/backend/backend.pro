@@ -38,7 +38,7 @@ SOURCES += \
     RootFolders.cpp \
     ScriptManager.cpp \
     RecalboxSystem.cpp \
-    UnzipThreadZlib.cpp
+    UnzipThread.cpp
 
 HEADERS += \
     Backend.h \
@@ -60,7 +60,7 @@ HEADERS += \
     ScriptManager.h \
     KeyEmitter.h \
     RecalboxSystem.h \
-    UnzipThreadZlib.h
+    UnzipThread.h
 
 include(imggen/imggen.pri)
 include(model/model.pri)

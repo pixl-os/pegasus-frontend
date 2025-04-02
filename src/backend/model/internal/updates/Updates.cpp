@@ -28,9 +28,6 @@
 #include <utils/Files.h>
 #include "ScriptManager.h"
 
-#include "UnzipThreadZlib.h"
-
-
 namespace {
 
 QString cleanName(QString componentName){
@@ -428,11 +425,14 @@ bool Updates::hasPlugin(){
     QString zipFilePath = directory.absoluteFilePath(entries.first());
     QString destinationPath = directoryPath; // Replace with your destination path
 
-    UnzipThreadZlib* unzipThread = new UnzipThreadZlib(zipFilePath, destinationPath);
+    m_unzipThread = new UnzipThread(zipFilePath, destinationPath);
 
-    QObject::connect(unzipThread, &UnzipThreadZlib::finishedUnzipping, [&]() {
+    QObject::connect(m_unzipThread, &UnzipThread::finishedUnzipping, [&](const QString& zipFilePath) {
         Log::debug(log_tag, LOGMSG("Unzipping finished."));
+        Log::debug(log_tag, LOGMSG("zipFilePath : %1").arg(zipFilePath));
+
         // Unzip successful and files exist, now remove the zip.
+        //no removing for testing
         QFile zipFile(zipFilePath);
         if(zipFile.remove()) {
             Log::debug(log_tag, LOGMSG("Zip file removed."));
@@ -440,23 +440,23 @@ bool Updates::hasPlugin(){
         else {
             Log::debug(log_tag, LOGMSG("Failed to remove zip file."));
         }
-        unzipThread->deleteLater();
+        m_unzipThread->deleteLater();
         m_hasplugin = false;
     });
 
-    QObject::connect(unzipThread, &UnzipThreadZlib::fileUnzipped, [&](const QString& fileName) {
+    QObject::connect(m_unzipThread, &UnzipThread::fileUnzipped, [&](const QString& fileName) {
         Log::debug(log_tag, LOGMSG("Unzipped file: %1").arg(fileName));
     });
 
-    QObject::connect(unzipThread, &UnzipThreadZlib::errorOccurred, [&](const QString& errorMessage){
+    QObject::connect(m_unzipThread, &UnzipThread::errorOccurred, [&](const QString& errorMessage){
         Log::error(log_tag, LOGMSG("Error: %1").arg(errorMessage));
-        unzipThread->deleteLater();
+        m_unzipThread->deleteLater();
         //remove .plugin file in case of issue also
         m_hasplugin = false;
     });
 
-    unzipThread->start();
     m_hasplugin = true;
+    m_unzipThread->start();
     return true;
 }
 

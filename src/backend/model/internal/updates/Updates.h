@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QTimer>
 #include "DownloadManager.h"
+#include "UnzipThread.h"
 
 const int MAX_DOWNLOADER = 20;
 
@@ -132,5 +133,6 @@ private:
     bool m_hasanyupdate = false; //deprecated
     bool m_hasplugin = false;
     QString log_tag = "Updates";
+    UnzipThread* m_unzipThread = nullptr;
 };
 } // namespace model
