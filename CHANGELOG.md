@@ -1,7 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2025-03-18- v0.1.10
+## [pixL-master] - 2025-04-XX - v0.1.11
+- Features:
+	- add overlay support for xemu + fix for dolphin
+	- add vsync, scanlines and dsp emulation parameters in XEMU advanced emulator settings
+
+## [pixL-master] - 2025-03-18 - v0.1.10
 - Features:
 	- add Amazon Luna controller layout
 	- update ratio Google Stadia

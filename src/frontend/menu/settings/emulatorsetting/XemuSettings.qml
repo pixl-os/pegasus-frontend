@@ -136,8 +136,55 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-//                    KeyNavigation.down: optTextureFilter
+                    KeyNavigation.down: optVsync
                 }
+
+                ToggleOption {
+                    id: optVsync
+
+                    label: qsTr("Enable Vsync") + api.tr
+                    note: qsTr("Vertical syncronisation.\nEnable on default.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("xemu.vsync",true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("xemu.vsync",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScanlines
+                }
+
+                ToggleOption {
+                    id: optScanlines
+
+                    label: qsTr("Enable scanlines") + api.tr
+                    note: qsTr("Included in specific overlay(s) with suffix '_scanlines'.\nDisable on default.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("xemu.scanlines",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("xemu.scanlines",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDSP
+                }
+
+                SectionTitle {
+                    text: qsTr("Sound configuration") + api.tr
+                    first: true
+                    symbol: "\uf11c"
+                }
+                ToggleOption {
+                    id: optDSP
+
+                    label: qsTr("DSP emulation") + api.tr
+                    note: qsTr("Emulate Xbox Digital Signal Processor.\nDisable on default.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("xemu.dsp",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("xemu.dsp",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                }
+
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
