@@ -424,10 +424,16 @@ FocusScope {
                                       case 'supermodel':
                                           hasOverlaySupport = true;
                                         break;
+                                      case 'dolphin':
+                                          hasOverlaySupport = true;
+                                        break;
                                       case 'dolphin-triforce':
                                           hasOverlaySupport = true;
                                         break;
                                       case 'pcsx2':
+                                          hasOverlaySupport = true;
+                                        break;
+                                      case 'xemu':
                                           hasOverlaySupport = true;
                                         break;
                                       default:
