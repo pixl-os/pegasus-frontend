@@ -14,6 +14,9 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add feature to find gamelist xml files for a root system and first level of subdirectory
 	- add parameter to activate gamelist(s) search in first level of subdirectories
 	- add parameter in "model2emu" menu for wine renderer
+	- add feature to manage "plugin" from share/plugin directory:
+		- manage decompression of .plugin zip file
+		- new simpler way using unzip thread using QuaZip
 
 ## [pixL-master] - 2025-03-18 - v0.1.10
 - Features:
