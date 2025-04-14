@@ -4,9 +4,15 @@ All notable changes to this project will be documented in this file (focus on ch
 ## [pixL-master] - 2025-04-XX - v0.1.11
 - Fixes:
 	- open(write/append)file directly in classes for robustness of updates/downloads
+	- deactivate some debug logs
 - Features:
 	- add overlay support for xemu + fix for dolphin
 	- add vsync, scanlines and dsp emulation parameters in XEMU advanced emulator settings
+	- add information on "rom extensions" available by core/emulator in menu
+	- introduce new "auto emulator/core selection" using rom extensions and priorities
+	- add "auto selection" menu navigation and menu visibility management
+	- add feature to find gamelist xml files for a root system and first level of subdirectory
+	- add parameter to activate gamelist(s) search in first level of subdirectories
 
 ## [pixL-master] - 2025-03-18 - v0.1.10
 - Features:
