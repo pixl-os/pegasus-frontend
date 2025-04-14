@@ -252,25 +252,27 @@ std::vector<QString> Metadata::find_gamelist_xml_files(const QDir& system_dir) c
         found_files.emplace_back(fileInfo.absoluteFilePath());
     }
 
-    // Get the list of first-level subdirectories
-    QFileInfoList first_level_subdirs = system_dir_obj.entryInfoList(
-        QStringList(), // No name filter, we want all directories
-        dir_filters
-        );
+    if(RecalboxConf::Instance().AsBool("pegasus.gamelistinsubdirectories")){
+        // Get the list of first-level subdirectories
+        QFileInfoList first_level_subdirs = system_dir_obj.entryInfoList(
+            QStringList(), // No name filter, we want all directories
+            dir_filters
+            );
 
-    // Iterate through the first-level subdirectories
-    for (const QFileInfo& subdirInfo : first_level_subdirs) {
-        QString subdir_name = subdirInfo.fileName();
-        if (!directories_to_ignore.contains(subdir_name)) {
-            QDir subdir_obj(subdirInfo.absoluteFilePath());
-            QFileInfoList gamelist_in_subdir = subdir_obj.entryInfoList(
-                QStringList() << "gamelist.xml",
-                filters
-                );
+        // Iterate through the first-level subdirectories
+        for (const QFileInfo& subdirInfo : first_level_subdirs) {
+            QString subdir_name = subdirInfo.fileName();
+            if (!directories_to_ignore.contains(subdir_name)) {
+                QDir subdir_obj(subdirInfo.absoluteFilePath());
+                QFileInfoList gamelist_in_subdir = subdir_obj.entryInfoList(
+                    QStringList() << "gamelist.xml",
+                    filters
+                    );
 
-            // Add any found gamelist.xml files from the subdirectory
-            for (const QFileInfo& fileInfo : gamelist_in_subdir) {
-                found_files.emplace_back(fileInfo.absoluteFilePath());
+                // Add any found gamelist.xml files from the subdirectory
+                for (const QFileInfo& fileInfo : gamelist_in_subdir) {
+                    found_files.emplace_back(fileInfo.absoluteFilePath());
+                }
             }
         }
     }
