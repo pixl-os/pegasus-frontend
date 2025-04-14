@@ -428,6 +428,19 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("pegasus.mediaondemand",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGamelistInSubDirectories
+                }
+                ToggleOption {
+                    id: optGamelistInSubDirectories
+
+                    label: qsTr("Gamelist in subdirectories") + api.tr
+                    note: qsTr("Once enabled, search 'gamelist.xml' also in first level of subdirectories.\n(Could impact loading performance)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.gamelistinsubdirectories",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.gamelistinsubdirectories",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
