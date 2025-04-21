@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2025-04-XX - v0.1.11
+## [pixL-master] - 2025-05-08 - v0.1.11
 - Fixes:
 	- open(write/append)file directly in classes for robustness of updates/downloads
 	- deactivate some debug logs
@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add "auto selection" menu navigation and menu visibility management
 	- add feature to find gamelist xml files for a root system and first level of subdirectory
 	- add parameter to activate gamelist(s) search in first level of subdirectories
+	- add parameter in "model2emu" menu for wine renderer
 
 ## [pixL-master] - 2025-03-18 - v0.1.10
 - Features:

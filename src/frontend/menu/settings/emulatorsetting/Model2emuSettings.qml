@@ -214,7 +214,7 @@ FocusScope {
                 }
                 //****************************** section to manage wine version of this emulator*****************************************
                 SectionTitle {
-                    text: qsTr("Wine configuration (Beta)") + api.tr
+                    text: qsTr("Wine 'Bottle' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
@@ -401,6 +401,97 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: btnCleanModel2emuBottles
+                }
+                // to clean/delete "bottle" before re-installation
+                SimpleButton {
+                    id: btnCleanModel2emuBottles
+                    Rectangle {
+                        id: containerValidateCleanModel2emuBottles
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Clean Model2emu wine bottle(s) (to re-install)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": "Model2emu Wine Bottles",
+                                                  "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineRenderer
+                }
+
+                //****************************** section to manage wine version of this emulator*****************************************
+                SectionTitle {
+                    text: qsTr("Wine 'Software' configuration") + api.tr
+                    first: true
+                    symbol: "\uf26f"
+                    symbolFontFamily: globalFonts.ion
+                }
+                MultivalueOption {
+                    id: optWineRenderer
+
+                    //property to manage parameter name
+                    property string parameterName : "model2emu.winerenderer"
+
+                    label: qsTr("Wine renderer") + api.tr
+                    note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineRenderer;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optWineSoftRenderer
                 }
                 ToggleOption {
@@ -458,43 +549,6 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: btnCleanModel2emuBottles
-                }
-                // to apply settings
-                SimpleButton {
-                    id: btnCleanModel2emuBottles
-                    Rectangle {
-                        id: containerValidate
-                        width: parent.width
-                        height: parent.height
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        color: parent.focus ? themeColor.underline : themeColor.secondary
-                        opacity : parent.focus ? 1 : 0.3
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            color: themeColor.textValue
-                            font.pixelSize: vpx(30)
-                            font.family: globalFonts.ion
-                            text : "\uf2ba  " + qsTr("Clean Model2emu wine bottle(s) (to re-install)") + api.tr
-                        }
-                    }
-                    onActivate: {
-                        //to force change of focus
-                        confirmDialog.focus = false;
-                        confirmDialog.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": "Model2emu Wine Bottles",
-                                                  "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
-                                                  "symbol": "\uf431",
-                                                  "symbolfont" : global.fonts.ion,
-                                                  "firstchoice": qsTr("Yes") + api.tr,
-                                                  "secondchoice": "",
-                                                  "thirdchoice": qsTr("No") + api.tr});
-                        //to force change of focus
-                        confirmDialog.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
