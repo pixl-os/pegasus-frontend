@@ -175,9 +175,10 @@ String::List StorageDevices::GetRawDeviceList()
 String StorageDevices::GetRawDeviceByLabel(const String& label)
 {
     String command;
-    if(!QFile::exists("/tmp/blkid")) command = _("blkid | grep 'LABEL=\"%f\"'");
-    return command = _("cat /tmp/blkid | grep 'LABEL=\"%f\"'");
+    if(!QFile::exists("/tmp/blkid")) GetCommandOutput("blkid > /tmp/blkid");
+    command = _("cat /tmp/blkid | grep 'LABEL=\"%f\"'");
     command.Replace("%f", label);
+
     for(const String& line : GetCommandOutput(command))
         return line;
 }
@@ -231,6 +232,124 @@ String StorageDevices::GetIconByDevice(const String& Device)
         return ""; //nothing found
     }
     return "";
+}
+
+//! Get Device from any Directory (to know partition/disk source of any directory)
+const StorageDevices::Device& StorageDevices::GetDeviceFromDirectory(const String& Directory)
+{
+    static StorageDevices::Device foundDevice{}; // Value-initialization for an empty/default Device
+    //case for share_init only
+    if(Directory.StartsWith("/recalbox/share_init") || Directory.StartsWith("/pixl/share_init")){
+        //device is "overlay" - no need to check, just create specific device for it (it's not like a storage one finally)
+        String devicePath;
+        String propertyLine;
+        long long Size;          //!< Size in byte
+        const String& line = GetRawDeviceByLabel("OVERLAY");
+        if (line.Extract(':', devicePath, propertyLine, true))
+        {
+            DeviceSizeInfo sizeInfos = GetFileSystemInfo();
+            // Extract device properties
+            PropertyMap properties = ExtractProperties(propertyLine);
+            // Get size for info
+            SizeInfo* info = sizeInfos.try_get(devicePath);
+            if (info != nullptr)
+            {
+                Size = ((long long)info->Size) << 10;
+            }
+            else
+            {
+                Size = 0;
+            }
+            String uuid = "DEV " + properties.get_or_return_default("UUID");
+            String label = properties.get_or_return_default("LABEL");
+            if (label.empty()) label = "Unnamed";
+            String filesystem = properties.get_or_return_default("TYPE");
+            if (filesystem.empty()) filesystem = "fs?";
+            String displayable = _("%i  Internal %l - %d (%f)");
+            displayable.Replace("%d", Path(devicePath).Filename())
+                .Replace("%l", label)
+                .Replace("%f", filesystem)
+                .Replace("%i", GetIconByDevice(Path(devicePath).Filename()));
+            String strSize = _("Size: %d");
+            strSize.Replace("%d", Size);
+            foundDevice = {Types::Internal, devicePath, sInternal, "RECALBOX", filesystem, displayable, true, sizeInfos};
+
+        }
+    }
+    else{
+        QString path = QString::fromStdString(Directory);
+        int lastSlashIndex = path.lastIndexOf('/');
+        if (lastSlashIndex != -1) {
+            path = path.left(lastSlashIndex);
+            //{ LOG(LogDebug) << "[Storage] GetDevicesFromDirectories directory (without last directory) : " << path.toStdString() ; }
+            //cleaning for search and for specific cases
+            if(path.endsWith("/pixl")) path = path.left(path.lastIndexOf('/'));
+            if(path.endsWith("/recalbox")) path = path.left(path.lastIndexOf('/'));
+            //{ LOG(LogDebug) << "[Storage] GetDevicesFromDirectories directory (cleaned) : " << path.toStdString() ; }
+        }
+        if(!QFile::exists("/tmp/df-kP")) GetCommandOutput("df -kP > /tmp/df-kP");
+        for(const String& line : GetCommandOutput("cat /tmp/df-kP"))
+        {
+
+            String::List items = line.Split(' ', true);
+            if(items[5] == Directory){
+                if(items[0].StartsWith("//")){//network path
+                    DeviceSizeInfo sizeInfos = GetFileSystemInfo();
+                    foundDevice = {Types::Internal, "", sNetwork, "", "", _("\uf086  Network Share"), true, sizeInfos};
+                    return foundDevice;
+                }
+            }
+            else if(items[5] == path.toStdString()){
+                if(items[0].StartsWith("/")){//drive/partition
+                    for(const StorageDevices::Device& device : GetStorageDevices())
+                    {
+                        if(device.DevicePath == items[0]){
+                          foundDevice = device; //return device matching
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // Device not found, return a static default instance
+    return foundDevice;
+}
+
+//! Get Devices from list of Directory (to know partition/disk source of a set of directories)
+const QStringList  StorageDevices::GetDevicesFromDirectories(const QStringList& directories)
+{
+    QStringList ListOfValue;
+    for(int i = 0; i < int(directories.size()) ; i++){
+        QString directory = directories.at(i);
+        StorageDevices::Device device =  StorageDevices::GetDeviceFromDirectory(directory.toStdString());
+        //remove path parts for display
+        directory = directory.replace("/recalbox/share/internals/","../");
+        directory = directory.replace("/recalbox/share/externals/","../");
+        directory = directory.replace("/recalbox/share_init/","../share_init/");
+        directory = directory.replace("/pixl/share_init/","../share_init/");
+        directory = directory.replace("/recalbox/share/","../share/");
+        directory = directory.replace("/pixl/share/","../share/");
+        //{ LOG(LogDebug) << "[Storage] GetDevicesFromDirectories directory (to display) : " << directory.toStdString() ; }
+        if(device.DisplayName.Contains("Network Share")){
+            ListOfValue.append(QString::fromStdString(device.DisplayName)
+                             + " "
+                             + directory
+                              );
+        }
+        else if(device.DisplayName != ""){
+            //keep only icon + label + file system format (exclude linux identifier that we could already retreived in list of share)
+            ListOfValue.append(QString::fromStdString(device.DisplayName.Split(" - ")[0])
+                             + " ("
+                             + QString::fromStdString(device.DisplayName.Split(" - ")[1].Split("(")[1])
+                             + " "
+                             + directory
+                              );
+        }
+        else{ //put only the full directory path in this case (if we can't identify the device)
+            ListOfValue.append(directories.at(i));
+        }
+    }
+    return ListOfValue;
 }
 
 String::List StorageDevices::GetMountedDeviceList()
