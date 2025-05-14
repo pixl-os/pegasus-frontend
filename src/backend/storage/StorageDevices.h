@@ -117,7 +117,19 @@ class StorageDevices
      */
     String GetStorageDevice();
 
-  private:
+    /*!
+     * @brief Get Device from any Directory (to know partition/disk source of any directory)
+     * @param directory Directory to set as share device
+     */
+    const Device& GetDeviceFromDirectory(const String& directory);
+
+    /*!
+     * @brief Get List of Device from any List of Directories (to know partition/disk source of a set of directories)
+     * @param directories List of Directories to set as share device
+     */
+    const QStringList GetDevicesFromDirectories(const QStringList& directories);
+
+private:
     //! Share device key
     static constexpr const char* sShareDevice = "sharedevice";
     //! Internal string

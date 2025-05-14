@@ -97,6 +97,9 @@ QStringList GetParametersList(QString Parameter)
     //clean global internal values if needed
     ListOfInternalValue.clear();
 
+    //! Storage devices
+    StorageDevices mStorageDevices;
+
     if (Parameter.endsWith(".ratio", Qt::CaseInsensitive) == true) // compatible for 'global.ratio' and '{system].ratio' (example: 'snes.ratio')
     {
         ListOfValue << QObject::tr("none") << QObject::tr("auto") << QObject::tr("square pixel") << QObject::tr("config")
@@ -176,11 +179,13 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanlines") << QObject::tr("mega bezel (under overlay)") << QObject::tr("mega bezel (above overlay)");
         ListOfInternalValue << "none" << "retro" << "scanlines" << "megabezel_under_overlay" << "megabezel_above_overlay";
     }
-    //to manage/select SHADERS directory
+    //to manage/select SHADERS directory (keep here to avoid to be disturb with "{system/rom}.shaders" pa
     else if (Parameter == "directory.shaders")
     {
         //shadersDirs
-        ListOfValue = paths::shadersDirs(true);
+        ListOfInternalValue = paths::shadersDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
+
     }
     else if (Parameter.endsWith(".shaders", Qt::CaseInsensitive) == true)
     {
@@ -793,9 +798,6 @@ QStringList GetParametersList(QString Parameter)
         ;sharedevice=INTERNAL
         */
 
-        //! Storage devices
-        StorageDevices mStorageDevices;
-
         for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
         {
             Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
@@ -870,55 +872,64 @@ QStringList GetParametersList(QString Parameter)
     else if (Parameter == "directories.roms.ignored")
     {
         //romsDirs
-        ListOfValue = paths::romsDirs(true);
+        ListOfInternalValue = paths::romsDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
     }
     //to manage/unselect THEMES directories
     else if (Parameter == "directories.themes.ignored")
     {
         //themesDirs
-        ListOfValue = paths::themesDirs(true);
-    }
-    //to manage/select SAVES directory
-    else if (Parameter == "directory.saves")
-    {
-        //savesDirs
-        ListOfValue = paths::savesDirs(true);
+        ListOfInternalValue = paths::themesDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
     }
     //to manage/select BIOS directory
     else if (Parameter == "directory.bios")
     {
         //biosDirs
-        ListOfValue = paths::biosDirs(true);
+        ListOfInternalValue = paths::biosDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
     }
-    //to manage/select MUSIC directory
-    else if (Parameter == "directory.music")
+    //to manage/select SAVES directory
+    else if (Parameter == "directory.saves")
     {
-        //musicDirs
-        ListOfValue = paths::musicDirs(true);
+        //savesDirs
+        ListOfInternalValue = paths::savesDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
     }
     //to manage/select OVERLAYS directory
     else if (Parameter == "directory.overlays")
     {
         //overlaysDirs
-        ListOfValue = paths::overlaysDirs(true);
-    }
-    //to manage/select SCREENSHOTS directory
-    else if (Parameter == "directory.screenshots")
-    {
-        //screenshotsDirs
-        ListOfValue = paths::screenshotsDirs(true);
+        ListOfInternalValue = paths::overlaysDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
     }
     //to manage/select USERSCRIPTS directory
     else if (Parameter == "directory.userscripts")
     {
         //userscriptsDirs
-        ListOfValue = paths::userscriptsDirs(true);
+        ListOfInternalValue = paths::userscriptsDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
+    }
+    //to manage/select SCREENSHOTS directory
+    else if (Parameter == "directory.screenshots")
+    {
+        //screenshotsDirs
+        ListOfInternalValue = paths::screenshotsDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
     }
     //to manage/select VIDEOS directory
     else if (Parameter == "directory.videos")
     {
         //videosDirs
-        ListOfValue = paths::videosDirs(true);
+        ListOfInternalValue = paths::videosDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
+    }
+    //to manage/select MUSIC directory
+    else if (Parameter == "directory.music")
+    {
+        //musicDirs
+        ListOfInternalValue = paths::musicDirs(true);
+        ListOfValue = mStorageDevices.GetDevicesFromDirectories(ListOfInternalValue);
     }
     //******************************************************** RETRODE PARAMETERS ************************************************************
     //to manage retrode controller ports mode
