@@ -212,41 +212,55 @@ QStringList GetParametersList(QString Parameter)
         QString empty = "";
         ListOfInternalValue << empty;
 
-        //read root directory
-        // Define shaders path
+        // read root directory and first-level subdirectories
         QDir shadersDir("/recalbox/share/shaders/");
-        // Sorting by name
+        shadersDir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot); // Include both dirs and files
         shadersDir.setSorting(QDir::Name);
-        QStringList files = shadersDir.entryList(QStringList(shadersext), QDir::Files);
-        for ( int index = 0; index < files.count(); index++ )
-        {
-            QString file = files.at(index);
+        QStringList entries = shadersDir.entryList(); // Get both files and dirs
+
+        QMap<QString, QStringList> dirFilesMap; // Map to store files per directory
+
+        // First, handle files in the root directory
+        QStringList rootFiles = shadersDir.entryList(QStringList(shadersext), QDir::Files);
+        for (const QString &file : rootFiles) {
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             // set absolute path and extension for recalbox.conf
             ListOfInternalValue.append("/recalbox/share/shaders/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(filterext, ""));
+            QString subfile = file;
+            ListOfValue.append(subfile.replace(filterext, ""));
         }
 
-        //read subdirectories
-        QDirIterator it("/recalbox/share/shaders/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
-        while (it.hasNext()) {
-            QString dir = it.next();
-            QString relativedir = dir;
-            relativedir = relativedir.replace("/recalbox/share/shaders/","");
-            //Log::debug(LOGMSG("Subdir : '%1'").arg(dir));
-            QDir shadersSubDir(dir);
-            // Sorting by name
-            shadersSubDir.setSorting(QDir::Name);
-            QStringList subfiles = shadersSubDir.entryList(QStringList(shadersext),QDir::Filter::Files,QDir::SortFlag::Name);
-            for (int i = 0; i < subfiles.count(); i++ )
-            {
+        // Then, process subdirectories
+        for (const QString &entryName : entries) {
+            QString entryPath = shadersDir.absoluteFilePath(entryName);
+            if (QFileInfo(entryPath).isDir()) {
+                // It's a directory
+                QString dir = entryPath;
+                QString relativedir = entryName;
+                //Log::debug(LOGMSG("Subdir : '%1'").arg(dir));
+
+                QDir shadersSubDir(dir);
+                shadersSubDir.setSorting(QDir::Name);
+                QStringList subfiles = shadersSubDir.entryList(QStringList(shadersext), QDir::Filter::Files, QDir::SortFlag::Name);
+
+                dirFilesMap[dir] = subfiles; // Store files for each directory
+            }
+        }
+
+        // Sort by directory and populate the lists
+        QList<QString> sortedDirs = dirFilesMap.keys();
+        std::sort(sortedDirs.begin(), sortedDirs.end());
+
+        for (const QString &dir : sortedDirs) {
+            QStringList subfiles = dirFilesMap[dir];
+            for (int i = 0; i < subfiles.count(); i++) {
                 QString subfile = subfiles.at(i);
                 //Log::debug(LOGMSG("File found in Subdir : '%1'").arg(subfile));
                 // set absolute path and extension for recalbox.conf
                 ListOfInternalValue.append(dir + '/' + subfile);
-                // remove file extension on menu
-                ListOfValue.append(subfile.replace(filterext, ""));
+                // include directory in ListOfValue, and remove extension
+                ListOfValue.append(QDir(dir).dirName() + "/" + subfile.replace(filterext, ""));
             }
         }
     }
