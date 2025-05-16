@@ -1,10 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2025-05-08 - v0.1.11
+## [pixL-master] - 2025-05-16 - v0.1.11
 - Fixes:
 	- open(write/append)file directly in classes for robustness of updates/downloads
 	- deactivate some debug logs
+	- fix to manage one level of directory for shaders (opengl/vulkan) and display it for sorting of shaders
+
 - Features:
 	- add overlay support for xemu + fix for dolphin
 	- add vsync, scanlines and dsp emulation parameters in XEMU advanced emulator settings
@@ -17,6 +19,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add feature to manage "plugin" from share/plugin directory:
 		- manage decompression of .plugin zip file
 		- new simpler way using unzip thread using QuaZip
+	- add icon/label/fs of storage devices for each directories and shorter in advanced directories configurations
 
 ## [pixL-master] - 2025-03-18 - v0.1.10
 - Features:
