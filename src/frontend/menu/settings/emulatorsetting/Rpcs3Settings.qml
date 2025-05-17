@@ -109,7 +109,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optInternalResolution;
+                        parameterslistBox.callerid = optResolutionScale;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
