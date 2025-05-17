@@ -234,7 +234,7 @@ FocusScope {
                 ToggleOption {
                     id: optNetworkStatut
 
-                    label: qsTr("Network Statut") + api.tr
+                    label: qsTr("Network Status") + api.tr
                     note: qsTr("If set to Connected, RPCS3 will alow programs to use internet connection.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("rpcs3.network")
@@ -261,7 +261,7 @@ FocusScope {
                 ToggleOption {
                     id: optRpcnStatut
 
-                    label: qsTr("PSN Statut") + api.tr
+                    label: qsTr("PSN Status") + api.tr
                     note: qsTr("If set enable RPCS3 will use the RPCN server as PSN connection if the game is supported.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("rpcs3.rpcn")
@@ -318,7 +318,7 @@ FocusScope {
                     id: optRpcs3RpcnToken
 
                     label: qsTr("Token") + api.tr
-                    note: qsTr("If you don't have an token check your mail after create an acount") + api.tr
+                    note: qsTr("If you don't have an token check your mail after create an account") + api.tr
 
                     TextFieldOption {
                         id: rpcnToken
@@ -345,7 +345,7 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "rpcs3.theme"
 
-                    label: qsTr("Changes theme menu") + api.tr
+                    label: qsTr("GUI Theme") + api.tr
                     note: qsTr("Changes the overall look of RPCS3") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)

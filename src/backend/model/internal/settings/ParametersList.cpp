@@ -610,7 +610,7 @@ QStringList GetParametersList(QString Parameter)
         /*
          *   Resolution Scale: 100
         */
-        ListOfValue << QObject::tr("25% (320x180)") << QObject::tr("50% (640x360)") << QObject::tr("75% (960x540") << QObject::tr("100% (1280x720) (default)")
+        ListOfValue << QObject::tr("25% (320x180)") << QObject::tr("50% (640x360)") << QObject::tr("75% (960x540)") << QObject::tr("100% (1280x720) (default)")
                     << QObject::tr("125% (1600x900)") << QObject::tr("150% (1920x1080)") << QObject::tr("175% (2240x1260)") << QObject::tr("200% (2560x1440)");
 
         ListOfInternalValue << "25" << "50" << "75" << "100"
