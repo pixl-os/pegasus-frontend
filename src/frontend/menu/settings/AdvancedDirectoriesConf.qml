@@ -21,16 +21,16 @@ FocusScope {
         function onAccept() {
             var result = "";
             //umount first in all cases
-            console.log("umount command : ","umount " + parameterslistBox.target);
+            //console.log("umount command : ","umount " + parameterslistBox.target);
             result = api.internal.system.run("umount " + parameterslistBox.target);
-            console.log("umount result : ",result);
+            //console.log("umount result : ",result);
             api.internal.system.run("sleep 1");
             //mount/remount
             //check that is not the default value
             if(parameterslistBox.target !== parameterslistBox.callerid.value){
-                console.log("mount command : ", "mount --bind " + parameterslistBox.callerid.value + " " + parameterslistBox.target + " 2>&1");
-                result = api.internal.system.run("mount --bind " + parameterslistBox.callerid.value + " " + parameterslistBox.target + " 2>&1");
-                console.log("mount result : ",result);
+                //console.log("mount command : ", "mount --bind " + parameterslistBox.callerid.internalvalue + " " + parameterslistBox.target + " 2>&1");
+                result = api.internal.system.run("mount --bind " + parameterslistBox.callerid.internalvalue + " " + parameterslistBox.target + " 2>&1");
+                //console.log("mount result : ",result);
                 if(result !== ""){
                     //add dialogBox to alert about issue
                     genericMessage.setSource("../../dialogs/GenericContinueDialog.qml",
@@ -213,9 +213,15 @@ FocusScope {
                     note: qsTr("select directory to take into account (share one by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -255,9 +261,15 @@ FocusScope {
                     note: qsTr("select directory to take into account (share one by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -297,9 +309,15 @@ FocusScope {
                     note: qsTr("select directory to take into account (share one by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -339,9 +357,15 @@ FocusScope {
                     note: qsTr("select directory to take into account (share one by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -381,9 +405,15 @@ FocusScope {
                     note: qsTr("select directory to take into account (share one by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -423,9 +453,15 @@ FocusScope {
                     note: qsTr("select directory to take into account (share one by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -466,9 +502,15 @@ FocusScope {
                     note: qsTr("select directory to take into account (share one by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -507,9 +549,15 @@ FocusScope {
                     note: qsTr("select directory to take into account (share one by default)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
+
+                    onValueChanged: {
+                        //to force to udpate internal value also
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -567,7 +615,7 @@ FocusScope {
             content.focus = true
             //check if need to restart to take change into account !
             if(previousValue !== api.internal.recalbox.getStringParameter(parameterName)){
-                console.log("needRestart");
+                //console.log("needRestart");
                 needRestart = true;
             }
         }
@@ -604,8 +652,8 @@ FocusScope {
 
         onClose: {
             content.focus = true
-            console.log("previous value : ", previous);
-            console.log("new value : ", callerid.value);
+            //console.log(("previous value : ", previous);
+            //console.log("new value : ", callerid.value);
             if (previous !== callerid.value ) {
                 //if different we could propose to remount this directory
                 //force save in recalbox.conf file before to execute anything in this case
