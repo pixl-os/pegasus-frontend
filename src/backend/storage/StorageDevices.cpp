@@ -45,7 +45,7 @@ void StorageDevices::Initialize()
   {
     current = "RAM";
     mDevices.push_back(Device(Types::Ram, "SHARE",  sInMemory, "RECALBOX", "tmpfs",_("In Memory!")+ " \u26a0", true, sizeInfos));
-    { LOG(LogWarning) << "[Storage] Share is stored in memory!"; }
+    //{ LOG(LogWarning) << "[Storage] Share is stored in memory!"; }
   }
 
   // Add Internal default share
@@ -129,7 +129,7 @@ void StorageDevices::Initialize()
       }
       //to ignore partition under 1 GByte (if size is well detected for sure)
       if ((Size <= (1024 * 1024 * 1024)) && (Size != 0)) continue;
-      Log::debug(LOGMSG("[Storage] Size: %1").arg(Size));
+      //Log::debug(LOGMSG("[Storage] Size: %1").arg(Size));
 
       String uuid = "DEV " + properties.get_or_return_default("UUID");
       String label = properties.get_or_return_default("LABEL");
@@ -529,7 +529,7 @@ void StorageDevices::AnalyseMounts()
     String::List items = line.Split(' ', true);
     if (items.size() < 6)
     {
-      { LOG(LogError) << "[Storage] Incomplete mount line: " << line; }
+      //{ LOG(LogError) << "[Storage] Incomplete mount line: " << line; }
       continue;
     }
     if (items[2] == "/recalbox/share") mShareInRAM =  (items[4] == "tmpfs");
