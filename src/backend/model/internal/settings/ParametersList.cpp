@@ -772,6 +772,15 @@ QStringList GetParametersList(QString Parameter)
                             << "9" << "10" << "11"
                             << "12";
     }
+    else if (Parameter == "global.retroachievements.leaderboard.indicators")
+    {
+        /*
+         * cheevos_leaderboards_enable = false
+        */
+        ListOfValue << QObject::tr("Disabled") << QObject::tr("Enabled (trackers and notifications)") << QObject::tr("Trackers only") << QObject::tr("Notifications only");
+
+        ListOfInternalValue << "false" << "true" << "trackers" << "notifications";
+    }
     else if (Parameter == "boot.audio.device")
     {
         /*
