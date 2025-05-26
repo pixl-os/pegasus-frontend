@@ -25,6 +25,7 @@ FocusScope {
     signal openXemuSettings
     signal openSupermodelSettings
     signal openPpssppSettings
+    signal openTeknoParrotSettings
     signal openYuzuSettings
     signal openSuyuSettings
 
@@ -264,6 +265,21 @@ FocusScope {
                     onActivate: {
                         focus = true;
                         root.openXemuSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoParrot
+                }
+                SimpleButton {
+                    id: optTeknoParrot
+                    visible: api.internal.system.run("if [ -d '/usr/bin/teknoparrot' ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
+                    label: qsTr("TeknoParrot") + api.tr
+                    note: qsTr("Change Configuration for TeknoParrot emulator for modern arcade systems") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openTeknoParrotSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optYuzu

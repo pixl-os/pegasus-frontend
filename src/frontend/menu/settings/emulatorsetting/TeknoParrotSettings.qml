@@ -1,10 +1,9 @@
 // Pegasus Frontend
 //
-// Created by BozoTheGeek - 17/05/2021
-// Updated by Strodown - 17/07/2023
+// Created by BozoTheGeek - 26/05/2025
 //
 
-import "emulatorsetting"
+//import "emulatorsetting"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
@@ -14,6 +13,13 @@ FocusScope {
     id: root
 
     signal close
+
+    // for any emulator menu
+    function openScreenWithEmulator(url, emulator) {
+        subscreen.setSource(url, {"emulator": emulator});
+        subscreen.focus = true;
+        root.state = "sub";
+    }
 
     function openScreen(url) {
         subscreen.source = url;
@@ -30,28 +36,13 @@ FocusScope {
     enabled: focus
     visible: 0 < (x + width) && x < Window.window.width
 
-
-    AdvancedEmulatorMain {
+    TeknoParrotMain {
         id: main
         focus: true
         anchors.right: parent.right
 
         onClose: root.close()
-        onOpenRetroarchSettings: root.openScreen("emulatorsetting/RetroarchSettings.qml")
-        onOpenRpcs3Settings: root.openScreen("emulatorsetting/Rpcs3Settings.qml")
-        onOpenModel2emuSettings: root.openScreen("emulatorsetting/Model2emuSettings.qml")
-        onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
-        onOpenDolphinTriforceSettings: root.openScreen("emulatorsetting/DolphinTriforceSettings.qml")
-        onOpenDuckstationSettings: root.openScreen("emulatorsetting/DuckstationSettings.qml")
-        onOpenPcsx2Settings: root.openScreen("emulatorsetting/Pcsx2Settings.qml")
-        onOpenCitraSettings: root.openScreen("emulatorsetting/CitraSettings.qml")
-        onOpenCemuSettings: root.openScreen("emulatorsetting/CemuSettings.qml")
-        onOpenXemuSettings: root.openScreen("emulatorsetting/XemuSettings.qml")
-        onOpenSupermodelSettings: root.openScreen("emulatorsetting/SupermodelSettings.qml")
-        onOpenPpssppSettings: root.openScreen("emulatorsetting/PpssppSettings.qml")
-        onOpenTeknoParrotSettings: root.openScreen("emulatorsetting/TeknoParrotSettings.qml")
-        onOpenYuzuSettings: root.openScreen("emulatorsetting/YuzuSettings.qml")
-        onOpenSuyuSettings: root.openScreen("emulatorsetting/SuyuSettings.qml")
+        onOpenWineConfiguration: root.openScreenWithEmulator("../WineConfiguration.qml", "teknoparrot")
     }
     Loader {
         id: modal

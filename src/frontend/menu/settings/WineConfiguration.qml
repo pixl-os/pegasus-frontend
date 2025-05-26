@@ -304,7 +304,7 @@ FocusScope {
                     onActivate: {
                         //to force change of focus
                         confirmDialog.focus = false;
-                        confirmDialog.setSource("../../../dialogs/Generic3ChoicesDialog.qml",
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                 { "title": emulator + " " + qsTr("Wine Bottles") + api.tr,
                                                   "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
                                                   "symbol": "\uf431",

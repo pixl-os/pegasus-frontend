@@ -335,8 +335,8 @@ QStringList GetParametersList(QString Parameter)
             // remove file extension on menu
             ListOfValue.append(file.replace(fileext, ""));
         }
-        //read "user" appimages file from /recalbox/share/save/usersettings/appimages
-        QDir wineUserDir("/recalbox/share/save/usersettings/appimages");
+        //read "user" appimages file from /recalbox/share/saves/usersettings/appimages
+        QDir wineUserDir("/recalbox/share/saves/usersettings/appimages");
         // Sorting by name
         wineUserDir.setSorting(QDir::Name);
         QStringList userfiles = wineUserDir.entryList(QStringList(ext), QDir::Files);
@@ -344,7 +344,7 @@ QStringList GetParametersList(QString Parameter)
         {
             QString file = userfiles.at(index);
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
-            ListOfInternalValue.append("/recalbox/share/save/usersettings/appimages/" + file);
+            ListOfInternalValue.append("/recalbox/share/saves/usersettings/appimages/" + file);
             // remove file extension on menu
             ListOfValue.append(file.replace(fileext, ""));
         }
