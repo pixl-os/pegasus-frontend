@@ -391,5 +391,7 @@
         <file>menu/settings/emulatorsetting/Rpcs3Settings.qml</file>
         <file>assets/gamepad/arcadestick/lstick_arcadestick.png</file>
         <file>assets/gamepad/arcadestick/rstick_arcadestick.png</file>
+        <file>menu/settings/WineConfiguration.qml</file>
+        <file>menu/settings/emulatorsetting/Model2emuMain.qml</file>
     </qresource>
 </RCC>
