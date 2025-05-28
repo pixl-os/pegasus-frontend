@@ -279,6 +279,47 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: optWineDllOverrides
+                }
+                MulticheckOption {
+                    id: optWineDllOverrides
+
+                    //property to manage parameter name
+                    property string parameterName : emulator + ".winedlloverrides"
+
+                    label: qsTr("DLL overrides") + api.tr
+                    note: qsTr("Select DLL overrides to apply (all selected by default)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterscheckBox.parameterName = parameterName;
+                        parameterscheckBox.callerid = optWineDllOverrides;
+                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
+                        parameterscheckBox.model = api.internal.recalbox.parameterslist;
+                        parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterscheckBox
+                        parameterscheckBox.focus = true;
+                        //to save previous value and know if we need restart or not finally
+                        parameterscheckBox.previousValue = api.internal.recalbox.getStringParameter(parameterName)
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                            parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: btnCleanEmulatorBottles
                 }
                 // to clean/delete "bottle" before re-installation
@@ -459,6 +500,41 @@ FocusScope {
         function onCancel() {
             //do nothing
             content.focus = true;
+        }
+    }
+
+    MulticheckBox {
+        id: parameterscheckBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property string previousValue
+        property MulticheckOption callerid
+
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+        //to load "checked" status for each indexes
+        isChecked: api.internal.recalbox.parameterslist.isChecked()
+
+        onClose: {
+            content.focus = true
+        }
+
+        onCheck: {
+            //console.log("parameterscheckBox::onCheck index : ", index, " checked : ", checked, " callerid.parameterName : ", callerid.parameterName);
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            api.internal.recalbox.parameterslist.currentIndexChecked = checked;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
 

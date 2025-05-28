@@ -314,6 +314,11 @@ QStringList GetParametersList(QString Parameter)
             }
         }
     }
+    else if (Parameter.endsWith(".winedlloverrides", Qt::CaseInsensitive) == true)
+    {
+        ListOfInternalValue << "mscoree=d" << "mshtml=d";
+        ListOfValue << QObject::tr("Disable Wine Mono installation/usage") << QObject::tr("Disable Wine Gecko installation/usage");
+    }
     else if (Parameter.endsWith(".wineappimage", Qt::CaseInsensitive) == true)
     {
         // add auto in list to let default value from configgen  if needed
@@ -333,7 +338,7 @@ QStringList GetParametersList(QString Parameter)
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             ListOfInternalValue.append("/usr/wine/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(fileext, ""));
+            ListOfValue.append(file.replace(fileext, "") + "(embedded)");
         }
         //read "user" appimages file from /recalbox/share/saves/usersettings/appimages
         QDir wineUserDir("/recalbox/share/saves/usersettings/appimages");
@@ -346,7 +351,7 @@ QStringList GetParametersList(QString Parameter)
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             ListOfInternalValue.append("/recalbox/share/saves/usersettings/appimages/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(fileext, ""));
+            ListOfValue.append(file.replace(fileext, "") + "(from user settings)");
         }
     }
     else if (Parameter.endsWith(".winearch", Qt::CaseInsensitive) == true)
