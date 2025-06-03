@@ -374,7 +374,8 @@ FocusScope {
                     property string parameterName : emulator + ".winerenderer"
 
                     label: qsTr("Wine renderer") + api.tr
-                    note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
+                    note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
+                          qsTr("('auto' let emulator to select the best renderer itself)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
 
@@ -468,7 +469,20 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    //KeyNavigation.down: optWineVirtualDesktop
                 }
+                //VIRTUAL DESKTOP SEEMS BUGGY NOW IN RECENT WINE VERSIONS
+                // ToggleOption {
+                //     id: optWineVirtualDesktop
+                //     label: qsTr("Wine Virtual Desktop") + api.tr
+                //     note: qsTr("Enable software launching in desktop for wine") + api.tr
+
+                //     checked: api.internal.recalbox.getBoolParameter(emulator + ".winevirtualdesktop", false)
+                //     onCheckedChanged: {
+                //         api.internal.recalbox.setBoolParameter(emulator + ".winevirtualdesktop",checked);
+                //     }
+                //     onFocusChanged: container.onFocus(this)
+                // }
 
                 Item {
                     width: parent.width

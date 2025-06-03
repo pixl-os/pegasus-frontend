@@ -103,14 +103,84 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption2
                 }
-                ToggleOption {
+                MultivalueOption {
                     id: optTeknoparrotOption2
-                    label: qsTr("Windowed") + api.tr
-                    note: qsTr("Start 'windowed' is adviced for iGPU usually") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.windowed")
+                    //property to manage parameter name
+                    property string parameterName : "teknoparrot.windowed"
+
+                    label: qsTr("Windowed") + api.tr
+                    note: qsTr("Start as 'windowed' is adviced for some GPU/Game") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optTeknoparrotOption2;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optTeknoparrotOption3
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption3
+                    label: qsTr("Frame limiter") + api.tr
+                    note: qsTr("Activated to prevent games running too fast") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.framelimiter", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("teknoparrot.windowed",checked);
+                        api.internal.recalbox.setBoolParameter("teknoparrot.framelimiter",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotOption4
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption4
+                    label: qsTr("Launch UI first") + api.tr
+                    note: qsTr("Start UI first to be able to change/verify conf if needed.\n(need mouse/keyboard to navigate)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.launch.ui", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("teknoparrot.launch.ui",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotOption5
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption5
+                    label: qsTr("Show launcher") + api.tr
+                    note: qsTr("To show launcher console from Open Parrot") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.show.launcher", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("teknoparrot.show.launcher",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optwineConfiguration

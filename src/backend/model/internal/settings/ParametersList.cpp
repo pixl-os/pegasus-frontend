@@ -404,6 +404,12 @@ QStringList GetParametersList(QString Parameter)
                             << "Light Blue" << "Orange" << "Yellow" << "Turquoise"
                             << "Magenta" << "Purple" << "Steel" << "Stone";
     }
+    //******************************************** For teknoparrot***************************************************
+    else if (Parameter == "teknoparrot.windowed")
+    {
+        ListOfValue << QObject::tr("Auto") << QObject::tr("Yes") << QObject::tr("No");
+        ListOfInternalValue << "auto" << "yes" << "no";
+    }
     else if (Parameter.endsWith(".color"))
     {
         /* "Original,Black,Gray,Blue,Green,Red" */
