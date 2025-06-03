@@ -505,6 +505,7 @@ FocusScope {
             //remove emulator bottles
             if (!isDebugEnv()){
                 api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_* ; mount -o remount,ro /");
+                api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_* ; mount -o remount,ro /");
             }
             else{//for simulate and see more the spinner
                 api.internal.system.run("sleep 5");
