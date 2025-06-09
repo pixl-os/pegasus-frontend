@@ -275,11 +275,18 @@ QStringList GetParametersList(QString Parameter)
         while (it.hasNext()) {
             QString dir = it.next();
             QString relativedir = dir;
-            Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
+            //Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
             //if contain /bin directory, we could consider that is a valid wine installed in pixL
             if(relativedir.endsWith("/bin")){
                 QString fulldir;
                 QString winename;
+                QString wineversion = "";
+                //check if wineserver exists to get version
+                if (QFile::exists(relativedir + "/wineserver")){
+                    QString Command = relativedir + "/wineserver --version | head -n 1 | tr -d '\\n' | tr -d '\\r'";
+                    wineversion = GetCommandOutput(Command.toUtf8().constData());
+                    Log::debug(LOGMSG("GetCommandOutput(%1): '%2'").arg(Command,wineversion));
+                }
                 //check if file wine or wine64 exists to detect a valid wine directory
                 if (QFile::exists(relativedir + "/wine")) {
                     fulldir = relativedir + "/wine";
@@ -289,7 +296,7 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (Wine)");
+                    ListOfValue.append(winename + " (wine) " + wineversion);
                 }
                 if (QFile::exists(relativedir + "/wine32")){
                     fulldir = relativedir + "/wine32";
@@ -299,7 +306,7 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (Wine32)");
+                    ListOfValue.append(winename + " (wine32) " + wineversion);
                 }
                 if (QFile::exists(relativedir + "/wine64")){
                     fulldir = relativedir + "/wine64";
@@ -309,7 +316,7 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (Wine64)");
+                    ListOfValue.append(winename + " (wine64) " + wineversion);
                 }
             }
         }
@@ -338,7 +345,7 @@ QStringList GetParametersList(QString Parameter)
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             ListOfInternalValue.append("/usr/wine/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(fileext, "") + "(embedded)");
+            ListOfValue.append(file.replace(fileext, "") + " " + QObject::tr("(embedded)"));
         }
         //read "user" appimages file from /recalbox/share/saves/usersettings/appimages
         QDir wineUserDir("/recalbox/share/saves/usersettings/appimages");
@@ -351,7 +358,7 @@ QStringList GetParametersList(QString Parameter)
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             ListOfInternalValue.append("/recalbox/share/saves/usersettings/appimages/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(fileext, "") + "(from user settings)");
+            ListOfValue.append(file.replace(fileext, "") + " " + QObject::tr("(from user settings)"));
         }
     }
     else if (Parameter.endsWith(".winearch", Qt::CaseInsensitive) == true)
@@ -369,8 +376,8 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("auto");
         QString empty = "";
         ListOfInternalValue << empty;
-        ListOfValue << "Windows 10" << "Windows 8.1" << "Windows 8" << "Windows 7" << "Windows 2008" << "Windows Vista" << "Windows 2003" << "Windows XP" << "Windows 2000" << "Windows NT 4.0" << "Windows Millennium Edition" << "Windows 98" << "Windows 95" << "Windows 3.1";
-        ListOfInternalValue << "win10" << "win81" << "win8" << "win7" << "win2008" << "vista" << "win2003" << "winxp" << "win2k" << "nt40" << "winme" << "win98" << "win95"  << "win31";
+        ListOfValue << "Windows 11" << "Windows 10" << "Windows 8.1" << "Windows 8" << "Windows 7" << "Windows 2008" << "Windows Vista" << "Windows 2003" << "Windows XP" << "Windows 2000" << "Windows NT 4.0" << "Windows Millennium Edition" << "Windows 98" << "Windows 95" << "Windows 3.1";
+        ListOfInternalValue << "win11" << "win10" << "win81" << "win8" << "win7" << "win2008" << "vista" << "win2003" << "winxp" << "win2k" << "nt40" << "winme" << "win98" << "win95"  << "win31";
     }
     else if (Parameter.endsWith(".winerenderer", Qt::CaseInsensitive) == true)
     {
