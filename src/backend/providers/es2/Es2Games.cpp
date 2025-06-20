@@ -112,44 +112,84 @@ size_t find_games_for(
 {
     model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
 
-    // find all (sub-)directories, but ignore 'media'
-    const QStringList dirs = [& system_dir]{
-        QStringList result;
+    // This vector will act as our queue for directories to process
+    QVector<QString> dirs_to_scan;
+    dirs_to_scan.append(system_dir.path()); // Start with the system's root directory
 
-        constexpr auto subdir_filters = QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-        constexpr auto subdir_flags = QDirIterator::FollowSymlinks | QDirIterator::Subdirectories;
-        //crash identified with just after debugguer 06-03-2024 - 22h25
-        QDirIterator dirs_it(system_dir.path(), subdir_filters, subdir_flags);
-        while (dirs_it.hasNext())
-            result.append(dirs_it.next());
-
-        result.removeOne(system_dir.path() + QStringLiteral("/media"));
-        result.append(system_dir.path());
-        return result;
-    }();
-
-    // scan for game files 
-    constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
-    constexpr auto entry_flags = QDirIterator::FollowSymlinks;
+    // Parse the extensions into QDir::match-compatible filters (e.g., "*.nes", "*.zip")
     const QStringList name_filters = parse_filters(sysentry.extensions);
 
     size_t found_games = 0;
-    for (const QString& dir_path : dirs) {
-        QDirIterator files_it(dir_path, name_filters, entry_filters, entry_flags);
-        while (files_it.hasNext()) {
-            files_it.next();
-            QFileInfo fileinfo = files_it.fileInfo();
+    int current_dir_index = 0; // Index to simulate popping from the front of the queue
 
-            const QString filename = fileinfo.completeBaseName();
+    // Manual BFS traversal
+    while (current_dir_index < dirs_to_scan.size()) {
+        const QString current_dir_path = dirs_to_scan.at(current_dir_index++);
 
-            QString path = ::clean_abs_path(fileinfo);
-            model::Game* game_ptr = sctx.game_by_filepath(path);
-            if (!game_ptr) {
-                game_ptr = sctx.create_game_for(collection);
-                sctx.game_add_filepath(*game_ptr, std::move(path));
+        // Skip the specific "media" directory if it's the one under the system_dir.
+        // We do this check here, so we don't even scan its contents.
+        if (current_dir_path == system_dir.path() + QStringLiteral("/media")) {
+            continue;
+        }
+
+        // Prepare QDirIterator to find both files and directories in the current_dir_path
+        // We do NOT use QDirIterator::Subdirectories here, as we manually control recursion.
+        constexpr auto entry_filters = QDir::Files | QDir::Dirs | QDir::Readable | QDir::NoDotAndDotDot;
+        constexpr auto entry_flags = QDirIterator::FollowSymlinks; // Still follow symlinks for direct entries
+
+        QDirIterator it(current_dir_path, entry_filters, entry_flags);
+
+        while (it.hasNext()) {
+            it.next(); // Advance to the next entry (file or directory)
+            QFileInfo fileinfo = it.fileInfo();
+
+            // Check if the current entry's name (file or directory name) matches any of the game extensions
+            bool matches_extension = false;
+            for (const QString& filter : name_filters) {
+                // QDir::match can match against full names like "MyGame.zip" or "AnotherGame.nes"
+                // It works for both files and directories.
+                if (QDir::match(filter, fileinfo.fileName())) {
+                    matches_extension = true;
+                    break;
+                }
             }
-            sctx.game_add_to(*game_ptr, collection);
-            found_games++;
+
+            if (fileinfo.isDir()) {
+                if (matches_extension) {
+                    // Scenario: Directory itself is a game (e.g., "MyGame.ps1/")
+                    // Add this directory as a game entry.
+                    // IMPORTANT: We DO NOT add this directory to 'dirs_to_scan',
+                    // effectively preventing further scanning *inside* it.
+                    QString path = ::clean_abs_path(fileinfo);
+                    model::Game* game_ptr = sctx.game_by_filepath(path);
+                    if (!game_ptr) {
+                        game_ptr = sctx.create_game_for(collection);
+                        sctx.game_add_filepath(*game_ptr, std::move(path));
+                    }
+                    sctx.game_add_to(*game_ptr, collection);
+                    found_games++;
+                } else {
+                    // Scenario: Regular directory (e.g., "Roms", "Games")
+                    // Add this directory to the list for future scanning,
+                    // unless it's the "media" directory.
+                    // Ensure 'media' is skipped, even if deeper in structure.
+                    if (fileinfo.fileName().compare(QStringLiteral("media"), Qt::CaseInsensitive) != 0) {
+                        dirs_to_scan.append(fileinfo.absoluteFilePath());
+                    }
+                }
+            } else if (fileinfo.isFile()) {
+                if (matches_extension) {
+                    // Scenario: Regular file that is a game (e.g., "game.nes", "rom.zip")
+                    QString path = ::clean_abs_path(fileinfo);
+                    model::Game* game_ptr = sctx.game_by_filepath(path);
+                    if (!game_ptr) {
+                        game_ptr = sctx.create_game_for(collection);
+                        sctx.game_add_filepath(*game_ptr, std::move(path));
+                    }
+                    sctx.game_add_to(*game_ptr, collection);
+                    found_games++;
+                }
+            }
         }
     }
 
