@@ -362,7 +362,7 @@ FocusScope {
 
                 //****************************** section to manage wine version of this emulator*****************************************
                 SectionTitle {
-                    text: qsTr("Wine 'Software' configuration") + api.tr
+                    text: qsTr("Wine 'Renderer' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
@@ -378,6 +378,7 @@ FocusScope {
                           qsTr("('auto' let emulator to select the best renderer itself)") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -386,6 +387,55 @@ FocusScope {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
                         parameterslistBox.callerid = optWineRenderer;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                            internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                            count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optWineHUD
+                }
+                MultivalueOption {
+                    id: optWineHUD
+                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    //property to manage parameter name
+                    property string parameterName : emulator + ".winehud"
+
+                    label: qsTr("Wine DXVK/VKD3D HUD") + api.tr
+                    note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineHUD;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -411,7 +461,51 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    KeyNavigation.down: optWineDxvkFramerate
+                }
+                MultivalueOption {
+                    id: optWineDxvkFramerate
+                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    //property to manage parameter name
+                    property string parameterName : emulator + ".winedxvkframerate"
 
+                    label: qsTr("Wine DXVK framerate") + api.tr
+                    note: qsTr("DXVK Framerate (FPS Limit especially for vulkan/DXVK (DirectX 9 to 11))") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineDxvkFramerate;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
                     KeyNavigation.down: optWineSoftRenderer
                 }
                 ToggleOption {
@@ -425,6 +519,12 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineAudioDriver
+                }
+                SectionTitle {
+                    text: qsTr("Wine 'Software' configuration") + api.tr
+                    first: true
+                    symbol: "\uf26f"
+                    symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
                     id: optWineAudioDriver
@@ -469,20 +569,98 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    //KeyNavigation.down: optWineVirtualDesktop
-                }
-                //VIRTUAL DESKTOP SEEMS BUGGY NOW IN RECENT WINE VERSIONS
-                // ToggleOption {
-                //     id: optWineVirtualDesktop
-                //     label: qsTr("Wine Virtual Desktop") + api.tr
-                //     note: qsTr("Enable software launching in desktop for wine") + api.tr
+                    KeyNavigation.down: optWineVirtualDesktop
+                }                
+                ToggleOption {
+                    id: optWineVirtualDesktop
+                    label: qsTr("Wine Virtual Desktop") + api.tr
+                    note: qsTr("Enable software launching in desktop for wine") + api.tr
 
-                //     checked: api.internal.recalbox.getBoolParameter(emulator + ".winevirtualdesktop", false)
-                //     onCheckedChanged: {
-                //         api.internal.recalbox.setBoolParameter(emulator + ".winevirtualdesktop",checked);
-                //     }
-                //     onFocusChanged: container.onFocus(this)
-                // }
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winevirtualdesktop", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(emulator + ".winevirtualdesktop",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineNVapi
+                }
+                SectionTitle {
+                    text: qsTr("Wine 'Performance' configuration") + api.tr
+                    first: true
+                    symbol: "\uf26f"
+                    symbolFontFamily: globalFonts.ion
+                }
+                ToggleOption {
+                    id: optWineNVapi
+                    label: qsTr("Wine NVAPI") + api.tr
+                    note: qsTr("Enable NVIDIA api for wine") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winenvapi", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(emulator + ".winenvapi",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineFullScreenFSR
+                }
+                ToggleOption {
+                    id: optWineFullScreenFSR
+                    label: qsTr("Wine Fullscreen FSR") + api.tr
+                    note: qsTr("Enables AMD FidelityFX Super Resolution (FSR).\n(globally for fullscreen games)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefullscreenfsr", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(emulator + ".winefullscreenfsr",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineFullScreenIntegerScaling
+                }
+                ToggleOption {
+                    id: optWineFullScreenIntegerScaling
+                    label: qsTr("Wine Fullscreen Integer Scaling") + api.tr
+                    note: qsTr("Enables integer scaling for fullscreen games.\n(Useful for pixel-perfect scaling on high-DPI displays)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefullscreenintegerscaling", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(emulator + ".winefullscreenintegerscaling",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineDisableFullScreenHack
+                }
+                ToggleOption {
+                    id: optWineDisableFullScreenHack
+                    label: qsTr("Wine Disable Fullscreen Hack") + api.tr
+                    note: qsTr("Disables Wine's fullscreen hack.\n(which sometimes causes issues with certain games)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winedisablefullscreenhack", true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(emulator + ".winedisablefullscreenhack",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineESync
+                }
+                ToggleOption {
+                    id: optWineESync
+                    label: qsTr("Wine Esync") + api.tr
+                    note: qsTr("Enables Esync (Eventfd Synchronization).\n(Can improve performance in multi-threaded games)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".wineesync", true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(emulator + ".wineesync",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineFSync
+                }
+                ToggleOption {
+                    id: optWineFSync
+                    label: qsTr("Wine Fsync") + api.tr
+                    note: qsTr("Enables Fsync (Futex Synchronization).\n(A newer, more performant alternative to Esync)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefsync", true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(emulator + ".winefsync",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    //KeyNavigation.down: optWineFSync
+                }
 
                 Item {
                     width: parent.width
@@ -568,15 +746,30 @@ FocusScope {
 
         onClose: content.focus = true
         onSelect: {
-            callerid.keypressed = true;
+            /*console.log(callerid.label," onSelect count : ", callerid.count);
+            console.log(callerid.label," onSelect currentindex : ", callerid.currentIndex);
+            console.log(callerid.label," onSelect newindex : ", index);
+            console.log(callerid.label," onSelect value : ", callerid.value);
+            console.log(callerid.label," onSelect internalvalue : ", callerid.internalvalue);*/
             //to use the good parameter
-            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+
+            if(typeof(callerid.command) === "undefined") api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            else api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
+
+            callerid.keypressed = true;
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
-            //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+            callerid.currentIndex = index;
+
+            //to force update of display of selected value
+            if(typeof(callerid.command) === "undefined"){
+                callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+                callerid.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+            }
+            else {
+                callerid.value = api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
+            }
         }
     }
 }

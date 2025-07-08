@@ -388,6 +388,12 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << "OpenGL" << "Vulkan";
         ListOfInternalValue << "gl" << "vulkan";
     }
+    else if (Parameter.endsWith(".winedxvkframerate", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen if needed
+        ListOfValue << QObject::tr("auto") << QObject::tr("50 FPS") << QObject::tr("60 FPS");
+        ListOfInternalValue << "0" << "50" << "60";
+    }
     else if (Parameter.endsWith(".wineaudiodriver", Qt::CaseInsensitive) == true)
     {
         // add auto in list to let default value from configgen if needed
@@ -396,6 +402,22 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         ListOfValue << "alsa" << "pulse";
         ListOfInternalValue << "alsa" << "pulse";
+    }
+    else if (Parameter.endsWith(".winehud", Qt::CaseInsensitive) == true)
+    {
+        // #set "vulkan" HUD
+        // # DXVK_HUD=[value]: (DXVK-specific) Displays an on-screen overlay with performance information.
+        // # DXVK_HUD=fps (frames per second)
+        // # DXVK_HUD=full (all info)
+        // # DXVK_HUD=devinfo (GPU/driver info)
+        // # DXVK_HUD=compiler (shader compilation stats)
+        // # DXVK_HUD=pipeline (pipeline compilation stats)
+        // # DXVK_HUD=none (disable)
+        ListOfValue << QObject::tr("Disable") << QObject::tr("Frames per second") << QObject::tr("All information")
+                    << QObject::tr("GPU/driver information") << QObject::tr("Shader compilation stats")
+                    << QObject::tr("Pipeline compilation stats");
+        ListOfInternalValue << "none" << "fps" << "full"
+                            << "devinfo" << "compiler" << "pipeline";
     }
     else if (Parameter == "system.selected.color")
     {
