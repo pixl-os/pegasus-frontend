@@ -394,6 +394,14 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("auto") << QObject::tr("50 FPS") << QObject::tr("60 FPS");
         ListOfInternalValue << "0" << "50" << "60";
     }
+    else if (Parameter.endsWith(".winedxvkmethod", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen if needed
+        ListOfValue << QObject::tr("auto") << QObject::tr("embedded (using symlinks from pixL)") << QObject::tr("winetricks (with save/restore)");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        ListOfInternalValue << "embedded" << "winetricks";
+    }
     else if (Parameter.endsWith(".wineaudiodriver", Qt::CaseInsensitive) == true)
     {
         // add auto in list to let default value from configgen if needed

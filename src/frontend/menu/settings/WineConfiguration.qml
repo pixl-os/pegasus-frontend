@@ -506,6 +506,51 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    KeyNavigation.down: optWineDxvkMethod
+                }
+                MultivalueOption {
+                    id: optWineDxvkMethod
+                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    //property to manage parameter name
+                    property string parameterName : emulator + ".winedxvkmethod"
+
+                    label: qsTr("Wine DXVK/VKD8D method") + api.tr
+                    note: qsTr("this 'DLLs' installation methodoloy can impact game behaviors") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineDxvkMethod;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
                     KeyNavigation.down: optWineSoftRenderer
                 }
                 ToggleOption {
