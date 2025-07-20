@@ -344,6 +344,7 @@ FocusScope {
                     }
                     onActivate: {
                         //to force change of focus
+                        confirmDialog.callerid = "btnCleanEmulatorBottles"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                 { "title": emulator + " " + qsTr("Wine Bottles") + api.tr,
@@ -416,51 +417,6 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optWineHUD
-                }
-                MultivalueOption {
-                    id: optWineHUD
-                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
-                    //property to manage parameter name
-                    property string parameterName : emulator + ".winehud"
-
-                    label: qsTr("Wine DXVK/VKD3D HUD") + api.tr
-                    note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
-
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
-
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineHUD;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                        }
-                        container.onFocus(this)
-                    }
                     KeyNavigation.down: optWineDxvkFramerate
                 }
                 MultivalueOption {
@@ -704,7 +660,100 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(emulator + ".winefsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.down: optWineFSync
+                    KeyNavigation.down: optWineDebug
+                }
+                SectionTitle {
+                    text: qsTr("Wine 'Developer' configuration") + api.tr
+                    first: true
+                    symbol: "\uf26f"
+                    symbolFontFamily: globalFonts.ion
+                }
+                MulticheckOption {
+                    id: optWineDebug
+
+                    //property to manage parameter name
+                    property string parameterName : emulator + ".winedebug"
+
+                    label: qsTr("Wine Debug") + api.tr
+                    note: qsTr("Especially for developer/beta testers to help analysis from debug logs") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterscheckBox.parameterName = parameterName;
+                        parameterscheckBox.callerid = optWineDebug;
+                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
+                        parameterscheckBox.model = api.internal.recalbox.parameterslist;
+                        parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterscheckBox
+                        parameterscheckBox.focus = true;
+                        //to save previous value and know if we need restart or not finally
+                        parameterscheckBox.previousValue = api.internal.recalbox.getStringParameter(parameterName)
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                            parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optWineHUD
+                }
+
+                MultivalueOption {
+                    id: optWineHUD
+                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    //property to manage parameter name
+                    property string parameterName : emulator + ".winehud"
+
+                    label: qsTr("Wine DXVK/VKD3D HUD") + api.tr
+                    note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineHUD;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    KeyNavigation.down: btnLaunchWineCfg
                 }
 
                 Item {
@@ -720,6 +769,7 @@ FocusScope {
         id: confirmDialog
         anchors.fill: parent
         z:10
+        property string callerid: ""
     }
 
     Connections {
@@ -727,8 +777,10 @@ FocusScope {
         function onAccept() {
             //remove emulator bottles
             if (!isDebugEnv()){
-                api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_* ; mount -o remount,ro /");
-                api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_* ; mount -o remount,ro /");
+                if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
+                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_* ; mount -o remount,ro /");
+                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_* ; mount -o remount,ro /");
+                }
             }
             else{//for simulate and see more the spinner
                 api.internal.system.run("sleep 5");

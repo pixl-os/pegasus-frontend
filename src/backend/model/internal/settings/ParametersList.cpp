@@ -9,6 +9,8 @@
 #include <QDir>
 #include <QDirIterator>
 
+#include <QProcess>
+
 namespace {
 
 /******************************* section to initial variables used by GetParametersList in same name *************************************/
@@ -29,15 +31,76 @@ QString GetCommandOutput(const std::string& command)
 {
     std::string output;
     char buffer[4096];
+    Log::debug(LOGMSG("GetCommandOutput command: '%1'").arg(QString::fromStdString(command)));
     FILE* pipe = popen(command.data(), "r");
     if (pipe != nullptr)
     {
-        while (feof(pipe) == 0)
-            if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        while (feof(pipe) == 0){
+            if (fgets(buffer, sizeof(buffer), pipe) != nullptr){
                 output.append(buffer);
+                Log::debug(LOGMSG("GetCommandOutput Output: '%1'").arg(QString::fromStdString(output)));
+            }
+        }
         pclose(pipe);
     }
     return QString::fromStdString(output);
+}
+
+QString GetCommandOutputQtBlocking(const QString& command, const QStringList& arguments, bool ReturnError = false, bool RemoveEOL = false)
+{
+    QProcess process;
+    // For simple commands, you might just use command.
+    // For commands with arguments, it's safer to use setProgram and setArguments.
+    // Example: "ls -l /tmp" -> setProgram("ls"); setArguments({"-l", "/tmp"});
+    // If your 'command' string already contains arguments like "ls -l",
+    // then setProgram("sh") and setArguments({"-c", command}) is an option,
+    // but parsing the command string into program and arguments is generally safer.
+
+    // Let's assume for now your 'command' is a single string that can be executed by sh -c
+    // If you always execute simple commands without spaces in the command itself
+    // (e.g., "ls", "pwd"), then just setProgram(command) is fine.
+    // If 'command' can contain arguments, it's better to parse it or use 'sh -c'.
+
+    // A robust way to handle the 'command' string you're currently using:
+    // This assumes your `command` string is a shell command that needs `sh -c`.
+    process.setProgram(command);
+    process.setArguments(arguments);
+
+    // Alternatively, if 'command' is just the executable name and you want to pass arguments separately:
+    //process.setProgram("/bin/ls");
+    //process.setArguments({"-l", "/tmp"});
+    //process.setProgram("/usr/wine/wine-tkg-wow64/bin/wineserver");
+    //process.setArguments({"--version","2>&1"});
+
+    Log::debug(LOGMSG("Executing command: %1").arg(command)); // Using Qt's debug output
+    Log::debug(LOGMSG("Executing arguments: %1").arg(arguments.join(" "))); // Using Qt's debug output
+
+    process.start();
+    process.waitForFinished(-1); // Wait indefinitely for the process to finish
+
+    QString output = QString::fromUtf8(process.readAllStandardOutput());
+    QString errorOutput = QString::fromUtf8(process.readAllStandardError());
+
+
+    if (process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0) {
+        Log::debug(LOGMSG("Command output: %1").arg(output));
+        Log::debug(LOGMSG("Standard Error: %1").arg(errorOutput));
+    } else {
+        // Command failed or exited with an error
+        Log::debug(LOGMSG("Command failed with exit code: %1").arg(process.exitCode()));
+        Log::debug(LOGMSG("and exit status: %1").arg(process.exitStatus()));
+        Log::debug(LOGMSG("Standard Error: %1").arg(errorOutput));
+        // You might choose to return errorOutput or an empty string,
+        // or throw an exception depending on your error handling strategy.
+    }
+    QString outputReturn = "";
+    if(ReturnError) outputReturn = errorOutput;
+    else outputReturn = output;
+    if(RemoveEOL){
+        outputReturn = outputReturn.replace("\n","");
+        outputReturn = outputReturn.replace("\r","");
+    }
+    return outputReturn;
 }
 
 QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, QStringList SysOptions = {})
@@ -281,12 +344,29 @@ QStringList GetParametersList(QString Parameter)
                 QString fulldir;
                 QString winename;
                 QString wineversion = "";
-                //check if wineserver exists to get version
-                if (QFile::exists(relativedir + "/wineserver")){
-                    QString Command = relativedir + "/wineserver --version | head -n 1 | tr -d '\\n' | tr -d '\\r'";
-                    wineversion = GetCommandOutput(Command.toUtf8().constData());
-                    Log::debug(LOGMSG("GetCommandOutput(%1): '%2'").arg(Command,wineversion));
+
+                //check if wineserver exists to get version (using wineserver --version command)
+                QString Command = relativedir + "/wineserver";
+                QStringList Arguments = {"--version"};
+                if (QFile::exists(Command)){
+                    wineversion = GetCommandOutputQtBlocking(Command, Arguments, true, true);
+                    //to keep version as "9.22", "8.0", etc...
+                    wineversion = wineversion.toLower().replace("wine","").trimmed();
                 }
+
+                //check if wine exists to get archi (using wine --version command)
+                Command = relativedir + "/wine";
+                bool wineIs32Bit = false;
+                if (QFile::exists(Command)){
+                    QString errorOutput = GetCommandOutputQtBlocking(Command, Arguments, true, true);
+                    if(errorOutput.contains("ELFCLASS64")){
+                        //if wine is 32 bit, we will search the 64 bit one
+                        //else we consider than wine64 = wine (no need to display both version as engine)
+                        //as for modern wine using wow64 architecture
+                        wineIs32Bit = true;
+                    }
+                }
+
                 //check if file wine or wine64 exists to detect a valid wine directory
                 if (QFile::exists(relativedir + "/wine")) {
                     fulldir = relativedir + "/wine";
@@ -296,8 +376,9 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (wine) " + wineversion);
-                }
+                    if(wineIs32Bit) ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
+                    else ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
+               }
                 if (QFile::exists(relativedir + "/wine32")){
                     fulldir = relativedir + "/wine32";
                     winename = relativedir;
@@ -306,9 +387,9 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (wine32) " + wineversion);
+                    ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
                 }
-                if (QFile::exists(relativedir + "/wine64")){
+                if (wineIs32Bit && QFile::exists(relativedir + "/wine64")){
                     fulldir = relativedir + "/wine64";
                     winename = relativedir;
                     winename = winename.replace("/usr/wine/","");
@@ -316,7 +397,7 @@ QStringList GetParametersList(QString Parameter)
                     // use name of directory from /usr/win for recalbox.conf
                     ListOfInternalValue.append(fulldir);
                     // remove file extension on menu
-                    ListOfValue.append(winename + " (wine64) " + wineversion);
+                    ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
                 }
             }
         }
@@ -426,6 +507,48 @@ QStringList GetParametersList(QString Parameter)
                     << QObject::tr("Pipeline compilation stats");
         ListOfInternalValue << "none" << "fps" << "full"
                             << "devinfo" << "compiler" << "pipeline";
+    }
+    else if (Parameter.endsWith(".winedebug", Qt::CaseInsensitive) == true)
+    {
+    // General Debug Channels (Often very verbose if set to trace):
+    // all: Enables or disables all debug channels. Use with caution for trace level, as the output will be immense. (WINEDEBUG=warn+all is a common starting point).
+    // err: Only error messages.
+    // warn: Warning messages.
+    // fixme: "Fixme" messages, indicating unimplemented or partially implemented functionality. Extremely useful for identifying Wine's shortcomings for a given application.
+    // trace: All debugging messages, including detailed function call traces. The most verbose level.
+
+    // Core Wine Components and OS Emulation:
+    // loaddll: (As you mentioned) Traces the loading and unloading of DLLs, including whether they are native Windows DLLs or Wine's built-in versions. Essential for DLL-related issues.
+    // module: More detailed information about module loading, sometimes overlapping with loaddll.
+    // process: Debugging information related to process creation, termination, and management.
+    // thread: Information about thread creation, synchronization, and termination.
+    // seh: (Structured Exception Handling) Crucial for debugging crashes and exceptions. Shows how Wine handles exceptions and if it can translate them correctly.
+    // rpc: Remote Procedure Call (RPC) interactions.
+    // heap: Memory heap allocations and deallocations. Useful for memory corruption issues.
+    // alloc: General memory allocation tracking.
+    // virtual: Virtual memory management.
+    // sync: Synchronization primitives (mutexes, semaphores, events).
+    // reg: Windows Registry access and manipulation.
+    // file: File system operations.
+    // path: Path resolution and management.
+    // fsync: File synchronization operations.
+    // con: Console output.
+    // keyboard: Keyboard input.
+    // mouse: Mouse input.
+    // time: Time-related functions.
+    // pipe: Named pipe operations.
+    // socket: Network socket operations.
+
+    //example (-all is added first to be sure to deactivate all by default)
+    //WINEDEBUG=-all,trace+loaddll,warn+all
+
+    //onlly few ones selectable to avoid to saturate system in all cases
+        ListOfValue << QObject::tr("Warning messages") << QObject::tr("Error messages") << QObject::tr("Fixme messages")
+                    << QObject::tr("DLLs loading") << QObject::tr("Modules loading")
+                    << QObject::tr("Crashes/Exceptions");
+        ListOfInternalValue << "warn+all" << "err+all" << "fixme+all"
+                            << "+loaddll" << "+module"
+                            << "+seh";
     }
     else if (Parameter == "system.selected.color")
     {
