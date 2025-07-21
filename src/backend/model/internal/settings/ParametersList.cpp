@@ -10,6 +10,12 @@
 #include <QDirIterator>
 
 #include <QProcess>
+#include <QSettings>
+
+#include <QMap>
+#include <QString>
+#include <QVariant>
+extern QMap<QString, QVariant> globalInMemorySettings; // Declare it as extern
 
 namespace {
 
@@ -26,6 +32,25 @@ parameters for system to get from collection emulators and cores
 snes.core=snes9x_next
 neogeo.emulator=fba2x
 */
+
+QMap<QString, QVariant> globalInMemorySettings; // Define it once
+// Your functions would then use globalInMemorySettings directly:
+// save
+void saveQStringListToGlobalMap(const QStringList& list, const QString& key) {
+    globalInMemorySettings[key] = list;
+    Log::debug(LOGMSG("List saved to global QMap with key: %1").arg(key));
+}
+
+// load
+QStringList loadQStringListFromGlobalMap(const QString& key) {
+    QStringList list = globalInMemorySettings.value(key).toStringList();
+    if (list.isEmpty() && !globalInMemorySettings.contains(key)) {
+        Log::debug(LOGMSG("List not found in global QMap for key: %1").arg(key));
+    } else {
+        Log::debug(LOGMSG("List loaded from global QMap for key: %1").arg(key));
+    }
+    return list;
+}
 
 QString GetCommandOutput(const std::string& command)
 {
@@ -155,6 +180,8 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
 QStringList GetParametersList(QString Parameter)
 {
+    Log::debug(LOGMSG("QStringList GetParametersList(%1)").arg(Parameter));
+
     QStringList ListOfValue;
 
     //clean global internal values if needed
@@ -252,6 +279,11 @@ QStringList GetParametersList(QString Parameter)
     }
     else if (Parameter.endsWith(".shaders", Qt::CaseInsensitive) == true)
     {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.shaders");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.shaders");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
         /*
         ## Set gpslp shader for all emulators (prefer shadersets above). Absolute path (string)
         global.shaders=/recalbox/share/shaders/myShaders.glslp
@@ -326,89 +358,108 @@ QStringList GetParametersList(QString Parameter)
                 ListOfValue.append(QDir(dir).dirName() + "/" + subfile.replace(filterext, ""));
             }
         }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.shaders");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.shaders");
+        return ListOfValue;
+
     }
     else if (Parameter.endsWith(".wine", Qt::CaseInsensitive) == true)
     {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.wine");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.wine");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
         // add auto in list to let default value from configgen  if needed
         ListOfValue << QObject::tr("auto");
         QString empty = "";
         ListOfInternalValue << empty;
         //read subdirectories in /usr/wine
-        QDirIterator it("/usr/wine/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        QString targetPath = "/usr/wine/";
+        QStringList nameFilters;
+        nameFilters << "wine-*"; // The wildcard '*' will match any characters after "wine-"
+        // Changed flag: removed QDirIterator::Subdirectories
+        QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
         while (it.hasNext()) {
             QString dir = it.next();
-            QString relativedir = dir;
-            //Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
-            //if contain /bin directory, we could consider that is a valid wine installed in pixL
-            if(relativedir.endsWith("/bin")){
-                QString fulldir;
-                QString winename;
-                QString wineversion = "";
-
-                //check if wineserver exists to get version (using wineserver --version command)
-                QString Command = relativedir + "/wineserver";
-                QStringList Arguments = {"--version"};
-                if (QFile::exists(Command)){
-                    wineversion = GetCommandOutputQtBlocking(Command, Arguments, true, true);
-                    //to keep version as "9.22", "8.0", etc...
-                    wineversion = wineversion.toLower().replace("wine","").trimmed();
-                }
-
-                //check if wine exists to get archi (using wine --version command)
-                Command = relativedir + "/wine";
-                bool wineIs32Bit = false;
-                if (QFile::exists(Command)){
-                    QString errorOutput = GetCommandOutputQtBlocking(Command, Arguments, true, true);
-                    if(errorOutput.contains("ELFCLASS64")){
-                        //if wine is 32 bit, we will search the 64 bit one
-                        //else we consider than wine64 = wine (no need to display both version as engine)
-                        //as for modern wine using wow64 architecture
-                        wineIs32Bit = true;
-                    }
-                }
-
-                //check if file wine or wine64 exists to detect a valid wine directory
-                if (QFile::exists(relativedir + "/wine")) {
-                    fulldir = relativedir + "/wine";
-                    winename = relativedir;
-                    winename = winename.replace("/usr/wine/","");
-                    winename = winename.replace("/bin","");
-                    // use name of directory from /usr/win for recalbox.conf
-                    ListOfInternalValue.append(fulldir);
-                    // remove file extension on menu
-                    if(wineIs32Bit) ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
-                    else ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
-               }
-                if (QFile::exists(relativedir + "/wine32")){
-                    fulldir = relativedir + "/wine32";
-                    winename = relativedir;
-                    winename = winename.replace("/usr/wine/","");
-                    winename = winename.replace("/bin","");
-                    // use name of directory from /usr/win for recalbox.conf
-                    ListOfInternalValue.append(fulldir);
-                    // remove file extension on menu
-                    ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
-                }
-                if (wineIs32Bit && QFile::exists(relativedir + "/wine64")){
-                    fulldir = relativedir + "/wine64";
-                    winename = relativedir;
-                    winename = winename.replace("/usr/wine/","");
-                    winename = winename.replace("/bin","");
-                    // use name of directory from /usr/win for recalbox.conf
-                    ListOfInternalValue.append(fulldir);
-                    // remove file extension on menu
-                    ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
+            //it should contain /bin directory if it is a valid wine installed in pixL
+            QString relativedir = dir + "/bin";
+            Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
+            QString fulldir;
+            QString winename;
+            QString wineversion = "";
+            //check if wineserver exists to get version (using wineserver --version command)
+            QString Command = relativedir + "/wineserver";
+            QStringList Arguments = {"--version"};
+            if (QFile::exists(Command)){
+                wineversion = GetCommandOutputQtBlocking(Command, Arguments, true, true);
+                //to keep version as "9.22", "8.0", etc...
+                wineversion = wineversion.toLower().replace("wine","").trimmed();
+            }
+            //check if wine exists to get archi (using wine --version command)
+            Command = relativedir + "/wine";
+            bool wineIs32Bit = false;
+            if (QFile::exists(Command)){
+                QString errorOutput = GetCommandOutputQtBlocking(Command, Arguments, true, true);
+                if(errorOutput.contains("ELFCLASS64")){
+                    //if wine is 32 bit, we will search the 64 bit one
+                    //else we consider than wine64 = wine (no need to display both version as engine)
+                    //as for modern wine using wow64 architecture
+                    wineIs32Bit = true;
                 }
             }
+            //check if file wine or wine64 exists to detect a valid wine directory
+            if (QFile::exists(relativedir + "/wine")) {
+                fulldir = relativedir + "/wine";
+                winename = relativedir;
+                winename = winename.replace("/usr/wine/","");
+                winename = winename.replace("/bin","");
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(fulldir);
+                // remove file extension on menu
+                if(wineIs32Bit) ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
+                else ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
+            }
+            if (QFile::exists(relativedir + "/wine32")){
+                fulldir = relativedir + "/wine32";
+                winename = relativedir;
+                winename = winename.replace("/usr/wine/","");
+                winename = winename.replace("/bin","");
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(fulldir);
+                // remove file extension on menu
+                ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
+            }
+            if (wineIs32Bit && QFile::exists(relativedir + "/wine64")){
+                fulldir = relativedir + "/wine64";
+                winename = relativedir;
+                winename = winename.replace("/usr/wine/","");
+                winename = winename.replace("/bin","");
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(fulldir);
+                // remove file extension on menu
+                ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
+            }
         }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.wine");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.wine");
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winedlloverrides", Qt::CaseInsensitive) == true)
     {
         ListOfInternalValue << "mscoree=d" << "mshtml=d";
         ListOfValue << QObject::tr("Disable Wine Mono installation/usage") << QObject::tr("Disable Wine Gecko installation/usage");
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".wineappimage", Qt::CaseInsensitive) == true)
     {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.wineappimage");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.wineappimage");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
         // add auto in list to let default value from configgen  if needed
         ListOfValue << QObject::tr("auto");
         QString empty = "";
@@ -441,6 +492,10 @@ QStringList GetParametersList(QString Parameter)
             // remove file extension on menu
             ListOfValue.append(file.replace(fileext, "") + " " + QObject::tr("(from user settings)"));
         }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.wineappimage");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.wineappimage");
+        return ListOfValue; //to go quicker
     }
     else if (Parameter.endsWith(".winearch", Qt::CaseInsensitive) == true)
     {
@@ -450,6 +505,7 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         ListOfValue << "32 bits" << "64 bits";
         ListOfInternalValue << "win32" << "win64";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winver", Qt::CaseInsensitive) == true)
     {
@@ -459,6 +515,7 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         ListOfValue << "Windows 11" << "Windows 10" << "Windows 8.1" << "Windows 8" << "Windows 7" << "Windows 2008" << "Windows Vista" << "Windows 2003" << "Windows XP" << "Windows 2000" << "Windows NT 4.0" << "Windows Millennium Edition" << "Windows 98" << "Windows 95" << "Windows 3.1";
         ListOfInternalValue << "win11" << "win10" << "win81" << "win8" << "win7" << "win2008" << "vista" << "win2003" << "winxp" << "win2k" << "nt40" << "winme" << "win98" << "win95"  << "win31";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winerenderer", Qt::CaseInsensitive) == true)
     {
@@ -468,12 +525,14 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         ListOfValue << "OpenGL" << "Vulkan";
         ListOfInternalValue << "gl" << "vulkan";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winedxvkframerate", Qt::CaseInsensitive) == true)
     {
         // add auto in list to let default value from configgen if needed
         ListOfValue << QObject::tr("auto") << QObject::tr("50 FPS") << QObject::tr("60 FPS");
         ListOfInternalValue << "0" << "50" << "60";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winedxvkmethod", Qt::CaseInsensitive) == true)
     {
@@ -482,6 +541,7 @@ QStringList GetParametersList(QString Parameter)
         QString empty = "";
         ListOfInternalValue << empty;
         ListOfInternalValue << "embedded" << "winetricks";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".wineaudiodriver", Qt::CaseInsensitive) == true)
     {
@@ -491,6 +551,7 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         ListOfValue << "alsa" << "pulse";
         ListOfInternalValue << "alsa" << "pulse";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winehud", Qt::CaseInsensitive) == true)
     {
@@ -507,6 +568,7 @@ QStringList GetParametersList(QString Parameter)
                     << QObject::tr("Pipeline compilation stats");
         ListOfInternalValue << "none" << "fps" << "full"
                             << "devinfo" << "compiler" << "pipeline";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winedebug", Qt::CaseInsensitive) == true)
     {
@@ -549,6 +611,7 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << "warn+all" << "err+all" << "fixme+all"
                             << "+loaddll" << "+module"
                             << "+seh";
+        return ListOfValue;
     }
     else if (Parameter == "system.selected.color")
     {
@@ -1035,6 +1098,11 @@ QStringList GetParametersList(QString Parameter)
     }
     else if (Parameter == "boot.sharedevice")
     {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.boot.sharedevice");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.boot.sharedevice");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
         /*
         # The `sharedevice` variable indicates where to find the SHARE folder/partition.
         # It can have the following values:
@@ -1073,6 +1141,9 @@ QStringList GetParametersList(QString Parameter)
                 ListOfInternalValue.append(QString::fromStdString(device.UUID));
             }
         }
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.boot.sharedevice");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.boot.sharedevice");
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".core", Qt::CaseInsensitive) == true) // compatible with all systems
     {
@@ -1599,7 +1670,7 @@ QList<bool> ParametersList::isChecked() {
 
 QString ParametersList::currentName(const QString& Parameter, const QString& InternalName) {
 
-    //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+    Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
 
     if (m_parameter != Parameter)
     {
@@ -1612,7 +1683,7 @@ QString ParametersList::currentName(const QString& Parameter, const QString& Int
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
     }
-    //if added to check if InternalName changed finally espcially for value change from recalbox.conf and using HTTP API
+    //if added to check if InternalName changed finally especially for value change from recalbox.conf and using HTTP API
     if(InternalName != ""){
         //need to reset from InternalName as comming from recalox.conf
         for(int i = 0; i < ListOfInternalValue.count(); i++) {
@@ -1627,7 +1698,7 @@ QString ParametersList::currentName(const QString& Parameter, const QString& Int
 
 QString ParametersList::currentInternalName(const QString& Parameter) {
 
-    //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+    Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
 
     if (m_parameter != Parameter)
     {

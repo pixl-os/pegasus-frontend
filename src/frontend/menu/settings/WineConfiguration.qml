@@ -55,6 +55,9 @@ FocusScope {
         contentWidth: content.width
         contentHeight: content.height
 
+        //to manage update from visibility
+        clip: true
+
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds
         boundsMovement: Flickable.StopAtBounds
@@ -66,6 +69,7 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
+
         FocusScope {
             id: content
 
@@ -85,6 +89,41 @@ FocusScope {
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
+                }
+
+                // Inside your delegate or item that needs to check visibility
+                function checkVisibility(item) {
+                    // Map the item's local coordinates to the Flickable's content coordinates
+                    // This gives you the item's rectangle relative to the Flickable's content.
+                    var itemXInContent = mapToItem(container.contentItem, 0, 0).x;
+                    var itemYInContent = mapToItem(container.contentItem, 0, 0).y;
+
+                    // Define the item's rectangle in the Flickable's content coordinate system
+                    var itemRectInContent = Qt.rect(itemXInContent, itemYInContent, item.width, item.height);
+
+                    // Define the Flickable's visible rectangle (its viewport)
+                    // This is relative to contentX and contentY, so it's (0,0, width, height) of the visible area
+                    // Adjust flickableRect to be in the content's coordinate system, shifted by contentX/contentY
+                    var flickableVisibleRect = Qt.rect(container.contentX, container.contentY, container.width, container.height);
+
+                    // Now, perform the intersection check manually or using helper functions if available.
+                    // The `intersects` property/method on QRectF is for C++ API.
+                    // For pure QML `Qt.rect`, you usually define an intersection logic like this:
+
+                    var intersects =
+                        itemRectInContent.x < flickableVisibleRect.x + flickableVisibleRect.width &&
+                        itemRectInContent.x + itemRectInContent.width > flickableVisibleRect.x &&
+                        itemRectInContent.y < flickableVisibleRect.y + flickableVisibleRect.height &&
+                        itemRectInContent.y + itemRectInContent.height > flickableVisibleRect.y;
+
+                    var visibleInFlickable = intersects;
+                    if((item.visibleInFlickable !== visibleInFlickable) &&  (visibleInFlickable === true)){
+                        item.value = api.internal.recalbox.parameterslist.currentName(item.parameterName);
+                        item.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(item.parameterName);
+                        item.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        item.count = api.internal.recalbox.parameterslist.count;
+                    }
+                    item.visibleInFlickable = visibleInFlickable;
                 }
                 //put from here options
                 //****************************** section to manage wine version of this emulator*****************************************
@@ -107,11 +146,9 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
-
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
+                    count: api.internal.recalbox.parameterslist.count
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
@@ -155,10 +192,9 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
+                    count: api.internal.recalbox.parameterslist.count
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -203,10 +239,9 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
+                    count: api.internal.recalbox.parameterslist.count
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -251,10 +286,8 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
+                    count: api.internal.recalbox.parameterslist.count
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -275,7 +308,6 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -366,7 +398,7 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineRenderer
+                    KeyNavigation.down: optWineSoftRenderer
                 }
 
                 //****************************** section to manage wine version of this emulator*****************************************
@@ -375,6 +407,18 @@ FocusScope {
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
+                }
+                ToggleOption {
+                    id: optWineSoftRenderer
+                    label: qsTr("Wine Software renderer") + api.tr
+                    note: qsTr("Enable software renderer for wine") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winesoftrenderer")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(emulator + ".winesoftrenderer",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWineRenderer
                 }
                 MultivalueOption {
                     id: optWineRenderer
@@ -386,11 +430,12 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
                           qsTr("('auto' let emulator to select the best renderer itself)") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    onXChanged: parent.checkVisibility(this)
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -434,11 +479,12 @@ FocusScope {
                     label: qsTr("Wine DXVK framerate") + api.tr
                     note: qsTr("DXVK Framerate (FPS Limit especially for vulkan/DXVK (DirectX 9 to 11))") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    onXChanged: parent.checkVisibility(this)
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -459,7 +505,6 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -481,11 +526,12 @@ FocusScope {
                     label: qsTr("Wine DXVK/VKD8D method") + api.tr
                     note: qsTr("this 'DLLs' installation methodoloy can impact game behaviors") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    onXChanged: parent.checkVisibility(this)
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -506,7 +552,6 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -517,18 +562,6 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optWineSoftRenderer
-                }
-                ToggleOption {
-                    id: optWineSoftRenderer
-                    label: qsTr("Wine Software renderer") + api.tr
-                    note: qsTr("Enable software renderer for wine") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winesoftrenderer")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winesoftrenderer",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineAudioDriver
                 }
                 SectionTitle {
@@ -546,11 +579,12 @@ FocusScope {
                     label: qsTr("Wine audio driver") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    onXChanged: parent.checkVisibility(this)
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -571,7 +605,6 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -731,11 +764,12 @@ FocusScope {
                     label: qsTr("Wine DXVK/VKD3D HUD") + api.tr
                     note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    onXChanged: parent.checkVisibility(this)
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -756,7 +790,6 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
