@@ -107,6 +107,7 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -130,6 +131,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -153,6 +155,7 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -176,6 +179,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -199,6 +203,7 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -222,6 +227,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -233,10 +239,10 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optWineVer
+                    KeyNavigation.down: optWindowsVersion
                 }
                 MultivalueOption {
-                    id: optWineVer
+                    id: optWindowsVersion
 
                     //property to manage parameter name
                     property string parameterName : emulator + ".winver"
@@ -245,6 +251,7 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -252,7 +259,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineVer;
+                        parameterslistBox.callerid = optWindowsVersion;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -268,6 +275,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -390,7 +398,6 @@ FocusScope {
                         parameterslistBox.callerid = optWineRenderer;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
-                        api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -409,8 +416,7 @@ FocusScope {
 
                     onFocusChanged:{
                         if(focus){
-                            value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                            internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
                             count = api.internal.recalbox.parameterslist.count;
                             currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                         }
@@ -429,6 +435,7 @@ FocusScope {
                     note: qsTr("DXVK Framerate (FPS Limit especially for vulkan/DXVK (DirectX 9 to 11))") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -452,6 +459,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -474,6 +482,7 @@ FocusScope {
                     note: qsTr("this 'DLLs' installation methodoloy can impact game behaviors") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -497,6 +506,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -537,6 +547,7 @@ FocusScope {
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -560,6 +571,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -720,6 +732,7 @@ FocusScope {
                     note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName);
 
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                     count: api.internal.recalbox.parameterslist.count;
@@ -743,6 +756,7 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentIndex = index;
                         //to force update of display of selected value
                         value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
                     }
 
                     onFocusChanged:{
@@ -755,6 +769,46 @@ FocusScope {
                     }
                     KeyNavigation.down: btnLaunchWineCfg
                 }
+                //to launch wine cfg from bottle clearly defined (could create wineprefix if missing)
+                SimpleButton {
+                    id: btnLaunchWineCfg
+                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    Rectangle {
+                        id: containerValidateLaunchWineCfg
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Launch Winecfg from wine bottle") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnLaunchWineCfg"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": emulator + " " + qsTr("Winecfg") + api.tr,
+                                                  "message": qsTr("Are you sure to launch Winecfg ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    //KeyNavigation.down: optWineRenderer
+                }
+
 
                 Item {
                     width: parent.width
@@ -781,6 +835,36 @@ FocusScope {
                     api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_* ; mount -o remount,ro /");
                     api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_* ; mount -o remount,ro /");
                 }
+                else if (confirmDialog.callerid === "btnLaunchWineCfg"){
+                    //LIMIT: if everything is set in "auto" we can't determine the prefix to select
+                    var env = ""
+                    var wine = ""
+                    var prefixroot = api.internal.recalbox.getStringParameter(emulator + ".wineprefixroot","/recalbox")
+                    if(optWineEngine.internalvalue !== ""){
+                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
+                        wine = optWineEngine.internalvalue
+                    }
+                    else if(optWineAppImage.internalvalue !== ""){
+                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineAppImage.value.replace(" (embedded)","")
+                        wine = "/usr/wine/wine"
+                    }
+                    if(env !== ""){
+                        if(optWineArch.internalvalue !== "" ){
+                            env = env + "_" + optWineArch.internalvalue;
+                        }
+                        //deactivated because not used in prefix for the moment
+                        /*if(optWindowsVersion.internalvalue !== "" ){
+                            env = env + "_" + optWindowsVersion.internalvalue;
+                        }*/
+                        var command = env + " " + wine + " winecfg";
+                        console.log("winecfg command: " + command);
+                        api.internal.system.run(command);
+                    }
+                    else {//we can't determine the prefix to use from pegasus-fe
+                        console.log("wine prefix can't be determine to execute winecfg");
+                    }
+                }
+
             }
             else{//for simulate and see more the spinner
                 api.internal.system.run("sleep 5");
