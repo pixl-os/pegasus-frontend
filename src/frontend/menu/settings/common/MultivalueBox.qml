@@ -75,10 +75,10 @@ FocusScope {
     }
     Item {
         id: box
-        height: list.count >= 10 ? (10 * itemHeight) : (list.count * itemHeight)
+        //fix to 10 if picture to display for each selection
+        height: (list.count >= 10) || (typeof(model.picture) !== "undefined") ? (10 * itemHeight) : (list.count * itemHeight)
         width: vpx(700)
         anchors.centerIn: parent
-
 
         Rectangle {
             id: borderBox
@@ -103,9 +103,10 @@ FocusScope {
                     id: list
                     focus: true
 
-                    width: parent.width
+                    width: (typeof(model.picture) === "undefined") ? parent.width : parent.width/2
                     height: Math.min(count * itemHeight, parent.height)
-                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    //anchors.verticalCenter: parent.verticalCenter
                     delegate: listItem
                     snapMode: ListView.SnapOneItem
                     highlightMoveDuration: 150
