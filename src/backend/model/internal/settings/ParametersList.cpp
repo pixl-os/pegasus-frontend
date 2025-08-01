@@ -633,6 +633,28 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("Auto") << QObject::tr("Yes") << QObject::tr("No");
         ListOfInternalValue << "auto" << "yes" << "no";
     }
+    else if (Parameter == "teknoparrot.versus.controller.mapping")
+    {
+        ListOfValue << QObject::tr("From yaml file mappings") << QObject::tr("For 6 Buttons Gamepad/Panel") << QObject::tr("For 8 Buttons Gamepad/Panel");
+        ListOfInternalValue << "" << "6buttons" << "8buttons";
+    }
+    else if (Parameter == "teknoparrot.screen.resolution")
+    {
+    // # screen resolution
+    // # if "auto" is selected, parameter will be empty (we let game manage its resolution)
+    // # if "default (720p)" is selected, parameter will be "1280x720" as major games are in HD
+    // # if "1080p" is selected, parameter will be "1920x1080" as Full HD
+    // # if "1440p" is selected, parameter will be "2560x1440" as Quad HD/2K
+    // # if "2160p" is selected, parameter will be "3840×2160" as Ultra HD/4K
+        ListOfValue << QObject::tr("Auto") << QObject::tr("720p - HD") << QObject::tr("1080p - Full HD") << QObject::tr("1440p - Quad HD/2K") << QObject::tr("2160p - Ultra HD/4K");
+        ListOfInternalValue << "" << "1280x720" << "1920x1080" << "2560x1440" << "3840x2160";
+    }
+    else if (Parameter == "teknoparrot.runner.type")
+    {
+        ListOfValue << "Wine" << "Proton";
+        ListOfInternalValue << "wine" << "proton";
+    }
+    //******************************************* For Color Management **********************************************
     else if (Parameter.endsWith(".color"))
     {
         /* "Original,Black,Gray,Blue,Green,Red" */

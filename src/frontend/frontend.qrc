@@ -395,5 +395,6 @@
         <file>menu/settings/emulatorsetting/Model2emuMain.qml</file>
         <file>menu/settings/emulatorsetting/TeknoParrotMain.qml</file>
         <file>menu/settings/emulatorsetting/TeknoParrotSettings.qml</file>
+        <file>menu/settings/ProtonConfiguration.qml</file>
     </qresource>
 </RCC>
