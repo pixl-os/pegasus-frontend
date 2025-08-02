@@ -128,21 +128,21 @@ FocusScope {
                 //put from here options
                 //****************************** section to manage wine version of this emulator*****************************************
                 SectionTitle {
-                    text: qsTr("Wine 'Bottle' configuration") + api.tr
+                    text: qsTr("Proton Wine 'Bottle' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
-                    id: optWineEngine
+                    id: optProtonEngine
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".wine"
+                    property string parameterName : emulator + ".proton"
 
                     // set focus only on first item
                     focus: true
 
-                    label: qsTr("Wine 'engine'") + api.tr
+                    label: qsTr("Proton 'engine'") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
@@ -152,7 +152,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineEngine;
+                        parameterslistBox.callerid = optProtonEngine;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -180,15 +180,15 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optWineAppImage
+                    KeyNavigation.down: optProtonArch
                 }
                 MultivalueOption {
-                    id: optWineAppImage
+                    id: optProtonArch
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".wineappimage"
+                    property string parameterName : emulator + ".protonarch"
 
-                    label: qsTr("Wine AppImage") + api.tr
+                    label: qsTr("Proton Wine architecture") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
@@ -199,54 +199,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineAppImage;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                        }
-                        container.onFocus(this)
-                    }
-
-                    KeyNavigation.down: optWineArch
-                }
-                MultivalueOption {
-                    id: optWineArch
-
-                    //property to manage parameter name
-                    property string parameterName : emulator + ".winearch"
-
-                    label: qsTr("Wine architecture") + api.tr
-                    note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
-
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
-                    count: api.internal.recalbox.parameterslist.count
-
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineArch;
+                        parameterslistBox.callerid = optProtonArch;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -319,47 +272,6 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optWineDllOverrides
-                }
-                MulticheckOption {
-                    id: optWineDllOverrides
-
-                    //property to manage parameter name
-                    property string parameterName : emulator + ".winedlloverrides"
-
-                    label: qsTr("DLL overrides") + api.tr
-                    note: qsTr("Select DLL overrides to apply (all selected by default)") + api.tr
-
-                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
-
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterscheckBox.parameterName = parameterName;
-                        parameterscheckBox.callerid = optWineDllOverrides;
-                        parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
-                        parameterscheckBox.model = api.internal.recalbox.parameterslist;
-                        parameterscheckBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterscheckBox
-                        parameterscheckBox.focus = true;
-                        //to save previous value and know if we need restart or not finally
-                        parameterscheckBox.previousValue = api.internal.recalbox.getStringParameter(parameterName)
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                            parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
-                        }
-                        container.onFocus(this)
-                    }
-
                     KeyNavigation.down: btnCleanEmulatorBottles
                 }
                 // to clean/delete "bottle" before re-installation
@@ -379,7 +291,7 @@ FocusScope {
                             color: themeColor.textValue
                             font.pixelSize: vpx(30)
                             font.family: globalFonts.ion
-                            text : "\uf2ba  " + qsTr("Clean") + " " + emulator + " " + qsTr("Wine bottle(s) (to re-install)") + api.tr
+                            text : "\uf2ba  " + qsTr("Clean") + " " + emulator + " " + qsTr("Proton bottle(s) (to re-install)") + api.tr
                         }
                     }
                     onActivate: {
@@ -387,7 +299,7 @@ FocusScope {
                         confirmDialog.callerid = "btnCleanEmulatorBottles"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": emulator + " " + qsTr("Wine Bottles") + api.tr,
+                                                { "title": emulator + " " + qsTr("Proton Bottles") + api.tr,
                                                   "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
@@ -398,35 +310,35 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineSoftRenderer
+                    KeyNavigation.down: optProtonSoftRenderer
                 }
 
                 //****************************** section to manage wine version of this emulator*****************************************
                 SectionTitle {
-                    text: qsTr("Wine 'Renderer' configuration") + api.tr
+                    text: qsTr("Proton Wine 'Renderer' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
                 }
                 ToggleOption {
-                    id: optWineSoftRenderer
-                    label: qsTr("Wine Software renderer") + api.tr
+                    id: optProtonSoftRenderer
+                    label: qsTr("Proton Wine Software renderer") + api.tr
                     note: qsTr("Enable software renderer for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winesoftrenderer")
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonsoftrenderer")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winesoftrenderer",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".protonsoftrenderer",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineRenderer
+                    KeyNavigation.down: optProtonRenderer
                 }
                 MultivalueOption {
-                    id: optWineRenderer
+                    id: optProtonRenderer
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winerenderer"
+                    property string parameterName : emulator + ".protonrenderer"
 
-                    label: qsTr("Wine renderer") + api.tr
+                    label: qsTr("Proton Wine renderer") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
                           qsTr("('auto' let emulator to select the best renderer itself)") + api.tr
 
@@ -440,7 +352,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineRenderer;
+                        parameterslistBox.callerid = optProtonRenderer;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -468,15 +380,15 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optWineDxvkFramerate
+                    KeyNavigation.down: optProtonDxvkFramerate
                 }
                 MultivalueOption {
-                    id: optWineDxvkFramerate
-                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    id: optProtonDxvkFramerate
+                    visible: optProtonRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winedxvkframerate"
+                    property string parameterName : emulator + ".protondxvkframerate"
 
-                    label: qsTr("Wine DXVK framerate") + api.tr
+                    label: qsTr("Proton Wine DXVK framerate") + api.tr
                     note: qsTr("DXVK Framerate (FPS Limit especially for vulkan/DXVK (DirectX 9 to 11))") + api.tr
 
                     // Logic to update visibleInFlickable based on scroll position
@@ -489,7 +401,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineDxvkFramerate;
+                        parameterslistBox.callerid = optProtonDxvkFramerate;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -515,68 +427,21 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optWineDxvkMethod
-                }
-                MultivalueOption {
-                    id: optWineDxvkMethod
-                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
-                    //property to manage parameter name
-                    property string parameterName : emulator + ".winedxvkmethod"
-
-                    label: qsTr("Wine DXVK/VKD8D method") + api.tr
-                    note: qsTr("this 'DLLs' installation methodoloy can impact game behaviors") + api.tr
-
-                    // Logic to update visibleInFlickable based on scroll position
-                    // This is less efficient as it's checked for ALL items
-                    property bool visibleInFlickable: false // Custom property to track visibility
-                    onXChanged: parent.checkVisibility(this)
-                    // Initial check
-                    Component.onCompleted: parent.checkVisibility(this)
-
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineDxvkMethod;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                        }
-                        container.onFocus(this)
-                    }
-                    KeyNavigation.down: optWineAudioDriver
+                    KeyNavigation.down: optProtonAudioDriver
                 }
                 SectionTitle {
-                    text: qsTr("Wine 'Software' configuration") + api.tr
+                    text: qsTr("Proton Wine 'Software' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
-                    id: optWineAudioDriver
+                    id: optProtonAudioDriver
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".wineaudiodriver"
+                    property string parameterName : emulator + ".protonaudiodriver"
 
-                    label: qsTr("Wine audio driver") + api.tr
+                    label: qsTr("Proton Wine audio driver") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
                     // Logic to update visibleInFlickable based on scroll position
@@ -589,7 +454,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineAudioDriver;
+                        parameterslistBox.callerid = optProtonAudioDriver;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -615,111 +480,111 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optWineVirtualDesktop
+                    KeyNavigation.down: optProtonVirtualDesktop
                 }                
                 ToggleOption {
-                    id: optWineVirtualDesktop
-                    label: qsTr("Wine Virtual Desktop") + api.tr
+                    id: optProtonVirtualDesktop
+                    label: qsTr("Proton Wine Virtual Desktop") + api.tr
                     note: qsTr("Enable software launching in desktop for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winevirtualdesktop", false)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonvirtualdesktop", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winevirtualdesktop",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".protonvirtualdesktop",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineNVapi
+                    KeyNavigation.down: optProtonNVapi
                 }
                 SectionTitle {
-                    text: qsTr("Wine 'Performance' configuration") + api.tr
+                    text: qsTr("Proton Wine 'Performance' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
                 }
                 ToggleOption {
-                    id: optWineNVapi
-                    label: qsTr("Wine NVAPI") + api.tr
+                    id: optProtonNVapi
+                    label: qsTr("Proton Wine NVAPI") + api.tr
                     note: qsTr("Enable NVIDIA api for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winenvapi", false)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonnvapi", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winenvapi",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".protonnvapi",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineFullScreenFSR
+                    KeyNavigation.down: optProtonFullScreenFSR
                 }
                 ToggleOption {
-                    id: optWineFullScreenFSR
-                    label: qsTr("Wine Fullscreen FSR") + api.tr
+                    id: optProtonFullScreenFSR
+                    label: qsTr("Proton Wine Fullscreen FSR") + api.tr
                     note: qsTr("Enables AMD FidelityFX Super Resolution (FSR).\n(globally for fullscreen games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefullscreenfsr", false)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonfullscreenfsr", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winefullscreenfsr",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".protonfullscreenfsr",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineFullScreenIntegerScaling
+                    KeyNavigation.down: optProtonFullScreenIntegerScaling
                 }
                 ToggleOption {
-                    id: optWineFullScreenIntegerScaling
-                    label: qsTr("Wine Fullscreen Integer Scaling") + api.tr
+                    id: optProtonFullScreenIntegerScaling
+                    label: qsTr("Proton Wine Fullscreen Integer Scaling") + api.tr
                     note: qsTr("Enables integer scaling for fullscreen games.\n(Useful for pixel-perfect scaling on high-DPI displays)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefullscreenintegerscaling", false)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonfullscreenintegerscaling", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winefullscreenintegerscaling",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".protonfullscreenintegerscaling",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineDisableFullScreenHack
+                    KeyNavigation.down: optProtonDisableFullScreenHack
                 }
                 ToggleOption {
-                    id: optWineDisableFullScreenHack
-                    label: qsTr("Wine Disable Fullscreen Hack") + api.tr
+                    id: optProtonDisableFullScreenHack
+                    label: qsTr("Proton Wine Disable Fullscreen Hack") + api.tr
                     note: qsTr("Disables Wine's fullscreen hack.\n(which sometimes causes issues with certain games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winedisablefullscreenhack", true)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protondisablefullscreenhack", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winedisablefullscreenhack",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".protondisablefullscreenhack",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineESync
+                    KeyNavigation.down: optProtonESync
                 }
                 ToggleOption {
-                    id: optWineESync
-                    label: qsTr("Wine Esync") + api.tr
+                    id: optProtonESync
+                    label: qsTr("Proton Wine Esync") + api.tr
                     note: qsTr("Enables Esync (Eventfd Synchronization).\n(Can improve performance in multi-threaded games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".wineesync", true)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonesync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".wineesync",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".protonesync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineFSync
+                    KeyNavigation.down: optProtonFSync
                 }
                 ToggleOption {
-                    id: optWineFSync
-                    label: qsTr("Wine Fsync") + api.tr
+                    id: optProtonFSync
+                    label: qsTr("Proton Wine Fsync") + api.tr
                     note: qsTr("Enables Fsync (Futex Synchronization).\n(A newer, more performant alternative to Esync)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefsync", true)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonfsync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winefsync",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".protonfsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineDebug
+                    KeyNavigation.down: optProtonDebug
                 }
                 SectionTitle {
-                    text: qsTr("Wine 'Developer' configuration") + api.tr
+                    text: qsTr("Proton Wine 'Developer' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
                 }
                 MulticheckOption {
-                    id: optWineDebug
+                    id: optProtonDebug
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winedebug"
+                    property string parameterName : emulator + ".protondebug"
 
-                    label: qsTr("Wine Debug") + api.tr
+                    label: qsTr("Proton Wine Debug") + api.tr
                     note: qsTr("Especially for developer/beta testers to help analysis from debug logs") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
@@ -730,7 +595,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterscheckBox.parameterName = parameterName;
-                        parameterscheckBox.callerid = optWineDebug;
+                        parameterscheckBox.callerid = optProtonDebug;
                         parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
@@ -752,16 +617,15 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optWineHUD
+                    KeyNavigation.down: optProtonHUD
                 }
-
                 MultivalueOption {
-                    id: optWineHUD
-                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    id: optProtonHUD
+                    visible: optProtonRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winehud"
+                    property string parameterName : emulator + ".protonhud"
 
-                    label: qsTr("Wine DXVK/VKD3D HUD") + api.tr
+                    label: qsTr("Proton Wine DXVK/VKD3D HUD") + api.tr
                     note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
 
                     // Logic to update visibleInFlickable based on scroll position
@@ -774,7 +638,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineHUD;
+                        parameterslistBox.callerid = optProtonHUD;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -805,7 +669,7 @@ FocusScope {
                 //to launch wine cfg from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchWineCfg
-                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    visible: (optProtonEngine.internalvalue !== "") || (optProtonAppImage.internalvalue !== "") ? true : false
                     Rectangle {
                         id: containerValidateLaunchWineCfg
                         width: parent.width
@@ -820,7 +684,7 @@ FocusScope {
                             color: themeColor.textValue
                             font.pixelSize: vpx(30)
                             font.family: globalFonts.ion
-                            text : "\uf2ba  " + qsTr("Launch Winecfg from wine bottle") + api.tr
+                            text : "\uf2ba  " + qsTr("Launch Winecfg from Proton Wine bottle") + api.tr
                         }
                     }
                     onActivate: {
@@ -839,9 +703,8 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.down: optWineRenderer
+                    //KeyNavigation.down: optProtonRenderer
                 }
-
 
                 Item {
                     width: parent.width
@@ -872,18 +735,18 @@ FocusScope {
                     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
                     var env = ""
                     var wine = ""
-                    var prefixroot = api.internal.recalbox.getStringParameter(emulator + ".wineprefixroot","/recalbox")
-                    if(optWineEngine.internalvalue !== ""){
-                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
-                        wine = optWineEngine.internalvalue
+                    var prefixroot = api.internal.recalbox.getStringParameter(emulator + ".protonprefixroot","/recalbox")
+                    if(optProtonEngine.internalvalue !== ""){
+                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
+                        wine = optProtonEngine.internalvalue
                     }
-                    else if(optWineAppImage.internalvalue !== ""){
-                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineAppImage.value.replace(" (embedded)","")
+                    else if(optProtonAppImage.internalvalue !== ""){
+                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonAppImage.value.replace(" (embedded)","")
                         wine = "/usr/wine/wine"
                     }
                     if(env !== ""){
-                        if(optWineArch.internalvalue !== "" ){
-                            env = env + "_" + optWineArch.internalvalue;
+                        if(optProtonArch.internalvalue !== "" ){
+                            env = env + "_" + optProtonArch.internalvalue;
                         }
                         //deactivated because not used in prefix for the moment
                         /*if(optWindowsVersion.internalvalue !== "" ){
@@ -894,7 +757,7 @@ FocusScope {
                         api.internal.system.run(command);
                     }
                     else {//we can't determine the prefix to use from pegasus-fe
-                        console.log("wine prefix can't be determine to execute winecfg");
+                        console.log("Proton wine prefix can't be determine to execute winecfg");
                     }
                 }
 
