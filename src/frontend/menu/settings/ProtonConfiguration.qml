@@ -186,7 +186,7 @@ FocusScope {
                     id: optProtonArch
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".protonarch"
+                    property string parameterName : emulator + ".proton.winearch"
 
                     label: qsTr("Proton Wine architecture") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -227,9 +227,11 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optWindowsVersion
+                    //KeyNavigation.down: optWindowsVersion
+                    KeyNavigation.down: btnCleanEmulatorBottles
                 }
-                MultivalueOption {
+                //RFU
+                /*MultivalueOption {
                     id: optWindowsVersion
 
                     //property to manage parameter name
@@ -273,7 +275,7 @@ FocusScope {
                     }
 
                     KeyNavigation.down: btnCleanEmulatorBottles
-                }
+                }*/
                 // to clean/delete "bottle" before re-installation
                 SimpleButton {
                     id: btnCleanEmulatorBottles
@@ -325,9 +327,9 @@ FocusScope {
                     label: qsTr("Proton Wine Software renderer") + api.tr
                     note: qsTr("Enable software renderer for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonsoftrenderer")
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winesoftrenderer")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".protonsoftrenderer",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winesoftrenderer",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonRenderer
@@ -336,7 +338,7 @@ FocusScope {
                     id: optProtonRenderer
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".protonrenderer"
+                    property string parameterName : emulator + ".proton.winerenderer"
 
                     label: qsTr("Proton Wine renderer") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -386,7 +388,7 @@ FocusScope {
                     id: optProtonDxvkFramerate
                     visible: optProtonRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".protondxvkframerate"
+                    property string parameterName : emulator + ".proton.winedxvkframerate"
 
                     label: qsTr("Proton Wine DXVK framerate") + api.tr
                     note: qsTr("DXVK Framerate (FPS Limit especially for vulkan/DXVK (DirectX 9 to 11))") + api.tr
@@ -427,19 +429,22 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optProtonAudioDriver
+                    //KeyNavigation.down: optProtonAudioDriver
+                    KeyNavigation.down: optProtonNVapi
                 }
-                SectionTitle {
+                //RFU
+                /*SectionTitle {
                     text: qsTr("Proton Wine 'Software' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
-                }
-                MultivalueOption {
+                }*/
+                //RFU
+                /*MultivalueOption {
                     id: optProtonAudioDriver
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".protonaudiodriver"
+                    property string parameterName : emulator + ".proton.wineaudiodriver"
 
                     label: qsTr("Proton Wine audio driver") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -482,18 +487,20 @@ FocusScope {
                     }
                     KeyNavigation.down: optProtonVirtualDesktop
                 }                
+                */
+                /*
                 ToggleOption {
                     id: optProtonVirtualDesktop
                     label: qsTr("Proton Wine Virtual Desktop") + api.tr
                     note: qsTr("Enable software launching in desktop for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonvirtualdesktop", false)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winevirtualdesktop", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".protonvirtualdesktop",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winevirtualdesktop",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonNVapi
-                }
+                }*/
                 SectionTitle {
                     text: qsTr("Proton Wine 'Performance' configuration") + api.tr
                     first: true
@@ -505,9 +512,9 @@ FocusScope {
                     label: qsTr("Proton Wine NVAPI") + api.tr
                     note: qsTr("Enable NVIDIA api for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonnvapi", false)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winenvapi", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".protonnvapi",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winenvapi",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenFSR
@@ -517,9 +524,9 @@ FocusScope {
                     label: qsTr("Proton Wine Fullscreen FSR") + api.tr
                     note: qsTr("Enables AMD FidelityFX Super Resolution (FSR).\n(globally for fullscreen games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonfullscreenfsr", false)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winefullscreenfsr", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".protonfullscreenfsr",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winefullscreenfsr",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenIntegerScaling
@@ -529,9 +536,9 @@ FocusScope {
                     label: qsTr("Proton Wine Fullscreen Integer Scaling") + api.tr
                     note: qsTr("Enables integer scaling for fullscreen games.\n(Useful for pixel-perfect scaling on high-DPI displays)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonfullscreenintegerscaling", false)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winefullscreenintegerscaling", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".protonfullscreenintegerscaling",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winefullscreenintegerscaling",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDisableFullScreenHack
@@ -541,9 +548,9 @@ FocusScope {
                     label: qsTr("Proton Wine Disable Fullscreen Hack") + api.tr
                     note: qsTr("Disables Wine's fullscreen hack.\n(which sometimes causes issues with certain games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protondisablefullscreenhack", true)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winedisablefullscreenhack", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".protondisablefullscreenhack",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winedisablefullscreenhack",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonESync
@@ -553,9 +560,9 @@ FocusScope {
                     label: qsTr("Proton Wine Esync") + api.tr
                     note: qsTr("Enables Esync (Eventfd Synchronization).\n(Can improve performance in multi-threaded games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonesync", true)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.wineesync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".protonesync",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".proton.wineesync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFSync
@@ -565,9 +572,9 @@ FocusScope {
                     label: qsTr("Proton Wine Fsync") + api.tr
                     note: qsTr("Enables Fsync (Futex Synchronization).\n(A newer, more performant alternative to Esync)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".protonfsync", true)
+                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winefsync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".protonfsync",checked);
+                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winefsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDebug
@@ -582,7 +589,7 @@ FocusScope {
                     id: optProtonDebug
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".protondebug"
+                    property string parameterName : emulator + ".proton.winedebug"
 
                     label: qsTr("Proton Wine Debug") + api.tr
                     note: qsTr("Especially for developer/beta testers to help analysis from debug logs") + api.tr
@@ -623,7 +630,7 @@ FocusScope {
                     id: optProtonHUD
                     visible: optProtonRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".protonhud"
+                    property string parameterName : emulator + ".proton.winehud"
 
                     label: qsTr("Proton Wine DXVK/VKD3D HUD") + api.tr
                     note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
@@ -664,10 +671,12 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: btnLaunchWineCfg
+                    //KeyNavigation.down: btnLaunchWineCfg
                 }
+
+                //RFU
                 //to launch wine cfg from bottle clearly defined (could create wineprefix if missing)
-                SimpleButton {
+                /*SimpleButton {
                     id: btnLaunchWineCfg
                     visible: (optProtonEngine.internalvalue !== "") || (optProtonAppImage.internalvalue !== "") ? true : false
                     Rectangle {
@@ -704,7 +713,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     //KeyNavigation.down: optProtonRenderer
-                }
+                }*/
 
                 Item {
                     width: parent.width
@@ -731,35 +740,35 @@ FocusScope {
                     api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_* ; mount -o remount,ro /");
                     api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_* ; mount -o remount,ro /");
                 }
-                else if (confirmDialog.callerid === "btnLaunchWineCfg"){
-                    //LIMIT: if everything is set in "auto" we can't determine the prefix to select
-                    var env = ""
-                    var wine = ""
-                    var prefixroot = api.internal.recalbox.getStringParameter(emulator + ".protonprefixroot","/recalbox")
-                    if(optProtonEngine.internalvalue !== ""){
-                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
-                        wine = optProtonEngine.internalvalue
-                    }
-                    else if(optProtonAppImage.internalvalue !== ""){
-                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonAppImage.value.replace(" (embedded)","")
-                        wine = "/usr/wine/wine"
-                    }
-                    if(env !== ""){
-                        if(optProtonArch.internalvalue !== "" ){
-                            env = env + "_" + optProtonArch.internalvalue;
-                        }
-                        //deactivated because not used in prefix for the moment
-                        /*if(optWindowsVersion.internalvalue !== "" ){
-                            env = env + "_" + optWindowsVersion.internalvalue;
-                        }*/
-                        var command = env + " " + wine + " winecfg";
-                        console.log("winecfg command: " + command);
-                        api.internal.system.run(command);
-                    }
-                    else {//we can't determine the prefix to use from pegasus-fe
-                        console.log("Proton wine prefix can't be determine to execute winecfg");
-                    }
-                }
+                // else if (confirmDialog.callerid === "btnLaunchWineCfg"){
+                //     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
+                //     var env = ""
+                //     var wine = ""
+                //     var prefixroot = api.internal.recalbox.getStringParameter(emulator + ".proton.wineprefixroot","/recalbox")
+                //     if(optProtonEngine.internalvalue !== ""){
+                //         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
+                //         wine = optProtonEngine.internalvalue
+                //     }
+                //     else if(optProtonAppImage.internalvalue !== ""){
+                //         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonAppImage.value.replace(" (embedded)","")
+                //         wine = "/usr/wine/wine"
+                //     }
+                //     if(env !== ""){
+                //         if(optProtonArch.internalvalue !== "" ){
+                //             env = env + "_" + optProtonArch.internalvalue;
+                //         }
+                //         //deactivated because not used in prefix for the moment
+                //         /*if(optWindowsVersion.internalvalue !== "" ){
+                //             env = env + "_" + optWindowsVersion.internalvalue;
+                //         }*/
+                //         var command = env + " " + wine + " winecfg";
+                //         console.log("winecfg command: " + command);
+                //         api.internal.system.run(command);
+                //     }
+                //     else {//we can't determine the prefix to use from pegasus-fe
+                //         console.log("Proton wine prefix can't be determine to execute winecfg");
+                //     }
+                // }
 
             }
             else{//for simulate and see more the spinner

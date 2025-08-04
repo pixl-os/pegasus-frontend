@@ -364,6 +364,68 @@ QStringList GetParametersList(QString Parameter)
         return ListOfValue;
 
     }
+    else if (Parameter == "system.selected.color")
+    {
+        /* "Original,Black,Gray,Blue,Green,Red" */
+        ListOfValue << QObject::tr("Original") << QObject::tr("Dark Green") << QObject::tr("Light Green") << QObject::tr("Dark Gray")
+                    << QObject::tr("Light Gray") << QObject::tr("Dark Red") << QObject::tr("Light Red") << QObject::tr("Dark Pink")
+                    << QObject::tr("Light Pink") << QObject::tr("Dark Brown") << QObject::tr("Light Brown") << QObject::tr("Dark Blue")
+                    << QObject::tr("Light Blue") << QObject::tr("Orange") << QObject::tr("Yellow") << QObject::tr("Turquoise")
+                    << QObject::tr("Magenta") << QObject::tr("Purple") << QObject::tr("Steel") << QObject::tr("Stone");
+        ListOfInternalValue << "Original" << "Dark Green" << "Light Green" << "Dark Gray"
+                            << "Light Gray" << "Dark Red" << "Light Red" << "Dark Pink"
+                            << "Light Pink" << "Dark Brown" << "Light Brown" << "Dark Blue"
+                            << "Light Blue" << "Orange" << "Yellow" << "Turquoise"
+                            << "Magenta" << "Purple" << "Steel" << "Stone";
+    }
+    //******************************************** For Proton *************************************************
+    else if (Parameter.endsWith(".proton", Qt::CaseInsensitive) == true)
+    {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.proton");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.proton");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read subdirectories in /usr/proton
+        QString targetPath = "/usr/proton/";
+        QStringList nameFilters;
+        nameFilters << "*proton*"; // The wildcard '*' will match any characters after "*proton*"
+        // Changed flag: removed QDirIterator::Subdirectories
+        QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            //it should contain /bin directory if it is a valid wine installed in pixL
+            QString fullpath = dir + "/proton";
+            QString protonname = "";
+            QString wineversion = "";
+            Log::debug(LOGMSG("File to find in Subdir : '%1'").arg(fullpath));
+            //check if file proton exists to detect a valid proton directory
+            if (QFile::exists(fullpath)) {
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(fullpath);
+                protonname = fullpath.replace("/usr/proton/","");
+                protonname = protonname.replace("/proton","");
+                //check if wineserver exists to get version (using wineserver --version command)
+                QString Command = dir + "/files/bin/wineserver";
+                QStringList Arguments = {"--version"};
+                if (QFile::exists(Command)){
+                    wineversion = GetCommandOutputQtBlocking(Command, Arguments, true, true);
+                    //to keep version as "wine 9.22", "wine-statging 8.0", etc...
+                    wineversion = wineversion.toLower().trimmed();
+                }
+                // remove file extension on menu
+                ListOfValue.append(protonname + " (" + wineversion + ")");
+            }
+        }
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.proton");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.proton");
+        return ListOfValue;
+    }
+    //******************************************** For Wine ***************************************************
     else if (Parameter.endsWith(".wine", Qt::CaseInsensitive) == true)
     {
         // load data from QSettings as cache (tip to speed up in menu browsing)
@@ -612,20 +674,6 @@ QStringList GetParametersList(QString Parameter)
                             << "+loaddll" << "+module"
                             << "+seh";
         return ListOfValue;
-    }
-    else if (Parameter == "system.selected.color")
-    {
-        /* "Original,Black,Gray,Blue,Green,Red" */
-        ListOfValue << QObject::tr("Original") << QObject::tr("Dark Green") << QObject::tr("Light Green") << QObject::tr("Dark Gray")
-                    << QObject::tr("Light Gray") << QObject::tr("Dark Red") << QObject::tr("Light Red") << QObject::tr("Dark Pink")
-                    << QObject::tr("Light Pink") << QObject::tr("Dark Brown") << QObject::tr("Light Brown") << QObject::tr("Dark Blue")
-                    << QObject::tr("Light Blue") << QObject::tr("Orange") << QObject::tr("Yellow") << QObject::tr("Turquoise")
-                    << QObject::tr("Magenta") << QObject::tr("Purple") << QObject::tr("Steel") << QObject::tr("Stone");
-        ListOfInternalValue << "Original" << "Dark Green" << "Light Green" << "Dark Gray"
-                            << "Light Gray" << "Dark Red" << "Light Red" << "Dark Pink"
-                            << "Light Pink" << "Dark Brown" << "Light Brown" << "Dark Blue"
-                            << "Light Blue" << "Orange" << "Yellow" << "Turquoise"
-                            << "Magenta" << "Purple" << "Steel" << "Stone";
     }
     //******************************************** For teknoparrot***************************************************
     else if (Parameter == "teknoparrot.windowed")

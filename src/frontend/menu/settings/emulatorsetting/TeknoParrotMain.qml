@@ -284,7 +284,7 @@ FocusScope {
                     KeyNavigation.down: optTeknoparrotOption4
                 }
                 SectionTitle {
-                    text: qsTr("'Launch' configuration") + api.tr
+                    text: qsTr("'Advanced' configuration") + api.tr
                     first: true
                     symbol: "\uf26f" //TO DO: fusee ?!
                     symbolFontFamily: globalFonts.ion
@@ -303,10 +303,10 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optTeknoparrotOption8
-                    label: qsTr("Keep User Profile(s) from UI") + api.tr
-                    note: qsTr("To let you configure Game/Controller Settings.\n(for testing usually)") + api.tr
+                    label: qsTr("Use UI Game Profile(s) if exists") + api.tr
+                    note: qsTr("To let you use your own Game/Controller Settings.\n(for testing usually)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.userprofile.from.ui", false)
+                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.keep.userprofile.from.ui", false)
                     onCheckedChanged: {
                         api.internal.recalbox.setBoolParameter("teknoparrot.keep.userprofile.from.ui",checked);
                     }
@@ -315,8 +315,9 @@ FocusScope {
                 }
                 ToggleOption {
                     id: optTeknoparrotOption81
-                    label: qsTr("Save User Profile(s) for UI") + api.tr
-                    note: qsTr("To see/modify pixL Game/Controller Settings\n(for investigation)") + api.tr
+                    visible: (optTeknoparrotOption8.checked === true) ? false : true
+                    label: qsTr("Overwrite UI Game Profile(s) by pixL") + api.tr
+                    note: qsTr("To have generated Game/Controller Settings from UI\n(as default)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("teknoparrot.save.userprofile.for.ui", true)
                     onCheckedChanged: {
