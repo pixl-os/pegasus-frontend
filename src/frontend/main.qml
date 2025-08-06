@@ -373,8 +373,9 @@ Window {
                     }
                     else if(lastAction === "gameviewselected"){ //to open a "game" menu only (to update override .cfg file)
                         //case when we select a view focus on a game (not in listview/gridview or other collections)
+                        lastCollection = api.internal.system.currentCollection();
                         lastGame = api.internal.system.currentGame();
-                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"game": lastGame});
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "game": lastGame});
                         subdialog.focus = true;
                     }
                     else{ //default "general" menu by default
