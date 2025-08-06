@@ -99,11 +99,16 @@ bool System::runBoolResult(const QString& Command, bool escaped)
   return exitcode == 0;
 }
 
-void System::notify(const QString& Action, model::Collection* collection, model::Game* game)
+void System::notify(const QString& Action, const QString& ActionData, model::Collection* collection, model::Game* game)
 {
     if(game == nullptr && collection == nullptr){
         //Log::debug(LOGMSG("NotifyFromString(Action.toUtf8().constData())"));
-        ScriptManager::Instance().NotifyFromString(Action.toUtf8().constData());
+        if(ActionData == nullptr){
+            ScriptManager::Instance().NotifyFromString(Action.toUtf8().constData());
+        }
+        else{
+            ScriptManager::Instance().NotifyFromString(Action.toUtf8().constData(), ActionData.toUtf8().constData());
+        }
     }
     else if (game == nullptr) {
         //Log::debug(LOGMSG("NotifyFromString(collection, Action.toUtf8().constData())"));
@@ -112,7 +117,7 @@ void System::notify(const QString& Action, model::Collection* collection, model:
     else if (collection != nullptr){
         //Log::debug(LOGMSG("NotifyFromString(collection, game, Action.toUtf8().constData())"));
         ScriptManager::Instance().NotifyFromString(collection, game, Action.toUtf8().constData());
-    }
+    }    
 }
 
 QString System::currentAction()

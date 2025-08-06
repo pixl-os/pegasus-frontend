@@ -49,12 +49,27 @@ public:
 
     //to set Action in /tmp/es_state.inf
     Q_INVOKABLE void notify(const QString& Action){
-        notify(Action, nullptr, nullptr);
+        notify(Action, nullptr, nullptr, nullptr);
+    }
+    //to set Action in /tmp/es_state.inf
+    Q_INVOKABLE void notify(const QString& Action, const QString& ActionData){
+        //Log::debug(LOGMSG("Q_INVOKABLE void notify(const QString& Action, const QString& ActionData)"));
+        notify(Action, ActionData, nullptr, nullptr);
+    }
+    //to set Action in /tmp/es_state.inf
+    Q_INVOKABLE void notify(const QString& Action, model::Game* game){
+        //Log::debug(LOGMSG("Q_INVOKABLE void notify(const QString& Action, model::Game* game)"));
+        notify(Action, nullptr, nullptr, game);
     }
     Q_INVOKABLE void notify(const QString& Action, model::Collection* collection){
-        notify(Action, collection, nullptr);
+        //Log::debug(LOGMSG("Q_INVOKABLE void notify(const QString& Action, model::Collection* collection)"));
+        notify(Action, nullptr, collection, nullptr);
     }
-    Q_INVOKABLE void notify(const QString& Action, model::Collection* collection, model::Game* game);
+    Q_INVOKABLE void notify(const QString& Action, model::Collection* collection, model::Game* game){
+        //Log::debug(LOGMSG("Q_INVOKABLE void notify(const QString& Action, model::Collection* collection, model::Game* game)"));
+        notify(Action, nullptr, collection, game);
+    }
+    Q_INVOKABLE void notify(const QString& Action, const QString& ActionData, model::Collection* collection, model::Game* game);
 
     //to get Action as set in /tmp/es_state.inf
     Q_INVOKABLE QString currentAction();

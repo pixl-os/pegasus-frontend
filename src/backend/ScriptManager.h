@@ -26,13 +26,15 @@
 enum class Notification
 {
     None                 = 0x00000, //!< Non triggered event
-    Start                = 0x00001, //!< ES start or restart. Parameter: start count
-    Stop                 = 0x00002, //!< ES stops. Parameter: start count
+    Start                = 0x00001, //!< PEGASUS-FRONTEND start or restart. Parameter: start count
+    Stop                 = 0x00002, //!< PEGASUS-FRONTEND stops. Parameter: start count
     Shutdown             = 0x00004, //!< The whole system is required to shutdown
     Reboot               = 0x00008, //!< The whole system is required to reboot
-    Relaunch             = 0x00010, //!< ES is going to relaunch
-    Quit                 = 0x00020, //!< ES is going to quit (ex: GPI case power button)
+    Relaunch             = 0x00010, //!< PEGASUS-FRONTEND is going to relaunch
+    Quit                 = 0x00020, //!< PEGASUS-FRONTEND is going to quit (ex: GPI case power button)
+    GroupBrowsing        = 0x00030, //!< The user is browsing group list and selected a new system. Parameter: group name
     SystemBrowsing       = 0x00040, //!< The user is browsing system list and selected a new system. Parameter: collection
+    CollectionBrowsing   = 0x00070, //!< The user is browsing any collection list and selected a new game. Parameter: game, collection
     GamelistBrowsing     = 0x00080, //!< The user is browsing the game list and selected a new game. Parameter: game, collection
     GameviewSelected     = 0x00090, //!< The user is selecting a view where game is described/focus. Parameter: game
     RunGame              = 0x00100, //!< A game is going to launch. Parameter: game
@@ -108,6 +110,15 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
 
     /*!
      * @brief
+     * @param action Action to notify from string
+     */
+    void NotifyFromString(const std::string& action, const std::string& actionData) {
+        Notification event = ActionFromString(action);
+        Notify(event, actionData);
+    }
+
+    /*!
+     * @brief
      * @param model::Collection collection to set collection
      * @param std::string action to notify from string
      */
@@ -146,7 +157,9 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param system Target system
      * @param action Action to notify
      */
-    void Notify(const model::Collection* collection, Notification action) { Notify(collection, nullptr, action, collection->name().toUtf8().constData()); }
+    void Notify(const model::Collection* collection, Notification action) {
+        Notify(collection, nullptr, action, collection->name().toUtf8().constData());
+    }
 
     /*!
      * @brief
@@ -159,7 +172,9 @@ class ScriptManager : public StaticLifeCycleControler<ScriptManager>
      * @param action Action to notify
      * @param actionParameters Optional action parameters
      */
-    void Notify(Notification action, const std::string& actionParameters) { Notify(nullptr, nullptr, action, actionParameters); }
+    void Notify(Notification action, const std::string& actionParameters) {
+        Notify(nullptr, nullptr, action, actionParameters);
+    }
 
     /*!
      * @brief Run the target using the given arguments.

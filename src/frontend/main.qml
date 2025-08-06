@@ -367,9 +367,8 @@ Window {
                     var lastCollection;
                     if(lastAction === "gamelistbrowsing"){ //to open a "system" menu (with selected game included)
                         //case when we browse in a listview/gridview
-                        lastGame = api.internal.system.currentGame();
                         lastCollection = api.internal.system.currentCollection();
-                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "game": lastGame});
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection});
                         subdialog.focus = true;
                     }
                     else if(lastAction === "gameviewselected"){ //to open a "game" menu only (to update override .cfg file)

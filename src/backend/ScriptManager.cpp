@@ -60,7 +60,9 @@ const char* ScriptManager::ActionToString(Notification action)
     case Notification::Reboot:               return "reboot";
 	case Notification::Relaunch:             return "relaunch";
     case Notification::Quit:                 return "quit";
+    case Notification::GroupBrowsing:        return "groupbrowsing";
     case Notification::SystemBrowsing:       return "systembrowsing";
+    case Notification::CollectionBrowsing:   return "collectionbrowsing";
     case Notification::GamelistBrowsing:     return "gamelistbrowsing";
     case Notification::GameviewSelected:     return "gameviewselected";
     case Notification::RunKodi:              return "runkodi";
@@ -91,7 +93,9 @@ Notification ScriptManager::ActionFromString(const std::string& action)
     { "reboot"              , Notification::Reboot               },
     { "relaunch"            , Notification::Relaunch             },
 	{ "quit"                , Notification::Quit                 },
+    { "groupbrowsing"       , Notification::GroupBrowsing        },
     { "systembrowsing"      , Notification::SystemBrowsing       },
+    { "collectionbrowsing"  , Notification::CollectionBrowsing   },
     { "gamelistbrowsing"    , Notification::GamelistBrowsing     },
     { "gameviewselected"    , Notification::GameviewSelected     },
     { "runkodi"             , Notification::RunKodi              },
@@ -216,7 +220,7 @@ void ScriptManager::BuildStateCommons(std::string& output, const model::Collecti
           .append("SystemId=").append(game->systemShortName().toUtf8().constData()).append(eol);
   else if (collection != nullptr)
       output.append("System=").append(collection->name().toUtf8().constData()).append(eol)
-          .append("SystemId=").append(game->systemShortName().toUtf8().constData()).append(eol);
+          .append("SystemId=").append(collection->shortName().toUtf8().constData()).append(eol);
   // else if (action == Notification::RunKodi)
     // output.append("System=kodi").append(eol)
           // .append("SystemId=kodi").append(eol);
@@ -291,7 +295,9 @@ void ScriptManager::BuildStateCompatibility(std::string& output, Notification ac
     case Notification::Reboot:
 	case Notification::Relaunch:
     case Notification::Quit:
+    case Notification::GroupBrowsing:
     case Notification::SystemBrowsing:
+    case Notification::CollectionBrowsing:
     case Notification::GamelistBrowsing:
     case Notification::GameviewSelected:
     case Notification::EndGame:
