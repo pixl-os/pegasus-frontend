@@ -47,6 +47,8 @@ public:
     Q_INVOKABLE void setBoolParameter(const QString& Parameter, const bool& Value);
     Q_INVOKABLE int getIntParameter(const QString& Parameter, const int& defaultValue = 0);
     Q_INVOKABLE void setIntParameter(const QString& Parameter, const int& Value);
+    Q_INVOKABLE void loadParametersFromOverride(const QString& OverrideFullPath);
+    Q_INVOKABLE void saveParametersInOverride();
     Q_INVOKABLE void saveParametersInBoot();
     Q_INVOKABLE void saveParameters();
     Q_INVOKABLE void reloadParameter(QString parameters); //to reload any parameters from recalbox.conf
