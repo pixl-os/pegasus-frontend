@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "RecalboxConf.h"
 #include "RecalboxBootConf.h"
+#include "RecalboxConfOverride.h"
 #include "Paths.h"
 
 #include "audio/AudioController.h"
@@ -1422,6 +1423,13 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
         ParameterBoot.replace(QString("boot."), QString(""));
         select_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
     }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        //check in {rom}.recalbox.conf
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        select_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+    }
     else
     {
         //check in recalbox.conf
@@ -1447,7 +1455,7 @@ bool ParametersList::select_parameter(const QString& name)
                 return true;
             }
         }
-        else // if internal value to check index from recalbox.conf/recalbox-boot.conf stored value
+        else // if internal value to check index from {rom}.recalbox.conf/recalbox.conf/recalbox-boot.conf stored value
         {
             if (ListOfInternalValue.at(idx) == name) {
                 m_current_idx = idx;
@@ -1480,6 +1488,18 @@ void ParametersList::save_selected_parameter()
         else RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
         //write recalbox-boot.conf immediately (but don't ask to reboot systematically ;-)
         RecalboxBootConf::Instance().Save();
+    }
+    //check in {rom}.recalbox.conf
+    else if(m_parameter.contains("overrride.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = m_parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        //write parameter in {rom}.recalbox.conf in all cases
+        if (ListOfInternalValue.size() == 0) RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), value.name.toUtf8().constData());
+        //or internal value
+        else RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
+        //write {rom}.recalbox.conf immediately (but don't ask to reboot systematically ;-)
+        RecalboxConfOverride::Instance().Save();
     }
     else
     {
@@ -1559,6 +1579,19 @@ void ParametersList::check_preferred_parameter(const QString& Parameter)
             check_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
         }
     }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        //check in {rom}.recalbox.conf
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        if(RecalboxConfOverride::Instance().HasKeyStartingWith(ParameterOverride.toUtf8().constData())){
+            check_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),"")));
+        }
+        else
+        {
+            check_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+        }
+    }
     else
     {
         //check in recalbox.conf
@@ -1597,7 +1630,7 @@ bool ParametersList::check_parameter(const QString& name)
             }
             else ListOfCheckedValue.append(false);
         }
-        else // if internal value to check index from recalbox.conf/recalbox-boot.conf stored value
+        else // if internal value to check index from {rom}.recalbox.conf/recalbox.conf/recalbox-boot.conf stored value
         {
             //to manage parameter managing inclusion or exclusion of any value from checklist
             if((name.contains(ListOfInternalValue.at(idx)) && !m_parameter.endsWith(".ignored")) ||
@@ -1655,6 +1688,16 @@ void ParametersList::save_checked_parameter(const bool checked)
         RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
         //write recalbox-boot.conf immediately (but don't ask to reboot systematically ;-)
         RecalboxBootConf::Instance().Save();
+    }
+    //check in {rom}.recalbox.conf
+    else if(m_parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = m_parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        //write parameter in {rom}.recalbox.conf in all cases
+        RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), Value.toUtf8().constData());
+        //write {rom}.recalbox.conf immediately (but don't ask to reboot systematically ;-)
+        RecalboxConfOverride::Instance().Save();
     }
     else
     {
