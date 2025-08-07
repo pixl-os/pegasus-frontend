@@ -1,6 +1,7 @@
 #include "ParametersList.h"
 #include "Log.h"
 #include "RecalboxConf.h"
+#include "RecalboxBootConf.h"
 #include "Paths.h"
 
 #include "audio/AudioController.h"
@@ -1397,7 +1398,6 @@ ParametersList::ParametersList(QObject* parent)
     , m_role_names({
                     { Roles::Name, QByteArrayLiteral("name") },
                     })
-    , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
 {
     //empty constructor to be generic
 }
@@ -1420,7 +1420,7 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
         //check in recalbox-boot.conf
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        select_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+        select_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
     }
     else
     {
@@ -1475,11 +1475,11 @@ void ParametersList::save_selected_parameter()
         QString ParameterBoot = m_parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
         //write parameter in recalbox-boot.conf in all cases
-        if (ListOfInternalValue.size() == 0) m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), value.name.toUtf8().constData());
+        if (ListOfInternalValue.size() == 0) RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), value.name.toUtf8().constData());
         //or internal value
-        else m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
+        else RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
         //write recalbox-boot.conf immediately (but don't ask to reboot systematically ;-)
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().Save();
     }
     else
     {
@@ -1551,12 +1551,12 @@ void ParametersList::check_preferred_parameter(const QString& Parameter)
         //check in recalbox-boot.conf
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        if(m_RecalboxBootConf.HasKeyStartingWith(ParameterBoot.toUtf8().constData())){
-            check_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),"")));
+        if(RecalboxBootConf::Instance().HasKeyStartingWith(ParameterBoot.toUtf8().constData())){
+            check_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),"")));
         }
         else
         {
-            check_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+            check_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
         }
     }
     else
@@ -1652,9 +1652,9 @@ void ParametersList::save_checked_parameter(const bool checked)
         QString ParameterBoot = m_parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
         //write parameter in recalbox-boot.conf in all cases
-        m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
+        RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
         //write recalbox-boot.conf immediately (but don't ask to reboot systematically ;-)
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().Save();
     }
     else
     {

@@ -1,6 +1,8 @@
 #include "Recalbox.h"
 #include "Log.h"
 
+#include "RecalboxBootConf.h"
+
 namespace {
 
 QString GetCommandOutput(const std::string& command)
@@ -78,7 +80,7 @@ QString Recalbox::getStringParameter(const QString& Parameter, const QString& de
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        return QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(), defaultValue.toUtf8().constData()));
+        return QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(), defaultValue.toUtf8().constData()));
     }
     else
     {
@@ -92,8 +94,8 @@ void Recalbox::setStringParameter(const QString& Parameter, const QString& Value
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
+        RecalboxBootConf::Instance().Save();
     }
     else
     {
@@ -107,7 +109,7 @@ bool Recalbox::getBoolParameter(const QString& Parameter, const bool& defaultVal
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        return m_RecalboxBootConf.AsBool(ParameterBoot.toUtf8().constData(),defaultValue);
+        return RecalboxBootConf::Instance().AsBool(ParameterBoot.toUtf8().constData(),defaultValue);
     }
     else
     {
@@ -121,8 +123,8 @@ void Recalbox::setBoolParameter(const QString& Parameter, const bool& Value)
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        m_RecalboxBootConf.SetBool(ParameterBoot.toUtf8().constData(), Value);
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().SetBool(ParameterBoot.toUtf8().constData(), Value);
+        RecalboxBootConf::Instance().Save();
     }
     else
     {
@@ -136,7 +138,7 @@ int Recalbox::getIntParameter(const QString& Parameter, const int& defaultValue)
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        return m_RecalboxBootConf.AsInt(ParameterBoot.toUtf8().constData(),defaultValue);
+        return RecalboxBootConf::Instance().AsInt(ParameterBoot.toUtf8().constData(),defaultValue);
     }
     else
     {
@@ -150,8 +152,8 @@ void Recalbox::setIntParameter(const QString& Parameter, const int& Value)
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        m_RecalboxBootConf.SetInt(ParameterBoot.toUtf8().constData(), Value);
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().SetInt(ParameterBoot.toUtf8().constData(), Value);
+        RecalboxBootConf::Instance().Save();
     }
     else
     {
@@ -164,6 +166,10 @@ void Recalbox::saveParameters()
     RecalboxConf::Instance().Save();
 }
 
+void Recalbox::saveParametersInBoot()
+{
+    RecalboxBootConf::Instance().Save();
+}
 void Recalbox::reloadParameter(QString parameter) //to relaod parameters from recalbox.conf
 {
     //need to identify the parameter to emit the good signal to update the value

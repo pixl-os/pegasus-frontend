@@ -69,9 +69,6 @@ private:
     const QHash<int, QByteArray> m_role_names;
     std::vector<ParameterEntry> m_parameterslist;
     QString m_parameter;
-
-    //! Boot configuration file
-    IniFile m_RecalboxBootConf;
     
     size_t m_current_idx;
     size_t m_current_checked;

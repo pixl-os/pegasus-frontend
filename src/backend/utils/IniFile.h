@@ -39,6 +39,15 @@ class IniFile
     bool Save();
 
     /*!
+     * @brief load the configuration file from a specific new path (usefull for override)
+     * @return True if the operation is successful
+     */
+    bool LoadFromNewPath(const std::string& NewPath){
+        mFilePath = Path(NewPath);
+        Load();
+    }
+
+    /*!
      * @brief Reload the configuration file withoot backup parameter already updated in memory
      * @return True if the operation is successful
      */
