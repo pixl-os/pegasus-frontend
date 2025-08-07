@@ -1,58 +1,58 @@
 //
-// From recalbox ES and Integrated by BozoTheGeek 26/03/2021 in Pegasus Front-end
+// Created by BozoTheGeek 07/08/2025 in Pegasus Front-end
 //
 
 #include "Log.h"
 
 #include <utils/rLog.h>
-#include "RecalboxConf.h"
+#include "RecalboxBootConf.h"
 #include "ScriptManager.h"
 #include <utils/Files.h>
 
-static Path recalboxConfFile("/recalbox/share/system/recalbox.conf");
-static Path recalboxConfFileInit("/recalbox/share_init/system/recalbox.conf");
+static Path recalboxBootConfFile("/boot/recalbox-boot.conf");
 
-RecalboxConf::RecalboxConf()
-  : IniFile(recalboxConfFile, recalboxConfFileInit),
-    StaticLifeCycleControler<RecalboxConf>("RecalboxConf")
+// The delegating constructor (declared as private in the header)
+// This is where the shared initialization code lives.
+RecalboxBootConf::RecalboxBootConf(const Path& primaryPath, const Path& initPath)
+    : IniFile(primaryPath, initPath),
+    StaticLifeCycleControler<RecalboxBootConf>("RecalboxBootConf")
 {
-    /* Activation of logs in ES source code components
-    LogError   = 0, //!< Error messages -> Activated by default
-    LogWarning = 1, //!< Warning messages
-    LogInfo    = 2, //!< Information message
-    LogDebug   = 3, //!< Debug message */
-    if (AsBool("pegasus.warnlogs")) rLog::setReportingLevel(LogLevel::LogWarning);
-    if (AsBool("pegasus.infologs")) rLog::setReportingLevel(LogLevel::LogInfo);
-    if (AsBool("pegasus.debuglogs")) rLog::setReportingLevel(LogLevel::LogDebug);
-
-    Log::debug(LOGMSG("Recalbox.conf instance created."));
+    Log::debug(LOGMSG("%1 instance created.").arg(QString::fromStdString(primaryPath.ToString())));
 }
 
-void RecalboxConf::OnSave()
+// The default public constructor
+// It delegates to the private constructor.
+RecalboxBootConf::RecalboxBootConf()
+    : RecalboxBootConf(recalboxBootConfFile, Path())
 {
-    ScriptManager::Instance().Notify(Notification::ConfigurationChanged, recalboxConfFile.ToString());
+    // This body can be empty as the work is done by the delegated constructor.
 }
 
-std::string RecalboxConf::GetLanguage()
+void RecalboxBootConf::OnSave()
 {
-  std::string locale = Strings::ToLowerASCII(RecalboxConf::Instance().GetSystemLanguage());
+    ScriptManager::Instance().Notify(Notification::ConfigurationChanged, recalboxBootConfFile.ToString());
+}
+
+std::string RecalboxBootConf::GetLanguage()
+{
+  std::string locale = Strings::ToLowerASCII(RecalboxBootConf::Instance().GetSystemLanguage());
   return (locale.length() == 5) ? locale.substr(0, 2) : "en";
 }
 
-std::string RecalboxConf::GetCountry()
+std::string RecalboxBootConf::GetCountry()
 {
-  std::string locale = Strings::ToLowerASCII(RecalboxConf::Instance().GetSystemLanguage());
+  std::string locale = Strings::ToLowerASCII(RecalboxBootConf::Instance().GetSystemLanguage());
   return (locale.length() == 5) ? locale.substr(3, 2) : "us";
 }
 
-RecalboxConf::Menu RecalboxConf::MenuFromString(const std::string& menu)
+RecalboxBootConf::Menu RecalboxBootConf::MenuFromString(const std::string& menu)
 {
   if (menu == "bartop") return Menu::Bartop;
   if (menu == "none") return Menu::None;
   return Menu::Default;
 }
 
-const std::string& RecalboxConf::MenuFromEnum(RecalboxConf::Menu menu)
+const std::string& RecalboxBootConf::MenuFromEnum(RecalboxBootConf::Menu menu)
 {
   switch (menu)
   {
@@ -73,14 +73,14 @@ const std::string& RecalboxConf::MenuFromEnum(RecalboxConf::Menu menu)
   return sDefault;
 }
 
-RecalboxConf::Relay RecalboxConf::RelayFromString(const std::string& relay)
+RecalboxBootConf::Relay RecalboxBootConf::RelayFromString(const std::string& relay)
 {
   if (relay == "nyc") return Relay::NewYork;
   if (relay == "madrid") return Relay::Madrid;
   return Relay::None;
 }
 
-const std::string& RecalboxConf::RelayFromEnum(RecalboxConf::Relay relay)
+const std::string& RecalboxBootConf::RelayFromEnum(RecalboxBootConf::Relay relay)
 {
   switch (relay)
   {

@@ -1,7 +1,5 @@
 //
-// Created by matthieu on 12/09/15.
-//
-// From recalbox ES and Integrated by BozoTheGeek 26/03/2021 in Pegasus Front-end
+// Created by BozoTheGeek on 07/08/25.
 //
 #pragma once
 
@@ -9,7 +7,7 @@
 #include <utils/cplusplus/StaticLifeCycleControler.h>
 #include <audio/AudioMode.h>
 
-class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxConf>
+class RecalboxBootConf : public IniFile, public StaticLifeCycleControler<RecalboxBootConf>
 {
   // private constructor to be delegate for others
   private:
@@ -19,7 +17,7 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
      * @param primaryPath The custom primary file path
      * @param initPath The custom init file path
      */
-    explicit RecalboxConf(const Path& primaryPath, const Path& initPath);
+    explicit RecalboxBootConf(const Path& primaryPath, const Path& initPath);
 
   public:
     // Default constructor
@@ -27,7 +25,7 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
      * @brief Constructor
      * @param initialConfigOnly true if only the original file has to be loaded
      */
-    explicit RecalboxConf();
+    explicit RecalboxBootConf();
 
     /*!
      * @brief Called when file has been saved
@@ -56,47 +54,47 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
 
     #define DefineGetterSetter(name, type, type2, key, defaultValue) \
       type Get##name() const { return As##type2(key, defaultValue); } \
-      RecalboxConf& Set##name(const type& value) { Set##type2(key, value); return *this; }
+      RecalboxBootConf& Set##name(const type& value) { Set##type2(key, value); return *this; }
 
     #define DefineListGetterSetter(name, key, defaultValue) \
       Strings::Vector Get##name() const { return Strings::Split(AsString(key, defaultValue), ','); } \
       bool IsIn##name(const std::string& value) const { return isInList(key, value); } \
-      RecalboxConf& Set##name(const Strings::Vector& value) { SetString(key, Strings::Join(value, ',')); return *this; }
+      RecalboxBootConf& Set##name(const Strings::Vector& value) { SetString(key, Strings::Join(value, ',')); return *this; }
 
     #define DefineGetterSetterParameterized(name, type, type2, keybefore, keyafter, defaultValue) \
       type Get##name(const std::string& subkey) const { return As##type2(std::string(keybefore).append(subkey).append(keyafter), defaultValue); } \
-      RecalboxConf& Set##name(const std::string& subkey, const type& value) { Set##type2(std::string(keybefore).append(subkey).append(keyafter), value); return *this; }
+      RecalboxBootConf& Set##name(const std::string& subkey, const type& value) { Set##type2(std::string(keybefore).append(subkey).append(keyafter), value); return *this; }
 
      /*
      #define DefineSystemGetterSetterImplementation(name, type, type2, key, defaultValue) \
-       type RecalboxConf::GetSystem##name(const SystemData& system) const { return As##type2(std::string(system.getName()).append(1, '.').append(key), defaultValue); } \
-       RecalboxConf& RecalboxConf::SetSystem##name(const SystemData& system, const type& value) { Set##type2(std::string(system.getName()).append(1, '.').append(key), value); return *this; }
+       type RecalboxBootConf::GetSystem##name(const SystemData& system) const { return As##type2(std::string(system.getName()).append(1, '.').append(key), defaultValue); } \
+       RecalboxBootConf& RecalboxBootConf::SetSystem##name(const SystemData& system, const type& value) { Set##type2(std::string(system.getName()).append(1, '.').append(key), value); return *this; }
 
      #define DefineEmulationStationSystemGetterSetterImplementation(name, type, type2, key, defaultValue) \
-       type RecalboxConf::GetSystem##name(const SystemData& system) const { return As##type2(std::string("emulationstation.").append(system.getName()).append(1, '.').append(key), defaultValue); } \
-       RecalboxConf& RecalboxConf::SetSystem##name(const SystemData& system, const type& value) { Set##type2(std::string("emulationstation.").append(system.getName()).append(1, '.').append(key), value); return *this; }
+       type RecalboxBootConf::GetSystem##name(const SystemData& system) const { return As##type2(std::string("emulationstation.").append(system.getName()).append(1, '.').append(key), defaultValue); } \
+       RecalboxBootConf& RecalboxBootConf::SetSystem##name(const SystemData& system, const type& value) { Set##type2(std::string("emulationstation.").append(system.getName()).append(1, '.').append(key), value); return *this; }
 
      #define DefineSystemGetterSetterDeclaration(name, type, type2, key) \
        type GetSystem##name(const SystemData& system) const; \
-       RecalboxConf& SetSystem##name(const SystemData& system, const type& value);
+       RecalboxBootConf& SetSystem##name(const SystemData& system, const type& value);
 
      #define DefineEmulationStationSystemGetterSetterDeclaration(name, type, type2, key) \
        type GetSystem##name(const SystemData& system) const; \
-       RecalboxConf& SetSystem##name(const SystemData& system, const type& value);
+       RecalboxBootConf& SetSystem##name(const SystemData& system, const type& value);
      */
 
     #define DefineGetterSetterEnum(name, enumType, key, adapterPrefix) \
        enumType Get##name() const { return adapterPrefix##FromString(AsString(key, "")); } \
-       RecalboxConf& Set##name(enumType value) { SetString(key, adapterPrefix##FromEnum(value)); return *this; }
+       RecalboxBootConf& Set##name(enumType value) { SetString(key, adapterPrefix##FromEnum(value)); return *this; }
 
      /*
      #define DefineEmulationStationSystemGetterSetterNumericEnumDeclaration(name, enumType) \
        enumType GetSystem##name(const SystemData& system) const; \
-       RecalboxConf& SetSystem##name(const SystemData& system, enumType value);
+       RecalboxBootConf& SetSystem##name(const SystemData& system, enumType value);
 
      #define DefineEmulationStationSystemGetterSetterNumericEnumImplementation(name, enumType, key, defaultValue) \
-       enumType RecalboxConf::GetSystem##name(const SystemData& system) const { return (enumType)AsInt(std::string("emulationstation.").append(system.getName()).append(1, '.').append(key), (int)(defaultValue)); } \
-       RecalboxConf& RecalboxConf::SetSystem##name(const SystemData& system, enumType value) { SetInt(std::string("emulationstation.").append(system.getName()).append(1, '.').append(key), (int)value); return *this; }
+       enumType RecalboxBootConf::GetSystem##name(const SystemData& system) const { return (enumType)AsInt(std::string("emulationstation.").append(system.getName()).append(1, '.').append(key), (int)(defaultValue)); } \
+       RecalboxBootConf& RecalboxBootConf::SetSystem##name(const SystemData& system, enumType value) { SetInt(std::string("emulationstation.").append(system.getName()).append(1, '.').append(key), (int)value); return *this; }
      */
 
     DefineGetterSetterEnum(MenuType, Menu, sMenuType, Menu)
@@ -252,13 +250,13 @@ class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxCon
      */
 
     bool GetCollection(const std::string& name) const { return AsBool(std::string(sCollectionHeader).append(1, '.').append(name), false); }
-    RecalboxConf& SetCollection(const std::string& name, bool on) { SetBool(std::string(sCollectionHeader).append(1, '.').append(name), on); return *this; }
+    RecalboxBootConf& SetCollection(const std::string& name, bool on) { SetBool(std::string(sCollectionHeader).append(1, '.').append(name), on); return *this; }
     
     std::string GetPad(int index) const { return AsString(std::string(sPadHeader).append(Strings::ToString(index)), ""); }
-    RecalboxConf& SetPad(int index, const std::string& padid) { SetString(std::string(sPadHeader).append(Strings::ToString(index)), padid); return *this; }
+    RecalboxBootConf& SetPad(int index, const std::string& padid) { SetString(std::string(sPadHeader).append(Strings::ToString(index)), padid); return *this; }
 
     std::string GetPadPegasus(int index) const { return AsString(std::string(sPadHeaderPegasus).append(Strings::ToString(index)), ""); }
-    RecalboxConf& SetPadPegasus(int index, const std::string& padid) { SetString(std::string(sPadHeaderPegasus).append(Strings::ToString(index)), padid); return *this; }
+    RecalboxBootConf& SetPadPegasus(int index, const std::string& padid) { SetString(std::string(sPadHeaderPegasus).append(Strings::ToString(index)), padid); return *this; }
 
     /*
      * System keys

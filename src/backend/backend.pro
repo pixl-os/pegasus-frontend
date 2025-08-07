@@ -29,6 +29,8 @@ SOURCES += \
     HttpServer.cpp \
     PegasusAssets.cpp \
     ProcessLauncher.cpp \
+    RecalboxBootConf.cpp \
+    RecalboxConfOverride.cpp \
     ScriptRunner.cpp \
     Paths.cpp \
     AppSettings.cpp \
@@ -50,6 +52,8 @@ HEADERS += \
     HttpServer.h \
     PegasusAssets.h \
     ProcessLauncher.h \
+    RecalboxBootConf.h \
+    RecalboxConfOverride.h \
     ScriptRunner.h \
     Paths.h \
     AppSettings.h \
