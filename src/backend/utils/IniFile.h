@@ -8,7 +8,6 @@
 
 #include <utils/os/fs/Path.h>
 #include <utils/storage/rHashMap.h>
-#include "Log.h"
 
 class IniFile
 {
@@ -44,7 +43,7 @@ class IniFile
      */
     bool LoadFromNewPath(const std::string& NewPath){
         mFilePath = Path(NewPath);
-        Load();
+        return Reload();
     }
 
     /*!

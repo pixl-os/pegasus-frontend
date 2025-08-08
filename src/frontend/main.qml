@@ -314,6 +314,8 @@ Window {
                     //console.log("Keys.onReleased: api.keys.isNetplay(event)");
                     event.accepted = true;
 
+                    //set fullscreen due to "large" buttons
+                    subdialog.fullscreen = true;
                     subdialog.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
                     subdialog.focus = true;
                     //subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
@@ -368,14 +370,18 @@ Window {
                     if(lastAction === "gamelistbrowsing"){ //to open a "system" menu (with selected game included)
                         //case when we browse in a listview/gridview
                         lastCollection = api.internal.system.currentCollection();
-                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection});
+                        //set not fullscreen due to be more like a popup dialogbox
+                        subdialog.fullscreen = false;
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "launchedAsDialogBox": true});
                         subdialog.focus = true;
                     }
                     else if(lastAction === "gameviewselected"){ //to open a "game" menu only (to update override .cfg file)
                         //case when we select a view focus on a game (not in listview/gridview or other collections)
                         lastCollection = api.internal.system.currentCollection();
                         lastGame = api.internal.system.currentGame();
-                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "game": lastGame});
+                        //set not fullscreen due to be more like a popup dialogbox
+                        subdialog.fullscreen = false;
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "game": lastGame , "launchedAsDialogBox": true});
                         subdialog.focus = true;
                     }
                     else{ //default "general" menu by default
@@ -461,11 +467,16 @@ Window {
         Loader {
             id: subdialog
             asynchronous: true
-            opacity: 1
+            opacity: focus ? 1 : 0
+            property bool fullscreen: true
+            property real screenratio: fullscreen ? 1.0 : 0.8
+            width: parent.width * screenratio
+            height: parent.height * screenratio
+            scale: focus ? 1.0 : 0
 
-            width: parent.width * 0.95
-            height: parent.height * 0.95
-            scale: 0.95
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
+            Behavior on scale { NumberAnimation { duration: 500; easing.type: Easing.Linear }
+            }
 
             anchors.centerIn: parent
 

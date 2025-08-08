@@ -9,6 +9,7 @@
 #include <utils/Strings.h>
 #include <utils/Files.h>
 #include "utils/rLog.h"
+#include "Log.h"
 
 IniFile::IniFile(const Path& path, const Path& fallbackpath)
   : mFilePath(path),
@@ -54,9 +55,17 @@ bool IniFile::Load()
 {
   // Load file
   std::string content;
-  if (!mFilePath.IsEmpty() && mFilePath.Exists()) content = Files::LoadFile(mFilePath);
-  else if (!mFallbackFilePath.IsEmpty() && mFallbackFilePath.Exists()) content = Files::LoadFile(mFallbackFilePath);
-  else return false;
+  //Log::debug(LOGMSG("[IniFile] IniFile::Load(%1)").arg(QString::fromStdString(mFilePath.ToString())));
+  //Log::debug(LOGMSG("[IniFile] IniFile::Load(%1)").arg(QString::fromStdString(mFallbackFilePath.ToString())));
+  if (!mFilePath.IsEmpty() && mFilePath.Exists()){
+      content = Files::LoadFile(mFilePath);
+  }
+  else if (!mFallbackFilePath.IsEmpty() && mFallbackFilePath.Exists()){
+      content = Files::LoadFile(mFallbackFilePath);
+  }
+  else{
+      return false;
+  }
 
   // Split lines
   content = Strings::Replace(content, "\r", "");
@@ -103,6 +112,9 @@ bool IniFile::ReloadValue(const std::string& keytoreload)
 
 bool IniFile::Reload()
 {
+  // cleaning from memory
+  mConfiguration.clear();
+  mPendingWrites.clear();
   // force Load of file
   return Load();
 }

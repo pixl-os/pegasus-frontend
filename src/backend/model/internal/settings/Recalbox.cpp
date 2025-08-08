@@ -34,7 +34,8 @@ Recalbox::Recalbox(QObject* parent)
 //Override could be for a directory and/or a specific rom
 void Recalbox::loadParametersFromOverride(const QString& OverrideFullPath)
 {
-    RecalboxConfOverride::Instance().LoadFromNewPath(OverrideFullPath.toStdString());
+    bool loaded = RecalboxConfOverride::Instance().LoadFromNewPath(OverrideFullPath.toStdString());
+    //Log::debug(LOGMSG("void Recalbox::loadParametersFromOverride() loaded: %1").arg(loaded ? "True" : "False"));
 }
 
 
@@ -255,7 +256,7 @@ QString Recalbox::runCommand(const QString& SysCommand, const QStringList& SysOp
 	}
 	//launch command using Qprocess to get output
     QString stdout = GetCommandOutput(CommandToUpdate.toUtf8().constData());
-    Log::debug(LOGMSG("GetCommandOutput(CommandToUpdate.toUtf8().constData()): '%1'").arg(stdout));
+    //Log::debug(LOGMSG("GetCommandOutput(CommandToUpdate.toUtf8().constData()): '%1'").arg(stdout));
 	return stdout;
 }
 

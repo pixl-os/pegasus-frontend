@@ -1,6 +1,7 @@
 // Pegasus Frontend
 //
 // Created by Strodown 17/07/2023
+// Updated by BozoTheGeek 06/08/2025 to manage system and override configurations
 //
 
 import "common"
@@ -22,15 +23,28 @@ FocusScope {
 
     enabled: focus
 
-    property var game;
-    property var system;
+    property var game
+    property var system
+    property var prefix : system.shortName
+    property bool launchedAsDialogBox: false
     // check if is a libretro emulator for dynamic entry
     property bool isLibretroCore
     property bool hasOverlaySupport
 
+    onGameChanged: {
+        if(typeof(game) !== "undefined"){
+            var romfile = game.files.get(0).path;
+            prefix = "override." + system.shortName
+            api.internal.recalbox.loadParametersFromOverride(romfile + ".recalbox.conf");
+        }
+    }
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
+            if(game){
+                api.internal.recalbox.saveParametersInOverride();
+            }
             root.close();
         }
     }
@@ -46,7 +60,8 @@ FocusScope {
     ScreenHeader {
         id: header
         //text: typeof(system) !== "undefined" ? (qsTr("Settings systems > ") + api.tr + system.name) : (qsTr("Settings game > ") + api.tr + game.title)
-        text: qsTr("Settings systems > ") + api.tr + system.name
+        text: game ? qsTr("Game Settings > ") + api.tr + game.title :
+                     qsTr("Settings systems > ") + api.tr + system.name
         z: 2
     }
     Flickable {
@@ -86,7 +101,7 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : parent.width * 0.7
                 height: implicitHeight
 
                 Item {
@@ -105,7 +120,7 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : system.shortName + ".ratio"
+                    property string parameterName : prefix + ".ratio"
 
                     label: qsTr("Game ratio") + api.tr
                     note: qsTr("Set ratio for this system (auto,4/3,16/9,16/10,etc...)") + api.tr
@@ -153,9 +168,9 @@ FocusScope {
                     label: qsTr("Smooth games") + api.tr
                     note: qsTr("Set smooth for this system") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".smooth")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".smooth")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(system.shortName + ".smooth",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".smooth",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSystemShaderSet
@@ -166,7 +181,7 @@ FocusScope {
                     id: optSystemShaderSet
 
                     //property to manage parameter name
-                    property string parameterName : system.shortName + ".shaderset"
+                    property string parameterName : prefix + ".shaderset"
 
                     label: qsTr("Predefined shaders") + api.tr
                     note: qsTr("Set predefined Shader effect for this system") + api.tr
@@ -221,7 +236,7 @@ FocusScope {
                     id: optSystemShaderBorderCoverage
 
                     //property to manage parameter name
-                    property string parameterName : system.shortName + ".shaderbordercoverage"
+                    property string parameterName : prefix + ".shaderbordercoverage"
                     //property of SliderOption to set
                     label: qsTr("Overlay Shader Border Coverage") + api.tr
                     note: qsTr("Additional Border Coverage to manage shader above overlay as Mega Bezel") + api.tr
@@ -259,7 +274,7 @@ FocusScope {
                     id: optSystemShader
 
                     //property to manage parameter name
-                    property string parameterName : system.shortName + ".shaders"
+                    property string parameterName : prefix + ".shaders"
 
                     label: qsTr("Shaders") + api.tr
                     note: qsTr("Set prefered Shader effect") + api.tr
@@ -309,9 +324,19 @@ FocusScope {
                     label: qsTr("Set overlay") + api.tr
                     note: qsTr("Set overlay on this system") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays", api.internal.recalbox.getBoolParameter("global.recalboxoverlays"))
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(system.shortName + ".recalboxoverlays",checked);
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(prefix + ".recalboxoverlays", api.internal.recalbox.getBoolParameter("global.recalboxoverlays"))
+
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(prefix + ".recalboxoverlays", api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays", api.internal.recalbox.getBoolParameter("global.recalboxoverlays")))
+                        }
+                    }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays", api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays", api.internal.recalbox.getBoolParameter("global.recalboxoverlays")))){
+                            api.internal.recalbox.setBoolParameter(prefix + ".recalboxoverlays",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSystemGameRewind
@@ -331,9 +356,9 @@ FocusScope {
                     label: qsTr("Game rewind") + api.tr
                     note: qsTr("Set rewind for this system 'Only work with Retroarch'") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".rewind")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".rewind")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(system.shortName + ".rewind",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".rewind",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSystemAutoSave
@@ -346,9 +371,9 @@ FocusScope {
                     label: qsTr("Auto save/load") + api.tr
                     note: qsTr("Set autosave/load savestate for this system") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".autosave")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".autosave")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(system.shortName + ".autosave",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".autosave",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: emulatorButtons.count > 1 ? optAutoCoreSelection : emulatorButtons.itemAt(0)
@@ -389,8 +414,8 @@ FocusScope {
                         onActivate: {
                             focus = true;
                             radioButton.checked = true;
-                            api.internal.recalbox.setStringParameter(system.shortName + ".emulator",system.getNameAt(index));
-                            api.internal.recalbox.setStringParameter(system.shortName + ".core",system.getCoreAt(index));
+                            api.internal.recalbox.setStringParameter(prefix + ".emulator",system.getNameAt(index));
+                            api.internal.recalbox.setStringParameter(prefix + ".core",system.getCoreAt(index));
                         }
                         
                         onFocusChanged: container.onFocus(this)
@@ -405,8 +430,8 @@ FocusScope {
                             anchors.verticalCenter: parent.verticalCenter
                             
                             checked: {
-                                var emulator = api.internal.recalbox.getStringParameter(system.shortName + ".emulator");
-                                var core = api.internal.recalbox.getStringParameter(system.shortName + ".core");
+                                var emulator = api.internal.recalbox.getStringParameter(prefix + ".emulator");
+                                var core = api.internal.recalbox.getStringParameter(prefix + ".core");
                                 //console.log("index=",index);
                                 //console.log("emulator=", emulator);
                                 //console.log("core=", core);

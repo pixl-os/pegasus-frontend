@@ -1490,7 +1490,7 @@ void ParametersList::save_selected_parameter()
         RecalboxBootConf::Instance().Save();
     }
     //check in {rom}.recalbox.conf
-    else if(m_parameter.contains("overrride.", Qt::CaseInsensitive))
+    else if(m_parameter.contains("override.", Qt::CaseInsensitive))
     {
         QString ParameterOverride = m_parameter;
         ParameterOverride.replace(QString("override."), QString(""));
@@ -1498,8 +1498,9 @@ void ParametersList::save_selected_parameter()
         if (ListOfInternalValue.size() == 0) RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), value.name.toUtf8().constData());
         //or internal value
         else RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
+        //Deactivate record saving
         //write {rom}.recalbox.conf immediately (but don't ask to reboot systematically ;-)
-        RecalboxConfOverride::Instance().Save();
+        //RecalboxConfOverride::Instance().Save();
     }
     else
     {
@@ -1696,8 +1697,9 @@ void ParametersList::save_checked_parameter(const bool checked)
         ParameterOverride.replace(QString("override."), QString(""));
         //write parameter in {rom}.recalbox.conf in all cases
         RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), Value.toUtf8().constData());
+        //Deactivate record saving
         //write {rom}.recalbox.conf immediately (but don't ask to reboot systematically ;-)
-        RecalboxConfOverride::Instance().Save();
+        //RecalboxConfOverride::Instance().Save();
     }
     else
     {
