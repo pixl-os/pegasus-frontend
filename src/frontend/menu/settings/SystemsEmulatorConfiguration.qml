@@ -79,7 +79,7 @@ FocusScope {
         boundsBehavior: Flickable.StopAtBounds
         boundsMovement: Flickable.StopAtBounds
 
-        clip: true
+        clip: launchedAsDialogBox
 
         readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
@@ -101,7 +101,7 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: launchedAsDialogBox ? root.width * 0.9 : parent.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
@@ -534,6 +534,81 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+        visible: launchedAsDialogBox
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Exit") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 }
