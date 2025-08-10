@@ -106,9 +106,40 @@ FocusScope {
 
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: game ? 0 : implicitHeight + vpx(30)
+                    visible: game ? false : true
                 }
-
+                SectionTitle {
+                    text: qsTr("Game information") + api.tr
+                    visible: game ? true : false
+                    first: false
+                    symbol: "\uf17f"
+                }
+                SimpleButton {
+                    id: optRomOverrideFiles
+                    visible: game ? true : false
+                    property string override_exists: "false"
+                    property string rom_size
+                    property string rom_file
+                    property string override_file
+                    Component.onCompleted: {
+                        if(game){
+                            rom_file = game.files.get(0).path;
+                            var word = rom_file.split('/');
+                            var game_filename = word[word.length-1];
+                            var extension = game_filename.split('.');
+                            var game_fileextension = extension[extension.length-1];
+                            override_file = rom_file + ".recalbox.conf";
+                            override_exists = api.internal.system.run("test -f \"" + rom_file + ".recalbox.conf\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'");
+                            rom_size = api.internal.system.run("du -kh \"" + rom_file + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'")
+                            console.log("rom_size : " + rom_size)
+                            label = qsTr("file name : ") + api.tr + game_filename
+                            note =  qsTr("file size : ") + api.tr + rom_size + "\n"
+                                  + qsTr("override : ") + api.tr + override_file
+                        }
+                    }
+                    pointerIcon: false
+                }
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true

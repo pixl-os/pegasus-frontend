@@ -2449,6 +2449,20 @@ Window {
         //reload theme
         content.source = Qt.binding(getThemeFile);
     }
+
+    function gameSettings(collection,game) {
+        //set not fullscreen due to be more like a popup dialogbox
+        subdialog.fullscreen = false;
+        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": collection, "game": game , "launchedAsDialogBox": true});
+        subdialog.focus = true;
+    }
+
+    function systemSettings(collection) {
+        //set not fullscreen due to be more like a popup dialogbox
+        subdialog.fullscreen = false;
+        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": collection, "launchedAsDialogBox": true});
+        subdialog.focus = true;
+    }
     //***********************************************************END OF GENERIC FUNCTIONS ACCESSIBLE ALSO FOR THEMES***************************************************************
 
     //***********************************************************BEGIN OF LIGHTGUNS MANAGEMENT *************************************************************
