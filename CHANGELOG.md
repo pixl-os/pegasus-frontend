@@ -1,6 +1,37 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2025-XX-XX - v0.1.12
+- Fixes:
+	- game parsing:
+		- be able to select directory as game and avoid to parse inside this type of directory in this case (quicker parsing)
+	- add cache management using QMap to browse quicker in some menu (not yet perfect)
+	- optimize code to well display editbox "pointers" (not yet perfecy)
+		
+- Features:
+	- display Advanced Emulator Settings if emulator present for some cases.
+	- dedicaced view for wine and proton configuration (to share with all emulators using wine):
+		- add management of DLL overrides
+		- remove also bottles from saves/usersettings stored in a NAS for example
+		- add wine version for wine engines
+		- add more parameters and env variables management for wine
+		- add parameter to manage DXVK/VKD8D dlls installations
+		- add "dev" area for winedebug/hud management + display version/arch for each engines now
+		- improve winengine/appimage usage and add winecfg launching
+		- add more parameters for wine and introduce proton management
+	- introduction of teknoparrot advance emulator settings
+	- activate clipping to use it as dialog box for Netplay Rooms
+	- add feature to call a qml file content as dialog box
+	- add api.internal.system for QML side to notify Action
+	- add events to manage notify for group, collection, system, grid, vertical list and gameview
+	- manage settings by game using overrides of recalbox.conf
+	- using singleton also for recalbox-boot.conf and override files as {rom].recalbox.conf
+	- parametersList adapted for recalbox.conf overrides
+	- feature to load/save recalbox.conf "override" from "game"  settings
+	- add help if "system/game" settings launched as dialogbox
+	- add game/rom/override information
+	- add way for theme to call game/system settings
+
 ## [pixL-master] - 2025-05-16 - v0.1.11
 - Fixes:
 	- open(write/append)file directly in classes for robustness of updates/downloads
