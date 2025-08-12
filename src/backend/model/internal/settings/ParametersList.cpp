@@ -24,6 +24,7 @@ namespace {
 /******************************* section to initial variables used by GetParametersList in same name *************************************/
 QStringList ListOfInternalValue;
 QList<bool> ListOfCheckedValue;
+QStringList ListOfPicture;
 
 /*
 list of global and system values (example using snes system)
@@ -136,6 +137,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
     //clean global internal values if needed
     ListOfInternalValue.clear();
+    ListOfPicture.clear();
 
     //replace from '%1' to '%i' parameters from SysCommand by SysOptions
     if (!SysOptions.empty())
@@ -175,6 +177,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
     {
         ListOfValue.append(QObject::tr("no value"));
         ListOfInternalValue.append(""); //to empty parameter
+        ListOfPicture.append(""); //to empty parameter
     }
 
     return ListOfValue;
@@ -188,6 +191,7 @@ QStringList GetParametersList(QString Parameter)
 
     //clean global internal values if needed
     ListOfInternalValue.clear();
+    ListOfPicture.clear();
 
     //! Storage devices
     StorageDevices mStorageDevices;
@@ -284,6 +288,7 @@ QStringList GetParametersList(QString Parameter)
         // load data from QSettings as cache (tip to speed up in menu browsing)
         ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.shaders");
         ListOfValue = loadQStringListFromGlobalMap("ListOfValue.shaders");
+        ListOfPicture = loadQStringListFromGlobalMap("ListOfPicture.shaders");
         if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
 
         /*
@@ -308,6 +313,7 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("none");
         QString empty = "";
         ListOfInternalValue << empty;
+        ListOfPicture << "";
 
         // read root directory and first-level subdirectories
         QDir shadersDir("/recalbox/share/shaders/");
@@ -326,6 +332,8 @@ QStringList GetParametersList(QString Parameter)
             // remove file extension on menu
             QString subfile = file;
             ListOfValue.append(subfile.replace(filterext, ""));
+            QString picturefile = "/recalbox/share/shaders/" + file;
+            ListOfPicture.append("file://" + picturefile.replace("/shaders/","/shaders/shader-previews/").replace(filterext, ".png"));
         }
 
         // Then, process subdirectories
@@ -357,12 +365,15 @@ QStringList GetParametersList(QString Parameter)
                 // set absolute path and extension for recalbox.conf
                 ListOfInternalValue.append(dir + '/' + subfile);
                 // include directory in ListOfValue, and remove extension
-                ListOfValue.append(QDir(dir).dirName() + "/" + subfile.replace(filterext, ""));
+                ListOfValue.append(QDir(dir).dirName() + "/" + subfile.replace(filterext,""));
+                QString picturefile = dir + '/' + subfiles.at(i);
+                ListOfPicture.append("file://" + picturefile.replace("/shaders/","/shaders/shader-previews/").replace(filterext, ".png"));
             }
         }
 
         saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.shaders");
         saveQStringListToGlobalMap(ListOfValue,"ListOfValue.shaders");
+        saveQStringListToGlobalMap(ListOfPicture,"ListOfPicture.shaders");
         return ListOfValue;
 
     }
@@ -687,6 +698,8 @@ QStringList GetParametersList(QString Parameter)
     {
         ListOfValue << QObject::tr("From yaml file mappings") << QObject::tr("For 6 Buttons Gamepad/Panel") << QObject::tr("For 8 Buttons Gamepad/Panel");
         ListOfInternalValue << "" << "6buttons" << "8buttons";
+        //to display preview of buttons
+        ListOfPicture << "" << "../../../assets/versus_arcade_games_buttons.webp" << "";
     }
     else if (Parameter == "teknoparrot.screen.resolution")
     {
@@ -1378,9 +1391,21 @@ std::vector<model::ParameterEntry> find_available_parameterslist(const QString& 
 
     parameterslist.reserve(static_cast<size_t>(ListOfValue.count()));
 
-    for (const QString& name : qAsConst(ListOfValue)) {
+    // Use a standard for loop with an index
+    for (int i = 0; i < ListOfValue.size(); ++i) {
+        const QString& name = ListOfValue.at(i);
         //Log::debug(LOGMSG("name `%1`").arg(name));
-        parameterslist.emplace_back(std::move(name));
+        if(ListOfPicture.size()>i){
+            const QString& picture = ListOfPicture.at(i);
+            //Log::debug(LOGMSG("picture `%1`").arg(picture));
+            //parameterslist.emplace_back(std::move(name),std::move(picture));
+            parameterslist.emplace_back(name,picture);
+        }
+        else{
+            const QString& picture = "";
+            //parameterslist.emplace_back(std::move(name),std::move(picture));
+            parameterslist.emplace_back(name,picture);
+        }
         //Log::debug(LOGMSG("Found parameter `%1`").arg(parameterslist.back().name));
     }
     return parameterslist;
@@ -1390,14 +1415,15 @@ std::vector<model::ParameterEntry> find_available_parameterslist(const QString& 
 
 namespace model {
 
-ParameterEntry::ParameterEntry(QString Name)
-    : name(std::move(Name))
+ParameterEntry::ParameterEntry(QString Name, QString Picture)
+    : name(std::move(Name)),picture(std::move(Picture))
 {}
 
 ParametersList::ParametersList(QObject* parent)
     : QAbstractListModel(parent)
     , m_role_names({
                     { Roles::Name, QByteArrayLiteral("name") },
+                    { Roles::Picture, QByteArrayLiteral("picture") },
                     })
 {
     //empty constructor to be generic
@@ -1725,6 +1751,8 @@ QVariant ParametersList::data(const QModelIndex& index, int role) const
     switch (role) {
     case Roles::Name:
         return parameter.name;
+    case Roles::Picture:
+        return parameter.picture;
     default:
         return {};
     }
@@ -1785,7 +1813,7 @@ QList<bool> ParametersList::isChecked() {
 
 QString ParametersList::currentName(const QString& Parameter, const QString& InternalName) {
 
-    Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+    //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
 
     if (m_parameter != Parameter)
     {
@@ -1794,6 +1822,10 @@ QString ParametersList::currentName(const QString& Parameter, const QString& Int
         m_parameter = Parameter;
         QStringList EmptyQStringList;
         m_parameterslist = find_available_parameterslist(Parameter,"",EmptyQStringList);
+        /*for(int i = 0; i < int(m_parameterslist.size()); i++){
+            Log::debug(LOGMSG("m_parameterslist.at(%2).name `%1`").arg(m_parameterslist.at(i).name,QString::number(i)));
+            Log::debug(LOGMSG("m_parameterslist.at(%2).picture `%1`").arg(m_parameterslist.at(i).picture,QString::number(i)));
+        }*/
         select_preferred_parameter(Parameter);
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
@@ -1813,7 +1845,7 @@ QString ParametersList::currentName(const QString& Parameter, const QString& Int
 
 QString ParametersList::currentInternalName(const QString& Parameter) {
 
-    Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
+    //Log::debug(LOGMSG("QString ParametersList::currentName(const QString& Parameter) - parameter: `%1`").arg(Parameter));
 
     if (m_parameter != Parameter)
     {

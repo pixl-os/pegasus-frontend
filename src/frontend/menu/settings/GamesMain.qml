@@ -248,6 +248,8 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "global.shaders"
+                    property bool has_picture: true
+                    //property int max_listitem_displayed: 5
 
                     label: qsTr("Shaders") + api.tr
                     note: qsTr("Set prefered Shader effect") + api.tr
@@ -393,6 +395,8 @@ FocusScope {
         //properties to manage parameter
         property string parameterName
         property MultivalueOption callerid
+        has_picture: typeof(callerid.has_picture) !== "undefined" ? callerid.has_picture : false
+        max_listitem_displayed: callerid.max_listitem_displayed
 
         //reuse same model
         model: api.internal.recalbox.parameterslist.model

@@ -16,16 +16,22 @@
 
 
 import QtQuick 2.12
-
+import "qrc:/qmlutils" as PegasusUtils
 
 FocusScope {
     id: root
 
-    property alias model: list.model
+    property var model
     property alias index: list.currentIndex
 
     readonly property int textSize: vpx(22)
     readonly property int itemHeight: 2.25 * textSize
+
+    property string selected_picture: ""
+
+    //coming from MultivalueOption geenrallly linked to MultiValueBox
+    property bool has_picture: false
+    property int max_listitem_displayed: 10
 
     signal close
     signal select(int index)
@@ -54,10 +60,13 @@ FocusScope {
             triggerClose();
         }
     }
+
     Component.onCompleted: {
-        if (list.currentIndex > 0)
+        if (list.currentIndex > 0){
             list.positionViewAtIndex(list.currentIndex, ListView.Center);
+        }
     }
+
     Rectangle {
         id: shade
 
@@ -75,11 +84,10 @@ FocusScope {
     }
     Item {
         id: box
-        //fix to 10 if picture to display for each selection
-        height: (list.count >= 10) || (typeof(model.picture) !== "undefined") ? (10 * itemHeight) : (list.count * itemHeight)
-        width: vpx(700)
+        //fix to 10 items size if picture to display for each selection
+        height: (list.count >= max_listitem_displayed) ? (max_listitem_displayed * itemHeight) : has_picture ? (max_listitem_displayed * itemHeight) : (list.count * itemHeight)
+        width: has_picture ? vpx(1100) : vpx(700)
         anchors.centerIn: parent
-
         Rectangle {
             id: borderBox
             height: box.height + vpx(15)
@@ -101,12 +109,12 @@ FocusScope {
 
                 ListView {
                     id: list
+                    model: root.model
                     focus: true
-
-                    width: (typeof(model.picture) === "undefined") ? parent.width : parent.width/2
+                    width: has_picture === true ? parent.width/2 : parent.width
                     height: Math.min(count * itemHeight, parent.height)
                     anchors.left: parent.left
-                    //anchors.verticalCenter: parent.verticalCenter
+
                     delegate: listItem
                     snapMode: ListView.SnapOneItem
                     highlightMoveDuration: 150
@@ -124,6 +132,47 @@ FocusScope {
                         cursorShape: Qt.PointingHandCursor
                     }
                 }
+
+                Image {
+                    id: picture
+                    source: selected_picture !== "" ? selected_picture : ""
+                    visible: selected_picture !== "" ? true : false
+                    //width: selected_picture !== "" ? (parent.width/2) : 0
+                    //height: parent.height
+
+                    anchors.right: parent.right
+                    anchors.left: list.right
+                    anchors.leftMargin: vpx(10) // Left margin
+                    anchors.rightMargin: vpx(10) // Right margin
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.topMargin: vpx(10) // Top margin
+                    anchors.bottomMargin: vpx(10) // Bottom margin
+
+                    asynchronous: true
+                    antialiasing: true
+                    fillMode: Image.PreserveAspectFit
+                    opacity: 1
+                }
+
+                Text {
+                    id: noImageText
+                    text: qsTr("No Preview Available") + api.tr
+                    visible: has_picture & ((selected_picture === "") || (picture.status === Image.Error)) ? true : false
+                    width: selected_picture !== "" ? (parent.width/2) : 0
+                    height: parent.height
+                    anchors.right: parent.right
+                    anchors.left: list.right
+                    anchors.leftMargin: vpx(10) // Left margin
+                    anchors.rightMargin: vpx(10) // Right margin
+                    anchors.topMargin: vpx(10) // Top margin
+                    anchors.bottomMargin: vpx(10) // Bottom margin
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "red"
+                    font.pixelSize: root.textSize
+                    font.family: globalFonts.sans
+                }
             }
         }
     }
@@ -131,6 +180,12 @@ FocusScope {
         id: listItem
         Rectangle {
             readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
+            clip: true
+            onHighlightedChanged:{
+            //onHighlightedChanged:{
+                //console.log("onTextChanged - model.picture : " + model.picture)
+                selected_picture = model.picture;
+            }
 
             width: ListView.view.width
             height: root.itemHeight
@@ -138,16 +193,51 @@ FocusScope {
             color: highlighted ? themeColor.secondary : themeColor.main
             border.color: highlighted ? themeColor.underline : themeColor.main
 
+            PegasusUtils.HorizontalAutoScroll{
+                id: longtext
+
+                scrollWaitDuration: 1000 // in ms
+                pixelsPerSecond: 20
+                activated: has_picture
+                visible: has_picture
+                anchors {
+                    top:    parent.top;
+                    left:   parent.left;
+                    right:  parent.right;
+                    leftMargin: vpx(5);
+                    rightMargin: vpx(5);
+                    horizontalCenter: parent.horizontalCenter;
+                    //verticalCenter: parent.verticalCenter;
+                }
+
+                height: parent.height
+
+                Text {
+                    id: labellongtext
+                    visible: has_picture
+                    //anchors.verticalCenter: parent.verticalCenter
+                    //anchors.horizontalCenter: parent.horizontalCenter
+
+                    text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
+                    color: themeColor.textValue
+                    font.pixelSize: root.textSize
+                    font.family: globalFonts.sans
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
             Text {
-                id: label
+                 id: label
+                 visible: !has_picture
+                 anchors.verticalCenter: parent.verticalCenter
+                 anchors.horizontalCenter: parent.horizontalCenter
 
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
-                color: themeColor.textValue
-                font.pixelSize: root.textSize
-                font.family: globalFonts.sans
+                 text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
+                 color: themeColor.textValue
+                 font.pixelSize: root.textSize
+                 font.family: globalFonts.sans
             }
 
             MouseArea {

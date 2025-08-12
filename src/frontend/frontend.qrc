@@ -396,5 +396,6 @@
         <file>menu/settings/emulatorsetting/TeknoParrotMain.qml</file>
         <file>menu/settings/emulatorsetting/TeknoParrotSettings.qml</file>
         <file>menu/settings/ProtonConfiguration.qml</file>
+        <file>assets/versus_arcade_games_buttons.webp</file>
     </qresource>
 </RCC>
