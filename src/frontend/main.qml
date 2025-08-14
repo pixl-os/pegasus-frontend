@@ -2099,7 +2099,7 @@ Window {
         triggeredOnStart: true
         onTriggered: {
             hasPlugin = api.internal.updates.hasPlugin();
-            console.log("hasPlugin: " + hasPlugin);
+            //console.log("hasPlugin: " + hasPlugin);
         }
     }
 

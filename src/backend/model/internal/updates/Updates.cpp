@@ -417,7 +417,7 @@ bool Updates::hasPlugin(){
     QStringList entries = directory.entryList(filters, QDir::Files);
 
     if (entries.isEmpty()) {
-        Log::debug(log_tag, LOGMSG("No .plugin file found !"));
+        //Log::debug(log_tag, LOGMSG("No .plugin file found !"));
         return false;
     }
 
