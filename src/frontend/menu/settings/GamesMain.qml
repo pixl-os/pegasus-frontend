@@ -248,8 +248,6 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : "global.shaders"
-                    property bool has_picture: true
-                    //property int max_listitem_displayed: 5
 
                     label: qsTr("Shaders") + api.tr
                     note: qsTr("Set prefered Shader effect") + api.tr
@@ -260,13 +258,23 @@ FocusScope {
                     count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalShader;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+
+                        //to customize Box display
+                        parameterslistBox.firstlist_title = qsTr("Directory") + api.tr
+                        parameterslistBox.secondlist_title = qsTr("Shader") + api.tr
+                        parameterslistBox.firstlist_minimum_width_purcentage = 0.23
+                        parameterslistBox.secondlist_minimum_width_purcentage = 0.43
+                        parameterslistBox.splitted_list = true;
+                        parameterslistBox.has_picture = true;
+                        parameterslistBox.max_listitem_displayed = 7;                        
+
+                        //for callback by parameterslistBox
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.callerid = optGlobalShader;
+                        parameterslistBox.parameterName = parameterName;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
@@ -395,14 +403,15 @@ FocusScope {
         //properties to manage parameter
         property string parameterName
         property MultivalueOption callerid
-        has_picture: typeof(callerid.has_picture) !== "undefined" ? callerid.has_picture : false
-        max_listitem_displayed: callerid.max_listitem_displayed
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
+        //has_picture: (callerid !== null) ? ((typeof(callerid.has_picture) !== "undefined") ? callerid.has_picture : false) : false
+        //max_listitem_displayed: (callerid !== null) ? ((typeof(callerid.max_listitem_displayed) !== "undefined") ? callerid.max_listitem_displayed : 10) : 10
+        //splitted_list: (callerid !== null) ? ((typeof(callerid.splitted_list) !== "undefined") ? callerid.splitted_list : false) : false
+
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             callerid.keypressed = true;

@@ -49,6 +49,9 @@ public:
     //to be able to set checkbox state individually
     Q_INVOKABLE QList<bool> isChecked();
 
+    // The new helper function to be exposed to QML
+    Q_INVOKABLE QVariant get(int row, const QString& roleName) const;
+
 //Variant examples from QML	
 /* Item {
     property variant items: [1, 2, 3, "four", "five"]

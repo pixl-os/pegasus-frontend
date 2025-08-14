@@ -297,16 +297,19 @@ QStringList GetParametersList(QString Parameter)
         select only compatible extension shaders in menu opengl(glslp) / vulkan(slangp)*/
         QString shadersext;
         QString filterext;
+        QString previews_directory;
         // check vulkan option in recalbox.conf
         if (RecalboxConf::Instance().AsBool("system.video.driver.vulkan", false) == true)
         {
             shadersext = "*.slangp";
             filterext = ".slangp";
+            previews_directory = "shader-previews-vulkan";
         }
         else
         {
             shadersext = "*.glslp";
             filterext = ".glslp";
+            previews_directory = "shader-previews-opengl";
         }
 
         // add none in list for disabled option if needed
@@ -333,7 +336,7 @@ QStringList GetParametersList(QString Parameter)
             QString subfile = file;
             ListOfValue.append(subfile.replace(filterext, ""));
             QString picturefile = "/recalbox/share/shaders/" + file;
-            ListOfPicture.append("file://" + picturefile.replace("/shaders/","/shaders/shader-previews/").replace(filterext, ".png"));
+            ListOfPicture.append("file://" + picturefile.replace("/shaders/","/shaders/" + previews_directory + "/").replace(filterext, ".png"));
         }
 
         // Then, process subdirectories
@@ -367,7 +370,7 @@ QStringList GetParametersList(QString Parameter)
                 // include directory in ListOfValue, and remove extension
                 ListOfValue.append(QDir(dir).dirName() + "/" + subfile.replace(filterext,""));
                 QString picturefile = dir + '/' + subfiles.at(i);
-                ListOfPicture.append("file://" + picturefile.replace("/shaders/","/shaders/shader-previews/").replace(filterext, ".png"));
+                ListOfPicture.append("file://" + picturefile.replace("/shaders/","/shaders/" + previews_directory + "/").replace(filterext, ".png"));
             }
         }
 
@@ -1756,6 +1759,31 @@ QVariant ParametersList::data(const QModelIndex& index, int role) const
     default:
         return {};
     }
+}
+
+QVariant ParametersList::get(int row, const QString& roleName) const
+{
+    if (row < 0 || row >= rowCount()) {
+        return QVariant();
+    }
+
+    QModelIndex index = this->index(row);
+
+    // Find the role ID from the role name
+    QHash<int, QByteArray> roles = roleNames();
+    int role = -1;
+    for (auto it = roles.constBegin(); it != roles.constEnd(); ++it) {
+        if (it.value() == roleName.toUtf8()) {
+            role = it.key();
+            break;
+        }
+    }
+
+    if (role != -1) {
+        return data(index, role);
+    }
+
+    return QVariant();
 }
 
 void ParametersList::setCurrentIndexChecked(bool checked)
