@@ -183,17 +183,22 @@ FocusScope {
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         //to customize Box display
                         parameterslistBox.firstlist_title = qsTr("Predefined shader") + api.tr
+                        parameterslistBox.has_picture = true;
+                        parameterslistBox.firstlist_minimum_width_purcentage = 0.30
+                        parameterslistBox.firstlist_maximum_width_purcentage = 0.30
+                        parameterslistBox.max_listitem_displayed = 10;
+
                         //for callback by parameterslistBox
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         parameterslistBox.callerid = optGlobalShaderSet;
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.callerid = optGlobalGameRatio;
                         parameterslistBox.parameterName = parameterName;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
 
                     onSelect: {
+                        //console.log("onSelect " + parameterName + " - index:" + str(index));
                         //to force to be on the good parameter selected
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         //to update index of parameterlist QAbstractList
@@ -418,6 +423,8 @@ FocusScope {
         model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
+          //console.log("onSelect - callerid.parameterName : " + callerid.parameterName);
+          //console.log("onSelect - index : " + index.toString());
             callerid.keypressed = true;
             //to use the good parameter
             api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
@@ -425,7 +432,9 @@ FocusScope {
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+          //console.log("onSelect - callerid.value : " + callerid.value);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+          //console.log("onSelect - callerid.currentIndex : " + callerid.currentIndex.toString());
             callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }

@@ -274,6 +274,10 @@ QStringList GetParametersList(QString Parameter)
         */
         ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanlines") << QObject::tr("mega bezel (under overlay)") << QObject::tr("mega bezel (above overlay)");
         ListOfInternalValue << "none" << "retro" << "scanlines" << "megabezel_under_overlay" << "megabezel_above_overlay";
+        QString previews_directory = "shaderset-previews";
+        for (const QString &name : ListOfInternalValue) {
+            ListOfPicture.append("file:///recalbox/share/shaders/" + previews_directory + "/" + name + ".png");
+        }
     }
     //to manage/select SHADERS directory (keep here to avoid to be disturb with "{system/rom}.shaders" pa
     else if (Parameter == "directory.shaders")

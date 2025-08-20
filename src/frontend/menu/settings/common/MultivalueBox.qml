@@ -112,6 +112,8 @@ FocusScope {
         else if (api.keys.isAccept(event)) {
             event.accepted = true;
             if(!splitted_list){
+                var currentIndex = prefixListView.currentIndex;
+                console.log("prefixListView.currentIndex : " + currentIndex.toString());
                 index = prefixListView.currentIndex;
                 //select index for new selection and close
                 select(index);
