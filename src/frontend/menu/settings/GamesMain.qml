@@ -124,13 +124,16 @@ FocusScope {
                     count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalGameRatio;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        //to customize Box display
+                        parameterslistBox.firstlist_title = qsTr("Game ratio") + api.tr
+                        //for callback by parameterslistBox
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.callerid = optGlobalGameRatio;
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.callerid = optGlobalGameRatio;
+                        parameterslistBox.parameterName = parameterName;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
@@ -263,7 +266,9 @@ FocusScope {
 
                         //to customize Box display
                         parameterslistBox.firstlist_title = qsTr("Directory") + api.tr
+                        parameterslistBox.firstlist_symbol = "\uf180"
                         parameterslistBox.secondlist_title = qsTr("Shader") + api.tr
+                        parameterslistBox.secondlist_symbol = "\uf2df"
                         parameterslistBox.firstlist_minimum_width_purcentage = 0.23
                         parameterslistBox.secondlist_minimum_width_purcentage = 0.43
                         parameterslistBox.splitted_list = true;
@@ -403,10 +408,6 @@ FocusScope {
         //properties to manage parameter
         property string parameterName
         property MultivalueOption callerid
-
-        //has_picture: (callerid !== null) ? ((typeof(callerid.has_picture) !== "undefined") ? callerid.has_picture : false) : false
-        //max_listitem_displayed: (callerid !== null) ? ((typeof(callerid.max_listitem_displayed) !== "undefined") ? callerid.max_listitem_displayed : 10) : 10
-        //splitted_list: (callerid !== null) ? ((typeof(callerid.splitted_list) !== "undefined") ? callerid.splitted_list : false) : false
 
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex

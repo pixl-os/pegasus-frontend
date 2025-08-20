@@ -16,6 +16,9 @@
 
 
 import QtQuick 2.15
+import QtQuick.Controls 2.15
+//import QtQuick.Layouts 1.15
+
 import "qrc:/qmlutils" as PegasusUtils
 //import "common"
 
@@ -39,6 +42,8 @@ FocusScope {
     property real secondlist_maximum_width_purcentage: 0.50
     property string firstlist_title: ""
     property string secondlist_title: ""
+    property string firstlist_symbol: ""
+    property string secondlist_symbol: ""
     property int box_maximum_width: 1100
     property int box_minimum_width: 700
 
@@ -71,9 +76,11 @@ FocusScope {
         firstlist_minimum_width_purcentage = 0.33;
         firstlist_maximum_width_purcentage = 0.50;
         firstlist_title = "";
+        firstlist_symbol = "";
         secondlist_minimum_width_purcentage = 0.33;
         secondlist_maximum_width_purcentage = 0.50;
         secondlist_title = "";
+        secondlist_symbol = "";
         box_maximum_width = 1100;
         box_minimum_width = 700;
         //reset size of box
@@ -220,19 +227,14 @@ FocusScope {
                             suffixListView.currentIndex = j;
                         }
                         j++;
-                        //suffixListView.visible = true;
                     }
                     else if ((selectedPrefix === "/") && (fullName === fullName.split("/")[0])) {
                         //case of prefix only (as at root)
                         suffixModel.append({ "name": fullName, "picture": root.model.get(i,"picture")});
-                        //suffixListView.currentIndex = 0;
                         if(root.index === i){
                             suffixListView.currentIndex = j;
                         }
                         j++;
-                        //hide suffix list in this case
-                        //suffixListView.visible = false;
-                        //break;
                     }
                 }
             }
@@ -241,15 +243,6 @@ FocusScope {
             suffixListView.positionViewAtIndex(suffixListView.currentIndex, ListView.Center);
         }
     }
-
-    /*function findPrefixIndex(prefixName) {
-        for (var i = 0; i < prefixModel.count; ++i) {
-            if (prefixModel.get(i).name === prefixName) {
-                return i;
-            }
-        }
-        return -1; // Return -1 if not found
-    }*/
 
     function findRootModelIndex(prefixName, suffixName) {
         for (var i = 0; i < root.model.count; ++i) {
@@ -263,12 +256,6 @@ FocusScope {
         return -1; // Return -1 if not found
     }
 
-
-    /*Component.onCompleted: {
-        //console.log("Component.onCompleted - root.index : " + root.index);
-        //populatePrefixModel();
-    }*/
-
     onModelChanged: {
         //console.log("onModelChanged - root.index : " + root.index);
         populatePrefixModel();
@@ -280,7 +267,7 @@ FocusScope {
         anchors.fill: parent
         color: "#000"
 
-        opacity: parent.focus ? 0.3 : 0.0
+        opacity: parent.focus ? 0.5 : 0.0
         Behavior on opacity { PropertyAnimation { duration: 150 } }
 
         MouseArea {
@@ -299,6 +286,7 @@ FocusScope {
             else return vpx(box_minimum_width)
         }
         anchors.centerIn: parent
+
         Rectangle {
             id: borderBox
             height: box.height + vpx(15)
@@ -313,22 +301,84 @@ FocusScope {
             radius: vpx(8)
             anchors.fill: box
 
+            Rectangle {
+                id: borderTabBar
+                visible: (firstlist_title === "" && secondlist_title === "") ? false : true
+                height: tabBar.height + vpx(11)
+                width: tabBar.width + vpx(15)
+                color: themeColor.secondary
+                radius: vpx(8)
+                anchors.left: tabBar.left
+                anchors.leftMargin: - vpx(8)
+                anchors.bottom: tabBar.bottom
+                anchors.bottomMargin: - vpx(4)
+            }
+
+            Rectangle {
+                id: borderTabBarHidding
+                visible: (firstlist_title === "" && secondlist_title === "") ? false : true
+                height: vpx(8)
+                width: has_picture ? tabBar.width + vpx(6) : tabBar.width
+                color: themeColor.main
+                anchors.left: tabBar.left
+                anchors.bottom: tabBar.bottom
+                anchors.bottomMargin: - vpx(4)
+            }
+
+            TabBar {
+                id: tabBar
+                width: firstlist_tab.width + secondlist_tab.width
+                anchors.left: parent.left
+                anchors.bottom: parent.top
+                anchors.bottomMargin: - vpx(4)
+                visible: (firstlist_title === "" && secondlist_title === "") ? false : true
+                height: itemHeight
+
+                background: Rectangle {
+                    color: themeColor.main
+                    radius: vpx(8) // Add rounded corners
+                }
+
+                TabButton {
+                    id: firstlist_tab
+                    width: has_picture && splitted_list ? parseInt(box.width * firstlist_minimum_width_purcentage) : (has_picture || splitted_list ? parseInt(box.width * firstlist_maximum_width_purcentage) : box.width)
+                    SectionTitle{
+                        text: firstlist_title
+                        visible: firstlist_title !== ""
+                        first: true
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        symbol: firstlist_symbol
+                    }
+                    background: Rectangle {
+                        color: themeColor.main
+                        anchors.left: parent.left
+                        anchors.leftMargin: vpx(1)
+                        radius: vpx(8) // Add rounded corners
+                    }
+                }
+
+                TabButton {
+                    id: secondlist_tab
+                    width: has_picture && splitted_list ? parseInt(box.width * secondlist_minimum_width_purcentage) : (splitted_list && !has_picture ? parseInt(box.width * secondlist_maximum_width_purcentage) : 0)
+                    SectionTitle{
+                        text: secondlist_title
+                        visible: secondlist_title !== ""
+                        first: true
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        symbol: secondlist_symbol
+                    }
+                    background: Rectangle {
+                        color: themeColor.main
+                        radius: vpx(8) // Add rounded corners
+                    }
+                }
+            }
+
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
                 hoverEnabled: true
                 clip: true
-
-                SectionTitle {
-                    text: firstlist_title
-                    visible: firstlist_title === "" ? false : true
-                    first: true
-                    symbol: "" //"\uf39b"
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    width: has_picture && splitted_list ? parseInt(parent.width * firstlist_minimum_width_purcentage) : (has_picture || splitted_list ? parseInt(parent.width * firstlist_maximum_width_purcentage) : parent.width)
-                    height: itemHeight
-                }
 
                 ListView {
                     id: prefixListView
@@ -337,7 +387,7 @@ FocusScope {
                     width: has_picture && splitted_list ? parseInt(parent.width * firstlist_minimum_width_purcentage) : (has_picture || splitted_list ? parseInt(parent.width * firstlist_maximum_width_purcentage) : parent.width)
                     height: Math.min(count * itemHeight, parent.height)
                     anchors.left: parent.left
-                    anchors.top: firstlist_title !== "" ? firstlist_title.bottom : parent.top
+                    anchors.top: parent.top
                     delegate: prefixListViewItem
                     snapMode: ListView.SnapOneItem
                     highlightMoveDuration: 150
@@ -359,17 +409,6 @@ FocusScope {
                     }
                 }
 
-                SectionTitle {
-                    text: secondlist_title
-                    visible: secondlist_title !== ""
-                    first: false
-                    symbol: "\uf39b"
-                    anchors.left: prefixListView.right
-                    anchors.top: parent.top
-                    width: has_picture && splitted_list ? parseInt(parent.width * secondlist_minimum_width_purcentage) : (splitted_list && !has_picture ? parseInt(parent.width * secondlist_maximum_width_purcentage) : 0)
-                    height: itemHeight
-                }
-
                 ListView {
                     id: suffixListView
 
@@ -378,7 +417,7 @@ FocusScope {
                     width: has_picture && splitted_list ? parseInt(parent.width * secondlist_minimum_width_purcentage) : (splitted_list && !has_picture ? parseInt(parent.width * secondlist_maximum_width_purcentage) : 0)
                     height: Math.min(count * itemHeight, parent.height)
                     anchors.left: prefixListView.right
-                    anchors.top: secondlist_title !== "" ? secondlist_title.top : parent.top
+                    anchors.top: parent.top
                     model: suffixModel
                     delegate: suffixListViewItem
                     snapMode: ListView.SnapOneItem
@@ -402,8 +441,6 @@ FocusScope {
                     id: picture
                     source: selected_picture !== "" ? selected_picture : ""
                     visible: selected_picture !== "" ? true : false
-                    //width: selected_picture !== "" ? (parent.width/2) : 0
-                    //height: parent.height
 
                     anchors.right: parent.right
                     anchors.left: suffixListView.right
@@ -444,7 +481,6 @@ FocusScope {
     Component {
         id: prefixListViewItem
         Rectangle {
-            //readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
             readonly property bool highlighted: ListView.isCurrentItem || (mouseArea.containsMouse && api.internal.settings.mouseSupport)
             clip: true
             onHighlightedChanged:{
@@ -471,8 +507,6 @@ FocusScope {
                     right:  parent.right;
                     leftMargin: vpx(5);
                     rightMargin: vpx(5);
-                    //horizontalCenter: parent.horizontalCenter;
-                    //verticalCenter: parent.verticalCenter;
                 }
 
                 height: parent.height
@@ -480,11 +514,8 @@ FocusScope {
                 Text {
                     id: labellongtext
                     visible: (has_picture && !splitted_list) ? true : false
-                    //anchors.verticalCenter: parent.verticalCenter
-                    //anchors.horizontalCenter: parent.horizontalCenter
 
                     text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
-                    //text: "labellongtext"
                     color: themeColor.textValue
                     font.pixelSize: root.textSize
                     font.family: globalFonts.sans
@@ -501,7 +532,6 @@ FocusScope {
                  anchors.horizontalCenter: parent.horizontalCenter
 
                  text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
-                 //text: "label"
                  color: themeColor.textValue
                  font.pixelSize: root.textSize
                  font.family: globalFonts.sans
@@ -518,7 +548,6 @@ FocusScope {
     Component {
         id: suffixListViewItem
         Rectangle {
-            //readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
             readonly property bool highlighted: ListView.isCurrentItem || (mouseArea.containsMouse && api.internal.settings.mouseSupport)
             clip: true
             onHighlightedChanged:{
@@ -548,8 +577,6 @@ FocusScope {
                     right:  parent.right;
                     leftMargin: vpx(5);
                     rightMargin: vpx(5);
-                    //horizontalCenter: parent.horizontalCenter;
-                    //verticalCenter: parent.verticalCenter;
                 }
 
                 height: parent.height
@@ -557,8 +584,6 @@ FocusScope {
                 Text {
                     id: labellongtext
                     visible: (has_picture && !splitted_list) ? true : false
-                    //anchors.verticalCenter: parent.verticalCenter
-                    //anchors.horizontalCenter: parent.horizontalCenter
 
                     text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
                     color: themeColor.textValue
