@@ -179,13 +179,16 @@ FocusScope {
                     }
 
                     onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optGlobalShaderSet;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        //to customize Box display
+                        parameterslistBox.firstlist_title = qsTr("Predefined shader") + api.tr
+                        //for callback by parameterslistBox
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.callerid = optGlobalShaderSet;
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.callerid = optGlobalGameRatio;
+                        parameterslistBox.parameterName = parameterName;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
