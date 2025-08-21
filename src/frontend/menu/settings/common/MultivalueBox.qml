@@ -113,7 +113,7 @@ FocusScope {
             event.accepted = true;
             if(!splitted_list){
                 var currentIndex = prefixListView.currentIndex;
-                console.log("prefixListView.currentIndex : " + currentIndex.toString());
+                //console.log("prefixListView.currentIndex : " + currentIndex.toString());
                 index = prefixListView.currentIndex;
                 //select index for new selection and close
                 select(index);
@@ -188,7 +188,38 @@ FocusScope {
                 for (var j = 0; j < prefixModel.count; j++) {
                     if ((prefixModel.get(j).name === savedPrefix) || ((savedPrefix === fullName) && (prefixModel.get(j).name === "/"))) {
                         prefixIndexToSelect = j;
-                        console.log("prefixIndexToSelect : " + prefixIndexToSelect)
+                        //console.log("prefixIndexToSelect : " + prefixIndexToSelect)
+                        break;
+                    }
+                }
+                // Set the current index of the prefix list view
+                if (prefixIndexToSelect !== -1) {
+                    prefixListView.currentIndex = prefixIndexToSelect;
+                }
+            }
+        }
+        else {
+            prefixListView.currentIndex = index;
+        }
+
+        if (prefixListView.currentIndex > 0){
+            prefixListView.positionViewAtIndex(prefixListView.currentIndex, ListView.Center);
+        }
+    }
+
+    function selectPrefixIndex() {
+        if (splitted_list){
+            if (root.index >= 0 && root.index < root.model.count) {
+                var fullName = root.model.get(root.index, "name")
+                //console.log("fullName : " + fullName)
+                var savedPrefix = fullName.split("/")[0];
+                //console.log("savedPrefix : " + savedPrefix)
+                // Now find the index of this prefix in the prefixModel
+                var prefixIndexToSelect = -1;
+                for (var j = 0; j < prefixModel.count; j++) {
+                    if ((prefixModel.get(j).name === savedPrefix) || ((savedPrefix === fullName) && (prefixModel.get(j).name === "/"))) {
+                        prefixIndexToSelect = j;
+                        //console.log("prefixIndexToSelect : " + prefixIndexToSelect)
                         break;
                     }
                 }
@@ -261,6 +292,10 @@ FocusScope {
     onModelChanged: {
         //console.log("onModelChanged - root.index : " + root.index);
         populatePrefixModel();
+    }
+    onIndexChanged: {
+        //console.log("onIndexChanged - root.index : " + root.index);
+        selectPrefixIndex();
     }
 
     Rectangle {
