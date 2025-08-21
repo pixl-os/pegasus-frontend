@@ -41,16 +41,16 @@ QMap<QString, QVariant> globalInMemorySettings; // Define it once
 // save
 void saveQStringListToGlobalMap(const QStringList& list, const QString& key) {
     globalInMemorySettings[key] = list;
-    Log::debug(LOGMSG("List saved to global QMap with key: %1").arg(key));
+  //Log::debug(LOGMSG("List saved to global QMap with key: %1").arg(key));
 }
 
 // load
 QStringList loadQStringListFromGlobalMap(const QString& key) {
     QStringList list = globalInMemorySettings.value(key).toStringList();
     if (list.isEmpty() && !globalInMemorySettings.contains(key)) {
-        Log::debug(LOGMSG("List not found in global QMap for key: %1").arg(key));
+      //Log::debug(LOGMSG("List not found in global QMap for key: %1").arg(key));
     } else {
-        Log::debug(LOGMSG("List loaded from global QMap for key: %1").arg(key));
+      //Log::debug(LOGMSG("List loaded from global QMap for key: %1").arg(key));
     }
     return list;
 }
@@ -59,14 +59,14 @@ QString GetCommandOutput(const std::string& command)
 {
     std::string output;
     char buffer[4096];
-    Log::debug(LOGMSG("GetCommandOutput command: '%1'").arg(QString::fromStdString(command)));
+  //Log::debug(LOGMSG("GetCommandOutput command: '%1'").arg(QString::fromStdString(command)));
     FILE* pipe = popen(command.data(), "r");
     if (pipe != nullptr)
     {
         while (feof(pipe) == 0){
             if (fgets(buffer, sizeof(buffer), pipe) != nullptr){
                 output.append(buffer);
-                Log::debug(LOGMSG("GetCommandOutput Output: '%1'").arg(QString::fromStdString(output)));
+              //Log::debug(LOGMSG("GetCommandOutput Output: '%1'").arg(QString::fromStdString(output)));
             }
         }
         pclose(pipe);
@@ -100,8 +100,8 @@ QString GetCommandOutputQtBlocking(const QString& command, const QStringList& ar
     //process.setProgram("/usr/wine/wine-tkg-wow64/bin/wineserver");
     //process.setArguments({"--version","2>&1"});
 
-    Log::debug(LOGMSG("Executing command: %1").arg(command)); // Using Qt's debug output
-    Log::debug(LOGMSG("Executing arguments: %1").arg(arguments.join(" "))); // Using Qt's debug output
+  //Log::debug(LOGMSG("Executing command: %1").arg(command)); // Using Qt's debug output
+  //Log::debug(LOGMSG("Executing arguments: %1").arg(arguments.join(" "))); // Using Qt's debug output
 
     process.start();
     process.waitForFinished(-1); // Wait indefinitely for the process to finish
@@ -111,13 +111,13 @@ QString GetCommandOutputQtBlocking(const QString& command, const QStringList& ar
 
 
     if (process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0) {
-        Log::debug(LOGMSG("Command output: %1").arg(output));
-        Log::debug(LOGMSG("Standard Error: %1").arg(errorOutput));
+      //Log::debug(LOGMSG("Command output: %1").arg(output));
+      //Log::debug(LOGMSG("Standard Error: %1").arg(errorOutput));
     } else {
         // Command failed or exited with an error
-        Log::debug(LOGMSG("Command failed with exit code: %1").arg(process.exitCode()));
-        Log::debug(LOGMSG("and exit status: %1").arg(process.exitStatus()));
-        Log::debug(LOGMSG("Standard Error: %1").arg(errorOutput));
+      //Log::debug(LOGMSG("Command failed with exit code: %1").arg(process.exitCode()));
+      //Log::debug(LOGMSG("and exit status: %1").arg(process.exitStatus()));
+      //Log::debug(LOGMSG("Standard Error: %1").arg(errorOutput));
         // You might choose to return errorOutput or an empty string,
         // or throw an exception depending on your error handling strategy.
     }
@@ -170,7 +170,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
     //remove empty ones for cleaning
     ListOfValue.removeAll(QString(""));
 
-    Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
+  //Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
 
     //to avoid crash when there is no value return by command/script
     if(ListOfValue.isEmpty())
@@ -185,7 +185,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
 QStringList GetParametersList(QString Parameter)
 {
-    Log::debug(LOGMSG("QStringList GetParametersList(%1)").arg(Parameter));
+  //Log::debug(LOGMSG("QStringList GetParametersList(%1)").arg(Parameter));
 
     QStringList ListOfValue;
 
@@ -422,7 +422,7 @@ QStringList GetParametersList(QString Parameter)
             QString fullpath = dir + "/proton";
             QString protonname = "";
             QString wineversion = "";
-            Log::debug(LOGMSG("File to find in Subdir : '%1'").arg(fullpath));
+          //Log::debug(LOGMSG("File to find in Subdir : '%1'").arg(fullpath));
             //check if file proton exists to detect a valid proton directory
             if (QFile::exists(fullpath)) {
                 // use name of directory from /usr/win for recalbox.conf
@@ -467,7 +467,7 @@ QStringList GetParametersList(QString Parameter)
             QString dir = it.next();
             //it should contain /bin directory if it is a valid wine installed in pixL
             QString relativedir = dir + "/bin";
-            Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
+          //Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
             QString fulldir;
             QString winename;
             QString wineversion = "";
@@ -788,10 +788,10 @@ QStringList GetParametersList(QString Parameter)
 
         for(const auto& playback : playbackList)
         {
-            Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+          //Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
             ListOfValue.append(QString::fromStdString(playback.DisplayableName)); // using Awesome Web Font
 
-            Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+          //Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
             ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
         }
         if(ListOfValue.isEmpty())
@@ -1176,10 +1176,10 @@ QStringList GetParametersList(QString Parameter)
 
         for(const auto& playback : playbackList)
         {
-            Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+          //Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
             ListOfValue.append(QString::fromStdString(playback.DisplayableName)); // using Awesome Web Font
 
-            Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+          //Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
             ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
         }
         if(ListOfValue.isEmpty())
@@ -1213,7 +1213,7 @@ QStringList GetParametersList(QString Parameter)
 
         for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
         {
-            Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
+          //Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
             if(device.Size != 0){
                 if(device.Free >= 0){
                    ListOfValue.append(QString::fromStdString(device.DisplayName) + " - " + QString::fromStdString(device.HumanFree()) + "/" + QString::fromStdString(device.HumanSize()) + " (" + QString::fromStdString(device.PercentFree()) + "%)");
@@ -1225,7 +1225,7 @@ QStringList GetParametersList(QString Parameter)
             else{
                 ListOfValue.append(QString::fromStdString(device.DisplayName));
             }
-            Log::debug(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
+          //Log::debug(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
             if(QString::fromStdString(device.DisplayName).contains("Internal SHARE")){
                 ListOfInternalValue.append(QString::fromStdString("INTERNAL"));
             }
@@ -1576,7 +1576,7 @@ void ParametersList::save_selected_parameter()
 void ParametersList::check_preferred_parameter(const QString& Parameter)
 {
     /*
-    Log::debug(LOGMSG("void ParametersList::check_preferred_parameter(const QString& Parameter) Parameter:`%1`").arg(Parameter));
+  //Log::debug(LOGMSG("void ParametersList::check_preferred_parameter(const QString& Parameter) Parameter:`%1`").arg(Parameter));
     to get first row as default value
     */
     QString DefaultValue = "";
