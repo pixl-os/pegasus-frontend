@@ -85,6 +85,7 @@ FocusScope {
         box_minimum_width = 700;
         //reset size of box
         box.width = vpx(box_minimum_width);
+        selected_picture = "";
         //close box
         root.close();
     }
@@ -292,10 +293,25 @@ FocusScope {
     onModelChanged: {
         //console.log("onModelChanged - root.index : " + root.index);
         populatePrefixModel();
+        //console.log("onTextChanged - model.picture : " + model.picture)
+        if(typeof(root.model) !== 'undefined'){
+            //console.log("onTextChanged - model.picture : " + model.picture)
+            if(has_picture && (typeof(root.model.get(index, "picture")) !== 'undefined')){
+                selected_picture = root.model.get(index, "picture");
+            }
+        }
     }
+
     onIndexChanged: {
         //console.log("onIndexChanged - root.index : " + root.index);
         selectPrefixIndex();
+        //console.log("onTextChanged - model.picture : " + model.picture)
+        if(typeof(root.model) !== 'undefined'){
+            //console.log("onTextChanged - model.picture : " + model.picture)
+            if(has_picture && (typeof(root.model.get(index, "picture")) !== 'undefined')){
+                selected_picture = root.model.get(index, "picture");
+            }
+        }
     }
 
     Rectangle {

@@ -186,7 +186,7 @@ FocusScope {
                         parameterslistBox.has_picture = true;
                         parameterslistBox.firstlist_minimum_width_purcentage = 0.30
                         parameterslistBox.firstlist_maximum_width_purcentage = 0.30
-                        parameterslistBox.max_listitem_displayed = 10;
+                        parameterslistBox.max_listitem_displayed = 9;
 
                         //for callback by parameterslistBox
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
