@@ -320,7 +320,7 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("none");
         QString empty = "";
         ListOfInternalValue << empty;
-        ListOfPicture << "";
+        ListOfPicture << "file:///recalbox/share/shaders/" + previews_directory + "/none.png";
 
         // read root directory and first-level subdirectories
         QDir shadersDir("/recalbox/share/shaders/");
