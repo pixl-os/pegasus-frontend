@@ -231,12 +231,6 @@ FocusScope {
                     //property to manage parameter name
                     property string parameterName : "teknoparrot.versus.controller.mapping"
 
-                    //activate picture display to display mapping
-                    //picture configured and provided by parametersList model
-                    property bool has_picture: true
-                    //linked to new feature of picture display (10 by default)
-                    property int max_listitem_displayed: 5
-
                     label: qsTr("'Versus' games controller mapping") + api.tr
                     note: qsTr("To adapt mappings to your habit/controller/panel") + api.tr
 
@@ -246,11 +240,21 @@ FocusScope {
                     count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optTeknoparrotOption32;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.parameterName = parameterName;
+
+                        //to customize Box display
+                        parameterslistBox.has_picture = true;
+                        parameterslistBox.firstlist_minimum_width_purcentage = 0.62;
+                        parameterslistBox.firstlist_maximum_width_purcentage = 0.62;
+                        parameterslistBox.box_maximum_width = 700;
+                        parameterslistBox.box_minimum_width = 700;
+                        parameterslistBox.has_picture = true;
+                        parameterslistBox.max_listitem_displayed = 4;
+
+                        //to force update of list of parameters
+                        parameterslistBox.callerid = optTeknoparrotOption32;
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
@@ -429,7 +433,6 @@ FocusScope {
             }
         }
     }
-
     MultivalueBox {
         id: parameterslistBox
         z: 3
@@ -437,16 +440,15 @@ FocusScope {
         //properties to manage parameter
         property string parameterName
         property MultivalueOption callerid
-        has_picture: typeof(callerid.has_picture) !== "undefined" ? callerid.has_picture : false
-        max_listitem_displayed: callerid.max_listitem_displayed
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
+          //console.log("onSelect - callerid.parameterName : " + callerid.parameterName);
+          //console.log("onSelect - index : " + index.toString());
             callerid.keypressed = true;
             //to use the good parameter
             api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
@@ -454,7 +456,9 @@ FocusScope {
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+          //console.log("onSelect - callerid.value : " + callerid.value);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+          //console.log("onSelect - callerid.currentIndex : " + callerid.currentIndex.toString());
             callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
