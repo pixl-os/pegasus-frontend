@@ -703,10 +703,10 @@ QStringList GetParametersList(QString Parameter)
     }
     else if (Parameter == "teknoparrot.versus.controller.mapping")
     {
-        ListOfValue << QObject::tr("From yaml file mappings") << QObject::tr("For 6 Buttons Gamepad/Panel") << QObject::tr("For 8 Buttons Gamepad/Panel") << QObject::tr("For 8 Buttons Gamepad/Panel (alternative)");
-        ListOfInternalValue << "" << "6buttons" << "8buttons" << "8buttons_bis";
+        ListOfValue << QObject::tr("From yaml file mappings") << QObject::tr("For 6 Buttons Gamepad/Panel") << QObject::tr("For 6 Buttons Gamepad/Panel (alternative)") << QObject::tr("For 8 Buttons Gamepad/Panel") << QObject::tr("For 8 Buttons Gamepad/Panel (alternative)");
+        ListOfInternalValue << "" << "6buttons" << "6buttons_bis "<< "8buttons" << "8buttons_bis";
         //to display preview of buttons
-        ListOfPicture << "../../../assets/x_buttons_panel.png" << "../../../assets/6_buttons_panel.png" << "../../../assets/8_buttons_panel.png" << "../../../assets/8_buttons_panel_bis.png";
+        ListOfPicture << "../../../assets/x_buttons_panel.png" << "../../../assets/6_buttons_panel.png" << "../../../assets/6_buttons_panel_bis.png" << "../../../assets/8_buttons_panel.png" << "../../../assets/8_buttons_panel_bis.png";
     }
     else if (Parameter == "teknoparrot.screen.resolution")
     {

@@ -246,12 +246,12 @@ FocusScope {
 
                         //to customize Box display
                         parameterslistBox.has_picture = true;
-                        parameterslistBox.firstlist_minimum_width_purcentage = 0.62;
-                        parameterslistBox.firstlist_maximum_width_purcentage = 0.62;
-                        parameterslistBox.box_maximum_width = 700;
-                        parameterslistBox.box_minimum_width = 700;
+                        parameterslistBox.firstlist_minimum_width_purcentage = 0.55;
+                        parameterslistBox.firstlist_maximum_width_purcentage = 0.55;
+                        parameterslistBox.box_maximum_width = 800;
+                        parameterslistBox.box_minimum_width = 800;
                         parameterslistBox.has_picture = true;
-                        parameterslistBox.max_listitem_displayed = 4;
+                        parameterslistBox.max_listitem_displayed = 5;
 
                         //to force update of list of parameters
                         parameterslistBox.callerid = optTeknoparrotOption32;
