@@ -132,7 +132,6 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         parameterslistBox.callerid = optGlobalGameRatio;
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.callerid = optGlobalGameRatio;
                         parameterslistBox.parameterName = parameterName;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;

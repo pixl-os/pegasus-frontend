@@ -162,13 +162,15 @@ FocusScope {
                     count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optSystemGameRatio;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        //to customize Box display
+                        parameterslistBox.firstlist_title = qsTr("Game ratio") + api.tr
+                        //for callback by parameterslistBox
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.callerid = optSystemGameRatio;
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.parameterName = parameterName;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
@@ -229,18 +231,26 @@ FocusScope {
                     }
 
                     onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optSystemShaderSet;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        //to customize Box display
+                        parameterslistBox.firstlist_title = qsTr("Predefined shader") + api.tr
+                        parameterslistBox.has_picture = true;
+                        parameterslistBox.firstlist_minimum_width_purcentage = 0.30
+                        parameterslistBox.firstlist_maximum_width_purcentage = 0.30
+                        parameterslistBox.max_listitem_displayed = 9;
+
+                        //for callback by parameterslistBox
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.callerid = optSystemShaderSet;
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.parameterName = parameterName;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
 
                     onSelect: {
+                        //console.log("onSelect " + parameterName + " - index:" + str(index));
                         //to force to be on the good parameter selected
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         //to update index of parameterlist QAbstractList
@@ -268,6 +278,7 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : prefix + ".shaderbordercoverage"
+
                     //property of SliderOption to set
                     label: qsTr("Overlay Shader Border Coverage") + api.tr
                     note: qsTr("Additional Border Coverage to manage shader above overlay as Mega Bezel") + api.tr
@@ -306,8 +317,6 @@ FocusScope {
 
                     //property to manage parameter name
                     property string parameterName : prefix + ".shaders"
-                    property bool has_picture: true
-                    //property int max_listitem_displayed: 5
 
                     label: qsTr("Shaders") + api.tr
                     note: qsTr("Set prefered Shader effect") + api.tr
@@ -318,13 +327,25 @@ FocusScope {
                     count: api.internal.recalbox.parameterslist.count;
 
                     onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optSystemShader;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+
+                        //to customize Box display
+                        parameterslistBox.firstlist_title = qsTr("Directory") + api.tr
+                        parameterslistBox.firstlist_symbol = "\uf180"
+                        parameterslistBox.secondlist_title = qsTr("Shader") + api.tr
+                        parameterslistBox.secondlist_symbol = "\uf2df"
+                        parameterslistBox.firstlist_minimum_width_purcentage = 0.23
+                        parameterslistBox.secondlist_minimum_width_purcentage = 0.43
+                        parameterslistBox.splitted_list = true;
+                        parameterslistBox.has_picture = true;
+                        parameterslistBox.max_listitem_displayed = 7;                        
+
+                        //for callback by parameterslistBox
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.callerid = optSystemShader;
+                        parameterslistBox.parameterName = parameterName;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
                     }
@@ -550,16 +571,15 @@ FocusScope {
         //properties to manage parameter
         property string parameterName
         property MultivalueOption callerid
-        has_picture: typeof(callerid.has_picture) !== "undefined" ? callerid.has_picture : false
-        max_listitem_displayed: callerid.max_listitem_displayed
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
+          //console.log("onSelect - callerid.parameterName : " + callerid.parameterName);
+          //console.log("onSelect - index : " + index.toString());
             callerid.keypressed = true;
             //to use the good parameter
             api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
@@ -567,7 +587,9 @@ FocusScope {
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+          //console.log("onSelect - callerid.value : " + callerid.value);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+          //console.log("onSelect - callerid.currentIndex : " + callerid.currentIndex.toString());
             callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
