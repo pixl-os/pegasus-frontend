@@ -3,7 +3,7 @@
 // Created by Strodown 17/07/2023
 // Updated by BozoTheGeek 06/08/2025 to manage system and override configurations
 //
-
+import "emulatorsetting"
 import "common"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
@@ -30,6 +30,9 @@ FocusScope {
     // check if is a libretro emulator for dynamic entry
     property bool isLibretroCore
     property bool hasOverlaySupport
+    //to have current emulator/core selected
+    property string emulator
+    property string core
 
     onGameChanged: {
         if(typeof(game) !== "undefined"){
@@ -451,6 +454,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: emulatorButtons.count > 1 ? true : false
+                    KeyNavigation.down: emulatorButtons.itemAt(0)
                 }
 
                 ButtonGroup  { id: radioGroup }
@@ -471,11 +475,10 @@ FocusScope {
                             api.internal.recalbox.setStringParameter(prefix + ".emulator",system.getNameAt(index));
                             api.internal.recalbox.setStringParameter(prefix + ".core",system.getCoreAt(index));
                         }
-                        
                         onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : (emulatorButtons.count > 1) ? optAutoCoreSelection : optSystemAutoSave
-                        KeyNavigation.down: (index < emulatorButtons.count) ? emulatorButtons.itemAt(index+1) : emulatorButtons.itemAt(emulatorButtons.count - 1)
-                        
+                        KeyNavigation.up: (index !== 0) ?  emulatorButtons.itemAt(index-1) : ((emulatorButtons.count > 1) ? optAutoCoreSelection : optSystemAutoSave)
+                        KeyNavigation.down: (index < (emulatorButtons.count - 1)) ? emulatorButtons.itemAt(index+1) : optLaunchAdvancedEmulatorSettings
+
                         RadioButton {
                             id: radioButton
 
@@ -499,8 +502,8 @@ FocusScope {
                             }
                             onCheckedChanged: {
                                 if(checked){
-                                    var emulator = system.getNameAt(index);
-                                    var core = system.getCoreAt(index);
+                                    emulator = system.getNameAt(index);
+                                    core = system.getCoreAt(index);
                                     //console.log("index=",index);
                                     //console.log("emulator=", emulator);
                                     //console.log("core=", core);
@@ -556,6 +559,39 @@ FocusScope {
                         }
                     }
 
+                }
+                SimpleButton {
+                    id: optLaunchAdvancedEmulatorSettings
+                    label: qsTr("Change Configuration for emulator selected") + api.tr
+                    note: ""
+                    pointerIcon: true
+                    visible: false
+                    onActivate: {
+                        focus = true;
+                        //root.openTeknoParrotSettings();
+                    }
+                    // loader to check if QML file exists
+                    Loader {
+                        id: myLoader
+                        // Attempt to load the file
+                        source: "emulatorsetting/" + emulator + "Settings.qml"
+                        onStatusChanged: {
+                            if (status === Loader.Error) {
+                                console.log("Failed to load component !");
+                                // Handle the error, e.g., show a placeholder UI
+                                parent.visible = false;
+                            }
+                        }
+                        onLoaded: {
+                            console.log("Content loaded!");
+                            // You can access properties and functions of the loaded item
+                            if (item) {
+                                console.log("Object acessibled!");
+                                parent.visible = true;
+                            }
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width

@@ -360,7 +360,7 @@
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
         <file>menu/settings/AdvancedEmulatorMain.qml</file>
-        <file>menu/settings/emulatorsetting/RetroarchSettings.qml</file>
+        <file>menu/settings/emulatorsetting/libretroSettings.qml</file>
         <file>menu/settings/AdvancedEmulatorSettings.qml</file>
         <file>menu/settings/emulatorsetting/Model2emuSettings.qml</file>
         <file>menu/settings/emulatorsetting/DolphinSettings.qml</file>
@@ -394,7 +394,7 @@
         <file>menu/settings/WineConfiguration.qml</file>
         <file>menu/settings/emulatorsetting/Model2emuMain.qml</file>
         <file>menu/settings/emulatorsetting/TeknoParrotMain.qml</file>
-        <file>menu/settings/emulatorsetting/TeknoParrotSettings.qml</file>
+        <file>menu/settings/emulatorsetting/teknoparrotSettings.qml</file>
         <file>menu/settings/ProtonConfiguration.qml</file>
         <file>assets/6_buttons_panel.png</file>
         <file>assets/8_buttons_panel.png</file>

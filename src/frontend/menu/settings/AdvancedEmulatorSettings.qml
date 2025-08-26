@@ -37,7 +37,7 @@ FocusScope {
         anchors.right: parent.right
 
         onClose: root.close()
-        onOpenRetroarchSettings: root.openScreen("emulatorsetting/RetroarchSettings.qml")
+        onOpenRetroarchSettings: root.openScreen("emulatorsetting/libretroSettings.qml")
         onOpenRpcs3Settings: root.openScreen("emulatorsetting/Rpcs3Settings.qml")
         onOpenModel2emuSettings: root.openScreen("emulatorsetting/Model2emuSettings.qml")
         onOpenDolphinSettings: root.openScreen("emulatorsetting/DolphinSettings.qml")
@@ -49,7 +49,7 @@ FocusScope {
         onOpenXemuSettings: root.openScreen("emulatorsetting/XemuSettings.qml")
         onOpenSupermodelSettings: root.openScreen("emulatorsetting/SupermodelSettings.qml")
         onOpenPpssppSettings: root.openScreen("emulatorsetting/PpssppSettings.qml")
-        onOpenTeknoParrotSettings: root.openScreen("emulatorsetting/TeknoParrotSettings.qml")
+        onOpenTeknoParrotSettings: root.openScreen("emulatorsetting/teknoparrotSettings.qml")
         onOpenYuzuSettings: root.openScreen("emulatorsetting/YuzuSettings.qml")
         onOpenSuyuSettings: root.openScreen("emulatorsetting/SuyuSettings.qml")
     }
