@@ -50,10 +50,21 @@ FocusScope {
     width: parent.width
     height: parent.height
     
-    anchors.fill: parent
+//    anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
+
+    property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? "override.pcsx2" : "pcsx2"
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader: game ? game.title +  " > Pcsx2" :
+        (system ? system.name + " > Pcsx2" :
+         qsTr("Advanced emulators settings > Pcsx2") + api.tr)
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -72,7 +83,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Pcsx2") + api.tr
+        text: titleHeader
         z: 2
     }
     Flickable {
@@ -85,6 +96,8 @@ FocusScope {
 
         contentWidth: content.width
         contentHeight: content.height
+
+        clip: launchedAsDialogBox
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds
@@ -110,14 +123,13 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
@@ -129,7 +141,7 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "pcsx2.resolution"
+                    property string parameterName : prefix + ".resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
                     note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
@@ -177,9 +189,9 @@ FocusScope {
                     label: qsTr("Enable Vsync") + api.tr
                     note: qsTr("Vertical syncronisation.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.vsync")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".vsync")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.vsync",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".vsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAnisotropy
@@ -188,7 +200,7 @@ FocusScope {
                     id: optAnisotropy
 
                     //property to manage parameter name
-                    property string parameterName : "pcsx2.anisotropy"
+                    property string parameterName : prefix + ".anisotropy"
 
                     label: qsTr("Anisotropy") + api.tr
                     note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics.") + api.tr
@@ -234,7 +246,7 @@ FocusScope {
                     id: optTVShaders
 
                     //property to manage parameter name
-                    property string parameterName : "pcsx2.tvshaders"
+                    property string parameterName : prefix + ".tvshaders"
 
                     label: qsTr("Tv Shaders") + api.tr
                     note: qsTr("Set your shaders effect.") + api.tr
@@ -281,9 +293,9 @@ FocusScope {
                     label: qsTr("Enable Graphical User Interface at start") + api.tr
                     note: qsTr("To access PCSX2 GUI at start") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.gui",false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".gui",false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.gui",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".gui",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optCrosshairs
@@ -300,9 +312,9 @@ FocusScope {
                     label: qsTr("Crosshairs") + api.tr
                     note: qsTr("Active crosshairs on lightgun games.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.crosshairs",true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".crosshairs",true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.crosshairs",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".crosshairs",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSplitscreenHack
@@ -313,9 +325,9 @@ FocusScope {
                     label: qsTr("Split screen hack (Beta)") + api.tr
                     note: qsTr("Hack to be able to play to split screen games as Time Crisis games\n(will be activated only if 2 guns connected)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.splitscreen.hack",true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".splitscreen.hack",true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.splitscreen.hack",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".splitscreen.hack",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSplitscreenFullStretch
@@ -326,9 +338,9 @@ FocusScope {
                     label: qsTr("Split screen full stretch (Beta)") + api.tr
                     note: qsTr("To maximize high of game view for split screen games\n(but not adviced to keep good ratio)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.splitscreen.fullstretch",false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".splitscreen.fullstretch",false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.splitscreen.fullstretch",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".splitscreen.fullstretch",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optCheats
@@ -344,9 +356,9 @@ FocusScope {
                     label: qsTr("Enable Cheats") + api.tr
                     note: qsTr("Ingames cheats enable.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.cheats",false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".cheats",false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.cheats",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".cheats",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optFastBoot
@@ -357,9 +369,9 @@ FocusScope {
                     label: qsTr("Fast Boot") + api.tr
                     note: qsTr("To start game directly without Bios loading introduction\n(Not compatible with all games/hacks)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.fastboot",false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".fastboot",false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.fastboot",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".fastboot",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optInjectSystemLanguage
@@ -370,9 +382,9 @@ FocusScope {
                     label: qsTr("Inject System Language in BIOS") + api.tr
                     note: qsTr("Set PS2 BIOS System language from pixL's one") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("pcsx2.injectsystemlanguage",true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".injectsystemlanguage",true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pcsx2.injectsystemlanguage",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".injectsystemlanguage",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: btnLaunchEuropeBIOS
@@ -529,10 +541,9 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                 }
-
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
         }
@@ -545,11 +556,10 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             callerid.keypressed = true;
@@ -561,6 +571,80 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+        visible: launchedAsDialogBox
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Back") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 }

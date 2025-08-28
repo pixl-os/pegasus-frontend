@@ -23,6 +23,17 @@ FocusScope {
 
     enabled: focus
 
+    property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? "override.model2emu" : "model2emu"
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader: game ? game.title +  " > Model2emu" :
+        (system ? system.name + " > Model2emu" :
+         qsTr("Advanced emulators settings > Model2emu") + api.tr)
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -40,7 +51,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Model2emu") + api.tr
+        text: titleHeader
         z: 2
     }
     Flickable {
@@ -53,6 +64,8 @@ FocusScope {
 
         contentWidth: content.width
         contentHeight: content.height
+
+        clip: launchedAsDialogBox
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds
@@ -78,7 +91,7 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
@@ -94,10 +107,10 @@ FocusScope {
                     label: qsTr("Xinput") + api.tr
                     note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used. (on change, need reboot)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.xinput",false) //deactivated by default to use Dinput
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".xinput",false) //deactivated by default to use Dinput
                     onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter("model2emu.xinput",false)){
-                            api.internal.recalbox.setBoolParameter("model2emu.xinput",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".xinput",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".xinput",checked);
                             //need to reboot to take change into account !
                             needReboot = true;
                         }
@@ -110,9 +123,9 @@ FocusScope {
                     label: qsTr("Fake Gouraud") + api.tr
                     note: qsTr("Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat).") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.fakeGouraud")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".fakeGouraud")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.fakeGouraud",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".fakeGouraud",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption21
@@ -122,9 +135,9 @@ FocusScope {
                     label: qsTr("Bilinear Filtering") + api.tr
                     note: qsTr("Enables bilinear filtering of textures.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.bilinearFiltering")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".bilinearFiltering")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.bilinearFiltering",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".bilinearFiltering",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption3
@@ -134,9 +147,9 @@ FocusScope {
                     label: qsTr("Trilinear Filtering") + api.tr
                     note: qsTr("Enables mipmap usage and trilinear filtering. (doesn’t work with some games, DoA for example)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.trilinearFiltering")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".trilinearFiltering")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.trilinearFiltering",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".trilinearFiltering",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption4
@@ -146,9 +159,9 @@ FocusScope {
                     label: qsTr("Filter Tilemaps") + api.tr
                     note: qsTr("Enables bilinear filtering on tilemaps. (looks good, but can cause some stretch artifacts)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.filterTilemaps")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".filterTilemaps")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.filterTilemaps",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".filterTilemaps",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption5
@@ -158,9 +171,9 @@ FocusScope {
                     label: qsTr("Force Managed") + api.tr
                     note: qsTr("Forces the DX driver to use Managed textures instead of Dynamic.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.forceManaged")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".forceManaged")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.forceManaged",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".forceManaged",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption6
@@ -170,9 +183,9 @@ FocusScope {
                     label: qsTr("Enable MIP") + api.tr
                     note: qsTr("Enables Direct3D Automipmap generation.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.enableMIP")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".enableMIP")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.enableMIP",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".enableMIP",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption7
@@ -182,9 +195,9 @@ FocusScope {
                     label: qsTr("Mesh Transparency") + api.tr
                     note: qsTr("Enabled meshed polygons for translucency.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.meshTransparency")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".meshTransparency")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.meshTransparency",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".meshTransparency",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption8
@@ -194,9 +207,9 @@ FocusScope {
                     label: qsTr("Full screen anti-aliasing") + api.tr
                     note: qsTr("Enable full screen antialiasing in Direct3D.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.fullscreenAA")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".fullscreenAA")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.fullscreenAA",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".fullscreenAA",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optModel2emuOption9
@@ -206,9 +219,9 @@ FocusScope {
                     label: qsTr("Scanlines") + api.tr
                     note: qsTr("Enable default scanlines.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("model2emu.scanlines")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".scanlines")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("model2emu.scanlines",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".scanlines",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optwineConfiguration
@@ -226,7 +239,7 @@ FocusScope {
                 }
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
         }
@@ -240,11 +253,10 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             callerid.keypressed = true;
@@ -256,6 +268,80 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+        visible: launchedAsDialogBox
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Back") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 }

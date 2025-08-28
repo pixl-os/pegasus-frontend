@@ -17,10 +17,23 @@ FocusScope {
     width: parent.width
     height: parent.height
     
-    anchors.fill: parent
+//    anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
+
+    property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? "override.cemu" : "cemu"
+
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader : game ? game.title +  " > Cemu" :
+                                  (system ? system.name + " > Cemu" :
+                                         qsTr("Advanced emulators settings > Cemu") + api.tr)
+
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -39,7 +52,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Cemu") + api.tr
+        text: titleHeader
         z: 2
     }
     Flickable {
@@ -52,6 +65,8 @@ FocusScope {
 
         contentWidth: content.width
         contentHeight: content.height
+
+        clip: launchedAsDialogBox
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds
@@ -77,14 +92,13 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
@@ -96,7 +110,7 @@ FocusScope {
 //                    focus: true
 
 //                    //property to manage parameter name
-//                    property string parameterName : "cemu.resolution"
+//                    property string parameterName : prefix + ".resolution"
 
 //                    label: qsTr("Internal Resolution") + api.tr
 //                    note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality,But cause issues in certain games") + api.tr
@@ -122,7 +136,7 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "cemu.upscale.filter"
+                    property string parameterName : prefix + ".upscale.filter"
 
                     label: qsTr("Upscale Filter") + api.tr
                     note: qsTr("Used when the game resolution is smaller than the windows size.") + api.tr
@@ -168,7 +182,7 @@ FocusScope {
                     id: optTextureFilter
 
                     //property to manage parameter name
-                    property string parameterName : "cemu.downscale.filter"
+                    property string parameterName : prefix + ".downscale.filter"
 
                     label: qsTr("Downscale Filter") + api.tr
                     note: qsTr("Used when the game resolution is bigger than the windows size.") + api.tr
@@ -214,7 +228,7 @@ FocusScope {
                     id: optVsync
 
                     //property to manage parameter name
-                    property string parameterName : "cemu.vsync"
+                    property string parameterName : prefix + ".vsync"
 
                     label: qsTr("Vsync") + api.tr
                     note: qsTr("Choose your vertical sync type.") + api.tr
@@ -267,9 +281,9 @@ FocusScope {
                     label: qsTr("Enable Async Compilation shaders") + api.tr
                     note: qsTr("Async shaders and pipeline compilation, reduce stutter at the cost of objects. \nNot rendering for a short time, vulkan only.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("cemu.async.compile")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".async.compile")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("cemu.async.compile",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".async.compile",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSDLUseButtonLabels
@@ -277,7 +291,7 @@ FocusScope {
                 ToggleOption {
                     id: optSDLUseButtonLabels
 
-                    property string parameterName :"cemu.use.sdl.button.labels"
+                    property string parameterName :prefix + ".use.sdl.button.labels"
                     label: qsTr("Use SDL button labels for mappings") + api.tr
                     note: qsTr("Feature to match button letters as requested on screen\nElse XBOX mapping will be used for all controllers") + api.tr
                     //set env variable to SDL_GAMECONTROLLER_USE_BUTTON_LABELS=1 by default
@@ -292,7 +306,7 @@ FocusScope {
                     id: optRumblePower
 
                     //property to manage parameter name
-                    property string parameterName : "cemu.rumble"
+                    property string parameterName : prefix + ".rumble"
 
                     //property of SliderOption to set
                     label: qsTr("Rumble power") + api.tr
@@ -337,9 +351,9 @@ FocusScope {
                     label: qsTr("Enable Wii U Gamepad") + api.tr
                     note: qsTr("Activate Wii U Gamepad usage in game") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("cemu.gamepad.activated",false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".gamepad.activated",false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("cemu.gamepad.activated",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".gamepad.activated",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGamepadAtStart
@@ -350,9 +364,9 @@ FocusScope {
                     label: qsTr("Show Gamepad at start") + api.tr
                     note: qsTr("Show gamepad window at front of game window and at start\n(else could be show/hide using HOTKEY+R1)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("cemu.gamepad.at.start",false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".gamepad.at.start",false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("cemu.gamepad.at.start",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".gamepad.at.start",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: optGamepadActivated.checked
@@ -364,16 +378,16 @@ FocusScope {
                     label: qsTr("Show Gamepad on second display (Beta)") + api.tr
                     note: qsTr("Need to have a second display (physical or virtual) connected\nand activated from 'video configuration' to work") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("cemu.gamepad.on.second.display",false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".gamepad.on.second.display",false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("cemu.gamepad.on.second.display",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".gamepad.on.second.display",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: optGamepadActivated.checked
                 }
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
         }
@@ -386,11 +400,10 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             callerid.keypressed = true;
@@ -402,6 +415,80 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+        visible: launchedAsDialogBox
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Back") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 }

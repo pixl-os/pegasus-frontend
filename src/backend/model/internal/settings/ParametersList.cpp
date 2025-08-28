@@ -1383,13 +1383,17 @@ std::vector<model::ParameterEntry> find_available_parameterslist(const QString& 
     //Log::debug(LOGMSG("Call of std::vector<model::ParameterEntry> find_available_parameterslist(const QString& Parameter)"));
     QStringList ListOfValue;
 
+    //remove "override." term in case of {rom}.recalbox.conf
+    QString ParameterWithoutOverride = Parameter;
+    ParameterWithoutOverride.replace(QString("override."), QString(""));
+
     if ((SysCommand != "") && (SysCommand != NULL))
     {
-        ListOfValue = GetParametersListFromSystem(Parameter, SysCommand, SysOptions);
+        ListOfValue = GetParametersListFromSystem(ParameterWithoutOverride, SysCommand, SysOptions);
     }
     else
     {
-        ListOfValue = GetParametersList(Parameter);
+        ListOfValue = GetParametersList(ParameterWithoutOverride);
     }
 
     std::vector<model::ParameterEntry> parameterslist;
@@ -1569,9 +1573,6 @@ void ParametersList::save_selected_parameter()
         int exitcode = system(qPrintable(QStringLiteral("setxkbmap %1").arg(value.name)));
     }
 }
-
-
-
 
 void ParametersList::check_preferred_parameter(const QString& Parameter)
 {

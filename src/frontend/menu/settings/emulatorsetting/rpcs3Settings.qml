@@ -16,11 +16,22 @@ FocusScope {
 
     width: parent.width
     height: parent.height
-
-    anchors.fill: parent
+    
+//    anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
+
+    property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? "override.rpcs3" : "rpcs3"
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader: game ? game.title +  " > Rpcs3" :
+        (system ? system.name + " > Rpcs3" :
+         qsTr("Advanced emulators settings > Rpcs3") + api.tr)
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -39,7 +50,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Rpcs3") + api.tr
+        text: titleHeader
         z: 2
     }
     Flickable {
@@ -52,6 +63,8 @@ FocusScope {
 
         contentWidth: content.width
         contentHeight: content.height
+
+        clip: launchedAsDialogBox
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds
@@ -77,14 +90,13 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
@@ -96,7 +108,7 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "rpcs3.resolution"
+                    property string parameterName : prefix + ".resolution"
 
                     label: qsTr("Resolution Scale") + api.tr
                     note: qsTr("Scale the game's resolution by the given percentage. \nThe base resolution is always 1280x720. \nValue below 100% wiil usually not improve performance.") + api.tr
@@ -144,9 +156,9 @@ FocusScope {
                     label: qsTr("VSync") + api.tr
                     note: qsTr("By having this off you might obtain a higher framerate at \nthe cost of tearing artifacts in the game.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("rpcs3.vsync")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".vsync")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("rpcs3.vsync",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".vsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optScanline
@@ -155,7 +167,7 @@ FocusScope {
                     id: optScanline
 
                     //property to manage parameter name
-                    property string parameterName : "rpcs3.scanline"
+                    property string parameterName : prefix + ".scanline"
 
                     label: qsTr("Output Scanling") + api.tr
                     note: qsTr("Nearest applies no filtering, bilinear smooths the image, \nand fidelity super resolution enhances upscaled images.") + api.tr
@@ -198,7 +210,7 @@ FocusScope {
                     id: optFidelityFx
 
                     //property to manage parameter name
-                    property string parameterName : "rpcs3.fidelityfx"
+                    property string parameterName : prefix + ".fidelityfx"
 
                     //property of SliderOption to set
                     label: qsTr("Set Fidelity FX level") + api.tr
@@ -237,9 +249,9 @@ FocusScope {
                     label: qsTr("Network Status") + api.tr
                     note: qsTr("If set to Connected, RPCS3 will alow programs to use internet connection.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("rpcs3.network")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".network")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("rpcs3.network",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".network",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optUpnp
@@ -250,9 +262,9 @@ FocusScope {
                     label: qsTr("Enable UPNP protocol") + api.tr
                     note: qsTr("This will automactically forward ports bound on 0.0.0.0 if your router has UPNP enabled.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("rpcs3.upnp")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".upnp")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("rpcs3.upnp",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".upnp",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: optNetworkStatut.checked
@@ -264,9 +276,9 @@ FocusScope {
                     label: qsTr("PSN Status") + api.tr
                     note: qsTr("If set enable RPCS3 will use the RPCN server as PSN connection if the game is supported.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("rpcs3.rpcn")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".rpcn")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("rpcs3.rpcn",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".rpcn",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: optNetworkStatut.checked
@@ -284,10 +296,10 @@ FocusScope {
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: TextInput.AlignRight
                         placeholderText: qsTr("Username") + api.tr
-                        text: api.internal.recalbox.getStringParameter("rpcs3.rpcn.username")
+                        text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.username")
                         echoMode: TextInput.Normal
                         inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter("rpcs3.rpcn.username", rpcnUsername.text)
+                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.username", rpcnUsername.text)
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRpcs3RpcnPassword
@@ -304,11 +316,11 @@ FocusScope {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         placeholderText: qsTr("Password") + api.tr
-                        text: api.internal.recalbox.getStringParameter("rpcs3.rpcn.password")
+                        text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.password")
                         horizontalAlignment: TextInput.AlignRight
                         echoMode: TextInput.PasswordEchoOnEdit
                         inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter("rpcs3.rpcn.password", rpcnPassword.text)
+                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.password", rpcnPassword.text)
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRpcs3RpcnToken
@@ -326,10 +338,10 @@ FocusScope {
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: TextInput.AlignRight
                         placeholderText: qsTr("Token") + api.tr
-                        text: api.internal.recalbox.getStringParameter("rpcs3.rpcn.token")
+                        text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.token")
                         echoMode: TextInput.PasswordEchoOnEdit
                         inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter("rpcs3.rpcn.token", rpcnToken.text)
+                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.token", rpcnToken.text)
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRpcs3Theme
@@ -343,7 +355,7 @@ FocusScope {
                 MultivalueOption {
                     id: optRpcs3Theme
                     //property to manage parameter name
-                    property string parameterName : "rpcs3.theme"
+                    property string parameterName : prefix + ".theme"
 
                     label: qsTr("GUI Theme") + api.tr
                     note: qsTr("Changes the overall look of RPCS3") + api.tr
@@ -383,7 +395,7 @@ FocusScope {
                 }
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
         }
@@ -396,11 +408,10 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             callerid.keypressed = true;
@@ -412,6 +423,80 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+        visible: launchedAsDialogBox
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Back") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 }

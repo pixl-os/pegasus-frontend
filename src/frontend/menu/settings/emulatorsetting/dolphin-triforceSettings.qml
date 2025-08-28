@@ -17,10 +17,23 @@ FocusScope {
     width: parent.width
     height: parent.height
     
-    anchors.fill: parent
+//    anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
+
+    property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? "override.dolphin-triforce" : "dolphin-triforce"
+
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader : game ? game.title +  " > Dolphin Triforce" :
+                                  (system ? system.name + " > Dolphin Triforce" :
+                                   qsTr("Advanced emulators settings > Dolphin Triforce") + api.tr)
+
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -39,7 +52,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Dolphin Triforce") + api.tr
+        text: titleHeader
         z: 2
     }
     Flickable {
@@ -52,6 +65,8 @@ FocusScope {
 
         contentWidth: content.width
         contentHeight: content.height
+
+        clip: launchedAsDialogBox
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds
@@ -77,7 +92,7 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
@@ -95,7 +110,7 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "dolphin-triforce.resolution"
+                    property string parameterName : prefix + ".resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
                     note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
@@ -143,9 +158,9 @@ FocusScope {
                     label: qsTr("Enable Vsync") + api.tr
                     note: qsTr("Enable Vsync for best rendering, but improve performance.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("dolphin-triforce.vsync")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".vsync")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("dolphin-triforce.vsync",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".vsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWideScreenHack
@@ -156,9 +171,9 @@ FocusScope {
                     label: qsTr("Enable Widescreen Hack") + api.tr
                     note: qsTr("Force screen ratio to 16/9.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("dolphin-triforce.widescreenhack")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".widescreenhack")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("dolphin-triforce.widescreenhack",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".widescreenhack",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAntiAliasing
@@ -167,7 +182,7 @@ FocusScope {
                     id: optAntiAliasing
 
                     //property to manage parameter name
-                    property string parameterName : "dolphin-triforce.antialiasing"
+                    property string parameterName : prefix + ".antialiasing"
 
                     label: qsTr("Anti-Aliasing") + api.tr
                     note: qsTr("Reduce the amount of aliasing caused by rasterizing 3d graphics.") + api.tr
@@ -223,11 +238,10 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             callerid.keypressed = true;
@@ -239,6 +253,80 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+        visible: launchedAsDialogBox
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Back") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 }

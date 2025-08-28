@@ -15,10 +15,29 @@ FocusScope {
     signal close
 
     // for any emulator menu
+    function openWithEmulator(url, emulator) {
+        if(root.launchedAsDialogBox){
+            modal.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox});
+            modal.focus = true;
+            root.state = "modal";
+        }
+        else{
+            subscreen.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox});
+            subscreen.focus = true;
+            root.state = "sub";
+        }
+    }
+
     function openScreenWithEmulator(url, emulator) {
-        subscreen.setSource(url, {"emulator": emulator});
+        subscreen.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox});
         subscreen.focus = true;
         root.state = "sub";
+    }
+
+    function openModalWithEmulator(url, emulator) {
+        modal.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox});
+        modal.focus = true;
+        root.state = "modal";
     }
 
     function openScreen(url) {
@@ -36,14 +55,20 @@ FocusScope {
     enabled: focus
     visible: 0 < (x + width) && x < Window.window.width
 
+    property var game
+    property var system
+    property bool launchedAsDialogBox: false
+
     TeknoParrotMain {
         id: main
         focus: true
         anchors.right: parent.right
-
+        launchedAsDialogBox: root.launchedAsDialogBox
+        game: root.game
+        system: root.system
         onClose: root.close()
-        onOpenWineConfiguration: root.openScreenWithEmulator("../WineConfiguration.qml", "teknoparrot")
-        onOpenProtonConfiguration: root.openScreenWithEmulator("../ProtonConfiguration.qml", "teknoparrot")
+        onOpenWineConfiguration: root.openWithEmulator("../WineConfiguration.qml", "teknoparrot")
+        onOpenProtonConfiguration: root.openWithEmulator("../ProtonConfiguration.qml", "teknoparrot")
     }
     Loader {
         id: modal

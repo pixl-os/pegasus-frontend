@@ -17,10 +17,21 @@ FocusScope {
     width: parent.width
     height: parent.height
     
-    anchors.fill: parent
+//    anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
+
+    property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? "override.yuzu" : "yuzu"
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader: game ? game.title +  " > Yuzu" :
+        (system ? system.name + " > Yuzu" :
+         qsTr("Advanced emulators settings > Yuzu") + api.tr)
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -39,7 +50,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > Yuzu") + api.tr
+        text: titleHeader
         z: 2
     }
     Flickable {
@@ -52,6 +63,8 @@ FocusScope {
 
         contentWidth: content.width
         contentHeight: content.height
+
+        clip: launchedAsDialogBox
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds
@@ -77,7 +90,7 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
@@ -95,7 +108,7 @@ FocusScope {
                     focus: true
 
                     //property to manage parameter name
-                    property string parameterName : "yuzu.resolution"
+                    property string parameterName : prefix + ".resolution"
 
                     label: qsTr("Internal Resolution") + api.tr
                     note: qsTr("Controls the rendering resolution. \nA high resolution greatly improves visual quality, \nBut cause issues in certain games.") + api.tr
@@ -140,7 +153,7 @@ FocusScope {
                 MultivalueOption {
                     id: optScalingFilter
                     //property to manage parameter name
-                    property string parameterName : "yuzu.scaling.filter"
+                    property string parameterName : prefix + ".scaling.filter"
 
                     label: qsTr("Scaling Filter") + api.tr
                     note: qsTr("Set your scaling filter resolution.") + api.tr
@@ -185,7 +198,7 @@ FocusScope {
                 SliderOption {
                     id: optFsrSharpening
                     //property to manage parameter name
-                    property string parameterName : "yuzu.fsr.sharpening"
+                    property string parameterName : prefix + ".fsr.sharpening"
 
                     //property of SliderOption to set
                     label: qsTr("Fsr Sharpening") + api.tr
@@ -214,7 +227,7 @@ FocusScope {
                 MultivalueOption {
                     id: optVsync
                     //property to manage parameter name
-                    property string parameterName : "yuzu.vsync"
+                    property string parameterName : prefix + ".vsync"
 
                     label: qsTr("Vsync") + api.tr
                     note: qsTr("Choose your vertical sync type.") + api.tr
@@ -267,8 +280,8 @@ FocusScope {
                     label: qsTr("Enable Async shaders") + api.tr
                     note: qsTr("Async shaders and pipeline compilation, \nReduce stutter at the cost of objects.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("yuzu.async.shader")
-                    onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.async.shader",checked);
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".async.shader")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter(prefix + ".async.shader",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optExtendedMemory
                 }
@@ -278,8 +291,8 @@ FocusScope {
                     label: qsTr("Extended memory") + api.tr
                     note: qsTr("Unsafe extended memory layout (8GB DRAM). \nDisabled on default.") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("yuzu.extended.memory")
-                    onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.extended.memory",checked);
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".extended.memory")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter(prefix + ".extended.memory",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDockedMode
                 }
@@ -289,13 +302,13 @@ FocusScope {
                     label: qsTr("Docked Mode") + api.tr
                     note: qsTr("Increases resolution, decreasing performance. \nHandheld Mode is used when disabled") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("yuzu.docked.mode")
-                    onCheckedChanged: api.internal.recalbox.setBoolParameter("yuzu.docked.mode",checked);
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".docked.mode")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter(prefix + ".docked.mode",checked);
                     onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
         }
@@ -308,11 +321,10 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             callerid.keypressed = true;
@@ -324,6 +336,80 @@ FocusScope {
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+        visible: launchedAsDialogBox
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Back") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 }
