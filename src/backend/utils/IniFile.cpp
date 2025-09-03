@@ -154,13 +154,18 @@ bool IniFile::Save()
 
   // Save new
   bool boot = mFilePath.StartWidth("/boot/");
+  bool init = mFilePath.StartWidth("/recalbox/share_init/");
+
   if (boot)
     if (system("mount -o remount,rw /boot") != 0) LOG(LogError) <<"[IniFile] Error remounting boot partition (RW)";
+  if (init)
+      if (system("mount -o remount,rw /") != 0) LOG(LogError) <<"[IniFile] Error remounting root partition (RW)";
   Files::SaveFile(mFilePath, Strings::Join(lines, '\n'));
   Log::info(LOGMSG("%1 saved.").arg(QString::fromStdString(mFilePath.ToString())));
   if (boot)
     if (system("mount -o remount,ro /boot") != 0) LOG(LogError) << "[IniFile] Error remounting boot partition (RW)";
-
+  if (init)
+      if (system("mount -o remount,ro /") != 0) LOG(LogError) << "[IniFile] Error remounting root partition (RW)";
   OnSave();
   return true;
 }
