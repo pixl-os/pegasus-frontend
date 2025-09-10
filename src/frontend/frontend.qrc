@@ -402,5 +402,6 @@
         <file>assets/x_buttons_panel.png</file>
         <file>assets/6_buttons_panel_bis.png</file>
         <file>menu/settings/SystemsEmulatorConfigurationMain.qml</file>
+        <file>menu/settings/common/RainbowSliderOption.qml</file>
     </qresource>
 </RCC>
