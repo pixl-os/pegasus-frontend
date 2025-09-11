@@ -484,9 +484,198 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optArcadeStick
+                    KeyNavigation.down: optPs4Controllers
                     visible: optPs3Controllers.checked && optBluetoothControllers.checked
                 }
+                ToggleOption {
+                    id: optPs4Controllers
+                    SectionTitle {
+                        text: qsTr("Sony Dualshock 4 controllers") + api.tr
+                        first: true
+                        visible: optBluetoothControllers.checked
+                    }
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.ds4.management")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("controllers.ds4.management",checked);
+                    }
+                    symbol: "\uf245"
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optP1DS4Controller
+                }
+                RainbowSliderOption {
+                    id: optP1DS4Controller
+
+                    //property to manage parameter name
+                    property string padindex : "0"
+                    property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
+
+                    visible: optPs4Controllers.checked
+                    //property of SliderOption to set
+                    label: qsTr("RGB color (player " + padindex + ")") + api.tr
+                    note: qsTr("to set color of Dualshock 4 led") + api.tr
+
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterNameIndex,33)
+                    // in text object
+                    value: sliderRBGstring
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optP2DS4Controller
+                }
+                RainbowSliderOption {
+                    id: optP2DS4Controller
+
+                    //property to manage parameter name
+                    property string padindex : "1"
+                    property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
+
+                    visible: optPs4Controllers.checked
+                    //property of SliderOption to set
+                    label: qsTr("RGB color (player " + padindex + ")") + api.tr
+                    note: qsTr("to set color of Dualshock 4 led") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterNameIndex,99)
+                    // in text object
+                    value: sliderRBGstring
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optP3DS4Controller
+                }
+                RainbowSliderOption {
+                    id: optP3DS4Controller
+
+                    //property to manage parameter name
+                    property string padindex : "2"
+                    property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
+
+                    visible: optPs4Controllers.checked
+                    //property of SliderOption to set
+                    label: qsTr("RGB color (player " + padindex + ")") + api.tr
+                    note: qsTr("to set color of Dualshock 4 led") + api.tr
+
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterNameIndex,67)
+                    // in text object
+                    value: sliderRBGstring
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optP4DS4Controller
+                }
+                RainbowSliderOption {
+                    id: optP4DS4Controller
+
+                    //property to manage parameter name
+                    property string padindex : "3"
+                    property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
+
+                    visible: optPs4Controllers.checked
+                    //property of SliderOption to set
+                    label: qsTr("RGB color (player " + padindex + ")") + api.tr
+                    note: qsTr("to set color of Dualshock 4 led") + api.tr
+
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterNameIndex,18)
+                    // in text object
+                    value: sliderRBGstring
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optArcadeStick
+                }
+
+
 
 //                ToggleOption {
 //                    id: optDB9Controllers
