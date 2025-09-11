@@ -254,13 +254,23 @@ FocusScope {
                             //Activation/Desactivation "move Mode" to change order of controllers connected
                             if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                                 event.accepted = true;
-                                if(controllersList.count > 1) controllersList.moveMode = !controllersList.moveMode;
+                                if(controllersList.count > 1){
+                                    if(controllersList.moveMode){
+                                        //to update color of DS4 controllers if order changed
+                                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 refresh")
+                                    }
+                                    controllersList.moveMode = !controllersList.moveMode;
+                                }
                                 //console.log("controllersList.moveMode : ", controllersList.moveMode);
                             }
                             //Desactivation of "move Mode" to change order of controllers connected
                             if (api.keys.isCancel(event) && !event.isAutoRepeat) {
-                                if(controllersList.moveMode) event.accepted = true;
-                                controllersList.moveMode = false;
+                                if(controllersList.moveMode){
+                                    event.accepted = true;
+                                    controllersList.moveMode = false;
+                                    //to update color of DS4 controllers if order changed
+                                    api.internal.system.runAsync("sh /etc/init.d/S99ds4 refresh")
+                                }
                                 //console.log("controllersList.moveMode : ", controllersList.moveMode);
                             }
                             //Launch gamepadeditor from selected gamepad from the controllersList

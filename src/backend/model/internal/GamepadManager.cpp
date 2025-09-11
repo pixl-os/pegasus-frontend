@@ -167,7 +167,10 @@ void GamepadManager::swap(int device_id1, int device_id2)
 
     RecalboxConf::Instance().SetPadPegasus(device_id1,device2PadPegasus.toUtf8().constData());
 	RecalboxConf::Instance().SetPadPegasus(device_id2,device1PadPegasus.toUtf8().constData());
-	
+
+    //save in file immediately for test/follow-up purpose
+    RecalboxConf::Instance().Save();
+
     //swap now in model::gamepad also
     try{
 		QString name1;
