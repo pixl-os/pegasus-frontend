@@ -508,12 +508,13 @@ FocusScope {
 
                     //property to manage parameter name
                     property string padindex : "0"
+                    property string playerindex : "1"
                     property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
                     property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
 
                     visible: optPs4Controllers.checked
                     //property of SliderOption to set
-                    label: qsTr("RGB color (player " + padindex + ")") + api.tr
+                    label: qsTr("RGB color (player " + playerindex + ")") + api.tr
                     note: qsTr("to set color of Dualshock 4 led") + api.tr
 
                     // in slider object
@@ -551,12 +552,13 @@ FocusScope {
 
                     //property to manage parameter name
                     property string padindex : "1"
+                    property string playerindex : "2"
                     property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
                     property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
 
                     visible: optPs4Controllers.checked
                     //property of SliderOption to set
-                    label: qsTr("RGB color (player " + padindex + ")") + api.tr
+                    label: qsTr("RGB color (player " + playerindex + ")") + api.tr
                     note: qsTr("to set color of Dualshock 4 led") + api.tr
                     // in slider object
                     max : 100
@@ -593,12 +595,13 @@ FocusScope {
 
                     //property to manage parameter name
                     property string padindex : "2"
+                    property string playerindex : "3"
                     property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
                     property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
 
                     visible: optPs4Controllers.checked
                     //property of SliderOption to set
-                    label: qsTr("RGB color (player " + padindex + ")") + api.tr
+                    label: qsTr("RGB color (player " + playerindex + ")") + api.tr
                     note: qsTr("to set color of Dualshock 4 led") + api.tr
 
                     // in slider object
@@ -636,12 +639,13 @@ FocusScope {
 
                     //property to manage parameter name
                     property string padindex : "3"
+                    property string playerindex : "4"
                     property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
                     property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
 
                     visible: optPs4Controllers.checked
                     //property of SliderOption to set
-                    label: qsTr("RGB color (player " + padindex + ")") + api.tr
+                    label: qsTr("RGB color (player " + playerindex + ")") + api.tr
                     note: qsTr("to set color of Dualshock 4 led") + api.tr
 
                     // in slider object
