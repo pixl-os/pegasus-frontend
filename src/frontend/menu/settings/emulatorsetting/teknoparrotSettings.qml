@@ -3,7 +3,6 @@
 // Created by BozoTheGeek - 26/05/2025
 //
 
-//import "emulatorsetting"
 import "qrc:/qmlutils" as PegasusUtils
 import QtQuick 2.12
 import QtQuick.Window 2.12
@@ -17,14 +16,10 @@ FocusScope {
     // for any emulator menu
     function openWithEmulator(url, emulator) {
         if(root.launchedAsDialogBox){
-            modal.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox});
-            modal.focus = true;
-            root.state = "modal";
+	    openModalWithEmulator(url, emulator)
         }
         else{
-            subscreen.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox});
-            subscreen.focus = true;
-            root.state = "sub";
+	    openScreenWithEmulator(url, emulator)
         }
     }
 
@@ -35,20 +30,25 @@ FocusScope {
     }
 
     function openModalWithEmulator(url, emulator) {
-        modal.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox});
-        modal.focus = true;
-        root.state = "modal";
-    }
+        console.log("openModal - url : ", url);
+        console.log("openModal - root.launchedAsDialogBox : ", root.launchedAsDialogBox);
+        if(root.game) console.log("openModal - root.game.title : ", root.game.title);
+        if(root.system) console.log("openModal - root.system.name : ", root.system.name);
 
-    function openScreen(url) {
-        subscreen.source = url;
-        subscreen.focus = true;
-        root.state = "sub";
-    }
-    function openModal(url) {
-        modal.source = url;
-        modal.focus = true;
-        root.state = "modal";
+        if (root.launchedAsDialogBox) modal.fullscreen = false;
+        if(root.game){
+        modal.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox,
+                                     "game": root.game});
+        }
+        else if(root.system){
+        modal.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox,
+                                     "system": root.system});
+        }
+        else{
+            modal.setSource(url, {"emulator": emulator, "launchedAsDialogBox": root.launchedAsDialogBox});
+        }
+	modal.focus = true;
+	root.state = "modal";
     }
 
     anchors.fill: parent
@@ -61,11 +61,14 @@ FocusScope {
 
     TeknoParrotMain {
         id: main
+
         focus: true
         anchors.right: parent.right
-        launchedAsDialogBox: root.launchedAsDialogBox
+
         game: root.game
         system: root.system
+        launchedAsDialogBox: root.launchedAsDialogBox
+
         onClose: root.close()
         onOpenWineConfiguration: root.openWithEmulator("../WineConfiguration.qml", "teknoparrot")
         onOpenProtonConfiguration: root.openWithEmulator("../ProtonConfiguration.qml", "teknoparrot")
@@ -73,9 +76,20 @@ FocusScope {
     Loader {
         id: modal
         asynchronous: true
+        opacity: focus ? 1 : 0
+        property bool fullscreen: true
+        property real screenratio: fullscreen ? 1.0 : 0.8
+        width: appWindow.width * screenratio
+        height: appWindow.height * screenratio
 
-        anchors.fill: parent
+        anchors.centerIn: parent
 
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.main
+            z: -1
+        }
+        visible: focus
         enabled: focus
         onLoaded: item.focus = focus
         onFocusChanged: if (item) item.focus = focus

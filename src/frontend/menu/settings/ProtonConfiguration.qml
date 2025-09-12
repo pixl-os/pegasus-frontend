@@ -17,13 +17,22 @@ FocusScope {
     width: parent.width
     height: parent.height
     
-    anchors.fill: parent
+    //anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
 
     property string emulator;
     property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? ("override." + emulator) : emulator
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader: game ? game.title +  " > " + qsTr("Proton configuration") + api.tr :
+        (system ? system.name + " > " + qsTr("Proton configuration") + api.tr :
+         emulator + " > " + qsTr("Proton configuration") + api.tr)
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -42,7 +51,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: emulator + " > " + qsTr("Proton configuration") + api.tr
+        text: titleHeader
         z: 2
     }
     Flickable {
@@ -69,7 +78,6 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
-
         FocusScope {
             id: content
 
@@ -83,7 +91,7 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
@@ -137,7 +145,7 @@ FocusScope {
                     id: optProtonEngine
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".proton"
+                    property string parameterName : prefix + ".proton"
 
                     // set focus only on first item
                     focus: true
@@ -186,7 +194,7 @@ FocusScope {
                     id: optProtonArch
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".proton.winearch"
+                    property string parameterName : prefix + ".proton.winearch"
 
                     label: qsTr("Proton Wine architecture") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -235,7 +243,7 @@ FocusScope {
                     id: optWindowsVersion
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winver"
+                    property string parameterName : prefix + ".winver"
 
                     label: qsTr("Windows version") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -301,7 +309,7 @@ FocusScope {
                         confirmDialog.callerid = "btnCleanEmulatorBottles"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": emulator + " " + qsTr("Proton Bottles") + api.tr,
+                                                { "title": prefix + " " + qsTr("Proton Bottles") + api.tr,
                                                   "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
@@ -327,9 +335,9 @@ FocusScope {
                     label: qsTr("Proton Wine Software renderer") + api.tr
                     note: qsTr("Enable software renderer for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winesoftrenderer")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winesoftrenderer")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winesoftrenderer",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winesoftrenderer",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonRenderer
@@ -338,7 +346,7 @@ FocusScope {
                     id: optProtonRenderer
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".proton.winerenderer"
+                    property string parameterName : prefix + ".proton.winerenderer"
 
                     label: qsTr("Proton Wine renderer") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -388,7 +396,7 @@ FocusScope {
                     id: optProtonDxvkFramerate
                     visible: optProtonRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".proton.winedxvkframerate"
+                    property string parameterName : prefix + ".proton.winedxvkframerate"
 
                     label: qsTr("Proton Wine DXVK framerate") + api.tr
                     note: qsTr("DXVK Framerate (FPS Limit especially for vulkan/DXVK (DirectX 9 to 11))") + api.tr
@@ -444,7 +452,7 @@ FocusScope {
                     id: optProtonAudioDriver
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".proton.wineaudiodriver"
+                    property string parameterName : prefix + ".proton.wineaudiodriver"
 
                     label: qsTr("Proton Wine audio driver") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -494,9 +502,9 @@ FocusScope {
                     label: qsTr("Proton Wine Virtual Desktop") + api.tr
                     note: qsTr("Enable software launching in desktop for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winevirtualdesktop", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winevirtualdesktop", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winevirtualdesktop",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winevirtualdesktop",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonNVapi
@@ -512,9 +520,9 @@ FocusScope {
                     label: qsTr("Proton Wine NVAPI") + api.tr
                     note: qsTr("Enable NVIDIA api for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winenvapi", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winenvapi",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winenvapi",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenFSR
@@ -524,9 +532,9 @@ FocusScope {
                     label: qsTr("Proton Wine Fullscreen FSR") + api.tr
                     note: qsTr("Enables AMD FidelityFX Super Resolution (FSR).\n(globally for fullscreen games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winefullscreenfsr", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenfsr", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winefullscreenfsr",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenfsr",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenIntegerScaling
@@ -536,9 +544,9 @@ FocusScope {
                     label: qsTr("Proton Wine Fullscreen Integer Scaling") + api.tr
                     note: qsTr("Enables integer scaling for fullscreen games.\n(Useful for pixel-perfect scaling on high-DPI displays)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winefullscreenintegerscaling", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenintegerscaling", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winefullscreenintegerscaling",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenintegerscaling",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDisableFullScreenHack
@@ -548,9 +556,9 @@ FocusScope {
                     label: qsTr("Proton Wine Disable Fullscreen Hack") + api.tr
                     note: qsTr("Disables Wine's fullscreen hack.\n(which sometimes causes issues with certain games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winedisablefullscreenhack", true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winedisablefullscreenhack", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winedisablefullscreenhack",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winedisablefullscreenhack",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonESync
@@ -560,9 +568,9 @@ FocusScope {
                     label: qsTr("Proton Wine Esync") + api.tr
                     note: qsTr("Enables Esync (Eventfd Synchronization).\n(Can improve performance in multi-threaded games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.wineesync", true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.wineesync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".proton.wineesync",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".proton.wineesync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFSync
@@ -572,9 +580,9 @@ FocusScope {
                     label: qsTr("Proton Wine Fsync") + api.tr
                     note: qsTr("Enables Fsync (Futex Synchronization).\n(A newer, more performant alternative to Esync)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".proton.winefsync", true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefsync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".proton.winefsync",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDebug
@@ -589,7 +597,7 @@ FocusScope {
                     id: optProtonDebug
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".proton.winedebug"
+                    property string parameterName : prefix + ".proton.winedebug"
 
                     label: qsTr("Proton Wine Debug") + api.tr
                     note: qsTr("Especially for developer/beta testers to help analysis from debug logs") + api.tr
@@ -630,7 +638,7 @@ FocusScope {
                     id: optProtonHUD
                     visible: optProtonRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".proton.winehud"
+                    property string parameterName : prefix + ".proton.winehud"
 
                     label: qsTr("Proton Wine DXVK/VKD3D HUD") + api.tr
                     note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
@@ -701,7 +709,7 @@ FocusScope {
                         confirmDialog.callerid = "btnLaunchWineCfg"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": emulator + " " + qsTr("Winecfg") + api.tr,
+                                                { "title": prefix + " " + qsTr("Winecfg") + api.tr,
                                                   "message": qsTr("Are you sure to launch Winecfg ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
@@ -717,7 +725,7 @@ FocusScope {
 
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
         }
@@ -744,7 +752,7 @@ FocusScope {
                 //     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
                 //     var env = ""
                 //     var wine = ""
-                //     var prefixroot = api.internal.recalbox.getStringParameter(emulator + ".proton.wineprefixroot","/recalbox")
+                //     var prefixroot = api.internal.recalbox.getStringParameter(prefix + ".proton.wineprefixroot","/recalbox")
                 //     if(optProtonEngine.internalvalue !== ""){
                 //         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
                 //         wine = optProtonEngine.internalvalue
@@ -825,11 +833,10 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             /*console.log(callerid.label," onSelect count : ", callerid.count);
@@ -913,7 +920,7 @@ FocusScope {
 
         Text {
             id: labelB
-            text: qsTr("Exit") + api.tr
+            text: qsTr("Back") + api.tr
             verticalAlignment: Text.AlignTop
             visible: {
                 return true;

@@ -17,13 +17,22 @@ FocusScope {
     width: parent.width
     height: parent.height
     
-    anchors.fill: parent
+    //anchors.fill: parent
     visible: 0 < (x + width) && x < Window.window.width
 
     enabled: focus
 
     property string emulator;
     property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? ("override." + emulator) : emulator
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader: game ? game.title +  " > " + qsTr("Wine configuration") + api.tr :
+        (system ? system.name + " > " + qsTr("Wine configuration") + api.tr :
+         emulator + " > " + qsTr("Wine configuration") + api.tr)
 
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
@@ -42,7 +51,7 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: emulator + " > " + qsTr("Wine configuration") + api.tr
+        text: titleHeader
         z: 2
     }
     Flickable {
@@ -69,7 +78,6 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
-
         FocusScope {
             id: content
 
@@ -83,7 +91,7 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
@@ -137,7 +145,7 @@ FocusScope {
                     id: optWineEngine
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".wine"
+                    property string parameterName : prefix + ".wine"
 
                     // set focus only on first item
                     focus: true
@@ -186,7 +194,7 @@ FocusScope {
                     id: optWineAppImage
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".wineappimage"
+                    property string parameterName : prefix + ".wineappimage"
 
                     label: qsTr("Wine AppImage") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -233,7 +241,7 @@ FocusScope {
                     id: optWineArch
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winearch"
+                    property string parameterName : prefix + ".winearch"
 
                     label: qsTr("Wine architecture") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -280,7 +288,7 @@ FocusScope {
                     id: optWindowsVersion
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winver"
+                    property string parameterName : prefix + ".winver"
 
                     label: qsTr("Windows version") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -325,7 +333,7 @@ FocusScope {
                     id: optWineDllOverrides
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winedlloverrides"
+                    property string parameterName : prefix + ".winedlloverrides"
 
                     label: qsTr("DLL overrides") + api.tr
                     note: qsTr("Select DLL overrides to apply (all selected by default)") + api.tr
@@ -387,7 +395,7 @@ FocusScope {
                         confirmDialog.callerid = "btnCleanEmulatorBottles"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": emulator + " " + qsTr("Wine Bottles") + api.tr,
+                                                { "title": prefix + " " + qsTr("Wine Bottles") + api.tr,
                                                   "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
@@ -413,9 +421,9 @@ FocusScope {
                     label: qsTr("Wine Software renderer") + api.tr
                     note: qsTr("Enable software renderer for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winesoftrenderer")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winesoftrenderer")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winesoftrenderer",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".winesoftrenderer",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineRenderer
@@ -424,7 +432,7 @@ FocusScope {
                     id: optWineRenderer
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winerenderer"
+                    property string parameterName : prefix + ".winerenderer"
 
                     label: qsTr("Wine renderer") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -474,7 +482,7 @@ FocusScope {
                     id: optWineDxvkFramerate
                     visible: optWineRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winedxvkframerate"
+                    property string parameterName : prefix + ".winedxvkframerate"
 
                     label: qsTr("Wine DXVK framerate") + api.tr
                     note: qsTr("DXVK Framerate (FPS Limit especially for vulkan/DXVK (DirectX 9 to 11))") + api.tr
@@ -521,7 +529,7 @@ FocusScope {
                     id: optWineDxvkMethod
                     visible: optWineRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winedxvkmethod"
+                    property string parameterName : prefix + ".winedxvkmethod"
 
                     label: qsTr("Wine DXVK/VKD8D method") + api.tr
                     note: qsTr("this 'DLLs' installation methodoloy can impact game behaviors") + api.tr
@@ -574,7 +582,7 @@ FocusScope {
                     id: optWineAudioDriver
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".wineaudiodriver"
+                    property string parameterName : prefix + ".wineaudiodriver"
 
                     label: qsTr("Wine audio driver") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -622,9 +630,9 @@ FocusScope {
                     label: qsTr("Wine Virtual Desktop") + api.tr
                     note: qsTr("Enable software launching in desktop for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winevirtualdesktop", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winevirtualdesktop", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winevirtualdesktop",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".winevirtualdesktop",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineNVapi
@@ -640,9 +648,9 @@ FocusScope {
                     label: qsTr("Wine NVAPI") + api.tr
                     note: qsTr("Enable NVIDIA api for wine") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winenvapi", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winenvapi",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".winenvapi",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineFullScreenFSR
@@ -652,9 +660,9 @@ FocusScope {
                     label: qsTr("Wine Fullscreen FSR") + api.tr
                     note: qsTr("Enables AMD FidelityFX Super Resolution (FSR).\n(globally for fullscreen games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefullscreenfsr", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winefullscreenfsr", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winefullscreenfsr",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".winefullscreenfsr",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineFullScreenIntegerScaling
@@ -664,9 +672,9 @@ FocusScope {
                     label: qsTr("Wine Fullscreen Integer Scaling") + api.tr
                     note: qsTr("Enables integer scaling for fullscreen games.\n(Useful for pixel-perfect scaling on high-DPI displays)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefullscreenintegerscaling", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winefullscreenintegerscaling", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winefullscreenintegerscaling",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".winefullscreenintegerscaling",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineDisableFullScreenHack
@@ -676,9 +684,9 @@ FocusScope {
                     label: qsTr("Wine Disable Fullscreen Hack") + api.tr
                     note: qsTr("Disables Wine's fullscreen hack.\n(which sometimes causes issues with certain games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winedisablefullscreenhack", true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winedisablefullscreenhack", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winedisablefullscreenhack",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".winedisablefullscreenhack",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineESync
@@ -688,9 +696,9 @@ FocusScope {
                     label: qsTr("Wine Esync") + api.tr
                     note: qsTr("Enables Esync (Eventfd Synchronization).\n(Can improve performance in multi-threaded games)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".wineesync", true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wineesync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".wineesync",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".wineesync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineFSync
@@ -700,9 +708,9 @@ FocusScope {
                     label: qsTr("Wine Fsync") + api.tr
                     note: qsTr("Enables Fsync (Futex Synchronization).\n(A newer, more performant alternative to Esync)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(emulator + ".winefsync", true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winefsync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(emulator + ".winefsync",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".winefsync",checked);
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineDebug
@@ -717,7 +725,7 @@ FocusScope {
                     id: optWineDebug
 
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winedebug"
+                    property string parameterName : prefix + ".winedebug"
 
                     label: qsTr("Wine Debug") + api.tr
                     note: qsTr("Especially for developer/beta testers to help analysis from debug logs") + api.tr
@@ -759,7 +767,7 @@ FocusScope {
                     id: optWineHUD
                     visible: optWineRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
-                    property string parameterName : emulator + ".winehud"
+                    property string parameterName : prefix + ".winehud"
 
                     label: qsTr("Wine DXVK/VKD3D HUD") + api.tr
                     note: qsTr("Especially for vulkan/DXVK (DirectX 9 to 11) or VKD3D (Direct 12) features") + api.tr
@@ -828,7 +836,7 @@ FocusScope {
                         confirmDialog.callerid = "btnLaunchWineCfg"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": emulator + " " + qsTr("Winecfg") + api.tr,
+                                                { "title": prefix + " " + qsTr("Winecfg") + api.tr,
                                                   "message": qsTr("Are you sure to launch Winecfg ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
@@ -842,10 +850,9 @@ FocusScope {
                     //KeyNavigation.down: optWineRenderer
                 }
 
-
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
         }
@@ -872,7 +879,7 @@ FocusScope {
                     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
                     var env = ""
                     var wine = ""
-                    var prefixroot = api.internal.recalbox.getStringParameter(emulator + ".wineprefixroot","/recalbox")
+                    var prefixroot = api.internal.recalbox.getStringParameter(prefix + ".wineprefixroot","/recalbox")
                     if(optWineEngine.internalvalue !== ""){
                         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
                         wine = optWineEngine.internalvalue
@@ -953,11 +960,10 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
             /*console.log(callerid.label," onSelect count : ", callerid.count);
@@ -1041,7 +1047,7 @@ FocusScope {
 
         Text {
             id: labelB
-            text: qsTr("Exit") + api.tr
+            text: qsTr("Back") + api.tr
             verticalAlignment: Text.AlignTop
             visible: {
                 return true;
