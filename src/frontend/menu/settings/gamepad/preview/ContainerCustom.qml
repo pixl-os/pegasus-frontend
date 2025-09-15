@@ -4,6 +4,7 @@
 //
 
 import QtQuick 2.12
+import QtGraphicalEffects 1.15 // The version number may vary
 
 Item {
     id: padContainer
@@ -168,9 +169,13 @@ Item {
     property real contrast: 0.5
     property real brightness: 0.5
 
+    //to manage change of led colors
+    property string rgbLedColor: ""
+    property real rgbLedLuminosity:  3.0
+
     Image {
         id: padBase
-        width: parent.width
+        width: vpx(padBaseSourceSizeWidth * ratio) //parent.width
         height: vpx(padBaseSourceSizeHeight * ratio)
         anchors.centerIn: parent
 
@@ -180,6 +185,71 @@ Item {
             width: padBaseSourceSizeWidth
             height: padBaseSourceSizeHeight
         }
+        visible: rgbLedColor === "" ? true : false
+    }
+
+    ShaderEffect {
+        anchors.fill: padBase  // Fill the same area as the Image
+        visible: rgbLedColor !== "" ? true : false
+        // Bind the image as a texture source
+        property variant source: padBase
+        property string rgbString: rgbLedColor
+        property real red
+        property real green
+        property real blue
+        property real luminosity: rgbLedLuminosity
+        onRgbStringChanged: {
+            if(rgbString !== ""){
+                red = Number(rgbString.split(",")[0]) / 255.0;
+                green = Number(rgbString.split(",")[1]) / 255.0;
+                blue = Number(rgbString.split(",")[2]) / 255.0;
+            }
+        }
+
+        // GLSL fragment shader to "color" tinted
+        fragmentShader: "
+            uniform sampler2D source;
+            varying highp vec2 qt_TexCoord0;
+            // The QML properties are available as uniforms
+            uniform float red;
+            uniform float green;
+            uniform float blue;
+            uniform highp float luminosity; // Parameter to control brightness
+            // Create a vec3 from the uniform values
+            vec3 targetColor = vec3(red, green, blue);
+
+            void main() {
+                // 1. Get the original pixel color
+                lowp vec4 originalColor = texture2D(source, qt_TexCoord0);
+
+                //for testing: to do it only with color with more blue
+                if((originalColor.b > (originalColor.r * 2.0)) && (originalColor.b > (originalColor.g*2.0))){
+                    // 2. Calculate the luminance (brightness) of the original pixel
+                    // This gives us a single float from 0.0 (black) to 1.0 (white)
+                    highp float luminance = dot(originalColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+
+                    // 3. Create the new color by multiplying the base color by the luminance
+                    // Multiplying the base color's R, G, and B values by the luminance
+                    // effectively scales them down, making them darker for lower luminance values.
+                    vec3 tintedColor = targetColor * luminance;
+
+                    // 4. Apply the luminosity parameter
+                    // Multiply the tinted color by the luminosity value.
+                    // A value > 1.0 makes the image brighter, and < 1.0 makes it darker.
+                    vec3 finalColor = tintedColor * luminosity;
+
+                    // 5. To prevent the color values from exceeding 1.0, you can clamp them.
+                    // This avoids 'blowing out' the highlights and keeps the color within the valid range.
+                    finalColor = clamp(finalColor, 0.0, 1.0);
+
+                    // 6. Output the final, adjusted color
+                    gl_FragColor = vec4(finalColor, originalColor.a);
+
+                } else {
+                    gl_FragColor = originalColor;
+                }
+            }
+        "
     }
 
     PadTriggerCustom {
