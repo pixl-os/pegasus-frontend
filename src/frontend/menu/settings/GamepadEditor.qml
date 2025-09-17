@@ -1606,6 +1606,10 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
+                            //to manage change of led colors
+                            rgbLedColor: "0,0,255" //default value as blue
+                            rgbLedLuminosity:  3.0
+
             } //As Sony PS4 pad
 
             ListElement {   name: "ps5"; qml: "gamepad/preview/ContainerCustom.qml";
@@ -2459,6 +2463,12 @@ FocusScope {
                 //to set specific brightness/contrast for L/R Buttons, start/select/guide & DPADs independent buttons.
                 if((typeof(myControllerLayout.get(index).contrast) !== 'undefined') && (myControllerLayout.get(index).contrast !== 0)) root.padPreview.contrast = myControllerLayout.get(index).contrast;
                 if((typeof(myControllerLayout.get(index).brightness) !== 'undefined') && (myControllerLayout.get(index).brightness !== 0)) root.padPreview.brightness = myControllerLayout.get(index).brightness;
+
+                //to manage led color (if exists and accessible from pixL)
+                if(typeof(myControllerLayout.get(index).rgbLedColor) !== 'undefined'){
+                   root.padPreview.rgbLedColor = api.internal.recalbox.getStringParameter("controllers.ds4.color.index.pad" + gamepadList.currentIndex,"")
+                }
+                if((typeof(myControllerLayout.get(index).rgbLedLuminosity) !== 'undefined') && (myControllerLayout.get(index).rgbLedLuminosity !== 1.0)) root.padPreview.rgbLedLuminosity = myControllerLayout.get(index).rgbLedLuminosity;
 
                 //set name at the end to avoid error/warning to early ;-)
                 root.padPreview.name = myControllerLayout.get(index).name;
