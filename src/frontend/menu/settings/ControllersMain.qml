@@ -256,7 +256,7 @@ FocusScope {
                                 event.accepted = true;
                                 if(controllersList.count > 1){
                                     if(controllersList.moveMode){
-                                        //to update color of DS4 controllers if order changed
+                                        //to update color of controllers led if exist/order changed
                                         api.internal.system.runAsync("sh /etc/init.d/S99ds4 refresh")
                                     }
                                     controllersList.moveMode = !controllersList.moveMode;

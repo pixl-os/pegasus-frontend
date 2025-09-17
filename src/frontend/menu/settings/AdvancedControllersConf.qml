@@ -484,38 +484,38 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optPs4Controllers
+                    KeyNavigation.down: optControllersLed
                     visible: optPs3Controllers.checked && optBluetoothControllers.checked
                 }
                 ToggleOption {
-                    id: optPs4Controllers
+                    id: optControllersLed
                     SectionTitle {
-                        text: qsTr("Sony Dualshock 4 controllers") + api.tr
+                        text: qsTr("Controllers LED management") + api.tr
                         first: true
                         visible: optBluetoothControllers.checked
                     }
 
-                    checked: api.internal.recalbox.getBoolParameter("controllers.ds4.management")
+                    checked: api.internal.recalbox.getBoolParameter("controllers.led.management")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("controllers.ds4.management",checked);
+                        api.internal.recalbox.setBoolParameter("controllers.led.management",checked);
                     }
-                    symbol: "\uf245"
+                    symbol: "\uf2d2"
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optP1DS4Controller
+                    KeyNavigation.down: optP1ControllerLed
                 }
                 RainbowSliderOption {
-                    id: optP1DS4Controller
+                    id: optP1ControllerLed
 
                     //property to manage parameter name
                     property string padindex : "0"
                     property string playerindex : "1"
-                    property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
-                    property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
+                    property string parameterNameIndex  : "controllers.led.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.led.color.rgb.pad" + padindex
 
-                    visible: optPs4Controllers.checked
+                    visible: optControllersLed.checked
                     //property of SliderOption to set
                     label: qsTr("RGB color (player " + playerindex + ")") + api.tr
-                    note: qsTr("to set color of Dualshock 4 led") + api.tr
+                    note: qsTr("to set color of led (as Dualshock 4 one)") + api.tr
 
                     // in slider object
                     max : 100
@@ -545,21 +545,21 @@ FocusScope {
                     }
 
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optP2DS4Controller
+                    KeyNavigation.down: optP2ControllerLed
                 }
                 RainbowSliderOption {
-                    id: optP2DS4Controller
+                    id: optP2ControllerLed
 
                     //property to manage parameter name
                     property string padindex : "1"
                     property string playerindex : "2"
-                    property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
-                    property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
+                    property string parameterNameIndex  : "controllers.led.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.led.color.rgb.pad" + padindex
 
-                    visible: optPs4Controllers.checked
+                    visible: optControllersLed.checked
                     //property of SliderOption to set
                     label: qsTr("RGB color (player " + playerindex + ")") + api.tr
-                    note: qsTr("to set color of Dualshock 4 led") + api.tr
+                    note: qsTr("to set color of led (as Dualshock 4 one)") + api.tr
                     // in slider object
                     max : 100
                     min : 0
@@ -588,21 +588,21 @@ FocusScope {
                     }
 
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optP3DS4Controller
+                    KeyNavigation.down: optP3ControllerLed
                 }
                 RainbowSliderOption {
-                    id: optP3DS4Controller
+                    id: optP3ControllerLed
 
                     //property to manage parameter name
                     property string padindex : "2"
                     property string playerindex : "3"
-                    property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
-                    property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
+                    property string parameterNameIndex  : "controllers.led.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.led.color.rgb.pad" + padindex
 
-                    visible: optPs4Controllers.checked
+                    visible: optControllersLed.checked
                     //property of SliderOption to set
                     label: qsTr("RGB color (player " + playerindex + ")") + api.tr
-                    note: qsTr("to set color of Dualshock 4 led") + api.tr
+                    note: qsTr("to set color of led (as Dualshock 4 one)") + api.tr
 
                     // in slider object
                     max : 100
@@ -632,21 +632,21 @@ FocusScope {
                     }
 
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optP4DS4Controller
+                    KeyNavigation.down: optP4ControllerLed
                 }
                 RainbowSliderOption {
-                    id: optP4DS4Controller
+                    id: optP4ControllerLed
 
                     //property to manage parameter name
                     property string padindex : "3"
                     property string playerindex : "4"
-                    property string parameterNameIndex  : "controllers.ds4.color.index.pad" + padindex
-                    property string parameterNameString : "controllers.ds4.color.rgb.pad" + padindex
+                    property string parameterNameIndex  : "controllers.led.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.led.color.rgb.pad" + padindex
 
-                    visible: optPs4Controllers.checked
+                    visible: optControllersLed.checked
                     //property of SliderOption to set
                     label: qsTr("RGB color (player " + playerindex + ")") + api.tr
-                    note: qsTr("to set color of Dualshock 4 led") + api.tr
+                    note: qsTr("to set color of led (as Dualshock 4 one)") + api.tr
 
                     // in slider object
                     max : 100
@@ -664,6 +664,8 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
+                        //ONLY FOR DS4 Controllers for the moment
+                        //to update color of DS4 controllers when we change color value
                         api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
                     }
 
@@ -672,6 +674,8 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
+                        //ONLY FOR DS4 Controllers for the moment
+                        //to update color of DS4 controllers when we change color value
                         api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
                     }
 

@@ -2466,7 +2466,8 @@ FocusScope {
 
                 //to manage led color (if exists and accessible from pixL)
                 if(typeof(myControllerLayout.get(index).rgbLedColor) !== 'undefined'){
-                   root.padPreview.rgbLedColor = api.internal.recalbox.getStringParameter("controllers.ds4.color.index.pad" + gamepadList.currentIndex,"")
+                   root.padPreview.rgbLedColor = api.internal.recalbox.getStringParameter("controllers.led.color.rgb.pad" + gamepadList.currentIndex,"");
+                   //console.log("root.padPreview.rgbLedColor : ", root.padPreview.rgbLedColor);
                 }
                 if((typeof(myControllerLayout.get(index).rgbLedLuminosity) !== 'undefined') && (myControllerLayout.get(index).rgbLedLuminosity !== 1.0)) root.padPreview.rgbLedLuminosity = myControllerLayout.get(index).rgbLedLuminosity;
 
