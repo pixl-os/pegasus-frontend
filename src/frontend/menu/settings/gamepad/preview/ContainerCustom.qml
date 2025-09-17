@@ -4,7 +4,7 @@
 //
 
 import QtQuick 2.12
-import QtGraphicalEffects 1.15 // The version number may vary
+import QtGraphicalEffects 1.15
 
 Item {
     id: padContainer
@@ -169,18 +169,32 @@ Item {
     property real contrast: 0.5
     property real brightness: 0.5
 
-    //to manage change of led colors
+    //to manage change of led colors (default values)
     property string rgbLedColor: ""
-    property real rgbLedLuminosity:  3.0
+    property real rgbLedLuminosity:  1.0
 
     Image {
         id: padBase
-        width: vpx(padBaseSourceSizeWidth * ratio) //parent.width
+        width: vpx(padBaseSourceSizeWidth * ratio)
         height: vpx(padBaseSourceSizeHeight * ratio)
         anchors.centerIn: parent
 
         fillMode: Image.PreserveAspectFit
         source: name ? "qrc:/frontend/assets/gamepad/" + name + "/base_" + name + ".png" : ""
+        sourceSize {
+            width: padBaseSourceSizeWidth
+            height: padBaseSourceSizeHeight
+        }
+    }
+
+    Image {
+        id: padLed
+        width: vpx(padBaseSourceSizeWidth * ratio) //parent.width
+        height: vpx(padBaseSourceSizeHeight * ratio)
+        anchors.centerIn: parent
+
+        fillMode: Image.PreserveAspectFit
+        source: name ? "qrc:/frontend/assets/gamepad/" + name + "/led_" + name + ".png" : ""
         sourceSize {
             width: padBaseSourceSizeWidth
             height: padBaseSourceSizeHeight
@@ -192,7 +206,7 @@ Item {
         anchors.fill: padBase  // Fill the same area as the Image
         visible: rgbLedColor !== "" ? true : false
         // Bind the image as a texture source
-        property variant source: padBase
+        property variant source: padLed
         property string rgbString: rgbLedColor
         property real red
         property real green
