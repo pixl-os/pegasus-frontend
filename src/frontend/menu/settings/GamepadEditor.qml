@@ -2260,6 +2260,13 @@ FocusScope {
                 {
                     if (isKeywordFound(controllerName, "", keywords[j]) && (myDeviceIcons.get(i).type === type ) && (keywords[j] !== "")){
                         layoutName = myDeviceIcons.get(i).layout;
+                        const exclusions = myDeviceIcons.get(i).exclusions.split(",");
+                        for(var j2 = 0; j2 < exclusions.length; j2++)
+                        {
+                            if (isExclusionFound(controllerName, "", exclusions[j2])){
+                                layoutName = "";
+                            }
+                        }
                         for(var k = 0; k < myControllerLayout.count;k++)
                         {
                             if(myControllerLayout.get(k).name === layoutName){
@@ -2276,11 +2283,11 @@ FocusScope {
             }while ((layoutQml === "") && (layoutName !== "default") && (i < myDeviceIcons.count))
             if (layoutQml === ""){
                 //to get default one if empty
-                for(var l = 0; l < myControllerLayout.count;l++)
+                for(var l2 = 0; l2 < myControllerLayout.count;l2++)
                 {
-                    if(myControllerLayout.get(l).name === "default"){
-                        layoutQml = myControllerLayout.get(l).qml;
-                        return l;
+                    if(myControllerLayout.get(l2).name === "default"){
+                        layoutQml = myControllerLayout.get(l2).qml;
+                        return l2;
                     }
                 }
             }

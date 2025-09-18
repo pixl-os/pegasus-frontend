@@ -2266,70 +2266,81 @@ Window {
         id: myDeviceIcons //now include also layout definition
 
         //CONTROLLERS PART
-        ListElement { icon: "\uf2ef"; keywords: "x360,xbox360,xbox 360,x-box 360"; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
-        ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one,xbox wireless"; type:"controller"; iconfont: "awesome"; layout: "xboxone"} //as layout XBOX SERIES, need layout XBOX ONE
-        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"; iconfont: "awesome"; layout: "xboxseries"} //as XBOX one for the moment, need icon for series
-        ListElement { icon: "\uf2f0"; keywords: "xbox series 20 years"; type:"controller"; iconfont: "awesome"; layout: "xboxseries20years"} //as XBOX one for icon, need icon for series and layout defined in input.cfg so that it can be used only for this controller
-        ListElement { icon: "\uf2ee"; keywords: "xbox,microsoft"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment
+        ListElement { icon: "\uf2ef"; keywords: "x360,xbox360,xbox 360,x-box 360"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
+        ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one,xbox wireless"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xboxone"} //as layout XBOX SERIES, need layout XBOX ONE
+        ListElement { icon: "\uf2f0"; keywords: "xbox series"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xboxseries"} //as XBOX one for the moment, need icon for series
+        ListElement { icon: "\uf2f0"; keywords: "xbox series 20 years"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xboxseries20years"} //as XBOX one for icon, need icon for series and layout defined in input.cfg so that it can be used only for this controller
+        ListElement { icon: "\uf2ee"; keywords: "xbox,microsoft"; exclusions: ""; type:"controller"; iconfont: "awesome"} //as XBOX for the moment
 
-        ListElement { icon: "\uf0cf"; keywords: "ps5,playstation 5,dualsense"; type:"controller"; iconfont: "awesome"; layout: "ps5"} // add wireless controller as usual PS name used by Sony
-        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; type:"controller"; iconfont: "awesome"; layout: "ps4"} // add wireless controller as usual PS name used by Sony
-        ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cf"; keywords: "ps5,playstation 5,dualsense"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "ps5"} // add wireless controller as usual PS name used by Sony
+        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; exclusions: "8bitdo"; type:"controller"; iconfont: "awesome"; layout: "ps4"} // add wireless controller as usual PS name used by Sony
+        ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
-        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,md/gen,sega genesis"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,md/gen,sega genesis"; exclusions: ""; type:"controller"; iconfont: "awesome"}
         
         //8bitdo sfc30 and snes30 added to be considered as SNES controller
-        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo,sfc30,snes30"; type:"controller"; iconfont: "awesome"; layout: "snes"}
-        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
-        ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo,sfc30,snes30"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "snes"}
+        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; exclusions: ""; type:"controller" ; iconfont: "awesome"; layout: "nes"}
+        ListElement { icon: "\uf262"; keywords: "gc,gamecube"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
         //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
         //other hujia devices exists for NES, SNES, gamecube, Wii, but will be detected upper if needed.
-        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; type:"controller" ; iconfont: "awesome"; layout: "n64"}
-        ListElement { icon: "\uf263"; keywords: "wii remote,rvl-cnt-01-tr"; type:"controller"; iconfont: "awesome"} //layout deactivated because not finished finally, called "wiimote"
+        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; exclusions: ""; type:"controller" ; iconfont: "awesome"; layout: "n64"}
+        ListElement { icon: "\uf263"; keywords: "wii remote,rvl-cnt-01-tr"; exclusions: ""; type:"controller"; iconfont: "awesome"} //layout deactivated because not finished finally, called "wiimote"
         
         //need to keep only 'pro controller' in case of nintendo switch pro controller as it is the HID name (internal name)
         //in the future, we have other controller as "pro controller", the layout detection should be complexified
-        ListElement { icon: "\uf0ca"; keywords: "switch pro,pro controller"; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
-        ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0ca"; keywords: "switch pro,pro controller"; exclusions: ""; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
+        ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
         //27/02/2022 2 controllers added snakebyte idroid:con, 8bitdo sn30 pro+
-        ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+,sn30 pro plus"; type:"controller"; iconfont: "awesome"; layout: "sn30proplus"}
+        ListElement { icon: "\uf0cb"; keywords: "idroid"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+,sn30 pro plus"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "sn30proplus"}
         //27/02/2022 2 controllers added 8bitdo pro 2
-        ListElement { icon: "\uf0cc"; keywords: "8bitdo pro 2"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cc"; keywords: "8bitdo pro 2"; exclusions: ""; type:"controller"; iconfont: "awesome"}
         //07/10/2024 2 controllers added 8bitdo arcade stick, 8bitdo sf30/sn30 pro and google stadia
-        ListElement { icon: "\uf0d1"; keywords: "stadia"; type:"controller"; iconfont: "awesome"; layout: "stadia"}
-        ListElement { icon: "\uf0d2"; keywords: "8bitdo arcade stick,n30 Arcade Stick"; type:"controller"; iconfont: "awesome"; layout: "arcadestick"} //match only in bluetooth else detected as xbox :-(
-        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro"; type:"controller"; iconfont: "awesome"; layout: "sn30pro"}
+        ListElement { icon: "\uf0d1"; keywords: "stadia"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "stadia"}
+        ListElement { icon: "\uf0d2"; keywords: "8bitdo arcade stick,n30 Arcade Stick"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "arcadestick"} //match only in bluetooth else detected as xbox :-(
+        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "sn30pro"}
 
         //28/02/2022 to add wheels/cockpit devices
-        ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
         //28/02/2022 to add arcade panel device
         //2 codes exists "\uf0cd" & "\uf0ce", respectivelly fill and transparent version
-        ListElement { icon: "\uf0cd"; keywords: "dragonrise,xinmo,xin-mo,j-pac,jpac"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cd"; keywords: "dragonrise,xinmo,xin-mo,j-pac,jpac"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
         //27/12/2024 1 controller added amazon luna
-        ListElement { icon: "\uf2f0"; keywords: "amazon,luna"; type:"controller"; iconfont: "awesome"; layout: "luna"} //icon as XBOX one for the moment, need icon for luna
+        ListElement { icon: "\uf2f0"; keywords: "amazon,luna"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "luna"} //icon as XBOX one for the moment, need icon for luna
 
         //AUDIO PART
         //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
         //04/10/21: add 'plt focus'
         //06/10/21: add 'qcy50' and 'jbl go'
-        ListElement { icon: "\uf1e2"; keywords: "headset,plt focus,qcy50,jbl go"; type:"audio"; iconfont: "awesome"}
-        ListElement { icon: "\uf1e1"; keywords: "speaker"; type:"audio"; iconfont: "awesome"}
-        ListElement { icon: "\uf1b0"; keywords: ""; types:"audio"; iconfont: "awesome"} //as generic icon for audio
+        ListElement { icon: "\uf1e2"; keywords: "headset,plt focus,qcy50,jbl go"; exclusions: ""; type:"audio"; iconfont: "awesome"}
+        ListElement { icon: "\uf1e1"; keywords: "speaker"; exclusions: ""; type:"audio"; iconfont: "awesome"}
+        ListElement { icon: "\uf1b0"; keywords: ""; exclusions: ""; types:"audio"; iconfont: "awesome"} //as generic icon for audio
 
     }
     //little function to faciliate check of value in 2 name and service from a keyword
     function isKeywordFound(name,service,keyword){
         if(typeof(name) !== "undefined" && typeof(service) !== "undefined"){
             if(name.toLowerCase().includes(keyword)||service.toLowerCase().includes(keyword)){
+                return true;
+            }
+            else return false;
+        }
+        else return false
+    }
+
+    //little function to faciliate check of value in 2 name and service from a keyword
+    function isExclusionFound(name,service,exclusion){
+        if(typeof(name) !== "undefined" && typeof(service) !== "undefined"){
+            if(name.toLowerCase().includes(exclusion)||service.toLowerCase().includes(exclusion)){
                 return true;
             }
             else return false;
@@ -2388,10 +2399,15 @@ Window {
         //search the good type
         do{
             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
-            for(var j = 0; j < typeKeywords.length;j++)
+            for(var j = 0; j < typeKeywords.length; j++)
             {
-                if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
+                if (isKeywordFound(name, service, typeKeywords[j])){
+                    //console.log("myDeviceTypes.get(i).type : ", myDeviceTypes.get(i).type);
+                    //console.log("myDeviceTypes.get(i).keywords : ", myDeviceTypes.get(i).keywords);
+                    type = myDeviceTypes.get(i).type;
+                }
             }
+
             i = i + 1;
         }while (type === "" && i < myDeviceTypes.count)
         //console.log("getIcon 2 - name: " + name + " - type: " + type);
@@ -2409,6 +2425,13 @@ Window {
                 }
                 if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
                     icon = myDeviceIcons.get(i).icon;
+                    const iconExclusions = myDeviceIcons.get(i).exclusions.split(",");
+                    for(var k2 = 0; k2 < iconExclusions.length; k2++)
+                    {
+                        if (isExclusionFound(name, service, iconExclusions[k2])){
+                            icon = "";
+                        }
+                    }
                     if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
                     else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
                     else getIconFont = globalFonts.sans; //as default one for the moment
