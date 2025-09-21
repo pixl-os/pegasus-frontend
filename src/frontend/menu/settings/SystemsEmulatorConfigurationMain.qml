@@ -36,6 +36,39 @@ FocusScope {
     //to manage better title in screen ScreenHeader (if we want to change it during loading)
     property string titleHeader : game ? game.title : qsTr("Settings systems > ") + api.tr + system.name
 
+    //function to get icon from teknoparrot if nothing available from scrap
+    function teknoParrotIcon(gameData) {
+        if (gameData){
+            if(gameData.collections.get(0).getCoreAt(0) === "teknoparrot"){
+                var path = gameData.files.get(0).path;
+                var words = path.split('/')
+                //add management of "-" to manage several versions of the same game in the same system
+                //examples naming in this case:
+                //DO6.tp or DO6-1.tp or DO6-proto.tp or DO6-v25.1.tp
+                var romname = words[words.length-1].split('.')[0].split('-')[0];
+                //console.log("words[words.length-1].split('.')[0].split('-')[0] : " + words[words.length-1].split('.')[0].split('-')[0])
+                return "file:///usr/bin/teknoparrot/Icons/" + romname + ".png";
+            }
+        }
+        return ""
+    }
+
+    //function to elide text string from right
+    function elideStringFromRight(text, maxLength) {
+      if (text.length > maxLength) {
+        return text.substring(0, maxLength - 3) + '...';
+      }
+      return text;
+    }
+
+    //function to elide text string from left
+    function elideStringFromLeft(text, maxLength) {
+      if (text.length > maxLength) {
+        return '...' + text.substring(text.length - (maxLength - 3));
+      }
+      return text;
+    }
+
     onGameChanged: {
         if(typeof(game) !== "undefined"){
             var romfile = game.files.get(0).path;
@@ -113,35 +146,135 @@ FocusScope {
                     visible: game ? false : true
                 }
                 SectionTitle {
-                    text: qsTr("Game information") + api.tr
+                    text: qsTr("Information") + api.tr
                     visible: game ? true : false
                     first: false
                     symbol: "\uf17f"
                 }
+
                 SimpleButton {
-                    id: optRomOverrideFiles
+                    id: optGameInfo
                     visible: game ? true : false
+                    clip: false
+                    width: parent.width - ((height/9)*16)
+                    showUnderline: false
+                    wrapMode: Text.NoWrap
                     property string override_exists: "false"
-                    property string rom_size
-                    property string rom_file
-                    property string override_file
+                    property string override_file : ""
+                    property string padtokey_exists: "false"
+                    property string padtokey_file: ""
+                    property string keys_exists: "false"
+                    property string keys_file: ""
+                    property string rom_size : ""
+                    property string rom_file: game ? game.files.get(0).path : ""
+                    property var rom_file_split: game ? rom_file.split('/') : ""
+                    property string game_filename: (game && (rom_file !== "") && (typeof(rom_file) !== "undefined")) ? rom_file_split[rom_file_split.length-1] : ""
+                    property string extension: game && game_filename !== "" ? game_filename.split('.')[1] : ""
+                    property string game_fileextension: game && extension !== "" ? extension[extension.length-1] : ""
+                    //property string game_logo: game ? game.assets.logo : ""
+                    label: qsTr("File: ") + api.tr + elideStringFromLeft(rom_file,60)
+                    note:  qsTr("Size: ") + api.tr + rom_size + "\n"
+                            + qsTr("Override: ") + api.tr
+                            + (override_exists ? game_filename + ".recalbox.conf" : "" ) + "\n"
+                            + "PadToKey: "
+                            + (padtokey_exists ? game_filename + ".p2k.cfg" : "" ) + "\n"
+                            + "Evmapy: "
+                            + (keys_exists ? game_filename + ".p2k.keys" : "" ) + "\n"
                     Component.onCompleted: {
                         if(game){
-                            rom_file = game.files.get(0).path;
-                            var word = rom_file.split('/');
-                            var game_filename = word[word.length-1];
-                            var extension = game_filename.split('.');
-                            var game_fileextension = extension[extension.length-1];
-                            override_file = rom_file + ".recalbox.conf";
-                            override_exists = api.internal.system.run("test -f \"" + rom_file + ".recalbox.conf\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'");
-                            rom_size = api.internal.system.run("du -kh \"" + rom_file + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'")
-                            console.log("rom_size : " + rom_size)
-                            label = qsTr("file name : ") + api.tr + game_filename
-                            note =  qsTr("file size : ") + api.tr + rom_size + "\n"
-                                  + qsTr("override : ") + api.tr + override_file
+                            gameInfoTimer.start();
                         }
                     }
                     pointerIcon: false
+
+                    //timer to update game information
+                    Timer {
+                        id: gameInfoTimer
+                        interval: 100 // Run the timer 100 ms
+                        repeat: false
+                        running: false
+                        triggeredOnStart: false
+                        onTriggered: {
+                            optGameInfo.override_file = optGameInfo.rom_file + ".recalbox.conf";
+                            optGameInfo.override_exists = api.internal.system.run("test -f \"" + optGameInfo.rom_file + ".recalbox.conf\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'");
+                            optGameInfo.padtokey_file = optGameInfo.rom_file + ".p2k.cfg";
+                            optGameInfo.padtokey_exists = api.internal.system.run("test -f \"" + optGameInfo.rom_file + ".p2k.cfg\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'");
+                            optGameInfo.keys_file = optGameInfo.rom_file + ".keys";
+                            optGameInfo.keys_exists = api.internal.system.run("test -f \"" + optGameInfo.rom_file + ".keys\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'");
+                            optGameInfo.rom_size = "";
+                            //test if not directory to have size of the rom quickly
+                            //console.log("test -d \"" + optGameInfo.rom_file + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'");
+                            if(api.internal.system.run("test -d \"" + optGameInfo.rom_file + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") !== "true"){
+                                optGameInfo.rom_size = api.internal.system.run("du -sh \"" + optGameInfo.rom_file + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r'");
+                                optGameInfo.rom_size = optGameInfo.rom_size + qsTr("Bytes") + api.tr + " (" + qsTr("file") + api.tr + ")"
+                            }
+                            else{
+                                optGameInfo.rom_size = "";
+                                api.internal.system.run("rm \"/tmp/" + optGameInfo.game_filename + ".size\"");
+                                api.internal.system.runAsync("du -sh \"" + optGameInfo.rom_file + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optGameInfo.game_filename + ".size\"", "popen");
+                                directorySizeTimer.start()
+                            }
+                        }
+                    }
+
+                    //timer to update game information
+                    Timer {
+                        id: directorySizeTimer
+                        interval: 3000 // Run the timer 100 ms
+                        repeat: false
+                        running: false
+                        triggeredOnStart: false
+                        onTriggered: {
+                            optGameInfo.rom_size = api.internal.system.run("cat \"/tmp/" + optGameInfo.game_filename + ".size\"");
+                            optGameInfo.rom_size = optGameInfo.rom_size + qsTr("Bytes") + api.tr + " (" + qsTr("directory") + api.tr + ")";
+                        }
+                    }
+
+                    Rectangle {
+                        height: parent.height
+                        color: "transparent"
+                        width: (parent.height/9)*16
+
+                        anchors.left: parent.right
+                        anchors.leftMargin: vpx(50)
+                        visible: true
+                        Image {
+                            id: background
+                            asynchronous: true
+                            height: parent.height
+                            width: parent.width
+                            source: game ? game.assets.screenshot : ""
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
+                            visible: true
+                        }
+                        Image {
+                            id: logo
+                            asynchronous: true
+                            height: parent.height/2
+                            width: background.width
+                            source: game ? game.assets.logo : ""
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
+                            visible: true
+                        }
+                        Image {
+                            id: tplogo
+                            asynchronous: true
+                            height: ((game.assets.logo === "") && (game.assets.screenshot === "")) ? (parent.height/4)*3 : parent.height/2
+                            width: background.width
+                            source: game && (game.assets.logo === "") ? teknoParrotIcon(game) : ""
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
+                            visible: true
+                        }
+                    }
                 }
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
@@ -574,7 +707,7 @@ FocusScope {
                     Loader {
                         id: myLoader
                         // Attempt to load the file
-                        source: "emulatorsetting/" + emulator + "Settings.qml"
+                        source: typeof(emulator) !== "undefined" && emulator !== "" ? "emulatorsetting/" + emulator + "Settings.qml" : ""
                         onStatusChanged: {
                             if (status === Loader.Error) {
                                 console.log("Failed to load component !");
@@ -583,10 +716,10 @@ FocusScope {
                             }
                         }
                         onLoaded: {
-                            console.log("Content loaded!");
+                            //console.log("Content loaded!");
                             // You can access properties and functions of the loaded item
                             if (item) {
-                                console.log("Object acessibled!");
+                                //console.log("Object acessibled!");
                                 parent.visible = true;
                             }
                         }
