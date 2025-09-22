@@ -69,7 +69,11 @@ void System::runAsync(const QString& Command, const QString& Engine)
     //Log::debug(LOGMSG("System::runAsync_slot() put in Qt::QueuedConnection"));
     m_Command = Command;
     m_Engine = Engine;
-    QMetaObject::invokeMethod(this,"runAsync_slot", Qt::QueuedConnection);
+    if(m_Engine == "thread"){
+       m_shellThread = new ShellThread(m_Command, m_Engine);
+       m_shellThread->start();
+    }
+    else QMetaObject::invokeMethod(this,"runAsync_slot", Qt::QueuedConnection);
 }
 
 void System::runAsync_slot()

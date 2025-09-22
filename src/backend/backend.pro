@@ -40,6 +40,7 @@ SOURCES += \
     RootFolders.cpp \
     ScriptManager.cpp \
     RecalboxSystem.cpp \
+    ShellThread.cpp \
     UnzipThread.cpp
 
 HEADERS += \
@@ -64,6 +65,7 @@ HEADERS += \
     ScriptManager.h \
     KeyEmitter.h \
     RecalboxSystem.h \
+    ShellThread.h \
     UnzipThread.h
 
 include(imggen/imggen.pri)

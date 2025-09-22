@@ -25,6 +25,7 @@
 #include "model/gaming/Game.h"
 #include "model/gaming/GameFile.h"
 
+#include "ShellThread.h"
 
 namespace model {
 
@@ -89,6 +90,7 @@ private:
     QString  m_Engine;
     QString m_Result;
     bool m_bResult;
+    ShellThread* m_shellThread = nullptr;
 };
 
 } // namespace model

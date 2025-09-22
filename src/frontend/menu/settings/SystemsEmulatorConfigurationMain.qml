@@ -175,11 +175,11 @@ FocusScope {
                     label: qsTr("File: ") + api.tr + elideStringFromLeft(rom_file,60)
                     note:  qsTr("Size: ") + api.tr + rom_size + "\n"
                             + qsTr("Override: ") + api.tr
-                            + (override_exists ? game_filename + ".recalbox.conf" : "" ) + "\n"
+                            + (override_exists === "true" ? game_filename + ".recalbox.conf" : "" ) + "\n"
                             + "PadToKey: "
-                            + (padtokey_exists ? game_filename + ".p2k.cfg" : "" ) + "\n"
+                            + (padtokey_exists === "true" ? game_filename + ".p2k.cfg" : "" ) + "\n"
                             + "Evmapy: "
-                            + (keys_exists ? game_filename + ".p2k.keys" : "" ) + "\n"
+                            + (keys_exists === "true" ? game_filename + ".p2k.keys" : "" ) + "\n"
                     Component.onCompleted: {
                         if(game){
                             gameInfoTimer.start();
@@ -190,7 +190,7 @@ FocusScope {
                     //timer to update game information
                     Timer {
                         id: gameInfoTimer
-                        interval: 100 // Run the timer 100 ms
+                        interval: 600 // Run the timer after 600 ms
                         repeat: false
                         running: false
                         triggeredOnStart: false
@@ -209,10 +209,15 @@ FocusScope {
                                 optGameInfo.rom_size = optGameInfo.rom_size + qsTr("Bytes") + api.tr + " (" + qsTr("file") + api.tr + ")"
                             }
                             else{
-                                optGameInfo.rom_size = "";
-                                api.internal.system.run("rm \"/tmp/" + optGameInfo.game_filename + ".size\"");
-                                api.internal.system.runAsync("du -sh \"" + optGameInfo.rom_file + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optGameInfo.game_filename + ".size\"", "popen");
-                                directorySizeTimer.start()
+                                if(api.internal.system.run("test -f \"/tmp/" + optGameInfo.game_filename + ".size\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                                    optGameInfo.rom_size = api.internal.system.run("cat \"/tmp/" + optGameInfo.game_filename + ".size\"");
+                                    optGameInfo.rom_size = optGameInfo.rom_size + qsTr("Bytes") + api.tr + " (" + qsTr("directory") + api.tr + ")";
+                                }
+                                else{
+                                    optGameInfo.rom_size = "";
+                                    api.internal.system.runAsync("du -sh \"" + optGameInfo.rom_file + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optGameInfo.game_filename + ".size\"", "thread");
+                                    directorySizeTimer.start();
+                                }
                             }
                         }
                     }
@@ -220,13 +225,16 @@ FocusScope {
                     //timer to update game information
                     Timer {
                         id: directorySizeTimer
-                        interval: 3000 // Run the timer 100 ms
-                        repeat: false
+                        interval: 500 // Run the timer every 500 ms
+                        repeat: true
                         running: false
-                        triggeredOnStart: false
+                        triggeredOnStart: true
                         onTriggered: {
-                            optGameInfo.rom_size = api.internal.system.run("cat \"/tmp/" + optGameInfo.game_filename + ".size\"");
-                            optGameInfo.rom_size = optGameInfo.rom_size + qsTr("Bytes") + api.tr + " (" + qsTr("directory") + api.tr + ")";
+                            if(api.internal.system.run("test -f \"/tmp/" + optGameInfo.game_filename + ".size\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                                optGameInfo.rom_size = api.internal.system.run("cat \"/tmp/" + optGameInfo.game_filename + ".size\"");
+                                optGameInfo.rom_size = optGameInfo.rom_size + qsTr("Bytes") + api.tr + " (" + qsTr("directory") + api.tr + ")";
+                                running = false; //to stop the timer
+                            }
                         }
                     }
 
@@ -236,7 +244,7 @@ FocusScope {
                         width: (parent.height/9)*16
 
                         anchors.left: parent.right
-                        anchors.leftMargin: vpx(50)
+                        //anchors.leftMargin: vpx(50)
                         visible: true
                         Image {
                             id: background
