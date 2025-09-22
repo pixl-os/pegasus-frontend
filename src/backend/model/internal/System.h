@@ -42,7 +42,7 @@ public:
 
     Q_INVOKABLE QString run(const QString& Command);
 
-    Q_INVOKABLE void runAsync(const QString& Command);
+    Q_INVOKABLE void runAsync(const QString& Command, const QString& engine = "QProcess");
     Q_INVOKABLE QString getRunAsyncResult();
 
     Q_INVOKABLE bool runBoolResult(const QString& Command, bool escaped = true);
@@ -86,6 +86,7 @@ signals:
 
 private:
     QString  m_Command;
+    QString  m_Engine;
     QString m_Result;
     bool m_bResult;
 };

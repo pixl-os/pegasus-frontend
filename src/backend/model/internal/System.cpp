@@ -64,19 +64,25 @@ QString System::run(const QString& Command)
   return QString::fromStdString(output);
 }
 
-void System::runAsync(const QString& Command)
+void System::runAsync(const QString& Command, const QString& Engine)
 {
     //Log::debug(LOGMSG("System::runAsync_slot() put in Qt::QueuedConnection"));
     m_Command = Command;
+    m_Engine = Engine;
     QMetaObject::invokeMethod(this,"runAsync_slot", Qt::QueuedConnection);
 }
 
 void System::runAsync_slot()
 {
-    QProcess *myProcess = new QProcess(parent());
-    myProcess->startDetached(m_Command);
-    m_Result = ""; //TO DO
-    myProcess->destroyed();
+    if(m_Engine == "popen"){
+        run(m_Command);
+    }
+    else if(m_Engine == "QProcess"){
+        QProcess *myProcess = new QProcess(parent());
+        myProcess->startDetached(m_Command);
+        m_Result = ""; //TO DO
+        myProcess->destroyed();
+    }
 }
 
 QString System::getRunAsyncResult()
