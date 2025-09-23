@@ -57,6 +57,9 @@ FocusScope {
         text: titleHeader
         z: 2
     }
+
+    clip: launchedAsDialogBox
+
     Flickable {
         id: container
 
@@ -67,8 +70,6 @@ FocusScope {
 
         contentWidth: content.width
         contentHeight: content.height
-
-        clip: launchedAsDialogBox
 
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds

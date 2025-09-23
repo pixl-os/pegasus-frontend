@@ -100,6 +100,9 @@ FocusScope {
         text: root.titleHeader
         z: 2
     }
+
+    clip: launchedAsDialogBox
+
     Flickable {
         id: container
 
@@ -114,8 +117,6 @@ FocusScope {
         Behavior on contentY { PropertyAnimation { duration: 100 } }
         boundsBehavior: Flickable.StopAtBounds
         boundsMovement: Flickable.StopAtBounds
-
-        clip: launchedAsDialogBox
 
         readonly property int yBreakpoint: height * 0.7
         readonly property int maxContentY: contentHeight - height
@@ -142,23 +143,16 @@ FocusScope {
 
                 Item {
                     width: parent.width
-                    height: game ? 0 : implicitHeight + vpx(30)
-                    visible: game ? false : true
+                    height: game ? vpx(10) : implicitHeight + vpx(30)
+                    visible: true
                 }
-                SectionTitle {
-                    text: qsTr("Information") + api.tr
-                    visible: game ? true : false
-                    first: false
-                    symbol: "\uf17f"
-                }
-
                 SimpleButton {
                     id: optGameInfo
                     visible: game ? true : false
-                    clip: false
                     width: parent.width - ((height/9)*16)
                     showUnderline: false
                     wrapMode: Text.NoWrap
+                    launchedAsDialogBox: root.launchedAsDialogBox
                     property string override_exists: "false"
                     property string override_file : ""
                     property string padtokey_exists: "false"
@@ -172,7 +166,7 @@ FocusScope {
                     property string extension: game && game_filename !== "" ? game_filename.split('.')[1] : ""
                     property string game_fileextension: game && extension !== "" ? extension[extension.length-1] : ""
                     //property string game_logo: game ? game.assets.logo : ""
-                    label: qsTr("File: ") + api.tr + elideStringFromLeft(rom_file,60)
+                    label: qsTr("File: ") + api.tr + elideStringFromLeft(rom_file,80)
                     note:  qsTr("Size: ") + api.tr + rom_size + "\n"
                             + qsTr("Override: ") + api.tr
                             + (override_exists === "true" ? game_filename + ".recalbox.conf" : "" ) + "\n"
@@ -244,7 +238,7 @@ FocusScope {
                         width: (parent.height/9)*16
 
                         anchors.left: parent.right
-                        //anchors.leftMargin: vpx(50)
+                        anchors.leftMargin: vpx(45)
                         visible: true
                         Image {
                             id: background
@@ -288,6 +282,7 @@ FocusScope {
                     text: qsTr("Game screen") + api.tr
                     first: true
                     symbol: "\uf17f"
+                    launchedAsDialogBox: true
                 }
                 MultivalueOption {
                     id: optSystemGameRatio

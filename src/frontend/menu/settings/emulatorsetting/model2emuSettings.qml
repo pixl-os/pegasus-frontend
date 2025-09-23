@@ -76,9 +76,8 @@ FocusScope {
         asynchronous: true
         opacity: focus ? 1 : 0
         property bool fullscreen: true
-        property real screenratio: fullscreen ? 1.0 : 0.8
-        width: appWindow.width * screenratio
-        height: appWindow.height * screenratio
+        width: appWindow.width * (fullscreen ? 1.0 : 0.90)
+        height: appWindow.height * (fullscreen ? 1.0 : 0.80)
 
         anchors.centerIn: parent
 

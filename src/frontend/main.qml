@@ -469,9 +469,8 @@ Window {
             asynchronous: true
             opacity: focus ? 1 : 0
             property bool fullscreen: true
-            property real screenratio: fullscreen ? 1.0 : 0.8
-            width: parent.width * screenratio
-            height: parent.height * screenratio
+            width: parent.width * (fullscreen ? 1.0 : 0.90)
+            height: parent.height * (fullscreen ? 1.0 : 0.80)
             scale: focus ? 1.0 : 0
 
             Behavior on opacity { PropertyAnimation { duration: 500 } }

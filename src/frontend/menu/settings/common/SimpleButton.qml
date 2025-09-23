@@ -27,10 +27,9 @@ FocusScope {
     property bool showUnderline: true
     property bool selectButton: false
     property int wrapMode: Text.WordWrap
-
-
+    property bool launchedAsDialogBox: false
     readonly property int fontSize: vpx(22)
-    readonly property int horizontalPadding: vpx(30)
+    readonly property int horizontalPadding: launchedAsDialogBox ? vpx(0) : vpx(30)
 
     signal activate()
 
