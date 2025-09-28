@@ -848,6 +848,86 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnLaunchRegedit
+                }
+
+                //to launch wine regedit from bottle clearly defined (could create wineprefix if missing)
+                SimpleButton {
+                    id: btnLaunchRegedit
+                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    Rectangle {
+                        id: containerValidateLaunchRegedit
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Launch regedit from wine bottle") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnLaunchRegedit"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": prefix + " " + qsTr("Regedit") + api.tr,
+                                                  "message": qsTr("Are you sure to launch regedit ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnLaunchControllerSettings
+                }
+
+                //to launch wine control joy.cpl from bottle clearly defined (could create wineprefix if missing)
+                SimpleButton {
+                    id: btnLaunchControllerSettings
+                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    Rectangle {
+                        id: containerValidateControllerSettings
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Launch Controller panel from wine bottle") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnLaunchControllerSettings"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": prefix + " " + qsTr("Controller panel") + api.tr,
+                                                  "message": qsTr("Are you sure to launch 'control joy.cpl' ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                     //KeyNavigation.down: optWineRenderer
                 }
 
@@ -876,10 +956,11 @@ FocusScope {
                     api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_* ; mount -o remount,ro /");
                     api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_* ; mount -o remount,ro /");
                 }
-                else if (confirmDialog.callerid === "btnLaunchWineCfg"){
+                else{
                     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
                     var env = ""
                     var wine = ""
+                    var command = ""
                     var prefixroot = api.internal.recalbox.getStringParameter(prefix + ".wineprefixroot","/recalbox")
                     if(optWineEngine.internalvalue !== ""){
                         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
@@ -892,20 +973,23 @@ FocusScope {
                     if(env !== ""){
                         if(optWineArch.internalvalue !== "" ){
                             env = env + "_" + optWineArch.internalvalue;
+                            if (confirmDialog.callerid === "btnLaunchWineCfg"){
+                                command = env + " " + wine + " winecfg";
+                            }
+                            else if (confirmDialog.callerid === "btnLaunchRegedit"){
+                                command = env + " " + wine + " regedit";
+                            }
+                            else if (confirmDialog.callerid === "btnLaunchControllerSettings"){
+                                command = env + " " + wine + " control joy.cpl";
+                            }
+                            console.log("winecfg command: " + command);
+                            api.internal.system.run(command);
                         }
-                        //deactivated because not used in prefix for the moment
-                        /*if(optWindowsVersion.internalvalue !== "" ){
-                            env = env + "_" + optWindowsVersion.internalvalue;
-                        }*/
-                        var command = env + " " + wine + " winecfg";
-                        console.log("winecfg command: " + command);
-                        api.internal.system.run(command);
-                    }
-                    else {//we can't determine the prefix to use from pegasus-fe
-                        console.log("wine prefix can't be determine to execute winecfg");
+                        else {//we can't determine the prefix to use from pegasus-fe
+                            console.log("wine prefix can't be determine to execute winecfg");
+                        }
                     }
                 }
-
             }
             else{//for simulate and see more the spinner
                 api.internal.system.run("sleep 5");
