@@ -54,8 +54,8 @@ FocusScope {
         //console.log("onGamepadChanged");
         //to force reload of Pad Preview when we change gamepad
         if(root.gamepad !== null){
-            console.log("root.gamepad.name : ", root.gamepad.name);
-            console.log("root.gamepad.deviceLayout : ", root.gamepad.deviceLayout);
+            //console.log("root.gamepad.name : ", root.gamepad.name);
+            //console.log("root.gamepad.deviceLayout : ", root.gamepad.deviceLayout);
             loaderPadPreview.enabled = false;
             loaderPadPreview.source = "";
             loaderPadPreview.layoutIndex = layoutArea.getControllerLayoutIndex(root.gamepad.name,root.gamepad.deviceLayout);

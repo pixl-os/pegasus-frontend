@@ -1407,7 +1407,7 @@ Window {
         showDataProgressText: dataLoading
 
         function hideMaybe() {
-            console.log("Splashcreen hiding by focus/z level");
+            //console.log("Splashcreen hiding by focus/z level");
             if (focus && !dataLoading && !skinLoading) {
                 //focus on theme content
                 content.focus = true;
@@ -2338,13 +2338,16 @@ Window {
 
     //little function to faciliate check of value in 2 name and service from a keyword
     function isExclusionFound(name,service,exclusion){
-        if(typeof(name) !== "undefined" && typeof(service) !== "undefined"){
-            if(name.toLowerCase().includes(exclusion)||service.toLowerCase().includes(exclusion)){
-                return true;
+        if(exclusion !== ""){
+            if(typeof(name) !== "undefined" && typeof(service) !== "undefined"){
+                if(name.toLowerCase().includes(exclusion)||service.toLowerCase().includes(exclusion)){
+                    return true;
+                }
+                else return false;
             }
             else return false;
         }
-        else return false
+        else return false;
     }
 
     //to change icon size for audio ones especially and keep standard one for others.
@@ -2422,15 +2425,19 @@ Window {
                 if(names.length >= 2){
                     name = names[1]; //to keep only the hid part if exist
                 }
+                //console.log("getIcon 2.1 - name: " + name + " - service: " + service + " - iconKeywords[k]: " + iconKeywords[k]);
                 if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
                     icon = myDeviceIcons.get(i).icon;
+                    //console.log("getIcon 2.2 - name: " + name + " - icon: " + icon);
                     const iconExclusions = myDeviceIcons.get(i).exclusions.split(",");
                     for(var k2 = 0; k2 < iconExclusions.length; k2++)
                     {
+                        //console.log("getIcon 2.2.1 - name: " + name + " - service: " + service + " - iconExclusions[k2]: " + iconExclusions[k2]);
                         if (isExclusionFound(name, service, iconExclusions[k2])){
                             icon = "";
                         }
                     }
+                    //console.log("getIcon 2.3 - name: " + name + " - icon: " + icon);
                     if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
                     else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
                     else getIconFont = globalFonts.sans; //as default one for the moment
