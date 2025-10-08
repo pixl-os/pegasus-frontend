@@ -733,6 +733,18 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << "Original" << "Black" << "White" << "Gray"
                             << "Blue" << "Green" << "Red" << "Purple";
     }
+    else if (Parameter.endsWith(".controller.skin"))
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //TODO: have gamepad "assett" files in OS to simplify management and parsing
+        if (Parameter.startsWith("xboxseries")){
+            ListOfValue << QObject::tr("20th Anniversary Special Edition") << QObject::tr("DOOM: The Dark Ages");
+            ListOfInternalValue << "20years" << "doom";
+        }
+    }
     else if (Parameter == "controllers.ps3.driver")
     {
         /*

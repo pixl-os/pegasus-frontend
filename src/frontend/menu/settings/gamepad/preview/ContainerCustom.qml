@@ -15,7 +15,9 @@ Item {
 
     property var gamepad
     property string currentButton: ""
-    property string name: "" //used to find file named as "x_name.jpg" : x_nes.png or x_snes.png for example
+    property string name: "" //used to find file named as "x_nameskin.jpg" :
+                             //x_xboxseries.png, x_nes.png or x_snes.png for example without skin selected
+                             //x_xboxseriesdoom.png or x_xboxseries20years.png
 
     //layout availability features list
     property bool hasSelect : true
@@ -192,14 +194,14 @@ Item {
         width: vpx(padBaseSourceSizeWidth * ratio) //parent.width
         height: vpx(padBaseSourceSizeHeight * ratio)
         anchors.centerIn: parent
+        visible: rgbLedColor === "" ? false : true
 
         fillMode: Image.PreserveAspectFit
-        source: name ? "qrc:/frontend/assets/gamepad/" + name + "/led_" + name + ".png" : ""
+        source: name && visible ? "qrc:/frontend/assets/gamepad/" + name + "/led_" + name + ".png" : ""
         sourceSize {
             width: padBaseSourceSizeWidth
             height: padBaseSourceSizeHeight
         }
-        visible: rgbLedColor === "" ? true : false
     }
 
     ShaderEffect {
@@ -420,6 +422,7 @@ Item {
         name: hasB ? padContainer.name : ""
         pressed: gamepad ? (hasNintendoPad ? gamepad.buttonSouth : gamepad.buttonEast) : false
     }
+
     PadButtonCustom {
         id: padA
         width: vpx(padAWidth * ratio)
@@ -436,6 +439,7 @@ Item {
         name: hasA ? padContainer.name : ""
         pressed: gamepad ? (hasNintendoPad ? gamepad.buttonEast : gamepad.buttonSouth) : false
     }
+
     PadButtonCustom {
         id: padY
         width: vpx(padYWidth * ratio)
@@ -452,6 +456,7 @@ Item {
         name: hasY ? padContainer.name : ""
         pressed: gamepad ? (hasNintendoPad ? gamepad.buttonWest : gamepad.buttonNorth) : false
     }
+
     PadButtonCustom {
         id: padX
         width: vpx(padXWidth * ratio)
@@ -585,7 +590,6 @@ Item {
         yPercent: (gamepad && gamepad.axisLeftY) || 0.0
     }
 
-
     PadButtonCustom {
         id: padRightStickUp
 
@@ -646,7 +650,6 @@ Item {
         pressed: (gamepad && gamepad.axisRightX < -0.5) ? true : false
     }
 
-
     PadButtonCustom {
         id: padRightStickRight
 
@@ -689,5 +692,4 @@ Item {
         xPercent: (gamepad && gamepad.axisRightX) || 0.0
         yPercent: (gamepad && gamepad.axisRightY) || 0.0
     }
-
 }

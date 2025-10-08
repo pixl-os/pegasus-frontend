@@ -17,6 +17,7 @@
 
 //import "gamepad/preview" as GamepadPreview
 import "gamepad"
+import "common"
 import "qrc:/qmlutils" as PegasusUtils
 import Pegasus.Model 0.12
 import QtQuick 2.15
@@ -319,6 +320,7 @@ FocusScope {
         anchors {
             top: deviceSelect.bottom
             bottom: footer.top
+            bottomMargin: vpx(10) + optControllerSkin.height
         }
         property int horizontalOffset: vpx(-560)
         property int verticalSpacing: vpx(170)
@@ -2666,6 +2668,7 @@ FocusScope {
 				inputType: "button"
 
                 KeyNavigation.right: configR3
+                KeyNavigation.down: optControllerSkin
             }
         }
         ConfigGroup {
@@ -2925,6 +2928,7 @@ FocusScope {
                 pressed: gamepad && gamepad.buttonR3
 				input: GamepadManager.GMButton.R3
 				inputType: "button"
+                KeyNavigation.down: optControllerSkin
 				
             }
         }
@@ -2985,6 +2989,150 @@ FocusScope {
                     KeyNavigation.right: configR1
                 }
             }
+        }
+    }
+
+    // Flickable {
+    //     id: container
+
+    //     width: content.width
+    //     anchors.horizontalCenter: parent.horizontalCenter
+    //     anchors.top: layoutArea.bottom
+    //     anchors.bottom: footer.top
+    //     anchors.bottomMargin: vpx(10)
+
+    //     contentWidth: content.width
+    //     contentHeight: content.height
+
+    //     Behavior on contentY { PropertyAnimation { duration: 100 } }
+    //     boundsBehavior: Flickable.StopAtBounds
+    //     boundsMovement: Flickable.StopAtBounds
+
+    //     readonly property int yBreakpoint: height * 0.7
+    //     readonly property int maxContentY: contentHeight - height
+
+    //     function onFocus(item) {
+    //         if (item.focus)
+    //             contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
+    //     }
+    // }
+
+    FocusScope {
+        id: content
+
+        focus: true
+        enabled: focus
+
+        //width: content.width
+
+        width: contentColumn.width
+        height: optControllerSkin.visible ? contentColumn.height : 0
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: layoutArea.bottom
+        anchors.bottom: footer.top
+        anchors.bottomMargin: optControllerSkin.visible ? vpx(10) : 0
+
+        visible: optControllerSkin.visible
+
+
+        Column {
+            id: contentColumn
+            spacing: vpx(5)
+
+            width: root.width * 0.7
+            height: implicitHeight
+
+            Item {
+                width: parent.width
+                height: vpx(10)
+                visible: optControllerSkin.visible
+            }
+
+            MultivalueOption {
+                id: optControllerSkin
+
+                //property to manage parameter name
+                property string parameterName : root.padPreview.name + ".controller.skin"
+                label: qsTr("Controller skin") + api.tr
+                note: qsTr("Set skin for this type of controller") + api.tr
+
+                value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                currentIndex: api.internal.recalbox.parameterslist.currentIndex
+                count: api.internal.recalbox.parameterslist.count
+
+                onValueChanged:{
+                    console.log("onCountChanged - api.internal.recalbox.parameterslist.count : " + api.internal.recalbox.parameterslist.count);
+                    console.log("onCountChanged - count : " + optControllerSkin.count);
+                    optControllerSkin.count = api.internal.recalbox.parameterslist.count;
+                    if(api.internal.recalbox.parameterslist.count < 2){
+                        optControllerSkin.visible = false;
+                    }
+                    else{
+                        optControllerSkin.visible = true;
+                    }
+                    console.log("onCountChanged - visible : " + optControllerSkin.visible);
+                }
+
+                onActivate: {
+                    //for callback by parameterslistBox
+                    parameterslistBox.parameterName = parameterName;
+                    parameterslistBox.callerid = optControllerSkin;
+                    //to force update of list of parameters
+                    api.internal.recalbox.parameterslist.currentName(parameterName);
+                    parameterslistBox.model = api.internal.recalbox.parameterslist;
+                    parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                    //to transfer focus to parameterslistBox
+                    parameterslistBox.focus = true;
+                }
+
+                onSelect: {
+                    //to force to be on the good parameter selected
+                    api.internal.recalbox.parameterslist.currentName(parameterName);
+                    //to update index of parameterlist QAbstractList
+                    api.internal.recalbox.parameterslist.currentIndex = index;
+                    //to force update of display of selected value
+                    value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                }
+
+                onFocusChanged:{
+                    if(focus){
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        count = api.internal.recalbox.parameterslist.count;
+                    }
+                    container.onFocus(this)
+                }
+                KeyNavigation.up: configL3
+            }
+        }
+    }
+
+    MultivalueBox {
+        id: parameterslistBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
+
+        //reuse same model
+        model: api.internal.recalbox.parameterslist.model
+        //to use index from parameterlist QAbstractList
+        index: api.internal.recalbox.parameterslist.currentIndex
+
+        onClose: content.focus = true
+        onSelect: {
+            callerid.keypressed = true;
+            //to use the good parameter
+            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            //to update index of parameterlist QAbstractList
+            api.internal.recalbox.parameterslist.currentIndex = index;
+            //to force update of display of selected value
+            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+            callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }
 
