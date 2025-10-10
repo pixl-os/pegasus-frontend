@@ -1903,7 +1903,10 @@ QString ParametersList::currentInternalName(const QString& Parameter) {
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
     }
-    return ListOfInternalValue.at(m_current_idx);
+    if(ListOfInternalValue.length() >=1)
+        return ListOfInternalValue.at(m_current_idx);
+    else
+        return "";
 }
 
 QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) {
