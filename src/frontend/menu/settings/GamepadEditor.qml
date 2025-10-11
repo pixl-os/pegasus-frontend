@@ -2490,7 +2490,7 @@ FocusScope {
                 }
                 else{
                     //console.log("api.internal.recalbox.getStringParameter(myControllerLayout.get(index).name + '.controller.skin', '') : ",api.internal.recalbox.getStringParameter(myControllerLayout.get(index).name + ".controller.skin", ""));
-                    root.padPreview.name = myControllerLayout.get(index).name + api.internal.recalbox.getStringParameter(myControllerLayout.get(index).name + ".controller.skin", "");
+                    root.padPreview.name = myControllerLayout.get(index).name + api.internal.recalbox.getStringParameter(myControllerLayout.get(index).name + "." + root.gamepad.deviceGUID + ".controller.skin", "");
                 }
                 //console.log("root.padPreview.name after : " + root.padPreview.name);
             }
@@ -3017,7 +3017,8 @@ FocusScope {
                 id: optControllerSkin
 
                 //property to manage parameter name
-                property string parameterName : myControllerLayout.get(loaderPadPreview.layoutIndex).name + ".controller.skin"
+                property string parameterName : myControllerLayout.get(loaderPadPreview.layoutIndex).name
+                                                + "." + root.gamepad.deviceGUID + ".controller.skin"
                 label: qsTr("Controller skin") + api.tr
                 value: api.internal.recalbox.parameterslist.currentName(parameterName)
                 internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)

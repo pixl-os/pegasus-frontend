@@ -49,6 +49,7 @@ signals:
     void nameChanged(int, QString);
     void indexChanged(int, int);
     void layoutChanged(int, QString);
+    void guidChanged(int, QString);
     void removed(int);
     
     void buttonChanged(int, GamepadButton, bool);

@@ -19,13 +19,14 @@
 
 namespace model {
 
-Gamepad::Gamepad(const int device_id, QString name, const int device_iid, const int device_idx, QString device_layout, QObject* parent)
+Gamepad::Gamepad(const int device_id, QString name, const int device_iid, const int device_idx, QString device_layout, QString device_guid, QObject* parent)
     : QObject(parent)
     , m_device_id(device_id)
     , m_name(std::move(name))
     , m_device_iid(device_iid)
     , m_device_idx(device_idx)
     , m_device_layout(device_layout)
+    , m_device_guid(device_guid)
 {}
 
 void Gamepad::setName(QString name)
@@ -56,6 +57,12 @@ void Gamepad::setLayout(QString device_layout)
 {
     m_device_layout = std::move(device_layout);
     emit layoutChanged(m_device_layout);
+}
+
+void Gamepad::setGUID(QString device_guid)
+{
+    m_device_guid = std::move(device_guid);
+    emit guidChanged(m_device_guid);
 }
 
 void Gamepad::setButtonState(GamepadButton button, bool pressed)
