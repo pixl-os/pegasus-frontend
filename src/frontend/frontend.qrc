@@ -449,5 +449,20 @@
         <file>assets/gamepad/xboxserieswhite/start_xboxserieswhite.png</file>
         <file>assets/gamepad/xboxserieswhite/x_xboxserieswhite.png</file>
         <file>assets/gamepad/xboxserieswhite/y_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxoneelite2/a_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/b_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/base_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/dpad_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/guide_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/l1_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/l2_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/lstick_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/r1_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/r2_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/rstick_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/select_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/start_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/x_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/y_xboxoneelite2.png</file>
     </qresource>
 </RCC>

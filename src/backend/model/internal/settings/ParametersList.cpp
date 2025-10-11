@@ -745,8 +745,8 @@ QStringList GetParametersList(QString Parameter)
             ListOfInternalValue  << "white" << "20years" << "doom";
         }
         else if(Parameter.startsWith("xboxone.")){
-            ListOfValue << QObject::tr("Xbox One S Edition");
-            ListOfInternalValue << "white";
+            ListOfValue << QObject::tr("Xbox One S Edition") << QObject::tr("Xbox Elite Series 2");
+            ListOfInternalValue << "white" << "elite2";
         }
 
     }
