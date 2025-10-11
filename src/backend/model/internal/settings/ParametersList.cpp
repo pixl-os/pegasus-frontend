@@ -741,8 +741,8 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         //TODO: have gamepad "asset" files in OS to simplify management and parsing
         if (Parameter.startsWith("xboxseries.")){
-            ListOfValue << QObject::tr("20th Anniversary Special Edition") << QObject::tr("DOOM: The Dark Ages");
-            ListOfInternalValue << "20years" << "doom";
+            ListOfValue << QObject::tr("Robot White") << QObject::tr("20th Anniversary Special Edition") << QObject::tr("DOOM: The Dark Ages");
+            ListOfInternalValue  << "white" << "20years" << "doom";
         }
         else if(Parameter.startsWith("xboxone.")){
             ListOfValue << QObject::tr("Xbox One S Edition");

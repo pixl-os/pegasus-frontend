@@ -434,5 +434,20 @@
         <file>assets/gamepad/xboxonewhite/start_xboxonewhite.png</file>
         <file>assets/gamepad/xboxonewhite/x_xboxonewhite.png</file>
         <file>assets/gamepad/xboxonewhite/y_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/a_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/b_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/base_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/dpad_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/guide_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/l1_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/l2_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/lstick_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/r1_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/r2_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/rstick_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/select_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/start_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/x_xboxserieswhite.png</file>
+        <file>assets/gamepad/xboxserieswhite/y_xboxserieswhite.png</file>
     </qresource>
 </RCC>
