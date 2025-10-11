@@ -739,11 +739,16 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("auto");
         QString empty = "";
         ListOfInternalValue << empty;
-        //TODO: have gamepad "assett" files in OS to simplify management and parsing
-        if (Parameter.startsWith("xboxseries")){
+        //TODO: have gamepad "asset" files in OS to simplify management and parsing
+        if (Parameter.startsWith("xboxseries.")){
             ListOfValue << QObject::tr("20th Anniversary Special Edition") << QObject::tr("DOOM: The Dark Ages");
             ListOfInternalValue << "20years" << "doom";
         }
+        else if(Parameter.startsWith("xboxone.")){
+            ListOfValue << QObject::tr("Xbox One S Edition");
+            ListOfInternalValue << "white";
+        }
+
     }
     else if (Parameter == "controllers.ps3.driver")
     {

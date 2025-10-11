@@ -419,5 +419,20 @@
         <file>assets/gamepad/xboxseriesdoom/y_xboxseriesdoom.png</file>
         <file>assets/gamepad/xboxseriesdoom/l1_xboxseriesdoom.png</file>
         <file>assets/gamepad/xboxseriesdoom/r1_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxonewhite/a_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/b_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/base_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/dpad_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/guide_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/l1_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/l2_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/lstick_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/r1_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/r2_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/rstick_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/select_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/start_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/x_xboxonewhite.png</file>
+        <file>assets/gamepad/xboxonewhite/y_xboxonewhite.png</file>
     </qresource>
 </RCC>
