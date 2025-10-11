@@ -404,5 +404,18 @@
         <file>menu/settings/SystemsEmulatorConfigurationMain.qml</file>
         <file>menu/settings/common/RainbowSliderOption.qml</file>
         <file>assets/gamepad/ps4/led_ps4.png</file>
+        <file>assets/gamepad/xboxseriesdoom/a_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/b_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/base_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/dpad_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/guide_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/l2_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/lstick_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/r2_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/rstick_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/select_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/start_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/x_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/y_xboxseriesdoom.png</file>
     </qresource>
 </RCC>

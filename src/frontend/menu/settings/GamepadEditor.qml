@@ -2481,7 +2481,18 @@ FocusScope {
                 if((typeof(myControllerLayout.get(index).rgbLedLuminosity) !== 'undefined') && (myControllerLayout.get(index).rgbLedLuminosity !== 1.0)) root.padPreview.rgbLedLuminosity = myControllerLayout.get(index).rgbLedLuminosity;
 
                 //set name at the end to avoid error/warning to early ;-)
-                root.padPreview.name = myControllerLayout.get(index).name + optControllerSkin.internalvalue;
+                //TO DO: select skin by GUID also if possible
+                //console.log("root.padPreview.name before : " + root.padPreview.name);
+                //console.log("myControllerLayout.get(index).name : " + myControllerLayout.get(index).name)
+                if(typeof(optControllerSkin.internalvalue) !== "undefined" ){
+                    //console.log("optControllerSkin.internalvalue : ", optControllerSkin.internalvalue , "");
+                    root.padPreview.name = myControllerLayout.get(index).name + optControllerSkin.internalvalue;
+                }
+                else{
+                    //console.log("api.internal.recalbox.getStringParameter(myControllerLayout.get(index).name + '.controller.skin', '') : ",api.internal.recalbox.getStringParameter(myControllerLayout.get(index).name + ".controller.skin", ""));
+                    root.padPreview.name = myControllerLayout.get(index).name + api.internal.recalbox.getStringParameter(myControllerLayout.get(index).name + ".controller.skin", "");
+                }
+                //console.log("root.padPreview.name after : " + root.padPreview.name);
             }
         }
 
@@ -3006,17 +3017,17 @@ FocusScope {
                 id: optControllerSkin
 
                 //property to manage parameter name
-                property string parameterName : root.padPreview.name + ".controller.skin"
+                property string parameterName : myControllerLayout.get(loaderPadPreview.layoutIndex).name + ".controller.skin"
                 label: qsTr("Controller skin") + api.tr
                 value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
                 currentIndex: api.internal.recalbox.parameterslist.currentIndex
                 count: api.internal.recalbox.parameterslist.count
-                /*onValueChanged: {
-                    if((api.internal.recalbox.parameterslist.count === 1) && (api.internal.recalbox.parameterslist.currentName(parameterName)==="auto"))
-                        visible = false;
-                    else
-                        visible = true;
-                }*/
+
+                onInternalvalueChanged: {
+                    //change layout skin if needed
+                    layoutArea.setParameters(loaderPadPreview.layoutIndex);
+                }
 
                 onActivate: {
                     //for callback by parameterslistBox
@@ -3037,6 +3048,9 @@ FocusScope {
                     api.internal.recalbox.parameterslist.currentIndex = index;
                     //to force update of display of selected value
                     value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    //console.log("updated value : " + value)
+                    internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    //console.log("updated internalvalue : " + internalvalue)
                 }
 
                 onFocusChanged:{
@@ -3077,7 +3091,8 @@ FocusScope {
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-          //console.log("onSelect - callerid.value : " + callerid.value);
+            callerid.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(callerid.parameterName);
+            //console.log("onSelect - callerid.value : " + callerid.value);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
           //console.log("onSelect - callerid.currentIndex : " + callerid.currentIndex.toString());
             callerid.count = api.internal.recalbox.parameterslist.count;
