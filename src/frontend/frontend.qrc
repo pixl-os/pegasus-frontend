@@ -417,5 +417,7 @@
         <file>assets/gamepad/xboxseriesdoom/start_xboxseriesdoom.png</file>
         <file>assets/gamepad/xboxseriesdoom/x_xboxseriesdoom.png</file>
         <file>assets/gamepad/xboxseriesdoom/y_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/l1_xboxseriesdoom.png</file>
+        <file>assets/gamepad/xboxseriesdoom/r1_xboxseriesdoom.png</file>
     </qresource>
 </RCC>
