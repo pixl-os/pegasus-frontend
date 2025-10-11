@@ -3030,6 +3030,10 @@ FocusScope {
                     layoutArea.setParameters(loaderPadPreview.layoutIndex);
                 }
 
+                onActiveFocusChanged:{
+                    if (activeFocus) padPreview.currentButton = "";
+                }
+
                 onActivate: {
                     //for callback by parameterslistBox
                     parameterslistBox.parameterName = parameterName;
