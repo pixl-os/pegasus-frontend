@@ -464,5 +464,6 @@
         <file>assets/gamepad/xboxoneelite2/start_xboxoneelite2.png</file>
         <file>assets/gamepad/xboxoneelite2/x_xboxoneelite2.png</file>
         <file>assets/gamepad/xboxoneelite2/y_xboxoneelite2.png</file>
+        <file>assets/gamepad/xboxoneelite2/xboxoneelite2.qml</file>
     </qresource>
 </RCC>

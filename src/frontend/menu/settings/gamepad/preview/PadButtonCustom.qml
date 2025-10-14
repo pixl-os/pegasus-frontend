@@ -9,6 +9,7 @@ Item {
     property string shortName
     property bool pressed: false
     property string name: "" //used to find file named as "shortName_name.jpg" : b_nes.png or a_snes.png for example
+    property string assetsPath: "" // historically "qrc:/frontend/assets/gamepad/" but could be from other places now ;-)
     property alias brightness: animation.brightness
     property alias contrast: animation.contrast
     visible: name ? true : false
@@ -20,7 +21,7 @@ Item {
         width: parent.width
         height: parent.height
         anchors.fill: parent.fill
-        source: name != "" ? "qrc:/frontend/assets/gamepad/" + name + "/" + shortName + "_" + name +".png" : ""
+        source: name != "" ? assetsPath + name + "/" + shortName + "_" + name +".png" : ""
         visible: !pressed
     }
 

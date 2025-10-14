@@ -2262,7 +2262,7 @@ Window {
     }
     //list model to manage icons of devices
     ListModel {
-        id: myDeviceIcons //now include also layout definition
+        id: myDeviceAssets //now include also layout definition
 
         //CONTROLLERS PART
         ListElement { icon: "\uf2ef"; keywords: "x360,xbox360,xbox 360,x-box 360"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
@@ -2383,17 +2383,17 @@ Window {
         let i = 0;
         //search icon from name equal to layout value
         do{
-            const layout = myDeviceIcons.get(i).layout;
+            const layout = myDeviceAssets.get(i).layout;
             if(layout === name){
-                icon = myDeviceIcons.get(i).icon;
-                if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
-                else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
+                icon = myDeviceAssets.get(i).icon;
+                if (myDeviceAssets.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
+                else if (myDeviceAssets.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
                 else getIconFont = globalFonts.sans; //as default one for the moment
             }
             i = i + 1;
-        }while (icon === "" && i < myDeviceIcons.count)
+        }while (icon === "" && i < myDeviceAssets.count)
         var iconcode = parseInt(icon.charCodeAt(0));
-        console.log("getIcon 1 - name: " + name + " - iconcode: " + iconcode);
+        //console.log("getIcon 1 - name: " + name + " - iconcode: " + iconcode);
         //check if any icon has been found
         if(icon !== "") return icon;
         //reset counter
@@ -2412,12 +2412,12 @@ Window {
 
             i = i + 1;
         }while (type === "" && i < myDeviceTypes.count)
-        console.log("getIcon 2 - name: " + name + " - type: " + type);
+        //console.log("getIcon 2 - name: " + name + " - type: " + type);
         //reset counter
         i = 0;
         //searchIcon using the good type
         do{
-            const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
+            const iconKeywords = myDeviceAssets.get(i).keywords.split(",");
             for(var k = 0; k < iconKeywords.length;k++)
             {
                 //split name that could contain the name + hid name separated by ' - '
@@ -2426,10 +2426,10 @@ Window {
                     name = names[1]; //to keep only the hid part if exist
                 }
                 //console.log("getIcon 2.1 - name: " + name + " - service: " + service + " - iconKeywords[k]: " + iconKeywords[k]);
-                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
-                    icon = myDeviceIcons.get(i).icon;
+                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceAssets.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
+                    icon = myDeviceAssets.get(i).icon;
                     //console.log("getIcon 2.2 - name: " + name + " - icon: " + icon);
-                    const iconExclusions = myDeviceIcons.get(i).exclusions.split(",");
+                    const iconExclusions = myDeviceAssets.get(i).exclusions.split(",");
                     for(var k2 = 0; k2 < iconExclusions.length; k2++)
                     {
                         //console.log("getIcon 2.2.1 - name: " + name + " - service: " + service + " - iconExclusions[k2]: " + iconExclusions[k2]);
@@ -2438,15 +2438,15 @@ Window {
                         }
                     }
                     //console.log("getIcon 2.3 - name: " + name + " - icon: " + icon);
-                    if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
-                    else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
+                    if (myDeviceAssets.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
+                    else if (myDeviceAssets.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
                     else getIconFont = globalFonts.sans; //as default one for the moment
                 }
             }
             i = i + 1;
-        }while (icon === "" && i < myDeviceIcons.count)
+        }while (icon === "" && i < myDeviceAssets.count)
         iconcode = parseInt(icon.charCodeAt(0));
-        console.log("getIcon 3 - name: " + name + " - type: " + type + " - iconcode: " + iconcode);
+        //console.log("getIcon 3 - name: " + name + " - type: " + type + " - iconcode: " + iconcode);
         return icon;
     }
 
