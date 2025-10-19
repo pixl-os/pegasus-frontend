@@ -216,51 +216,6 @@
         <file>assets/gamepad/ps5/start_ps5.png</file>
         <file>assets/gamepad/ps5/x_ps5.png</file>
         <file>assets/gamepad/ps5/y_ps5.png</file>
-        <file>assets/gamepad/xboxone/a_xboxone.png</file>
-        <file>assets/gamepad/xboxone/base_xboxone.png</file>
-        <file>assets/gamepad/xboxone/b_xboxone.png</file>
-        <file>assets/gamepad/xboxone/dpad_xboxone.png</file>
-        <file>assets/gamepad/xboxone/guide_xboxone.png</file>
-        <file>assets/gamepad/xboxone/l1_xboxone.png</file>
-        <file>assets/gamepad/xboxone/l2_xboxone.png</file>
-        <file>assets/gamepad/xboxone/lstick_xboxone.png</file>
-        <file>assets/gamepad/xboxone/r1_xboxone.png</file>
-        <file>assets/gamepad/xboxone/r2_xboxone.png</file>
-        <file>assets/gamepad/xboxone/rstick_xboxone.png</file>
-        <file>assets/gamepad/xboxone/select_xboxone.png</file>
-        <file>assets/gamepad/xboxone/start_xboxone.png</file>
-        <file>assets/gamepad/xboxone/x_xboxone.png</file>
-        <file>assets/gamepad/xboxone/y_xboxone.png</file>
-        <file>assets/gamepad/xboxseries/a_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/base_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/b_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/dpad_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/guide_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/l1_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/l2_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/lstick_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/r1_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/r2_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/rstick_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/select_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/start_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/x_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries/y_xboxseries.png</file>
-        <file>assets/gamepad/xboxseries20years/a_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/base_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/b_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/dpad_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/guide_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/l1_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/l2_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/lstick_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/r1_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/r2_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/rstick_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/select_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/start_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/x_xboxseries20years.png</file>
-        <file>assets/gamepad/xboxseries20years/y_xboxseries20years.png</file>
         <file>assets/gamepad/luna/a_luna.png</file>
         <file>assets/gamepad/luna/base_luna.png</file>
         <file>assets/gamepad/luna/b_luna.png</file>
@@ -404,66 +359,5 @@
         <file>menu/settings/SystemsEmulatorConfigurationMain.qml</file>
         <file>menu/settings/common/RainbowSliderOption.qml</file>
         <file>assets/gamepad/ps4/led_ps4.png</file>
-        <file>assets/gamepad/xboxseriesdoom/a_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/b_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/base_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/dpad_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/guide_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/l2_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/lstick_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/r2_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/rstick_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/select_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/start_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/x_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/y_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/l1_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxseriesdoom/r1_xboxseriesdoom.png</file>
-        <file>assets/gamepad/xboxonewhite/a_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/b_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/base_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/dpad_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/guide_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/l1_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/l2_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/lstick_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/r1_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/r2_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/rstick_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/select_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/start_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/x_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxonewhite/y_xboxonewhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/a_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/b_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/base_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/dpad_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/guide_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/l1_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/l2_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/lstick_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/r1_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/r2_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/rstick_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/select_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/start_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/x_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxserieswhite/y_xboxserieswhite.png</file>
-        <file>assets/gamepad/xboxoneelite2/a_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/b_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/base_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/dpad_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/guide_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/l1_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/l2_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/lstick_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/r1_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/r2_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/rstick_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/select_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/start_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/x_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/y_xboxoneelite2.png</file>
-        <file>assets/gamepad/xboxoneelite2/xboxoneelite2.qml</file>
     </qresource>
 </RCC>
