@@ -54,7 +54,7 @@ FocusScope {
     onGamepadChanged: {
         //console.log("onGamepadChanged");
         //to force reload of Pad Preview when we change gamepad
-        if(root.gamepad !== null){
+        if(root.gamepad !== null && typeof(root.gamepad) !== "undefined"){
             //console.log("root.gamepad.name : ", root.gamepad.name);
             //console.log("root.gamepad.deviceLayout : ", root.gamepad.deviceLayout);
             loaderPadPreview.enabled = false;
@@ -2332,20 +2332,25 @@ FocusScope {
 
         //new function to get deviceLayout from controllerName if deviceLayout is not yet provided from input.cfg
         function getControllerLayoutName(gamepad) {
-            var layoutName = gamepad.deviceLayout;
+            let layoutName = "";
+            let controllerName = "";
             let type = "controller";
             let i = 0;
 
             //check first if deviceLayout is not provided from input.cfg
-            if (layoutName !== ""){
+            if((typeof(gamepad.deviceLayout) !== "undefined") && (gamepad.deviceLayout !== null) && gamepad.deviceLayout !== ""){
                 //to get the one proposed from gamepad input.cfg deviceLayout if not empty
-                return layoutName;
+                layoutName = gamepad.deviceLayout;
+                return layoutName
             }
 
             //split name that could contain the name + hid name separated by ' - '
             const names = gamepad.name.split(" - ");
             if(names.length >= 2){
                 controllerName = names[1]; //to keep only the hid part if exist
+            }
+            else{
+                controllerName = gamepad.name;
             }
 
             //search asset using the good type
@@ -2364,7 +2369,9 @@ FocusScope {
                             }
                         }
                         //return layoutName if anyone match and not excluded
-                        if(layoutName !== "") return layoutName
+                        if((typeof(layoutName) !== "undefined") && (layoutName !== null) && (layoutName !== "")){
+                            return layoutName
+                        }
                     }
                 }
                 i = i + 1;
@@ -2735,7 +2742,10 @@ FocusScope {
                     console.log("loaderPadPreview Loader.Ready");
                     if(loaderPadPreview.item != null){
                         root.padPreview = loaderPadPreview.item;
-                        root.padPreview.assetsPath = loaderPadPreview.layoutAssetsPath
+                        //check if model has AssetsPath
+                        if(typeof(root.padPreview.assetsPath) !== "undefined"){
+                            root.padPreview.assetsPath = loaderPadPreview.layoutAssetsPath;
+                        }
                         //set dynamically the layout
                         //console.log("loaderPadPreview parent.setParameters()");
                         parent.setParameters();
