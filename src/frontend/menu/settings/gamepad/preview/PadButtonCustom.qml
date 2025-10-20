@@ -60,7 +60,7 @@ Item {
         visible: pressed
         anchors.fill: pressedImage
         source: pressedImage
-        brightness: 0.5
-        contrast: 0.5
+        brightness: 0.1
+        contrast: 0.2
     }
 }

@@ -179,5 +179,6 @@
         <file>assets/6_buttons_panel_bis.png</file>
         <file>menu/settings/SystemsEmulatorConfigurationMain.qml</file>
         <file>menu/settings/common/RainbowSliderOption.qml</file>
+        <file>assets/gamepad/wiimote/dpad_wiimote.png</file>
     </qresource>
 </RCC>

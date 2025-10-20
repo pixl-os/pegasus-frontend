@@ -2287,7 +2287,7 @@ Window {
         //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
         //other hujia devices exists for NES, SNES, gamecube, Wii, but will be detected upper if needed.
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; exclusions: ""; type:"controller" ; iconfont: "awesome"; layout: "n64"}
-        ListElement { icon: "\uf263"; keywords: "wii remote,rvl-cnt-01-tr"; exclusions: ""; type:"controller"; iconfont: "awesome"} //layout deactivated because not finished finally, called "wiimote"
+        ListElement { icon: "\uf263"; keywords: "wiimote,wii remote,rvl-cnt-01-tr"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "wiimote"}
         
         //need to keep only 'pro controller' in case of nintendo switch pro controller as it is the HID name (internal name)
         //in the future, we have other controller as "pro controller", the layout detection should be complexified

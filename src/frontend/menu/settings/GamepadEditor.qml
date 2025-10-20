@@ -233,7 +233,7 @@ FocusScope {
 
         focus: true
         Keys.forwardTo: isNewController ? [] : [gamepadList]
-        KeyNavigation.down: configL1
+        KeyNavigation.down: configL1.visible ? configL1 : configSelect
 
         GamepadName {
             visible: !hasGamepads && !isNewController
@@ -1936,7 +1936,7 @@ FocusScope {
                             hasLeftStick : false; hasRightStick : false; hasButtonsForRightStick : false;
                             hasL3 : false; hasR3 : false;
 
-                            hasDpad : false;
+                            hasDpad : true;
                             hasButtonsForDpad : false;
 
                             hasScreenshotButton : false;
@@ -1944,53 +1944,53 @@ FocusScope {
                             ratio: 0.9; padBaseSourceSizeWidth : 290 ; padBaseSourceSizeHeight : 502;
 
                             //parameters for select
-                            padSelectWidth : 21;
-                            padSelectHeight : 21;
-                            padSelectTopY: 229;
-                            padSelectLeftX: 184;
+                            padSelectWidth : 22;
+                            padSelectHeight : 22;
+                            padSelectTopY: 228;
+                            padSelectLeftX: 183;
 
                             //parameters for start
-                            padStartWidth : 21;
-                            padStartHeight : 21;
-                            padStartTopY: 229;
-                            padStartLeftX: 252;
+                            padStartWidth : 22;
+                            padStartHeight : 22;
+                            padStartTopY: 228;
+                            padStartLeftX: 251;
 
                             //parameters for home/guide/hotkey (Home of Nintendo Wiimote controller)
-                            padGuideWidth : 19;
-                            padGuideHeight : 20;
-                            padGuideTopY: 230;
-                            padGuideLeftX: 218;
+                            padGuideWidth : 21;
+                            padGuideHeight : 22;
+                            padGuideTopY: 228;
+                            padGuideLeftX: 217;
 
                             //parameters for A/B/X(1)/Y(2)
                             //As A
-                            padAWidth : 39;
-                            padAHeight : 40;
-                            padATopY: 136;
+                            padAWidth : 40;
+                            padAHeight : 41;
+                            padATopY: 135;
                             padALeftX: 208;
 
                             //As B
-                            padBWidth : 49;
-                            padBHeight : 67;
-                            padBTopY: 77;
-                            padBLeftX: 37;
+                            padBWidth : 50;
+                            padBHeight : 68;
+                            padBTopY: 76;
+                            padBLeftX: 36;
 
                             //As 1
                             padXWidth : 27;
                             padXHeight : 26;
                             padXTopY: 356;
-                            padXLeftX: 214;
+                            padXLeftX: 215;
 
                             //As 2
                             padYWidth : 28;
                             padYHeight : 27;
                             padYTopY: 400;
-                            padYLeftX: 214;
+                            padYLeftX: 215;
 
                             //parameter for Dpad
-                            /*dpadAreaTopY: 267;
-                            dpadAreaBottomY: 391;
-                            dpadAreaLeftX: 97;
-                            dpadAreaRightX: 227;*/
+                            dpadAreaTopY: 49;
+                            dpadAreaBottomY: 110;
+                            dpadAreaLeftX: 197;
+                            dpadAreaRightX: 258;
 
                             //nunchuck isn't define and no picture
                             //parameter for C
@@ -2015,7 +2015,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Nintendo WIImote pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
+            } //As Nintendo Wiimote pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
 
             /*ListElement {   name: "switchpro"; qml: "gamepad/preview/ContainerCustom.qml";
 
@@ -2773,6 +2773,7 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: -parent.verticalSpacing
             }
+            visible: configL1.visible && configL2.visible
             ConfigField {
                 focus: true
                 id: configL1
@@ -2799,7 +2800,7 @@ FocusScope {
 				input: GamepadManager.GMButton.L2
 				inputType: "button"
 
-                KeyNavigation.right: configR2
+                KeyNavigation.right: configR2.visible ? configR2 : configSelect
                 KeyNavigation.down: configDpadUp
             }
         }
@@ -2822,6 +2823,7 @@ FocusScope {
 
                 KeyNavigation.right: configA
                 KeyNavigation.down: configDpadDown
+                KeyNavigation.up: configL2.visible ? configL2 : configSelect
             }
             ConfigField {
                 id: configDpadDown
@@ -2926,6 +2928,7 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: -parent.verticalSpacing
             }
+            visible: configR1.visible && configR2.visible
             ConfigField {
                 id: configR1
                 visible: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasR1) !== 'undefined') ? root.padPreview.hasR1 : true) : false
@@ -3204,6 +3207,7 @@ FocusScope {
 
                     KeyNavigation.up: deviceSelect
                     KeyNavigation.down: configL1
+                    KeyNavigation.left: configL1
                     KeyNavigation.right: configGuide
                 }
                 ConfigField {
