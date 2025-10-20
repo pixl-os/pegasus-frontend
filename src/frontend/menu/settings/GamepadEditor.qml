@@ -1386,7 +1386,7 @@ FocusScope {
 
             } //As Microsoft XBOX SERIE S/X 20 years pad*/
 
-            ListElement {   name: "luna"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "luna"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -1430,10 +1430,10 @@ FocusScope {
                             padGuideLeftX: 509;
 
                             //parameters for share (screenshot) //RFU
-                            /*padSelectWidth : 78;
-                            padSelectHeight : 48;
-                            padSelectTopY: 592;
-                            padSelectLeftX: 684;*/
+                            // padSelectWidth : 78;
+                            //padSelectHeight : 48;
+                            //padSelectTopY: 592;
+                            //padSelectLeftX: 684;
 
                             //parameters for A/B/X/Y
                             //As A
@@ -1506,7 +1506,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Amazon luna
+            } //As Amazon luna*/
 
             ListElement {   name: "ps4"; qml: "gamepad/preview/ContainerCustom.qml";
 
