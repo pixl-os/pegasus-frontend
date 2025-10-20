@@ -2017,7 +2017,7 @@ FocusScope {
 
             } //As Nintendo WIImote pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
 
-            ListElement {   name: "switchpro"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "switchpro"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -2059,12 +2059,12 @@ FocusScope {
                             padGuideHeight : 38;
                             padGuideTopY: 256;
                             padGuideLeftX: 481;
-							
-							//parameters for screenshot -> share //RFU
-                            /*padShareWidth : 36;
-                            padShareHeight : 35;
-                            padShareTopY: 257;
-                            padShareLeftX: 357;*/
+
+                            //parameters for screenshot -> share //RFU
+                            //padShareWidth : 36;
+                            //padShareHeight : 35;
+                            //padShareTopY: 257;
+                            //padShareLeftX: 357;
 
                             //parameters for A/B/X/Y
                             //As B -> A
@@ -2137,7 +2137,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As switchpro pad
+            } //As switchpro pad*/
             
             ListElement {   name: "stadia"; qml: "gamepad/preview/ContainerCustom.qml";
 

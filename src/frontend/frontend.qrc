@@ -127,21 +127,6 @@
         <file>menu/settings/WifiNetworks.qml</file>
         <file>dialogs/WifiDialog.qml</file>
         <file>assets/navigation.wav</file>
-        <file>assets/gamepad/switchpro/a_switchpro.png</file>
-        <file>assets/gamepad/switchpro/base_switchpro.png</file>
-        <file>assets/gamepad/switchpro/b_switchpro.png</file>
-        <file>assets/gamepad/switchpro/dpad_switchpro.png</file>
-        <file>assets/gamepad/switchpro/guide_switchpro.png</file>
-        <file>assets/gamepad/switchpro/l1_switchpro.png</file>
-        <file>assets/gamepad/switchpro/lstick_switchpro.png</file>
-        <file>assets/gamepad/switchpro/r1_switchpro.png</file>
-        <file>assets/gamepad/switchpro/rstick_switchpro.png</file>
-        <file>assets/gamepad/switchpro/select_switchpro.png</file>
-        <file>assets/gamepad/switchpro/start_switchpro.png</file>
-        <file>assets/gamepad/switchpro/x_switchpro.png</file>
-        <file>assets/gamepad/switchpro/y_switchpro.png</file>
-        <file>assets/gamepad/switchpro/l2_switchpro.png</file>
-        <file>assets/gamepad/switchpro/r2_switchpro.png</file>
         <file>assets/gamepad/stadia/a_stadia.png</file>
         <file>assets/gamepad/stadia/base_stadia.png</file>
         <file>assets/gamepad/stadia/b_stadia.png</file>
