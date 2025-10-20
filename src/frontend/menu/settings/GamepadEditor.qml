@@ -713,7 +713,7 @@ FocusScope {
 
             } //As SN30 PRO pad (but with L2/R2 to be compatible with switch online ones)*/
 
-            ListElement {   name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "nes"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: false;
                             hasSelect: true;
@@ -786,7 +786,7 @@ FocusScope {
                             contrast : 0.4
                             brightness: 0.6
 
-            } //As NES pad (but with L1/R1 to be compatible with switch online ones)
+            } //As NES pad (but with L1/R1 to be compatible with switch online ones)*/
 
             ListElement {   name: "arcadestick"; qml: "gamepad/preview/ContainerCustom.qml";
 
