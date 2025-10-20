@@ -1769,14 +1769,14 @@ FocusScope {
                             rStickHeight : 172;
                             rStickTopY: 617;
                             rStickLeftX: 902;
-							
+
                             //to adapt contrast/brightness
                             contrast : 0.1
                             brightness: 0.2
 
             } //As Sony PS5 pad*/
 
-            ListElement {   name: "n64"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "n64"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -1916,7 +1916,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Nintendo 64 pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
+            } //As Nintendo 64 pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)*/
 
             ListElement {   name: "wiimote"; qml: "gamepad/preview/ContainerCustom.qml";
 

@@ -127,22 +127,6 @@
         <file>menu/settings/WifiNetworks.qml</file>
         <file>dialogs/WifiDialog.qml</file>
         <file>assets/navigation.wav</file>
-        <file>assets/gamepad/n64/l2_n64.png</file>
-        <file>assets/gamepad/n64/base_n64.png</file>
-        <file>assets/gamepad/n64/r1_n64.png</file>
-        <file>assets/gamepad/n64/l1_n64.png</file>
-        <file>assets/gamepad/n64/lstick_n64.png</file>
-        <file>assets/gamepad/n64/dpad_n64.png</file>
-        <file>assets/gamepad/n64/select_n64.png</file>
-        <file>assets/gamepad/n64/r2_n64.png</file>
-        <file>assets/gamepad/n64/guide_n64.png</file>
-        <file>assets/gamepad/n64/rstickup_n64.png</file>
-        <file>assets/gamepad/n64/rstickright_n64.png</file>
-        <file>assets/gamepad/n64/rstickdown_n64.png</file>
-        <file>assets/gamepad/n64/rstickleft_n64.png</file>
-        <file>assets/gamepad/n64/a_n64.png</file>
-        <file>assets/gamepad/n64/b_n64.png</file>
-        <file>assets/gamepad/n64/start_n64.png</file>
         <file>assets/gamepad/switchpro/a_switchpro.png</file>
         <file>assets/gamepad/switchpro/base_switchpro.png</file>
         <file>assets/gamepad/switchpro/b_switchpro.png</file>
