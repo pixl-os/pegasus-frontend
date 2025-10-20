@@ -788,7 +788,7 @@ FocusScope {
 
             } //As NES pad (but with L1/R1 to be compatible with switch online ones)*/
 
-            ListElement {   name: "arcadestick"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "arcadestick"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -902,7 +902,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As 8bitdo Arcade stick pad
+            } //As 8bitdo Arcade stick pad*/
 
             ListElement {   name: "xbox360"; qml: "gamepad/preview/ContainerCustom.qml";
 
