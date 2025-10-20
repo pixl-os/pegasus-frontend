@@ -2139,7 +2139,7 @@ FocusScope {
 
             } //As switchpro pad*/
             
-            ListElement {   name: "stadia"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "stadia"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -2183,10 +2183,10 @@ FocusScope {
                             padGuideLeftX: 384;
                             
                             //parameters for screenshot -> share //RFU
-                            /*padShareWidth : 32;
-                            padShareHeight : 29;
-                            padShareTopY: 242;
-                            padShareLeftX: 455;*/
+                            //padShareWidth : 32;
+                            //padShareHeight : 29;
+                            //padShareTopY: 242;
+                            //padShareLeftX: 455;
 
                             //parameters for A/B/X/Y
                             //As A
@@ -2259,7 +2259,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Google STADIA pad
+            } //As Google STADIA pad*/
 
         }
 
