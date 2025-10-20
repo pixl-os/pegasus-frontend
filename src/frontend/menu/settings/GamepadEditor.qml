@@ -904,7 +904,7 @@ FocusScope {
 
             } //As 8bitdo Arcade stick pad*/
 
-            ListElement {   name: "xbox360"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "xbox360"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -1018,7 +1018,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Microsoft XBOX 360 pad
+            } //As Microsoft XBOX 360 pad*/
 
             /*ListElement {   name: "xboxone"; qml: "gamepad/preview/ContainerCustom.qml";
 

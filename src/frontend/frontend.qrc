@@ -122,21 +122,6 @@
         <file>menu/settings/gamepad/preview/PadButtonCustom.qml</file>
         <file>menu/settings/gamepad/preview/PadShoulderCustom.qml</file>
         <file>menu/settings/gamepad/preview/PadTriggerCustom.qml</file>
-        <file>assets/gamepad/xbox360/r2_xbox360.png</file>
-        <file>assets/gamepad/xbox360/l2_xbox360.png</file>
-        <file>assets/gamepad/xbox360/r1_xbox360.png</file>
-        <file>assets/gamepad/xbox360/l1_xbox360.png</file>
-        <file>assets/gamepad/xbox360/base_xbox360.png</file>
-        <file>assets/gamepad/xbox360/a_xbox360.png</file>
-        <file>assets/gamepad/xbox360/b_xbox360.png</file>
-        <file>assets/gamepad/xbox360/y_xbox360.png</file>
-        <file>assets/gamepad/xbox360/x_xbox360.png</file>
-        <file>assets/gamepad/xbox360/lstick_xbox360.png</file>
-        <file>assets/gamepad/xbox360/rstick_xbox360.png</file>
-        <file>assets/gamepad/xbox360/dpad_xbox360.png</file>
-        <file>assets/gamepad/xbox360/start_xbox360.png</file>
-        <file>assets/gamepad/xbox360/select_xbox360.png</file>
-        <file>assets/gamepad/xbox360/guide_xbox360.png</file>
         <file>menu/settings/gamepad/preview/StickCustom.qml</file>
         <file>assets/gamepad/ps4/base_ps4.png</file>
         <file>assets/gamepad/ps4/r2_ps4.png</file>
