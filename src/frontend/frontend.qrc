@@ -115,20 +115,7 @@
         <file>assets/pbar-red.png</file>
         <file>assets/pbar-green.png</file>
         <file>dialogs/RestartDialog.qml</file>
-        <file>assets/gamepad/snes/base_snes.png</file>
-        <file>assets/gamepad/snes/x_snes.png</file>
-        <file>assets/gamepad/snes/y_snes.png</file>
-        <file>assets/gamepad/snes/a_snes.png</file>
-        <file>assets/gamepad/snes/b_snes.png</file>
-        <file>assets/gamepad/snes/dpad_snes.png</file>
-        <file>assets/gamepad/snes/select_snes.png</file>
-        <file>assets/gamepad/snes/start_snes.png</file>
         <file>global/CustomBorder.qml</file>
-        <file>assets/gamepad/snes/guide_snes.png</file>
-        <file>assets/gamepad/snes/l1_snes.png</file>
-        <file>assets/gamepad/snes/r1_snes.png</file>
-        <file>assets/gamepad/snes/l2_snes.png</file>
-        <file>assets/gamepad/snes/r2_snes.png</file>
         <file>assets/gamepad/nes/base_nes.png</file>
         <file>assets/gamepad/nes/dpad_nes.png</file>
         <file>assets/gamepad/nes/r1_nes.png</file>

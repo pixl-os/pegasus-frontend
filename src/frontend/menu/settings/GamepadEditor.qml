@@ -383,7 +383,7 @@ FocusScope {
 
             } // By default
 
-            ListElement {   name: "snes"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "snes"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: false;
                             hasSelect: true;
@@ -479,7 +479,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As SNES pad (but with L2/R2 to be compatible with switch online ones)
+            } //As SNES pad (but with L2/R2 to be compatible with switch online ones)*/
 
             ListElement {   name: "sn30proplus"; qml: "gamepad/preview/ContainerCustom.qml";
 
