@@ -143,24 +143,6 @@
         <file>assets/gamepad/n64/a_n64.png</file>
         <file>assets/gamepad/n64/b_n64.png</file>
         <file>assets/gamepad/n64/start_n64.png</file>
-        <file>assets/gamepad/ps5/a_ps5.png</file>
-        <file>assets/gamepad/ps5/b_ps5.png</file>
-        <file>assets/gamepad/ps5/base_ps5.png</file>
-        <file>assets/gamepad/ps5/dpdown_ps5.png</file>
-        <file>assets/gamepad/ps5/dpleft_ps5.png</file>
-        <file>assets/gamepad/ps5/dpright_ps5.png</file>
-        <file>assets/gamepad/ps5/dpup_ps5.png</file>
-        <file>assets/gamepad/ps5/guide_ps5.png</file>
-        <file>assets/gamepad/ps5/l1_ps5.png</file>
-        <file>assets/gamepad/ps5/l2_ps5.png</file>
-        <file>assets/gamepad/ps5/lstick_ps5.png</file>
-        <file>assets/gamepad/ps5/r1_ps5.png</file>
-        <file>assets/gamepad/ps5/r2_ps5.png</file>
-        <file>assets/gamepad/ps5/rstick_ps5.png</file>
-        <file>assets/gamepad/ps5/select_ps5.png</file>
-        <file>assets/gamepad/ps5/start_ps5.png</file>
-        <file>assets/gamepad/ps5/x_ps5.png</file>
-        <file>assets/gamepad/ps5/y_ps5.png</file>
         <file>assets/gamepad/switchpro/a_switchpro.png</file>
         <file>assets/gamepad/switchpro/base_switchpro.png</file>
         <file>assets/gamepad/switchpro/b_switchpro.png</file>

@@ -1644,7 +1644,7 @@ FocusScope {
 
             } //As Sony PS4 pad*/
 
-            ListElement {   name: "ps5"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "ps5"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -1774,7 +1774,7 @@ FocusScope {
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Sony PS5 pad
+            } //As Sony PS5 pad*/
 
             ListElement {   name: "n64"; qml: "gamepad/preview/ContainerCustom.qml";
 
