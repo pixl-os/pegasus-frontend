@@ -1918,7 +1918,7 @@ FocusScope {
 
             } //As Nintendo 64 pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)*/
 
-            ListElement {   name: "wiimote"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "wiimote"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -1994,28 +1994,28 @@ FocusScope {
 
                             //nunchuck isn't define and no picture
                             //parameter for C
-                            /*padL2Width : 73;
-                            padL2Height : 86;
-                            padL2TopY: 605;
-                            padL2LeftX: 178;*/
+                            //padL2Width : 73;
+                            //padL2Height : 86;
+                            //padL2TopY: 605;
+                            //padL2LeftX: 178;
 
                             //parameter for Z
-                            /*padL2Width : 73;
-                            padL2Height : 86;
-                            padL2TopY: 605;
-                            padL2LeftX: 178;*/
+                            //padL2Width : 73;
+                            //padL2Height : 86;
+                            //padL2TopY: 605;
+                            //padL2LeftX: 178;
 
                             //parameter for Left stick
-                            /*lStickWidth : 81;
-                            lStickHeight : 71;
-                            lStickTopY: 477;
-                            lStickLeftX: 390;*/
+                            //lStickWidth : 81;
+                            //lStickHeight : 71;
+                            //lStickTopY: 477;
+                            //lStickLeftX: 390;
 
                             //to adapt contrast/brightness
                             contrast : 0.1
                             brightness: 0.2
 
-            } //As Nintendo Wiimote pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)
+            } //As Nintendo Wiimote pad (but C buttons are on RStick, no X/Y, Z as L2, ZR as R2)*/
 
             /*ListElement {   name: "switchpro"; qml: "gamepad/preview/ContainerCustom.qml";
 

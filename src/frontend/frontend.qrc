@@ -127,14 +127,6 @@
         <file>menu/settings/WifiNetworks.qml</file>
         <file>dialogs/WifiDialog.qml</file>
         <file>assets/navigation.wav</file>
-        <file>assets/gamepad/wiimote/a_wiimote.png</file>
-        <file>assets/gamepad/wiimote/base_wiimote.png</file>
-        <file>assets/gamepad/wiimote/b_wiimote.png</file>
-        <file>assets/gamepad/wiimote/guide_wiimote.png</file>
-        <file>assets/gamepad/wiimote/select_wiimote.png</file>
-        <file>assets/gamepad/wiimote/start_wiimote.png</file>
-        <file>assets/gamepad/wiimote/x_wiimote.png</file>
-        <file>assets/gamepad/wiimote/y_wiimote.png</file>
         <file>assets/backgroundpixl.png</file>
         <file>assets/logobeta.png</file>
         <file>menu/settings/AdvancedEmulatorMain.qml</file>
@@ -179,6 +171,5 @@
         <file>assets/6_buttons_panel_bis.png</file>
         <file>menu/settings/SystemsEmulatorConfigurationMain.qml</file>
         <file>menu/settings/common/RainbowSliderOption.qml</file>
-        <file>assets/gamepad/wiimote/dpad_wiimote.png</file>
     </qresource>
 </RCC>
