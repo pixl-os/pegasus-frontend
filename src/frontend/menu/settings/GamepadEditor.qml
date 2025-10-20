@@ -1508,7 +1508,7 @@ FocusScope {
 
             } //As Amazon luna*/
 
-            ListElement {   name: "ps4"; qml: "gamepad/preview/ContainerCustom.qml";
+            /*ListElement {   name: "ps4"; qml: "gamepad/preview/ContainerCustom.qml";
 
                             hasDedicatedGuide: true;
                             hasSelect: true;
@@ -1642,7 +1642,7 @@ FocusScope {
                             rgbLedColor: "0,0,255" //default value as blue
                             rgbLedLuminosity:  3.0
 
-            } //As Sony PS4 pad
+            } //As Sony PS4 pad*/
 
             ListElement {   name: "ps5"; qml: "gamepad/preview/ContainerCustom.qml";
 
