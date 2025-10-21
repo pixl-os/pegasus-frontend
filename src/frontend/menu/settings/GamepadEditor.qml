@@ -2773,7 +2773,6 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: -parent.verticalSpacing
             }
-            visible: configL1.visible && configL2.visible
             ConfigField {
                 focus: true
                 id: configL1
@@ -2803,6 +2802,7 @@ FocusScope {
                 KeyNavigation.right: configR2.visible ? configR2 : configSelect
                 KeyNavigation.down: configDpadUp
             }
+            visible: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasL1) !== 'undefined') ? root.padPreview.hasL1 : true) : false
         }
         ConfigGroup {
             label: qsTr("dpad") + api.tr
@@ -2928,7 +2928,6 @@ FocusScope {
                 verticalCenter: parent.verticalCenter
                 verticalCenterOffset: -parent.verticalSpacing
             }
-            visible: configR1.visible && configR2.visible
             ConfigField {
                 id: configR1
                 visible: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasR1) !== 'undefined') ? root.padPreview.hasR1 : true) : false
@@ -2955,6 +2954,7 @@ FocusScope {
 
                 KeyNavigation.down: configA
             }
+            visible: (typeof(root.padPreview) !== 'undefined') ? ((typeof(root.padPreview.hasR1) !== 'undefined') ? root.padPreview.hasR1 : true) : false
         }
         ConfigGroup {
             label: qsTr("abxy") + api.tr
