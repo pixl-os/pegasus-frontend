@@ -2599,10 +2599,12 @@ FocusScope {
                         root.padPreview.name = layout.name + api.internal.recalbox.getStringParameter(layout.name + "." + root.gamepad.deviceGUID + ".controller.skin", "");
                     }
                     //Add a way to select specific Controller Layout Element/values from QML model provided for a specific optControllerSkin
-                    //console.log(loaderPadPreview.layoutAssetsPath + root.padPreview.name + "/" + root.padPreview.name + ".qml");
-                    var fileToFind = loaderPadPreview.layoutAssetsPath.replace("file:/","")
+                    var fileToFind = loaderPadPreview.layoutAssetsPath.replace("file:/","") + root.padPreview.name + "/" + root.padPreview.name + ".qml"
+                    //console.log("fileToFind : " + fileToFind);
                     var fileExists = api.internal.system.run("if [ -f " + fileToFind + " ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
+                    //console.log("fileExists : " + fileExists);
                     if(fileExists !== false){
+                        //console.log("loaderPadPreview.layoutAssetsPath : " + loaderPadPreview.layoutAssetsPath);
                         //if file doesn't exists, no loading in this case, just a warning visible in log
                         skinLoader.source = loaderPadPreview.layoutAssetsPath + root.padPreview.name + "/" + root.padPreview.name + ".qml"
                     }
@@ -2675,17 +2677,7 @@ FocusScope {
                     //console.log("skinLoader.item : " + skinLoader.item.toString())
                     //console.log("skinLoader.item.get(0) : " + skinLoader.item.get(0).toString())
                     layoutArea.loadAndMergeSingleElement(skinLoader.item.get(0))
-                    if((typeof(skinLoader.item.get(0).qml) !== "undefined") && (skinLoader.item.get(0).qml !== "")){
-                        loaderPadPreview.layoutName = skinLoader.item.get(0).name
-                        loaderPadPreview.layoutIndex = -1; //to deactivate usage of index and MyController model
-                        //console.log("loaderPadPreview.source  = skinLoader.item.get(0).qml;")
-                        loaderPadPreview.source  = skinLoader.item.get(0).qml;
-                        loaderPadPreview.enabled = true;
-                    }
-                    else{
-                        // Unload the component in this case
-                        skinLoader.source = ""
-                    }
+                    skinLoader.source = ""
                 }
                 else if (status === Loader.Error) {
                     // FAILURE: File was NOT found in resources (or had a syntax error).
