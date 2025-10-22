@@ -3281,6 +3281,15 @@ FocusScope {
                     //for callback by parameterslistBox
                     parameterslistBox.parameterName = parameterName;
                     parameterslistBox.callerid = optControllerSkin;
+
+                    //to customize Box display
+                    parameterslistBox.has_picture = true;
+                    parameterslistBox.firstlist_minimum_width_purcentage = 0.53;
+                    parameterslistBox.firstlist_maximum_width_purcentage = 0.53;
+                    parameterslistBox.box_maximum_width = 750;
+                    parameterslistBox.box_minimum_width = 750;
+                    parameterslistBox.max_listitem_displayed = 5;
+
                     //to force update of list of parameters
                     api.internal.recalbox.parameterslist.currentName(parameterName);
                     parameterslistBox.model = api.internal.recalbox.parameterslist;

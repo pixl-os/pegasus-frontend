@@ -752,6 +752,9 @@ QStringList GetParametersList(QString Parameter)
 
         //NEW WAY to let users add skins
         QString keyword = Parameter.section('.', 0, 0);
+        //put path of "auto" picture (from share_init) / use jpg file to speed up preview
+        ListOfPicture.append("file://recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" +
+                             keyword + "/original_" + keyword + ".jpg");
         //check if others exists in share_init or share
         QStringList paths;
         paths << "/recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" // first directory
@@ -781,7 +784,10 @@ QStringList GetParametersList(QString Parameter)
                 if(dirName != keyword){
                     QString skin = dirName.replace(keyword.toLower(),QString(""));
                     //now we store directory of skin in recalbox.conf
-                    ListOfInternalValue.append(path + skin);
+                    ListOfInternalValue.append(path + keyword + skin);
+                    ListOfPicture.append("file://" + path +
+                                         keyword + skin + "/" +
+                                         "original_" + keyword + skin + ".jpg");
                     //"Upper" case first char of keyword and skins to be nicer for display name ;-)
                     skin[0] = skin[0].toUpper();
                     keyword[0] = keyword[0].toUpper();
@@ -789,8 +795,10 @@ QStringList GetParametersList(QString Parameter)
                         ListOfValue.append(keyword + " " + skin);
                     }
                     else{
-                        ListOfValue.append(keyword + " " + skin + " (from share/system)");
+                        ListOfValue.append(keyword + " " + skin + " " + QObject::tr("(personal skin)"));
                     }
+                    //restore to lower case
+                    keyword = keyword.toLower();
                 }
             }
         }
