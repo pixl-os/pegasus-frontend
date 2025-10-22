@@ -2590,9 +2590,9 @@ FocusScope {
                     //set name at the end to avoid error/warning to early ;-)
                     //console.log("root.padPreview.name before : " + root.padPreview.name);
                     //console.log("layout.name : " + layout.name)
-                    if(typeof(optControllerSkin.internalvalue) !== "undefined" ){
-                        //console.log("optControllerSkin.internalvalue : ", optControllerSkin.internalvalue , "");
-                        root.padPreview.name = layout.name + optControllerSkin.internalvalue;
+                    if(typeof(optControllerSkin.skinName) !== "undefined" ){
+                        //console.log("optControllerSkin.skinName : ", optControllerSkin.skinName , "");
+                        root.padPreview.name = layout.name + optControllerSkin.skinName;
                     }
                     else{
                         //console.log("api.internal.recalbox.getStringParameter(layout.name + '.controller.skin', '') : ",api.internal.recalbox.getStringParameter(layout.name + ".controller.skin", ""));
@@ -3250,6 +3250,7 @@ FocusScope {
                 //property to manage parameter name
                 property string parameterName : loaderPadPreview.layoutName
                                                 + "." + root.gamepad.deviceGUID + ".controller.skin"
+                property string skinName : ""
                 label: qsTr("Controller skin") + api.tr
                 value: api.internal.recalbox.parameterslist.currentName(parameterName)
                 internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
@@ -3258,6 +3259,16 @@ FocusScope {
 
                 onInternalvalueChanged: {
                     //change layout skin if needed
+                    if(internalvalue === ""){
+                        skinName = ""
+                    }
+                    else{
+                        // 1. Split the string into an array using the delimiter '/'
+                        let pathParts = internalvalue.split("/");
+                        // 2. Access the last element of the array using 'length - 1'
+                        skinName = pathParts[pathParts.length - 1].replace(loaderPadPreview.layoutName,"")
+                    }
+                    //console.log("optControllerSkin.onInternalvalueChanged - skinName : " + skinName);
                     //console.log("optControllerSkin layoutArea.setParameters()");
                     layoutArea.setParameters();
                 }

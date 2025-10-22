@@ -739,14 +739,60 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("auto");
         QString empty = "";
         ListOfInternalValue << empty;
-        //TODO: have gamepad "asset" files in OS to simplify management and parsing
-        if (Parameter.startsWith("xboxseries.")){
+
+        //OLD WAY
+        /*if (Parameter.startsWith("xboxseries.")){
             ListOfValue << QObject::tr("Robot White") << QObject::tr("20th Anniversary Special Edition") << QObject::tr("DOOM: The Dark Ages");
             ListOfInternalValue  << "white" << "20years" << "doom";
         }
         else if(Parameter.startsWith("xboxone.")){
             ListOfValue << QObject::tr("Xbox One S Edition") << QObject::tr("Xbox Elite Series 2");
             ListOfInternalValue << "white" << "elite2";
+        }*/
+
+        //NEW WAY to let users add skins
+        QString keyword = Parameter.section('.', 0, 0);
+        //check if others exists in share_init or share
+        QStringList paths;
+        paths << "/recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" // first directory
+              << "/recalbox/share/system/.pegasus-frontend/assets/gamepad/"; // second directory
+        // Iterate over each path and perform the search
+        for (const QString &path : paths) {
+            QDir dir(path);
+            // Set the name filter: list entries starting with "xbox"
+            QStringList nameFilter;
+            nameFilter << keyword + "*";
+
+            // Set the directory filters: only list directories, and exclude "." and ".."
+            QDir::Filters filters = QDir::Dirs | QDir::NoDotAndDotDot;
+
+            // Get the filtered list of directory names
+            QStringList directories = dir.entryList(nameFilter, filters);
+
+            // Now, as example 'xboxDirectories' will contain names like "xboxone", "xboxonewhite", "xboxoneelite2" etc.,
+            // assuming they exist in 'parentDirPath' and start with "xboxone" keyword.
+
+            // Example of parsing/processing the list:
+            Log::debug(LOGMSG("Found directories starting with").arg(keyword));
+            for (QString &dirName : directories) {
+                Log::debug(LOGMSG("Directory found in root : '%1'").arg(dirName));
+                // You can now use dirName for further operations in your QT C++ application.
+                // For full path: QString fullPath = parentDirPath + QDir::separator() + dirName;
+                if(dirName != keyword){
+                    QString skin = dirName.replace(keyword.toLower(),QString(""));
+                    //now we store directory of skin in recalbox.conf
+                    ListOfInternalValue.append(path + skin);
+                    //"Upper" case first char of keyword and skins to be nicer for display name ;-)
+                    skin[0] = skin[0].toUpper();
+                    keyword[0] = keyword[0].toUpper();
+                    if(path.contains("/share_init/")){
+                        ListOfValue.append(keyword + " " + skin);
+                    }
+                    else{
+                        ListOfValue.append(keyword + " " + skin + " (from share/system)");
+                    }
+                }
+            }
         }
 
     }
