@@ -2735,8 +2735,21 @@ FocusScope {
                     if(loaderPadPreview.item != null){
                         root.padPreview = loaderPadPreview.item;
                         //check if model has AssetsPath
-                        if(typeof(root.padPreview.assetsPath) !== "undefined"){
+                        if((typeof(root.padPreview.assetsPath) !== "undefined") && (optControllerSkin.internalvalue === "")){
                             root.padPreview.assetsPath = loaderPadPreview.layoutAssetsPath;
+                        }
+                        else{
+                            // 1. Split the string into an array using the delimiter '/'
+                            let pathParts = optControllerSkin.internalvalue.split("/");
+                            // 2. Access the last element of the array using 'length - 1'
+                            var skinName = pathParts[pathParts.length - 1].replace(loaderPadPreview.layoutName,"")
+                            // 3. check if model has AssetsPath before update
+                            if(typeof(root.padPreview.assetsPath) !== "undefined"){
+                                //console.log("0 - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
+                                //take path of this skin to have the assetsPath
+                                root.padPreview.assetsPath = "file:/" + optControllerSkin.internalvalue.replace(loaderPadPreview.layoutName + skinName,"");
+                            }
+                            //console.log("0.1 - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
                         }
                         //set dynamically the layout
                         //console.log("loaderPadPreview parent.setParameters()");
@@ -3260,13 +3273,30 @@ FocusScope {
                 onInternalvalueChanged: {
                     //change layout skin if needed
                     if(internalvalue === ""){
-                        skinName = ""
+                        skinName = "";
+                        if(loaderPadPreview.status === Loader.Ready){
+                            root.padPreview.name = loaderPadPreview.layoutName;
+                        }
                     }
                     else{
                         // 1. Split the string into an array using the delimiter '/'
                         let pathParts = internalvalue.split("/");
                         // 2. Access the last element of the array using 'length - 1'
                         skinName = pathParts[pathParts.length - 1].replace(loaderPadPreview.layoutName,"")
+                        // 3. check if model has AssetsPath before update
+                        if(typeof(root.padPreview) !== "undefined"){
+                            if(typeof(root.padPreview.assetsPath) !== "undefined"){
+                                //console.log("1 - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
+                                //take path of this skin to have the assetsPath
+                                //but due to biding, WARNING WILL BE GENERATED DURING UPDATE of VALUES but no bad effect in UI
+                                //only warning as following when we change the assetsPath value
+                                //2025-10-24T02:32:39 [w] qrc:/frontend/menu/settings/gamepad/preview/PadTriggerCustom.qml:46:5: QML Image: Cannot open: file://recalbox/share_init/system/.pegasus-frontend/assets/gamepad/xboxseriespink/r2_xboxseriespink.png
+                                root.padPreview.name = loaderPadPreview.layoutName + skinName
+                                root.padPreview.assetsPath = "file:/" + internalvalue.replace(loaderPadPreview.layoutName + skinName,"");
+                                loaderPadPreview.layoutAssetsPath = "file:/" + internalvalue.replace(loaderPadPreview.layoutName + skinName,"");
+                                //console.log("2 - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
+                            }
+                        }
                     }
                     //console.log("optControllerSkin.onInternalvalueChanged - skinName : " + skinName);
                     //console.log("optControllerSkin layoutArea.setParameters()");
