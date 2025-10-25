@@ -776,7 +776,7 @@ QStringList GetParametersList(QString Parameter)
             // assuming they exist in 'parentDirPath' and start with "xboxone" keyword.
 
             // Example of parsing/processing the list:
-            Log::debug(LOGMSG("Found directories starting with").arg(keyword));
+            Log::debug(LOGMSG("Found directories starting with %1").arg(keyword));
             for (QString &dirName : directories) {
                 Log::debug(LOGMSG("Directory found in root : '%1'").arg(dirName));
                 // You can now use dirName for further operations in your QT C++ application.

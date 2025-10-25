@@ -3261,21 +3261,26 @@ FocusScope {
                 id: optControllerSkin
 
                 //property to manage parameter name
-                property string parameterName : loaderPadPreview.layoutName
-                                                + "." + root.gamepad.deviceGUID + ".controller.skin"
+                property string parameterName : loaderPadPreview.layoutName !== "" ? loaderPadPreview.layoutName + "." + root.gamepad.deviceGUID + ".controller.skin" : ""
                 property string skinName : ""
                 label: qsTr("Controller skin") + api.tr
-                value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+                value: parameterName !== "" ? api.internal.recalbox.parameterslist.currentName(parameterName) : ""
+                internalvalue: parameterName !== "" ? api.internal.recalbox.parameterslist.currentInternalName(parameterName): ""
                 currentIndex: api.internal.recalbox.parameterslist.currentIndex
                 count: api.internal.recalbox.parameterslist.count
+                /*onParameterNameChanged: {
+                    console.log("optControllerSkin.parameterName : " + parameterName)
+                    console.log("loaderPadPreview.layoutName : " + loaderPadPreview.layoutName)
+                }*/
 
                 onInternalvalueChanged: {
                     //change layout skin if needed
                     if(internalvalue === ""){
                         skinName = "";
                         if(loaderPadPreview.status === Loader.Ready){
-                            root.padPreview.name = loaderPadPreview.layoutName;
+                            if(loaderPadPreview.layoutName !== ""){
+                                root.padPreview.name = loaderPadPreview.layoutName;
+                            }
                         }
                     }
                     else{
@@ -3300,6 +3305,7 @@ FocusScope {
                     }
                     //console.log("optControllerSkin.onInternalvalueChanged - skinName : " + skinName);
                     //console.log("optControllerSkin layoutArea.setParameters()");
+                    //console.log("optControllerSkin loaderPadPreview.layoutName : " + loaderPadPreview.layoutName);
                     layoutArea.setParameters();
                 }
 
