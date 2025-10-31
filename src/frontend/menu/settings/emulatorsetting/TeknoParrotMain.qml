@@ -308,6 +308,22 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: optTeknoparrotOption33
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption33
+
+                    property string parameterName: prefix + ".switch.dpad.leftstick"
+                    label: qsTr("Switch D-PAD/Left Stick") + api.tr
+                    note: qsTr("Enable possibility to switch to left stick if we prefer") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(parameterName,false) //deactivated by default to use DPAD in priority for versus game
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName,false)){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption3
                 }
 
