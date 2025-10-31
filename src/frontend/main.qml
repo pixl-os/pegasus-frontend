@@ -36,6 +36,10 @@ Window {
 
     visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
+    //Parameters for all dialog boxes
+    property int dialogHorizontalSize: 100
+    property int dialogVerticalSize: 100
+    property int dialogScale: 80
     //Flags to know if any parameter needing reboot or restart
     property bool needReboot : false
     property bool needRestart : false
@@ -367,6 +371,9 @@ Window {
                     var lastAction = api.internal.system.currentAction();
                     var lastGame;
                     var lastCollection;
+                    dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+                    dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+                    dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
                     if(lastAction === "gamelistbrowsing"){ //to open a "system" menu (with selected game included)
                         //case when we browse in a listview/gridview
                         lastCollection = api.internal.system.currentCollection();
@@ -469,9 +476,10 @@ Window {
             asynchronous: true
             opacity: focus ? 1 : 0
             property bool fullscreen: true
-            width: parent.width * (fullscreen ? 1.0 : 0.90)
-            height: parent.height * (fullscreen ? 1.0 : 0.80)
-            scale: focus ? 1.0 : 0
+
+            width: parent.width * (dialogHorizontalSize/100)
+            height: parent.height * (dialogVerticalSize/100)
+            scale: focus ? (fullscreen ? 1.0 : (dialogScale/100)) : 0
 
             Behavior on opacity { PropertyAnimation { duration: 500 } }
             Behavior on scale { NumberAnimation { duration: 500; easing.type: Easing.Linear }
@@ -2480,6 +2488,9 @@ Window {
 
     function gameSettings(collection,game) {
         //set not fullscreen due to be more like a popup dialogbox
+        dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+        dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+        dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
         subdialog.fullscreen = false;
         subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": collection, "game": game , "launchedAsDialogBox": true});
         subdialog.focus = true;
@@ -2487,6 +2498,9 @@ Window {
 
     function systemSettings(collection) {
         //set not fullscreen due to be more like a popup dialogbox
+        dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+        dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+        dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
         subdialog.fullscreen = false;
         subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": collection, "launchedAsDialogBox": true});
         subdialog.focus = true;

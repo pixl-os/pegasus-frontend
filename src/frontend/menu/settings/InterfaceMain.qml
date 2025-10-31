@@ -270,8 +270,99 @@ FocusScope {
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDialogBoxScale
+                }
+                SliderOption {
+                    id: optDialogBoxScale
+
+                    //property to manage parameter name
+                    property string parameterName : "system.dialog.scale"
+                    //property of SliderOption to set
+                    label: qsTr("Dialog box scale") + api.tr
+                    note: qsTr("This scale is expressed as a percentage of screen. \nthe default value is 80% (min: 50% - max 100%).") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 50
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,80)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,80) + "%"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDialogBoxHorizontalSize
+                }
+                SliderOption {
+                    id: optDialogBoxHorizontalSize
+
+                    //property to manage parameter name
+                    property string parameterName : "system.dialog.horizontal.size"
+                    //property of SliderOption to set
+                    label: qsTr("Dialog box Horizontal Size") + api.tr
+                    note: qsTr("This size is expressed as a percentage of screen. \nthe default value is 100% (min: 50% - max 150%).") + api.tr
+                    // in slider object
+                    max : 150
+                    min : 50
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,90)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,100) + "%"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDialogBoxVerticalSize
+                }
+                SliderOption {
+                    id: optDialogBoxVerticalSize
+
+                    //property to manage parameter name
+                    property string parameterName : "system.dialog.vertical.size"
+                    //property of SliderOption to set
+                    label: qsTr("Dialog box Vertical Size") + api.tr
+                    note: qsTr("This size is expressed as a percentage of screen. \nthe default value is 100% (min: 50% - max 150%).") + api.tr
+                    // in slider object
+                    max : 150
+                    min : 50
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,105)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,100) + "%"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTheme
                 }
+
                 SectionTitle {
                     text: qsTr("Theme management") + api.tr
                     first: true
