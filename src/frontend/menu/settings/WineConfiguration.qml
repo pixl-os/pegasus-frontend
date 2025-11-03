@@ -953,8 +953,14 @@ FocusScope {
             //remove emulator bottles
             if (!isDebugEnv()){
                 if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
-                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_* ; mount -o remount,ro /");
-                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_* ; mount -o remount,ro /");
+                    //active case-insensitive globbing
+                    api.internal.system.run("shopt -s noscaseglob");
+                    //let time to change really and avoid bad effects
+                    api.internal.system.run("sleep 1.0");
+                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_*wine* ; mount -o remount,ro /");
+                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*wine* ; mount -o remount,ro /");
+                    //disable case-insensitive globbing
+                    api.internal.system.run("shopt -u noscaseglob");
                 }
                 else{
                     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
