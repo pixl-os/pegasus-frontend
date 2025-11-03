@@ -254,24 +254,10 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optMenuControlsConfig
-
-                }
-                SimpleButton {
-                    id: optMenuControlsConfig
-
-                    label: qsTr("Change menu controls") + api.tr
-                    note: qsTr("Change control assignation only in menu") + api.tr
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-
-                    onActivate: {
-                        focus = true;
-                        root.openKeySettings();
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optDialogBoxScale
+
                 }
+
                 SliderOption {
                     id: optDialogBoxScale
 
@@ -279,7 +265,7 @@ FocusScope {
                     property string parameterName : "system.dialog.scale"
                     //property of SliderOption to set
                     label: qsTr("Dialog box scale") + api.tr
-                    note: qsTr("This scale is expressed as a percentage of screen. \nthe default value is 80% (min: 50% - max 100%).") + api.tr
+                    note: qsTr("the default value is 80% (min: 50% - max 100%).") + api.tr
                     // in slider object
                     max : 100
                     min : 50
@@ -309,11 +295,11 @@ FocusScope {
                     property string parameterName : "system.dialog.horizontal.size"
                     //property of SliderOption to set
                     label: qsTr("Dialog box Horizontal Size") + api.tr
-                    note: qsTr("This size is expressed as a percentage of screen. \nthe default value is 100% (min: 50% - max 150%).") + api.tr
+                    note: qsTr("the default value is 100% (min: 50% - max 150%).") + api.tr
                     // in slider object
                     max : 150
                     min : 50
-                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,90)
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,100)
                     // in text object
                     value: api.internal.recalbox.getIntParameter(parameterName,100) + "%"
                     onActivate: {
@@ -339,13 +325,13 @@ FocusScope {
                     property string parameterName : "system.dialog.vertical.size"
                     //property of SliderOption to set
                     label: qsTr("Dialog box Vertical Size") + api.tr
-                    note: qsTr("This size is expressed as a percentage of screen. \nthe default value is 100% (min: 50% - max 150%).") + api.tr
+                    note: qsTr("the default value is 105% (min: 50% - max 150%).") + api.tr
                     // in slider object
                     max : 150
                     min : 50
                     slidervalue : api.internal.recalbox.getIntParameter(parameterName,105)
                     // in text object
-                    value: api.internal.recalbox.getIntParameter(parameterName,100) + "%"
+                    value: api.internal.recalbox.getIntParameter(parameterName,105) + "%"
                     onActivate: {
                         focus = true;
                     }
@@ -360,9 +346,54 @@ FocusScope {
                         sfxNav.play();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optMenuControlsConfig
+                }
+                SectionTitle {
+                    text: qsTr("Interface controls") + api.tr
+                    first: true
+                    symbol: "\uf181"
+                }
+                SimpleButton {
+                    id: optMenuControlsConfig
+
+                    label: qsTr("Change menu controls") + api.tr
+                    note: qsTr("Change control assignation only in menu") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openKeySettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGameMenuBehavior
+                }
+                ToggleOption {
+                    id: optGameMenuBehavior
+
+                    label: qsTr("Use 'Start' button for Game menu") + api.tr
+                    note: qsTr("Deactivated by default (only for theme able to manage Game/System sub-menu)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.theme.use.start.game.menu", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.theme.use.start.game.menu",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSytemMenuBehavior
+                }
+                ToggleOption {
+                    id: optSytemMenuBehavior
+
+                    label: qsTr("Use 'Start' button for System menu") + api.tr
+                    note: qsTr("Activated by default (only for theme able to manage Game/System sub-menu)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.theme.use.start.system.menu", true)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.theme.use.start.system.menu",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTheme
                 }
-
                 SectionTitle {
                     text: qsTr("Theme management") + api.tr
                     first: true

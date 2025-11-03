@@ -269,7 +269,7 @@ FocusScope {
                             asynchronous: true
                             height: ((game.assets.logo === "") && (game.assets.screenshot === "")) ? (parent.height/4)*3 : parent.height/2
                             width: background.width
-                            source: game && (game.assets.logo === "") ? teknoParrotIcon(game) : ""
+                            source: game ? (game.assets.logo === "" ? teknoParrotIcon(game) : "") : ""
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.horizontalCenter: parent.horizontalCenter
                             fillMode: Image.PreserveAspectFit

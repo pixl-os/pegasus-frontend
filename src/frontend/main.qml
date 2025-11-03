@@ -374,7 +374,7 @@ Window {
                     dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
                     dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
                     dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
-                    if(lastAction === "gamelistbrowsing"){ //to open a "system" menu (with selected game included)
+                    if(lastAction === "gamelistbrowsing" && api.internal.recalbox.getBoolParameter("pegasus.theme.use.start.system.menu", true)){ //to open a "system" menu (with selected game included)
                         //case when we browse in a listview/gridview
                         lastCollection = api.internal.system.currentCollection();
                         //set not fullscreen due to be more like a popup dialogbox
@@ -382,7 +382,7 @@ Window {
                         subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "launchedAsDialogBox": true});
                         subdialog.focus = true;
                     }
-                    else if(lastAction === "gameviewselected"){ //to open a "game" menu only (to update override .cfg file)
+                    else if(lastAction === "gameviewselected" && api.internal.recalbox.getBoolParameter("pegasus.theme.use.start.game.menu", false)){ //to open a "game" menu only (to update override .cfg file)
                         //case when we select a view focus on a game (not in listview/gridview or other collections)
                         lastCollection = api.internal.system.currentCollection();
                         lastGame = api.internal.system.currentGame();
