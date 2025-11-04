@@ -337,13 +337,27 @@ FocusScope {
                 ToggleOption {
                     id: optSystemSmoothGame
 
+                    //property to manage parameter name
+                    property string suffix: ".smooth"
+                    property string parameterName : prefix + suffix
+
                     label: qsTr("Smooth games") + api.tr
                     note: qsTr("Set smooth for this system") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".smooth")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".smooth",checked);
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
                     }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSystemShaderSet
                     // not visible if not libretro Core
@@ -514,23 +528,27 @@ FocusScope {
                 ToggleOption {
                     id: optSystemOverlays
 
+                    //property to manage parameter name
+                    property string suffix: ".recalboxoverlays"
+                    property string parameterName : prefix + suffix
+
                     label: qsTr("Set overlay") + api.tr
                     note: qsTr("Set overlay on this system") + api.tr
 
                     checked:{
                         if(prefix === system.shortName){
-                            return api.internal.recalbox.getBoolParameter(prefix + ".recalboxoverlays", api.internal.recalbox.getBoolParameter("global.recalboxoverlays"))
-
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
                         }
                         else{
-                            return api.internal.recalbox.getBoolParameter(prefix + ".recalboxoverlays", api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays", api.internal.recalbox.getBoolParameter("global.recalboxoverlays")))
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
                         }
                     }
                     onCheckedChanged:{
-                        if(checked !== api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays", api.internal.recalbox.getBoolParameter(system.shortName + ".recalboxoverlays", api.internal.recalbox.getBoolParameter("global.recalboxoverlays")))){
-                            api.internal.recalbox.setBoolParameter(prefix + ".recalboxoverlays",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
                         }
                     }
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSystemGameRewind
                     // not visible if not libretro Core
@@ -546,13 +564,27 @@ FocusScope {
                 ToggleOption {
                     id: optSystemGameRewind
 
+                    //property to manage parameter name
+                    property string suffix: ".rewind"
+                    property string parameterName : prefix + suffix
+
                     label: qsTr("Game rewind") + api.tr
                     note: qsTr("Set rewind for this system 'Only work with Retroarch'") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".rewind")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".rewind",checked);
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
                     }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optSystemAutoSave
                     // not visible if not libretro Core
@@ -561,12 +593,25 @@ FocusScope {
                 ToggleOption {
                     id: optSystemAutoSave
 
+                    //property to manage parameter name
+                    property string suffix: ".autosave"
+                    property string parameterName : prefix + suffix
+
                     label: qsTr("Auto save/load") + api.tr
                     note: qsTr("Set autosave/load savestate for this system") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".autosave")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".autosave",checked);
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
+                    }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: emulatorButtons.count > 1 ? optAutoCoreSelection : emulatorButtons.itemAt(0)
@@ -581,13 +626,27 @@ FocusScope {
                 ToggleOption {
                     id: optAutoCoreSelection
 
+                    //property to manage parameter name
+                    property string suffix: ".autoselection"
+                    property string parameterName : prefix + suffix
+
                     label: qsTr("Auto emulator/core selection") + api.tr
                     note: qsTr("To select the best ones to use from rom extensions (if needed)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(system.shortName + ".autoselection")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(system.shortName + ".autoselection",checked);
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
                     }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
                     onFocusChanged: container.onFocus(this)
                     visible: emulatorButtons.count > 1 ? true : false
                     KeyNavigation.down: emulatorButtons.itemAt(0)
@@ -728,12 +787,80 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: containerDeleteOverrideFile
+                }
+                //to be able to delete "override" file
+                SimpleButton {
+                    id: btnDeleteOverrideFile
+                    visible: game ? (optGameInfo.override_exists === "true" ? true : false) : false
+                    Rectangle {
+                        id: containerDeleteOverrideFile
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? "red" : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf4c5  " + qsTr("Delete override file and exit") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnDeleteOverrideFile"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": prefix + " " + qsTr("Override file deletion") + api.tr,
+                                                  "message": qsTr("Are you sure to delete \n'" + optGameInfo.override_file + "'\nfile and exit ?") + api.tr,
+                                                  "symbol": "\uf4c5",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
                     height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
+        }
+    }
+
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+        z:10
+        property string callerid: ""
+    }
+
+    Connections {
+        target: confirmDialog.item
+        function onAccept() {
+            if (confirmDialog.callerid === "btnDeleteOverrideFile"){
+                if(typeof(game) !== "undefined"){
+                    var romfile = game.files.get(0).path;
+                    api.internal.system.run("mount -o remount,rw /; sleep 1; rm -f " + romfile + ".recalbox.conf" + " ; sleep 1; mount -o remount,ro /");
+                    optGameInfo.override_exists = "false";
+                    btnDeleteOverrideFile.visible = false;
+                    optSystemGameRatio.focus = true;
+                    root.close();
+                }
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
         }
     }
     MultivalueBox {
