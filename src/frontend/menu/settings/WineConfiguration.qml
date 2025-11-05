@@ -424,7 +424,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".winesoftrenderer")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".winesoftrenderer",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winesoftrenderer",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winesoftrenderer",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineRenderer
@@ -633,7 +635,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".winevirtualdesktop", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".winevirtualdesktop",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winevirtualdesktop",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winevirtualdesktop",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineNVapi
@@ -651,7 +655,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".winenvapi",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winenvapi",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winenvapi",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineFullScreenFSR
@@ -663,7 +669,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".winefullscreenfsr", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".winefullscreenfsr",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winefullscreenfsr",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winefullscreenfsr",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineFullScreenIntegerScaling
@@ -675,7 +683,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".winefullscreenintegerscaling", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".winefullscreenintegerscaling",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winefullscreenintegerscaling",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winefullscreenintegerscaling",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineDisableFullScreenHack
@@ -687,7 +697,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".winedisablefullscreenhack", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".winedisablefullscreenhack",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winedisablefullscreenhack",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winedisablefullscreenhack",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineESync
@@ -699,7 +711,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".wineesync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".wineesync",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wineesync",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".wineesync",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineFSync
@@ -711,7 +725,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".winefsync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".winefsync",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winefsync",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winefsync",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineDebug

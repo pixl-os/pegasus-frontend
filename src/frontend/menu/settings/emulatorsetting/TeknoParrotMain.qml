@@ -314,6 +314,7 @@ FocusScope {
                     id: optTeknoparrotOption33
 
                     property string parameterName: prefix + ".switch.dpad.leftstick"
+
                     label: qsTr("Switch D-PAD/Left Stick") + api.tr
                     note: qsTr("Enable possibility to switch to left stick if we prefer") + api.tr
 
@@ -355,7 +356,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".framelimiter", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".framelimiter",checked);
+                       if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".framelimiter",true)){
+                           api.internal.recalbox.setBoolParameter(prefix + ".framelimiter",checked);
+                       }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption6
@@ -367,7 +370,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".rotate.tate", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".rotate.tate",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".rotate.tate",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".rotate.tate",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption31
@@ -379,7 +384,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".force.freeplay", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".force.freeplay",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".force.freeplay",true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".force.freeplay",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotAdvancedConf
@@ -393,7 +400,12 @@ FocusScope {
                         symbol: "\uf412"
                     }
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".advanced.configuration", false)
-                    onCheckedChanged: api.internal.recalbox.setBoolParameter(prefix + ".advanced.configuration",checked);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".advanced.configuration",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".advanced.configuration",checked);
+
+                        }
+                    }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption4
                 }
@@ -404,7 +416,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".launch.ui", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".launch.ui",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".launch.ui",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".launch.ui",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption8
@@ -417,7 +431,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".keep.userprofile.from.ui", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".keep.userprofile.from.ui",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".keep.userprofile.from.ui",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".keep.userprofile.from.ui",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption81
@@ -431,7 +447,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".save.userprofile.for.ui", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".save.userprofile.for.ui",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".save.userprofile.for.ui",true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".save.userprofile.for.ui",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption5                    
@@ -443,7 +461,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".show.launcher", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".show.launcher",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".show.launcher",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".show.launcher",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotRunnerConf
@@ -459,7 +479,11 @@ FocusScope {
                         symbolFontFamily: globalFonts.ion
                     }
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".runner.configuration", false)
-                    onCheckedChanged: api.internal.recalbox.setBoolParameter(prefix + ".runner.configuration",checked);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".runner.configuration",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".runner.configuration",checked);
+                        }
+                    }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotRunnerType
                 }
