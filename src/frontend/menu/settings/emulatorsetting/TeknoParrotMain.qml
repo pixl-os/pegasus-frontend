@@ -324,6 +324,22 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotMenuService
+                }
+                ToggleOption {
+                    id: optTeknoparrotMenuService
+
+                    property string parameterName: prefix + ".menu.service"
+                    label: qsTr("Activate Test/Service menu access") + api.tr
+                    note: qsTr("Enable accces to Test/Service menu using usually L3/R3 buttons") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(parameterName,false) //deactivated by default
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName,false)){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption3
                 }
 
