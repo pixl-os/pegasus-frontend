@@ -471,6 +471,20 @@ Window {
             }
         }
 
+        //to have a shade behind the subdialog loaded
+        Rectangle {
+            id: shade
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+
+            color: "#000"
+            opacity: subdialog.focus ? 0.75 : 0
+            visible: opacity > 0.001 && width > 0
+            Behavior on opacity { NumberAnimation { duration: 300 } }
+        }
+
         Loader {
             id: subdialog
             asynchronous: true
