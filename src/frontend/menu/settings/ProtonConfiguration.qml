@@ -338,7 +338,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winesoftrenderer")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winesoftrenderer",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winesoftrenderer",false)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winesoftrenderer",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonRenderer
@@ -523,7 +525,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winenvapi",checked);
+		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi",false)){
+                       	    api.internal.recalbox.setBoolParameter(prefix + ".proton.winenvapi",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenFSR
@@ -535,7 +539,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenfsr", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenfsr",checked);
+		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenfsr",false)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenfsr",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenIntegerScaling
@@ -547,7 +553,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenintegerscaling", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenintegerscaling",checked);
+		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenintegerscaling",false)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenintegerscaling",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDisableFullScreenHack
@@ -559,7 +567,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winedisablefullscreenhack", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winedisablefullscreenhack",checked);
+		        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winedisablefullscreenhack",true)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winedisablefullscreenhack",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonESync
@@ -571,7 +581,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.wineesync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.wineesync",checked);
+		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.wineesync",true)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.wineesync",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFSync
@@ -583,7 +595,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefsync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefsync",checked);
+		        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winefsync",true)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winefsync",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDebug

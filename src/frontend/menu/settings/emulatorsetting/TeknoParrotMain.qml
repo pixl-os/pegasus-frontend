@@ -231,7 +231,7 @@ FocusScope {
 
                     //property of SliderOption to set
                     label: qsTr("Set dead zone Controller") + api.tr
-                    note: qsTr("The dead zone is expressed as a percentage. \nthe axis and the default value is 2% (min: 0% - max 30%).") + api.tr
+                    note: qsTr("the default value is 2% (min: 0% - max 30%).") + api.tr
                     // in slider object
                     max : 30
                     min : 0
