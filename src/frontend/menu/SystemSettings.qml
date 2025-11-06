@@ -49,6 +49,7 @@ FocusScope {
         onClose: root.close()
         onOpenVideoSettings: root.openScreen("settings/VideoSettings.qml")
         onOpenInformationSystem: root.openScreen("settings/InformationSystem.qml")
+        onOpenSystemLogs: root.openScreen("settings/SystemLogs.qml")
         onOpenWifiNetworks: root.openScreen("settings/WifiNetworks.qml")
         onOpenAdvancedDirectoriesConfiguration: root.openScreen("settings/AdvancedDirectoriesConf.qml")
     }

@@ -306,6 +306,29 @@ Window {
 
             // Input releasing
             Keys.onReleased: {
+                //****************************************************************************************
+                if(devModeActivated === false){
+                    //To detect any pattern ;-)
+                    //console.log("event.key : ", event.key);
+                    //console.log("codePattern[" + codeIndex + "] : " + codePattern[codeIndex]);
+                    if(api.keys.isUp(event) && codePattern[codeIndex] === "Up") codeIndex = codeIndex + 1;
+                    else if(api.keys.isDown(event) && codePattern[codeIndex] === "Down") codeIndex = codeIndex + 1;
+                    else if(api.keys.isLeft(event) && codePattern[codeIndex] === "Left") codeIndex = codeIndex + 1;
+                    else if(api.keys.isRight(event) && codePattern[codeIndex] === "Right") codeIndex = codeIndex + 1;
+                    else if(api.keys.isAccept(event) && codePattern[codeIndex] === "A") codeIndex = codeIndex + 1;
+                    else if(api.keys.isCancel(event) && codePattern[codeIndex] === "B") codeIndex = codeIndex + 1;
+                    else { //reset pattern
+                        codeIndex = 0;
+                    }
+                    //if all keys of code has been confirmed
+                    if(codeIndex >= codePattern.length){
+                        //CODE OK !!!
+                        devModeActivated = true;
+                        codeIndex = 0;
+                    }
+                }
+                //****************************************************************************************
+
                 // Guide
                 if (api.keys.isGuide(event) && !event.isAutoRepeat) {
                     event.accepted = true;
@@ -2835,4 +2858,101 @@ Window {
         }
     }
     //*********************************************************** END OF SLIDERS MANAGEMENT *************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //for the code ;-)
+    property var codePattern: ["Up", "Up", "Down", "Down", "Left", "Right", "Left", "Right", "B", "A"];
+    property int codeIndex: 0
+    property bool devModeActivated: false;
+
+    // Timer to show the sliders during a limited after update
+    Timer {
+        id: devModeStatusCheck
+        interval: 10000
+        repeat: false
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            devModeActivated = api.internal.recalbox.getBoolParameter("system.dev.mode.activated",false);
+            //console.log("devModeStatusCheck - devModeActivated: ", devModeActivated)
+        }
+    }
+
+    onDevModeActivatedChanged:{
+        //console.log("onDevModeActivatedChanged - devModeActivated: ", devModeActivated)
+        if(devModeActivated){
+            //show popup to alert success
+            apiconnection.onShowPopup(qsTr("Congratulation"), qsTr("'Dev' mode activated !"),"",3);
+            api.internal.recalbox.setBoolParameter("system.dev.mode.activated",true);
+        }
+    }
 }

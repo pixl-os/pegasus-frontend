@@ -171,5 +171,7 @@
         <file>assets/6_buttons_panel_bis.png</file>
         <file>menu/settings/SystemsEmulatorConfigurationMain.qml</file>
         <file>menu/settings/common/RainbowSliderOption.qml</file>
+        <file>menu/settings/SystemLogs.qml</file>
+        <file>menu/settings/common/FileEditor.qml</file>
     </qresource>
 </RCC>
