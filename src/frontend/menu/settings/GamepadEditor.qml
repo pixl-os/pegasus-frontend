@@ -2596,17 +2596,32 @@ FocusScope {
                     }
                     else{
                         //console.log("api.internal.recalbox.getStringParameter(layout.name + '.controller.skin', '') : ",api.internal.recalbox.getStringParameter(layout.name + ".controller.skin", ""));
-                        root.padPreview.name = layout.name + api.internal.recalbox.getStringParameter(layout.name + "." + root.gamepad.deviceGUID + ".controller.skin", "");
+                        //root.padPreview.name = layout.name + api.internal.recalbox.getStringParameter(layout.name + "." + root.gamepad.deviceGUID + ".controller.skin", "");
+                        let pathParts = api.internal.recalbox.getStringParameter(layout.name + "." + root.gamepad.deviceGUID + ".controller.skin", "").split("/");
+                        root.padPreview.name = pathParts[pathParts.length - 1];
                     }
+                    //console.log("root.padPreview.name : " + root.padPreview.name);
                     //Add a way to select specific Controller Layout Element/values from QML model provided for a specific optControllerSkin
-                    var fileToFind = loaderPadPreview.layoutAssetsPath.replace("file:/","") + root.padPreview.name + "/" + root.padPreview.name + ".qml"
+                    //search from share_init
+                    loaderPadPreview.layoutAssetsPath = "file:/" + "/recalbox/share/system/.pegasus-frontend/assets/gamepad/"
+                    var fileToFind = "/recalbox/share/system/.pegasus-frontend/assets/gamepad/" + root.padPreview.name + "/" + root.padPreview.name + ".qml"
                     //console.log("fileToFind : " + fileToFind);
                     var fileExists = api.internal.system.run("if [ -f " + fileToFind + " ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
                     //console.log("fileExists : " + fileExists);
+                    if(fileExists === false){
+                        //search from share_init
+                        loaderPadPreview.layoutAssetsPath = "file:/" + "/recalbox/share_init/system/.pegasus-frontend/assets/gamepad/"
+                        fileToFind = "/recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" + root.padPreview.name + "/" + root.padPreview.name + ".qml"
+                        //console.log("fileToFind : " + fileToFind);
+                        fileExists = api.internal.system.run("if [ -f " + fileToFind + " ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
+                        //console.log("fileExists : " + fileExists);
+                    }
                     if(fileExists !== false){
                         //console.log("loaderPadPreview.layoutAssetsPath : " + loaderPadPreview.layoutAssetsPath);
                         //if file doesn't exists, no loading in this case, just a warning visible in log
-                        skinLoader.source = loaderPadPreview.layoutAssetsPath + root.padPreview.name + "/" + root.padPreview.name + ".qml"
+                        //skinLoader.source = loaderPadPreview.layoutAssetsPath + root.padPreview.name + "/" + root.padPreview.name + ".qml"
+                        root.padPreview.assetsPath = loaderPadPreview.layoutAssetsPath;
+                        skinLoader.source = "file:/" + fileToFind
                     }
                 }
             }
@@ -3285,13 +3300,14 @@ FocusScope {
                     }
                     else{
                         // 1. Split the string into an array using the delimiter '/'
+                        //console.log("optControllerSkin internalvalue : " + internalvalue);
                         let pathParts = internalvalue.split("/");
                         // 2. Access the last element of the array using 'length - 1'
                         skinName = pathParts[pathParts.length - 1].replace(loaderPadPreview.layoutName,"")
                         // 3. check if model has AssetsPath before update
                         if(typeof(root.padPreview) !== "undefined"){
                             if(typeof(root.padPreview.assetsPath) !== "undefined"){
-                                //console.log("1 - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
+                                //console.log("optControllerSkin - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
                                 //take path of this skin to have the assetsPath
                                 //but due to biding, WARNING WILL BE GENERATED DURING UPDATE of VALUES but no bad effect in UI
                                 //only warning as following when we change the assetsPath value
@@ -3299,7 +3315,7 @@ FocusScope {
                                 root.padPreview.name = loaderPadPreview.layoutName + skinName
                                 root.padPreview.assetsPath = "file:/" + internalvalue.replace(loaderPadPreview.layoutName + skinName,"");
                                 loaderPadPreview.layoutAssetsPath = "file:/" + internalvalue.replace(loaderPadPreview.layoutName + skinName,"");
-                                //console.log("2 - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
+                                //console.log("optControllerSkin - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
                             }
                         }
                     }
