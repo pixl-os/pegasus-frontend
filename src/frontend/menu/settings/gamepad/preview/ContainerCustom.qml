@@ -221,7 +221,12 @@ Item {
         property real green
         property real blue
         property real luminosity: rgbLedLuminosity
+        /*onVisibleChanged: {
+            console.log("onVisibleChanged - visible: " + visible);
+        }*/
         onRgbStringChanged: {
+            //console.log("onRgbStringChanged - rgbLedColor: " + rgbLedColor);
+            //console.log("onRgbStringChanged - rgbLedLuminosity: " + rgbLedLuminosity);
             if(rgbString !== ""){
                 red = Number(rgbString.split(",")[0]) / 255.0;
                 green = Number(rgbString.split(",")[1]) / 255.0;

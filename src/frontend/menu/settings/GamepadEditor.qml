@@ -2616,7 +2616,10 @@ FocusScope {
                         fileExists = api.internal.system.run("if [ -f " + fileToFind + " ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
                         //console.log("fileExists : " + fileExists);
                     }
-                    if(fileExists !== false){
+                    root.padPreview.assetsPath = loaderPadPreview.layoutAssetsPath;
+
+                    //only oad any skin QML if exists (to avoid to reload layout)
+                    if(fileExists !== false && optControllerSkin.skinName !== ""){
                         //console.log("loaderPadPreview.layoutAssetsPath : " + loaderPadPreview.layoutAssetsPath);
                         //if file doesn't exists, no loading in this case, just a warning visible in log
                         //skinLoader.source = loaderPadPreview.layoutAssetsPath + root.padPreview.name + "/" + root.padPreview.name + ".qml"
