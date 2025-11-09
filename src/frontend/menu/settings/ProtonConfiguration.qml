@@ -760,44 +760,12 @@ FocusScope {
             //remove emulator bottles
             if (!isDebugEnv()){
                 if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
-                    //active case-insensitive globbing
-                    api.internal.system.run("shopt -s noscaseglob");
                     //let time to change really and avoid bad effects
-                    api.internal.system.run("sleep 1.0");
-                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_*proton* ; mount -o remount,ro /");
-                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*proton* ; mount -o remount,ro /");
-                    //disable case-insensitive globbing
-                    api.internal.system.run("shopt -u noscaseglob");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/." + emulator + "_*Proton* ; mount -o remount,ro /");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/." + emulator + "_*proton* ; mount -o remount,ro /");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*Proton* ; mount -o remount,ro /");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*proton* ; mount -o remount,ro /");
                 }
-                // else if (confirmDialog.callerid === "btnLaunchWineCfg"){
-                //     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
-                //     var env = ""
-                //     var wine = ""
-                //     var prefixroot = api.internal.recalbox.getStringParameter(prefix + ".proton.wineprefixroot","/recalbox")
-                //     if(optProtonEngine.internalvalue !== ""){
-                //         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
-                //         wine = optProtonEngine.internalvalue
-                //     }
-                //     else if(optProtonAppImage.internalvalue !== ""){
-                //         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonAppImage.value.replace(" (embedded)","")
-                //         wine = "/usr/wine/wine"
-                //     }
-                //     if(env !== ""){
-                //         if(optProtonArch.internalvalue !== "" ){
-                //             env = env + "_" + optProtonArch.internalvalue;
-                //         }
-                //         //deactivated because not used in prefix for the moment
-                //         /*if(optWindowsVersion.internalvalue !== "" ){
-                //             env = env + "_" + optWindowsVersion.internalvalue;
-                //         }*/
-                //         var command = env + " " + wine + " winecfg";
-                //         console.log("winecfg command: " + command);
-                //         api.internal.system.run(command);
-                //     }
-                //     else {//we can't determine the prefix to use from pegasus-fe
-                //         console.log("Proton wine prefix can't be determine to execute winecfg");
-                //     }
-                // }
             }
             else{//for simulate and see more the spinner
                 api.internal.system.run("sleep 5");
