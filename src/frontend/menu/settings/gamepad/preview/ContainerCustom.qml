@@ -250,8 +250,8 @@ Item {
                 // 1. Get the original pixel color
                 lowp vec4 originalColor = texture2D(source, qt_TexCoord0);
 
-                //for testing: to do it only with color with more blue
-                if((originalColor.b > (originalColor.r * 2.0)) && (originalColor.b > (originalColor.g*2.0))){
+                //for testing: to do it only with color with more blue (as default color for DS4/DualSense)
+                if((originalColor.b > (originalColor.r * 1.8)) && (originalColor.b > (originalColor.g * 1.8))){
                     // 2. Calculate the luminance (brightness) of the original pixel
                     // This gives us a single float from 0.0 (black) to 1.0 (white)
                     highp float luminance = dot(originalColor.rgb, vec3(0.2126, 0.7152, 0.0722));

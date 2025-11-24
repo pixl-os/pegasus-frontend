@@ -258,6 +258,8 @@ FocusScope {
                                     if(controllersList.moveMode){
                                         //to update color of controllers led if exist/order changed
                                         api.internal.system.runAsync("sh /etc/init.d/S99ds4 refresh")
+                                        //to update color of DualSense controllers if order changed
+                                        api.internal.system.runAsync("sh /etc/init.d/S99dualsense refresh")
                                     }
                                     controllersList.moveMode = !controllersList.moveMode;
                                 }
@@ -270,6 +272,8 @@ FocusScope {
                                     controllersList.moveMode = false;
                                     //to update color of DS4 controllers if order changed
                                     api.internal.system.runAsync("sh /etc/init.d/S99ds4 refresh")
+                                    //to update color of DualSense controllers if order changed
+                                    api.internal.system.runAsync("sh /etc/init.d/S99dualsense refresh")
                                 }
                                 //console.log("controllersList.moveMode : ", controllersList.moveMode);
                             }
