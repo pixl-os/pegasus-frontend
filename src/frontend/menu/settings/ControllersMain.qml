@@ -59,6 +59,14 @@ FocusScope {
         text: qsTr("Controllers") + api.tr
         z: 2
     }
+
+    //ONLY FOR DUALSENSE/DS4 Controllers for the moment
+    function rainbowRefreshColor(){
+        //to update color of controllers led if exist/order changed
+        //console.log("bash /etc/init.d/S99controllerled refresh");
+        api.internal.system.runAsync("bash /etc/init.d/S99controllerled refresh");
+    }
+
     Flickable {
         id: container
 
@@ -257,9 +265,7 @@ FocusScope {
                                 if(controllersList.count > 1){
                                     if(controllersList.moveMode){
                                         //to update color of controllers led if exist/order changed
-                                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 refresh")
-                                        //to update color of DualSense controllers if order changed
-                                        api.internal.system.runAsync("sh /etc/init.d/S99dualsense refresh")
+                                        rainbowRefreshColor();
                                     }
                                     controllersList.moveMode = !controllersList.moveMode;
                                 }
@@ -270,10 +276,8 @@ FocusScope {
                                 if(controllersList.moveMode){
                                     event.accepted = true;
                                     controllersList.moveMode = false;
-                                    //to update color of DS4 controllers if order changed
-                                    api.internal.system.runAsync("sh /etc/init.d/S99ds4 refresh")
-                                    //to update color of DualSense controllers if order changed
-                                    api.internal.system.runAsync("sh /etc/init.d/S99dualsense refresh")
+                                    //to update color of controllers led if exist/order changed
+                                    rainbowRefreshColor();
                                 }
                                 //console.log("controllersList.moveMode : ", controllersList.moveMode);
                             }

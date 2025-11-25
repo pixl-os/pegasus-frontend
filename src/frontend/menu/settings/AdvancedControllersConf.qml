@@ -109,8 +109,8 @@ FocusScope {
     //ONLY FOR DUALSENSE/DS4 Controllers for the moment
     //to update color of DUALSENSE/DS4 controllers when we change color value
     function rainbowUpdateColor(padindex, sliderRBGstring){
-        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
-        api.internal.system.runAsync("sh /etc/init.d/S99dualsense update " + padindex + " " + sliderRBGstring)
+        //console.log("bash /etc/init.d/S99controllerled update " + padindex + " " + sliderRBGstring);
+        api.internal.system.runAsync("bash /etc/init.d/S99controllerled update " + padindex + " " + sliderRBGstring);
     }
 
     Flickable {
@@ -540,7 +540,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        rainbowUpdateColor(padindex);
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     Keys.onRightPressed: {
@@ -548,7 +548,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        rainbowUpdateColor(padindex);
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     onFocusChanged: container.onFocus(this)
@@ -583,7 +583,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        rainbowUpdateColor(padindex);
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     Keys.onRightPressed: {
@@ -591,7 +591,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        rainbowUpdateColor(padindex);
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     onFocusChanged: container.onFocus(this)
@@ -627,7 +627,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        rainbowUpdateColor(padindex);
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     Keys.onRightPressed: {
@@ -635,7 +635,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        rainbowUpdateColor(padindex);
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     onFocusChanged: container.onFocus(this)
@@ -671,7 +671,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        rainbowUpdateColor(padindex);
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     Keys.onRightPressed: {
@@ -679,7 +679,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        rainbowUpdateColor(padindex);
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     onFocusChanged: container.onFocus(this)
