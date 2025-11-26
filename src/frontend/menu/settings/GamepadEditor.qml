@@ -79,7 +79,11 @@ FocusScope {
                 fileExists = api.internal.system.run("if [ -f " + fileToFind + " ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
             }
             if(fileExists !== false){
+                layoutLoader.active = false;
+                layoutLoader.source = "";
                 //console.log("fileToload : " + "file:/" + fileToFind);
+                //console.log("layoutLoader.active : " + layoutLoader.active.toString());
+                layoutLoader.active = true;
                 layoutLoader.source = "file:/" + fileToFind
             }
             else{
