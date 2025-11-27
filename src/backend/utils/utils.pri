@@ -41,6 +41,7 @@ HEADERS += \
     $$PWD/libretro-common/include/libchdr/huffman.h \
     $$PWD/libretro-common/include/libchdr/lzma.h \
     $$PWD/libretro-common/include/libchdr/minmax.h \
+    $$PWD/qmlvaluereader.h \
     $$PWD/quazip/JlCompress.h \
     $$PWD/quazip/ioapi.h \
     $$PWD/quazip/minizip_crypt.h \
@@ -224,6 +225,7 @@ SOURCES += \
     $$PWD/libretro-common/formats/libchdr/libchdr_huffman.c \
     $$PWD/libretro-common/formats/libchdr/libchdr_lzma.c \
     $$PWD/libretro-common/formats/libchdr/libchdr_zlib.c \
+    $$PWD/qmlvaluereeader.cpp \
     $$PWD/quazip/JlCompress.cpp \
     $$PWD/quazip/qioapi.cpp \
     $$PWD/quazip/quaadler32.cpp \

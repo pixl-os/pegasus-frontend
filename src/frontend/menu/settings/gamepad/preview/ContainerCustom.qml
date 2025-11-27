@@ -18,6 +18,8 @@ Item {
     property string name: "" //used to find file named as "x_nameskin.jpg" :
                              //x_xboxseries.png, x_nes.png or x_snes.png for example without skin selected
                              //x_xboxseriesdoom.png or x_xboxseries20years.png
+    property string humanReadableName: "" //used to have a "human readable name" to display :
+
     property string assetsPath: "" // historically "qrc:/frontend/assets/gamepad/" but could be from other places now ;-)
     property string qml: "" //to avoid following warining issue when we load qml file containing reference to QML to Loader
                             //[w] qrc:/frontend/menu/settings/GamepadEditor.qml:2714: Error: Cannot assign to non-existent property "qml"

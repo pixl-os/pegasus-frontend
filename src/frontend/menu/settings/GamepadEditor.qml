@@ -365,6 +365,7 @@ FocusScope {
             id: myControllerLayout
             //CONTROLLERS LAYOUT TO DISPLAY IN EDITOR depending of layout name
             ListElement { name: "default"; qml: "gamepad/preview/Container.qml"
+                humanReadableName: "";
                 hasDedicatedGuide: true;
                 hasSelect: true;
                 hasStart: true;
@@ -2413,6 +2414,12 @@ FocusScope {
                 if(layout.qml.includes("ContainerCustom")){ //if we use the one that we could customize
 
                     //Settings of layout availability features list
+
+                    if(typeof(layout.humanReadableName) !== 'undefined') {
+                        root.padPreview.humanReadableName = layout.humanReadableName;
+                    }
+                    else root.padPreview.humanReadableName = "";
+
                     if(typeof(layout.hasSelect) !== 'undefined') root.padPreview.hasSelect = layout.hasSelect;
                     if(typeof(layout.hasStart) !== 'undefined') root.padPreview.hasStart = layout.hasStart;
 
@@ -2575,10 +2582,10 @@ FocusScope {
                     if(typeof(layout.rStickRightLeftX) !== 'undefined') root.padPreview.rStickRightLeftX = layout.rStickRightLeftX;
 
                     //Settings of contrast/brightness
-                    //console.log("typeof(layout.brightness) : ",typeof(layout.brightness));
-                    //console.log("layout.brightness : ", layout.brightness);
-                    //console.log("typeof(layout.contrast) : ",typeof(layout.contrast));
-                    //console.log("layout.contrast : ", layout.contrast);
+                    //console.log("setParameters() - typeof(layout.brightness) : ",typeof(layout.brightness));
+                    //console.log("setParameters() - layout.brightness : ", layout.brightness);
+                    //console.log("setParameters() - typeof(layout.contrast) : ",typeof(layout.contrast));
+                    //console.log("setParameters() - layout.contrast : ", layout.contrast);
 
                     //to set specific brightness/contrast for L/R Buttons, start/select/guide & DPADs independent buttons.
                     if((typeof(layout.contrast) !== 'undefined') && (layout.contrast !== 0)) root.padPreview.contrast = layout.contrast;
@@ -2609,22 +2616,22 @@ FocusScope {
                     //search from share_init
                     loaderPadPreview.layoutAssetsPath = "file:/" + "/recalbox/share/system/.pegasus-frontend/assets/gamepad/"
                     var fileToFind = "/recalbox/share/system/.pegasus-frontend/assets/gamepad/" + root.padPreview.name + "/" + root.padPreview.name + ".qml"
-                    //console.log("fileToFind : " + fileToFind);
+                    //console.log("setParameters() - fileToFind : " + fileToFind);
                     var fileExists = api.internal.system.run("if [ -f " + fileToFind + " ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
-                    //console.log("fileExists : " + fileExists);
+                    //console.log("setParameters() - fileExists : " + fileExists);
                     if(fileExists === false){
                         //search from share_init
                         loaderPadPreview.layoutAssetsPath = "file:/" + "/recalbox/share_init/system/.pegasus-frontend/assets/gamepad/"
                         fileToFind = "/recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" + root.padPreview.name + "/" + root.padPreview.name + ".qml"
-                        //console.log("fileToFind : " + fileToFind);
+                        //console.log("setParameters() - fileToFind : " + fileToFind);
                         fileExists = api.internal.system.run("if [ -f " + fileToFind + " ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
-                        //console.log("fileExists : " + fileExists);
+                        //console.log("setParameters() - fileExists : " + fileExists);
                     }
                     root.padPreview.assetsPath = loaderPadPreview.layoutAssetsPath;
 
-                    //only oad any skin QML if exists (to avoid to reload layout)
+                    //only load any skin QML if exists (to avoid to reload layout)
                     if(fileExists !== false && optControllerSkin.skinName !== ""){
-                        //console.log("loaderPadPreview.layoutAssetsPath : " + loaderPadPreview.layoutAssetsPath);
+                        //console.log("setParameters() - loaderPadPreview.layoutAssetsPath : " + loaderPadPreview.layoutAssetsPath);
                         //if file doesn't exists, no loading in this case, just a warning visible in log
                         //skinLoader.source = loaderPadPreview.layoutAssetsPath + root.padPreview.name + "/" + root.padPreview.name + ".qml"
                         root.padPreview.assetsPath = loaderPadPreview.layoutAssetsPath;
@@ -2641,13 +2648,13 @@ FocusScope {
             active: true // Start loading immediately if true
 
             onStatusChanged: {
-                //console.log("layoutLoader onStatusChanged");
+                console.log("layoutLoader onStatusChanged");
                 if (status === Loader.Loading) {
-                    //console.log("layoutLoader Loader.Loading");
+                    console.log("layoutLoader Loader.Loading");
                     //RFU
                 }
                 else if (status === Loader.Ready) {
-                    //console.log("layoutLoader Loader.Ready");
+                    console.log("layoutLoader Loader.Ready");
                     // SUCCESS: File was found and loaded. Proceed with data merge.
                     //console.log("layoutLoader found and loaded successfully.")
                     //console.log("layoutLoader : " + layoutLoader.toString())
@@ -2667,7 +2674,7 @@ FocusScope {
                 }
                 else if (status === Loader.Error) {
                     // FAILURE: File was NOT found in resources (or had a syntax error).
-                    //console.warn("QML file NOT found or failed to load. Skipping merge.")
+                    console.warn("QML file NOT found or failed to load. Skipping merge.")
                     if(loaderPadPreview.layoutIndex !== -1){
                         loaderPadPreview.layoutName = myControllerLayout.get(loaderPadPreview.layoutIndex).name;
                         loaderPadPreview.source = myControllerLayout.get(loaderPadPreview.layoutIndex).qml;
@@ -2686,7 +2693,7 @@ FocusScope {
             active: true // Start loading immediately if true
 
             onStatusChanged: {
-                //console.log("skinLoader onStatusChanged");
+                console.log("skinLoader onStatusChanged");
                 if (status === Loader.Loading) {
                     console.log("skinLoaderoutLoader Loader.Loading");
                     //RFU
@@ -2699,13 +2706,13 @@ FocusScope {
                     //console.log("skinLoader.item : " + skinLoader.item.toString())
                     //console.log("skinLoader.item.get(0) : " + skinLoader.item.get(0).toString())
                     layoutArea.loadAndMergeSingleElement(skinLoader.item.get(0))
-                    skinLoader.source = ""
+                    skinLoader.source = "";
                 }
                 else if (status === Loader.Error) {
                     // FAILURE: File was NOT found in resources (or had a syntax error).
                     console.warn("QML file NOT found or failed to load. Skipping merge.")
                     // Unload the component in this case
-                    skinLoader.source = ""
+                    skinLoader.source = "";
                 }
             }
         }
@@ -2718,7 +2725,7 @@ FocusScope {
 
                 // 2. Check for success and ensure there's at least one child (the ListElement)
                 if (!container) {
-                    console.warn("Could not load or find ListElement.")
+                    //console.warn("loadAndMergeSingleElement - Could not load or find ListElement.")
                     return
                 }
 
@@ -2728,12 +2735,18 @@ FocusScope {
                 // 4. Dynamically build the new object (QVariantMap)
                 var newObject = {}
                 var keys = Object.keys(newElement)
-                //console.log("keys.length : " + keys.length);
+                //console.log("loadAndMergeSingleElement - keys.length : " + keys.length);
+
                 for (var k = 0; k < keys.length; k++) {
                     var keyName = keys[k];
                     var keyValue = newElement[keyName]
-                    //console.log("Update : " + keyName + " = " + keyValue);
-                    deviceModel[keyName] = keyValue;
+                    //console.log("loadAndMergeSingleElement - Update : " + keyName + " = " + keyValue);
+                    if(deviceModel[keyName]){
+                       deviceModel[keyName] = keyValue;
+                    }
+                    else{
+                        console.log("loadAndMergeSingleElement - can't update : " + keyName + " = " + keyValue);
+                    }
                 }
             }
         }
@@ -2747,7 +2760,7 @@ FocusScope {
             property string layoutAssetsPath
             asynchronous: false
             onStatusChanged: {
-                //console.log("onStatusChanged");
+                console.log("onStatusChanged");
                 if (loaderPadPreview.status === Loader.Loading) {
                     console.log("loaderPadPreview Loader.Loading");
                     //RFU
@@ -2771,7 +2784,7 @@ FocusScope {
                                 //take path of this skin to have the assetsPath
                                 root.padPreview.assetsPath = "file:/" + optControllerSkin.internalvalue.replace(loaderPadPreview.layoutName + skinName,"");
                             }
-                            //console.log("0.1 - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
+                            console.log("0.1 - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
                         }
                         //set dynamically the layout
                         //console.log("loaderPadPreview parent.setParameters()");
@@ -3283,7 +3296,7 @@ FocusScope {
                 id: optControllerSkin
 
                 //property to manage parameter name
-                property string parameterName : loaderPadPreview.layoutName !== "" ? loaderPadPreview.layoutName + "." + root.gamepad.deviceGUID + ".controller.skin" : ""
+                property string parameterName : root.gamepad && loaderPadPreview.layoutName !== "" ? loaderPadPreview.layoutName + "." + root.gamepad.deviceGUID + ".controller.skin" : ""
                 property string skinName : ""
                 label: qsTr("Controller skin") + api.tr
                 value: parameterName !== "" ? api.internal.recalbox.parameterslist.currentName(parameterName) : ""
@@ -3311,8 +3324,10 @@ FocusScope {
                         let pathParts = internalvalue.split("/");
                         // 2. Access the last element of the array using 'length - 1'
                         skinName = pathParts[pathParts.length - 1].replace(loaderPadPreview.layoutName,"")
+                        //console.log("optControllerSkin skinName : " + skinName);
                         // 3. check if model has AssetsPath before update
                         if(typeof(root.padPreview) !== "undefined"){
+                            //console.log("optControllerSkin - root.padPreview.name : " + root.padPreview.name);
                             if(typeof(root.padPreview.assetsPath) !== "undefined"){
                                 //console.log("optControllerSkin - root.padPreview.assetsPath : " + root.padPreview.assetsPath);
                                 //take path of this skin to have the assetsPath

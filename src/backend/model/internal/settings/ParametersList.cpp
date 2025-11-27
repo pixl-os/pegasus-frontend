@@ -4,6 +4,7 @@
 #include "RecalboxBootConf.h"
 #include "RecalboxConfOverride.h"
 #include "Paths.h"
+#include "utils/qmlvaluereader.h"
 
 #include "audio/AudioController.h"
 #include "storage/StorageDevices.h"
@@ -788,17 +789,40 @@ QStringList GetParametersList(QString Parameter)
                     ListOfPicture.append("file://" + path +
                                          keyword + skin + "/" +
                                          "original_" + keyword + skin + ".jpg");
-                    //"Upper" case first char of keyword and skins to be nicer for display name ;-)
-                    skin[0] = skin[0].toUpper();
-                    keyword[0] = keyword[0].toUpper();
-                    if(path.contains("/share_init/")){
-                        ListOfValue.append(keyword + " " + skin);
+
+                    // check and read QML if exists
+                    QString qmlPath = path +
+                                      keyword + skin + "/" +
+                                      keyword + skin + ".qml";
+
+                    // --- Example with your specific value ---
+                    QString keyToFind = "humanReadableName";
+
+                    QString name = QmlValueReader::readStringValue(qmlPath, keyToFind);
+
+                    if (!name.isEmpty()) {
+                        Log::debug(LOGMSG("✅ Successfully read value: '%1'").arg(name));
+                        // Output example: "SF30 PRO (JP/EU)"
+                        if(path.contains("/share_init/")){
+                            ListOfValue.append(name);
+                        }
+                        else{
+                            ListOfValue.append(name + " " + QObject::tr("(personal skin)"));
+                        }
+                    } else {
+                        Log::debug(LOGMSG("Failed to read value from QML. Use skin identification to display"));
+                        //"Upper" case first char of keyword and skins to be nicer for display name ;-)
+                        skin[0] = skin[0].toUpper();
+                        keyword[0] = keyword[0].toUpper();
+                        if(path.contains("/share_init/")){
+                            ListOfValue.append(keyword + " " + skin);
+                        }
+                        else{
+                            ListOfValue.append(keyword + " " + skin + " " + QObject::tr("(personal skin)"));
+                        }
+                        //restore to lower case
+                        keyword = keyword.toLower();
                     }
-                    else{
-                        ListOfValue.append(keyword + " " + skin + " " + QObject::tr("(personal skin)"));
-                    }
-                    //restore to lower case
-                    keyword = keyword.toLower();
                 }
             }
         }
