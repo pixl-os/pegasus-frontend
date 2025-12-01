@@ -740,23 +740,12 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("auto");
         QString empty = "";
         ListOfInternalValue << empty;
-
-        //OLD WAY
-        /*if (Parameter.startsWith("xboxseries.")){
-            ListOfValue << QObject::tr("Robot White") << QObject::tr("20th Anniversary Special Edition") << QObject::tr("DOOM: The Dark Ages");
-            ListOfInternalValue  << "white" << "20years" << "doom";
-        }
-        else if(Parameter.startsWith("xboxone.")){
-            ListOfValue << QObject::tr("Xbox One S Edition") << QObject::tr("Xbox Elite Series 2");
-            ListOfInternalValue << "white" << "elite2";
-        }*/
-
-        //NEW WAY to let users add skins
         QString keyword = Parameter.section('.', 0, 0);
         //put path of "auto" picture (from share_init) / use jpg file to speed up preview
         ListOfPicture.append("file://recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" +
                              keyword + "/original_" + keyword + ".jpg");
-        //check if others exists in share_init or share
+
+        //check if others exists as skins in share_init or share
         QStringList paths;
         paths << "/recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" // first directory
               << "/recalbox/share/system/.pegasus-frontend/assets/gamepad/"; // second directory
@@ -784,11 +773,6 @@ QStringList GetParametersList(QString Parameter)
                 // For full path: QString fullPath = parentDirPath + QDir::separator() + dirName;
                 if(dirName != keyword){
                     QString skin = dirName.replace(keyword.toLower(),QString(""));
-                    //now we store directory of skin in recalbox.conf
-                    ListOfInternalValue.append(path + keyword + skin);
-                    ListOfPicture.append("file://" + path +
-                                         keyword + skin + "/" +
-                                         "original_" + keyword + skin + ".jpg");
 
                     // check and read QML if exists
                     QString qmlPath = path +
@@ -796,20 +780,34 @@ QStringList GetParametersList(QString Parameter)
                                       keyword + skin + ".qml";
 
                     // --- Example with your specific value ---
-                    QString keyToFind = "humanReadableName";
-
-                    QString name = QmlValueReader::readStringValue(qmlPath, keyToFind);
-
-                    if (!name.isEmpty()) {
-                        Log::debug(LOGMSG("✅ Successfully read value: '%1'").arg(name));
-                        // Output example: "SF30 PRO (JP/EU)"
-                        if(path.contains("/share_init/")){
-                            ListOfValue.append(name);
+                    QString keyToFind = "skinName";
+                    QString skinName = QmlValueReader::readStringValue(qmlPath, keyToFind);
+                    if (!skinName.isEmpty()) {
+                        //file exists as any initial layout or skin
+                        Log::debug(LOGMSG("value returned: '%1'").arg(skinName));
+                        // Output example: "sn30prosnesjpeu"
+                        if (skinName.contains("no " + keyToFind)) {
+                            //it's not a QML for skin in this case
+                            continue; //ignore this one because not a skin
                         }
-                        else{
-                            ListOfValue.append(name + " " + QObject::tr("(personal skin)"));
+
+                        // --- Example with your specific value ---
+                        keyToFind = "humanReadableName";
+                        QString name = QmlValueReader::readStringValue(qmlPath, keyToFind);
+
+                        if (!name.isEmpty()) {
+                            //Log::debug(LOGMSG("✅ Successfully read value: '%1'").arg(name));
+                            // Output example: "SF30 PRO (JP/EU)"
+                            if(path.contains("/share_init/")){
+                                ListOfValue.append(name);
+                            }
+                            else{
+                                ListOfValue.append(name + " " + QObject::tr("(personal skin)"));
+                            }
                         }
-                    } else {
+                    }
+
+                    if(skinName == ("no " + keyToFind) || skinName.isEmpty()) {
                         Log::debug(LOGMSG("Failed to read value from QML. Use skin identification to display"));
                         //"Upper" case first char of keyword and skins to be nicer for display name ;-)
                         skin[0] = skin[0].toUpper();
@@ -822,7 +820,15 @@ QStringList GetParametersList(QString Parameter)
                         }
                         //restore to lower case
                         keyword = keyword.toLower();
+                        skin = skin.toLower();
                     }
+
+                    //now we store directory of skin in recalbox.conf via the internal  value
+                    ListOfInternalValue.append(path + keyword + skin);
+                    ListOfPicture.append("file://" + path +
+                                         keyword + skin + "/" +
+                                         "original_" + keyword + skin + ".jpg");
+
                 }
             }
         }

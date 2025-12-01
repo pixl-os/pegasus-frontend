@@ -22,11 +22,14 @@ QString QmlValueReader::readStringValue(const QString& qmlFilePath, const QStrin
         //Log::debug(LOGMSG("QmlValueReader: line trimmed: '%1'").arg(line));
 
         // 2. Check if the line starts with our target key
-        if (line.contains(targetKey)) {
+        if (line.contains(propertyKey)) {
             // Remove the key and colon to isolate the value part
             line = line.remove(0, targetKey.length()).trimmed();
             //Log::debug(LOGMSG("QmlValueReader: line without key: '%1'").arg(line));
-
+            if(line[0] == ":"){
+                // Remove the ':' if needed due to spaces for example
+                line.remove(0, 1);
+            }
             // Expected format: "VALUE";
             // Check for quotes and the trailing semicolon for robustness
             if (line.startsWith('"') && line.contains(';')) {
@@ -53,5 +56,5 @@ QString QmlValueReader::readStringValue(const QString& qmlFilePath, const QStrin
     // If the loop finishes without finding the key
     file.close();
     //Log::debug(LOGMSG("QmlValueReader: Key not found or format invalid for key: '%1'").arg(propertyKey));
-    return QString();
+    return "no " + propertyKey;
 }

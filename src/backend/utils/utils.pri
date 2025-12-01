@@ -225,7 +225,7 @@ SOURCES += \
     $$PWD/libretro-common/formats/libchdr/libchdr_huffman.c \
     $$PWD/libretro-common/formats/libchdr/libchdr_lzma.c \
     $$PWD/libretro-common/formats/libchdr/libchdr_zlib.c \
-    $$PWD/qmlvaluereeader.cpp \
+    $$PWD/qmlvaluereader.cpp \
     $$PWD/quazip/JlCompress.cpp \
     $$PWD/quazip/qioapi.cpp \
     $$PWD/quazip/quaadler32.cpp \
