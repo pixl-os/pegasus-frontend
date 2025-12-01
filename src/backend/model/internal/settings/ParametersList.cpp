@@ -766,25 +766,43 @@ QStringList GetParametersList(QString Parameter)
             // assuming they exist in 'parentDirPath' and start with "xboxone" keyword.
 
             // Example of parsing/processing the list:
-            Log::debug(LOGMSG("Found directories starting with %1").arg(keyword));
+            //Log::debug(LOGMSG("Found directories starting with %1").arg(keyword));
             for (QString &dirName : directories) {
-                Log::debug(LOGMSG("Directory found in root : '%1'").arg(dirName));
+                //Log::debug(LOGMSG("Directory found in root : '%1'").arg(dirName));
                 // You can now use dirName for further operations in your QT C++ application.
                 // For full path: QString fullPath = parentDirPath + QDir::separator() + dirName;
-                if(dirName != keyword){
-                    QString skin = dirName.replace(keyword.toLower(),QString(""));
+                QString skin = dirName.replace(keyword.toLower(),QString(""));
 
-                    // check and read QML if exists
-                    QString qmlPath = path +
-                                      keyword + skin + "/" +
-                                      keyword + skin + ".qml";
+                // check and read QML if exists
+                QString qmlPath = path +
+                                  keyword + skin + "/" +
+                                  keyword + skin + ".qml";
+                //Log::debug(LOGMSG("dirName: '%1' -  keyword: '%2'").arg(dirName, keyword));
+                if((keyword + skin) == keyword){ // if not identify as skin
+                    // --- Example with your specific value ---
+                    QString keyToFind = "humanReadableName";
+                    QString name = QmlValueReader::readStringValue(qmlPath, keyToFind);
+                    //Log::debug(LOGMSG("keyToFind: '%1' -  name: '%2'").arg(keyToFind, name));
+                    //to be able to avoid to set as "auto" if value exists in QML for "Human Readable Name"
+                    if ((!name.isEmpty()) && (name != ("no " + keyToFind))) {
+                        //Log::debug(LOGMSG("✅ Successfully read value: '%1'").arg(name));
+                        // Output example: "SF30 PRO (JP/EU)"
+                        if(path.contains("/share_init/")){
+                            ListOfValue[0] = name;
+                        }
+                        else{
+                            ListOfValue[0] = name + " " + QObject::tr("(personal skin)");
+                        }
+                    }
 
+                }
+                else{
                     // --- Example with your specific value ---
                     QString keyToFind = "skinName";
                     QString skinName = QmlValueReader::readStringValue(qmlPath, keyToFind);
                     if (!skinName.isEmpty()) {
                         //file exists as any initial layout or skin
-                        Log::debug(LOGMSG("value returned: '%1'").arg(skinName));
+                        //Log::debug(LOGMSG("value returned: '%1'").arg(skinName));
                         // Output example: "sn30prosnesjpeu"
                         if (skinName.contains("no " + keyToFind)) {
                             //it's not a QML for skin in this case
@@ -808,7 +826,7 @@ QStringList GetParametersList(QString Parameter)
                     }
 
                     if(skinName == ("no " + keyToFind) || skinName.isEmpty()) {
-                        Log::debug(LOGMSG("Failed to read value from QML. Use skin identification to display"));
+                        //Log::debug(LOGMSG("Failed to read value from QML. Use skin identification to display"));
                         //"Upper" case first char of keyword and skins to be nicer for display name ;-)
                         skin[0] = skin[0].toUpper();
                         keyword[0] = keyword[0].toUpper();
