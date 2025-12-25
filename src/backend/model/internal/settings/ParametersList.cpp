@@ -725,6 +725,12 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << "Wine" << "Proton";
         ListOfInternalValue << "wine" << "proton";
     }
+    //********************************************* For Theme Behaviors **********************************************
+    else if (Parameter.endsWith(".start.usage"))
+    {
+        ListOfValue << QObject::tr("Game Menu") << QObject::tr("System Menu") << QObject::tr("Main Menu");
+        ListOfInternalValue << "GameMenu" << "SystemMenu" << "MainMenu";
+    }
     //******************************************* For Color Management **********************************************
     else if (Parameter.endsWith(".color"))
     {

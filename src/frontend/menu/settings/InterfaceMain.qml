@@ -366,33 +366,103 @@ FocusScope {
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGameMenuBehavior
+                    KeyNavigation.down: optGameviewStartUsage
                 }
-                ToggleOption {
-                    id: optGameMenuBehavior
+                MultivalueOption {
+                    id: optGameviewStartUsage
 
-                    label: qsTr("Use 'Start' button for Game menu") + api.tr
-                    note: qsTr("Deactivated by default (only for theme able to manage Game/System sub-menu)") + api.tr
+                    //property to manage parameter name
+                    property string parameterName : "pegasus.theme.gameview.start.usage"
 
-                    checked: api.internal.recalbox.getBoolParameter("pegasus.theme.use.start.game.menu", false)
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pegasus.theme.use.start.game.menu",checked);
+                    label: qsTr("Use 'Start' button in Gameview for") + api.tr
+                    note: qsTr("Only for theme able to 'notify' Gameview states to Pegasus)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGameviewStartUsage;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSytemMenuBehavior
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optGamelistStartUsage
+
                 }
-                ToggleOption {
-                    id: optSytemMenuBehavior
+                MultivalueOption {
+                    id: optGamelistStartUsage
 
-                    label: qsTr("Use 'Start' button for System menu") + api.tr
-                    note: qsTr("Activated by default (only for theme able to manage Game/System sub-menu)") + api.tr
+                    //property to manage parameter name
+                    property string parameterName : "pegasus.theme.gamelist.start.usage"
 
-                    checked: api.internal.recalbox.getBoolParameter("pegasus.theme.use.start.system.menu", true)
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pegasus.theme.use.start.system.menu",checked);
+                    label: qsTr("Use 'Start' button in GameList for") + api.tr
+                    note: qsTr("Only for theme able to 'notify' Gamelist states to Pegasus)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGamelistStartUsage;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
                     }
-                    onFocusChanged: container.onFocus(this)
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optTheme
+
                 }
                 SectionTitle {
                     text: qsTr("Theme management") + api.tr
@@ -579,22 +649,36 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
-            callerid.keypressed = true;
+            /*console.log(callerid.label," onSelect count : ", callerid.count);
+            console.log(callerid.label," onSelect currentindex : ", callerid.currentIndex);
+            console.log(callerid.label," onSelect newindex : ", index);
+            console.log(callerid.label," onSelect value : ", callerid.value);
+            console.log(callerid.label," onSelect internalvalue : ", callerid.internalvalue);*/
             //to use the good parameter
-            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+
+            if(typeof(callerid.command) === "undefined") api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            else api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
+
+            callerid.keypressed = true;
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
-            //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+            callerid.currentIndex = index;
+
+            //to force update of display of selected value
+            if(typeof(callerid.command) === "undefined"){
+                callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+                callerid.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+            }
+            else {
+                callerid.value = api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
+            }
         }
     }
     MultivalueBox {

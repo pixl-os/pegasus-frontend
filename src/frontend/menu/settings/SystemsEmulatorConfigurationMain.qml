@@ -70,7 +70,7 @@ FocusScope {
     }
 
     onGameChanged: {
-        if(typeof(game) !== "undefined"){
+        if(game && typeof(game) !== "undefined"){
             var romfile = game.files.get(0).path;
             prefix = "override." + system.shortName
             api.internal.recalbox.loadParametersFromOverride(romfile + ".recalbox.conf");
@@ -267,7 +267,7 @@ FocusScope {
                         Image {
                             id: tplogo
                             asynchronous: true
-                            height: ((game.assets.logo === "") && (game.assets.screenshot === "")) ? (parent.height/4)*3 : parent.height/2
+                            height: game ? (((game.assets.logo === "") && (game.assets.screenshot === "")) ? (parent.height/4)*3 : parent.height/2) : (parent.height/4)*3
                             width: background.width
                             source: game ? (game.assets.logo === "" ? teknoParrotIcon(game) : "") : ""
                             anchors.verticalCenter: parent.verticalCenter

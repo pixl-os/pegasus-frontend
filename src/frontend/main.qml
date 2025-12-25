@@ -394,18 +394,17 @@ Window {
                     var lastAction = api.internal.system.currentAction();
                     var lastGame;
                     var lastCollection;
+                    var menu = "";
                     dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
                     dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
                     dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
-                    if(lastAction === "gamelistbrowsing" && api.internal.recalbox.getBoolParameter("pegasus.theme.use.start.system.menu", true)){ //to open a "system" menu (with selected game included)
-                        //case when we browse in a listview/gridview
-                        lastCollection = api.internal.system.currentCollection();
-                        //set not fullscreen due to be more like a popup dialogbox
-                        subdialog.fullscreen = false;
-                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "launchedAsDialogBox": true});
-                        subdialog.focus = true;
+                    if(lastAction === "gamelistbrowsing"){
+                        menu = api.internal.recalbox.getStringParameter("pegasus.theme.gamelist.start.usage", "GameMenu"); //Game Menu by default for GameLists
                     }
-                    else if(lastAction === "gameviewselected" && api.internal.recalbox.getBoolParameter("pegasus.theme.use.start.game.menu", false)){ //to open a "game" menu only (to update override .cfg file)
+                    else if(lastAction === "gameviewselected"){
+                        menu = api.internal.recalbox.getStringParameter("pegasus.theme.gameview.start.usage", "GameMenu"); //Game Menu by default for GameViews
+                    }
+                    if(menu === "GameMenu"){
                         //case when we select a view focus on a game (not in listview/gridview or other collections)
                         lastCollection = api.internal.system.currentCollection();
                         lastGame = api.internal.system.currentGame();
@@ -414,7 +413,15 @@ Window {
                         subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "game": lastGame , "launchedAsDialogBox": true});
                         subdialog.focus = true;
                     }
-                    else{ //default "general" menu by default
+                    else if(menu === "SystemMenu"){
+                        //case when we browse in a listview/gridview
+                        lastCollection = api.internal.system.currentCollection();
+                        //set not fullscreen due to be more like a popup dialogbox
+                        subdialog.fullscreen = false;
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "launchedAsDialogBox": true});
+                        subdialog.focus = true;
+                    }
+                    else{ //MainMenu or empty
                         mainMenu.focus = true;
                     }
                 }
