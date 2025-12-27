@@ -1590,9 +1590,14 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
         //check in {rom}.recalbox.conf
         QString ParameterOverride = Parameter;
         ParameterOverride.replace(QString("override."), QString(""));
-        select_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),
-                                                                                          RecalboxConf::Instance().AsString(ParameterOverride.toUtf8().constData(),
-                                                                                          DefaultValue.toUtf8().constData()))));
+        if(RecalboxConfOverride::Instance().HasKey(ParameterOverride.toUtf8().constData())){ //if value already exsits in override file
+            select_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),"")));
+        }
+        else{ //if value not already exsits in override file
+            select_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),
+                                                                                              RecalboxConf::Instance().AsString(ParameterOverride.toUtf8().constData(),
+                                                                                              DefaultValue.toUtf8().constData()))));
+        }
     }
     else
     {
@@ -1733,7 +1738,7 @@ void ParametersList::check_preferred_parameter(const QString& Parameter)
         //check in recalbox-boot.conf
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        if(RecalboxBootConf::Instance().HasKeyStartingWith(ParameterBoot.toUtf8().constData())){
+        if(RecalboxBootConf::Instance().HasKey(ParameterBoot.toUtf8().constData())){
             check_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),"")));
         }
         else
@@ -1746,7 +1751,7 @@ void ParametersList::check_preferred_parameter(const QString& Parameter)
         //check in {rom}.recalbox.conf
         QString ParameterOverride = Parameter;
         ParameterOverride.replace(QString("override."), QString(""));
-        if(RecalboxConfOverride::Instance().HasKeyStartingWith(ParameterOverride.toUtf8().constData())){
+        if(RecalboxConfOverride::Instance().HasKey(ParameterOverride.toUtf8().constData())){
             check_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),"")));
         }
         else
@@ -1759,7 +1764,7 @@ void ParametersList::check_preferred_parameter(const QString& Parameter)
     {
         //check in recalbox.conf
         //Log::debug(LOGMSG("check_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));"));
-        if(RecalboxConf::Instance().HasKeyStartingWith(Parameter.toUtf8().constData())){
+        if(RecalboxConf::Instance().HasKey(Parameter.toUtf8().constData())){
             check_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),"")));
         }
         else

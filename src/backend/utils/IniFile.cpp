@@ -268,16 +268,29 @@ std::string IniFile::ExtractValue(const std::string& key) const
   return (item != nullptr) ? *item : std::string();
 }
 
-bool IniFile::HasKeyStartingWith(const std::string& startWidth)
+bool IniFile::HasKey(const std::string& start)
 {
   for (auto& it : mPendingWrites)
-    if (Strings::StartsWith(it.first, startWidth))
+    if (it.first == start)
       return true;
 
   for (auto& it : mConfiguration)
-    if (Strings::StartsWith(it.first, startWidth))
+    if (it.first == start)
       return true;
 
   return false;
+}
+
+bool IniFile::HasKeyStartingWith(const std::string& keyStartWith)
+{
+    for (auto& it : mPendingWrites)
+        if (Strings::StartsWith(it.first, keyStartWith))
+            return true;
+
+    for (auto& it : mConfiguration)
+        if (Strings::StartsWith(it.first, keyStartWith))
+            return true;
+
+    return false;
 }
 
