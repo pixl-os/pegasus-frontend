@@ -338,7 +338,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winesoftrenderer")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winesoftrenderer",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winesoftrenderer",false)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winesoftrenderer",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonRenderer
@@ -523,7 +525,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winenvapi",checked);
+		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi",false)){
+                       	    api.internal.recalbox.setBoolParameter(prefix + ".proton.winenvapi",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenFSR
@@ -535,7 +539,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenfsr", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenfsr",checked);
+		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenfsr",false)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenfsr",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenIntegerScaling
@@ -547,7 +553,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenintegerscaling", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenintegerscaling",checked);
+		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winefullscreenintegerscaling",false)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winefullscreenintegerscaling",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDisableFullScreenHack
@@ -559,7 +567,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winedisablefullscreenhack", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winedisablefullscreenhack",checked);
+		        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winedisablefullscreenhack",true)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winedisablefullscreenhack",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonESync
@@ -571,7 +581,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.wineesync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.wineesync",checked);
+		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.wineesync",true)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.wineesync",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFSync
@@ -583,7 +595,9 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winefsync", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".proton.winefsync",checked);
+		        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winefsync",true)){
+                        	api.internal.recalbox.setBoolParameter(prefix + ".proton.winefsync",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDebug
@@ -746,39 +760,12 @@ FocusScope {
             //remove emulator bottles
             if (!isDebugEnv()){
                 if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
-                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_* ; mount -o remount,ro /");
-                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_* ; mount -o remount,ro /");
+                    //let time to change really and avoid bad effects
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/." + emulator + "_*Proton* ; mount -o remount,ro /");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/." + emulator + "_*proton* ; mount -o remount,ro /");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*Proton* ; mount -o remount,ro /");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*proton* ; mount -o remount,ro /");
                 }
-                // else if (confirmDialog.callerid === "btnLaunchWineCfg"){
-                //     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
-                //     var env = ""
-                //     var wine = ""
-                //     var prefixroot = api.internal.recalbox.getStringParameter(prefix + ".proton.wineprefixroot","/recalbox")
-                //     if(optProtonEngine.internalvalue !== ""){
-                //         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
-                //         wine = optProtonEngine.internalvalue
-                //     }
-                //     else if(optProtonAppImage.internalvalue !== ""){
-                //         env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonAppImage.value.replace(" (embedded)","")
-                //         wine = "/usr/wine/wine"
-                //     }
-                //     if(env !== ""){
-                //         if(optProtonArch.internalvalue !== "" ){
-                //             env = env + "_" + optProtonArch.internalvalue;
-                //         }
-                //         //deactivated because not used in prefix for the moment
-                //         /*if(optWindowsVersion.internalvalue !== "" ){
-                //             env = env + "_" + optWindowsVersion.internalvalue;
-                //         }*/
-                //         var command = env + " " + wine + " winecfg";
-                //         console.log("winecfg command: " + command);
-                //         api.internal.system.run(command);
-                //     }
-                //     else {//we can't determine the prefix to use from pegasus-fe
-                //         console.log("Proton wine prefix can't be determine to execute winecfg");
-                //     }
-                // }
-
             }
             else{//for simulate and see more the spinner
                 api.internal.system.run("sleep 5");

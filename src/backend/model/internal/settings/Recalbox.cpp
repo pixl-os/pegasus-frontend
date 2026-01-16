@@ -94,8 +94,13 @@ QString Recalbox::getStringParameter(const QString& Parameter, const QString& de
     {
         QString ParameterOverride = Parameter;
         ParameterOverride.replace(QString("override."), QString(""));
-        return QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),
-                                                                      RecalboxConf::Instance().AsString(ParameterOverride.toUtf8().constData(), defaultValue.toUtf8().constData())));
+        if(RecalboxConfOverride::Instance().HasKey(ParameterOverride.toUtf8().constData())){ //if value already exsits in override file
+            return QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),""));
+        }
+        else{ //if value not already exsits in override file
+            return QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),
+                                                                                    RecalboxConf::Instance().AsString(ParameterOverride.toUtf8().constData(), defaultValue.toUtf8().constData())));
+        }
     }
     else
     {

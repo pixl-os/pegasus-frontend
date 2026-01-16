@@ -106,6 +106,13 @@ FocusScope {
         api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
         api.internal.system.run('sed -i \'s/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
     }
+    //ONLY FOR DUALSENSE/DS4 Controllers for the moment
+    //to update color of DUALSENSE/DS4 controllers when we change color value
+    function rainbowUpdateColor(padindex, sliderRBGstring){
+        //console.log("bash /etc/init.d/S99controllerled update " + padindex + " " + sliderRBGstring);
+        api.internal.system.runAsync("bash /etc/init.d/S99controllerled update " + padindex + " " + sliderRBGstring);
+    }
+
     Flickable {
         id: container
 
@@ -515,7 +522,7 @@ FocusScope {
                     visible: optControllersLed.checked
                     //property of SliderOption to set
                     label: qsTr("RGB color (player " + playerindex + ")") + api.tr
-                    note: qsTr("to set color of led (as Dualshock 4 one)") + api.tr
+                    note: qsTr("to set color of led (as Dualsense/Dualshock 4 one)") + api.tr
 
                     // in slider object
                     max : 100
@@ -533,7 +540,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     Keys.onRightPressed: {
@@ -541,7 +548,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     onFocusChanged: container.onFocus(this)
@@ -559,7 +566,7 @@ FocusScope {
                     visible: optControllersLed.checked
                     //property of SliderOption to set
                     label: qsTr("RGB color (player " + playerindex + ")") + api.tr
-                    note: qsTr("to set color of led (as Dualshock 4 one)") + api.tr
+                    note: qsTr("to set color of led (as Dualsense/Dualshock 4 one)") + api.tr
                     // in slider object
                     max : 100
                     min : 0
@@ -576,7 +583,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     Keys.onRightPressed: {
@@ -584,7 +591,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     onFocusChanged: container.onFocus(this)
@@ -602,7 +609,7 @@ FocusScope {
                     visible: optControllersLed.checked
                     //property of SliderOption to set
                     label: qsTr("RGB color (player " + playerindex + ")") + api.tr
-                    note: qsTr("to set color of led (as Dualshock 4 one)") + api.tr
+                    note: qsTr("to set color of led (as Dualsense/Dualshock 4 one)") + api.tr
 
                     // in slider object
                     max : 100
@@ -620,7 +627,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     Keys.onRightPressed: {
@@ -628,7 +635,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     onFocusChanged: container.onFocus(this)
@@ -646,7 +653,7 @@ FocusScope {
                     visible: optControllersLed.checked
                     //property of SliderOption to set
                     label: qsTr("RGB color (player " + playerindex + ")") + api.tr
-                    note: qsTr("to set color of led (as Dualshock 4 one)") + api.tr
+                    note: qsTr("to set color of led (as Dualsense/Dualshock 4 one)") + api.tr
 
                     // in slider object
                     max : 100
@@ -664,9 +671,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        //ONLY FOR DS4 Controllers for the moment
-                        //to update color of DS4 controllers when we change color value
-                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     Keys.onRightPressed: {
@@ -674,9 +679,7 @@ FocusScope {
                         value = sliderRBGstring
                         api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
                         sfxNav.play();
-                        //ONLY FOR DS4 Controllers for the moment
-                        //to update color of DS4 controllers when we change color value
-                        api.internal.system.runAsync("sh /etc/init.d/S99ds4 update " + padindex + " " + sliderRBGstring)
+                        rainbowUpdateColor(padindex,sliderRBGstring);
                     }
 
                     onFocusChanged: container.onFocus(this)

@@ -76,8 +76,9 @@ FocusScope {
         asynchronous: true
         opacity: focus ? 1 : 0
         property bool fullscreen: true
-        width: appWindow.width * (fullscreen ? 1.0 : 0.90)
-        height: appWindow.height * (fullscreen ? 1.0 : 0.80)
+        width: appWindow.width * (dialogHorizontalSize/100)
+        height: appWindow.height * (dialogVerticalSize/100)
+
 
         anchors.centerIn: parent
 

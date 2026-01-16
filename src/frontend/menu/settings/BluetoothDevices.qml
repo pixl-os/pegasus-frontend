@@ -377,10 +377,11 @@ FocusScope {
         id: bluetoothTimer
         interval: 1000 // Run the timer every second
         repeat: true
-        running: (api.internal.recalbox.getStringParameter("controllers.bluetooth.scan.methods") !== "") ? true : false
+        running: true
         triggeredOnStart: false
         onTriggered: {
-
+                //console.log("interval : ", interval);
+                //console.log("counter : ", counter);
                 if ((interval/1000)*counter === 2){ // wait 2 seconds before to scan bluetooth for the first time
                     //console.log("Start bluetooth scan... at ", (interval/1000)*counter," seconds")
                     btModel.running = false;
@@ -389,9 +390,8 @@ FocusScope {
                     }
                     else{
                         //to test with release version of recalbox - need to check if UI is blocked or not
-                        console.log("legacy method: api.internal.system.run('sh /recalbox/scripts/recalbox-config.sh hcitoolscan')");
+                        //console.log("legacy method: api.internal.system.run('sh /recalbox/scripts/recalbox-config.sh hcitoolscan')");
                         api.internal.system.runAsync("timeout 30 sh /recalbox/scripts/recalbox-config.sh hcitoolscan");
-                        //var result = api.internal.system.runAsync("sleep 10");
                         //need to read later "cat /tmp/btlist" using timer in this case
                     }
                 }

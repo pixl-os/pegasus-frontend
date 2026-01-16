@@ -15,7 +15,18 @@ Item {
 
     property var gamepad
     property string currentButton: ""
-    property string name: "" //used to find file named as "x_name.jpg" : x_nes.png or x_snes.png for example
+    property string name: "" //used to find file named as "x_nameskin.jpg" :
+                             //x_xboxseries.png, x_nes.png or x_snes.png for example without skin selected
+                             //x_xboxseriesdoom.png or x_xboxseries20years.png
+    property string humanReadableName: "" //used to have a "human readable name" to display :
+
+    property string assetsPath: "" // historically "qrc:/frontend/assets/gamepad/" but could be from other places now ;-)
+    property string qml: "" //to avoid following warining issue when we load qml file containing reference to QML to Loader
+                            //[w] qrc:/frontend/menu/settings/GamepadEditor.qml:2714: Error: Cannot assign to non-existent property "qml"
+
+    /*onAssetsPathChanged: {
+        console.log("padContainer - assetsPath: " + assetsPath);
+    }*/
 
     //layout availability features list
     property bool hasSelect : true
@@ -180,7 +191,7 @@ Item {
         anchors.centerIn: parent
 
         fillMode: Image.PreserveAspectFit
-        source: name ? "qrc:/frontend/assets/gamepad/" + name + "/base_" + name + ".png" : ""
+        source: name ? padContainer.assetsPath + name + "/base_" + name + ".png" : ""
         sourceSize {
             width: padBaseSourceSizeWidth
             height: padBaseSourceSizeHeight
@@ -192,14 +203,14 @@ Item {
         width: vpx(padBaseSourceSizeWidth * ratio) //parent.width
         height: vpx(padBaseSourceSizeHeight * ratio)
         anchors.centerIn: parent
+        visible: rgbLedColor === "" ? false : true
 
         fillMode: Image.PreserveAspectFit
-        source: name ? "qrc:/frontend/assets/gamepad/" + name + "/led_" + name + ".png" : ""
+        source: name && visible ? padContainer.assetsPath + name + "/led_" + name + ".png" : ""
         sourceSize {
             width: padBaseSourceSizeWidth
             height: padBaseSourceSizeHeight
         }
-        visible: rgbLedColor === "" ? true : false
     }
 
     ShaderEffect {
@@ -212,7 +223,12 @@ Item {
         property real green
         property real blue
         property real luminosity: rgbLedLuminosity
+        /*onVisibleChanged: {
+            console.log("onVisibleChanged - visible: " + visible);
+        }*/
         onRgbStringChanged: {
+            //console.log("onRgbStringChanged - rgbLedColor: " + rgbLedColor);
+            //console.log("onRgbStringChanged - rgbLedLuminosity: " + rgbLedLuminosity);
             if(rgbString !== ""){
                 red = Number(rgbString.split(",")[0]) / 255.0;
                 green = Number(rgbString.split(",")[1]) / 255.0;
@@ -236,8 +252,8 @@ Item {
                 // 1. Get the original pixel color
                 lowp vec4 originalColor = texture2D(source, qt_TexCoord0);
 
-                //for testing: to do it only with color with more blue
-                if((originalColor.b > (originalColor.r * 2.0)) && (originalColor.b > (originalColor.g*2.0))){
+                //for testing: to do it only with color with more blue (as default color for DS4/DualSense)
+                if((originalColor.b > (originalColor.r * 1.8)) && (originalColor.b > (originalColor.g * 1.8))){
                     // 2. Calculate the luminance (brightness) of the original pixel
                     // This gives us a single float from 0.0 (black) to 1.0 (white)
                     highp float luminance = dot(originalColor.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -282,6 +298,7 @@ Item {
         brightness: padContainer.brightness
         shortName: "l2"
         name: hasL2 ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonL2 : false
     }
 
@@ -301,6 +318,7 @@ Item {
         brightness: padContainer.brightness
         shortName: "l1"
         name: hasL1 ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonL1 : false
     }
 
@@ -320,6 +338,7 @@ Item {
         brightness: padContainer.brightness
         shortName: "r2"
         name: hasR2 ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonR2 : false
     }
 
@@ -339,6 +358,7 @@ Item {
         brightness: padContainer.brightness
         shortName: "r1"
         name: hasR1 ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonR1 : false
     }
 
@@ -358,6 +378,7 @@ Item {
         brightness: padContainer.brightness
         shortName: "select"
         name: hasSelect ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonSelect : false
         visible: gamepad ? (!padGuide.pressed || hasDedicatedGuide) : true
 
@@ -380,6 +401,7 @@ Item {
         brightness: padContainer.brightness
         shortName: "guide"
         name: (hasSelect || hasDedicatedGuide) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonGuide : false
         visible: gamepad ? (!padSelect.pressed || hasDedicatedGuide) : true
     }
@@ -401,6 +423,7 @@ Item {
         brightness: padContainer.brightness
         shortName: "start"
         name: hasStart ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonStart : false
     }
 
@@ -418,8 +441,10 @@ Item {
 
         shortName: "b"
         name: hasB ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? (hasNintendoPad ? gamepad.buttonSouth : gamepad.buttonEast) : false
     }
+
     PadButtonCustom {
         id: padA
         width: vpx(padAWidth * ratio)
@@ -434,8 +459,10 @@ Item {
 
         shortName: "a"
         name: hasA ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? (hasNintendoPad ? gamepad.buttonEast : gamepad.buttonSouth) : false
     }
+
     PadButtonCustom {
         id: padY
         width: vpx(padYWidth * ratio)
@@ -450,8 +477,10 @@ Item {
 
         shortName: "y"
         name: hasY ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? (hasNintendoPad ? gamepad.buttonWest : gamepad.buttonNorth) : false
     }
+
     PadButtonCustom {
         id: padX
         width: vpx(padXWidth * ratio)
@@ -466,6 +495,7 @@ Item {
 
         shortName: "x"
         name: hasX ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? (hasNintendoPad ? gamepad.buttonNorth : gamepad.buttonWest) : false
     }
 
@@ -483,6 +513,7 @@ Item {
             horizontalCenterOffset: vpx(-((padBaseSourceSizeWidth/2) - (dpadAreaLeftX + ((dpadAreaRightX-dpadAreaLeftX)/2))) * ratio);
         }
         name: (hasDpad && !hasButtonsForDpad) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         gamepad: parent.gamepad
     }
 
@@ -502,6 +533,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "dpup"
         name: (hasDpad && hasButtonsForDpad) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonUp : false
     }
 
@@ -521,6 +553,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "dpdown"
         name: (hasDpad && hasButtonsForDpad) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonDown : false
     }
 
@@ -540,6 +573,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "dpleft"
         name: (hasDpad && hasButtonsForDpad) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonLeft : false
     }
 
@@ -559,6 +593,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "dpright"
         name: (hasDpad && hasButtonsForDpad) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: gamepad ? gamepad.buttonRight : false
     }
 
@@ -580,11 +615,11 @@ Item {
         brightness:  padContainer.brightness
         side: "l"
         name: hasLeftStick ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: hasL3 && gamepad ? gamepad.buttonL3 : false
         xPercent: (gamepad && gamepad.axisLeftX) || 0.0
         yPercent: (gamepad && gamepad.axisLeftY) || 0.0
     }
-
 
     PadButtonCustom {
         id: padRightStickUp
@@ -603,6 +638,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "rstickup"
         name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: (gamepad && gamepad.axisRightY < -0.5) ? true : false
     }
 
@@ -623,6 +659,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "rstickdown"
         name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: (gamepad && gamepad.axisRightY > 0.5) ? true : false
     }
 
@@ -643,9 +680,9 @@ Item {
         brightness:  padContainer.brightness
         shortName: "rstickleft"
         name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: (gamepad && gamepad.axisRightX < -0.5) ? true : false
     }
-
 
     PadButtonCustom {
         id: padRightStickRight
@@ -664,6 +701,7 @@ Item {
         brightness:  padContainer.brightness
         shortName: "rstickright"
         name: (hasRightStick && hasButtonsForRightStick) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: (gamepad && gamepad.axisRightX > 0.5) ? true : false
     }
 
@@ -685,9 +723,9 @@ Item {
         brightness:  padContainer.brightness
         side: "r"
         name: (hasRightStick && !hasButtonsForRightStick) ? padContainer.name : ""
+        assetsPath: padContainer.assetsPath
         pressed: hasR3 && gamepad ? gamepad.buttonR3 : false
         xPercent: (gamepad && gamepad.axisRightX) || 0.0
         yPercent: (gamepad && gamepad.axisRightY) || 0.0
     }
-
 }

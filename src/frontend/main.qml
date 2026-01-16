@@ -36,6 +36,10 @@ Window {
 
     visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
+    //Parameters for all dialog boxes
+    property int dialogHorizontalSize: 100
+    property int dialogVerticalSize: 100
+    property int dialogScale: 80
     //Flags to know if any parameter needing reboot or restart
     property bool needReboot : false
     property bool needRestart : false
@@ -302,6 +306,29 @@ Window {
 
             // Input releasing
             Keys.onReleased: {
+                //****************************************************************************************
+                if(devModeActivated === false){
+                    //To detect any pattern ;-)
+                    //console.log("event.key : ", event.key);
+                    //console.log("codePattern[" + codeIndex + "] : " + codePattern[codeIndex]);
+                    if(api.keys.isUp(event) && codePattern[codeIndex] === "Up") codeIndex = codeIndex + 1;
+                    else if(api.keys.isDown(event) && codePattern[codeIndex] === "Down") codeIndex = codeIndex + 1;
+                    else if(api.keys.isLeft(event) && codePattern[codeIndex] === "Left") codeIndex = codeIndex + 1;
+                    else if(api.keys.isRight(event) && codePattern[codeIndex] === "Right") codeIndex = codeIndex + 1;
+                    else if(api.keys.isAccept(event) && codePattern[codeIndex] === "A") codeIndex = codeIndex + 1;
+                    else if(api.keys.isCancel(event) && codePattern[codeIndex] === "B") codeIndex = codeIndex + 1;
+                    else { //reset pattern
+                        codeIndex = 0;
+                    }
+                    //if all keys of code has been confirmed
+                    if(codeIndex >= codePattern.length){
+                        //CODE OK !!!
+                        devModeActivated = true;
+                        codeIndex = 0;
+                    }
+                }
+                //****************************************************************************************
+
                 // Guide
                 if (api.keys.isGuide(event) && !event.isAutoRepeat) {
                     event.accepted = true;
@@ -367,15 +394,17 @@ Window {
                     var lastAction = api.internal.system.currentAction();
                     var lastGame;
                     var lastCollection;
-                    if(lastAction === "gamelistbrowsing"){ //to open a "system" menu (with selected game included)
-                        //case when we browse in a listview/gridview
-                        lastCollection = api.internal.system.currentCollection();
-                        //set not fullscreen due to be more like a popup dialogbox
-                        subdialog.fullscreen = false;
-                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "launchedAsDialogBox": true});
-                        subdialog.focus = true;
+                    var menu = "";
+                    dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+                    dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+                    dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
+                    if(lastAction === "gamelistbrowsing"){
+                        menu = api.internal.recalbox.getStringParameter("pegasus.theme.gamelist.start.usage", "GameMenu"); //Game Menu by default for GameLists
                     }
-                    else if(lastAction === "gameviewselected"){ //to open a "game" menu only (to update override .cfg file)
+                    else if(lastAction === "gameviewselected"){
+                        menu = api.internal.recalbox.getStringParameter("pegasus.theme.gameview.start.usage", "GameMenu"); //Game Menu by default for GameViews
+                    }
+                    if(menu === "GameMenu"){
                         //case when we select a view focus on a game (not in listview/gridview or other collections)
                         lastCollection = api.internal.system.currentCollection();
                         lastGame = api.internal.system.currentGame();
@@ -384,7 +413,15 @@ Window {
                         subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "game": lastGame , "launchedAsDialogBox": true});
                         subdialog.focus = true;
                     }
-                    else{ //default "general" menu by default
+                    else if(menu === "SystemMenu"){
+                        //case when we browse in a listview/gridview
+                        lastCollection = api.internal.system.currentCollection();
+                        //set not fullscreen due to be more like a popup dialogbox
+                        subdialog.fullscreen = false;
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "launchedAsDialogBox": true});
+                        subdialog.focus = true;
+                    }
+                    else{ //MainMenu or empty
                         mainMenu.focus = true;
                     }
                 }
@@ -464,14 +501,29 @@ Window {
             }
         }
 
+        //to have a shade behind the subdialog loaded
+        Rectangle {
+            id: shade
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+
+            color: "#000"
+            opacity: subdialog.focus ? 0.75 : 0
+            visible: opacity > 0.001 && width > 0
+            Behavior on opacity { NumberAnimation { duration: 300 } }
+        }
+
         Loader {
             id: subdialog
             asynchronous: true
             opacity: focus ? 1 : 0
             property bool fullscreen: true
-            width: parent.width * (fullscreen ? 1.0 : 0.90)
-            height: parent.height * (fullscreen ? 1.0 : 0.80)
-            scale: focus ? 1.0 : 0
+
+            width: parent.width * (dialogHorizontalSize/100)
+            height: parent.height * (dialogVerticalSize/100)
+            scale: focus ? (fullscreen ? 1.0 : (dialogScale/100)) : 0
 
             Behavior on opacity { PropertyAnimation { duration: 500 } }
             Behavior on scale { NumberAnimation { duration: 500; easing.type: Easing.Linear }
@@ -2262,13 +2314,12 @@ Window {
     }
     //list model to manage icons of devices
     ListModel {
-        id: myDeviceIcons //now include also layout definition
+        id: myDeviceAssets //now include also layout definition
 
         //CONTROLLERS PART
         ListElement { icon: "\uf2ef"; keywords: "x360,xbox360,xbox 360,x-box 360"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
         ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one,xbox wireless"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xboxone"} //as layout XBOX SERIES, need layout XBOX ONE
         ListElement { icon: "\uf2f0"; keywords: "xbox series"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xboxseries"} //as XBOX one for the moment, need icon for series
-        ListElement { icon: "\uf2f0"; keywords: "xbox series 20 years"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xboxseries20years"} //as XBOX one for icon, need icon for series and layout defined in input.cfg so that it can be used only for this controller
         ListElement { icon: "\uf2ee"; keywords: "xbox,microsoft"; exclusions: ""; type:"controller"; iconfont: "awesome"} //as XBOX for the moment
 
         ListElement { icon: "\uf0cf"; keywords: "ps5,playstation 5,dualsense"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "ps5"} // add wireless controller as usual PS name used by Sony
@@ -2288,7 +2339,7 @@ Window {
         //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
         //other hujia devices exists for NES, SNES, gamecube, Wii, but will be detected upper if needed.
         ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; exclusions: ""; type:"controller" ; iconfont: "awesome"; layout: "n64"}
-        ListElement { icon: "\uf263"; keywords: "wii remote,rvl-cnt-01-tr"; exclusions: ""; type:"controller"; iconfont: "awesome"} //layout deactivated because not finished finally, called "wiimote"
+        ListElement { icon: "\uf263"; keywords: "wiimote,wii remote,rvl-cnt-01-tr"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "wiimote"}
         
         //need to keep only 'pro controller' in case of nintendo switch pro controller as it is the HID name (internal name)
         //in the future, we have other controller as "pro controller", the layout detection should be complexified
@@ -2383,16 +2434,16 @@ Window {
         let i = 0;
         //search icon from name equal to layout value
         do{
-            const layout = myDeviceIcons.get(i).layout;
+            const layout = myDeviceAssets.get(i).layout;
             if(layout === name){
-                icon = myDeviceIcons.get(i).icon;
-                if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
-                else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
+                icon = myDeviceAssets.get(i).icon;
+                if (myDeviceAssets.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
+                else if (myDeviceAssets.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
                 else getIconFont = globalFonts.sans; //as default one for the moment
             }
             i = i + 1;
-        }while (icon === "" && i < myDeviceIcons.count)
-        //var iconcode = parseInt(icon.charCodeAt(0));
+        }while (icon === "" && i < myDeviceAssets.count)
+        var iconcode = parseInt(icon.charCodeAt(0));
         //console.log("getIcon 1 - name: " + name + " - iconcode: " + iconcode);
         //check if any icon has been found
         if(icon !== "") return icon;
@@ -2417,7 +2468,7 @@ Window {
         i = 0;
         //searchIcon using the good type
         do{
-            const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
+            const iconKeywords = myDeviceAssets.get(i).keywords.split(",");
             for(var k = 0; k < iconKeywords.length;k++)
             {
                 //split name that could contain the name + hid name separated by ' - '
@@ -2426,10 +2477,10 @@ Window {
                     name = names[1]; //to keep only the hid part if exist
                 }
                 //console.log("getIcon 2.1 - name: " + name + " - service: " + service + " - iconKeywords[k]: " + iconKeywords[k]);
-                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
-                    icon = myDeviceIcons.get(i).icon;
+                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceAssets.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
+                    icon = myDeviceAssets.get(i).icon;
                     //console.log("getIcon 2.2 - name: " + name + " - icon: " + icon);
-                    const iconExclusions = myDeviceIcons.get(i).exclusions.split(",");
+                    const iconExclusions = myDeviceAssets.get(i).exclusions.split(",");
                     for(var k2 = 0; k2 < iconExclusions.length; k2++)
                     {
                         //console.log("getIcon 2.2.1 - name: " + name + " - service: " + service + " - iconExclusions[k2]: " + iconExclusions[k2]);
@@ -2438,14 +2489,14 @@ Window {
                         }
                     }
                     //console.log("getIcon 2.3 - name: " + name + " - icon: " + icon);
-                    if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
-                    else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
+                    if (myDeviceAssets.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
+                    else if (myDeviceAssets.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
                     else getIconFont = globalFonts.sans; //as default one for the moment
                 }
             }
             i = i + 1;
-        }while (icon === "" && i < myDeviceIcons.count)
-        //iconcode = parseInt(icon.charCodeAt(0));
+        }while (icon === "" && i < myDeviceAssets.count)
+        iconcode = parseInt(icon.charCodeAt(0));
         //console.log("getIcon 3 - name: " + name + " - type: " + type + " - iconcode: " + iconcode);
         return icon;
     }
@@ -2481,6 +2532,9 @@ Window {
 
     function gameSettings(collection,game) {
         //set not fullscreen due to be more like a popup dialogbox
+        dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+        dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+        dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
         subdialog.fullscreen = false;
         subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": collection, "game": game , "launchedAsDialogBox": true});
         subdialog.focus = true;
@@ -2488,6 +2542,9 @@ Window {
 
     function systemSettings(collection) {
         //set not fullscreen due to be more like a popup dialogbox
+        dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+        dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+        dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
         subdialog.fullscreen = false;
         subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": collection, "launchedAsDialogBox": true});
         subdialog.focus = true;
@@ -2808,4 +2865,101 @@ Window {
         }
     }
     //*********************************************************** END OF SLIDERS MANAGEMENT *************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //for the code ;-)
+    property var codePattern: ["Up", "Up", "Down", "Down", "Left", "Right", "Left", "Right", "B", "A"];
+    property int codeIndex: 0
+    property bool devModeActivated: false;
+
+    // Timer to show the sliders during a limited after update
+    Timer {
+        id: devModeStatusCheck
+        interval: 10000
+        repeat: false
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            devModeActivated = api.internal.recalbox.getBoolParameter("system.dev.mode.activated",false);
+            //console.log("devModeStatusCheck - devModeActivated: ", devModeActivated)
+        }
+    }
+
+    onDevModeActivatedChanged:{
+        //console.log("onDevModeActivatedChanged - devModeActivated: ", devModeActivated)
+        if(devModeActivated){
+            //show popup to alert success
+            apiconnection.onShowPopup(qsTr("Congratulation"), qsTr("'Dev' mode activated !"),"",3);
+            api.internal.recalbox.setBoolParameter("system.dev.mode.activated",true);
+        }
+    }
 }

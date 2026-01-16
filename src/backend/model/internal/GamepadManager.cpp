@@ -98,6 +98,8 @@ GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
             this, &GamepadManager::bkOnIndexChanged);
     connect(m_backend, &GamepadManagerBackend::layoutChanged,
             this, &GamepadManager::bkOnLayoutChanged);
+    connect(m_backend, &GamepadManagerBackend::guidChanged,
+            this, &GamepadManager::bkOnGuidChanged);
     connect(m_backend, &GamepadManagerBackend::removed,
             this, &GamepadManager::bkOnRemoved);
     connect(m_backend, &GamepadManagerBackend::buttonConfigured,
@@ -175,6 +177,7 @@ void GamepadManager::swap(int device_id1, int device_id2)
     try{
 		QString name1;
         QString layout1;
+        QString guid1;
 		int iid1;
 		int idx1;
 		//search & backup first device
@@ -182,11 +185,13 @@ void GamepadManager::swap(int device_id1, int device_id2)
         if (it != m_devices->constEnd()) {
 			name1 = (*it)->name();
             layout1 = (*it)->deviceLayout();
+            guid1 = (*it)->deviceGUID();
             iid1 = (*it)->deviceInstance();
 			idx1 = (*it)->deviceIndex();
         }
         QString name2;
         QString layout2;
+        QString guid2;
         int iid2;
         int idx2;
 		//search second device
@@ -194,6 +199,7 @@ void GamepadManager::swap(int device_id1, int device_id2)
         if (it2 != m_devices->constEnd()) {
 			name2 = (*it2)->name();
             layout2 = (*it2)->deviceLayout();
+            guid2 = (*it)->deviceGUID();
             iid2 = (*it2)->deviceInstance();
 			idx2 = (*it2)->deviceIndex();
         }
@@ -203,6 +209,7 @@ void GamepadManager::swap(int device_id1, int device_id2)
             //(*it)->setName(std::move(name2));
             (*it)->setName(name2);
             (*it)->setLayout(layout2);
+            (*it)->setGUID(guid2);
             (*it)->setInstance(iid2);
             (*it)->setIndex(idx2);
 		}
@@ -210,6 +217,7 @@ void GamepadManager::swap(int device_id1, int device_id2)
             //(*it2)->setName(std::move(name1));
             (*it2)->setName(name1);
             (*it2)->setLayout(layout1);
+            (*it)->setGUID(guid1);
             (*it2)->setInstance(iid1);
             (*it2)->setIndex(idx1);
 		}		
@@ -244,7 +252,7 @@ void GamepadManager::bkOnConnected(int device_idx, QString device_guid, QString 
     //add check to avoid to re-add device already added previously (strange behavior found with wine and from steamdeck unfortunatelly)
     const auto it = find_by_deviceiid(*m_devices, device_iid);
     if (it == m_devices->constEnd()) {
-        m_devices->append(new Gamepad(device_idx, device_name, device_iid, device_idx, device_layout, m_devices)); //device_id equals to device_idx at connnection
+        m_devices->append(new Gamepad(device_idx, device_name, device_iid, device_idx, device_layout, device_guid, m_devices)); //device_id equals to device_idx at connnection
         Log::info(m_log_tag, LOGMSG("Connected device %1 (%2)").arg(pretty_id(device_idx), device_name));
         //showpopup for 4 seconds by default
         emit showPopup(QStringLiteral("Device %1 connected").arg(QString::number(device_idx)),QStringLiteral("%1").arg(device_name),QStringLiteral("%1").arg(device_layout), 4);
@@ -360,6 +368,22 @@ void GamepadManager::bkOnLayoutChanged(int device_id, QString layout)
         if (it != m_devices->constEnd()) {
             Log::debug(m_log_tag, LOGMSG("Set layout of device %1 to '%2'").arg(pretty_id(device_id), layout));
             (*it)->setLayout(std::move(layout));
+        }
+    }
+    catch ( const std::exception & Exp )
+    {
+        Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
+    }
+}
+
+void GamepadManager::bkOnGuidChanged(int device_id, QString guid)
+{
+    //Log::info(m_log_tag, LOGMSG("void GamepadManager::bkOnGUIDChanged(int device_id, QString GUID)"));
+    try{
+        const auto it = find_by_deviceid(*m_devices, device_id);
+        if (it != m_devices->constEnd()) {
+            Log::debug(m_log_tag, LOGMSG("Set guid of device %1 to '%2'").arg(pretty_id(device_id), guid));
+            (*it)->setGUID(std::move(guid));
         }
     }
     catch ( const std::exception & Exp )

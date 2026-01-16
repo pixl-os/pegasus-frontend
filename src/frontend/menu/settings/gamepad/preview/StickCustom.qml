@@ -12,8 +12,13 @@ Item {
     property real xPercent: 0.0
     property real yPercent: 0.0
     property string name: "" //used to find file named as "shortName_name.jpg" : b_nes.png or a_snes.png for example
+    property string assetsPath: "" // historically "qrc:/frontend/assets/gamepad/" but could be from other places now ;-)
     property alias brightness: animation.brightness
     property alias contrast: animation.contrast
+
+    /*onAssetsPathChanged: {
+        console.log("StickCustom - assetsPath: " + assetsPath);
+    }*/
 
     height: width
 
@@ -41,7 +46,7 @@ Item {
         }
 
         fillMode: Image.PreserveAspectFit
-        source: name != "" ? "qrc:/frontend/assets/gamepad/" + name + "/" + side + "stick_" + name +".png" : ""
+        source: name != "" ? assetsPath + name + "/" + side + "stick_" + name +".png" : ""
         sourceSize {
             width: 128
             height: 128

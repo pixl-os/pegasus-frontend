@@ -85,6 +85,7 @@ private slots:
     void bkOnNameChanged(int, QString);
 	void bkOnIndexChanged(int, int);
     void bkOnLayoutChanged(int, QString);
+    void bkOnGuidChanged(int, QString);
     void bkOnRemoved(int);
 
     void bkOnButtonCfg(int, GamepadButton);
