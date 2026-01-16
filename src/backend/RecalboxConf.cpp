@@ -24,7 +24,7 @@ RecalboxConf::RecalboxConf()
     if (AsBool("pegasus.warnlogs")) rLog::setReportingLevel(LogLevel::LogWarning);
     if (AsBool("pegasus.infologs")) rLog::setReportingLevel(LogLevel::LogInfo);
     if (AsBool("pegasus.debuglogs")) rLog::setReportingLevel(LogLevel::LogDebug);
-    
+
     Log::debug(LOGMSG("Recalbox.conf instance created."));
 }
 

@@ -1,6 +1,9 @@
 #include "Recalbox.h"
 #include "Log.h"
 
+#include "RecalboxBootConf.h"
+#include "RecalboxConfOverride.h"
+
 namespace {
 
 QString GetCommandOutput(const std::string& command)
@@ -24,10 +27,17 @@ namespace model {
 
 Recalbox::Recalbox(QObject* parent)
     : QObject(parent)
-    , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
 {
-
+//RecalboxConfOverride::Instance() Path will be updated dynamically from loadParametersFromOverride
 }
+
+//Override could be for a directory and/or a specific rom
+void Recalbox::loadParametersFromOverride(const QString& OverrideFullPath)
+{
+    bool loaded = RecalboxConfOverride::Instance().LoadFromNewPath(OverrideFullPath.toStdString());
+    //Log::debug(LOGMSG("void Recalbox::loadParametersFromOverride() loaded: %1").arg(loaded ? "True" : "False"));
+}
+
 
 void Recalbox::setAudioVolume(int new_val)
 {
@@ -78,7 +88,19 @@ QString Recalbox::getStringParameter(const QString& Parameter, const QString& de
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        return QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(), defaultValue.toUtf8().constData()));
+        return QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(), defaultValue.toUtf8().constData()));
+    }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        if(RecalboxConfOverride::Instance().HasKey(ParameterOverride.toUtf8().constData())){ //if value already exsits in override file
+            return QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),""));
+        }
+        else{ //if value not already exsits in override file
+            return QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),
+                                                                                    RecalboxConf::Instance().AsString(ParameterOverride.toUtf8().constData(), defaultValue.toUtf8().constData())));
+        }
     }
     else
     {
@@ -92,8 +114,14 @@ void Recalbox::setStringParameter(const QString& Parameter, const QString& Value
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
+        RecalboxBootConf::Instance().Save();
+    }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), Value.toUtf8().constData());
     }
     else
     {
@@ -107,7 +135,14 @@ bool Recalbox::getBoolParameter(const QString& Parameter, const bool& defaultVal
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        return m_RecalboxBootConf.AsBool(ParameterBoot.toUtf8().constData(),defaultValue);
+        return RecalboxBootConf::Instance().AsBool(ParameterBoot.toUtf8().constData(),defaultValue);
+    }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        return RecalboxConfOverride::Instance().AsBool(ParameterOverride.toUtf8().constData(),
+                                             RecalboxConf::Instance().AsBool(ParameterOverride.toUtf8().constData(),defaultValue));
     }
     else
     {
@@ -121,8 +156,14 @@ void Recalbox::setBoolParameter(const QString& Parameter, const bool& Value)
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        m_RecalboxBootConf.SetBool(ParameterBoot.toUtf8().constData(), Value);
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().SetBool(ParameterBoot.toUtf8().constData(), Value);
+        RecalboxBootConf::Instance().Save();
+    }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        RecalboxConfOverride::Instance().SetBool(ParameterOverride.toUtf8().constData(), Value);
     }
     else
     {
@@ -136,7 +177,14 @@ int Recalbox::getIntParameter(const QString& Parameter, const int& defaultValue)
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        return m_RecalboxBootConf.AsInt(ParameterBoot.toUtf8().constData(),defaultValue);
+        return RecalboxBootConf::Instance().AsInt(ParameterBoot.toUtf8().constData(),defaultValue);
+    }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        return RecalboxConfOverride::Instance().AsInt(ParameterOverride.toUtf8().constData(),
+                                            RecalboxConf::Instance().AsInt(ParameterOverride.toUtf8().constData(),defaultValue));
     }
     else
     {
@@ -150,8 +198,14 @@ void Recalbox::setIntParameter(const QString& Parameter, const int& Value)
     {
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        m_RecalboxBootConf.SetInt(ParameterBoot.toUtf8().constData(), Value);
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().SetInt(ParameterBoot.toUtf8().constData(), Value);
+        RecalboxBootConf::Instance().Save();
+    }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        RecalboxConfOverride::Instance().SetInt(ParameterOverride.toUtf8().constData(), Value);
     }
     else
     {
@@ -164,6 +218,15 @@ void Recalbox::saveParameters()
     RecalboxConf::Instance().Save();
 }
 
+void Recalbox::saveParametersInBoot()
+{
+    RecalboxBootConf::Instance().Save();
+}
+
+void Recalbox::saveParametersInOverride()
+{
+    RecalboxConfOverride::Instance().Save();
+}
 void Recalbox::reloadParameter(QString parameter) //to relaod parameters from recalbox.conf
 {
     //need to identify the parameter to emit the good signal to update the value
@@ -198,7 +261,7 @@ QString Recalbox::runCommand(const QString& SysCommand, const QStringList& SysOp
 	}
 	//launch command using Qprocess to get output
     QString stdout = GetCommandOutput(CommandToUpdate.toUtf8().constData());
-    Log::debug(LOGMSG("GetCommandOutput(CommandToUpdate.toUtf8().constData()): '%1'").arg(stdout));
+    //Log::debug(LOGMSG("GetCommandOutput(CommandToUpdate.toUtf8().constData()): '%1'").arg(stdout));
 	return stdout;
 }
 

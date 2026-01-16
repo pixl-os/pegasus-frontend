@@ -12,6 +12,7 @@
 #include "utils/Sizes.h"
 #include <utils/storage/rHashMap.h>
 #include <utils/IniFile.h>
+#include <QStringList>
 
 class StorageDevices
 {

@@ -29,6 +29,8 @@ SOURCES += \
     HttpServer.cpp \
     PegasusAssets.cpp \
     ProcessLauncher.cpp \
+    RecalboxBootConf.cpp \
+    RecalboxConfOverride.cpp \
     ScriptRunner.cpp \
     Paths.cpp \
     AppSettings.cpp \
@@ -38,6 +40,7 @@ SOURCES += \
     RootFolders.cpp \
     ScriptManager.cpp \
     RecalboxSystem.cpp \
+    ShellThread.cpp \
     UnzipThread.cpp
 
 HEADERS += \
@@ -50,6 +53,8 @@ HEADERS += \
     HttpServer.h \
     PegasusAssets.h \
     ProcessLauncher.h \
+    RecalboxBootConf.h \
+    RecalboxConfOverride.h \
     ScriptRunner.h \
     Paths.h \
     AppSettings.h \
@@ -60,6 +65,7 @@ HEADERS += \
     ScriptManager.h \
     KeyEmitter.h \
     RecalboxSystem.h \
+    ShellThread.h \
     UnzipThread.h
 
 include(imggen/imggen.pri)

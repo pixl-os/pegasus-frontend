@@ -11,7 +11,18 @@
 
 class RecalboxConf : public IniFile, public StaticLifeCycleControler<RecalboxConf>
 {
+  // private constructor to be delegate for others
+  private:
+    // Constructor with both primary and init paths
+    /*!
+     * @brief Constructor with custom primary and init paths
+     * @param primaryPath The custom primary file path
+     * @param initPath The custom init file path
+     */
+    explicit RecalboxConf(const Path& primaryPath, const Path& initPath);
+
   public:
+    // Default constructor
     /*!
      * @brief Constructor
      * @param initialConfigOnly true if only the original file has to be loaded

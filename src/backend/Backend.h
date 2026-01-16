@@ -19,11 +19,11 @@
 
 #include "CliArgs.h"
 
-#include <memory>
-
 //for recalbox ES components
 #include <utils/rLog.h>
 #include "RecalboxConf.h"
+#include "RecalboxBootConf.h"
+#include "RecalboxConfOverride.h"
 #include "ScriptManager.h"
 #include "hardware/Board.h"
 #include "audio/AudioController.h"
@@ -59,6 +59,12 @@ private:
     //! Recalbox configuration
     RecalboxConf mRecalboxConf;
     
+    //! Recalbox Boot configuration
+    RecalboxBootConf mRecalboxBootConf;
+
+    //! Recalbox configuration Override
+    RecalboxConfOverride mRecalboxConfOverride;
+
     //! Script management
     ScriptManager mScriptManager;
     

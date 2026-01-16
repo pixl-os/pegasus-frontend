@@ -26,6 +26,7 @@ FocusScope {
     signal close
     signal openVideoSettings
     signal openInformationSystem
+    signal openSystemLogs
     signal openWifiNetworks
     signal openAdvancedDirectoriesConfiguration
 
@@ -860,13 +861,98 @@ FocusScope {
                         api.internal.settings.virtualKeyboardSupport = checked;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optHideMouse
+                    KeyNavigation.down: optShowLogs
                 }
+                SectionTitle {
+                    text: qsTr("Developer menu") + api.tr
+                    first: true
+                    symbol: "\uf412" //TODO: change icon ?!
+                    visible: devModeActivated
+                }
+                SimpleButton {
+                    id: optShowLogs
+
+                    label: qsTr("System logs") + api.tr
+                    note: qsTr("To see logs content...") + api.tr
+                    pointerIcon: true
+                    visible: devModeActivated
+
+                    onActivate: {
+                        focus = true;
+                        root.openSystemLogs();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnCancelDevMode
+                }
+                SimpleButton {
+                    id: btnCancelDevMode
+                    visible: devModeActivated
+
+                    Rectangle {
+                        id: containerValidateCancelDevMode
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? "red" : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2e8  " + qsTr("Hide developer mode") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnCancelDevMode"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": qsTr("Developer mode") + api.tr,
+                                                  "message": qsTr("Are you sure to hide 'dev' mode ?") + api.tr,
+                                                  "symbol": "\uf2e8",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                }
+
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
             }
+        }
+    }
+
+    //loader to load confirm dialog
+    Loader {
+        id: confirmDialog
+        anchors.fill: parent
+        z:10
+        property string callerid: ""
+    }
+
+    Connections {
+        target: confirmDialog.item
+        function onAccept() {
+            if(confirmDialog.callerid === "btnCancelDevMode"){
+                api.internal.recalbox.setBoolParameter("system.dev.mode.activated", false);
+                devModeActivated = false;
+                //to focus on last visible item
+                optHideKeyboard.focus = true;
+            }
+            content.focus = true;
+        }
+        function onCancel() {
+            //do nothing
+            content.focus = true;
         }
     }
 

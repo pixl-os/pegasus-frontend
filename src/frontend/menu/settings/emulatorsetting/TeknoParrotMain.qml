@@ -24,6 +24,17 @@ FocusScope {
 
     enabled: focus
 
+    property bool launchedAsDialogBox: false
+
+    property var game
+    property var system
+    //to manage overloading
+    property string prefix : game ? "override.teknoparrot" : "teknoparrot"
+    //to manage better title in screen ScreenHeader (if we want to change it during loading)
+    property string titleHeader: game ? game.title +  " > TeknoParrot" :
+        (system ? system.name + " > TeknoParrot" :
+         qsTr("Advanced emulators settings > TeknoParrot") + api.tr)
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -41,9 +52,12 @@ FocusScope {
     }
     ScreenHeader {
         id: header
-        text: qsTr("Advanced emulators settings > TeknoParrot") + api.tr
+        text: titleHeader
         z: 2
     }
+
+    clip: launchedAsDialogBox
+
     Flickable {
         id: container
 
@@ -79,87 +93,27 @@ FocusScope {
                 id: contentColumn
                 spacing: vpx(5)
 
-                width: root.width * 0.7
+                width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
                 height: implicitHeight
 
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
+
                 SectionTitle {
-                    text: qsTr("'Game' configuration") + api.tr
+                    text: qsTr("Game screen") + api.tr
                     first: true
-                    symbol: "\uf26f" //TO DO: fusee ?!
-                    symbolFontFamily: globalFonts.ion
-                }
-                ToggleOption {
-                    id: optTeknoparrotOption1
-                    // set focus only on first item
-                    focus: true
-
-                    label: qsTr("Xinput") + api.tr
-                    note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used. (on change, need reboot)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.xinput",false) //deactivated by default to use Dinput
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter("teknoparrot.xinput",false)){
-                            api.internal.recalbox.setBoolParameter("teknoparrot.xinput",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTeknoparrotOption2
-                }
-                MultivalueOption {
-                    id: optTeknoparrotOption2
-
-                    //property to manage parameter name
-                    property string parameterName : "teknoparrot.windowed"
-
-                    label: qsTr("Windowed") + api.tr
-                    note: qsTr("Start as 'windowed' is adviced for some GPU/Game") + api.tr
-
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
-
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optTeknoparrotOption2;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                        }
-                        container.onFocus(this)
-                    }
-
-                    KeyNavigation.down: optTeknoparrotOption7
+                    symbol: "\uf17f"
                 }
                 MultivalueOption {
                     id: optTeknoparrotOption7
 
+                    // set focus only on first item
+                    focus: true
+
                     //property to manage parameter name
-                    property string parameterName : "teknoparrot.screen.resolution"
+                    property string parameterName : prefix + ".screen.resolution"
 
                     label: qsTr("Screen/Window resolution") + api.tr
                     note: qsTr("To adpat resolution in full screen/windowed") + api.tr
@@ -199,40 +153,16 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optTeknoparrotOption3
-                }
-                ToggleOption {
-                    id: optTeknoparrotOption3
-                    label: qsTr("Frame limiter") + api.tr
-                    note: qsTr("Activated to prevent games running too fast") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.framelimiter", true)
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("teknoparrot.framelimiter",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTeknoparrotOption31
-                }
-                ToggleOption {
-                    id: optTeknoparrotOption31
-                    label: qsTr("Force Free Play") + api.tr
-                    note: qsTr("Activate Free Play automatically if manageable by emulator") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.force.freeplay", true)
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("teknoparrot.force.freeplay",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTeknoparrotOption32
+                    KeyNavigation.down: optTeknoparrotOption2
                 }
                 MultivalueOption {
-                    id: optTeknoparrotOption32
+                    id: optTeknoparrotOption2
 
                     //property to manage parameter name
-                    property string parameterName : "teknoparrot.versus.controller.mapping"
+                    property string parameterName : prefix + ".windowed"
 
-                    label: qsTr("'Versus' games controller mapping") + api.tr
-                    note: qsTr("To adapt mappings to your habit/controller/panel") + api.tr
+                    label: qsTr("Windowed") + api.tr
+                    note: qsTr("Start as 'windowed' is adviced for some GPU/Game") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
 
@@ -242,7 +172,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optTeknoparrotOption32;
+                        parameterslistBox.callerid = optTeknoparrotOption2;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -269,6 +199,168 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: optTeknoparrotOption1
+                }
+
+                SectionTitle {
+                    text: qsTr("Controllers") + api.tr
+                    first: true
+                    symbol: "\uf181"
+                    symbolFontFamily: globalFonts.ion
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption1
+
+                    label: qsTr("Xinput") + api.tr
+                    note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used. (on change, need reboot)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".xinput",false) //deactivated by default to use Dinput
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".xinput",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".xinput",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotDeadZone
+                }
+                SliderOption {
+                    id: optTeknoparrotDeadZone
+
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".deadzone"
+
+                    //property of SliderOption to set
+                    label: qsTr("Set dead zone Controller") + api.tr
+                    note: qsTr("the default value is 2% (min: 0% - max 30%).") + api.tr
+                    // in slider object
+                    max : 30
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,2)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,2) + "%"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotOption32
+                }
+                MultivalueOption {
+                    id: optTeknoparrotOption32
+
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".versus.controller.mapping"
+
+                    label: qsTr("'Versus' games controller mapping") + api.tr
+                    note: qsTr("To adapt mappings to your habit/controller/panel") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.parameterName = parameterName;
+
+                        //to customize Box display
+                        parameterslistBox.has_picture = true;
+                        parameterslistBox.firstlist_minimum_width_purcentage = 0.55;
+                        parameterslistBox.firstlist_maximum_width_purcentage = 0.55;
+                        parameterslistBox.box_maximum_width = 800;
+                        parameterslistBox.box_minimum_width = 800;
+                        parameterslistBox.has_picture = true;
+                        parameterslistBox.max_listitem_displayed = 5;
+
+                        //to force update of list of parameters
+                        parameterslistBox.callerid = optTeknoparrotOption32;
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optTeknoparrotOption33
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption33
+
+                    property string parameterName: prefix + ".switch.dpad.leftstick"
+
+                    label: qsTr("Switch D-PAD/Left Stick") + api.tr
+                    note: qsTr("Enable possibility to switch to left stick if we prefer") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(parameterName,false) //deactivated by default to use DPAD in priority for versus game
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName,false)){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotMenuService
+                }
+                ToggleOption {
+                    id: optTeknoparrotMenuService
+
+                    property string parameterName: prefix + ".menu.service"
+                    label: qsTr("Activate Test/Service menu access") + api.tr
+                    note: qsTr("Enable accces to Test/Service menu using usually L3/R3 buttons") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(parameterName,false) //deactivated by default
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName,false)){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotOption3
+                }
+
+                SectionTitle {
+                    text: qsTr("'Game' configuration") + api.tr
+                    first: true
+                    symbol: "\uf179"
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption3
+                    label: qsTr("Frame limiter") + api.tr
+                    note: qsTr("Activated to prevent games running too fast") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".framelimiter", true)
+                    onCheckedChanged: {
+                       if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".framelimiter",true)){
+                           api.internal.recalbox.setBoolParameter(prefix + ".framelimiter",checked);
+                       }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption6
                 }
                 ToggleOption {
@@ -276,80 +368,130 @@ FocusScope {
                     label: qsTr("Rotate 'Tate' Game") + api.tr
                     note: qsTr("To rotate gamez from Open Parrot") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.rotate.tate", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".rotate.tate", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("teknoparrot.rotate.tate",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".rotate.tate",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".rotate.tate",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotOption31
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption31
+                    label: qsTr("Force Free Play") + api.tr
+                    note: qsTr("Activate Free Play automatically if manageable by emulator") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".force.freeplay", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".force.freeplay",true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".force.freeplay",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotAdvancedConf
+                }
+
+                ToggleOption {
+                    id: optTeknoparrotAdvancedConf
+                    SectionTitle {
+                        text: qsTr("'Advanced' configuration") + api.tr
+                        first: true
+                        symbol: "\uf412"
+                    }
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".advanced.configuration", false)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".advanced.configuration",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".advanced.configuration",checked);
+
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption4
-                }
-                SectionTitle {
-                    text: qsTr("'Advanced' configuration") + api.tr
-                    first: true
-                    symbol: "\uf26f" //TO DO: fusee ?!
-                    symbolFontFamily: globalFonts.ion
                 }
                 ToggleOption {
                     id: optTeknoparrotOption4
                     label: qsTr("Launch UI first") + api.tr
                     note: qsTr("Start UI first to be able to change/verify conf if needed.\n(need mouse/keyboard to navigate)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.launch.ui", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".launch.ui", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("teknoparrot.launch.ui",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".launch.ui",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".launch.ui",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption8
+                    visible: optTeknoparrotAdvancedConf.checked
                 }
                 ToggleOption {
                     id: optTeknoparrotOption8
                     label: qsTr("Use UI Game Profile(s) if exists") + api.tr
                     note: qsTr("To let you use your own Game/Controller Settings.\n(for testing usually)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.keep.userprofile.from.ui", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".keep.userprofile.from.ui", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("teknoparrot.keep.userprofile.from.ui",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".keep.userprofile.from.ui",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".keep.userprofile.from.ui",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption81
+                    visible: optTeknoparrotAdvancedConf.checked
                 }
                 ToggleOption {
                     id: optTeknoparrotOption81
-                    visible: (optTeknoparrotOption8.checked === true) ? false : true
+                    visible: optTeknoparrotAdvancedConf.checked ? (optTeknoparrotOption8.checked === true ? false : true) : false
                     label: qsTr("Overwrite UI Game Profile(s) by pixL") + api.tr
                     note: qsTr("To have generated Game/Controller Settings from UI\n(as default)") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.save.userprofile.for.ui", true)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".save.userprofile.for.ui", true)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("teknoparrot.save.userprofile.for.ui",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".save.userprofile.for.ui",true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".save.userprofile.for.ui",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTeknoparrotOption5
+                    KeyNavigation.down: optTeknoparrotOption5                    
                 }
                 ToggleOption {
                     id: optTeknoparrotOption5
                     label: qsTr("Show launcher") + api.tr
                     note: qsTr("To show launcher console from Open Parrot") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter("teknoparrot.show.launcher", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".show.launcher", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("teknoparrot.show.launcher",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".show.launcher",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".show.launcher",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoparrotRunnerConf
+                    visible: optTeknoparrotAdvancedConf.checked
+                }
+
+                ToggleOption {
+                    id: optTeknoparrotRunnerConf
+                    SectionTitle {
+                        text: qsTr("'Runner' configuration") + api.tr
+                        first: true
+                        symbol: "\uf26f" //TO DO: fusee ?!
+                        symbolFontFamily: globalFonts.ion
+                    }
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".runner.configuration", false)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".runner.configuration",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".runner.configuration",checked);
+                        }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotRunnerType
                 }
-                SectionTitle {
-                    text: qsTr("'Runner' configuration") + api.tr
-                    first: true
-                    symbol: "\uf26f" //TO DO: fusee ?!
-                    symbolFontFamily: globalFonts.ion
-                }
-
                 MultivalueOption {
                     id: optTeknoparrotRunnerType
 
                     //property to manage parameter name
-                    property string parameterName : "teknoparrot.runner.type"
+                    property string parameterName : prefix + ".runner.type"
 
                     label: qsTr("'Runner' type used to launch TeknoParrot") + api.tr
                     note: qsTr("To manage different cases (if needed)") + api.tr
@@ -390,10 +532,11 @@ FocusScope {
                     }
 
                     KeyNavigation.down: optWineConfiguration
+                    visible: optTeknoparrotRunnerConf.checked
                 }
                 SimpleButton {
                     id: optWineConfiguration
-                    visible: optTeknoparrotRunnerType.value === "Wine" ? true : false
+                    visible: optTeknoparrotRunnerConf.checked && (optTeknoparrotRunnerType.value === "Wine") ? true : false
                     label: qsTr("'Wine' configuration") + api.tr
                     onActivate: {
                         focus = true;
@@ -406,7 +549,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: optProtonConfiguration
-                    visible: optTeknoparrotRunnerType.value === "Proton" ? true : false
+                    visible: optTeknoparrotRunnerConf.checked && (optTeknoparrotRunnerType.value === "Proton") ? true : false
                     label: qsTr("'Proton' configuration") + api.tr
                     onActivate: {
                         focus = true;
@@ -416,14 +559,14 @@ FocusScope {
                     //pointer moved in SimpleButton desactived on default
                     pointerIcon: true
                 }
+
                 Item {
                     width: parent.width
-                    height: implicitHeight + vpx(30)
+                    height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
                 }
             }
         }
     }
-
     MultivalueBox {
         id: parameterslistBox
         z: 3
@@ -432,13 +575,14 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
+          //console.log("onSelect - callerid.parameterName : " + callerid.parameterName);
+          //console.log("onSelect - index : " + index.toString());
             callerid.keypressed = true;
             //to use the good parameter
             api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
@@ -446,8 +590,84 @@ FocusScope {
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+          //console.log("onSelect - callerid.value : " + callerid.value);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+          //console.log("onSelect - callerid.currentIndex : " + callerid.currentIndex.toString());
             callerid.count = api.internal.recalbox.parameterslist.count;
+        }
+    }
+    Item {
+        id: footer
+        width: parent.width
+        height: vpx(50)
+        anchors.bottom: parent.bottom
+        z:2
+        visible: launchedAsDialogBox
+
+        //Rectangle for the transparent background
+        Rectangle {
+            anchors.fill: parent
+            color: themeColor.screenHeader
+            opacity: 0.75
+        }
+
+        //rectangle for the gray line
+        Rectangle {
+            width: parent.width * 0.97
+            height: vpx(1)
+            color: "#777"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        //for the help to exit
+        Rectangle {
+            id: backButtonIcon
+            height: labelB.height
+            width: height
+            radius: width * 0.5
+            border { color: "#777"; width: vpx(1) }
+            color: "transparent"
+            visible: {
+                return true;
+            }
+
+            anchors {
+                right: labelB.left
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(1)
+                margins: vpx(10)
+            }
+            Text {
+                text: "B"
+                color: "#777"
+                font {
+                    family: global.fonts.sans
+                    pixelSize: parent.height * 0.7
+                }
+                anchors.centerIn: parent
+            }
+        }
+
+        Text {
+            id: labelB
+            text: qsTr("Back") + api.tr
+            verticalAlignment: Text.AlignTop
+            visible: {
+                return true;
+            }
+
+            color: "#777"
+            font {
+                family: global.fonts.sans
+                pixelSize: vpx(22)
+                capitalization: Font.SmallCaps
+            }
+            anchors {
+                verticalCenter: parent.verticalCenter
+                verticalCenterOffset: vpx(-1)
+                right: parent.right; rightMargin: parent.width * 0.015
+            }
         }
     }
 }

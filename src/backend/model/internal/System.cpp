@@ -17,8 +17,9 @@
 
 #include "System.h"
 #include <QProcess>
-#include "Log.h"
 
+//added to manage action notifications provided by script manager
+#include "ScriptManager.h"
 
 namespace model {
 
@@ -63,19 +64,29 @@ QString System::run(const QString& Command)
   return QString::fromStdString(output);
 }
 
-void System::runAsync(const QString& Command)
+void System::runAsync(const QString& Command, const QString& Engine)
 {
     //Log::debug(LOGMSG("System::runAsync_slot() put in Qt::QueuedConnection"));
     m_Command = Command;
-    QMetaObject::invokeMethod(this,"runAsync_slot", Qt::QueuedConnection);
+    m_Engine = Engine;
+    if(m_Engine == "thread"){
+       m_shellThread = new ShellThread(m_Command, m_Engine);
+       m_shellThread->start();
+    }
+    else QMetaObject::invokeMethod(this,"runAsync_slot", Qt::QueuedConnection);
 }
 
 void System::runAsync_slot()
 {
-    QProcess *myProcess = new QProcess(parent());
-    myProcess->startDetached(m_Command);
-    m_Result = ""; //TO DO
-    myProcess->destroyed();
+    if(m_Engine == "popen"){
+        run(m_Command);
+    }
+    else if(m_Engine == "QProcess"){
+        QProcess *myProcess = new QProcess(parent());
+        myProcess->startDetached(m_Command);
+        m_Result = ""; //TO DO
+        myProcess->destroyed();
+    }
 }
 
 QString System::getRunAsyncResult()
@@ -96,6 +107,42 @@ bool System::runBoolResult(const QString& Command, bool escaped)
   //Log::debug(LOGMSG("runBoolResult escaped Command : '%1'").arg(escapedCommand.c_str()));
   int exitcode = system(escapedCommand.c_str());
   return exitcode == 0;
+}
+
+void System::notify(const QString& Action, const QString& ActionData, model::Collection* collection, model::Game* game)
+{
+    if(game == nullptr && collection == nullptr){
+        //Log::debug(LOGMSG("NotifyFromString(Action.toUtf8().constData())"));
+        if(ActionData == nullptr){
+            ScriptManager::Instance().NotifyFromString(Action.toUtf8().constData());
+        }
+        else{
+            ScriptManager::Instance().NotifyFromString(Action.toUtf8().constData(), ActionData.toUtf8().constData());
+        }
+    }
+    else if (game == nullptr) {
+        //Log::debug(LOGMSG("NotifyFromString(collection, Action.toUtf8().constData())"));
+        ScriptManager::Instance().NotifyFromString(collection, Action.toUtf8().constData());
+    }
+    else if (collection != nullptr){
+        //Log::debug(LOGMSG("NotifyFromString(collection, game, Action.toUtf8().constData())"));
+        ScriptManager::Instance().NotifyFromString(collection, game, Action.toUtf8().constData());
+    }    
+}
+
+QString System::currentAction()
+{
+    return QString::fromStdString(ScriptManager::Instance().LastAction());
+}
+
+model::Game* System::currentGame()
+{
+    return ScriptManager::Instance().LastGame();
+}
+
+model::Collection* System::currentCollection()
+{
+    return ScriptManager::Instance().LastCollection();
 }
 
 } // namespace model

@@ -10,6 +10,7 @@ Item {
     property var gamepad
     property int pressAngle: 15
     property string name: "" //used to find file named as "dpad_name.jpg" : dpad_nes.png or dpad_snes.png for example
+    property string assetsPath: "" // historically "qrc:/frontend/assets/gamepad/" but could be from other places now ;-)
     property alias brightness: animation.brightness
     property alias contrast: animation.contrast
     visible: name ? (gamepad ? (
@@ -25,7 +26,7 @@ Item {
         height: parent.height
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        source: name ? "qrc:/frontend/assets/gamepad/" + name + "/dpad_" + name + ".png" : ""
+        source: name ? assetsPath + name + "/dpad_" + name + ".png" : ""
         visible: gamepad ? (!gamepad.buttonLeft && !gamepad.buttonRight && !gamepad.buttonUp && !gamepad.buttonDown) : true
     }
 

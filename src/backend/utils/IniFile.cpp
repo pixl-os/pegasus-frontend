@@ -9,6 +9,7 @@
 #include <utils/Strings.h>
 #include <utils/Files.h>
 #include "utils/rLog.h"
+#include "Log.h"
 
 IniFile::IniFile(const Path& path, const Path& fallbackpath)
   : mFilePath(path),
@@ -54,9 +55,17 @@ bool IniFile::Load()
 {
   // Load file
   std::string content;
-  if (!mFilePath.IsEmpty() && mFilePath.Exists()) content = Files::LoadFile(mFilePath);
-  else if (!mFallbackFilePath.IsEmpty() && mFallbackFilePath.Exists()) content = Files::LoadFile(mFallbackFilePath);
-  else return false;
+  //Log::debug(LOGMSG("[IniFile] IniFile::Load(%1)").arg(QString::fromStdString(mFilePath.ToString())));
+  //Log::debug(LOGMSG("[IniFile] IniFile::Load(%1)").arg(QString::fromStdString(mFallbackFilePath.ToString())));
+  if (!mFilePath.IsEmpty() && mFilePath.Exists()){
+      content = Files::LoadFile(mFilePath);
+  }
+  else if (!mFallbackFilePath.IsEmpty() && mFallbackFilePath.Exists()){
+      content = Files::LoadFile(mFallbackFilePath);
+  }
+  else{
+      return false;
+  }
 
   // Split lines
   content = Strings::Replace(content, "\r", "");
@@ -103,6 +112,9 @@ bool IniFile::ReloadValue(const std::string& keytoreload)
 
 bool IniFile::Reload()
 {
+  // cleaning from memory
+  mConfiguration.clear();
+  mPendingWrites.clear();
   // force Load of file
   return Load();
 }
@@ -142,13 +154,18 @@ bool IniFile::Save()
 
   // Save new
   bool boot = mFilePath.StartWidth("/boot/");
+  bool init = mFilePath.StartWidth("/recalbox/share_init/");
+
   if (boot)
     if (system("mount -o remount,rw /boot") != 0) LOG(LogError) <<"[IniFile] Error remounting boot partition (RW)";
+  if (init)
+      if (system("mount -o remount,rw /") != 0) LOG(LogError) <<"[IniFile] Error remounting root partition (RW)";
   Files::SaveFile(mFilePath, Strings::Join(lines, '\n'));
   Log::info(LOGMSG("%1 saved.").arg(QString::fromStdString(mFilePath.ToString())));
   if (boot)
     if (system("mount -o remount,ro /boot") != 0) LOG(LogError) << "[IniFile] Error remounting boot partition (RW)";
-
+  if (init)
+      if (system("mount -o remount,ro /") != 0) LOG(LogError) << "[IniFile] Error remounting root partition (RW)";
   OnSave();
   return true;
 }
@@ -251,16 +268,29 @@ std::string IniFile::ExtractValue(const std::string& key) const
   return (item != nullptr) ? *item : std::string();
 }
 
-bool IniFile::HasKeyStartingWith(const std::string& startWidth)
+bool IniFile::HasKey(const std::string& start)
 {
   for (auto& it : mPendingWrites)
-    if (Strings::StartsWith(it.first, startWidth))
+    if (it.first == start)
       return true;
 
   for (auto& it : mConfiguration)
-    if (Strings::StartsWith(it.first, startWidth))
+    if (it.first == start)
       return true;
 
   return false;
+}
+
+bool IniFile::HasKeyStartingWith(const std::string& keyStartWith)
+{
+    for (auto& it : mPendingWrites)
+        if (Strings::StartsWith(it.first, keyStartWith))
+            return true;
+
+    for (auto& it : mConfiguration)
+        if (Strings::StartsWith(it.first, keyStartWith))
+            return true;
+
+    return false;
 }
 

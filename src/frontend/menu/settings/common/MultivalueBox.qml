@@ -15,24 +15,78 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-import QtQuick 2.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+//import QtQuick.Layouts 1.15
 
+import "qrc:/qmlutils" as PegasusUtils
+//import "common"
 
 FocusScope {
     id: root
 
-    property alias model: list.model
-    property alias index: list.currentIndex
+    property var model
+    property int index //index in model
 
     readonly property int textSize: vpx(22)
     readonly property int itemHeight: 2.25 * textSize
 
+    //new property usefull to customize Box to display to select options/parameters ;-)
+    property string selected_picture: ""
+    property bool has_picture: false
+    property int max_listitem_displayed: 10
+    property bool splitted_list: false
+    property real firstlist_minimum_width_purcentage: 0.33
+    property real firstlist_maximum_width_purcentage: 0.50
+    property real secondlist_minimum_width_purcentage: 0.33
+    property real secondlist_maximum_width_purcentage: 0.50
+    property string firstlist_title: ""
+    property string secondlist_title: ""
+    property string firstlist_symbol: ""
+    property string secondlist_symbol: ""
+    property int box_maximum_width: 1100
+    property int box_minimum_width: 700
+
     signal close
     signal select(int index)
 
-    onFocusChanged: if (focus) root.state = "open";
+    onFocusChanged:{
+        if (focus){
+            root.state = "open";
+            root.visible = true;
+            if(has_picture) box.width = vpx(box_maximum_width);
+            else box.width = vpx(box_minimum_width);
+        }
+    }
+
     function triggerClose() {
         root.state = "";
+        //hide MultiValue box before reseting
+        root.visible = false;
+        //come back to firstlist in term of focus
+        prefixListView.focus = true;
+        index = 0;
+        prefixListView.currentIndex = 0;
+        suffixListView.focus = false;
+        suffixListView.currentIndex = 0;
+        //reseting parameters
+        has_picture = false;
+        max_listitem_displayed = 10;
+        splitted_list = false;
+        firstlist_minimum_width_purcentage = 0.33;
+        firstlist_maximum_width_purcentage = 0.50;
+        firstlist_title = "";
+        firstlist_symbol = "";
+        secondlist_minimum_width_purcentage = 0.33;
+        secondlist_maximum_width_purcentage = 0.50;
+        secondlist_title = "";
+        secondlist_symbol = "";
+        box_maximum_width = 1100;
+        box_minimum_width = 700;
+        //reset size of box
+        box.width = vpx(box_minimum_width);
+        selected_picture = "";
+        //close box
         root.close();
     }
 
@@ -46,25 +100,227 @@ FocusScope {
 
         if (api.keys.isCancel(event)) {
             event.accepted = true;
-            triggerClose();
+            if(prefixListView.focus){
+                //close without new selection/change
+                triggerClose();
+            }
+            else {
+                //come back to prefixList
+                suffixListView.focus = false;
+                prefixListView.focus = true;
+            }
         }
         else if (api.keys.isAccept(event)) {
             event.accepted = true;
-            select(index);
-            triggerClose();
+            if(!splitted_list){
+                var currentIndex = prefixListView.currentIndex;
+                //console.log("prefixListView.currentIndex : " + currentIndex.toString());
+                index = prefixListView.currentIndex;
+                //select index for new selection and close
+                select(index);
+                triggerClose();
+            }
+            else{
+                if(suffixListView.focus ||  (suffixListView.visible === false)){
+                    //find index of root model from select value in prefix/suffix ListViews
+                    index = findRootModelIndex(prefixListView.model.get(prefixListView.currentIndex).name,
+                                              suffixListView.model.get(suffixListView.currentIndex).name);
+                    //select index for new selection and close
+                    select(index);
+                    triggerClose();
+                }
+                else if(prefixListView.focus){
+                    //go to suffixList
+                    prefixListView.focus = false;
+                    suffixListView.focus = true;
+                }
+            }
+        }
+        else if (api.keys.isLeft(event)) {
+            if(suffixListView.focus && splitted_list){
+                //come back to prefixList
+                suffixListView.focus = false;
+                prefixListView.focus = true;
+            }
+        }
+        else if (api.keys.isRight(event)) {
+            if(prefixListView.focus && splitted_list && suffixListView.visible){
+                //go to suffixList
+                prefixListView.focus = false;
+                suffixListView.focus = true;
+            }
         }
     }
-    Component.onCompleted: {
-        if (list.currentIndex > 0)
-            list.positionViewAtIndex(list.currentIndex, ListView.Center);
+
+    ListModel {
+        id: prefixModel
     }
+
+    // Function to populate the prefixModel with unique values
+    function populatePrefixModel() {
+        //to populate splitted list or not
+        //console.log("populatePrefixModel()");
+        //console.log("splitted_list : " + splitted_list)
+        if (splitted_list){
+            prefixModel.clear();
+            var uniquePrefixes = {};
+            var fullName = "";
+            //console.log("root.model.count : " + root.model.count)
+            for (var i = 0; i < root.model.count; i++) {
+                fullName = root.model.get(i, "name")
+                var prefix = fullName.split("/")[0];
+                if(prefix === fullName){
+                    prefix = "/"
+                }
+                //console.log("prefix: " + prefix)
+                if (!uniquePrefixes[prefix]) {
+                    uniquePrefixes[prefix] = true;
+                    //console.log("prefixModel.append({ 'name': " + prefix + "});")
+                    prefixModel.append({ "name": prefix });
+                }
+            }
+            if (root.index >= 0 && root.index < root.model.count) {
+                fullName = root.model.get(root.index, "name");
+                //console.log("fullName : " + fullName)
+                var savedPrefix = fullName.split("/")[0];
+                //console.log("savedPrefix : " + savedPrefix)
+                // Now find the index of this prefix in the prefixModel
+                var prefixIndexToSelect = -1;
+                for (var j = 0; j < prefixModel.count; j++) {
+                    if ((prefixModel.get(j).name === savedPrefix) || ((savedPrefix === fullName) && (prefixModel.get(j).name === "/"))) {
+                        prefixIndexToSelect = j;
+                        //console.log("prefixIndexToSelect : " + prefixIndexToSelect)
+                        break;
+                    }
+                }
+                // Set the current index of the prefix list view
+                if (prefixIndexToSelect !== -1) {
+                    prefixListView.currentIndex = prefixIndexToSelect;
+                }
+            }
+        }
+        else {
+            prefixListView.currentIndex = index;
+        }
+
+        if (prefixListView.currentIndex > 0){
+            prefixListView.positionViewAtIndex(prefixListView.currentIndex, ListView.Center);
+        }
+    }
+
+    function selectPrefixIndex() {
+        if (splitted_list){
+            if (root.index >= 0 && root.index < root.model.count) {
+                var fullName = root.model.get(root.index, "name")
+                //console.log("fullName : " + fullName)
+                var savedPrefix = fullName.split("/")[0];
+                //console.log("savedPrefix : " + savedPrefix)
+                // Now find the index of this prefix in the prefixModel
+                var prefixIndexToSelect = -1;
+                for (var j = 0; j < prefixModel.count; j++) {
+                    if ((prefixModel.get(j).name === savedPrefix) || ((savedPrefix === fullName) && (prefixModel.get(j).name === "/"))) {
+                        prefixIndexToSelect = j;
+                        //console.log("prefixIndexToSelect : " + prefixIndexToSelect)
+                        break;
+                    }
+                }
+                // Set the current index of the prefix list view
+                if (prefixIndexToSelect !== -1) {
+                    prefixListView.currentIndex = prefixIndexToSelect;
+                }
+            }
+        }
+        else {
+            prefixListView.currentIndex = index;
+        }
+
+        if (prefixListView.currentIndex > 0){
+            prefixListView.positionViewAtIndex(prefixListView.currentIndex, ListView.Center);
+        }
+    }
+
+    ListModel {
+        id: suffixModel
+    }
+
+    // Function to populate the suffixModel with unique values
+    function populateSuffixModel() {
+        //console.log("suffixListView.model");
+        suffixModel.clear();
+        if(splitted_list){
+            if (prefixListView.currentIndex !== -1) {
+                var selectedPrefix = prefixListView.model.get(prefixListView.currentIndex).name;
+                //console.log("suffixListView.model - selectedPrefix : " + selectedPrefix);
+                var j = 0;
+                for (var i = 0; i < root.model.count; ++i) {
+                    var fullName = root.model.get(i,"name");
+                    if (fullName.startsWith(selectedPrefix + "/")) {
+                        var suffix = fullName.split("/")[1];
+                        suffixModel.append({ "name": suffix, "picture": root.model.get(i,"picture")});
+                        if(root.index === i){
+                            suffixListView.currentIndex = j;
+                        }
+                        j++;
+                    }
+                    else if ((selectedPrefix === "/") && (fullName === fullName.split("/")[0])) {
+                        //case of prefix only (as at root)
+                        suffixModel.append({ "name": fullName, "picture": root.model.get(i,"picture")});
+                        if(root.index === i){
+                            suffixListView.currentIndex = j;
+                        }
+                        j++;
+                    }
+                }
+            }
+        }
+        if (suffixListView.currentIndex > 0){
+            suffixListView.positionViewAtIndex(suffixListView.currentIndex, ListView.Center);
+        }
+    }
+
+    function findRootModelIndex(prefixName, suffixName) {
+        for (var i = 0; i < root.model.count; ++i) {
+            if (root.model.get(i, "name") === (prefixName + "/" + suffixName)) {
+                return i;
+            }
+            else if((root.model.get(i, "name") === suffixName) && (prefixName === "/")) { //for parameter at root
+                return i;
+            }
+        }
+        return -1; // Return -1 if not found
+    }
+
+    onModelChanged: {
+        //console.log("onModelChanged - root.index : " + root.index);
+        populatePrefixModel();
+        //console.log("onTextChanged - model.picture : " + model.picture)
+        if(typeof(root.model) !== 'undefined'){
+            //console.log("onTextChanged - model.picture : " + model.picture)
+            if(has_picture && (typeof(root.model.get(index, "picture")) !== 'undefined')){
+                selected_picture = root.model.get(index, "picture");
+            }
+        }
+    }
+
+    onIndexChanged: {
+        //console.log("onIndexChanged - root.index : " + root.index);
+        selectPrefixIndex();
+        //console.log("onTextChanged - model.picture : " + model.picture)
+        if(typeof(root.model) !== 'undefined'){
+            //console.log("onTextChanged - model.picture : " + model.picture)
+            if(has_picture && (typeof(root.model.get(index, "picture")) !== 'undefined')){
+                selected_picture = root.model.get(index, "picture");
+            }
+        }
+    }
+
     Rectangle {
         id: shade
 
         anchors.fill: parent
         color: "#000"
 
-        opacity: parent.focus ? 0.3 : 0.0
+        opacity: parent.focus ? 0.5 : 0.0
         Behavior on opacity { PropertyAnimation { duration: 150 } }
 
         MouseArea {
@@ -75,9 +331,13 @@ FocusScope {
     }
     Item {
         id: box
-        //fix to 10 if picture to display for each selection
-        height: (list.count >= 10) || (typeof(model.picture) !== "undefined") ? (10 * itemHeight) : (list.count * itemHeight)
-        width: vpx(700)
+        //fix to 10 items size if picture to display for each selection
+        height: (prefixListView.count >= max_listitem_displayed) ? (max_listitem_displayed * itemHeight) : has_picture ? (max_listitem_displayed * itemHeight) : (prefixListView.count * itemHeight)
+        width: {
+            //console.log("box width binding - has_picture " + has_picture);
+            if(has_picture) return vpx(box_maximum_width)
+            else return vpx(box_minimum_width)
+        }
         anchors.centerIn: parent
 
         Rectangle {
@@ -88,10 +348,84 @@ FocusScope {
             radius: vpx(8)
             anchors.centerIn: parent
         }
+
         Rectangle {
             color: themeColor.main
             radius: vpx(8)
             anchors.fill: box
+
+            Rectangle {
+                id: borderTabBar
+                visible: (firstlist_title === "" && secondlist_title === "") ? false : true
+                height: tabBar.height + vpx(11)
+                width: tabBar.width + vpx(15)
+                color: themeColor.secondary
+                radius: vpx(8)
+                anchors.left: tabBar.left
+                anchors.leftMargin: - vpx(8)
+                anchors.bottom: tabBar.bottom
+                anchors.bottomMargin: - vpx(4)
+            }
+
+            Rectangle {
+                id: borderTabBarHidding
+                visible: (firstlist_title === "" && secondlist_title === "") ? false : true
+                height: vpx(8)
+                width: has_picture ? tabBar.width + vpx(6) : tabBar.width
+                color: themeColor.main
+                anchors.left: tabBar.left
+                anchors.bottom: tabBar.bottom
+                anchors.bottomMargin: - vpx(4)
+            }
+
+            TabBar {
+                id: tabBar
+                width: firstlist_tab.width + secondlist_tab.width
+                anchors.left: parent.left
+                anchors.bottom: parent.top
+                anchors.bottomMargin: - vpx(4)
+                visible: (firstlist_title === "" && secondlist_title === "") ? false : true
+                height: itemHeight
+
+                background: Rectangle {
+                    color: themeColor.main
+                    radius: vpx(8) // Add rounded corners
+                }
+
+                TabButton {
+                    id: firstlist_tab
+                    width: has_picture && splitted_list ? parseInt(box.width * firstlist_minimum_width_purcentage) : (has_picture || splitted_list ? parseInt(box.width * firstlist_maximum_width_purcentage) : box.width)
+                    SectionTitle{
+                        text: firstlist_title
+                        visible: firstlist_title !== ""
+                        first: true
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        symbol: firstlist_symbol
+                    }
+                    background: Rectangle {
+                        color: themeColor.main
+                        anchors.left: parent.left
+                        anchors.leftMargin: vpx(1)
+                        radius: vpx(8) // Add rounded corners
+                    }
+                }
+
+                TabButton {
+                    id: secondlist_tab
+                    width: has_picture && splitted_list ? parseInt(box.width * secondlist_minimum_width_purcentage) : (splitted_list && !has_picture ? parseInt(box.width * secondlist_maximum_width_purcentage) : 0)
+                    SectionTitle{
+                        text: secondlist_title
+                        visible: secondlist_title !== ""
+                        first: true
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        symbol: secondlist_symbol
+                    }
+                    background: Rectangle {
+                        color: themeColor.main
+                        radius: vpx(8) // Add rounded corners
+                    }
+                }
+            }
 
             MouseArea {
                 id: mouseArea
@@ -100,54 +434,160 @@ FocusScope {
                 clip: true
 
                 ListView {
-                    id: list
-                    focus: true
-
-                    width: (typeof(model.picture) === "undefined") ? parent.width : parent.width/2
+                    id: prefixListView
+                    model: splitted_list ? prefixModel : root.model
+                    focus: splitted_list ? false : true
+                    width: has_picture && splitted_list ? parseInt(parent.width * firstlist_minimum_width_purcentage) : (has_picture || splitted_list ? parseInt(parent.width * firstlist_maximum_width_purcentage) : parent.width)
                     height: Math.min(count * itemHeight, parent.height)
                     anchors.left: parent.left
-                    //anchors.verticalCenter: parent.verticalCenter
-                    delegate: listItem
+                    anchors.top: parent.top
+                    delegate: prefixListViewItem
+                    snapMode: ListView.SnapOneItem
+                    highlightMoveDuration: 150
+                    onCurrentIndexChanged: {
+                        populateSuffixModel();
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            var new_idx = prefixListView.indexAt(mouse.x, prefixListView.contentY + mouse.y);
+                            if (new_idx < 0)
+                                return;
+
+                            prefixListView.currentIndex = new_idx;
+                            root.select(new_idx);
+                        }
+                        cursorShape: Qt.PointingHandCursor
+                    }
+                }
+
+                ListView {
+                    id: suffixListView
+
+                    focus: splitted_list ? true : false
+                    visible: splitted_list
+                    width: has_picture && splitted_list ? parseInt(parent.width * secondlist_minimum_width_purcentage) : (splitted_list && !has_picture ? parseInt(parent.width * secondlist_maximum_width_purcentage) : 0)
+                    height: Math.min(count * itemHeight, parent.height)
+                    anchors.left: prefixListView.right
+                    anchors.top: parent.top
+                    model: suffixModel
+                    delegate: suffixListViewItem
                     snapMode: ListView.SnapOneItem
                     highlightMoveDuration: 150
 
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            var new_idx = list.indexAt(mouse.x, list.contentY + mouse.y);
+                            var new_idx = suffixListView.indexAt(mouse.x, suffixListView.co/ntentY + mouse.y);
                             if (new_idx < 0)
                                 return;
 
-                            list.currentIndex = new_idx;
+                            suffixListView.currentIndex = new_idx;
                             root.select(new_idx);
                         }
                         cursorShape: Qt.PointingHandCursor
                     }
                 }
+
+                Image {
+                    id: picture
+                    source: selected_picture !== "" ? selected_picture : ""
+                    visible: selected_picture !== "" ? true : false
+
+                    anchors.right: parent.right
+                    anchors.left: suffixListView.right
+                    anchors.leftMargin: vpx(10) // Left margin
+                    anchors.rightMargin: vpx(10) // Right margin
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.topMargin: vpx(10) // Top margin
+                    anchors.bottomMargin: vpx(10) // Bottom margin
+
+                    asynchronous: true
+                    antialiasing: true
+                    fillMode: Image.PreserveAspectFit
+                    opacity: 1
+                }
+
+                Text {
+                    id: noImageText
+                    text: qsTr("No Preview Available") + api.tr
+                    visible: has_picture & ((selected_picture === "") || (picture.status === Image.Error)) ? true : false
+                    width: selected_picture !== "" ? (parent.width/2) : 0
+                    height: parent.height
+                    anchors.right: parent.right
+                    anchors.left: suffixListView.right
+                    anchors.leftMargin: vpx(10) // Left margin
+                    anchors.rightMargin: vpx(10) // Right margin
+                    anchors.topMargin: vpx(10) // Top margin
+                    anchors.bottomMargin: vpx(10) // Bottom margin
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: "red"
+                    font.pixelSize: root.textSize
+                    font.family: globalFonts.sans
+                }
             }
         }
     }
     Component {
-        id: listItem
+        id: prefixListViewItem
         Rectangle {
-            readonly property bool highlighted: ListView.isCurrentItem || mouseArea.containsMouse
+            readonly property bool highlighted: ListView.isCurrentItem || (mouseArea.containsMouse && api.internal.settings.mouseSupport)
+            clip: true
+            onHighlightedChanged:{
+                //console.log("onTextChanged - model.picture : " + model.picture)
+                if(has_picture && !splitted_list) selected_picture = model.picture;
+            }
 
             width: ListView.view.width
             height: root.itemHeight
             radius: vpx(8)
             color: highlighted ? themeColor.secondary : themeColor.main
-            border.color: highlighted ? themeColor.underline : themeColor.main
+            border.color: highlighted && prefixListView.focus ? themeColor.underline : themeColor.main
+
+            PegasusUtils.HorizontalAutoScroll{
+                id: longtext
+
+                scrollWaitDuration: 1000 // in ms
+                pixelsPerSecond: 20
+                visible: (has_picture && !splitted_list) ? true : false
+                activated: visible
+                anchors {
+                    top:    parent.top;
+                    left:   parent.left;
+                    right:  parent.right;
+                    leftMargin: vpx(5);
+                    rightMargin: vpx(5);
+                }
+
+                height: parent.height
+
+                Text {
+                    id: labellongtext
+                    visible: (has_picture && !splitted_list) ? true : false
+
+                    text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
+                    color: themeColor.textValue
+                    font.pixelSize: root.textSize
+                    font.family: globalFonts.sans
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
 
             Text {
-                id: label
+                 id: label
+                 visible: !labellongtext.visible
+                 anchors.verticalCenter: parent.verticalCenter
+                 anchors.horizontalCenter: parent.horizontalCenter
 
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
-                color: themeColor.textValue
-                font.pixelSize: root.textSize
-                font.family: globalFonts.sans
+                 text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
+                 color: themeColor.textValue
+                 font.pixelSize: root.textSize
+                 font.family: globalFonts.sans
             }
 
             MouseArea {
@@ -157,6 +597,77 @@ FocusScope {
             }
         }
     }
+
+    Component {
+        id: suffixListViewItem
+        Rectangle {
+            readonly property bool highlighted: ListView.isCurrentItem || (mouseArea.containsMouse && api.internal.settings.mouseSupport)
+            clip: true
+            onHighlightedChanged:{
+                if(typeof(model) !== 'undefined'){
+                    //console.log("onTextChanged - model.picture : " + model.picture)
+                    if(has_picture && splitted_list && (typeof(model.picture) !== 'undefined')){
+                        selected_picture = model.picture;
+                    }
+                }
+             }
+            width: ListView.view.width
+            height: root.itemHeight
+            radius: vpx(8)
+            color: highlighted ? themeColor.secondary : themeColor.main
+            border.color: highlighted && suffixListView.focus ? themeColor.underline : themeColor.main
+
+            PegasusUtils.HorizontalAutoScroll{
+                id: longtext
+
+                scrollWaitDuration: 1000 // in ms
+                pixelsPerSecond: 20
+                visible: (has_picture && !splitted_list) ? true : false
+                activated: visible
+                anchors {
+                    top:    parent.top;
+                    left:   parent.left;
+                    right:  parent.right;
+                    leftMargin: vpx(5);
+                    rightMargin: vpx(5);
+                }
+
+                height: parent.height
+
+                Text {
+                    id: labellongtext
+                    visible: (has_picture && !splitted_list) ? true : false
+
+                    text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
+                    color: themeColor.textValue
+                    font.pixelSize: root.textSize
+                    font.family: globalFonts.sans
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Text {
+                 id: label
+                 visible: !labellongtext.visible
+                 anchors.verticalCenter: parent.verticalCenter
+                 anchors.horizontalCenter: parent.horizontalCenter
+
+                 text: (typeof(model.version) !== "undefined") && (model.version.trim().length !== 0) ? model.name + " - " + model.version : model.name
+                 color: themeColor.textValue
+                 font.pixelSize: root.textSize
+                 font.family: globalFonts.sans
+            }
+
+            MouseArea {
+                id: mouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+            }
+        }
+    }
+
     states: State {
         name: "open"
         AnchorChanges {

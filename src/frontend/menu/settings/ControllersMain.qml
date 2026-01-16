@@ -59,6 +59,14 @@ FocusScope {
         text: qsTr("Controllers") + api.tr
         z: 2
     }
+
+    //ONLY FOR DUALSENSE/DS4 Controllers for the moment
+    function rainbowRefreshColor(){
+        //to update color of controllers led if exist/order changed
+        //console.log("bash /etc/init.d/S99controllerled refresh");
+        api.internal.system.runAsync("bash /etc/init.d/S99controllerled refresh");
+    }
+
     Flickable {
         id: container
 
@@ -216,7 +224,7 @@ FocusScope {
                             visible: true
                         }
                         label: (modelData) ? "#" + (index + 1) + ": " + modelData.name +
-                                             (api.internal.recalbox.getBoolParameter("pegasus.debuglogs") ?
+                                             (devModeActivated ?
                                              " (id:" + modelData.deviceId + "/idx:" + modelData.deviceIndex + "/iid:" + modelData.deviceInstance + ")" :
                                              " (" +modelData.deviceInstance + ")") :
                                              ""
@@ -254,13 +262,23 @@ FocusScope {
                             //Activation/Desactivation "move Mode" to change order of controllers connected
                             if (api.keys.isAccept(event) && !event.isAutoRepeat) {
                                 event.accepted = true;
-                                if(controllersList.count > 1) controllersList.moveMode = !controllersList.moveMode;
+                                if(controllersList.count > 1){
+                                    if(controllersList.moveMode){
+                                        //to update color of controllers led if exist/order changed
+                                        rainbowRefreshColor();
+                                    }
+                                    controllersList.moveMode = !controllersList.moveMode;
+                                }
                                 //console.log("controllersList.moveMode : ", controllersList.moveMode);
                             }
                             //Desactivation of "move Mode" to change order of controllers connected
                             if (api.keys.isCancel(event) && !event.isAutoRepeat) {
-                                if(controllersList.moveMode) event.accepted = true;
-                                controllersList.moveMode = false;
+                                if(controllersList.moveMode){
+                                    event.accepted = true;
+                                    controllersList.moveMode = false;
+                                    //to update color of controllers led if exist/order changed
+                                    rainbowRefreshColor();
+                                }
                                 //console.log("controllersList.moveMode : ", controllersList.moveMode);
                             }
                             //Launch gamepadeditor from selected gamepad from the controllersList

@@ -333,6 +333,8 @@ FocusScope {
         boundsBehavior: Flickable.StopAtBounds
         boundsMovement: Flickable.StopAtBounds
 
+        clip: true
+
         FocusScope {
             id: content
 

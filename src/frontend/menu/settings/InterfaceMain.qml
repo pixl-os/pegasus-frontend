@@ -254,8 +254,104 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optMenuControlsConfig
+                    KeyNavigation.down: optDialogBoxScale
 
+                }
+
+                SliderOption {
+                    id: optDialogBoxScale
+
+                    //property to manage parameter name
+                    property string parameterName : "system.dialog.scale"
+                    //property of SliderOption to set
+                    label: qsTr("Dialog box scale") + api.tr
+                    note: qsTr("the default value is 80% (min: 50% - max 100%).") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 50
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,80)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,80) + "%"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDialogBoxHorizontalSize
+                }
+                SliderOption {
+                    id: optDialogBoxHorizontalSize
+
+                    //property to manage parameter name
+                    property string parameterName : "system.dialog.horizontal.size"
+                    //property of SliderOption to set
+                    label: qsTr("Dialog box Horizontal Size") + api.tr
+                    note: qsTr("the default value is 100% (min: 50% - max 150%).") + api.tr
+                    // in slider object
+                    max : 150
+                    min : 50
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,100)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,100) + "%"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDialogBoxVerticalSize
+                }
+                SliderOption {
+                    id: optDialogBoxVerticalSize
+
+                    //property to manage parameter name
+                    property string parameterName : "system.dialog.vertical.size"
+                    //property of SliderOption to set
+                    label: qsTr("Dialog box Vertical Size") + api.tr
+                    note: qsTr("the default value is 105% (min: 50% - max 150%).") + api.tr
+                    // in slider object
+                    max : 150
+                    min : 50
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,105)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,105) + "%"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "%";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optMenuControlsConfig
+                }
+                SectionTitle {
+                    text: qsTr("Interface controls") + api.tr
+                    first: true
+                    symbol: "\uf181"
                 }
                 SimpleButton {
                     id: optMenuControlsConfig
@@ -270,7 +366,103 @@ FocusScope {
                         root.openKeySettings();
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGameviewStartUsage
+                }
+                MultivalueOption {
+                    id: optGameviewStartUsage
+
+                    //property to manage parameter name
+                    property string parameterName : "pegasus.theme.gameview.start.usage"
+
+                    label: qsTr("Use 'Start' button in Gameview for") + api.tr
+                    note: qsTr("Only for theme able to 'notify' Gameview states to Pegasus)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGameviewStartUsage;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optGamelistStartUsage
+
+                }
+                MultivalueOption {
+                    id: optGamelistStartUsage
+
+                    //property to manage parameter name
+                    property string parameterName : "pegasus.theme.gamelist.start.usage"
+
+                    label: qsTr("Use 'Start' button in GameList for") + api.tr
+                    note: qsTr("Only for theme able to 'notify' Gamelist states to Pegasus)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optGamelistStartUsage;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optTheme
+
                 }
                 SectionTitle {
                     text: qsTr("Theme management") + api.tr
@@ -457,22 +649,36 @@ FocusScope {
         property string parameterName
         property MultivalueOption callerid
 
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
         //to use index from parameterlist QAbstractList
         index: api.internal.recalbox.parameterslist.currentIndex
-
+        //reuse same model
+        model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
-            callerid.keypressed = true;
+            /*console.log(callerid.label," onSelect count : ", callerid.count);
+            console.log(callerid.label," onSelect currentindex : ", callerid.currentIndex);
+            console.log(callerid.label," onSelect newindex : ", index);
+            console.log(callerid.label," onSelect value : ", callerid.value);
+            console.log(callerid.label," onSelect internalvalue : ", callerid.internalvalue);*/
             //to use the good parameter
-            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+
+            if(typeof(callerid.command) === "undefined") api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+            else api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
+
+            callerid.keypressed = true;
             //to update index of parameterlist QAbstractList
             api.internal.recalbox.parameterslist.currentIndex = index;
-            //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
             callerid.count = api.internal.recalbox.parameterslist.count;
+            callerid.currentIndex = index;
+
+            //to force update of display of selected value
+            if(typeof(callerid.command) === "undefined"){
+                callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+                callerid.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+            }
+            else {
+                callerid.value = api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
+            }
         }
     }
     MultivalueBox {

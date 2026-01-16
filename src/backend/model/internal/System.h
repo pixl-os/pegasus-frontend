@@ -21,6 +21,11 @@
 #include <utils/Strings.h>
 #include <QObject>
 
+#include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
+
+#include "ShellThread.h"
 
 namespace model {
 
@@ -38,10 +43,41 @@ public:
 
     Q_INVOKABLE QString run(const QString& Command);
 
-    Q_INVOKABLE void runAsync(const QString& Command);
+    Q_INVOKABLE void runAsync(const QString& Command, const QString& engine = "QProcess");
     Q_INVOKABLE QString getRunAsyncResult();
 
     Q_INVOKABLE bool runBoolResult(const QString& Command, bool escaped = true);
+
+    //to set Action in /tmp/es_state.inf
+    Q_INVOKABLE void notify(const QString& Action){
+        notify(Action, nullptr, nullptr, nullptr);
+    }
+    //to set Action in /tmp/es_state.inf
+    Q_INVOKABLE void notify(const QString& Action, const QString& ActionData){
+        //Log::debug(LOGMSG("Q_INVOKABLE void notify(const QString& Action, const QString& ActionData)"));
+        notify(Action, ActionData, nullptr, nullptr);
+    }
+    //to set Action in /tmp/es_state.inf
+    Q_INVOKABLE void notify(const QString& Action, model::Game* game){
+        //Log::debug(LOGMSG("Q_INVOKABLE void notify(const QString& Action, model::Game* game)"));
+        notify(Action, nullptr, nullptr, game);
+    }
+    Q_INVOKABLE void notify(const QString& Action, model::Collection* collection){
+        //Log::debug(LOGMSG("Q_INVOKABLE void notify(const QString& Action, model::Collection* collection)"));
+        notify(Action, nullptr, collection, nullptr);
+    }
+    Q_INVOKABLE void notify(const QString& Action, model::Collection* collection, model::Game* game){
+        //Log::debug(LOGMSG("Q_INVOKABLE void notify(const QString& Action, model::Collection* collection, model::Game* game)"));
+        notify(Action, nullptr, collection, game);
+    }
+    Q_INVOKABLE void notify(const QString& Action, const QString& ActionData, model::Collection* collection, model::Game* game);
+
+    //to get Action as set in /tmp/es_state.inf
+    Q_INVOKABLE QString currentAction();
+    //to get current Game
+    Q_INVOKABLE model::Game* currentGame();
+    //to get current Collection
+    Q_INVOKABLE model::Collection* currentCollection();
 
 private slots:
     void runAsync_slot();
@@ -51,8 +87,10 @@ signals:
 
 private:
     QString  m_Command;
+    QString  m_Engine;
     QString m_Result;
     bool m_bResult;
+    ShellThread* m_shellThread = nullptr;
 };
 
 } // namespace model

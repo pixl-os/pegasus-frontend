@@ -20,12 +20,13 @@ import QtQuick 2.12
 
 
 Text {
+    property bool launchedAsDialogBox: false
     property bool first: false
     property alias symbol: symbolTitle.text
     property alias symbolFontSize: symbolTitle.font.pixelSize
     property alias symbolFontFamily: symbolTitle.font.family
     property int fontSize: vpx(22)
-    property int horizontalPadding: vpx(20)
+    property int horizontalPadding: launchedAsDialogBox ? vpx(10) : vpx(20)
 
     color: themeColor.textSectionTitle
     font {

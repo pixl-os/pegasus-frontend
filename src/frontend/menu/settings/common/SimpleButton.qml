@@ -26,10 +26,10 @@ FocusScope {
     property alias pointerIcon: pointerConfigs.visible
     property bool showUnderline: true
     property bool selectButton: false
-
-
+    property int wrapMode: Text.WordWrap
+    property bool launchedAsDialogBox: false
     readonly property int fontSize: vpx(22)
-    readonly property int horizontalPadding: vpx(30)
+    readonly property int horizontalPadding: launchedAsDialogBox ? vpx(0) : vpx(30)
 
     signal activate()
 
@@ -81,11 +81,12 @@ FocusScope {
 
         Text {
             id: label
+            maximumLineCount: (root.wrapMode === Text.NoWrap) ? 1 : 2
             color: themeColor.textLabel
             font.pixelSize: fontSize
             font.family: globalFonts.sans
             width: underline.width
-            wrapMode: Text.WordWrap
+            wrapMode: root.wrapMode
         }
 
         Text {

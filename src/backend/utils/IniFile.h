@@ -8,7 +8,6 @@
 
 #include <utils/os/fs/Path.h>
 #include <utils/storage/rHashMap.h>
-#include "Log.h"
 
 class IniFile
 {
@@ -37,6 +36,15 @@ class IniFile
      * @return True if the operation is successful
      */
     bool Save();
+
+    /*!
+     * @brief load the configuration file from a specific new path (usefull for override)
+     * @return True if the operation is successful
+     */
+    bool LoadFromNewPath(const std::string& NewPath){
+        mFilePath = Path(NewPath);
+        return Reload();
+    }
 
     /*!
      * @brief Reload the configuration file withoot backup parameter already updated in memory
@@ -133,11 +141,18 @@ class IniFile
     bool isInList(const std::string &name, const std::string &value) const;
 
     /*!
+     * @brief Check if there is one key matching the given string
+     * @param key String
+     * @return True if one key matchs with the given string
+     */
+    bool HasKey(const std::string& key);
+
+    /*!
      * @brief Check if there is at least one key starting with the given string
-     * @param startWidth String
+     * @param keyStartWidth String
      * @return True if at least one key starts with the given string
      */
-    bool HasKeyStartingWith(const std::string& startWidth);
+    bool HasKeyStartingWith(const std::string& keyStartWith);
 
     /*!
      * @brief Check if the given line is a valide 'key=value'

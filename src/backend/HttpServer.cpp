@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QUrl>
 #include <HttpServer.h>
+#include "Log.h"
 
 //For recalbox
 #include "RecalboxConf.h"
