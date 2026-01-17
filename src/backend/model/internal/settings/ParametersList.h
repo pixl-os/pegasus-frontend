@@ -8,7 +8,8 @@
 namespace model {
 struct ParameterEntry {
     QString name;
-    explicit ParameterEntry(QString name);
+    QString picture; // The picture field is now a QString for the file path
+    explicit ParameterEntry(QString name, QString picture); // Update the constructor
     MOVE_ONLY(ParameterEntry)
 };
 
@@ -23,7 +24,8 @@ public:
 
     enum Roles {
         Name = Qt::UserRole + 1,
-   };
+        Picture // Keep the same role for the picture
+    };
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
@@ -47,6 +49,9 @@ public:
     //to be able to set checkbox state individually
     Q_INVOKABLE QList<bool> isChecked();
 
+    // The new helper function to be exposed to QML
+    Q_INVOKABLE QVariant get(int row, const QString& roleName) const;
+
 //Variant examples from QML	
 /* Item {
     property variant items: [1, 2, 3, "four", "five"]
@@ -66,12 +71,12 @@ signals:
     void checkedChanged();
 
 private:
-    const QHash<int, QByteArray> m_role_names;
+    QHash<int, QByteArray> m_role_names = {
+        {Name, "name"},
+        {Picture, "picture"} // Add the new role name mapping
+    };
     std::vector<ParameterEntry> m_parameterslist;
     QString m_parameter;
-
-    //! Boot configuration file
-    IniFile m_RecalboxBootConf;
     
     size_t m_current_idx;
     size_t m_current_checked;

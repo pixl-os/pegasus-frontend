@@ -54,7 +54,7 @@ public:
         qWarning().noquote().nospace() << msg;
     }
     void error(const QString& msg) override {
-        qWarning().noquote().nospace() << msg;
+        qWarning().noquote().nospace() << "Error: " << msg;
     }
 };
 
@@ -71,7 +71,11 @@ public:
         colorlog(m_pre_info, m_marker_info, msg);
     }
     void warning(const QString& msg) override {
-        colorlog(m_pre_warning, m_marker_info, msg);
+        //just simple exclusion for the moment, TO DO: add filetring mechanism to manage more cases in the future
+        if (msg.contains("libpng warning:")){
+            //do nothing for the moment and just ignore to avoid to warning from libpng due to format of png files in scrap
+        }
+        else colorlog(m_pre_warning, m_marker_warning, msg);
     }
     void error(const QString& msg) override {
         colorlog(m_pre_error, m_marker_error, msg);
@@ -145,8 +149,11 @@ public:
     void warning(const QString& msg) override {
         if (Q_UNLIKELY(!m_file.isOpen()))
             return;
-
-        datelog(m_marker_warning, msg);
+        //just simple exclusion for the moment, TO DO: add filetring mechanism to manage more cases in the future
+        if (msg.contains("libpng warning:")){
+            //do nothing for the moment and just ignore to avoid to warning from libpng due to format of png files in scrap
+        }
+        else datelog(m_marker_warning, msg);
         m_stream.flush();
     }
     void error(const QString& msg) override {

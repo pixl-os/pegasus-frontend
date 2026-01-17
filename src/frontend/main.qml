@@ -36,6 +36,10 @@ Window {
 
     visibility: api.internal.settings.fullscreen
                 ? Window.FullScreen : Window.AutomaticVisibility
+    //Parameters for all dialog boxes
+    property int dialogHorizontalSize: 100
+    property int dialogVerticalSize: 100
+    property int dialogScale: 80
     //Flags to know if any parameter needing reboot or restart
     property bool needReboot : false
     property bool needRestart : false
@@ -60,6 +64,8 @@ Window {
     //TIPS: properties to preload during launch of pegasus-fe and avoid "slow" effect during loading of menus
     property string preload_global_shaders: api.internal.recalbox.parameterslist.currentName("global.shaders")
     property string preload_boot_sharedevice: api.internal.recalbox.parameterslist.currentName("boot.sharedevice")
+    property string preload_teknoparrot_wine: api.internal.recalbox.parameterslist.currentName("teknoparrot.wine")
+    property string preload_teknoparrot_wineappimage: api.internal.recalbox.parameterslist.currentName("teknoparrot.wineappimage")
 
     /*onClosing: {
         theme.source = "";
@@ -300,6 +306,29 @@ Window {
 
             // Input releasing
             Keys.onReleased: {
+                //****************************************************************************************
+                if(devModeActivated === false){
+                    //To detect any pattern ;-)
+                    //console.log("event.key : ", event.key);
+                    //console.log("codePattern[" + codeIndex + "] : " + codePattern[codeIndex]);
+                    if(api.keys.isUp(event) && codePattern[codeIndex] === "Up") codeIndex = codeIndex + 1;
+                    else if(api.keys.isDown(event) && codePattern[codeIndex] === "Down") codeIndex = codeIndex + 1;
+                    else if(api.keys.isLeft(event) && codePattern[codeIndex] === "Left") codeIndex = codeIndex + 1;
+                    else if(api.keys.isRight(event) && codePattern[codeIndex] === "Right") codeIndex = codeIndex + 1;
+                    else if(api.keys.isAccept(event) && codePattern[codeIndex] === "A") codeIndex = codeIndex + 1;
+                    else if(api.keys.isCancel(event) && codePattern[codeIndex] === "B") codeIndex = codeIndex + 1;
+                    else { //reset pattern
+                        codeIndex = 0;
+                    }
+                    //if all keys of code has been confirmed
+                    if(codeIndex >= codePattern.length){
+                        //CODE OK !!!
+                        devModeActivated = true;
+                        codeIndex = 0;
+                    }
+                }
+                //****************************************************************************************
+
                 // Guide
                 if (api.keys.isGuide(event) && !event.isAutoRepeat) {
                     event.accepted = true;
@@ -311,9 +340,15 @@ Window {
                 else if (api.keys.isNetplay(event) && !event.isAutoRepeat && !global.guideButtonPressed && !global.buttonLongPress){
                     //console.log("Keys.onReleased: api.keys.isNetplay(event)");
                     event.accepted = true;
-                    subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
-                    subscreen.focus = true;
-                    content.state = "sub";
+
+                    //set fullscreen due to "large" buttons
+                    subdialog.fullscreen = true;
+                    subdialog.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
+                    subdialog.focus = true;
+                    //subscreen.setSource("menu/settings/NetplayRooms.qml", {"isCallDirectly": true});
+                    //subscreen.focus = true;
+                    //content.state = "sub";
+
                     //stop longpress timer also to avoid border effect
                     timerButtonPressed.stop()
                     global.guideButtonPressed = false;
@@ -336,7 +371,6 @@ Window {
             Keys.onPressed: {
                 //if (api.keys.isGuide(event)) console.log("Keys.onPressed: saw as guide");
                 //if (api.keys.isNetplay(event)) console.log("Keys.onPressed: saw as netplay");
-
                 //start timer to detect button long press
                 if((global.buttonLongPress == false) && (timerButtonPressed.running  == false))  timerButtonPressed.restart();
                 // Guide
@@ -352,11 +386,44 @@ Window {
                     timerButtonPressed.stop()
                     global.buttonLongPress = false;
                 }
-                // Menu
+                // Menu(s)
                 else if (api.keys.isMenu(event) && !event.isAutoRepeat) {
                     //console.log("Keys.onPressed: api.keys.isMenu(event)");
                     event.accepted = true;
-                    mainMenu.focus = true;
+
+                    var lastAction = api.internal.system.currentAction();
+                    var lastGame;
+                    var lastCollection;
+                    var menu = "";
+                    dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+                    dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+                    dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
+                    if(lastAction === "gamelistbrowsing"){
+                        menu = api.internal.recalbox.getStringParameter("pegasus.theme.gamelist.start.usage", "GameMenu"); //Game Menu by default for GameLists
+                    }
+                    else if(lastAction === "gameviewselected"){
+                        menu = api.internal.recalbox.getStringParameter("pegasus.theme.gameview.start.usage", "GameMenu"); //Game Menu by default for GameViews
+                    }
+                    if(menu === "GameMenu"){
+                        //case when we select a view focus on a game (not in listview/gridview or other collections)
+                        lastCollection = api.internal.system.currentCollection();
+                        lastGame = api.internal.system.currentGame();
+                        //set not fullscreen due to be more like a popup dialogbox
+                        subdialog.fullscreen = false;
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "game": lastGame , "launchedAsDialogBox": true});
+                        subdialog.focus = true;
+                    }
+                    else if(menu === "SystemMenu"){
+                        //case when we browse in a listview/gridview
+                        lastCollection = api.internal.system.currentCollection();
+                        //set not fullscreen due to be more like a popup dialogbox
+                        subdialog.fullscreen = false;
+                        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": lastCollection, "launchedAsDialogBox": true});
+                        subdialog.focus = true;
+                    }
+                    else{ //MainMenu or empty
+                        mainMenu.focus = true;
+                    }
                 }
                 //To refresh theme
                 else if (event.key === Qt.Key_F5) {
@@ -433,6 +500,57 @@ Window {
                     mainMenu.focus = true;
             }
         }
+
+        //to have a shade behind the subdialog loaded
+        Rectangle {
+            id: shade
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+
+            color: "#000"
+            opacity: subdialog.focus ? 0.75 : 0
+            visible: opacity > 0.001 && width > 0
+            Behavior on opacity { NumberAnimation { duration: 300 } }
+        }
+
+        Loader {
+            id: subdialog
+            asynchronous: true
+            opacity: focus ? 1 : 0
+            property bool fullscreen: true
+
+            width: parent.width * (dialogHorizontalSize/100)
+            height: parent.height * (dialogVerticalSize/100)
+            scale: focus ? (fullscreen ? 1.0 : (dialogScale/100)) : 0
+
+            Behavior on opacity { PropertyAnimation { duration: 500 } }
+            Behavior on scale { NumberAnimation { duration: 500; easing.type: Easing.Linear }
+            }
+
+            anchors.centerIn: parent
+
+            Rectangle {
+                anchors.fill: parent
+                color: themeColor.main
+                z: -1
+            }
+            visible: focus
+            enabled: focus
+            onLoaded: item.focus = focus
+            onFocusChanged: if (item) item.focus = focus
+        }
+        Connections {
+            target: subdialog.item
+            function onClose() {
+                content.focus = true;
+                content.state = "";
+                theme.visible = true;
+                theme.focus = true;
+            }
+        }
+
         Loader {
             id: subscreen
             asynchronous: true
@@ -441,6 +559,13 @@ Window {
             height: parent.height
             anchors.left: content.right
 
+            Rectangle {
+                anchors.fill: parent
+                color: themeColor.main
+                z: -1
+            }
+
+            visible: focus
             enabled: focus
             onLoaded: item.focus = focus
             onFocusChanged: if (item) item.focus = focus
@@ -1334,7 +1459,7 @@ Window {
         showDataProgressText: dataLoading
 
         function hideMaybe() {
-            console.log("Splashcreen hiding by focus/z level");
+            //console.log("Splashcreen hiding by focus/z level");
             if (focus && !dataLoading && !skinLoading) {
                 //focus on theme content
                 content.focus = true;
@@ -2025,7 +2150,7 @@ Window {
         triggeredOnStart: true
         onTriggered: {
             hasPlugin = api.internal.updates.hasPlugin();
-            console.log("hasPlugin: " + hasPlugin);
+            //console.log("hasPlugin: " + hasPlugin);
         }
     }
 
@@ -2189,67 +2314,66 @@ Window {
     }
     //list model to manage icons of devices
     ListModel {
-        id: myDeviceIcons //now include also layout definition
+        id: myDeviceAssets //now include also layout definition
 
         //CONTROLLERS PART
-        ListElement { icon: "\uf2ef"; keywords: "x360,xbox360,xbox 360,x-box 360"; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
-        ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one,xbox wireless"; type:"controller"; iconfont: "awesome"; layout: "xboxone"} //as layout XBOX SERIES, need layout XBOX ONE
-        ListElement { icon: "\uf2f0"; keywords: "xbox series"; type:"controller"; iconfont: "awesome"; layout: "xboxseries"} //as XBOX one for the moment, need icon for series
-        ListElement { icon: "\uf2f0"; keywords: "xbox series 20 years"; type:"controller"; iconfont: "awesome"; layout: "xboxseries20years"} //as XBOX one for icon, need icon for series and layout defined in input.cfg so that it can be used only for this controller
-        ListElement { icon: "\uf2ee"; keywords: "xbox,microsoft"; type:"controller"; iconfont: "awesome"} //as XBOX for the moment
+        ListElement { icon: "\uf2ef"; keywords: "x360,xbox360,xbox 360,x-box 360"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xbox360"} //as XBOX for the moment, need icon for 360
+        ListElement { icon: "\uf2f0"; keywords: "xboxone,xbox one,x-box one,xbox wireless"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xboxone"} //as layout XBOX SERIES, need layout XBOX ONE
+        ListElement { icon: "\uf2f0"; keywords: "xbox series"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "xboxseries"} //as XBOX one for the moment, need icon for series
+        ListElement { icon: "\uf2ee"; keywords: "xbox,microsoft"; exclusions: ""; type:"controller"; iconfont: "awesome"} //as XBOX for the moment
 
-        ListElement { icon: "\uf0cf"; keywords: "ps5,playstation 5,dualsense"; type:"controller"; iconfont: "awesome"; layout: "ps5"} // add wireless controller as usual PS name used by Sony
-        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; type:"controller"; iconfont: "awesome"; layout: "ps4"} // add wireless controller as usual PS name used by Sony
-        ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cf"; keywords: "ps5,playstation 5,dualsense"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "ps5"} // add wireless controller as usual PS name used by Sony
+        ListElement { icon: "\uf2ca"; keywords: "ps4,playstation 4,dualshock 4,wireless controller"; exclusions: "8bitdo"; type:"controller"; iconfont: "awesome"; layout: "ps4"} // add wireless controller as usual PS name used by Sony
+        ListElement { icon: "\uf2c9"; keywords: "ps3,playstation 3,dualshock 3"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf2c8"; keywords: "ps2,playstation 2,dualshock 2"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf275"; keywords: "ps1,psx,playstation,dualshock 1"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
-        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,md/gen,sega genesis"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf26a"; keywords: "mastersystem,master system"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf26b"; keywords: "megadrive,mega drive,md/gen,sega genesis"; exclusions: ""; type:"controller"; iconfont: "awesome"}
         
         //8bitdo sfc30 and snes30 added to be considered as SNES controller
-        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo,sfc30,snes30"; type:"controller"; iconfont: "awesome"; layout: "snes"}
-        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; type:"controller" ; iconfont: "awesome"; layout: "nes"}
-        ListElement { icon: "\uf262"; keywords: "gc,gamecube"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf25e"; keywords: "snes,super nintendo,sfc30,snes30"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "snes"}
+        ListElement { icon: "\uf25c"; keywords: "nes,nintendo entertainment system"; exclusions: ""; type:"controller" ; iconfont: "awesome"; layout: "nes"}
+        ListElement { icon: "\uf262"; keywords: "gc,gamecube"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
         //huijia added for n64 due to mayflash n64 controller adapter v1 detected as "HuiJia  USB GamePad"
         //other hujia devices exists for NES, SNES, gamecube, Wii, but will be detected upper if needed.
-        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; type:"controller" ; iconfont: "awesome"; layout: "n64"}
-        ListElement { icon: "\uf263"; keywords: "wii remote,rvl-cnt-01-tr"; type:"controller"; iconfont: "awesome"} //layout deactivated because not finished finally, called "wiimote"
+        ListElement { icon: "\uf260"; keywords: "n64,nintendo 64,nintendo64,huijia"; exclusions: ""; type:"controller" ; iconfont: "awesome"; layout: "n64"}
+        ListElement { icon: "\uf263"; keywords: "wiimote,wii remote,rvl-cnt-01-tr"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "wiimote"}
         
         //need to keep only 'pro controller' in case of nintendo switch pro controller as it is the HID name (internal name)
         //in the future, we have other controller as "pro controller", the layout detection should be complexified
-        ListElement { icon: "\uf0ca"; keywords: "switch pro,pro controller"; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
-        ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0ca"; keywords: "switch pro,pro controller"; exclusions: ""; type:"controller"; iconfont: "awesome";  layout: "switchpro"}
+        ListElement { icon: "\uf0c8"; keywords: "joy-con (l)"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0c9"; keywords: "joy-con (r)"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
         //27/02/2022 2 controllers added snakebyte idroid:con, 8bitdo sn30 pro+
-        ListElement { icon: "\uf0cb"; keywords: "idroid"; type:"controller"; iconfont: "awesome"}
-        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+,sn30 pro plus"; type:"controller"; iconfont: "awesome"; layout: "sn30proplus"}
+        ListElement { icon: "\uf0cb"; keywords: "idroid"; exclusions: ""; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cc"; keywords: "sn30 pro+,sn30 pro plus"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "sn30proplus"}
         //27/02/2022 2 controllers added 8bitdo pro 2
-        ListElement { icon: "\uf0cc"; keywords: "8bitdo pro 2"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cc"; keywords: "8bitdo pro 2"; exclusions: ""; type:"controller"; iconfont: "awesome"}
         //07/10/2024 2 controllers added 8bitdo arcade stick, 8bitdo sf30/sn30 pro and google stadia
-        ListElement { icon: "\uf0d1"; keywords: "stadia"; type:"controller"; iconfont: "awesome"; layout: "stadia"}
-        ListElement { icon: "\uf0d2"; keywords: "8bitdo arcade stick,n30 Arcade Stick"; type:"controller"; iconfont: "awesome"; layout: "arcadestick"} //match only in bluetooth else detected as xbox :-(
-        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro"; type:"controller"; iconfont: "awesome"; layout: "sn30pro"}
+        ListElement { icon: "\uf0d1"; keywords: "stadia"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "stadia"}
+        ListElement { icon: "\uf0d2"; keywords: "8bitdo arcade stick,n30 Arcade Stick"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "arcadestick"} //match only in bluetooth else detected as xbox :-(
+        ListElement { icon: "\uf0d3"; keywords: "sn30 pro,sf30 pro"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "sn30pro"}
 
         //28/02/2022 to add wheels/cockpit devices
-        ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0c7"; keywords: "cockpit,wheel"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
         //28/02/2022 to add arcade panel device
         //2 codes exists "\uf0cd" & "\uf0ce", respectivelly fill and transparent version
-        ListElement { icon: "\uf0cd"; keywords: "dragonrise,xinmo,xin-mo,j-pac,jpac"; type:"controller"; iconfont: "awesome"}
+        ListElement { icon: "\uf0cd"; keywords: "dragonrise,xinmo,xin-mo,j-pac,jpac"; exclusions: ""; type:"controller"; iconfont: "awesome"}
 
         //27/12/2024 1 controller added amazon luna
-        ListElement { icon: "\uf2f0"; keywords: "amazon,luna"; type:"controller"; iconfont: "awesome"; layout: "luna"} //icon as XBOX one for the moment, need icon for luna
+        ListElement { icon: "\uf2f0"; keywords: "amazon,luna"; exclusions: ""; type:"controller"; iconfont: "awesome"; layout: "luna"} //icon as XBOX one for the moment, need icon for luna
 
         //AUDIO PART
         //add here specific headset tested, keep it in lowercase and as displayed in bluetooth detection
         //04/10/21: add 'plt focus'
         //06/10/21: add 'qcy50' and 'jbl go'
-        ListElement { icon: "\uf1e2"; keywords: "headset,plt focus,qcy50,jbl go"; type:"audio"; iconfont: "awesome"}
-        ListElement { icon: "\uf1e1"; keywords: "speaker"; type:"audio"; iconfont: "awesome"}
-        ListElement { icon: "\uf1b0"; keywords: ""; types:"audio"; iconfont: "awesome"} //as generic icon for audio
+        ListElement { icon: "\uf1e2"; keywords: "headset,plt focus,qcy50,jbl go"; exclusions: ""; type:"audio"; iconfont: "awesome"}
+        ListElement { icon: "\uf1e1"; keywords: "speaker"; exclusions: ""; type:"audio"; iconfont: "awesome"}
+        ListElement { icon: "\uf1b0"; keywords: ""; exclusions: ""; types:"audio"; iconfont: "awesome"} //as generic icon for audio
 
     }
     //little function to faciliate check of value in 2 name and service from a keyword
@@ -2261,6 +2385,20 @@ Window {
             else return false;
         }
         else return false
+    }
+
+    //little function to faciliate check of value in 2 name and service from a keyword
+    function isExclusionFound(name,service,exclusion){
+        if(exclusion !== ""){
+            if(typeof(name) !== "undefined" && typeof(service) !== "undefined"){
+                if(name.toLowerCase().includes(exclusion)||service.toLowerCase().includes(exclusion)){
+                    return true;
+                }
+                else return false;
+            }
+            else return false;
+        }
+        else return false;
     }
 
     //to change icon size for audio ones especially and keep standard one for others.
@@ -2296,16 +2434,16 @@ Window {
         let i = 0;
         //search icon from name equal to layout value
         do{
-            const layout = myDeviceIcons.get(i).layout;
+            const layout = myDeviceAssets.get(i).layout;
             if(layout === name){
-                icon = myDeviceIcons.get(i).icon;
-                if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
-                else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
+                icon = myDeviceAssets.get(i).icon;
+                if (myDeviceAssets.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
+                else if (myDeviceAssets.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
                 else getIconFont = globalFonts.sans; //as default one for the moment
             }
             i = i + 1;
-        }while (icon === "" && i < myDeviceIcons.count)
-        //var iconcode = parseInt(icon.charCodeAt(0));
+        }while (icon === "" && i < myDeviceAssets.count)
+        var iconcode = parseInt(icon.charCodeAt(0));
         //console.log("getIcon 1 - name: " + name + " - iconcode: " + iconcode);
         //check if any icon has been found
         if(icon !== "") return icon;
@@ -2314,10 +2452,15 @@ Window {
         //search the good type
         do{
             const typeKeywords = myDeviceTypes.get(i).keywords.split(",");
-            for(var j = 0; j < typeKeywords.length;j++)
+            for(var j = 0; j < typeKeywords.length; j++)
             {
-                if (isKeywordFound(name, service, typeKeywords[j])) type = myDeviceTypes.get(i).type;
+                if (isKeywordFound(name, service, typeKeywords[j])){
+                    //console.log("myDeviceTypes.get(i).type : ", myDeviceTypes.get(i).type);
+                    //console.log("myDeviceTypes.get(i).keywords : ", myDeviceTypes.get(i).keywords);
+                    type = myDeviceTypes.get(i).type;
+                }
             }
+
             i = i + 1;
         }while (type === "" && i < myDeviceTypes.count)
         //console.log("getIcon 2 - name: " + name + " - type: " + type);
@@ -2325,7 +2468,7 @@ Window {
         i = 0;
         //searchIcon using the good type
         do{
-            const iconKeywords = myDeviceIcons.get(i).keywords.split(",");
+            const iconKeywords = myDeviceAssets.get(i).keywords.split(",");
             for(var k = 0; k < iconKeywords.length;k++)
             {
                 //split name that could contain the name + hid name separated by ' - '
@@ -2333,16 +2476,27 @@ Window {
                 if(names.length >= 2){
                     name = names[1]; //to keep only the hid part if exist
                 }
-                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceIcons.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
-                    icon = myDeviceIcons.get(i).icon;
-                    if (myDeviceIcons.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
-                    else if (myDeviceIcons.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
+                //console.log("getIcon 2.1 - name: " + name + " - service: " + service + " - iconKeywords[k]: " + iconKeywords[k]);
+                if (isKeywordFound(name, service, iconKeywords[k]) && (myDeviceAssets.get(i).type === type || ((type === "") && (iconKeywords[k] !== "")))){
+                    icon = myDeviceAssets.get(i).icon;
+                    //console.log("getIcon 2.2 - name: " + name + " - icon: " + icon);
+                    const iconExclusions = myDeviceAssets.get(i).exclusions.split(",");
+                    for(var k2 = 0; k2 < iconExclusions.length; k2++)
+                    {
+                        //console.log("getIcon 2.2.1 - name: " + name + " - service: " + service + " - iconExclusions[k2]: " + iconExclusions[k2]);
+                        if (isExclusionFound(name, service, iconExclusions[k2])){
+                            icon = "";
+                        }
+                    }
+                    //console.log("getIcon 2.3 - name: " + name + " - icon: " + icon);
+                    if (myDeviceAssets.get(i).iconfont === "awesome") getIconFont = globalFonts.awesome;
+                    else if (myDeviceAssets.get(i).iconfont === "ion") getIconFont = globalFonts.ion;
                     else getIconFont = globalFonts.sans; //as default one for the moment
                 }
             }
             i = i + 1;
-        }while (icon === "" && i < myDeviceIcons.count)
-        //iconcode = parseInt(icon.charCodeAt(0));
+        }while (icon === "" && i < myDeviceAssets.count)
+        iconcode = parseInt(icon.charCodeAt(0));
         //console.log("getIcon 3 - name: " + name + " - type: " + type + " - iconcode: " + iconcode);
         return icon;
     }
@@ -2374,6 +2528,26 @@ Window {
         api.internal.system.run("sleep 1");
         //reload theme
         content.source = Qt.binding(getThemeFile);
+    }
+
+    function gameSettings(collection,game) {
+        //set not fullscreen due to be more like a popup dialogbox
+        dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+        dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+        dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
+        subdialog.fullscreen = false;
+        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": collection, "game": game , "launchedAsDialogBox": true});
+        subdialog.focus = true;
+    }
+
+    function systemSettings(collection) {
+        //set not fullscreen due to be more like a popup dialogbox
+        dialogHorizontalSize = api.internal.recalbox.getIntParameter("system.dialog.horizontal.size",90);
+        dialogVerticalSize = api.internal.recalbox.getIntParameter("system.dialog.vertical.size",105);
+        dialogScale = api.internal.recalbox.getIntParameter("system.dialog.scale",80);
+        subdialog.fullscreen = false;
+        subdialog.setSource("menu/settings/SystemsEmulatorConfiguration.qml", {"system": collection, "launchedAsDialogBox": true});
+        subdialog.focus = true;
     }
     //***********************************************************END OF GENERIC FUNCTIONS ACCESSIBLE ALSO FOR THEMES***************************************************************
 
@@ -2691,4 +2865,101 @@ Window {
         }
     }
     //*********************************************************** END OF SLIDERS MANAGEMENT *************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //for the code ;-)
+    property var codePattern: ["Up", "Up", "Down", "Down", "Left", "Right", "Left", "Right", "B", "A"];
+    property int codeIndex: 0
+    property bool devModeActivated: false;
+
+    // Timer to show the sliders during a limited after update
+    Timer {
+        id: devModeStatusCheck
+        interval: 10000
+        repeat: false
+        running: true
+        triggeredOnStart: false
+        onTriggered: {
+            devModeActivated = api.internal.recalbox.getBoolParameter("system.dev.mode.activated",false);
+            //console.log("devModeStatusCheck - devModeActivated: ", devModeActivated)
+        }
+    }
+
+    onDevModeActivatedChanged:{
+        //console.log("onDevModeActivatedChanged - devModeActivated: ", devModeActivated)
+        if(devModeActivated){
+            //show popup to alert success
+            apiconnection.onShowPopup(qsTr("Congratulation"), qsTr("'Dev' mode activated !"),"",3);
+            api.internal.recalbox.setBoolParameter("system.dev.mode.activated",true);
+        }
+    }
 }

@@ -1,6 +1,123 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
+## [pixL-master] - 2025-XX-XX - v0.1.12
+- Fixes:
+	- game parsing:
+		- be able to select directory as game and avoid to parse inside this type of directory in this case (quicker parsing)
+	- add cache management using QMap to browse quicker in some menu (not yet perfect)
+	- optimize code to well display editbox "pointers" (not yet perfecy)
+	- add filtering about warnings about libpng
+	- quick fix to force bluetooth scan in all cases now
+
+- Features:
+	- intriduction of dedicaced view for wine and proton configuration (to share with all emulators using wine):
+		- add management of DLL overrides
+		- remove also bottles from saves/usersettings stored in a NAS for example
+		- add wine version for wine engines
+		- add more parameters and env variables management for wine
+		- add parameter to manage DXVK/VKD8D dlls installations
+		- add "dev" area for winedebug/hud management + display version/arch for each engines now
+		- improve winengine/appimage usage and add winecfg launching
+		- add more parameters for wine and introduce proton management
+		- fixes to well display wine/proton menu in dialog boxes for model2emu and teknoparrot
+		- to add regedit and control joy.cpl as tools
+		- clean now engine prefix by type of engine (wine or proton)
+		- set condition to set parameter in case of boolean option (for proton also)
+		- fix proton prefix deletion
+	- introduction of teknoparrot advance emulator settings:
+		- add arcade panel previews for tp controls mappings
+		- add alternate panel mapping preview image for tp in 6 buttons
+		- add test/service menu option
+		- set condition to set parameter in case of boolean option (for teknoparrot)
+	- introduce possibility to display an image from list selection:
+		- add splitted listview with title/tab management
+		- add title for "Predefined shader" also
+		- add picture for "Predefined shader" alsooverride file deletion feature
+		- add management of "none" preview for shader set
+	- introduction to have access to emulator configuration from system/game menu:
+		- rename QML files for emulator settings to automate QML file call/detection
+		- add launch of advanced emulator settings from game/system settings
+		- activate clipping to use it as dialog box for Netplay Rooms
+		- add feature to call a qml file content as dialog box
+		- add api.internal.system for QML side to notify Action
+		- add events to manage notify for group, collection, system, grid, vertical list and gameview
+		- add way for theme to call game/system settings
+		- new management of menu triggering for themes
+		- add unlock of root for share_init file writing for override files
+		- add info/size about rom/override/pad2key/keys from emulator configuration per game
+		- add parameters to change size/scale of dialogbox for user interface
+		- add 2 interface options to manage behaviors for game/system/main menu in themes
+		- modify to have a shade behind dialog boxes
+		- manage settings by game using overrides of recalbox.conf
+		- using singleton also for recalbox-boot.conf and override files as {rom].recalbox.conf
+		- parametersList adapted for recalbox.conf overrides
+		- feature to load/save recalbox.conf "override" from "game"  settings
+		- add help if "system/game" settings launched as dialogbox
+		- add game/rom/override information
+		- add override file deletion feature
+		- add capacity for override to take into account empty  keys from override if exists
+		- restore icon display also in menu as modal dialog box
+	- introduction to controller led management:
+		- add nrainbowslider component to be able to manage RGB color settings
+		- add menu to manage RGB Color for Dualshock 4 controller led for 4 players
+		- change color of players during controllers swapping
+		- introduce player index vs pad index for ds4 controllers management
+		- add capacity to change led color/luminosity in gamepad preview also
+		- add picture/parameters to manage led area for ps4 controllers
+		- modify to be more generic for parameters for next controller using led
+		- fix ps4 led management due to "fresh" skin management
+		- add support of "dualsense" color led management
+		- use finally a "common" script for all controller leds
+	- introduce feature to manage skins:
+		- propose more xbox series visuals
+		- add access to "guid" property at qml level
+		- add missing xbox series "doom" parts + improvements
+		- add 2 others visual with same resolutions to manage skins matching for sboxs series 20 years
+		- add xbox one design for this layout
+		- fix gamepad view in case of skins selection to unfocus controls
+		- add xbox one controller "white" skin
+		- add xbox series controller "robot white" skin
+		- add xbox one controller "elite 2" skin
+		- using qml as conf of specific skin if needed
+		- fix to restore "undefined" skin/layout
+		- controllers assets to move in OS finally:
+			- remove xbox one/series layout/skins assets to move in OS finally
+			- remove snes layout assets
+			- remove sn30 pro plus layout assets
+			- remove sn30 pro layout assets
+			- remove nes layout assets
+			- remove arcadestick layout assets
+			- remove xbox360 layout assets
+			- remove luna layout assets
+			- remove ps4 layout assets
+			- remove ps5 layout assets
+			- remove n64 layout assets
+			- remove switchpro layout assets
+			- remove stadia layout assets
+			- remove wiimote layout assets
+		- fix wiimote case layout assets/detection
+		- fix display of "left back/right back" groups
+		- fix skin finding/management
+		- add dynamic parsing of skins from share_init and share (usefull for testing new ones)
+		- add skin preview in parameters list
+		- fix assets path to use share/share_init at the same time
+		- fix parameterName not well completed
+		- rework advanced menu and add deadzone management
+		- add capacity to switch between dpad and left stick as prefered
+		- fix assets path for gamepad layout/skin
+		- fix loading of layout when we have several controllers connected
+		- skin "human readable" naming management + fix assets loading
+		- skin "name" management + some fixes
+		- add "human readable name" to initial layout also from QML
+		
+	- for dev ;-):
+		- introduction log viewer - first iteration
+	- display Advanced Emulator Settings if emulator present for some cases.
+	- add capacity to manage some "exclusion" to select layout/icon
+	- add capacity to call script/command/bin in background using "Qprocess" or "popen"
+	- first iteration to have a thead to shell command and to improve performance
+
 ## [pixL-master] - 2025-05-16 - v0.1.11
 - Fixes:
 	- open(write/append)file directly in classes for robustness of updates/downloads

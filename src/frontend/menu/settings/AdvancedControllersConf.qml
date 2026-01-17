@@ -106,6 +106,13 @@ FocusScope {
         api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
         api.internal.system.run('sed -i \'s/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
     }
+    //ONLY FOR DUALSENSE/DS4 Controllers for the moment
+    //to update color of DUALSENSE/DS4 controllers when we change color value
+    function rainbowUpdateColor(padindex, sliderRBGstring){
+        //console.log("bash /etc/init.d/S99controllerled update " + padindex + " " + sliderRBGstring);
+        api.internal.system.runAsync("bash /etc/init.d/S99controllerled update " + padindex + " " + sliderRBGstring);
+    }
+
     Flickable {
         id: container
 
@@ -484,9 +491,202 @@ FocusScope {
                         container.onFocus(this)
                     }
 
-                    KeyNavigation.down: optArcadeStick
+                    KeyNavigation.down: optControllersLed
                     visible: optPs3Controllers.checked && optBluetoothControllers.checked
                 }
+                ToggleOption {
+                    id: optControllersLed
+                    SectionTitle {
+                        text: qsTr("Controllers LED management") + api.tr
+                        first: true
+                        visible: optBluetoothControllers.checked
+                    }
+
+                    checked: api.internal.recalbox.getBoolParameter("controllers.led.management")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("controllers.led.management",checked);
+                    }
+                    symbol: "\uf2d2"
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optP1ControllerLed
+                }
+                RainbowSliderOption {
+                    id: optP1ControllerLed
+
+                    //property to manage parameter name
+                    property string padindex : "0"
+                    property string playerindex : "1"
+                    property string parameterNameIndex  : "controllers.led.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.led.color.rgb.pad" + padindex
+
+                    visible: optControllersLed.checked
+                    //property of SliderOption to set
+                    label: qsTr("RGB color (player " + playerindex + ")") + api.tr
+                    note: qsTr("to set color of led (as Dualsense/Dualshock 4 one)") + api.tr
+
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterNameIndex,33)
+                    // in text object
+                    value: sliderRBGstring
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        rainbowUpdateColor(padindex,sliderRBGstring);
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        rainbowUpdateColor(padindex,sliderRBGstring);
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optP2ControllerLed
+                }
+                RainbowSliderOption {
+                    id: optP2ControllerLed
+
+                    //property to manage parameter name
+                    property string padindex : "1"
+                    property string playerindex : "2"
+                    property string parameterNameIndex  : "controllers.led.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.led.color.rgb.pad" + padindex
+
+                    visible: optControllersLed.checked
+                    //property of SliderOption to set
+                    label: qsTr("RGB color (player " + playerindex + ")") + api.tr
+                    note: qsTr("to set color of led (as Dualsense/Dualshock 4 one)") + api.tr
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterNameIndex,99)
+                    // in text object
+                    value: sliderRBGstring
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        rainbowUpdateColor(padindex,sliderRBGstring);
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        rainbowUpdateColor(padindex,sliderRBGstring);
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optP3ControllerLed
+                }
+                RainbowSliderOption {
+                    id: optP3ControllerLed
+
+                    //property to manage parameter name
+                    property string padindex : "2"
+                    property string playerindex : "3"
+                    property string parameterNameIndex  : "controllers.led.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.led.color.rgb.pad" + padindex
+
+                    visible: optControllersLed.checked
+                    //property of SliderOption to set
+                    label: qsTr("RGB color (player " + playerindex + ")") + api.tr
+                    note: qsTr("to set color of led (as Dualsense/Dualshock 4 one)") + api.tr
+
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterNameIndex,67)
+                    // in text object
+                    value: sliderRBGstring
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        rainbowUpdateColor(padindex,sliderRBGstring);
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        rainbowUpdateColor(padindex,sliderRBGstring);
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optP4ControllerLed
+                }
+                RainbowSliderOption {
+                    id: optP4ControllerLed
+
+                    //property to manage parameter name
+                    property string padindex : "3"
+                    property string playerindex : "4"
+                    property string parameterNameIndex  : "controllers.led.color.index.pad" + padindex
+                    property string parameterNameString : "controllers.led.color.rgb.pad" + padindex
+
+                    visible: optControllersLed.checked
+                    //property of SliderOption to set
+                    label: qsTr("RGB color (player " + playerindex + ")") + api.tr
+                    note: qsTr("to set color of led (as Dualsense/Dualshock 4 one)") + api.tr
+
+                    // in slider object
+                    max : 100
+                    min : 0
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterNameIndex,18)
+                    // in text object
+                    value: sliderRBGstring
+
+                    onActivate: {
+                        focus = true;
+                    }
+
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        rainbowUpdateColor(padindex,sliderRBGstring);
+                    }
+
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterNameIndex,slidervalue);
+                        value = sliderRBGstring
+                        api.internal.recalbox.setStringParameter(parameterNameString,sliderRBGstring);
+                        sfxNav.play();
+                        rainbowUpdateColor(padindex,sliderRBGstring);
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optArcadeStick
+                }
+
+
 
 //                ToggleOption {
 //                    id: optDB9Controllers

@@ -25,6 +25,9 @@ FocusScope {
     signal openXemuSettings
     signal openSupermodelSettings
     signal openPpssppSettings
+    signal openTeknoParrotSettings
+    signal openYuzuSettings
+    signal openSuyuSettings
 
     width: parent.width
     height: parent.height
@@ -262,6 +265,51 @@ FocusScope {
                     onActivate: {
                         focus = true;
                         root.openXemuSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optTeknoParrot
+                }
+                SimpleButton {
+                    id: optTeknoParrot
+                    visible: api.internal.system.run("if [ -d '/usr/bin/teknoparrot' ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
+                    label: qsTr("TeknoParrot") + api.tr
+                    note: qsTr("Change Configuration for TeknoParrot emulator for modern arcade systems") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openTeknoParrotSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optYuzu
+                }
+                SimpleButton {
+                    id: optYuzu
+                    visible: api.internal.system.run("if [ -f '/usr/bin/yuzu' ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
+                    label: qsTr("Yuzu") + api.tr
+                    note: qsTr("Change Configuration for Yuzu emulator for Nintendo switch") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openYuzuSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSuyu
+                }
+                SimpleButton {
+                    id: optSuyu
+                    visible: api.internal.system.run("if [ -f '/usr/bin/suyu' ]; then echo 'true' ; else echo 'false' ; fi ;").includes('true') ? true : false ;
+                    label: qsTr("Suyu") + api.tr
+                    note: qsTr("Change Configuration for Suyu emulator for Nintendo switch") + api.tr
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+
+                    onActivate: {
+                        focus = true;
+                        root.openSuyuSettings();
                     }
                     onFocusChanged: container.onFocus(this)
                 }

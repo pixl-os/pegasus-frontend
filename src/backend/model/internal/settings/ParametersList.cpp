@@ -1,7 +1,10 @@
 #include "ParametersList.h"
 #include "Log.h"
 #include "RecalboxConf.h"
+#include "RecalboxBootConf.h"
+#include "RecalboxConfOverride.h"
 #include "Paths.h"
+#include "utils/qmlvaluereader.h"
 
 #include "audio/AudioController.h"
 #include "storage/StorageDevices.h"
@@ -9,11 +12,20 @@
 #include <QDir>
 #include <QDirIterator>
 
+#include <QProcess>
+#include <QSettings>
+
+#include <QMap>
+#include <QString>
+#include <QVariant>
+extern QMap<QString, QVariant> globalInMemorySettings; // Declare it as extern
+
 namespace {
 
 /******************************* section to initial variables used by GetParametersList in same name *************************************/
 QStringList ListOfInternalValue;
 QList<bool> ListOfCheckedValue;
+QStringList ListOfPicture;
 
 /*
 list of global and system values (example using snes system)
@@ -25,19 +37,99 @@ snes.core=snes9x_next
 neogeo.emulator=fba2x
 */
 
+QMap<QString, QVariant> globalInMemorySettings; // Define it once
+// Your functions would then use globalInMemorySettings directly:
+// save
+void saveQStringListToGlobalMap(const QStringList& list, const QString& key) {
+    globalInMemorySettings[key] = list;
+  //Log::debug(LOGMSG("List saved to global QMap with key: %1").arg(key));
+}
+
+// load
+QStringList loadQStringListFromGlobalMap(const QString& key) {
+    QStringList list = globalInMemorySettings.value(key).toStringList();
+    if (list.isEmpty() && !globalInMemorySettings.contains(key)) {
+      //Log::debug(LOGMSG("List not found in global QMap for key: %1").arg(key));
+    } else {
+      //Log::debug(LOGMSG("List loaded from global QMap for key: %1").arg(key));
+    }
+    return list;
+}
+
 QString GetCommandOutput(const std::string& command)
 {
     std::string output;
     char buffer[4096];
+  //Log::debug(LOGMSG("GetCommandOutput command: '%1'").arg(QString::fromStdString(command)));
     FILE* pipe = popen(command.data(), "r");
     if (pipe != nullptr)
     {
-        while (feof(pipe) == 0)
-            if (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+        while (feof(pipe) == 0){
+            if (fgets(buffer, sizeof(buffer), pipe) != nullptr){
                 output.append(buffer);
+              //Log::debug(LOGMSG("GetCommandOutput Output: '%1'").arg(QString::fromStdString(output)));
+            }
+        }
         pclose(pipe);
     }
     return QString::fromStdString(output);
+}
+
+QString GetCommandOutputQtBlocking(const QString& command, const QStringList& arguments, bool ReturnError = false, bool RemoveEOL = false)
+{
+    QProcess process;
+    // For simple commands, you might just use command.
+    // For commands with arguments, it's safer to use setProgram and setArguments.
+    // Example: "ls -l /tmp" -> setProgram("ls"); setArguments({"-l", "/tmp"});
+    // If your 'command' string already contains arguments like "ls -l",
+    // then setProgram("sh") and setArguments({"-c", command}) is an option,
+    // but parsing the command string into program and arguments is generally safer.
+
+    // Let's assume for now your 'command' is a single string that can be executed by sh -c
+    // If you always execute simple commands without spaces in the command itself
+    // (e.g., "ls", "pwd"), then just setProgram(command) is fine.
+    // If 'command' can contain arguments, it's better to parse it or use 'sh -c'.
+
+    // A robust way to handle the 'command' string you're currently using:
+    // This assumes your `command` string is a shell command that needs `sh -c`.
+    process.setProgram(command);
+    process.setArguments(arguments);
+
+    // Alternatively, if 'command' is just the executable name and you want to pass arguments separately:
+    //process.setProgram("/bin/ls");
+    //process.setArguments({"-l", "/tmp"});
+    //process.setProgram("/usr/wine/wine-tkg-wow64/bin/wineserver");
+    //process.setArguments({"--version","2>&1"});
+
+  //Log::debug(LOGMSG("Executing command: %1").arg(command)); // Using Qt's debug output
+  //Log::debug(LOGMSG("Executing arguments: %1").arg(arguments.join(" "))); // Using Qt's debug output
+
+    process.start();
+    process.waitForFinished(-1); // Wait indefinitely for the process to finish
+
+    QString output = QString::fromUtf8(process.readAllStandardOutput());
+    QString errorOutput = QString::fromUtf8(process.readAllStandardError());
+
+
+    if (process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0) {
+      //Log::debug(LOGMSG("Command output: %1").arg(output));
+      //Log::debug(LOGMSG("Standard Error: %1").arg(errorOutput));
+    } else {
+        // Command failed or exited with an error
+      //Log::debug(LOGMSG("Command failed with exit code: %1").arg(process.exitCode()));
+      //Log::debug(LOGMSG("and exit status: %1").arg(process.exitStatus()));
+      //Log::debug(LOGMSG("Standard Error: %1").arg(errorOutput));
+        // You might choose to return errorOutput or an empty string,
+        // or throw an exception depending on your error handling strategy.
+    }
+    QString outputReturn = "";
+    if(ReturnError) outputReturn = errorOutput;
+    else outputReturn = output;
+    if(RemoveEOL){
+        outputReturn = outputReturn.replace("\n","");
+        outputReturn = outputReturn.replace("\r","");
+    }
+    return outputReturn;
 }
 
 QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, QStringList SysOptions = {})
@@ -46,6 +138,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
     //clean global internal values if needed
     ListOfInternalValue.clear();
+    ListOfPicture.clear();
 
     //replace from '%1' to '%i' parameters from SysCommand by SysOptions
     if (!SysOptions.empty())
@@ -78,13 +171,14 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
     //remove empty ones for cleaning
     ListOfValue.removeAll(QString(""));
 
-    Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
+  //Log::debug(LOGMSG("The list of value for '%1' is '%2'.").arg(Parameter,ListOfValue.join(",")));
 
     //to avoid crash when there is no value return by command/script
     if(ListOfValue.isEmpty())
     {
         ListOfValue.append(QObject::tr("no value"));
         ListOfInternalValue.append(""); //to empty parameter
+        ListOfPicture.append(""); //to empty parameter
     }
 
     return ListOfValue;
@@ -92,10 +186,13 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
 QStringList GetParametersList(QString Parameter)
 {
+  //Log::debug(LOGMSG("QStringList GetParametersList(%1)").arg(Parameter));
+
     QStringList ListOfValue;
 
     //clean global internal values if needed
     ListOfInternalValue.clear();
+    ListOfPicture.clear();
 
     //! Storage devices
     StorageDevices mStorageDevices;
@@ -178,6 +275,10 @@ QStringList GetParametersList(QString Parameter)
         */
         ListOfValue << QObject::tr("none") << QObject::tr("retro") << QObject::tr("scanlines") << QObject::tr("mega bezel (under overlay)") << QObject::tr("mega bezel (above overlay)");
         ListOfInternalValue << "none" << "retro" << "scanlines" << "megabezel_under_overlay" << "megabezel_above_overlay";
+        QString previews_directory = "shaderset-previews";
+        for (const QString &name : ListOfInternalValue) {
+            ListOfPicture.append("file:///recalbox/share/shaders/" + previews_directory + "/" + name + ".png");
+        }
     }
     //to manage/select SHADERS directory (keep here to avoid to be disturb with "{system/rom}.shaders" pa
     else if (Parameter == "directory.shaders")
@@ -189,28 +290,38 @@ QStringList GetParametersList(QString Parameter)
     }
     else if (Parameter.endsWith(".shaders", Qt::CaseInsensitive) == true)
     {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.shaders");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.shaders");
+        ListOfPicture = loadQStringListFromGlobalMap("ListOfPicture.shaders");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
         /*
         ## Set gpslp shader for all emulators (prefer shadersets above). Absolute path (string)
         global.shaders=/recalbox/share/shaders/myShaders.glslp
         select only compatible extension shaders in menu opengl(glslp) / vulkan(slangp)*/
         QString shadersext;
         QString filterext;
+        QString previews_directory;
         // check vulkan option in recalbox.conf
         if (RecalboxConf::Instance().AsBool("system.video.driver.vulkan", false) == true)
         {
             shadersext = "*.slangp";
             filterext = ".slangp";
+            previews_directory = "shader-previews-vulkan";
         }
         else
         {
             shadersext = "*.glslp";
             filterext = ".glslp";
+            previews_directory = "shader-previews-opengl";
         }
 
         // add none in list for disabled option if needed
         ListOfValue << QObject::tr("none");
         QString empty = "";
         ListOfInternalValue << empty;
+        ListOfPicture << "file:///recalbox/share/shaders/" + previews_directory + "/none.png";
 
         // read root directory and first-level subdirectories
         QDir shadersDir("/recalbox/share/shaders/");
@@ -229,6 +340,8 @@ QStringList GetParametersList(QString Parameter)
             // remove file extension on menu
             QString subfile = file;
             ListOfValue.append(subfile.replace(filterext, ""));
+            QString picturefile = "/recalbox/share/shaders/" + file;
+            ListOfPicture.append("file://" + picturefile.replace("/shaders/","/shaders/" + previews_directory + "/").replace(filterext, ".png"));
         }
 
         // Then, process subdirectories
@@ -260,62 +373,176 @@ QStringList GetParametersList(QString Parameter)
                 // set absolute path and extension for recalbox.conf
                 ListOfInternalValue.append(dir + '/' + subfile);
                 // include directory in ListOfValue, and remove extension
-                ListOfValue.append(QDir(dir).dirName() + "/" + subfile.replace(filterext, ""));
+                ListOfValue.append(QDir(dir).dirName() + "/" + subfile.replace(filterext,""));
+                QString picturefile = dir + '/' + subfiles.at(i);
+                ListOfPicture.append("file://" + picturefile.replace("/shaders/","/shaders/" + previews_directory + "/").replace(filterext, ".png"));
             }
         }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.shaders");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.shaders");
+        saveQStringListToGlobalMap(ListOfPicture,"ListOfPicture.shaders");
+        return ListOfValue;
+
     }
+    else if (Parameter == "system.selected.color")
+    {
+        /* "Original,Black,Gray,Blue,Green,Red" */
+        ListOfValue << QObject::tr("Original") << QObject::tr("Dark Green") << QObject::tr("Light Green") << QObject::tr("Dark Gray")
+                    << QObject::tr("Light Gray") << QObject::tr("Dark Red") << QObject::tr("Light Red") << QObject::tr("Dark Pink")
+                    << QObject::tr("Light Pink") << QObject::tr("Dark Brown") << QObject::tr("Light Brown") << QObject::tr("Dark Blue")
+                    << QObject::tr("Light Blue") << QObject::tr("Orange") << QObject::tr("Yellow") << QObject::tr("Turquoise")
+                    << QObject::tr("Magenta") << QObject::tr("Purple") << QObject::tr("Steel") << QObject::tr("Stone");
+        ListOfInternalValue << "Original" << "Dark Green" << "Light Green" << "Dark Gray"
+                            << "Light Gray" << "Dark Red" << "Light Red" << "Dark Pink"
+                            << "Light Pink" << "Dark Brown" << "Light Brown" << "Dark Blue"
+                            << "Light Blue" << "Orange" << "Yellow" << "Turquoise"
+                            << "Magenta" << "Purple" << "Steel" << "Stone";
+    }
+    //******************************************** For Proton *************************************************
+    else if (Parameter.endsWith(".proton", Qt::CaseInsensitive) == true)
+    {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.proton");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.proton");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read subdirectories in /usr/proton
+        QString targetPath = "/usr/proton/";
+        QStringList nameFilters;
+        nameFilters << "*proton*"; // The wildcard '*' will match any characters after "*proton*"
+        // Changed flag: removed QDirIterator::Subdirectories
+        QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            //it should contain /bin directory if it is a valid wine installed in pixL
+            QString fullpath = dir + "/proton";
+            QString protonname = "";
+            QString wineversion = "";
+          //Log::debug(LOGMSG("File to find in Subdir : '%1'").arg(fullpath));
+            //check if file proton exists to detect a valid proton directory
+            if (QFile::exists(fullpath)) {
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(fullpath);
+                protonname = fullpath.replace("/usr/proton/","");
+                protonname = protonname.replace("/proton","");
+                //check if wineserver exists to get version (using wineserver --version command)
+                QString Command = dir + "/files/bin/wineserver";
+                QStringList Arguments = {"--version"};
+                if (QFile::exists(Command)){
+                    wineversion = GetCommandOutputQtBlocking(Command, Arguments, true, true);
+                    //to keep version as "wine 9.22", "wine-statging 8.0", etc...
+                    wineversion = wineversion.toLower().trimmed();
+                }
+                // remove file extension on menu
+                ListOfValue.append(protonname + " (" + wineversion + ")");
+            }
+        }
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.proton");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.proton");
+        return ListOfValue;
+    }
+    //******************************************** For Wine ***************************************************
     else if (Parameter.endsWith(".wine", Qt::CaseInsensitive) == true)
     {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.wine");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.wine");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
         // add auto in list to let default value from configgen  if needed
         ListOfValue << QObject::tr("auto");
         QString empty = "";
         ListOfInternalValue << empty;
         //read subdirectories in /usr/wine
-        QDirIterator it("/usr/wine/",QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        QString targetPath = "/usr/wine/";
+        QStringList nameFilters;
+        nameFilters << "wine-*"; // The wildcard '*' will match any characters after "wine-"
+        // Changed flag: removed QDirIterator::Subdirectories
+        QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
         while (it.hasNext()) {
             QString dir = it.next();
-            QString relativedir = dir;
-            Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
-            //if contain /bin directory, we could consider that is a valid wine installed in pixL
-            if(relativedir.endsWith("/bin")){
-                QString fulldir;
-                QString winename;
-                //check if file wine or wine64 exists to detect a valid wine directory
-                if (QFile::exists(relativedir + "/wine")) {
-                    fulldir = relativedir + "/wine";
-                    winename = relativedir;
-                    winename = winename.replace("/usr/wine/","");
-                    winename = winename.replace("/bin","");
-                    // use name of directory from /usr/win for recalbox.conf
-                    ListOfInternalValue.append(fulldir);
-                    // remove file extension on menu
-                    ListOfValue.append(winename + " (Wine)");
-                }
-                if (QFile::exists(relativedir + "/wine32")){
-                    fulldir = relativedir + "/wine32";
-                    winename = relativedir;
-                    winename = winename.replace("/usr/wine/","");
-                    winename = winename.replace("/bin","");
-                    // use name of directory from /usr/win for recalbox.conf
-                    ListOfInternalValue.append(fulldir);
-                    // remove file extension on menu
-                    ListOfValue.append(winename + " (Wine32)");
-                }
-                if (QFile::exists(relativedir + "/wine64")){
-                    fulldir = relativedir + "/wine64";
-                    winename = relativedir;
-                    winename = winename.replace("/usr/wine/","");
-                    winename = winename.replace("/bin","");
-                    // use name of directory from /usr/win for recalbox.conf
-                    ListOfInternalValue.append(fulldir);
-                    // remove file extension on menu
-                    ListOfValue.append(winename + " (Wine64)");
+            //it should contain /bin directory if it is a valid wine installed in pixL
+            QString relativedir = dir + "/bin";
+          //Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
+            QString fulldir;
+            QString winename;
+            QString wineversion = "";
+            //check if wineserver exists to get version (using wineserver --version command)
+            QString Command = relativedir + "/wineserver";
+            QStringList Arguments = {"--version"};
+            if (QFile::exists(Command)){
+                wineversion = GetCommandOutputQtBlocking(Command, Arguments, true, true);
+                //to keep version as "9.22", "8.0", etc...
+                wineversion = wineversion.toLower().replace("wine","").trimmed();
+            }
+            //check if wine exists to get archi (using wine --version command)
+            Command = relativedir + "/wine";
+            bool wineIs32Bit = false;
+            if (QFile::exists(Command)){
+                QString errorOutput = GetCommandOutputQtBlocking(Command, Arguments, true, true);
+                if(errorOutput.contains("ELFCLASS64")){
+                    //if wine is 32 bit, we will search the 64 bit one
+                    //else we consider than wine64 = wine (no need to display both version as engine)
+                    //as for modern wine using wow64 architecture
+                    wineIs32Bit = true;
                 }
             }
+            //check if file wine or wine64 exists to detect a valid wine directory
+            if (QFile::exists(relativedir + "/wine")) {
+                fulldir = relativedir + "/wine";
+                winename = relativedir;
+                winename = winename.replace("/usr/wine/","");
+                winename = winename.replace("/bin","");
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(fulldir);
+                // remove file extension on menu
+                if(wineIs32Bit) ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
+                else ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
+            }
+            if (QFile::exists(relativedir + "/wine32")){
+                fulldir = relativedir + "/wine32";
+                winename = relativedir;
+                winename = winename.replace("/usr/wine/","");
+                winename = winename.replace("/bin","");
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(fulldir);
+                // remove file extension on menu
+                ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
+            }
+            if (wineIs32Bit && QFile::exists(relativedir + "/wine64")){
+                fulldir = relativedir + "/wine64";
+                winename = relativedir;
+                winename = winename.replace("/usr/wine/","");
+                winename = winename.replace("/bin","");
+                // use name of directory from /usr/win for recalbox.conf
+                ListOfInternalValue.append(fulldir);
+                // remove file extension on menu
+                ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
+            }
         }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.wine");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.wine");
+        return ListOfValue;
+    }
+    else if (Parameter.endsWith(".winedlloverrides", Qt::CaseInsensitive) == true)
+    {
+        ListOfInternalValue << "mscoree=d" << "mshtml=d";
+        ListOfValue << QObject::tr("Disable Wine Mono installation/usage") << QObject::tr("Disable Wine Gecko installation/usage");
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".wineappimage", Qt::CaseInsensitive) == true)
     {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.wineappimage");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.wineappimage");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
         // add auto in list to let default value from configgen  if needed
         ListOfValue << QObject::tr("auto");
         QString empty = "";
@@ -333,10 +560,10 @@ QStringList GetParametersList(QString Parameter)
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
             ListOfInternalValue.append("/usr/wine/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(fileext, ""));
+            ListOfValue.append(file.replace(fileext, "") + " " + QObject::tr("(embedded)"));
         }
-        //read "user" appimages file from /recalbox/share/save/usersettings/appimages
-        QDir wineUserDir("/recalbox/share/save/usersettings/appimages");
+        //read "user" appimages file from /recalbox/share/saves/usersettings/appimages
+        QDir wineUserDir("/recalbox/share/saves/usersettings/appimages");
         // Sorting by name
         wineUserDir.setSorting(QDir::Name);
         QStringList userfiles = wineUserDir.entryList(QStringList(ext), QDir::Files);
@@ -344,10 +571,14 @@ QStringList GetParametersList(QString Parameter)
         {
             QString file = userfiles.at(index);
             //Log::debug(LOGMSG("File found in root : '%1'").arg(file));
-            ListOfInternalValue.append("/recalbox/share/save/usersettings/appimages/" + file);
+            ListOfInternalValue.append("/recalbox/share/saves/usersettings/appimages/" + file);
             // remove file extension on menu
-            ListOfValue.append(file.replace(fileext, ""));
+            ListOfValue.append(file.replace(fileext, "") + " " + QObject::tr("(from user settings)"));
         }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.wineappimage");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.wineappimage");
+        return ListOfValue; //to go quicker
     }
     else if (Parameter.endsWith(".winearch", Qt::CaseInsensitive) == true)
     {
@@ -357,6 +588,7 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         ListOfValue << "32 bits" << "64 bits";
         ListOfInternalValue << "win32" << "win64";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winver", Qt::CaseInsensitive) == true)
     {
@@ -364,8 +596,9 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("auto");
         QString empty = "";
         ListOfInternalValue << empty;
-        ListOfValue << "Windows 10" << "Windows 8.1" << "Windows 8" << "Windows 7" << "Windows 2008" << "Windows Vista" << "Windows 2003" << "Windows XP" << "Windows 2000" << "Windows NT 4.0" << "Windows Millennium Edition" << "Windows 98" << "Windows 95" << "Windows 3.1";
-        ListOfInternalValue << "win10" << "win81" << "win8" << "win7" << "win2008" << "vista" << "win2003" << "winxp" << "win2k" << "nt40" << "winme" << "win98" << "win95"  << "win31";
+        ListOfValue << "Windows 11" << "Windows 10" << "Windows 8.1" << "Windows 8" << "Windows 7" << "Windows 2008" << "Windows Vista" << "Windows 2003" << "Windows XP" << "Windows 2000" << "Windows NT 4.0" << "Windows Millennium Edition" << "Windows 98" << "Windows 95" << "Windows 3.1";
+        ListOfInternalValue << "win11" << "win10" << "win81" << "win8" << "win7" << "win2008" << "vista" << "win2003" << "winxp" << "win2k" << "nt40" << "winme" << "win98" << "win95"  << "win31";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".winerenderer", Qt::CaseInsensitive) == true)
     {
@@ -375,6 +608,23 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         ListOfValue << "OpenGL" << "Vulkan";
         ListOfInternalValue << "gl" << "vulkan";
+        return ListOfValue;
+    }
+    else if (Parameter.endsWith(".winedxvkframerate", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen if needed
+        ListOfValue << QObject::tr("auto") << QObject::tr("50 FPS") << QObject::tr("60 FPS");
+        ListOfInternalValue << "0" << "50" << "60";
+        return ListOfValue;
+    }
+    else if (Parameter.endsWith(".winedxvkmethod", Qt::CaseInsensitive) == true)
+    {
+        // add auto in list to let default value from configgen if needed
+        ListOfValue << QObject::tr("auto") << QObject::tr("embedded (using symlinks from pixL)") << QObject::tr("winetricks (with save/restore)");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        ListOfInternalValue << "embedded" << "winetricks";
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".wineaudiodriver", Qt::CaseInsensitive) == true)
     {
@@ -384,21 +634,104 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << empty;
         ListOfValue << "alsa" << "pulse";
         ListOfInternalValue << "alsa" << "pulse";
+        return ListOfValue;
     }
-    else if (Parameter == "system.selected.color")
+    else if (Parameter.endsWith(".winehud", Qt::CaseInsensitive) == true)
     {
-        /* "Original,Black,Gray,Blue,Green,Red" */
-        ListOfValue << QObject::tr("Original") << QObject::tr("Dark Green") << QObject::tr("Light Green") << QObject::tr("Dark Gray")
-                    << QObject::tr("Light Gray") << QObject::tr("Dark Red") << QObject::tr("Light Red") << QObject::tr("Dark Pink")
-                    << QObject::tr("Light Pink") << QObject::tr("Dark Brown") << QObject::tr("Light Brown") << QObject::tr("Dark Blue")
-                    << QObject::tr("Light Blue") << QObject::tr("Orange") << QObject::tr("Yellow") << QObject::tr("Turquoise")
-                    << QObject::tr("Magenta") << QObject::tr("Purple") << QObject::tr("Steel") << QObject::tr("Stone");
-        ListOfInternalValue << "Original" << "Dark Green" << "Light Green" << "Dark Gray"
-                            << "Light Gray" << "Dark Red" << "Light Red" << "Dark Pink"
-                            << "Light Pink" << "Dark Brown" << "Light Brown" << "Dark Blue"
-                            << "Light Blue" << "Orange" << "Yellow" << "Turquoise"
-                            << "Magenta" << "Purple" << "Steel" << "Stone";
+        // #set "vulkan" HUD
+        // # DXVK_HUD=[value]: (DXVK-specific) Displays an on-screen overlay with performance information.
+        // # DXVK_HUD=fps (frames per second)
+        // # DXVK_HUD=full (all info)
+        // # DXVK_HUD=devinfo (GPU/driver info)
+        // # DXVK_HUD=compiler (shader compilation stats)
+        // # DXVK_HUD=pipeline (pipeline compilation stats)
+        // # DXVK_HUD=none (disable)
+        ListOfValue << QObject::tr("Disable") << QObject::tr("Frames per second") << QObject::tr("All information")
+                    << QObject::tr("GPU/driver information") << QObject::tr("Shader compilation stats")
+                    << QObject::tr("Pipeline compilation stats");
+        ListOfInternalValue << "none" << "fps" << "full"
+                            << "devinfo" << "compiler" << "pipeline";
+        return ListOfValue;
     }
+    else if (Parameter.endsWith(".winedebug", Qt::CaseInsensitive) == true)
+    {
+    // General Debug Channels (Often very verbose if set to trace):
+    // all: Enables or disables all debug channels. Use with caution for trace level, as the output will be immense. (WINEDEBUG=warn+all is a common starting point).
+    // err: Only error messages.
+    // warn: Warning messages.
+    // fixme: "Fixme" messages, indicating unimplemented or partially implemented functionality. Extremely useful for identifying Wine's shortcomings for a given application.
+    // trace: All debugging messages, including detailed function call traces. The most verbose level.
+
+    // Core Wine Components and OS Emulation:
+    // loaddll: (As you mentioned) Traces the loading and unloading of DLLs, including whether they are native Windows DLLs or Wine's built-in versions. Essential for DLL-related issues.
+    // module: More detailed information about module loading, sometimes overlapping with loaddll.
+    // process: Debugging information related to process creation, termination, and management.
+    // thread: Information about thread creation, synchronization, and termination.
+    // seh: (Structured Exception Handling) Crucial for debugging crashes and exceptions. Shows how Wine handles exceptions and if it can translate them correctly.
+    // rpc: Remote Procedure Call (RPC) interactions.
+    // heap: Memory heap allocations and deallocations. Useful for memory corruption issues.
+    // alloc: General memory allocation tracking.
+    // virtual: Virtual memory management.
+    // sync: Synchronization primitives (mutexes, semaphores, events).
+    // reg: Windows Registry access and manipulation.
+    // file: File system operations.
+    // path: Path resolution and management.
+    // fsync: File synchronization operations.
+    // con: Console output.
+    // keyboard: Keyboard input.
+    // mouse: Mouse input.
+    // time: Time-related functions.
+    // pipe: Named pipe operations.
+    // socket: Network socket operations.
+
+    //example (-all is added first to be sure to deactivate all by default)
+    //WINEDEBUG=-all,trace+loaddll,warn+all
+
+    //onlly few ones selectable to avoid to saturate system in all cases
+        ListOfValue << QObject::tr("Warning messages") << QObject::tr("Error messages") << QObject::tr("Fixme messages")
+                    << QObject::tr("DLLs loading") << QObject::tr("Modules loading")
+                    << QObject::tr("Crashes/Exceptions");
+        ListOfInternalValue << "warn+all" << "err+all" << "fixme+all"
+                            << "+loaddll" << "+module"
+                            << "+seh";
+        return ListOfValue;
+    }
+    //******************************************** For teknoparrot***************************************************
+    else if (Parameter == "teknoparrot.windowed")
+    {
+        ListOfValue << QObject::tr("Auto") << QObject::tr("Yes") << QObject::tr("No");
+        ListOfInternalValue << "auto" << "yes" << "no";
+    }
+    else if (Parameter == "teknoparrot.versus.controller.mapping")
+    {
+        ListOfValue << QObject::tr("From yaml file mappings") << QObject::tr("For 6 Buttons Gamepad/Panel") << QObject::tr("For 6 Buttons Gamepad/Panel (alternative)") << QObject::tr("For 8 Buttons Gamepad/Panel") << QObject::tr("For 8 Buttons Gamepad/Panel (alternative)");
+        ListOfInternalValue << "" << "6buttons" << "6buttons_bis "<< "8buttons" << "8buttons_bis";
+        //to display preview of buttons
+        ListOfPicture << "../../../assets/x_buttons_panel.png" << "../../../assets/6_buttons_panel.png" << "../../../assets/6_buttons_panel_bis.png" << "../../../assets/8_buttons_panel.png" << "../../../assets/8_buttons_panel_bis.png";
+    }
+    else if (Parameter == "teknoparrot.screen.resolution")
+    {
+    // # screen resolution
+    // # if "auto" is selected, parameter will be empty (we let game manage its resolution)
+    // # if "default (720p)" is selected, parameter will be "1280x720" as major games are in HD
+    // # if "1080p" is selected, parameter will be "1920x1080" as Full HD
+    // # if "1440p" is selected, parameter will be "2560x1440" as Quad HD/2K
+    // # if "2160p" is selected, parameter will be "3840×2160" as Ultra HD/4K
+        ListOfValue << QObject::tr("Auto") << QObject::tr("720p - HD") << QObject::tr("1080p - Full HD") << QObject::tr("1440p - Quad HD/2K") << QObject::tr("2160p - Ultra HD/4K");
+        ListOfInternalValue << "" << "1280x720" << "1920x1080" << "2560x1440" << "3840x2160";
+    }
+    else if (Parameter == "teknoparrot.runner.type")
+    {
+        ListOfValue << "Wine" << "Proton";
+        ListOfInternalValue << "wine" << "proton";
+    }
+    //********************************************* For Theme Behaviors **********************************************
+    else if (Parameter.endsWith(".start.usage"))
+    {
+        ListOfValue << QObject::tr("Game Menu") << QObject::tr("System Menu") << QObject::tr("Main Menu");
+        ListOfInternalValue << "GameMenu" << "SystemMenu" << "MainMenu";
+    }
+    //******************************************* For Color Management **********************************************
     else if (Parameter.endsWith(".color"))
     {
         /* "Original,Black,Gray,Blue,Green,Red" */
@@ -406,6 +739,124 @@ QStringList GetParametersList(QString Parameter)
                     << QObject::tr("Blue") << QObject::tr("Green") << QObject::tr("Red") << QObject::tr("Purple");
         ListOfInternalValue << "Original" << "Black" << "White" << "Gray"
                             << "Blue" << "Green" << "Red" << "Purple";
+    }
+    else if (Parameter.endsWith(".controller.skin"))
+    {
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        QString keyword = Parameter.section('.', 0, 0);
+        //put path of "auto" picture (from share_init) / use jpg file to speed up preview
+        ListOfPicture.append("file://recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" +
+                             keyword + "/original_" + keyword + ".jpg");
+
+        //check if others exists as skins in share_init or share
+        QStringList paths;
+        paths << "/recalbox/share_init/system/.pegasus-frontend/assets/gamepad/" // first directory
+              << "/recalbox/share/system/.pegasus-frontend/assets/gamepad/"; // second directory
+        // Iterate over each path and perform the search
+        for (const QString &path : paths) {
+            QDir dir(path);
+            // Set the name filter: list entries starting with "xbox"
+            QStringList nameFilter;
+            nameFilter << keyword + "*";
+
+            // Set the directory filters: only list directories, and exclude "." and ".."
+            QDir::Filters filters = QDir::Dirs | QDir::NoDotAndDotDot;
+
+            // Get the filtered list of directory names
+            QStringList directories = dir.entryList(nameFilter, filters);
+
+            // Now, as example 'xboxDirectories' will contain names like "xboxone", "xboxonewhite", "xboxoneelite2" etc.,
+            // assuming they exist in 'parentDirPath' and start with "xboxone" keyword.
+
+            // Example of parsing/processing the list:
+            //Log::debug(LOGMSG("Found directories starting with %1").arg(keyword));
+            for (QString &dirName : directories) {
+                //Log::debug(LOGMSG("Directory found in root : '%1'").arg(dirName));
+                // You can now use dirName for further operations in your QT C++ application.
+                // For full path: QString fullPath = parentDirPath + QDir::separator() + dirName;
+                QString skin = dirName.replace(keyword.toLower(),QString(""));
+
+                // check and read QML if exists
+                QString qmlPath = path +
+                                  keyword + skin + "/" +
+                                  keyword + skin + ".qml";
+                //Log::debug(LOGMSG("dirName: '%1' -  keyword: '%2'").arg(dirName, keyword));
+                if((keyword + skin) == keyword){ // if not identify as skin
+                    // --- Example with your specific value ---
+                    QString keyToFind = "humanReadableName";
+                    QString name = QmlValueReader::readStringValue(qmlPath, keyToFind);
+                    //Log::debug(LOGMSG("keyToFind: '%1' -  name: '%2'").arg(keyToFind, name));
+                    //to be able to avoid to set as "auto" if value exists in QML for "Human Readable Name"
+                    if ((!name.isEmpty()) && (name != ("no " + keyToFind))) {
+                        //Log::debug(LOGMSG("✅ Successfully read value: '%1'").arg(name));
+                        // Output example: "SF30 PRO (JP/EU)"
+                        if(path.contains("/share_init/")){
+                            ListOfValue[0] = name;
+                        }
+                        else{
+                            ListOfValue[0] = name + " " + QObject::tr("(personal skin)");
+                        }
+                    }
+
+                }
+                else{
+                    // --- Example with your specific value ---
+                    QString keyToFind = "skinName";
+                    QString skinName = QmlValueReader::readStringValue(qmlPath, keyToFind);
+                    if (!skinName.isEmpty()) {
+                        //file exists as any initial layout or skin
+                        //Log::debug(LOGMSG("value returned: '%1'").arg(skinName));
+                        // Output example: "sn30prosnesjpeu"
+                        if (skinName.contains("no " + keyToFind)) {
+                            //it's not a QML for skin in this case
+                            continue; //ignore this one because not a skin
+                        }
+
+                        // --- Example with your specific value ---
+                        keyToFind = "humanReadableName";
+                        QString name = QmlValueReader::readStringValue(qmlPath, keyToFind);
+
+                        if (!name.isEmpty()) {
+                            //Log::debug(LOGMSG("✅ Successfully read value: '%1'").arg(name));
+                            // Output example: "SF30 PRO (JP/EU)"
+                            if(path.contains("/share_init/")){
+                                ListOfValue.append(name);
+                            }
+                            else{
+                                ListOfValue.append(name + " " + QObject::tr("(personal skin)"));
+                            }
+                        }
+                    }
+
+                    if(skinName == ("no " + keyToFind) || skinName.isEmpty()) {
+                        //Log::debug(LOGMSG("Failed to read value from QML. Use skin identification to display"));
+                        //"Upper" case first char of keyword and skins to be nicer for display name ;-)
+                        skin[0] = skin[0].toUpper();
+                        keyword[0] = keyword[0].toUpper();
+                        if(path.contains("/share_init/")){
+                            ListOfValue.append(keyword + " " + skin);
+                        }
+                        else{
+                            ListOfValue.append(keyword + " " + skin + " " + QObject::tr("(personal skin)"));
+                        }
+                        //restore to lower case
+                        keyword = keyword.toLower();
+                        skin = skin.toLower();
+                    }
+
+                    //now we store directory of skin in recalbox.conf via the internal  value
+                    ListOfInternalValue.append(path + keyword + skin);
+                    ListOfPicture.append("file://" + path +
+                                         keyword + skin + "/" +
+                                         "original_" + keyword + skin + ".jpg");
+
+                }
+            }
+        }
+
     }
     else if (Parameter == "controllers.ps3.driver")
     {
@@ -462,10 +913,10 @@ QStringList GetParametersList(QString Parameter)
 
         for(const auto& playback : playbackList)
         {
-            Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+          //Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
             ListOfValue.append(QString::fromStdString(playback.DisplayableName)); // using Awesome Web Font
 
-            Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+          //Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
             ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
         }
         if(ListOfValue.isEmpty())
@@ -755,6 +1206,74 @@ QStringList GetParametersList(QString Parameter)
 
         ListOfInternalValue << "0" << "1" << "2" << "3";
     }
+    else if (Parameter == "yuzu.resolution")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("x0.5 (360p/540p) [experimental]") << QObject::tr("x0.75 (540p/810p) [experimental]") << QObject::tr("x1 (720p/1080p) [native]") << QObject::tr("x1.5 (1080p/1620p) [experimental]")
+                    << QObject::tr("x2 (1440p/2160p)") << QObject::tr("x3 (2160p/3240p)") << QObject::tr("x4 (2880p/4320p)") << QObject::tr("x5 (3600p/5400p)")
+                    << QObject::tr("x6 (4320p/6480p)") << QObject::tr("x7 (5040p/7560p)") << QObject::tr("x8 (5760p/8640p)");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "yuzu.scaling.filter")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("Nearest Neighbor") << QObject::tr("Bilinear") << QObject::tr("Bicubic")
+                    << QObject::tr("Gaussian") << QObject::tr("Scaleforce") << QObject::tr("AMD Fidelity FX");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter == "yuzu.vsync")
+    {
+        /*
+         * use_vsync = 0
+         * no 1 value ???
+        */
+        ListOfValue << QObject::tr("Immediate (VSync Off)") << QObject::tr("FIFO (VSync On)") << QObject::tr("FIFO Relaxed");
+
+        ListOfInternalValue << "0" << "2" << "3";
+    }
+    else if (Parameter == "suyu.resolution")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("x0.5 (360p/540p) [experimental]") << QObject::tr("x0.75 (540p/810p) [experimental]") << QObject::tr("x1 (720p/1080p) [native]") << QObject::tr("x1.5 (1080p/1620p) [experimental]")
+                    << QObject::tr("x2 (1440p/2160p)") << QObject::tr("x3 (2160p/3240p)") << QObject::tr("x4 (2880p/4320p)") << QObject::tr("x5 (3600p/5400p)")
+                    << QObject::tr("x6 (4320p/6480p)") << QObject::tr("x7 (5040p/7560p)") << QObject::tr("x8 (5760p/8640p)");
+
+        ListOfInternalValue << "0" << "1" << "2" << "3"
+                            << "4" << "5" << "6" << "7"
+                            << "8" << "9" << "10";
+    }
+    else if (Parameter == "suyu.scaling.filter")
+    {
+        /*
+         * resolution_setup = 2
+        */
+        ListOfValue << QObject::tr("Nearest Neighbor") << QObject::tr("Bilinear") << QObject::tr("Bicubic")
+                    << QObject::tr("Gaussian") << QObject::tr("Scaleforce") << QObject::tr("AMD Fidelity FX");
+
+        ListOfInternalValue << "0" << "1" << "2"
+                            << "3" << "4" << "5";
+    }
+    else if (Parameter == "suyu.vsync")
+    {
+        /*
+         * use_vsync = 0
+         * no 1 value ???
+        */
+        ListOfValue << QObject::tr("Immediate (VSync Off)") << QObject::tr("FIFO (VSync On)") << QObject::tr("FIFO Relaxed");
+
+        ListOfInternalValue << "0" << "2" << "3";
+    }
     else if (Parameter == "retroarch.color.theme.menu")
     {
         /*
@@ -782,10 +1301,10 @@ QStringList GetParametersList(QString Parameter)
 
         for(const auto& playback : playbackList)
         {
-            Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+          //Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
             ListOfValue.append(QString::fromStdString(playback.DisplayableName)); // using Awesome Web Font
 
-            Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+          //Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
             ListOfInternalValue.append(QString::fromStdString(playback.InternalName));
         }
         if(ListOfValue.isEmpty())
@@ -796,6 +1315,11 @@ QStringList GetParametersList(QString Parameter)
     }
     else if (Parameter == "boot.sharedevice")
     {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.boot.sharedevice");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.boot.sharedevice");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
         /*
         # The `sharedevice` variable indicates where to find the SHARE folder/partition.
         # It can have the following values:
@@ -814,7 +1338,7 @@ QStringList GetParametersList(QString Parameter)
 
         for(const StorageDevices::Device& device : mStorageDevices.GetStorageDevices())
         {
-            Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
+          //Log::debug(LOGMSG("Storage Device Name: %1").arg(QString::fromStdString(device.DisplayName)));
             if(device.Size != 0){
                 if(device.Free >= 0){
                    ListOfValue.append(QString::fromStdString(device.DisplayName) + " - " + QString::fromStdString(device.HumanFree()) + "/" + QString::fromStdString(device.HumanSize()) + " (" + QString::fromStdString(device.PercentFree()) + "%)");
@@ -826,7 +1350,7 @@ QStringList GetParametersList(QString Parameter)
             else{
                 ListOfValue.append(QString::fromStdString(device.DisplayName));
             }
-            Log::debug(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
+          //Log::debug(LOGMSG("Storage Device ID: %1").arg(QString::fromStdString(device.UUID)));
             if(QString::fromStdString(device.DisplayName).contains("Internal SHARE")){
                 ListOfInternalValue.append(QString::fromStdString("INTERNAL"));
             }
@@ -834,6 +1358,9 @@ QStringList GetParametersList(QString Parameter)
                 ListOfInternalValue.append(QString::fromStdString(device.UUID));
             }
         }
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.boot.sharedevice");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.boot.sharedevice");
+        return ListOfValue;
     }
     else if (Parameter.endsWith(".core", Qt::CaseInsensitive) == true) // compatible with all systems
     {
@@ -981,13 +1508,17 @@ std::vector<model::ParameterEntry> find_available_parameterslist(const QString& 
     //Log::debug(LOGMSG("Call of std::vector<model::ParameterEntry> find_available_parameterslist(const QString& Parameter)"));
     QStringList ListOfValue;
 
+    //remove "override." term in case of {rom}.recalbox.conf
+    QString ParameterWithoutOverride = Parameter;
+    ParameterWithoutOverride.replace(QString("override."), QString(""));
+
     if ((SysCommand != "") && (SysCommand != NULL))
     {
-        ListOfValue = GetParametersListFromSystem(Parameter, SysCommand, SysOptions);
+        ListOfValue = GetParametersListFromSystem(ParameterWithoutOverride, SysCommand, SysOptions);
     }
     else
     {
-        ListOfValue = GetParametersList(Parameter);
+        ListOfValue = GetParametersList(ParameterWithoutOverride);
     }
 
     std::vector<model::ParameterEntry> parameterslist;
@@ -996,9 +1527,21 @@ std::vector<model::ParameterEntry> find_available_parameterslist(const QString& 
 
     parameterslist.reserve(static_cast<size_t>(ListOfValue.count()));
 
-    for (const QString& name : qAsConst(ListOfValue)) {
+    // Use a standard for loop with an index
+    for (int i = 0; i < ListOfValue.size(); ++i) {
+        const QString& name = ListOfValue.at(i);
         //Log::debug(LOGMSG("name `%1`").arg(name));
-        parameterslist.emplace_back(std::move(name));
+        if(ListOfPicture.size()>i){
+            const QString& picture = ListOfPicture.at(i);
+            //Log::debug(LOGMSG("picture `%1`").arg(picture));
+            //parameterslist.emplace_back(std::move(name),std::move(picture));
+            parameterslist.emplace_back(name,picture);
+        }
+        else{
+            const QString& picture = "";
+            //parameterslist.emplace_back(std::move(name),std::move(picture));
+            parameterslist.emplace_back(name,picture);
+        }
         //Log::debug(LOGMSG("Found parameter `%1`").arg(parameterslist.back().name));
     }
     return parameterslist;
@@ -1008,16 +1551,16 @@ std::vector<model::ParameterEntry> find_available_parameterslist(const QString& 
 
 namespace model {
 
-ParameterEntry::ParameterEntry(QString Name)
-    : name(std::move(Name))
+ParameterEntry::ParameterEntry(QString Name, QString Picture)
+    : name(std::move(Name)),picture(std::move(Picture))
 {}
 
 ParametersList::ParametersList(QObject* parent)
     : QAbstractListModel(parent)
     , m_role_names({
                     { Roles::Name, QByteArrayLiteral("name") },
+                    { Roles::Picture, QByteArrayLiteral("picture") },
                     })
-    , m_RecalboxBootConf(Path("/boot/recalbox-boot.conf"))
 {
     //empty constructor to be generic
 }
@@ -1040,7 +1583,21 @@ void ParametersList::select_preferred_parameter(const QString& Parameter)
         //check in recalbox-boot.conf
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        select_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+        select_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+    }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        //check in {rom}.recalbox.conf
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        if(RecalboxConfOverride::Instance().HasKey(ParameterOverride.toUtf8().constData())){ //if value already exsits in override file
+            select_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),"")));
+        }
+        else{ //if value not already exsits in override file
+            select_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),
+                                                                                              RecalboxConf::Instance().AsString(ParameterOverride.toUtf8().constData(),
+                                                                                              DefaultValue.toUtf8().constData()))));
+        }
     }
     else
     {
@@ -1067,7 +1624,7 @@ bool ParametersList::select_parameter(const QString& name)
                 return true;
             }
         }
-        else // if internal value to check index from recalbox.conf/recalbox-boot.conf stored value
+        else // if internal value to check index from {rom}.recalbox.conf/recalbox.conf/recalbox-boot.conf stored value
         {
             if (ListOfInternalValue.at(idx) == name) {
                 m_current_idx = idx;
@@ -1095,11 +1652,24 @@ void ParametersList::save_selected_parameter()
         QString ParameterBoot = m_parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
         //write parameter in recalbox-boot.conf in all cases
-        if (ListOfInternalValue.size() == 0) m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), value.name.toUtf8().constData());
+        if (ListOfInternalValue.size() == 0) RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), value.name.toUtf8().constData());
         //or internal value
-        else m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
+        else RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
         //write recalbox-boot.conf immediately (but don't ask to reboot systematically ;-)
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().Save();
+    }
+    //check in {rom}.recalbox.conf
+    else if(m_parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = m_parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        //write parameter in {rom}.recalbox.conf in all cases
+        if (ListOfInternalValue.size() == 0) RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), value.name.toUtf8().constData());
+        //or internal value
+        else RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), ListOfInternalValue.at(m_current_idx).toUtf8().constData());
+        //Deactivate record saving
+        //write {rom}.recalbox.conf immediately (but don't ask to reboot systematically ;-)
+        //RecalboxConfOverride::Instance().Save();
     }
     else
     {
@@ -1136,13 +1706,10 @@ void ParametersList::save_selected_parameter()
     }
 }
 
-
-
-
 void ParametersList::check_preferred_parameter(const QString& Parameter)
 {
     /*
-    Log::debug(LOGMSG("void ParametersList::check_preferred_parameter(const QString& Parameter) Parameter:`%1`").arg(Parameter));
+  //Log::debug(LOGMSG("void ParametersList::check_preferred_parameter(const QString& Parameter) Parameter:`%1`").arg(Parameter));
     to get first row as default value
     */
     QString DefaultValue = "";
@@ -1171,19 +1738,33 @@ void ParametersList::check_preferred_parameter(const QString& Parameter)
         //check in recalbox-boot.conf
         QString ParameterBoot = Parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
-        if(m_RecalboxBootConf.HasKeyStartingWith(ParameterBoot.toUtf8().constData())){
-            check_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),"")));
+        if(RecalboxBootConf::Instance().HasKey(ParameterBoot.toUtf8().constData())){
+            check_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),"")));
         }
         else
         {
-            check_parameter(QString::fromStdString(m_RecalboxBootConf.AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+            check_parameter(QString::fromStdString(RecalboxBootConf::Instance().AsString(ParameterBoot.toUtf8().constData(),DefaultValue.toUtf8().constData())));
+        }
+    }
+    else if(Parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        //check in {rom}.recalbox.conf
+        QString ParameterOverride = Parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        if(RecalboxConfOverride::Instance().HasKey(ParameterOverride.toUtf8().constData())){
+            check_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),"")));
+        }
+        else
+        {
+            check_parameter(QString::fromStdString(RecalboxConfOverride::Instance().AsString(ParameterOverride.toUtf8().constData(),
+                                                                                             RecalboxConf::Instance().AsString(ParameterOverride.toUtf8().constData(),""))));
         }
     }
     else
     {
         //check in recalbox.conf
         //Log::debug(LOGMSG("check_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),DefaultValue.toUtf8().constData())));"));
-        if(RecalboxConf::Instance().HasKeyStartingWith(Parameter.toUtf8().constData())){
+        if(RecalboxConf::Instance().HasKey(Parameter.toUtf8().constData())){
             check_parameter(QString::fromStdString(RecalboxConf::Instance().AsString(Parameter.toUtf8().constData(),"")));
         }
         else
@@ -1217,7 +1798,7 @@ bool ParametersList::check_parameter(const QString& name)
             }
             else ListOfCheckedValue.append(false);
         }
-        else // if internal value to check index from recalbox.conf/recalbox-boot.conf stored value
+        else // if internal value to check index from {rom}.recalbox.conf/recalbox.conf/recalbox-boot.conf stored value
         {
             //to manage parameter managing inclusion or exclusion of any value from checklist
             if((name.contains(ListOfInternalValue.at(idx)) && !m_parameter.endsWith(".ignored")) ||
@@ -1272,9 +1853,20 @@ void ParametersList::save_checked_parameter(const bool checked)
         QString ParameterBoot = m_parameter;
         ParameterBoot.replace(QString("boot."), QString(""));
         //write parameter in recalbox-boot.conf in all cases
-        m_RecalboxBootConf.SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
+        RecalboxBootConf::Instance().SetString(ParameterBoot.toUtf8().constData(), Value.toUtf8().constData());
         //write recalbox-boot.conf immediately (but don't ask to reboot systematically ;-)
-        m_RecalboxBootConf.Save();
+        RecalboxBootConf::Instance().Save();
+    }
+    //check in {rom}.recalbox.conf
+    else if(m_parameter.contains("override.", Qt::CaseInsensitive))
+    {
+        QString ParameterOverride = m_parameter;
+        ParameterOverride.replace(QString("override."), QString(""));
+        //write parameter in {rom}.recalbox.conf in all cases
+        RecalboxConfOverride::Instance().SetString(ParameterOverride.toUtf8().constData(), Value.toUtf8().constData());
+        //Deactivate record saving
+        //write {rom}.recalbox.conf immediately (but don't ask to reboot systematically ;-)
+        //RecalboxConfOverride::Instance().Save();
     }
     else
     {
@@ -1300,9 +1892,36 @@ QVariant ParametersList::data(const QModelIndex& index, int role) const
     switch (role) {
     case Roles::Name:
         return parameter.name;
+    case Roles::Picture:
+        return parameter.picture;
     default:
         return {};
     }
+}
+
+QVariant ParametersList::get(int row, const QString& roleName) const
+{
+    if (row < 0 || row >= rowCount()) {
+        return QVariant();
+    }
+
+    QModelIndex index = this->index(row);
+
+    // Find the role ID from the role name
+    QHash<int, QByteArray> roles = roleNames();
+    int role = -1;
+    for (auto it = roles.constBegin(); it != roles.constEnd(); ++it) {
+        if (it.value() == roleName.toUtf8()) {
+            role = it.key();
+            break;
+        }
+    }
+
+    if (role != -1) {
+        return data(index, role);
+    }
+
+    return QVariant();
 }
 
 void ParametersList::setCurrentIndexChecked(bool checked)
@@ -1369,11 +1988,15 @@ QString ParametersList::currentName(const QString& Parameter, const QString& Int
         m_parameter = Parameter;
         QStringList EmptyQStringList;
         m_parameterslist = find_available_parameterslist(Parameter,"",EmptyQStringList);
+        /*for(int i = 0; i < int(m_parameterslist.size()); i++){
+            Log::debug(LOGMSG("m_parameterslist.at(%2).name `%1`").arg(m_parameterslist.at(i).name,QString::number(i)));
+            Log::debug(LOGMSG("m_parameterslist.at(%2).picture `%1`").arg(m_parameterslist.at(i).picture,QString::number(i)));
+        }*/
         select_preferred_parameter(Parameter);
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
     }
-    //if added to check if InternalName changed finally espcially for value change from recalbox.conf and using HTTP API
+    //if added to check if InternalName changed finally especially for value change from recalbox.conf and using HTTP API
     if(InternalName != ""){
         //need to reset from InternalName as comming from recalox.conf
         for(int i = 0; i < ListOfInternalValue.count(); i++) {
@@ -1401,7 +2024,10 @@ QString ParametersList::currentInternalName(const QString& Parameter) {
         //to signal end of model's data
         emit QAbstractItemModel::endResetModel();
     }
-    return ListOfInternalValue.at(m_current_idx);
+    if(ListOfInternalValue.length() >=1)
+        return ListOfInternalValue.at(m_current_idx);
+    else
+        return "";
 }
 
 QString ParametersList::currentNameFromSystem (const QString& Parameter, const QString& SysCommand, const QStringList& SysOptions) {

@@ -31,7 +31,6 @@ FocusScope {
     property var internalvalue
 
     property bool keypressed: false
-    property bool firsttime: true
 
     property int currentIndex : -1
     property int count : 0
@@ -45,36 +44,6 @@ FocusScope {
 
     width: parent.width
     height: labelContainer.height + fontSize * 1.25
-
-    Component.onCompleted: {
-        //if(firsttime) console.log(labeltext.text," onCurrentIndexChanged (first time)");
-        //else console.log(labeltext.text," onCurrentIndexChanged (key pressed)");
-        if(currentIndex < (count - 1)){
-          rightPointer.visible = true;
-        } else rightPointer.visible = false;
-        if(currentIndex >=1){
-          leftPointer.visible = true
-        } else leftPointer.visible = false;
-    }
-
-    onCurrentIndexChanged: {
-        if(keypressed || firsttime){
-            /*if(firsttime) console.log(labeltext.text," onCurrentIndexChanged (first time)");
-            else console.log(labeltext.text," onCurrentIndexChanged (key pressed)");
-            console.log(labeltext.text," onCurrentIndexChanged count : ", count);
-            console.log(labeltext.text," onCurrentIndexChanged currentindex : ", currentIndex);
-            console.log(labeltext.text," onCurrentIndexChanged value : ", value);
-            console.log(labeltext.text," onCurrentIndexChanged internalvalue : ", internalvalue);*/
-            if(currentIndex < (count - 1)){
-              rightPointer.visible = true;
-            } else rightPointer.visible = false;
-            if(currentIndex >=1){
-              leftPointer.visible = true
-            } else leftPointer.visible = false;
-            keypressed = false;
-            firsttime = false;
-        }
-    }
 
     Keys.onPressed: {
         //console.log("MultivalueOption onPressed of ", labeltext.text)
@@ -154,7 +123,7 @@ FocusScope {
 
     Text {
         id: leftPointer
-        visible: false
+        visible: (currentIndex === 0) ? false : true
         anchors {
             rightMargin: vpx(10)
             right: valueText.left
@@ -176,12 +145,11 @@ FocusScope {
         color: themeColor.textValue
         font.pixelSize: fontSize
         font.family: globalFonts.sans
-        property bool firsttime: true
     }
 
     Text {
         id: rightPointer
-        visible: false
+        visible: currentIndex === (count - 1) ? false : true
         anchors {
             rightMargin: horizontalPadding
             right: parent.right
