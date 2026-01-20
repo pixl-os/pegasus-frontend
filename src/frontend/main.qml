@@ -1444,6 +1444,29 @@ Window {
                 apiconnection.onShowPopup("Video game CD-ROM reader", "CD-ROM mounted from " + cdromDevice + " to " + cdromMountpoint,"",3);
                 cdRomDialogBoxTimer.start();
             }
+            // FOR EPILOGUE GB OPERATOR...
+            else if(action === "gboperator-remove" && api.internal.recalbox.getBoolParameter("dumpers.gboperator.enabled",false)){
+                apiconnection.onShowPopup("Video game cartridge reader", "GB OPERATOR removed","",3);
+                //remove potential previous files about rom
+                api.internal.system.run("rm /tmp/GBOPERATOR.romcrc32");
+                api.internal.system.run("rm /tmp/GBOPERATOR.rommd5");
+                //remove cartridge also and stop timer to find roms/saves from GBOPERATOR
+                dialogBoxGBOPERATORTimer.cartridge_plugged = false;
+                dialogBoxGBOPERATORTimer.stop();
+                //for message in dialog box
+                gameCartridge = qsTr("gb operator removed");
+                //to set data of game
+                gameCartridge_region = "";
+                gameCartridge_state = "disconnected";
+                gameCartridge_name = "";
+            }
+            else if(action.includes("gboperator-add") && api.internal.recalbox.getBoolParameter("dumpers.gboperator.enabled",false)){
+                apiconnection.onShowPopup("Video game cartridge reader", "GB Operator plugged","",3);
+                //run timer to find roms/saves from GB Operator
+                dialogBoxGBOPERATORTimer.cartridge_plugged = false;
+                dialogBoxGBOPERATORTimer.start();
+            }
+
         }
         function onEventLoadingStarted() {
             //console.log("onEventLoadingStarted()");
