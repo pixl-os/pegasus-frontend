@@ -1368,6 +1368,7 @@ Window {
                 powerDialog.item.message = qsTr("Pegasus will restart. Are you sure?");
                 powerDialog.focus = true;
             }
+            // FOR USB DRIVES/KEYS...
             else if(action === "usbmount-add"){
                 powerDialog.source = "dialogs/RestartDialog.qml";
                 powerDialog.item.message = qsTr("New USB device detected with ROMS directory, do you want to parse it now ?");
@@ -1378,6 +1379,7 @@ Window {
                 powerDialog.item.message = qsTr("USB device removed, do you want to refresh list of games ?");
                 powerDialog.focus = true;
             }
+            // FOR RETRODE...
             else if(action === "retrode-remove" && api.internal.recalbox.getBoolParameter("dumpers.retrode.enabled",false)){
                 apiconnection.onShowPopup("Video game cartridge reader", "RETRODE removed","",3);
                 //remove potential previous files about rom
@@ -1403,6 +1405,7 @@ Window {
                 dialogBoxRETRODETimer.cartridge_plugged = false;
                 dialogBoxRETRODETimer.start();
             }
+            // FOR USB-NES...
             else if(action === "usbnes-remove"  && api.internal.recalbox.getBoolParameter("dumpers.usbnes.enabled",false)){
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES removed","",3);
                 //remove potential previous files about rom
@@ -1429,6 +1432,7 @@ Window {
                 dialogBoxUSBNESTimer.cartridge_plugged = false;
                 dialogBoxUSBNESTimer.start();
             }
+            // FOR CD-ROM...
             else if(action === "cdrom-eject"){
                 apiconnection.onShowPopup("Video game CD-ROM reader", "CD-ROM ejected","",3);
                 cdRomDialogBoxTimer.stop();
