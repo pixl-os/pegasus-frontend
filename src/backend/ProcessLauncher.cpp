@@ -403,7 +403,7 @@ ProcessLauncher::ProcessLauncher(QObject* parent)
 
 void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)
 {
-    //Log::debug(LOGMSG("void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)"));
+    Log::debug(LOGMSG("void ProcessLauncher::onLaunchRequested(const model::GameFile* q_gamefile)"));
     Q_ASSERT(q_gamefile);
     //Log::debug(LOGMSG("Q_ASSERT(q_gamefile);"));
 

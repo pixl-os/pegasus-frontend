@@ -20,9 +20,9 @@ Singleplay::Singleplay(QObject* parent)
 }
 
 void Singleplay::setSystem (const QString shortName){
-    //Log::debug(LOGMSG("shortName : %1").arg(shortName));
+    Log::debug(LOGMSG("shortName : %1").arg(shortName));
     providers::es2::SystemEntry sysentry = Provider->find_one_system(shortName);
-    //Log::debug(LOGMSG("sysentry.shortname : %1").arg(sysentry.shortname));
+    Log::debug(LOGMSG("sysentry.shortname : %1").arg(sysentry.shortname));
 
     //Way added to manage a game without collection
      if(sysentry.shortname == shortName){ //system found

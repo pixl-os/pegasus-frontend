@@ -120,7 +120,7 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-
+				//for USBNES...
                 ToggleOption {
                     id: optUSBNESDumper
                     //dumpers.usbnes.enabled=0
@@ -204,7 +204,8 @@ FocusScope {
                     KeyNavigation.down: optRETRODEDumper
                     visible: optUSBNESDumper.checked
                 }
-                ToggleOption {
+                //for RETRODE...
+				ToggleOption {
                     id: optRETRODEDumper
                     //dumpers.retrode.enabled=0
                     SectionTitle {
@@ -254,7 +255,7 @@ FocusScope {
                     KeyNavigation.down: optRETRODESaveROMInfo
                     visible: optRETRODEDumper.checked
                 }
-                //RFU: paremeter finally not use (retroarch can't manage sav directly from cartrideg (need to rename to .srm and can't focus one file :()
+                //RFU: paremeter finally not use (retroarch can't manage sav directly from cartridge (need to rename to .srm and can't focus one file :()
                 /*ToggleOption {
                     id: optRETRODESaveReadOnly
                     //dumpers.retrode.save.readonly=1 by default
@@ -559,8 +560,88 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: optRETRODEDumper.checked
+					KeyNavigation.down: optGBOPERATORDumper
                 }
+                //for GB OPERATOR...
+				ToggleOption {
+                    id: optGBOPERATORDumper
+                    //dumpers.gboperator.enabled=0
+                    SectionTitle {
+                        text: qsTr("GB OPERATOR dumper") + api.tr
+                        first: true
+                        symbol: "\uf264"
+                        symbolFontFamily: globalFonts.awesome
+                        symbolFontSize: vpx(40)
+                    }
 
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.enabled",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.enabled",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.gboperator.enabled",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGBOPERATORMoveSave
+                }
+                ToggleOption {
+                    id: optGBOPERATORMoveSave
+                    //dumpers.gboperator.movesave=0 by default
+                    label: qsTr("Cartridge SRAM in your saves") + api.tr
+                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly retroach/usb-nes are not compatible to update SRAM directly)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.movesave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.movesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.gboperator.movesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGBOPERATORSaveDump
+                    visible: optGBOPERATORDumper.checked
+                }
+                ToggleOption {
+                    id: optGBOPERATORSaveDump
+                    //dumpers.gboperator.savedump=0 by default
+                    label: qsTr("Cartridge ROM in your dumps") + api.tr
+                    note: qsTr("Copy and rename 'Rom' from cartridge to keep it\n(will be in 'dumps' share directory)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.savedump",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.savedump",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.gboperator.savedump",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGBOPERATORWriteSave
+                    visible: optGBOPERATORDumper.checked
+                }
+                ToggleOption {
+                    id: optGBOPERATORWriteSave
+                    //dumpers.gboperator.writesave=0 by default
+                    label: qsTr("'Save' file writing to cartridge") + api.tr
+                    note: qsTr("Enable write of save to cartridge\n(USB-NES should connected/resetted after configuration change)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.gboperator.writesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGBOPERATORSaveROMInfo
+                    visible: optGBOPERATORDumper.checked
+                }
+                ToggleOption {
+                    id: optGBOPERATORSaveROMInfo
+                    //dumpers.gboperator.romlist=0 by default
+                    label: qsTr("Save rom information in file") + api.tr
+                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'usb-nes.romlist.csv')") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.romlist",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.romlist",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.gboperator.romlist",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optGBOPERATORDumper.checked
+                }
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
