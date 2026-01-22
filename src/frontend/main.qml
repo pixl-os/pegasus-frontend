@@ -1571,7 +1571,7 @@ Window {
                 apiconnection.onShowPopup("Video game cartridge reader", "RETRODE removed","",3);
                 //remove potential previous files about rom
                 api.internal.system.run("rm /tmp/RETRODE.romcrc32");
-                api.internal.system.run("rm /tmp/RETRODE.rommd5");
+                //RFU: api.internal.system.run("rm /tmp/RETRODE.rommd5");
                 //remove cartridge also and stop timer to find roms/saves from RETRODE
                 dialogBoxRETRODETimer.cartridge_plugged = false;
                 dialogBoxRETRODETimer.stop();
@@ -1597,7 +1597,7 @@ Window {
                 apiconnection.onShowPopup("Video game cartridge reader", "USB-NES removed","",3);
                 //remove potential previous files about rom
                 api.internal.system.run("rm /tmp/USBNES.romcrc32");
-                api.internal.system.run("rm /tmp/USBNES.rommd5");
+                //RFU: api.internal.system.run("rm /tmp/USBNES.rommd5");
                 //remove cartridge also and stop timer to find roms/saves from USBNES
                 dialogBoxUSBNESTimer.cartridge_plugged = false;
                 dialogBoxUSBNESTimer.stop();
@@ -1636,7 +1636,7 @@ Window {
                 apiconnection.onShowPopup("Video game cartridge reader", "GB OPERATOR removed","",3);
                 //remove potential previous files about rom
                 api.internal.system.run("rm /tmp/GBOPERATOR.romcrc32");
-                api.internal.system.run("rm /tmp/GBOPERATOR.rommd5");
+                //RFU: api.internal.system.run("rm /tmp/GBOPERATOR.rommd5");
                 //remove cartridge also and stop timer to find roms/saves from GBOPERATOR
                 dialogBoxGBOPERATORTimer.cartridge_plugged = false;
                 dialogBoxGBOPERATORTimer.stop();
