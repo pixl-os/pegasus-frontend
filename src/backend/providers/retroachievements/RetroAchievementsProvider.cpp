@@ -33,14 +33,14 @@ RetroAchievementsProvider::RetroAchievementsProvider(QObject* parent)
 {}
 
 RetroAchievementsProvider::RetroAchievementsProvider(QString hashlibrary_url, QObject* parent)
-    : Provider(QLatin1String("retroAchievements"), QStringLiteral("RetroAchievements provider"), PROVIDER_FLAG_INTERNAL | PROVIDER_FLAG_HIDE_PROGRESS, parent)
+    : Provider(QLatin1String("retroAchievements"), QStringLiteral("RetroAchievements"), PROVIDER_FLAG_INTERNAL | PROVIDER_FLAG_HIDE_PROGRESS, parent)
     , m_hashlibrary_url(std::move(hashlibrary_url))
 {}
 
 Provider& RetroAchievementsProvider::run(SearchContext& sctx)
 {
     //Initialize Metahelper for each update and for each games for the moment
-    QString log_tag = "Retroachievements provider";
+    QString log_tag = "Retroachievements";
     try{
         providers::retroAchievements::Metadata metahelper(log_tag);
         //to verify and get token first

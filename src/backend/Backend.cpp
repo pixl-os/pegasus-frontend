@@ -264,11 +264,11 @@ void Backend::start()
     IAudioController::DeviceList playbackList = mAudioController.GetPlaybackList();
     for(const auto& playback : playbackList)
     {
-        Log::debug(LOGMSG("Audio device DisplayableName : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
-        Log::debug(LOGMSG("Audio device InternalName : '%1'").arg(QString::fromStdString(playback.InternalName)));
+        Log::debug(LOGMSG("AudioDevice: DisplayableName - '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+        Log::debug(LOGMSG("AudioDevice: InternalName - '%1'").arg(QString::fromStdString(playback.InternalName)));
         if(playback.InternalName == originalAudioDevice){
             originalAudioDeviceFound = true;
-            Log::debug(LOGMSG("Original Audio Device Found : '%1'").arg(QString::fromStdString(playback.DisplayableName)));
+            Log::debug(LOGMSG("AudioDevice: Original Found - '%1'").arg(QString::fromStdString(playback.DisplayableName)));
             break; //exit for in this case, device found as configured
         }
         else if( QString::fromStdString(playback.DisplayableName).contains("hdmi", Qt::CaseInsensitive) ||

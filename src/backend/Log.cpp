@@ -45,7 +45,16 @@ namespace logsinks {
 class QtLog : public LogSink {
 public:
     void debug(const QString& msg) override {
-        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) qDebug().noquote().nospace() << msg;
+        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")){
+            // 1. Extract everything before the first ':'
+            // section(separator, start, end)
+            // to generate the good parameter
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
+            // check if parameter is activated to hide this type of debug log
+            if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                qDebug().noquote().nospace() << msg;
+            }
+        }
     }
     void info(const QString& msg) override {
         qInfo().noquote().nospace() << msg;
@@ -65,7 +74,16 @@ public:
         : m_stream(stdout)
     {}
     void debug(const QString& msg) override {
-        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) colorlog(m_pre_debug, m_marker_debug, msg);
+        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")){
+            // 1. Extract everything before the first ':'
+            // section(separator, start, end)
+            // to generate the good parameter
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
+            // check if parameter is activated to hide this type of debug log
+            if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                colorlog(m_pre_debug, m_marker_debug, msg);
+            }
+        }
     }
     void info(const QString& msg) override {
         colorlog(m_pre_info, m_marker_info, msg);
@@ -138,7 +156,16 @@ public:
         if (Q_UNLIKELY(!m_file.isOpen()))
             return;
 
-        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) datelog(m_marker_debug, msg);
+        if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")){
+            // 1. Extract everything before the first ':'
+            // section(separator, start, end)
+            // to generate the good parameter
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
+            // check if parameter is activated to hide this type of debug log
+            if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                datelog(m_marker_debug, msg);
+            }
+        }
     }
     void info(const QString& msg) override {
         if (Q_UNLIKELY(!m_file.isOpen()))
@@ -233,7 +260,16 @@ void on_qt_message(QtMsgType type, const QMessageLogContext& context, const QStr
     const QString prepared_msg = qFormatLogMessage(type, context, msg);
     switch (type) {
         case QtMsgType::QtDebugMsg:
-            if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")) Log::debug(prepared_msg);
+            if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")){
+                // 1. Extract everything before the first ':'
+                // section(separator, start, end)
+                // to generate the good parameter
+                const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
+                // check if parameter is activated to hide this type of debug log
+                if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                    Log::debug(prepared_msg);
+                }
+            }
             break;
         case QtMsgType::QtInfoMsg:
             Log::info(prepared_msg);

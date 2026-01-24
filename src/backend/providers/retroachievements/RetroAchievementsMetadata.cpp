@@ -471,8 +471,8 @@ QString get_token_from_cache(QString log_tag, QString json_cache_dir)
 	Password.remove("\\", Qt::CaseInsensitive);
 	
     //Try to get token from json in cache
-    QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, hashQString(Username + Password));
-    QString token = apply_login_json(log_tag + " - cache", json);
+    QJsonDocument json = providers::read_json_from_cache(log_tag, json_cache_dir, hashQString(Username + Password));
+    QString token = apply_login_json(log_tag, json);
     if(token == ""){
         //Delete JSON in cache by security - use Username and Password to have a unique key and if password is changed finally.
         providers::delete_cached_json(log_tag, json_cache_dir, hashQString(Username + Password));
@@ -582,13 +582,13 @@ bool get_game_details_from_gameid(int gameid, QString token, model::Game& game, 
 	if (gameid != 0)
 	{
 		//Try to get game details from json in cache
-		QJsonDocument json = providers::read_json_from_cache(log_tag + " - cache", json_cache_dir, "RaGameID=" + QString::number(gameid));
-		result = apply_game_json(game, log_tag + " - cache", json);
+        QJsonDocument json = providers::read_json_from_cache(log_tag, json_cache_dir, "RaGameID=" + QString::number(gameid));
+        result = apply_game_json(game, log_tag, json);
         Log::debug(log_tag, LOGMSG("get_game_details_from_gameid - Json cache for Game: '%1' - RaGameID '%2' found: '%3'").arg(game.title(),QString::number(gameid), QString::number(result)));
         if (result == false)
 		{
 			//Delete JSON inb cache by security - use Username and Password to have a unique key and if password is changed finally.
-			providers::delete_cached_json(log_tag + " - cache", json_cache_dir, "RaGameID=" + QString::number(gameid));
+            providers::delete_cached_json(log_tag, json_cache_dir, "RaGameID=" + QString::number(gameid));
 			//to get Username
 			QString Username = QString::fromStdString(RecalboxConf::Instance().AsString("global.retroachievements.username"));
 			//Url to get Game details
@@ -934,9 +934,9 @@ void Metadata::build_md5_db(QString hashlibrary_url) const
     int size = 0;
 
     //Try to get RA hash library from cache
-    QJsonDocument json = providers::read_json_from_cache(m_log_tag + " - cache", m_json_cache_dir, "ra_hash_library");
+    QJsonDocument json = providers::read_json_from_cache(m_log_tag, m_json_cache_dir, "ra_hash_library");
 
-    Metadata::mRetroAchievementsGames = apply_hash_library_json(m_log_tag + " - cache", json);
+    Metadata::mRetroAchievementsGames = apply_hash_library_json(m_log_tag, json);
     if (Metadata::mRetroAchievementsGames.size() < 1)
     {
         //Delete JSON in cache by security
@@ -949,7 +949,7 @@ void Metadata::build_md5_db(QString hashlibrary_url) const
         //kill manager to avoid memory leaks
         delete manager;
 
-        Metadata::mRetroAchievementsGames = apply_hash_library_json(m_log_tag + " - cache", json);
+        Metadata::mRetroAchievementsGames = apply_hash_library_json(m_log_tag, json);
         if (Metadata::mRetroAchievementsGames.size() >= 1)
         {
             //saved in cache
@@ -1001,8 +1001,8 @@ int Metadata::set_RaHash_And_GameID(model::Game& game, bool ForceUpdate) const
             //calculate hash (using crc32) if missing
             crc32_hash_used =  calculateCRC32(romfile.toUtf8()).toUpper();
         }
-        QJsonDocument json_from_cache = providers::read_json_from_cache(m_log_tag + " - cache", m_json_cache_dir, game_ptr->collections().shortName() + "_" + crc32_hash_used);
-        md5_hash = apply_ra_hash_json(m_log_tag + " - cache", json_from_cache);
+        QJsonDocument json_from_cache = providers::read_json_from_cache(m_log_tag, m_json_cache_dir, game_ptr->collections().shortName() + "_" + crc32_hash_used);
+        md5_hash = apply_ra_hash_json(m_log_tag, json_from_cache);
 
         //Calculate md5 hash if not found from cache
         if (md5_hash == ""){

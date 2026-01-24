@@ -36,7 +36,7 @@ QString joined_list(const QStringList& list) { return list.join(QLatin1String(",
 
 namespace model {
 
-const providers::retroAchievements::Metadata Game::m_metahelper("Game retroachievements");
+const providers::retroAchievements::Metadata Game::m_metahelper("retroachievements");
 
 GameData::GameData() = default;
 
