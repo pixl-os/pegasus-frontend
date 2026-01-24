@@ -163,12 +163,12 @@ void ScriptManager::LoadScriptList()
         if (permanent)
         {
           RunProcess(path, {}, false, true);
-          { LOG(LogDebug) << "[Script] Run permanent UserScript: " << path.ToString(); }
+          { LOG(LogDebug) << "Scripts: Run permanent UserScript - " << path.ToString(); }
         }
         else
         {
           mScriptList.push_back({ path, ExtractNotificationsFromPath(path), synced });
-          { LOG(LogDebug) << "[Script] Scan UserScript: " << path.ToString(); }
+          { LOG(LogDebug) << "Scripts: Scan UserScript - " << path.ToString(); }
         }
       }
 }
@@ -370,7 +370,7 @@ void ScriptManager::RunProcess(const Path& target, const Strings::Vector& argume
   args.push_back(target.ToChars());
   for (const std::string& argument : arguments) args.push_back(argument.c_str());
 
-  { LOG(LogDebug) << "[Script] Run UserScript: " << Strings::Join(args, ' '); }
+  { LOG(LogDebug) << "Scripts: Run UserScript - " << Strings::Join(args, ' '); }
 
   // Push final null
   args.push_back(nullptr);
@@ -450,12 +450,12 @@ std::string ScriptManager::RunProcessWithReturn(const Path& target, const String
   args.push_back(target.ToChars());
   for (const std::string& argument : arguments) args.push_back(argument.c_str());
 
-  { LOG(LogDebug) << "[Script] Run UserScript: " << Strings::Join(args, ' '); }
-  { LOG(LogDebug) << "[Script] Run UserScript (command): " << command.data(); }
-  { LOG(LogDebug) << "[Script] Run UserScript (args): " << args.data(); }
+  { LOG(LogDebug) << "Scripts: Run UserScript - " << Strings::Join(args, ' '); }
+  { LOG(LogDebug) << "Scripts: Run UserScript (command) - " << command.data(); }
+  { LOG(LogDebug) << "Scripts: Run UserScript (args) - " << args.data(); }
 
   std::string result = run(Strings::Join(args, ' '));
-  { LOG(LogDebug) << "[Script] UserScript return: " << result; }
+  { LOG(LogDebug) << "Scripts: UserScript return - " << result; }
   // Push final null
   args.push_back(nullptr);
   return result;

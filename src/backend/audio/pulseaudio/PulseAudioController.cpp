@@ -36,7 +36,7 @@ void PulseAudioController::Initialize()
 
   // Subscribe to changes
   //PulseSubscribe();
-  { LOG(LogDebug) << "[PulseAudio] Initialized."; }
+  { LOG(LogDebug) << "PulseAudio: Initialized."; }
 }
 
 void PulseAudioController::Finalize()
@@ -49,7 +49,7 @@ void PulseAudioController::SetProfileCallback(pa_context *context, int success, 
   (void)context;
   (void)success;
 
-  { LOG(LogDebug) << "[PulseAudio] Set Profile result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
+  { LOG(LogDebug) << "PulseAudio: Set Profile result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
 
   // Get class
   PulseAudioController& This = *(PulseAudioController*)userdata;
@@ -63,7 +63,7 @@ void PulseAudioController::SetVolumeCallback(pa_context *context, int success, v
   (void)context;
   (void)success;
 
-  { LOG(LogDebug) << "[PulseAudio] Set Volume result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
+  { LOG(LogDebug) << "PulseAudio: Set Volume result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
 
   // Get class
   PulseAudioController& This = *(PulseAudioController*)userdata;
@@ -77,7 +77,7 @@ void PulseAudioController::SetMuteCallback(pa_context *context, int success, voi
   (void)context;
   (void)success;
 
-  { LOG(LogDebug) << "[PulseAudio] Set Mute result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
+  { LOG(LogDebug) << "PulseAudio: Set Mute result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
 
   // Get class
   PulseAudioController& This = *(PulseAudioController*)userdata;
@@ -91,7 +91,7 @@ void PulseAudioController::SetSinkCallback(pa_context *context, int success, voi
   (void)context;
   (void)success;
 
-  { LOG(LogDebug) << "[PulseAudio] Set Sink result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
+  { LOG(LogDebug) << "PulseAudio: Set Sink result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
 
   // Get class
   PulseAudioController& This = *(PulseAudioController*)userdata;
@@ -105,7 +105,7 @@ void PulseAudioController::SetPortCallback(pa_context *context, int success, voi
   (void)context;
   (void)success;
 
-  { LOG(LogDebug) << "[PulseAudio] Set Port result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
+  { LOG(LogDebug) << "PulseAudio: Set Port result: " << (success != 0 ? "SUCCESS" : "FAIL"); }
 
   // Get class
   PulseAudioController& This = *(PulseAudioController*)userdata;
@@ -178,7 +178,7 @@ void PulseAudioController::SubsciptionCallback(pa_context *context, pa_subscript
     default: eventStr = "UNKNOWN EVENT"; break;
   }
 
-  { LOG(LogError) << "[PulseAudio] EVENT! Type: " << typeStr << " - Event: " << eventStr << " - Index: " << index; }
+  { LOG(LogError) << "PulseAudio: EVENT! Type: " << typeStr << " - Event: " << eventStr << " - Index: " << index; }
 }
 
 AudioIcon PulseAudioController::GetPortIcon(const pa_card_port_info& info)
@@ -213,14 +213,14 @@ void PulseAudioController::EnumerateCardCallback(pa_context* context, const pa_c
   newCard.Index = info->index;
   newCard.HasActioveProfile = false;
 
-  { LOG(LogDebug) << "[PulseAudio] Card #" << newCard.Index << " : " << newCard.Name; }
+  { LOG(LogDebug) << "PulseAudio: Card #" << newCard.Index << " : " << newCard.Name; }
 
   // Active profile
   std::string activeProfileName;
   if (info->active_profile2 != nullptr)
   {
     activeProfileName = info->active_profile2->name;
-    { LOG(LogDebug) << "[PulseAudio] Active Profile: " << info->active_profile2->description << " ("
+    { LOG(LogDebug) << "PulseAudio: Active Profile: " << info->active_profile2->description << " ("
                     << info->active_profile2->name << ") - Available "
                     << (info->active_profile2->available != 0 ? "YES" : "NO") << " - Priority "
                     << info->active_profile2->priority; }
@@ -240,7 +240,7 @@ void PulseAudioController::EnumerateCardCallback(pa_context* context, const pa_c
     newPort.Priority = portInfo.priority;
     newPort.InternalIndex = (int)newCard.Ports.size();
 
-    { LOG(LogDebug) << "[PulseAudio]   Port " << newPort.Description << " (" << newPort.Name << ") - Available " << (newPort.Available ? "YES" : "NO") << " - Priority " << newPort.Priority; }
+    { LOG(LogDebug) << "PulseAudio:   Port " << newPort.Description << " (" << newPort.Name << ") - Available " << (newPort.Available ? "YES" : "NO") << " - Priority " << newPort.Priority; }
 
     // Port's supported profiles
     for(int p = portInfo.n_profiles; --p >= 0; )
@@ -254,7 +254,7 @@ void PulseAudioController::EnumerateCardCallback(pa_context* context, const pa_c
       newProfile.Available = profileInfo.available != 0;
       newProfile.Priority = profileInfo.priority;
 
-      { LOG(LogDebug) << "[PulseAudio]     Profile " << newProfile.Description << " (" << newProfile.Name << ") - Available " << (newProfile.Available ? "YES" : "NO") << " - Priority " << newProfile.Priority; }
+      { LOG(LogDebug) << "PulseAudio:     Profile " << newProfile.Description << " (" << newProfile.Name << ") - Available " << (newProfile.Available ? "YES" : "NO") << " - Priority " << newProfile.Priority; }
 
       // Check if this profile is the active one
       newCard.HasActioveProfile |= (newProfile.Name == activeProfileName);
@@ -291,13 +291,13 @@ void PulseAudioController::EnumerateSinkCallback(pa_context* context, const pa_s
   newSink.Index = info->index;
   newSink.Channels = info->channel_map.channels;
 
-  { LOG(LogDebug) << "[PulseAudio] Sink #" << newSink.Index << ' ' << newSink.Name << " found."; }
+  { LOG(LogDebug) << "PulseAudio: Sink #" << newSink.Index << ' ' << newSink.Name << " found."; }
 
   // Collect available ports
   for(int i = info->n_ports; --i >= 0; )
   {
     newSink.PortNames.push_back(info->ports[i]->name);
-    { LOG(LogDebug) << "[PulseAudio]   Port " << info->ports[i]->name << " - " << info->ports[i]->description; }
+    { LOG(LogDebug) << "PulseAudio:   Port " << info->ports[i]->name << " - " << info->ports[i]->description; }
   }
 
   // Attach the sink to it's parent card
@@ -309,12 +309,12 @@ void PulseAudioController::EnumerateSinkCallback(pa_context* context, const pa_s
       card.Sinks.push_back(newSink);
       This.mSyncer.UnLock();
       attached = true;
-      { LOG(LogDebug) << "[PulseAudio] Sink #" << newSink.Index << ' ' << newSink.Name << " attached to card #" << card.Index << ' ' << card.Name; }
+      { LOG(LogDebug) << "PulseAudio: Sink #" << newSink.Index << ' ' << newSink.Name << " attached to card #" << card.Index << ' ' << card.Name; }
     }
 
   // Attached?
   if (!attached)
-  { LOG(LogWarning) << "[PulseAudio] Sink #" << newSink.Index << ' ' << newSink.Name << " has no parent card!"; }
+  { LOG(LogWarning) << "PulseAudio: Sink #" << newSink.Index << ' ' << newSink.Name << " has no parent card!"; }
 }
 
 void PulseAudioController::AddSpecialPlaybacks(IAudioController::DeviceList& list)
@@ -438,24 +438,24 @@ std::string PulseAudioController::SetDefaultPlayback(const std::string& original
   {
     Mutex::AutoLock lock(mSyncer);
 
-    { LOG(LogDebug) << "[PulseAudio] Switching to " << playbackName; }
+    { LOG(LogDebug) << "PulseAudio: Switching to " << playbackName; }
 
     std::string cardName;
     std::string portName;
     if (!Strings::SplitAt(playbackName, ':', cardName, portName, true))
-    { LOG(LogError) << "[PulseAudio] Invalid playbackname: " << playbackName; }
+    { LOG(LogError) << "PulseAudio: Invalid playbackname: " << playbackName; }
 
     card = LookupCard(cardName);
-    if (card == nullptr) { LOG(LogError) << "[PulseAudio] No sound card available!"; return playbackName; }
+    if (card == nullptr) { LOG(LogError) << "PulseAudio: No sound card available!"; return playbackName; }
     port = LookupPort(*card, portName);
-    if (port == nullptr) { LOG(LogError) << "[PulseAudio] No port '" << portName << "' available on sound card " << card->Description; return playbackName; }
+    if (port == nullptr) { LOG(LogError) << "PulseAudio: No port '" << portName << "' available on sound card " << card->Description; return playbackName; }
 
     // Activate port's best profile
     const Profile* selectedProfile = &port->Profiles[0];
     for (const Profile& profile : port->Profiles)
       selectedProfile = (profile.Priority > selectedProfile->Priority) ? &profile : selectedProfile;
 
-    { LOG(LogDebug) << "[PulseAudio] Activating profile " << selectedProfile->Description << " for card #" << card->Index << ' ' << card->Name; }
+    { LOG(LogDebug) << "PulseAudio: Activating profile " << selectedProfile->Description << " for card #" << card->Index << ' ' << card->Name; }
 
     pa_operation* profileOp = pa_context_set_card_profile_by_index(mPulseAudioContext, card->Index, selectedProfile->Name.data(), SetProfileCallback,this);
     // Wait for response
@@ -478,7 +478,7 @@ std::string PulseAudioController::SetDefaultPlayback(const std::string& original
     mSignal.WaitSignal();
     // Release
     pa_operation_unref(op);
-    { LOG(LogDebug) << "[PulseAudio] Sink '" << sink.Name << "' has been switched to port " << port->Name; }
+    { LOG(LogDebug) << "PulseAudio: Sink '" << sink.Name << "' has been switched to port " << port->Name; }
 
     // Set sink the default one
     op = pa_context_set_default_sink(mPulseAudioContext, sink.Name.data(), SetSinkCallback, this);
@@ -486,7 +486,7 @@ std::string PulseAudioController::SetDefaultPlayback(const std::string& original
     mSignal.WaitSignal();
     // Release
     pa_operation_unref(op);
-    { LOG(LogDebug) << "[PulseAudio] Sink '" << sink.Name << "' has been set as default sink."; }
+    { LOG(LogDebug) << "PulseAudio: Sink '" << sink.Name << "' has been set as default sink."; }
 
     break;
   }
@@ -554,14 +554,14 @@ void PulseAudioController::PulseContextConnect()
 {
   // Wait for response
   mSignal.WaitSignal();
-  { LOG(LogDebug) << "[PulseAudio] Connected to Server."; }
+  { LOG(LogDebug) << "PulseAudio: Connected to Server."; }
 }
 
 void PulseAudioController::PulseContextDisconnect()
 {
   // Disconnect from pulse server
   pa_context_disconnect(mPulseAudioContext);
-  { LOG(LogDebug) << "[PulseAudio] Disconnected to Server."; }
+  { LOG(LogDebug) << "PulseAudio: Disconnected to Server."; }
 }
 
 void PulseAudioController::PulseEnumarateSinks()
@@ -572,7 +572,7 @@ void PulseAudioController::PulseEnumarateSinks()
   mSyncer.UnLock();
 
   // Enumerate sinks
-  { LOG(LogDebug) << "[PulseAudio] Enumerating Sinks"; }
+  { LOG(LogDebug) << "PulseAudio: Enumerating Sinks"; }
   pa_operation* sinkOp = pa_context_get_sink_info_list(mPulseAudioContext, EnumerateSinkCallback, this);
   // Wait for response
   mSignal.WaitSignal();
@@ -583,7 +583,7 @@ void PulseAudioController::PulseEnumarateSinks()
   for(Card& card : mCards)
     for(Sink& sink : card.Sinks)
     {
-      { LOG(LogDebug) << "[PulseAudio] Unmute Sink #" << sink.Index << " - " << sink.Name; }
+      { LOG(LogDebug) << "PulseAudio: Unmute Sink #" << sink.Index << " - " << sink.Name; }
       // Set volume
       pa_context_set_sink_mute_by_index(mPulseAudioContext, sink.Index, 0, SetMuteCallback, this);
       // Wait for result
@@ -611,10 +611,10 @@ const PulseAudioController::Profile* PulseAudioController::GetBestProfile(const 
   }
   // Check port
   if (selectedPort == nullptr)
-  { LOG(LogWarning) << "[PulseAudio] Card #" << card.Index << ' ' << card.Name << " has no port with available profiles!"; return nullptr; }
+  { LOG(LogWarning) << "PulseAudio: Card #" << card.Index << ' ' << card.Name << " has no port with available profiles!"; return nullptr; }
 
   // Check available profiles
-  if (selectedPort->Profiles.empty()) { LOG(LogWarning) << "[PulseAudio] Card #" << card.Index << ' ' << card.Name << ", Port " << selectedPort->Description << " has no profile!"; return nullptr; }
+  if (selectedPort->Profiles.empty()) { LOG(LogWarning) << "PulseAudio: Card #" << card.Index << ' ' << card.Name << ", Port " << selectedPort->Description << " has no profile!"; return nullptr; }
 
   // Seek for the highest profile
   const Profile* selectedProfile = &selectedPort->Profiles[0];
@@ -629,15 +629,15 @@ void PulseAudioController::SetDefaultProfiles()
   for(Card& card : mCards)
   {
     if (card.HasActioveProfile) continue;
-    if (card.Ports.empty()) { LOG(LogWarning) << "[PulseAudio] Card #" << card.Index << ' ' << card.Name << " has no port!"; continue; }
+    if (card.Ports.empty()) { LOG(LogWarning) << "PulseAudio: Card #" << card.Index << ' ' << card.Name << " has no port!"; continue; }
 
-    { LOG(LogDebug) << "[PulseAudio] Card #" << card.Index << ' ' << card.Name << " has no profile activated."; }
+    { LOG(LogDebug) << "PulseAudio: Card #" << card.Index << ' ' << card.Name << " has no profile activated."; }
 
     const Profile* selectedProfile = GetBestProfile(card);
     if (selectedProfile == nullptr) continue;
 
     // Activate selected profile
-    { LOG(LogDebug) << "[PulseAudio] Activating profile " << selectedProfile->Description << " for card #" << card.Index << ' ' << card.Name; }
+    { LOG(LogDebug) << "PulseAudio: Activating profile " << selectedProfile->Description << " for card #" << card.Index << ' ' << card.Name; }
 
     pa_operation* profileOp = pa_context_set_card_profile_by_index(mPulseAudioContext, card.Index, selectedProfile->Name.data(), SetProfileCallback, this);
     // Wait for response
@@ -652,7 +652,7 @@ void PulseAudioController::PulseEnumerateCards()
   mCards.clear();
 
   // Enumerate cards
-  { LOG(LogDebug) << "[PulseAudio] Enumerating Cards."; }
+  { LOG(LogDebug) << "PulseAudio: Enumerating Cards."; }
   pa_operation* cardOp = pa_context_get_card_info_list(mPulseAudioContext, EnumerateCardCallback, this);
   
   // Wait for response
@@ -671,7 +671,7 @@ void PulseAudioController::PulseEnumerateCards()
 
 void PulseAudioController::PulseSubscribe()
 {
-  { LOG(LogDebug) << "[PulseAudio] Subscribing to events"; }
+  { LOG(LogDebug) << "PulseAudio: Subscribing to events"; }
 
   pa_context_set_subscribe_callback(mPulseAudioContext, SubsciptionCallback, this);
   pa_context_subscribe(mPulseAudioContext, PA_SUBSCRIPTION_MASK_ALL, nullptr, nullptr);

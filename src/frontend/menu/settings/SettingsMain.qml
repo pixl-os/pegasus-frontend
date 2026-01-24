@@ -821,19 +821,6 @@ FocusScope {
                         root.openInformationSystem();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optDebugMode
-                }
-                ToggleOption {
-                    id: optDebugMode
-
-                    label: qsTr("Debug mode") + api.tr
-                    note: qsTr("Give me your log baby !!! ;-)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter("pegasus.debuglogs")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("pegasus.debuglogs",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optHideMouse
                 }
                 ToggleOption {
@@ -847,7 +834,6 @@ FocusScope {
                         api.internal.settings.mouseSupport = checked;
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.up: optDebugMode
                     KeyNavigation.down: optHideKeyboard
                 }
                 ToggleOption {
@@ -861,12 +847,162 @@ FocusScope {
                         api.internal.settings.virtualKeyboardSupport = checked;
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optDebugMode
+                }
+
+                //for Debug and logs...
+                ToggleOption {
+                    id: optDebugMode
+
+                    //label: qsTr("Debug mode") + api.tr
+                    //note: qsTr("Give me your log baby !!! ;-)") + api.tr
+
+                    SectionTitle {
+                        text: qsTr("Debug mode") + api.tr
+                        symbol: "\uf15c"
+                        first: true
+                        symbolFontFamily: globalFonts.awesome
+                        symbolFontSize: vpx(20)
+                    }
+
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.debuglogs")
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter("pegasus.debuglogs",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogUpdate
+                }
+                ToggleOption {
+                    id: optlogUpdate
+                    label: qsTr("Hide Debug Logs for 'Updates'") + api.tr
+                    note: qsTr("to reduce log by hidding debug 'Updates' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.updates.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.updates.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.updates.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogScript
+                    visible: optDebugMode.checked
+                }
+                ToggleOption {
+                    id: optlogScript
+                    label: qsTr("Hide Debug Logs for 'Scripts'") + api.tr
+                    note: qsTr("to reduce log by hidding 'Scripts' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.scripts.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.scripts.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.scripts.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogController
+                    visible: optDebugMode.checked
+                }
+                ToggleOption {
+                    id: optlogController
+                    label: qsTr("Hide Debug Logs for 'Controller'") + api.tr
+                    note: qsTr("to reduce log by hidding 'Controller' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.controller.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.controller.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.controller.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogQml
+                    visible: optDebugMode.checked
+                }
+                ToggleOption {
+                    id: optlogQml
+                    label: qsTr("Hide Debug Logs for 'Qml'") + api.tr
+                    note: qsTr("to reduce log by hidding 'Qml' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.qml.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.qml.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.qml.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogPulseAudio
+                    visible: optDebugMode.checked
+                }
+                ToggleOption {
+                    id: optlogPulseAudio
+                    label: qsTr("Hide Debug Logs for 'PulseAudio'") + api.tr
+                    note: qsTr("to reduce log by hidding 'PulseAudio' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.pulseaudio.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.pulseaudio.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.pulseaudio.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogRetroachievements
+                    visible: optDebugMode.checked
+                }
+                ToggleOption {
+                    id: optlogRetroachievements
+                    label: qsTr("Hide Debug Logs for 'Retroachievements'") + api.tr
+                    note: qsTr("to reduce log by hidding 'Retroachievements' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.retroachievements.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.retroachievements.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.retroachievements.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogGamelist
+                    visible: optDebugMode.checked
+                }
+                ToggleOption {
+                    id: optlogGamelist
+                    label: qsTr("Hide Debug Logs for 'Gamelist'") + api.tr
+                    note: qsTr("to reduce log by hidding 'Gamelist' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.gamelist.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.gamelist.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.gamelist.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogGamepadManagerSDL2
+                    visible: optDebugMode.checked
+                }
+                ToggleOption {
+                    id: optlogGamepadManagerSDL2
+                    label: qsTr("Hide Debug Logs for 'GamepadManagerSDL2'") + api.tr
+                    note: qsTr("to reduce log by hidding 'GamepadManagerSDL2' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.gamepadmanagersdl2.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.gamepadmanagersdl2.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.gamepadmanagersdl2.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogAudioDevice
+                    visible: optDebugMode.checked
+                }
+                ToggleOption {
+                    id: optlogAudioDevice
+                    label: qsTr("Hide Debug Logs for 'AudioDevice'") + api.tr
+                    note: qsTr("to reduce log by hidding 'AudioDevice' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.audiodevice.debuglogs",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.audiodevice.debuglogs",false)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.audiodevice.debuglogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optShowLogs
+                    visible: optDebugMode.checked
                 }
                 SectionTitle {
                     text: qsTr("Developer menu") + api.tr
-                    first: true
-                    symbol: "\uf412" //TODO: change icon ?!
+                    symbol: "\uf2ed"
+                    symbolFontFamily: globalFonts.awesome
+                    symbolFontSize: vpx(60)
                     visible: devModeActivated
                 }
                 SimpleButton {
