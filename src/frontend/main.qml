@@ -899,23 +899,23 @@ Window {
                 return;
             }
             var mountpoint = api.internal.system.run("cat /tmp/USBNES.mountpoint 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
-            //console.log("USB-NES mountpoint : ", mountpoint)
+            //console.log("USBNES: mountpoint  - ", mountpoint)
             if(mountpoint.includes("/usb")) {
-                //console.log("USB-NES cartridge plugged: ", cartridge_plugged)
+                //console.log("USBNES: cartridge plugged - ", cartridge_plugged)
                 //check any change ?
                 var readflag = api.internal.system.run("cat " + mountpoint + "/pixl-read.flag" + " | tr -d '\\n' | tr -d '\\r'");
-                //console.log("USB-NES readflag: ", readflag);
+                //console.log("USBNES: readflag - ", readflag);
                 if(readflag !== "true"){
                     //get size of the rom detected
                     var romsize = api.internal.system.run("wc -c "+ mountpoint + "/rom.nes  | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("USB-NES romsize: ", romsize)
+                    //console.log("USBNES: romsize - ", romsize)
                     //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
                     var previousromcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("USB-NES previousromcrc32: ", previousromcrc32)
+                    //console.log("USBNES: previousromcrc32 - ", previousromcrc32)
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                     //(don't try to match with screenscrapper one where header is added and/or done on zip file)
                     var romcrc32 = api.internal.system.run("crc32 " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("USB-NES romcrc32: ", romcrc32)
+                    //console.log("USBNES: romcrc32 - ", romcrc32)
                     if((parseInt(romsize) > 16)){
                         cartridge_plugged = true;
                         if(romcrc32 === previousromcrc32){
@@ -936,14 +936,14 @@ Window {
                         //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.rommd5");
                         //calculate sha1 for PRG-ROM/SHR-ROM (don't try to match with screenscrapper one where it's done on full .nes/.zip file and including header)
                         var romsha1=api.internal.system.run("python3 /recalbox/scripts/nes_tools/nes_header_tools.py " + mountpoint + " rom.nes | tr -d '\\n' | tr -d '\\r'");
-                        //console.log("USB-NES romsha1: ", romsha1);
+                        //console.log("USBNES: romsha1 - ", romsha1);
                         //get info from nes 2.0 DB xml file
                         var rominfo=api.internal.system.run("grep -i " + romsha1 + " /recalbox/scripts/nes_tools/nes20db.xml -A4 -B3 | grep -i '<game>' | sed -n 's/.*<!-- \\(.*\\).nes.*/\\1/p' | tr -d '\\n' | tr -d '\\r'");
-                        //console.log("USB-NES rominfo: ", rominfo);
+                        //console.log("USBNES: rominfo - ", rominfo);
                         if(rominfo !== ""){
                             //check also if sav game exist
                             var savinfo=api.internal.system.run("ls "+ mountpoint + "/rom.sav 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                            //console.log("USB-NES savinfo: ", savinfo);
+                            //console.log("USBNES: savinfo - ", savinfo);
                             var savinfoflag = "N";
                             gameCartridge_save = "";
                             if(savinfo !== ""){
@@ -957,14 +957,14 @@ Window {
                             //to take first part that could contain type (licenced/playchoise/Vs. System/unlicensed...) and region (optionaly: PAL, North America, Japan, China, Taiwan & HongKong, ElseWhere, South Korea...)
                             //we will manage only cartdridge format and what we ahve with no-intro ;-)
                             var type_region = rominfo.split('\\')[0];
-                            //console.log("USB-NES type_region: ", type_region);
+                            //console.log("USBNES: type_region - ", type_region);
                             gameCartridge_type = type_region.split(' ')[0];
-                            //console.log("USB-NES gameCartridge_type: ", gameCartridge_type);
+                            //console.log("USBNES: gameCartridge_type - ", gameCartridge_type);
                             gameCartridge_region = type_region.replace(gameCartridge_type,"");
                             //finally we trim region here for later
                             var regex = RegExp("^\\s*(.*?)\\s*$");
                             gameCartridge_region = gameCartridge_region.replace(regex, "$1");
-                            //console.log("USB-NES region: '",gameCartridge_region,"'");
+                            //console.log("USBNES: region: '",gameCartridge_region,"'");
                             if(gameCartridge_region !== ""){
                                 var region_index = getRegionIndex(gameCartridge_region);
                                 if(region_index !== -1){
@@ -984,7 +984,7 @@ Window {
 
                                 var existingRom = ""
                                 existingRom = api.internal.system.run("grep -i " + romsha1 + " /recalbox/share/roms/usb-nes.romlist.csv | tr -d '\\n' | tr -d '\\r'");
-                                //console.log("existingRom : ",existingRom);
+                                //console.log("existingRom  - ",existingRom);
                                 if(existingRom === ""){
                                     //format GAME TITLE,REGION,TYPE,WORKS,SAVE FOUND;SHA1 for PRG-ROM/SHR-ROM,DUMPER VERSION,WHEN,COMMENT
                                     var now = new Date();
@@ -1010,7 +1010,7 @@ Window {
                                 var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].nes";
                                 //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                                 var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                                //console.log("existingDump : ",existingDump);
+                                //console.log("existingDump  - ",existingDump);
                                 //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
                                 //manual move/erase to do in share dumps directory in this case
                                 if(!existingDump.includes("/recalbox/share/dumps/")){
@@ -1063,11 +1063,11 @@ Window {
                         gameCartridge_crc32 = "";
                         gameCartridge_name = "";
                     }
-                    //console.log("USB-NES gameCartridge (full description from NESDB 2.0) : ", gameCartridge);
-                    //console.log("USB-NES gameCartridge_region (no-intro regions) : ", gameCartridge_region);
-                    //console.log("USB-NES gameCartridge_system (pixL system shortname): ", gameCartridge_system);
-                    //console.log("USB-NES gameCartridge_state : ", gameCartridge_state);
-                    //console.log("USB-NES gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
+                    console.log("USBNES: gameCartridge (full description from NESDB 2.0) - ", gameCartridge);
+                    console.log("USBNES: gameCartridge_region (no-intro regions) - ", gameCartridge_region);
+                    console.log("USBNES: gameCartridge_system (pixL system shortname) - ", gameCartridge_system);
+                    console.log("USBNES: gameCartridge_state - ", gameCartridge_state);
+                    console.log("USBNES: gameCartridge_name (name extracted to help for search in gamelists) - ", gameCartridge_name);
                     //set read.flag to "true"
                     api.internal.system.run("echo '" + true + "' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/pixl-read.flag");
                 }
@@ -1089,23 +1089,23 @@ Window {
                 return;
             }
             var mountpoint = api.internal.system.run("cat /tmp/RETRODE.mountpoint 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
-            //console.log("RETRODE mountpoint : ", mountpoint)
+            //console.log("RETRODE: mountpoint  - ", mountpoint)
             if(mountpoint.includes("/usb")) {
-                //console.log("RETRODE cartridge plugged: ", cartridge_plugged)
+                //console.log("RETRODE: cartridge plugged - ", cartridge_plugged)
                 //get list of extensions from RETRODE.CFG (always with this order in this file after restart and conf : snes,megadrive,n64,gb,gba,mastersystem,gamegear)
                 //console.log("grep -i 'RomExt' "+ mountpoint + "/RETRODE.CFG  | awk -F' ' '{print $2}' | paste -s -d ',' | tr -d '\\n' | tr -d '\\r'");
                 var romsExt = api.internal.system.run("grep -i 'RomExt' "+ mountpoint + "/RETRODE.CFG  | awk -F' ' '{print $2}' | paste -s -d ',' | tr -d '\\n' | tr -d '\\r'");
-                //console.log("RETRODE romsExt ",romsExt);
+                //console.log("RETRODE: romsExt ",romsExt);
                 //find rom using existing extension
                 var fileFound = "";
                 var systemFound = "";
                 for(var i=0; i<7; i++){
                     //console.log("ls " + mountpoint + "/*." + romsExt.split(",")[i] + " 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
                     fileFound = api.internal.system.run("ls " + mountpoint + "/*." + romsExt.split(",")[i] + " 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("RETRODE fileFound for ",retrode_systems_list.split(",")[i], " : ", fileFound)
+                    //console.log("RETRODE: fileFound for ",retrode_systems_list.split(",")[i], "  - ", fileFound)
                     if(fileFound !== ""){
                         systemFound = retrode_systems_list.split(",")[i];
-                        //console.log("RETRODE systemFound : ",systemFound)
+                        //console.log("RETRODE: systemFound  - ",systemFound)
                         break;
                     }
                 }
@@ -1151,12 +1151,12 @@ Window {
                     gameCartridge_state = ""
                     gameCartridge_name = "";
                 }
-                //console.log("RETRODE gameCartridge (from file name) : ", gameCartridge);
-                //console.log("RETRODE gameCartridge_region (no-intro regions) : ", gameCartridge_region);
-                //console.log("RETRODE gameCartridge_system (pixL system shortname): ", gameCartridge_system);
-                //console.log("RETRODE gameCartridge_crc32 (as in gamelist for snes): ", gameCartridge_crc32);
-                //console.log("RETRODE gameCartridge_state : ", gameCartridge_state);
-                //console.log("RETRODE gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
+                //console.log("RETRODE: gameCartridge (from file name) - ", gameCartridge);
+                //console.log("RETRODE: gameCartridge_region (no-intro regions) - ", gameCartridge_region);
+                //console.log("RETRODE: gameCartridge_system (pixL system shortname) - ", gameCartridge_system);
+                //console.log("RETRODE: gameCartridge_crc32 (as in gamelist for snes) - ", gameCartridge_crc32);
+                //console.log("RETRODE: gameCartridge_state - ", gameCartridge_state);
+                //console.log("RETRODE: gameCartridge_name (name extracted to help for search in gamelists) - ", gameCartridge_name);
                 //set read.flag but empty
                 api.internal.system.run("echo '' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/pixl-read.flag");
             }
@@ -1177,22 +1177,22 @@ Window {
         property string systemFound: ""
         property string romExt: ""
         onTriggered: {
-            //console.log("RETRODE mountpoint : ", mountpoint)
+            //console.log("RETRODE: mountpoint  - ", mountpoint)
             if(mountpoint.includes("/usb")) {
-                //console.log("RETRODE cartridge plugged: ", cartridge_plugged)
-                //console.log("RETRODE romExt ",romExt);
-                //console.log("RETRODE fileFound for ",systemFound, " : ", fileFound)
+                //console.log("RETRODE: cartridge plugged - ", cartridge_plugged)
+                //console.log("RETRODE: romExt ",romExt);
+                //console.log("RETRODE: fileFound for ",systemFound, "  - ", fileFound)
                 //get size of the rom detected
                 var romsize = api.internal.system.run("wc -c "+ fileFound + "  | tr -d '\\n' | tr -d '\\r'");
                 if(isDebugEnv()) api.internal.system.run("sleep 4"); //to simulate slownness when we read rom file for the first time
                 genericMessage.focus = false;
-                //console.log("RETRODE romsize: ", romsize)
+                //console.log("RETRODE: romsize - ", romsize)
                 //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
                 var previousromcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                //console.log("RETRODE previousromcrc32: ", previousromcrc32)
+                //console.log("RETRODE: previousromcrc32 - ", previousromcrc32)
                 //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                 var romcrc32 = api.internal.system.run("crc32 " + fileFound + " | tr -d '\\n' | tr -d '\\r'");
-                //console.log("RETRODE romcrc32: ", romcrc32)
+                //console.log("RETRODE: romcrc32 - ", romcrc32)
                 if(romcrc32 === previousromcrc32){
                     gameCartridge_state = "reloaded";
                     //show popup to say that is a reset
@@ -1212,7 +1212,7 @@ Window {
                 //get info from file name (first part)
                 var romfilename=fileFound.replace(mountpoint + "/","");
                 var rominfo=romfilename.replace("." + romExt,"");
-                //console.log("RETRODE rominfo: ", rominfo);
+                //console.log("RETRODE: rominfo - ", rominfo);
                 if(rominfo !== ""){
                     //check also if sav game exist
                     //but we should exclude 3 files for that
@@ -1221,7 +1221,7 @@ Window {
                     var value3 = "RETRODE.CFG"
                     //console.log("ls -1 "+ mountpoint + " 2>/dev/null | grep -vE '^(" + value1 +"|" + value2 + "|" + value3 + ")$' | tr -d '\\n' | tr -d '\\r'");
                     var savinfo=api.internal.system.run("ls -1 "+ mountpoint + " 2>/dev/null | grep -vE '^(" + value1 +"|" + value2 + "|" + value3 + ")$' | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("RETRODE savinfo: ", savinfo);
+                    //console.log("RETRODE: savinfo - ", savinfo);
                     var savinfoflag = "N";
                     gameCartridge_save = "";
                     if(savinfo !== ""){
@@ -1230,15 +1230,15 @@ Window {
                         gameCartridge_save = mountpoint + "/" + savinfo;
                     }
                     gameCartridge_state = "identified";
-                    //console.log("RETRODE gameCartridge_state: ", gameCartridge_state);
+                    //console.log("RETRODE: gameCartridge_state - ", gameCartridge_state);
                     gameCartridge = rominfo;
-                    //console.log("RETRODE gameCartridge: ", gameCartridge);
+                    //console.log("RETRODE: gameCartridge - ", gameCartridge);
                     gameCartridge_type = ""; //empty for RETRODE
-                    //console.log("RETRODE gameCartridge_type: ", gameCartridge_type);
+                    //console.log("RETRODE: gameCartridge_type - ", gameCartridge_type);
                     gameCartridge_region = ""; //empty for RETRODE
-                    //console.log("RETRODE gameCartridge_region: ", gameCartridge_region);
+                    //console.log("RETRODE: gameCartridge_region - ", gameCartridge_region);
                     gameCartridge_name = ""; //let it empty to search only by crc32
-                    //console.log("RETRODE gameCartridge_name: ", gameCartridge_name);
+                    //console.log("RETRODE: gameCartridge_name - ", gameCartridge_name);
                     //check if option to save rominfo/crc32 is requested
                     if(api.internal.recalbox.getBoolParameter("dumpers.retrode.romlist",false)){
                         var existingFile = ""
@@ -1249,7 +1249,7 @@ Window {
                         }
                         var existingRom = ""
                         existingRom = api.internal.system.run("grep -i " + romcrc32 + " /recalbox/share/roms/retrode.romlist.csv | tr -d '\\n' | tr -d '\\r'");
-                        //console.log("existingRom : ",existingRom);
+                        //console.log("existingRom  - ",existingRom);
                         if(existingRom === ""){
                             //format GAME TITLE,SYSTEM,WORKS,SAVE FOUND;CRC32 FILE CHECKSUM,DUMPER VERSION,WHEN,COMMENT
                             var now = new Date();
@@ -1266,13 +1266,13 @@ Window {
                     gameCartridge_system = systemFound;
                     //to do last because will trig changes
                     gameCartridge_crc32 = romcrc32.split(" ")[0];//need to take first part only because file name/path is inlcuded in result of CRC32 calculation
-                    //console.log("RETRODE gameCartridge_crc32: ", gameCartridge_crc32);
+                    //console.log("RETRODE: gameCartridge_crc32 - ", gameCartridge_crc32);
                     //dump of rom if request
                     if(api.internal.recalbox.getBoolParameter("dumpers.retrode.savedump",false)){
                         var targetedDump = "/recalbox/share/dumps/" + rominfo + " [" + gameCartridge_crc32 + "]." + romExt;
                         //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                         var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                        //console.log("existingDump : ",existingDump);
+                        //console.log("existingDump  - ",existingDump);
                         //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
                         //manual move/erase to do in share dumps directory in this case
                         if(!existingDump.includes("/recalbox/share/dumps/")){
@@ -1285,12 +1285,12 @@ Window {
                 //propose cartridge dialog box in this case
                 cartridgeDialogBoxLoader.visible = true; //to show
                 cartridgeDialogBoxLoader.focus = true; //to have focus
-                //console.log("RETRODE gameCartridge (from file name) : ", gameCartridge);
-                //console.log("RETRODE gameCartridge_region (no-intro regions) : ", gameCartridge_region);
-                //console.log("RETRODE gameCartridge_system (pixL system shortname): ", gameCartridge_system);
-                //console.log("RETRODE gameCartridge_crc32 (as in gamelist for snes): ", gameCartridge_crc32);
-                //console.log("RETRODE gameCartridge_state : ", gameCartridge_state);
-                //console.log("RETRODE gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
+                console.log("RETRODE: gameCartridge (from file name) - ", gameCartridge);
+                console.log("RETRODE: gameCartridge_region (no-intro regions) - ", gameCartridge_region);
+                console.log("RETRODE: gameCartridge_system (pixL system shortname) - ", gameCartridge_system);
+                console.log("RETRODE: gameCartridge_crc32 (as in gamelist for snes) - ", gameCartridge_crc32);
+                console.log("RETRODE: gameCartridge_state - ", gameCartridge_state);
+                console.log("RETRODE: gameCartridge_name (name extracted to help for search in gamelists) - ", gameCartridge_name);
             }
         }
     }
@@ -1309,35 +1309,35 @@ Window {
                 return;
             }
             var mountpoint = "/tmp"; //use tmp directory for gboperator because no mountpoint exists in this case
-            //console.log("gboperator 'virtual' mountpoint : ", mountpoint)
+            //console.log("gboperator 'virtual' mountpoint  - ", mountpoint)
             if(mountpoint.includes("/tmp")) { //stupid test just to keep same structucode than USBNES ;-)
-                //console.log("GB OPERATOR cartridge plugged: ", cartridge_plugged)
+                //console.log("GBOPERATOR: cartridge plugged - ", cartridge_plugged)
                 //check any change ?
                 var readflag = api.internal.system.run("cat " + mountpoint + "/GBOPERATOR.readflag" + " | tr -d '\\n' | tr -d '\\r'");
-                //console.log("GB OPERATOR readflag: ", readflag);
+                //console.log("GBOPERATOR: readflag - ", readflag);
                 if(readflag !== "true"){
                     //in case of GB operator, the gameinfo contains the ROM file name with extension for the moment
                     var romfile = api.internal.system.run("cat /tmp/GBOPERATOR.gamedumped | tr -d '\\n' | tr -d '\\r'");
                     //just file name without extension for the moment in rominfo
                     var parts = romfile.split(".");
                     var rominfo = parts.slice(0, -1).join(".");
-                    //console.log("GB OPERATOR rominfo: ", rominfo);
+                    //console.log("GBOPERATOR: rominfo - ", rominfo);
                     //get system from romfile extension (gb or gbc, gba not yet supported)
                     var system =  romfile.split('.').pop();
-                    //console.log("GB OPERATOR system: ", system)
+                    //console.log("GBOPERATOR: system - ", system)
                     //get size of the rom detected
-                    console.log("wc -c \""+ mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
+                    //console.log("GBOPERATOR: wc -c \""+ mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
                     var romsize = api.internal.system.run("wc -c \""+ mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("GB OPERATOR romsize: ", romsize)
+                    //console.log("GBOPERATOR: romsize - ", romsize)
                     //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
                     var previousromcrc32 = api.internal.system.run("cat /tmp/GBOPERATOR.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("GB OPERATOR previousromcrc32: ", previousromcrc32)
+                    //console.log("GBOPERATOR: previousromcrc32 - ", previousromcrc32)
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                     //(don't try to match with screenscrapper one where header is added and/or done on zip file)
-                    //console.log("crc32 \"" + mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
+                    //console.log("GBOPERATOR: crc32 \"" + mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
                     var romcrc32 = api.internal.system.run("crc32 \"" + mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("GB OPERATOR romcrc32:", romcrc32)
-                    //console.log("GB OPERATOR parseInt(romsize):", parseInt(romsize).toString())
+                    //console.log("GBOPERATOR: romcrc32:", romcrc32)
+                    //console.log("GBOPERATOR: parseInt(romsize):", parseInt(romsize).toString())
                     if((parseInt(romsize) >= 32768)){
                         cartridge_plugged = true;
                         if(romcrc32 === previousromcrc32){
@@ -1359,7 +1359,7 @@ Window {
                         if(rominfo !== ""){
                             //check also if sav game exist
                             var savinfo=api.internal.system.run("ls \""+ mountpoint + "/" + rominfo + ".sav\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                            console.log("GB OPERATOR savinfo: ", savinfo);
+                            console.log("GBOPERATOR: savinfo - ", savinfo);
                             var savinfoflag = "N";
                             gameCartridge_save = "";
                             if(savinfo !== ""){
@@ -1370,9 +1370,9 @@ Window {
                             gameCartridge_state = "identified";
                             gameCartridge = rominfo;
                             gameCartridge_type = ""; // NA - not really possible t well discriminate
-                            console.log("GB OPERATOR gameCartridge_type:", gameCartridge_type);
+                            //console.log("GBOPERATOR: gameCartridge_type - ", gameCartridge_type);
                             gameCartridge_region = ""; // NA - not really possible t well discriminate
-                            console.log("GB OPERATOR region:",gameCartridge_region);
+                            //console.log("GBOPERATOR: region - ",gameCartridge_region);
                             gameCartridge_region_regex = "";
                             //check if option to save rominfo/crc32 is requested
                             if(api.internal.recalbox.getBoolParameter("dumpers.gboperator.romlist",false)){
@@ -1385,17 +1385,17 @@ Window {
 
                                 var existingRom = ""
                                 existingRom = api.internal.system.run("grep -i " + romcrc32 + " /recalbox/share/roms/usb-nes.romlist.csv | tr -d '\\n' | tr -d '\\r'");
-                                //console.log("existingRom : ",existingRom);
+                                //console.log("GBOPERATOR: existingRom  - ",existingRom);
                                 if(existingRom === ""){
                                     //format GAME TITLE,WORKS,SAVE FOUND;ROM CRC32,DUMPER VERSION,WHEN,COMMENT
                                     var now = new Date();
                                     var formattedDateTime = now.toString("yyyy-MM-dd hh:mm:ss");
-                                    //console.log("Formatted date and time:", formattedDateTime);
+                                    //console.log("GBOPERATOR: Formatted date and time - ", formattedDateTime);
                                     if(gboperatorVersion === ""){
                                         //read GB OPERATOR version and store it in global variable
                                         gboperatorVersion = "1.0" // fix version for the moment, need to investigate if possible to have it from GB OPERATOR ?!
                                     }
-                                    //console.log('echo "' + rominfo + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + gboperatorVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/gboperator.romlist.csv');
+                                    //console.log('GBOPERATOR: echo "' + rominfo + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + gboperatorVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/gboperator.romlist.csv');
                                     api.internal.system.run('echo "' + rominfo + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + gboperatorVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/gboperator.romlist.csv');
 
                                 }
@@ -1403,19 +1403,19 @@ Window {
                             gameCartridge_system = system;
                             //to do last because will trig changes
                             gameCartridge_crc32 = romcrc32.split(" ")[0];//need to take first part only because file name/path is inlcuded in result of CRC32 calculation
-                            //console.log("GBOPERATOR gameCartridge_crc32: ", gameCartridge_crc32);
+                            //console.log("GBOPERATOR: gameCartridge_crc32 - ", gameCartridge_crc32);
                             gameCartridge_name = rominfo;
                             //dump of rom if request
                             if(api.internal.recalbox.getBoolParameter("dumpers.gboperator.savedump",false)){
                                 var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name  + " [" + romcrc32.split(' ')[0] + "].gb";
-                                //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                                //console.log("GBOPERATOR: ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                                 var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                                //console.log("existingDump : ",existingDump);
+                                //console.log("GBOPERATOR: existingDump  - ",existingDump);
                                 //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
                                 //manual move/erase to do in share dumps directory in this case
                                 if(!existingDump.includes("/recalbox/share/dumps/")){
                                     //copy of rom as dump
-                                    //console.log("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
+                                    //console.log("GBOPERATOR: cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
                                     api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
                                 }
                             }
@@ -1435,11 +1435,12 @@ Window {
                         cartridgeDialogBoxLoader.visible = true; //to show
                         cartridgeDialogBoxLoader.focus = true; //to have focus
                     }
-                    console.log("GB OPERATOR gameCartridge (full description) : ", gameCartridge);
-                    console.log("GB OPERATOR gameCartridge_region (no-intro regions) : ", gameCartridge_region);
-                    console.log("GB OPERATOR gameCartridge_system (pixL system shortname): ", gameCartridge_system);
-                    console.log("GB OPERATOR gameCartridge_state : ", gameCartridge_state);
-                    console.log("GB OPERATOR gameCartridge_name (name extracted to help for search in gamelists): ", gameCartridge_name);
+                    console.log("GBOPERATOR: gameCartridge (full description) - ", gameCartridge);
+                    console.log("GBOPERATOR: gameCartridge_region (no-intro regions) - ", gameCartridge_region);
+                    console.log("GBOPERATOR: gameCartridge_system (pixL system shortname) - ", gameCartridge_system);
+                    console.log("GBOPERATOR: gameCartridge_state - ", gameCartridge_state);
+                    console.log("GBOPERATOR: gameCartridge_name (name extracted to help for search in gamelists) - ", gameCartridge_name);
+                    console.log("GBOPERATOR: gameCartridge_crc32 - ", gameCartridge_crc32);
                     //set read.flag to "true"
                     api.internal.system.run("echo '" + true + "' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/GBOPERATOR.readflag");
                 }
