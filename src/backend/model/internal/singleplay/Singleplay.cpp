@@ -32,7 +32,8 @@ void Singleplay::setSystem (const QString shortName){
             .setLaunchWorkdir("/recalbox/share/roms/" + sysentry.shortname)
             .setLaunchCmdBasedir(" ")
             .setSystemManufacturer(sysentry.manufacturer)
-            .setSystemShortName(sysentry.shortname);
+            .setSystemShortName(sysentry.shortname)
+            .setSystemName(sysentry.name);
         //To take into account priority=1 (or lower value) as default emulator and core
         int first_priority = 0;
         for (int n = 0;n < sysentry.emulators.count(); n++)

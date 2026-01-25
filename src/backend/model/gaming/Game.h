@@ -91,6 +91,7 @@ struct GameData {
     QString launchCmdBasedir = "";
     QString systemManufacturer = "";
     QString systemShortName = "";
+    QString systemName = "";
     QString emulatorName = "";
     QString emulatorCore = "";
 };
@@ -146,6 +147,12 @@ public:
         else return m_data.systemShortName;
     }
     //new way to provide launch command to be able to manage with single play
+    const QString& systemName() const {
+        //Log::debug(LOGMSG("Game::m_data.systemName : %1").arg(m_data.systemName));
+        if (m_data.systemName == "") return m_collections->get(0)->name();
+        else return m_data.systemName;
+    }
+    //new way to provide launch command to be able to manage with single play
     const QString& launchCmd() const {
         //Log::debug(LOGMSG("Game::m_data.launchCmd : %1").arg(m_data.launchCmd));
         if (m_data.launchCmd == "") return m_collections->get(0)->commonLaunchCmd();
@@ -192,6 +199,7 @@ public:
     SETTER(QString, LaunchCmdBasedir, launchCmdBasedir)
     SETTER(QString, SystemManufacturer, systemManufacturer)
     SETTER(QString, SystemShortName, systemShortName)
+    SETTER(QString, SystemName, systemName)
     SETTER(QString, EmulatorName, emulatorName)
     SETTER(QString, EmulatorCore, emulatorCore)
 
