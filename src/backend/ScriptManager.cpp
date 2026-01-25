@@ -215,9 +215,10 @@ void ScriptManager::BuildStateCommons(std::string& output, const model::Collecti
         .append("ActionData=").append(actionParameters).append(eol);
 
   // System
-  if (game != nullptr)
-      output.append("System=").append(game->collections().name().toUtf8().constData()).append(eol)
-          .append("SystemId=").append(game->systemShortName().toUtf8().constData()).append(eol);
+  if (game != nullptr){
+      output.append("System=").append(game->systemName().toUtf8().constData()).append(eol);
+      output.append("SystemId=").append(game->systemShortName().toUtf8().constData()).append(eol);
+  }
   else if (collection != nullptr)
       output.append("System=").append(collection->name().toUtf8().constData()).append(eol)
           .append("SystemId=").append(collection->shortName().toUtf8().constData()).append(eol);
