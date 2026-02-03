@@ -1380,14 +1380,14 @@ Window {
                                 existingFile = api.internal.system.run("ls /recalbox/share/roms/gboperator.romlist.csv 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
                                 if(!existingFile.includes("gboperator.romlist.csv")){
                                     //if no file exists, let create it with column titles
-                                    api.internal.system.run("echo 'GAME TITLE;WORKS;SAVE FOUND;ROM CRC32;DUMPER VERSION;WHEN;COMMENT' >> /recalbox/share/roms/gboperator.romlist.csv");
+                                    api.internal.system.run("echo 'GAME TITLE;EPILOGUEID(GB/GBC)/GAMEID(GBA);WORKS;SAVE FOUND;ROM CRC32;DUMPER VERSION;DUMPER HEADER HEXA;DUMPER HEADER ASCII;WHEN;COMMENT' >> /recalbox/share/roms/gboperator.romlist.csv");
                                 }
 
                                 var existingRom = ""
                                 existingRom = api.internal.system.run("grep -i " + romcrc32 + " /recalbox/share/roms/usb-nes.romlist.csv | tr -d '\\n' | tr -d '\\r'");
                                 //console.log("GBOPERATOR: existingRom  - ",existingRom);
                                 if(existingRom === ""){
-                                    //format GAME TITLE,WORKS,SAVE FOUND;ROM CRC32,DUMPER VERSION,WHEN,COMMENT
+                                    //format GAME TITLE,GAME ID,WORKS,SAVE FOUND;ROM CRC32,DUMPER VERSION,DUMPER HEADER HEXA,DUMPER HEADER ASCII,WHEN,COMMENT
                                     var now = new Date();
                                     var formattedDateTime = now.toString("yyyy-MM-dd hh:mm:ss");
                                     //console.log("GBOPERATOR: Formatted date and time - ", formattedDateTime);
@@ -1395,8 +1395,13 @@ Window {
                                         //read GB OPERATOR version and store it in global variable
                                         gboperatorVersion = "1.0" // fix version for the moment, need to investigate if possible to have it from GB OPERATOR ?!
                                     }
-                                    //console.log('GBOPERATOR: echo "' + rominfo + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + gboperatorVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/gboperator.romlist.csv');
-                                    api.internal.system.run('echo "' + rominfo + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + gboperatorVersion  + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/gboperator.romlist.csv');
+                                    //get gb operator epilogueid(GB/GBC)/gameid(GBA)
+                                    var gameid = api.internal.system.run("cat /tmp/GBOPERATOR.gameid | tr -d '\\n' | tr -d '\\r'");
+                                    //get also gb operator header info
+                                    var gboperatorHeaderHexa = api.internal.system.run("cat /tmp/GBOPERATOR.hexaheader | tr -d '\\n' | tr -d '\\r'");
+                                    var gboperatorHeaderAscii = api.internal.system.run("cat /tmp/GBOPERATOR.asciiheader | tr -d '\\n' | tr -d '\\r'");
+                                    //console.log('GBOPERATOR: echo "' + rominfo + ';' + gameid + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + gboperatorVersion  + ';' + gboperatorheaderhexa + ';' + gboperatorheaderascii + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/gboperator.romlist.csv');
+                                    api.internal.system.run('echo "' + rominfo + ';' + gameid + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + gboperatorVersion  + ';' + gboperatorHeaderHexa + ';' + gboperatorHeaderAscii + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/gboperator.romlist.csv');
 
                                 }
                             }
