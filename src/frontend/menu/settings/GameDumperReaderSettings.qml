@@ -632,7 +632,7 @@ FocusScope {
                     id: optGBOPERATORSaveROMInfo
                     //dumpers.gboperator.romlist=0 by default
                     label: qsTr("Save rom information in file") + api.tr
-                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'usb-nes.romlist.csv')") + api.tr
+                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'gboperator.romlist.csv')") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.romlist",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.romlist",false)){
