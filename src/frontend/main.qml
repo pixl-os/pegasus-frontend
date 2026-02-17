@@ -745,13 +745,13 @@ Window {
         function onAccept() {
             content.focus = true;            
             //copy save game from cartridge to saves "share" directory
-            //For usbnes case (using nes system only and one file name for sav)
             var romcrc32 = "";
             var targetedSave = "";
             var targetedRom = "";
             var existingSave = "";
 
-            if(gameCartridge_save.includes("rom.sav") && api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false)){
+            //For usbnes case (using nes system only and one file name for sav)
+            if(gameCartridge_save.includes("rom.sav") && (gameCartridge_dumper === "usbnes") && api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false)){
                 //get crc32 to ahve it in name of files as reference to improve unicity
                 romcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
                 //rename .sav to .srm to be compatible with retroarch cores and need to have same name than rom ;-)
@@ -770,10 +770,14 @@ Window {
                 //need to reset rom full path in this case
                 api.internal.singleplay.setFile(targetedRom);
             }
-            //For retrode case (using multiple systems) and not as usbnes ;-)
-            else if((gameCartridge_save !== "") & !gameCartridge_save.includes("rom.sav") && api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false)){
+            //For retrode & gb operator case (using multiple systems) and not as usbnes ;-)
+            else if((gameCartridge_save !== "")
+                    && ( ((gameCartridge_dumper === "retrode") && api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false))
+                    ||   ((gameCartridge_dumper === "gboperator") && api.internal.recalbox.getBoolParameter("dumpers.gboperator.movesave",false)) )
+                    ){
                 //get crc32 to ahve it in name of files as reference to improve unicity
-                romcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                if(gameCartridge_dumper === "retrode") romcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                if(gameCartridge_dumper === "gboperator") romcrc32 = api.internal.system.run("cat /tmp/GBOPERATOR.romcrc32 | tr -d '\\n' | tr -d '\\r'");
                 //copy with existing extension for the moment to retroarch cores and need to have same name than rom but just adding CRC32 ;-)
                 var resultArray = gameCartridge_rom.split("/");
                 var filename = resultArray[resultArray.length -1]; // Get the last component of the path
@@ -839,6 +843,7 @@ Window {
     property string gameCartridge_crc32: "" //use for SNES/SFC for the moment
     property string gameCartridge_save: "" //to know file path of save file
     property string gameCartridge_rom: "" //to know file path of rom file
+    property string gameCartridge_dumper: "" //to store name of dumper for later in process
 
     property string usbnesVersion: "" //to store version at mount
     property string retrodeVersion: "" //to store version at mount
@@ -914,7 +919,7 @@ Window {
                     //console.log("USBNES: previousromcrc32 - ", previousromcrc32)
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                     //(don't try to match with screenscrapper one where header is added and/or done on zip file)
-                    var romcrc32 = api.internal.system.run("crc32 " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r'");
+                    var romcrc32 = api.internal.system.run("crc32 " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r'").split(" ")[0];
                     //console.log("USBNES: romcrc32 - ", romcrc32)
                     if((parseInt(romsize) > 16)){
                         cartridge_plugged = true;
@@ -931,7 +936,7 @@ Window {
                         //set system to select to run this rom
                         api.internal.singleplay.setSystem("nes"); //using shortName
                         //store new crc32 (including complete path of rom) and store it for the moment
-                        api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.romcrc32");
+                        api.internal.system.run("echo \"" + romcrc32.split(" ")[0] + "\" | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.romcrc32");
                         //RFU: generate md5 (including complete path of rom) and store it for the moment
                         //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/USBNES.rommd5");
                         //calculate sha1 for PRG-ROM/SHR-ROM (don't try to match with screenscrapper one where it's done on full .nes/.zip file and including header)
@@ -1032,6 +1037,7 @@ Window {
                         }
 
                         //propose cartridge dialog box in this case
+                        gameCartridge_dumper = "usbnes";
                         cartridgeDialogBoxLoader.visible = true; //to show
                         cartridgeDialogBoxLoader.focus = true; //to have focus
                     }
@@ -1040,6 +1046,7 @@ Window {
                         //remove potential previous files about rom
                         api.internal.system.run("rm /tmp/USBNES.romcrc32");
                         //RFU: api.internal.system.run("rm /tmp/USBNES.rommd5");
+                        gameCartridge_dumper = "";
                         cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
                         cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                         //show popup to say that game has been removed
@@ -1052,6 +1059,7 @@ Window {
                         gameCartridge_name = "";
                     }
                     else if((parseInt(romsize) <= 16)){
+                        gameCartridge_dumper = "";
                         cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
                         cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                         //show popup to alert that we didn't detected the game
@@ -1128,6 +1136,7 @@ Window {
                     //remove potential previous files about rom
                     api.internal.system.run("rm /tmp/RETRODE.romcrc32");
                     //RFU: api.internal.system.run("rm /tmp/RETRODE.rommd5");
+                    gameCartridge_dumper = "";
                     cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
                     cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                     //show popup to say that game has been removed
@@ -1140,6 +1149,7 @@ Window {
                     gameCartridge_name = "";
                 }
                 else if(!readflag.includes("pixl-read")){
+                    gameCartridge_dumper = "";
                     cartridgeDialogBoxLoader.focus = false; //to unfocus if displayed
                     cartridgeDialogBoxLoader.visible = false; //to hide if displayed
                     //show popup to alert that we didn't detected the game
@@ -1191,7 +1201,7 @@ Window {
                 var previousromcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
                 //console.log("RETRODE: previousromcrc32 - ", previousromcrc32)
                 //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
-                var romcrc32 = api.internal.system.run("crc32 " + fileFound + " | tr -d '\\n' | tr -d '\\r'");
+                var romcrc32 = api.internal.system.run("crc32 " + fileFound + " | tr -d '\\n' | tr -d '\\r'").split(" ")[0];
                 //console.log("RETRODE: romcrc32 - ", romcrc32)
                 if(romcrc32 === previousromcrc32){
                     gameCartridge_state = "reloaded";
@@ -1206,7 +1216,7 @@ Window {
                 //set system to select to run this rom
                 api.internal.singleplay.setSystem(systemFound.split("|")[0]); //using shortName or take first one if several use the same extension
                 //store new crc32 (including complete path of rom) and store it for the moment
-                api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.romcrc32");
+                api.internal.system.run("echo \"" + romcrc32.split(" ")[0] + "\" | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.romcrc32");
                 //RFU: generate md5 (including complete path of rom) and store it for the moment
                 //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/RETRODE.rommd5");
                 //get info from file name (first part)
@@ -1248,7 +1258,7 @@ Window {
                             api.internal.system.run("echo 'GAME TITLE;SYSTEM;WORKS;SAVE FOUND;CRC32 FILE CHECKSUM;DUMPER VERSION;WHEN;COMMENT' >> /recalbox/share/roms/retrode.romlist.csv");
                         }
                         var existingRom = ""
-                        existingRom = api.internal.system.run("grep -i " + romcrc32 + " /recalbox/share/roms/retrode.romlist.csv | tr -d '\\n' | tr -d '\\r'");
+                        existingRom = api.internal.system.run("grep -i " + romcrc32.split(" ")[0] + " /recalbox/share/roms/retrode.romlist.csv | tr -d '\\n' | tr -d '\\r'");
                         //console.log("existingRom  - ",existingRom);
                         if(existingRom === ""){
                             //format GAME TITLE,SYSTEM,WORKS,SAVE FOUND;CRC32 FILE CHECKSUM,DUMPER VERSION,WHEN,COMMENT
@@ -1283,6 +1293,7 @@ Window {
                     }
                 }
                 //propose cartridge dialog box in this case
+                gameCartridge_dumper = "retrode";
                 cartridgeDialogBoxLoader.visible = true; //to show
                 cartridgeDialogBoxLoader.focus = true; //to have focus
                 console.log("RETRODE: gameCartridge (from file name) - ", gameCartridge);
@@ -1335,9 +1346,9 @@ Window {
                     //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
                     //(don't try to match with screenscrapper one where header is added and/or done on zip file)
                     //console.log("GBOPERATOR: crc32 \"" + mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
-                    var romcrc32 = api.internal.system.run("crc32 \"" + mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
-                    //console.log("GBOPERATOR: romcrc32:", romcrc32)
-                    //console.log("GBOPERATOR: parseInt(romsize):", parseInt(romsize).toString())
+                    var romcrc32 = api.internal.system.run("crc32 \"" + mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'").split(" ")[0];
+                    console.log("GBOPERATOR: romcrc32:", romcrc32)
+                    console.log("GBOPERATOR: parseInt(romsize):", parseInt(romsize).toString())
                     if((parseInt(romsize) >= 32768)){
                         cartridge_plugged = true;
                         if(romcrc32 === previousromcrc32){
@@ -1353,7 +1364,7 @@ Window {
                         //set system to select to run this rom
                         api.internal.singleplay.setSystem(system); //using shortName
                         //store new crc32 (including complete path of rom) and store it for the moment
-                        api.internal.system.run("echo '" + romcrc32 + "' | tr -d '\\n' | tr -d '\\r' > /tmp/GBOPERATOR.romcrc32");
+                        api.internal.system.run("echo \"" + romcrc32.split(" ")[0] + "\" | tr -d '\\n' | tr -d '\\r' > /tmp/GBOPERATOR.romcrc32");
                         //RFU: generate md5 (including complete path of rom) and store it for the moment
                         //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/GBOPERATOR.rommd5");
                         if(rominfo !== ""){
@@ -1384,7 +1395,7 @@ Window {
                                 }
 
                                 var existingRom = ""
-                                existingRom = api.internal.system.run("grep -i " + romcrc32 + " /recalbox/share/roms/usb-nes.romlist.csv | tr -d '\\n' | tr -d '\\r'");
+                                existingRom = api.internal.system.run("grep -i " + romcrc32.split(" ")[0] + " /recalbox/share/roms/gboperator.romlist.csv | tr -d '\\n' | tr -d '\\r'");
                                 //console.log("GBOPERATOR: existingRom  - ",existingRom);
                                 if(existingRom === ""){
                                     //format GAME TITLE,GAME ID,WORKS,SAVE FOUND;ROM CRC32,DUMPER VERSION,DUMPER HEADER HEXA,DUMPER HEADER ASCII,WHEN,COMMENT
@@ -1437,6 +1448,7 @@ Window {
                         }
 
                         //propose cartridge dialog box in this case
+                        gameCartridge_dumper = "gboperator";
                         cartridgeDialogBoxLoader.visible = true; //to show
                         cartridgeDialogBoxLoader.focus = true; //to have focus
                     }
