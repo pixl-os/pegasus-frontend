@@ -587,7 +587,7 @@ FocusScope {
                     id: optGBOPERATORMoveSave
                     //dumpers.gboperator.movesave=0 by default
                     label: qsTr("Cartridge SRAM in your saves") + api.tr
-                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly retroach/usb-nes are not compatible to update SRAM directly)") + api.tr
+                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly retroach/gboperator are not compatible to update SRAM directly)") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.movesave",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.movesave",false)){
@@ -610,14 +610,15 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGBOPERATORWriteSave
+                    KeyNavigation.down: optGBOPERATORSaveROMInfo
                     visible: optGBOPERATORDumper.checked
                 }
-                ToggleOption {
+                //RFU: paremeter finally not use (retroarch can't manage sav directly from cartridge (need to rename to .srm and can't focus one file :()
+                /*ToggleOption {
                     id: optGBOPERATORWriteSave
                     //dumpers.gboperator.writesave=0 by default
                     label: qsTr("'Save' file writing to cartridge") + api.tr
-                    note: qsTr("Enable write of save to cartridge\n(USB-NES should connected/resetted after configuration change)") + api.tr
+                    note: qsTr("Enable write of save to cartridge") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false)){
@@ -627,7 +628,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGBOPERATORSaveROMInfo
                     visible: optGBOPERATORDumper.checked
-                }
+                }*/
                 ToggleOption {
                     id: optGBOPERATORSaveROMInfo
                     //dumpers.gboperator.romlist=0 by default
