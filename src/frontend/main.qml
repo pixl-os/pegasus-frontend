@@ -1376,7 +1376,7 @@ Window {
                             if(savinfo !== ""){
                                 savinfoflag = "Y";
                                 //just communicate that sav is available
-                                gameCartridge_save = mountpoint + "/" + romname +".sav";
+                                gameCartridge_save = mountpoint + "/" + rominfo +".sav";
                             }
                             gameCartridge_state = "identified";
                             gameCartridge = rominfo;
