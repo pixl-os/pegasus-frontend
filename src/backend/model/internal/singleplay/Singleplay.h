@@ -30,6 +30,8 @@ public:
         m_game.setPath(path);
     }
     Q_INVOKABLE void setSystem (const QString shortName);
+    Q_INVOKABLE QString getEmulatorName(); //needed to know where to store the "save/ram" file using libretro (retroarch)
+    Q_INVOKABLE QString getCoreLongName(); //needed to know where to store the "save/ram" file using retroarch
 
 signals:
 

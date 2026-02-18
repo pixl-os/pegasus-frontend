@@ -749,26 +749,36 @@ Window {
             var targetedSave = "";
             var targetedRom = "";
             var existingSave = "";
+            var coreLongName;
 
             //For usbnes case (using nes system only and one file name for sav)
             if(gameCartridge_save.includes("rom.sav") && (gameCartridge_dumper === "usbnes") && api.internal.recalbox.getBoolParameter("dumpers.usbnes.movesave",false)){
                 //get crc32 to ahve it in name of files as reference to improve unicity
                 romcrc32 = api.internal.system.run("cat /tmp/USBNES.romcrc32 | tr -d '\\n' | tr -d '\\r'");
-                //rename .sav to .srm to be compatible with retroarch cores and need to have same name than rom ;-)
-                targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].srm";
+
                 targetedRom = "/recalbox/share/extractions/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].nes";
-                existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
-                //manual move/erase to do in share saves directory in this case
-                if(!existingSave.includes("/recalbox/share/saves/")){
-                    //copy of save
-                    api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
-                }
                 //mandatory copy of rom in /extractions to be able to rename rom (.nes) and to match with targeted save file (.srm) (we will erase in this case if already exists)
                 //copy of rom
                 api.internal.system.run("cp \"" + gameCartridge_rom + "\" \"" + targetedRom + "\"");
                 //need to reset rom full path in this case
                 api.internal.singleplay.setFile(targetedRom);
+
+                //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
+                if(api.internal.singleplay.getEmulatorName() === "libretro"){
+                    coreLongName = api.internal.singleplay.getCoreLongName();
+                    //rename .sav to .srm to be compatible with retroarch cores and need to have same name than rom ;-)
+                    targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + coreLongName + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].srm";
+                }
+                else{
+                    //rename .sav to .srm to be compatible with retroarch cores and need to have same name than rom ;-)
+                    targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].srm";
+                }
+                existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                //manual move/erase to do in share saves directory in this case
+                if(!existingSave.includes("/recalbox/share/saves/")){
+                    //copy of save
+                    api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                }
             }
             //For retrode & gb operator case (using multiple systems) and not as usbnes ;-)
             else if((gameCartridge_save !== "")
@@ -796,6 +806,7 @@ Window {
                 filename = resultArray[resultArray.length -1]; // Get the last component of the path
                 //force every save file to use .srm extension for the moment when we move it and use it with in retroarch
                 var savExt = ".srm";
+
                 //RFU
                 // Apply the regular expression to the file name
                 //match = regex.exec(filename);
@@ -806,22 +817,30 @@ Window {
                 //    savName = match[1];
                 //    savExt = match[2];
                 //}
-                targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + romName + " [" + romcrc32.split(' ')[0] + "]" + savExt;
+
                 targetedRom = "/recalbox/share/extractions/" + romName + " [" + romcrc32.split(' ')[0] + "]" + romExt;
-                existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
-                //manual move/erase to do in share saves directory in this case
-                if(!existingSave.includes("/recalbox/share/saves/")){
-                    //copy of save
-                    api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
-                }
                 //mandatory copy of rom in /extractions to be able to rename rom nd to match with targeted save file (we will erase in this case if already exists)
                 //copy of rom
                 api.internal.system.run("cp \"" + gameCartridge_rom + "\" \"" + targetedRom + "\"");
                 //need to reset rom full path in this case
                 api.internal.singleplay.setFile(targetedRom);
-            }
 
+                //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
+                if(api.internal.singleplay.getEmulatorName() === "libretro"){
+                    coreLongName = api.internal.singleplay.getCoreLongName();
+                    targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + coreLongName + "/" + romName + " [" + romcrc32.split(' ')[0] + "]" + savExt;
+                }
+                else{
+                    targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + romName + " [" + romcrc32.split(' ')[0] + "]" + savExt;
+                }
+                existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                //manual move/erase to do in share saves directory in this case
+                if(!existingSave.includes("/recalbox/share/saves/")){
+                    //copy of save
+                    api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                }
+
+            }
             // connect game to launcher
             api.connectGameFiles(api.internal.singleplay.game);
             // launch this Game
