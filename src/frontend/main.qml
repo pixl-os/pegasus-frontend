@@ -1423,7 +1423,7 @@ Window {
                             gameCartridge_name = rominfo;
                             //dump of rom if request
                             if(api.internal.recalbox.getBoolParameter("dumpers.gboperator.savedump",false)){
-                                var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name  + " [" + romcrc32.split(' ')[0] + "].gb";
+                                var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name  + " [" + romcrc32.split(' ')[0] + "]." + gameCartridge_system;
                                 //console.log("GBOPERATOR: ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                                 var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                                 //console.log("GBOPERATOR: existingDump  - ",existingDump);
