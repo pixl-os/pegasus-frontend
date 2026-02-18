@@ -110,7 +110,23 @@ All notable changes to this project will be documented in this file (focus on ch
 		- skin "human readable" naming management + fix assets loading
 		- skin "name" management + some fixes
 		- add "human readable name" to initial layout also from QML
-		
+	- introduce support of Epilogie GB Operator dumper/reader:
+		- add section for "actions" linked to this reader/dumper
+		- introduction timer for gboperator rom/save management
+		- add settings menu for this dumper/reader
+		- add capacity to hide some usual verbose debug logs
+		- add systemName in "Singleplay" notifications
+		- stable and tested for launch/dump of GB/GBC cartridge
+		- update dumper logs for debug logs
+		- keep header info in romlist csv file
+		- fix sublabel about gboperator.romlist.csv
+		- remove some singleplay debug log
+		- add management of saves
+		- fix extension of dump files
+		- fix to manage game with ' in file name
+		- remove save file writing not supported by retroarch/gboperator for the moment
+		- fix management of saves
+		- add management of dedicated libretro core directory for saves
 	- for dev ;-):
 		- introduction log viewer - first iteration
 	- display Advanced Emulator Settings if emulator present for some cases.
