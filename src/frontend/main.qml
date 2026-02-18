@@ -757,16 +757,16 @@ Window {
                 //rename .sav to .srm to be compatible with retroarch cores and need to have same name than rom ;-)
                 targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].srm";
                 targetedRom = "/recalbox/share/extractions/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].nes";
-                existingSave = api.internal.system.run("ls '"+ targetedSave + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                 //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
                 //manual move/erase to do in share saves directory in this case
                 if(!existingSave.includes("/recalbox/share/saves/")){
                     //copy of save
-                    api.internal.system.run("cp '" + gameCartridge_save + "' '" + targetedSave + "'");
+                    api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
                 }
                 //mandatory copy of rom in /extractions to be able to rename rom (.nes) and to match with targeted save file (.srm) (we will erase in this case if already exists)
                 //copy of rom
-                api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedRom + "'");
+                api.internal.system.run("cp \"" + gameCartridge_rom + "\" \"" + targetedRom + "\"");
                 //need to reset rom full path in this case
                 api.internal.singleplay.setFile(targetedRom);
             }
@@ -808,16 +808,16 @@ Window {
                 //}
                 targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + romName + " [" + romcrc32.split(' ')[0] + "]" + savExt;
                 targetedRom = "/recalbox/share/extractions/" + romName + " [" + romcrc32.split(' ')[0] + "]" + romExt;
-                existingSave = api.internal.system.run("ls '"+ targetedSave + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                 //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
                 //manual move/erase to do in share saves directory in this case
                 if(!existingSave.includes("/recalbox/share/saves/")){
                     //copy of save
-                    api.internal.system.run("cp '" + gameCartridge_save + "' '" + targetedSave + "'");
+                    api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
                 }
                 //mandatory copy of rom in /extractions to be able to rename rom nd to match with targeted save file (we will erase in this case if already exists)
                 //copy of rom
-                api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedRom + "'");
+                api.internal.system.run("cp \"" + gameCartridge_rom + "\" \"" + targetedRom + "\"");
                 //need to reset rom full path in this case
                 api.internal.singleplay.setFile(targetedRom);
             }
@@ -1013,15 +1013,15 @@ Window {
                             //dump of rom if request
                             if(api.internal.recalbox.getBoolParameter("dumpers.usbnes.savedump",false)){
                                 var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name + " (" + gameCartridge_region + ")" + " (" + gameCartridge_type + ") [" + romcrc32.split(' ')[0] + "].nes";
-                                //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                                var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                                //console.log("ls \""+ targetedDump + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                                var existingDump = api.internal.system.run("ls \""+ targetedDump + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                                 //console.log("existingDump  - ",existingDump);
                                 //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
                                 //manual move/erase to do in share dumps directory in this case
                                 if(!existingDump.includes("/recalbox/share/dumps/")){
                                     //copy of rom as dump
-                                    //console.log("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
-                                    api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
+                                    //console.log("cp \"" + gameCartridge_rom + "\" \"" + targetedDump + "\"");
+                                    api.internal.system.run("cp \"" + gameCartridge_rom + "\" \"" + targetedDump + "\"");
                                 }
                             }
                         }
@@ -1280,8 +1280,8 @@ Window {
                     //dump of rom if request
                     if(api.internal.recalbox.getBoolParameter("dumpers.retrode.savedump",false)){
                         var targetedDump = "/recalbox/share/dumps/" + rominfo + " [" + gameCartridge_crc32 + "]." + romExt;
-                        //console.log("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                        var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                        //console.log("ls \""+ targetedDump + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                        var existingDump = api.internal.system.run("ls \""+ targetedDump + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                         //console.log("existingDump  - ",existingDump);
                         //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
                         //manual move/erase to do in share dumps directory in this case
@@ -1419,20 +1419,20 @@ Window {
                             gameCartridge_system = system;
                             //to do last because will trig changes
                             gameCartridge_crc32 = romcrc32.split(" ")[0];//need to take first part only because file name/path is inlcuded in result of CRC32 calculation
-                            //console.log("GBOPERATOR: gameCartridge_crc32 - ", gameCartridge_crc32);
+                            console.log("GBOPERATOR: gameCartridge_crc32 - ", gameCartridge_crc32);
                             gameCartridge_name = rominfo;
                             //dump of rom if request
                             if(api.internal.recalbox.getBoolParameter("dumpers.gboperator.savedump",false)){
                                 var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name  + " [" + romcrc32.split(' ')[0] + "]." + gameCartridge_system;
-                                //console.log("GBOPERATOR: ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                                var existingDump = api.internal.system.run("ls '"+ targetedDump + "' 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                                //console.log("GBOPERATOR: existingDump  - ",existingDump);
+                                console.log("GBOPERATOR: ls \""+ targetedDump + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                                var existingDump = api.internal.system.run("ls \""+ targetedDump + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                                console.log("GBOPERATOR: existingDump  - ",existingDump);
                                 //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
                                 //manual move/erase to do in share dumps directory in this case
                                 if(!existingDump.includes("/recalbox/share/dumps/")){
                                     //copy of rom as dump
-                                    //console.log("GBOPERATOR: cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
-                                    api.internal.system.run("cp '" + gameCartridge_rom + "' '" + targetedDump + "'");
+                                    console.log("GBOPERATOR: cp \"" + gameCartridge_rom + "\" \"" + targetedDump + "\"");
+                                    api.internal.system.run("cp \"" + gameCartridge_rom + "\" \"" + targetedDump + "\"");
                                 }
                             }
                         }
