@@ -816,14 +816,17 @@ Window {
                 else{
                     targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + romName + savExt;
                 }
-                existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                 //umount first (to remove existing bind in all cases)
                 api.internal.system.run("umount \"" + targetedSave + "\"");
+                api.internal.system.run("sleep 0.5");
+                existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                //console.log("existingSave: ", existingSave);
                 if(api.internal.recalbox.getBoolParameter("dumpers." + gameCartridge_dumper + ".movesave",false)){
                     //manual move/erase to do in share saves directory if needed
                     if(!existingSave.includes("/recalbox/share/saves/")){
                         //copy of save
                         api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                        //console.log("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
                     }
                 }
                 if(api.internal.recalbox.getBoolParameter("dumpers." + gameCartridge_dumper + ".writesave",false)){
@@ -831,9 +834,12 @@ Window {
                     if(!existingSave.includes("/recalbox/share/saves/")){
                         //copy of save to have a initial file in all cases
                         api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                        //console.log("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                        api.internal.system.run("sleep 0.5");
                     }
                     //use BIND to have same behavior than symlink but on all file system
                     api.internal.system.run("mount --bind \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                    //console.log("mount --bind \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
                 }
             }
             // connect game to launcher
