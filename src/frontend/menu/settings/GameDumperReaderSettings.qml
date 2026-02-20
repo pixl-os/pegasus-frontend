@@ -40,6 +40,8 @@ FocusScope {
                 api.internal.system.run("sed -i 's/\\[forceSize\\].*/\\[forceSize\\] " + api.internal.recalbox.getIntParameter("dumpers.retrode.force.size",0) + "/g' /tmp/RETRODE.CFG");
                 //update Force Mapper
                 api.internal.system.run("sed -i 's/\\[forceMapper\\].*/\\[forceMapper\\] " + api.internal.recalbox.getIntParameter("dumpers.retrode.force.mapper",0) + "/g' /tmp/RETRODE.CFG");
+                //update Save Read Only
+                api.internal.system.run("sed -i 's/\\[saveReadonly\\].*/\\[saveReadonly\\] " + ( api.internal.recalbox.getIntParameter("dumpers.retrode.writesave",0) === 1 ? "0" : "1" ) + "/g' /tmp/RETRODE.CFG");
                 //recopy now from TMP to mountPoint and sync to be sure about udpate ;-)
                 api.internal.system.run("dd if=/tmp/RETRODE.CFG of=" + mountpoint + "/RETRODE.CFG");
             }
@@ -228,8 +230,8 @@ FocusScope {
                 ToggleOption {
                     id: optRETRODEMoveSave
                     //dumpers.retrode.movesave=0 by default
-                    label: qsTr("Cartridge SRAM in your saves") + api.tr
-                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly retroach/retrode are not compatible to update SRAM directly)") + api.tr
+                    label: qsTr("Cartridge RAM in your saves") + api.tr
+                    note: qsTr("Moved .sav from cartridge to your .srm saves to play with it (if not already moved/exists)") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false)){
@@ -237,8 +239,23 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRETRODEWriteSave
+                    visible: optRETRODEDumper.checked && !optRETRODEWriteSave.checked
+                }
+                ToggleOption {
+                    id: optRETRODEWriteSave
+                    //dumpers.retrode.writesave=0 by default
+                    label: qsTr("Cartridge RAM writing (Beta)") + api.tr
+                    note: qsTr("Create link from your saves to cartridge (if not already moved/exists)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.writesave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.writesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.retrode.writesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRETRODESaveDump
-                    visible: optRETRODEDumper.checked
+                    visible: optRETRODEDumper.checked && !optRETRODEMoveSave.checked
                 }
                 ToggleOption {
                     id: optRETRODESaveDump
@@ -255,38 +272,6 @@ FocusScope {
                     KeyNavigation.down: optRETRODESaveROMInfo
                     visible: optRETRODEDumper.checked
                 }
-                //RFU: paremeter finally not use (retroarch can't manage sav directly from cartridge (need to rename to .srm and can't focus one file :()
-                /*ToggleOption {
-                    id: optRETRODESaveReadOnly
-                    //dumpers.retrode.save.readonly=1 by default
-                    label: qsTr("Cartridge SRAM readonly") + api.tr
-                    note: qsTr("Deactivate readonly to save directly in cartridge\n(see also RETRODE documentation to know 'save support' by system)") + api.tr
-                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.save.readonly",true);
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.save.readonly",true)){
-                            api.internal.recalbox.setBoolParameter("dumpers.retrode.save.readonly",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optRETRODEfilenameChecksum
-                    visible: optRETRODEDumper.checked && !optRETRODEMoveSave.checked
-                }*/
-                //RFU: no usage of this feature for the moment
-                /*ToggleOption {
-                    id: optRETRODEfilenameChecksum
-                    //dumpers.retrode.filename.checksum=1 by default
-                    label: qsTr("Checksum/Game Code in file name") + api.tr
-                    note: qsTr("Add 4-digit checksum or game code in rom file name\n(see RETRODE documentation for more details on this parameter)") + api.tr
-                    checked: api.internal.recalbox.getBoolParameter("dumpers.retrode.filename.checksum",true);
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.retrode.filename.checksum",true)){
-                            api.internal.recalbox.setBoolParameter("dumpers.retrode.filename.checksum",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optRETRODESaveROMInfo
-                    visible: optRETRODEDumper.checked
-                }*/
                 ToggleOption {
                     id: optRETRODESaveROMInfo
                     //dumpers.retrode.romlist=0 by default
@@ -601,7 +586,7 @@ FocusScope {
                 ToggleOption {
                     id: optGBOPERATORWriteSave
                     //dumpers.gboperator.writesave=0 by default
-                    label: qsTr("Cartridge RAM writing") + api.tr
+                    label: qsTr("Cartridge RAM writing (Beta)") + api.tr
                     note: qsTr("Create symlink from your saves to cartridge (if not already moved/exists)") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false);
                     onCheckedChanged: {
