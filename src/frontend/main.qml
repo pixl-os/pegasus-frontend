@@ -782,8 +782,9 @@ Window {
             }
             //For retrode & gb operator case (using multiple systems) and not as usbnes ;-)
             else if((gameCartridge_save !== "")
-                    && ( ((gameCartridge_dumper === "retrode") && api.internal.recalbox.getBoolParameter("dumpers.retrode.movesave",false))
-                    ||   ((gameCartridge_dumper === "gboperator") && api.internal.recalbox.getBoolParameter("dumpers.gboperator.movesave",false)) )
+                    && ((gameCartridge_dumper === "retrode") || (gameCartridge_dumper === "gboperator"))
+                    && ( api.internal.recalbox.getBoolParameter("dumpers." + gameCartridge_dumper + ".movesave",false)
+                      || api.internal.recalbox.getBoolParameter("dumpers." + gameCartridge_dumper + ".writesave",false))
                     ){
                 //get crc32 to ahve it in name of files as reference to improve unicity
                 if(gameCartridge_dumper === "retrode") romcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
@@ -834,12 +835,24 @@ Window {
                     targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + romName + " [" + romcrc32.split(' ')[0] + "]" + savExt;
                 }
                 existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
-                //manual move/erase to do in share saves directory in this case
-                if(!existingSave.includes("/recalbox/share/saves/")){
-                    //copy of save
-                    api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                //umount first (to remove existing bind in all cases)
+                api.internal.system.run("umount \"" + targetedSave + "\"");
+                if(api.internal.recalbox.getBoolParameter("dumpers." + gameCartridge_dumper + ".movesave",false)){
+                    //manual move/erase to do in share saves directory if needed
+                    if(!existingSave.includes("/recalbox/share/saves/")){
+                        //copy of save
+                        api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                    }
                 }
-
+                if(api.internal.recalbox.getBoolParameter("dumpers." + gameCartridge_dumper + ".writesave",false)){
+                    //create like a symlink to update cartridge directly (or from /tmp in case of gb operator)
+                    if(!existingSave.includes("/recalbox/share/saves/")){
+                        //copy of save to have a initial file in all cases
+                        api.internal.system.run("cp \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                    }
+                    //use BIND to have same behavior than symlink but on all file system
+                    api.internal.system.run("mount --bind \"" + gameCartridge_save + "\" \"" + targetedSave + "\"");
+                }
             }
             // connect game to launcher
             api.connectGameFiles(api.internal.singleplay.game);
