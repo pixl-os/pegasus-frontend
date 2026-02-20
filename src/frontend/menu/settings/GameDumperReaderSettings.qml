@@ -586,8 +586,8 @@ FocusScope {
                 ToggleOption {
                     id: optGBOPERATORMoveSave
                     //dumpers.gboperator.movesave=0 by default
-                    label: qsTr("Cartridge SRAM in your saves") + api.tr
-                    note: qsTr("Move 'Save' from cartridge to play with it (if not already move)\n(Unfortunatelly retroach/gboperator are not compatible to update SRAM directly)") + api.tr
+                    label: qsTr("Cartridge RAM in your saves") + api.tr
+                    note: qsTr("Moved .sav from cartridge to your .srm saves to play with it (if not already moved/exists)") + api.tr
                     checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.movesave",false);
                     onCheckedChanged: {
                         if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.movesave",false)){
@@ -595,8 +595,23 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGBOPERATORWriteSave
+                    visible: optGBOPERATORDumper.checked && !optGBOPERATORWriteSave.checked
+                }
+                ToggleOption {
+                    id: optGBOPERATORWriteSave
+                    //dumpers.gboperator.writesave=0 by default
+                    label: qsTr("Cartridge RAM writing") + api.tr
+                    note: qsTr("Create symlink from your saves to cartridge (if not already moved/exists)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.gboperator.writesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optGBOPERATORSaveDump
-                    visible: optGBOPERATORDumper.checked
+                    visible: optGBOPERATORDumper.checked && !optGBOPERATORMoveSave.checked
                 }
                 ToggleOption {
                     id: optGBOPERATORSaveDump
@@ -613,22 +628,6 @@ FocusScope {
                     KeyNavigation.down: optGBOPERATORSaveROMInfo
                     visible: optGBOPERATORDumper.checked
                 }
-                //RFU: paremeter finally not use (retroarch can't manage sav directly from cartridge (need to rename to .srm and can't focus one file :()
-                /*ToggleOption {
-                    id: optGBOPERATORWriteSave
-                    //dumpers.gboperator.writesave=0 by default
-                    label: qsTr("'Save' file writing to cartridge") + api.tr
-                    note: qsTr("Enable write of save to cartridge") + api.tr
-                    checked: api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false);
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.gboperator.writesave",false)){
-                            api.internal.recalbox.setBoolParameter("dumpers.gboperator.writesave",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGBOPERATORSaveROMInfo
-                    visible: optGBOPERATORDumper.checked
-                }*/
                 ToggleOption {
                     id: optGBOPERATORSaveROMInfo
                     //dumpers.gboperator.romlist=0 by default
