@@ -808,31 +808,13 @@ Window {
                 //force every save file to use .srm extension for the moment when we move it and use it with in retroarch
                 var savExt = ".srm";
 
-                //RFU
-                // Apply the regular expression to the file name
-                //match = regex.exec(filename);
-                // If a match is found, extract the file name and extension
-                //var savExt = "";
-                //var savName = "";
-                //if (match) {
-                //    savName = match[1];
-                //    savExt = match[2];
-                //}
-
-                targetedRom = "/recalbox/share/extractions/" + romName + " [" + romcrc32.split(' ')[0] + "]" + romExt;
-                //mandatory copy of rom in /extractions to be able to rename rom nd to match with targeted save file (we will erase in this case if already exists)
-                //copy of rom
-                api.internal.system.run("cp \"" + gameCartridge_rom + "\" \"" + targetedRom + "\"");
-                //need to reset rom full path in this case
-                api.internal.singleplay.setFile(targetedRom);
-
                 //for the moment: we don't recopy save if already exists for this rom / no proposal to erase in this case
                 if(api.internal.singleplay.getEmulatorName() === "libretro"){
                     coreLongName = api.internal.singleplay.getCoreLongName();
-                    targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + coreLongName + "/" + romName + " [" + romcrc32.split(' ')[0] + "]" + savExt;
+                    targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + coreLongName + "/" + romName + savExt;
                 }
                 else{
-                    targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + romName + " [" + romcrc32.split(' ')[0] + "]" + savExt;
+                    targetedSave = "/recalbox/share/saves/" + gameCartridge_system + "/" + romName + savExt;
                 }
                 existingSave = api.internal.system.run("ls \""+ targetedSave + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
                 //umount first (to remove existing bind in all cases)
