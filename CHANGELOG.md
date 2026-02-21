@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- quick fix to force bluetooth scan in all cases now
 
 - Features:
-	- intriduction of dedicaced view for wine and proton configuration (to share with all emulators using wine):
+	- introduction of dedicaced view for wine and proton configuration (to share with all emulators using wine):
 		- add management of DLL overrides
 		- remove also bottles from saves/usersettings stored in a NAS for example
 		- add wine version for wine engines
@@ -124,9 +124,11 @@ All notable changes to this project will be documented in this file (focus on ch
 		- add management of saves
 		- fix extension of dump files
 		- fix to manage game with ' in file name
-		- remove save file writing not supported by retroarch/gboperator for the moment
 		- fix management of saves
 		- add management of dedicated libretro core directory for saves
+		- finally add save writing in cartridge using binding for gb operator and retrode
+		- stop to use "extractions" directory for retrode/gb operator
+		- improve bind/cp for saves writing
 	- for dev ;-):
 		- introduction log viewer - first iteration
 	- display Advanced Emulator Settings if emulator present for some cases.
