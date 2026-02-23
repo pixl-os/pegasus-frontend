@@ -396,8 +396,47 @@ FocusScope {
                         confirmDialog.callerid = "btnCleanEmulatorBottles"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": prefix + " " + qsTr("Wine Bottles") + api.tr,
+                                                { "title": emulator + " " + qsTr("Wine Bottles") + api.tr,
                                                   "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnManageWineEmbedded
+                }
+
+                // to clean/delete "bottle" before re-installation
+                SimpleButton {
+                    id: btnManageWineEmbedded
+                    Rectangle {
+                        id: containerValidateManageWineEmbedded
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Manage") + " " + qsTr("Wine engine(s)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnManageWineEmbedded"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": qsTr("pixL ProtonUp-Qt") + api.tr,
+                                                  "message": qsTr("Ready to manage your Wine engine(s) ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
                                                   "firstchoice": qsTr("Yes") + api.tr,
@@ -853,7 +892,7 @@ FocusScope {
                         confirmDialog.callerid = "btnLaunchWineCfg"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": prefix + " " + qsTr("Winecfg") + api.tr,
+                                                { "title": emulator + " " + qsTr("Winecfg") + api.tr,
                                                   "message": qsTr("Are you sure to launch Winecfg ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
@@ -893,7 +932,7 @@ FocusScope {
                         confirmDialog.callerid = "btnLaunchRegedit"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": prefix + " " + qsTr("Regedit") + api.tr,
+                                                { "title": emulator + " " + qsTr("Regedit") + api.tr,
                                                   "message": qsTr("Are you sure to launch regedit ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
@@ -933,7 +972,7 @@ FocusScope {
                         confirmDialog.callerid = "btnLaunchControllerSettings"
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": prefix + " " + qsTr("Controller panel") + api.tr,
+                                                { "title": emulator + " " + qsTr("Controller panel") + api.tr,
                                                   "message": qsTr("Are you sure to launch 'control joy.cpl' ?") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
@@ -973,10 +1012,20 @@ FocusScope {
                     api.internal.system.run("shopt -s noscaseglob");
                     //let time to change really and avoid bad effects
                     api.internal.system.run("sleep 1.0");
-                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/." + emulator + "_*wine* ; mount -o remount,ro /");
-                    api.internal.system.run("sleep 1 ; mount -o remount,rw /; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*wine* ; mount -o remount,ro /");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/." + emulator + "_*wine* ; mount -o remount,ro /");
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*wine* ; mount -o remount,ro /");
                     //disable case-insensitive globbing
                     api.internal.system.run("shopt -u noscaseglob");
+                }
+                else if (confirmDialog.callerid === "btnManageWineEmbedded"){
+                    //provide write access
+                    api.internal.system.run("mount -o remount,rw /");
+                    //update protonUp-QT conf to select the good installation (proton or wine)
+                    api.internal.system.run("sed -i 's|^installdir = .*|installdir = /usr/wine/|' /recalbox/share/system/.config/pupgui/config.ini");
+                    //Launch protonUp-QT optWineAppImage
+                    api.internal.system.run("/usr/bin/ProtonUp-Qt.AppImage");
+                    //force refreash of list of WINE engine/appimage if needed
+                    //TO DO
                 }
                 else{
                     //LIMIT: if everything is set in "auto" we can't determine the prefix to select
