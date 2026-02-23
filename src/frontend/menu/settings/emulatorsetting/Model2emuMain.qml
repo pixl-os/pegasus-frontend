@@ -14,6 +14,7 @@ FocusScope {
 
     signal close
     signal openWineConfiguration
+    signal openProtonConfiguration
 
     width: parent.width
     height: parent.height
@@ -225,11 +226,78 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(prefix + ".scanlines",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optwineConfiguration
+                    KeyNavigation.down: optModel2emuRunnerConf
+                    visible: optModel2emuAdvancedConf.checked
+                }
+
+                ToggleOption {
+                    id: optModel2emuRunnerConf
+                    SectionTitle {
+                        text: qsTr("'Runner' configuration") + api.tr
+                        first: true
+                        symbol: "\uf26f" //TO DO: fusee ?!
+                        symbolFontFamily: globalFonts.ion
+                    }
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".runner.configuration", false)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".runner.configuration",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".runner.configuration",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optModel2emuRunnerType
+                }
+                MultivalueOption {
+                    id: optModel2emuRunnerType
+
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".runner.type"
+
+                    label: qsTr("'Runner' type used to launch Model2emu") + api.tr
+                    note: qsTr("To manage different cases (if needed)") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optModel2emuRunnerType;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
+                    KeyNavigation.down: optWineConfiguration
+                    visible: optModel2emuRunnerConf.checked
                 }
                 SimpleButton {
-                    id: optwineConfiguration
-                    label: qsTr("Wine configuration") + api.tr
+                    id: optWineConfiguration
+                    visible: optModel2emuRunnerConf.checked && (optModel2emuRunnerType.value === "Wine") ? true : false
+                    label: qsTr("'Wine' configuration") + api.tr
                     onActivate: {
                         focus = true;
                         root.openWineConfiguration();
@@ -237,7 +305,21 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     //pointer moved in SimpleButton desactived on default
                     pointerIcon: true
+                    KeyNavigation.down: optProtonConfiguration
                 }
+                SimpleButton {
+                    id: optProtonConfiguration
+                    visible: optModel2emuRunnerConf.checked && (optModel2emuRunnerType.value === "Proton") ? true : false
+                    label: qsTr("'Proton' configuration") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openProtonConfiguration();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
+                }
+
                 Item {
                     width: parent.width
                     height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
@@ -245,7 +327,6 @@ FocusScope {
             }
         }
     }
-
     MultivalueBox {
         id: parameterslistBox
         z: 3
@@ -260,6 +341,8 @@ FocusScope {
         model: api.internal.recalbox.parameterslist
         onClose: content.focus = true
         onSelect: {
+          //console.log("onSelect - callerid.parameterName : " + callerid.parameterName);
+          //console.log("onSelect - index : " + index.toString());
             callerid.keypressed = true;
             //to use the good parameter
             api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
@@ -267,7 +350,9 @@ FocusScope {
             api.internal.recalbox.parameterslist.currentIndex = index;
             //to force update of display of selected value
             callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
+          //console.log("onSelect - callerid.value : " + callerid.value);
             callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+          //console.log("onSelect - callerid.currentIndex : " + callerid.currentIndex.toString());
             callerid.count = api.internal.recalbox.parameterslist.count;
         }
     }

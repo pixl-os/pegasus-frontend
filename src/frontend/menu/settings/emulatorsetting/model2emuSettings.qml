@@ -61,6 +61,7 @@ FocusScope {
     
     Model2emuMain {
         id: main
+
         focus: true
         anchors.right: parent.right
 
@@ -70,6 +71,7 @@ FocusScope {
 
         onClose: root.close()
         onOpenWineConfiguration: root.openWithEmulator("../WineConfiguration.qml", "model2emu")
+        onOpenProtonConfiguration: root.openWithEmulator("../ProtonConfiguration.qml", "model2emu")
     }
     Loader {
         id: modal
@@ -78,7 +80,6 @@ FocusScope {
         property bool fullscreen: true
         width: appWindow.width * (dialogHorizontalSize/100)
         height: appWindow.height * (dialogVerticalSize/100)
-
 
         anchors.centerIn: parent
 
