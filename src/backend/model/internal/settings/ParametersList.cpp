@@ -720,7 +720,7 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("Auto") << QObject::tr("720p - HD") << QObject::tr("1080p - Full HD") << QObject::tr("1440p - Quad HD/2K") << QObject::tr("2160p - Ultra HD/4K");
         ListOfInternalValue << "" << "1280x720" << "1920x1080" << "2560x1440" << "3840x2160";
     }
-    else if (Parameter == "teknoparrot.runner.type")
+    else if (Parameter.endsWith(".runner.type"))
     {
         ListOfValue << "Wine" << "Proton";
         ListOfInternalValue << "wine" << "proton";
