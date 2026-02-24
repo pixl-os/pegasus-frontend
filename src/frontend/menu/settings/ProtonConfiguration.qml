@@ -480,17 +480,15 @@ FocusScope {
                         container.onFocus(this)
                     }
                     //KeyNavigation.down: optProtonAudioDriver
-                    KeyNavigation.down: optProtonNVapi
+                    KeyNavigation.down: optProtonAudioDriver
                 }
-                //RFU
-                /*SectionTitle {
+                SectionTitle {
                     text: qsTr("Proton Wine 'Software' configuration") + api.tr
                     first: true
                     symbol: "\uf26f"
                     symbolFontFamily: globalFonts.ion
-                }*/
-                //RFU
-                /*MultivalueOption {
+                }
+                MultivalueOption {
                     id: optProtonAudioDriver
 
                     //property to manage parameter name
@@ -535,9 +533,8 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optProtonVirtualDesktop
+                    KeyNavigation.down: optProtonNVapi
                 }                
-                */
                 /*
                 ToggleOption {
                     id: optProtonVirtualDesktop
