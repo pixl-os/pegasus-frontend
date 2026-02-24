@@ -606,8 +606,8 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("auto");
         QString empty = "";
         ListOfInternalValue << empty;
-        ListOfValue << "OpenGL" << "Vulkan";
-        ListOfInternalValue << "gl" << "vulkan";
+        ListOfValue << "64-bit OpenGL" << "32-bit OpenGL" << "64-bit Vulkan" << "32-bit Vulkan";
+        ListOfInternalValue << "gl" << "gl32" << "vulkan" << "vulkan32";
         return ListOfValue;
     }
     else if (Parameter.endsWith(".winedxvkframerate", Qt::CaseInsensitive) == true)
