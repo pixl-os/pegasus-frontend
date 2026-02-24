@@ -796,14 +796,10 @@ FocusScope {
             //remove emulator bottles
             if (!isDebugEnv()){
                 if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
-                    //active case-insensitive globbing
-                    api.internal.system.run("shopt -s noscaseglob");
-                    //let time to change really and avoid bad effects
-                    api.internal.system.run("sleep 1.0");
-                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/." + emulator + "_*proton* ; mount -o remount,ro /");
-                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*proton* ; mount -o remount,ro /");
-                    //disable case-insensitive globbing
-                    api.internal.system.run("shopt -u noscaseglob");
+                    //unlocksystem, active case-insensitive globbing, delete and restore previous state in one command
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; shopt -s nocaseglob; sleep 1.0; rm -r /recalbox/." + emulator + "_*proton* ; shopt -u nocaseglob; sleep 1.0; mount -o remount,ro /;");
+                    //and from usersettings if exists
+                    api.internal.system.run("mount -o remount,rw /; sleep 1.0; shopt -s nocaseglob; sleep 1.0; rm -r /recalbox/share/saves/usersettings/." + emulator + "_*proton* ; shopt -u nocaseglob; sleep 1.0; mount -o remount,ro /;");
                 }
                 else if (confirmDialog.callerid === "btnManageProtonEmbedded"){
                     //provide write access
