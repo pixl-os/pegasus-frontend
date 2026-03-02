@@ -794,8 +794,8 @@ FocusScope {
         target: confirmDialog.item
         function onAccept() {
             //remove emulator bottles
-            if (!isDebugEnv()){
-                if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
+            if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
+                if (!isDebugEnv()){
                     //unlock file system and delete
                     api.internal.system.run("mount -o remount,rw /");
                     //kill wine/exe in memory that could block deletion
@@ -807,19 +807,45 @@ FocusScope {
                     api.internal.system.run("rm -r /recalbox/share/saves/usersettings/." + emulator + "*proton*");
                     api.internal.system.run("rm -r /recalbox/share/saves/usersettings/." + emulator + "*Proton*");
                 }
-                else if (confirmDialog.callerid === "btnManageProtonEmbedded"){
-                    //provide write access
-                    api.internal.system.run("mount -o remount,rw /");
-                    //update protonUp-QT conf to select the good installation (proton or wine)
-                    api.internal.system.run("sed -i 's|^installdir = .*|installdir = /usr/proton/|' /recalbox/share/system/.config/pupgui/config.ini");
-                    //Launch protonUp-QT optWineAppImage
-                    api.internal.system.run("/usr/bin/ProtonUp-Qt.AppImage");
-                    //force refreash of list of WINE engine/appimage if needed
-                    //TO DO
+                else{//for simulate and see more the spinner
+                    api.internal.system.run("sleep 5");
                 }
             }
-            else{//for simulate and see more the spinner
-                api.internal.system.run("sleep 5");
+            else if (confirmDialog.callerid === "btnManageProtonEmbedded"){
+                var userDirectory = "";
+                if (!isDebugEnv()){
+                    //provide write access
+                    api.internal.system.run("mount -o remount,rw /");
+                    userDirectory = "/recalbox/share/system/";
+                }
+                else{
+                    userDirectory = "~/";
+                }
+                //update protonUp-QT conf to select the good installation (proton or wine)
+                api.internal.system.run("sed -i 's|^installdir = .*|installdir = /usr/proton/|' /recalbox/share/system/.config/pupgui/config.ini");
+                //update color for pixL Theme
+                // main:               background,
+                api.internal.system.run("sed -i 's|^background = .*|background = " + themeColor.main + "|' " + userDirectory + ".config/pupgui/config.ini");
+                // secondary:          _secondary,
+                api.internal.system.run("sed -i 's|^_secondary = .*|_secondary = " + themeColor.secondary + "|' " + userDirectory + ".config/pupgui/config.ini");
+                // textTitle:          _textTitle,
+                api.internal.system.run("sed -i 's|^_texttitle = .*|_texttitle = " + themeColor.textTitle + "|' " + userDirectory + ".config/pupgui/config.ini");
+                // textLabel:          _textLabel,
+                api.internal.system.run("sed -i 's|^_textlabel = .*|_textlabel = " + themeColor.textLabel + "|' " + userDirectory + ".config/pupgui/config.ini");
+                // textSublabel:       _textSublabel,
+                api.internal.system.run("sed -i 's|^_textsublabel = .*|_textsublabel = " + themeColor.textSublabel + "|' " + userDirectory + ".config/pupgui/config.ini");
+                // textSectionTitle:   accent,
+                api.internal.system.run("sed -i 's|^accent = .*|accent = " + themeColor.textSectionTitle + "|' " + userDirectory + ".config/pupgui/config.ini");
+                if (!isDebugEnv()){
+                    //Launch protonUp-QT AppImage
+                    api.internal.system.run("/usr/bin/ProtonUp-Qt.AppImage");
+                }
+                else{
+                    //Launch protonUp-QT AppImage from dev project / or from home specific directory
+                    api.internal.system.run("~/ProtonUp-Qt-pixL/ProtonUp-Qt-2.14.0-x86_64.AppImage");
+                }
+                //force refreash of list of WINE engine/appimage if needed
+                //TO DO
             }
             content.focus = true;
         }
