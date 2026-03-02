@@ -798,6 +798,9 @@ FocusScope {
                 if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
                     //unlock file system and delete
                     api.internal.system.run("mount -o remount,rw /");
+                    //kill wine/exe in memory that could block deletion
+                    api.internal.system.run('pkill -9 "/.exe"');
+                    api.internal.system.run('pkill -9 wine');
                     api.internal.system.run("sleep 1.0");
                     api.internal.system.run("rm -r /recalbox/." + emulator + "*proton*");
                     api.internal.system.run("rm -r /recalbox/." + emulator + "*Proton*");
