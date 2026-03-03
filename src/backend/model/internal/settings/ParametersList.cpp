@@ -231,7 +231,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
 QStringList GetParametersList(QString Parameter)
 {
-  //Log::debug(LOGMSG("QStringList GetParametersList(%1)").arg(Parameter));
+    Log::debug(LOGMSG("QStringList GetParametersList(%1)").arg(Parameter));
 
     QStringList ListOfValue;
 
@@ -498,27 +498,33 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.winebottles");
         ListOfValue = loadQStringListFromGlobalMap("ListOfValue.winebottles");
 
+        Log::debug(LOGMSG("ListOfValue.empty: %1").arg(ListOfValue.empty()));
+
         if(ListOfValue.empty()){
             //read subdirectories in /recalbox/ to take all wine bottles
             QString targetPath = "/recalbox/";
             QStringList nameFilters;
             QString filter = ".*_wine-*";
             nameFilters << filter ; // The wildcard '*' will match any characters after ".*_wine-*"
-
+            Log::debug(LOGMSG("nameFilters: %1").arg(filter));
             // Changed flag: removed QDirIterator::Subdirectories
-            QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
+            QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
             while (it.hasNext()) {
                 QString dir = it.next();
                 QString dirName = it.fileName();
+                Log::debug(LOGMSG("dirName: %1").arg(dirName));
                 // Condition d'exclusion : on ignore si le nom finit par "_dlls"
                 if (dirName.endsWith("_dlls")) {
                     continue; // On passe au suivant sans rien faire
                 }
                 //it should contain /bottle.done directory if it is a valid wine bottle installed in pixL
                 QString relativedir = dir + "/bottle.done";
+                Log::debug(LOGMSG("relativedir: %1").arg(relativedir));
                 if (QFile::exists(relativedir)){
                     ListOfValue.append(dir.replace("/recalbox/.","").replace("/",""));
                     ListOfInternalValue.append(dir);
+                    Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
+
                 }
             }
             saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottles");
