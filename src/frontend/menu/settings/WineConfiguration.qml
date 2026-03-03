@@ -143,13 +143,59 @@ FocusScope {
                     symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
+                    id: optWineBottle
+
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".winebottle"
+
+                    // set focus only on first item
+                    focus: true
+
+                    label: qsTr("Wine 'bottle' to use") + api.tr
+                    note: qsTr("Select existing one or 'New bottle' in list") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
+                    count: api.internal.recalbox.parameterslist.count
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineBottle;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    KeyNavigation.down: optWineEngine
+                }
+
+                MultivalueOption {
                     id: optWineEngine
 
                     //property to manage parameter name
                     property string parameterName : prefix + ".wine"
-
-                    // set focus only on first item
-                    focus: true
 
                     label: qsTr("Wine 'engine'") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
@@ -188,7 +234,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-
+                    visible: optWineBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optWineAppImage
                 }
                 MultivalueOption {
@@ -235,7 +281,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-
+                    visible: optWineBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optWineArch
                 }
                 MultivalueOption {
@@ -282,7 +328,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-
+                    visible: optWineBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optWindowsVersion
                 }
                 MultivalueOption {
@@ -327,7 +373,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-
+                    visible: optWineBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optWineDllOverrides
                 }
                 MulticheckOption {
@@ -368,88 +414,11 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-
-                    KeyNavigation.down: btnCleanEmulatorBottles
-                }
-                // to clean/delete "bottle" before re-installation
-                SimpleButton {
-                    id: btnCleanEmulatorBottles
-                    Rectangle {
-                        id: containerValidateCleanEmulatorBottles
-                        width: parent.width
-                        height: parent.height
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        color: parent.focus ? themeColor.underline : themeColor.secondary
-                        opacity : parent.focus ? 1 : 0.3
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            color: themeColor.textValue
-                            font.pixelSize: vpx(30)
-                            font.family: globalFonts.ion
-                            text : "\uf2ba  " + qsTr("Clean") + " " + emulator + " " + qsTr("Wine bottle(s) (to re-install)") + api.tr
-                        }
-                    }
-                    onActivate: {
-                        //to force change of focus
-                        confirmDialog.callerid = "btnCleanEmulatorBottles"
-                        confirmDialog.focus = false;
-                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": emulator + " " + qsTr("Wine Bottles") + api.tr,
-                                                  "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
-                                                  "symbol": "\uf431",
-                                                  "symbolfont" : global.fonts.ion,
-                                                  "firstchoice": qsTr("Yes") + api.tr,
-                                                  "secondchoice": "",
-                                                  "thirdchoice": qsTr("No") + api.tr});
-                        //to force change of focus
-                        confirmDialog.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: btnManageWineEmbedded
-                }
-
-                // to clean/delete "bottle" before re-installation
-                SimpleButton {
-                    id: btnManageWineEmbedded
-                    Rectangle {
-                        id: containerValidateManageWineEmbedded
-                        width: parent.width
-                        height: parent.height
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        color: parent.focus ? themeColor.underline : themeColor.secondary
-                        opacity : parent.focus ? 1 : 0.3
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            color: themeColor.textValue
-                            font.pixelSize: vpx(30)
-                            font.family: globalFonts.ion
-                            text : "\uf2ba  " + qsTr("Manage") + " " + qsTr("Wine engine(s)") + api.tr
-                        }
-                    }
-                    onActivate: {
-                        //to force change of focus
-                        confirmDialog.callerid = "btnManageWineEmbedded"
-                        confirmDialog.focus = false;
-                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
-                                                { "title": qsTr("pixL ProtonUp-Qt") + api.tr,
-                                                  "message": qsTr("Ready to manage your Wine engine(s) ?") + api.tr,
-                                                  "symbol": "\uf431",
-                                                  "symbolfont" : global.fonts.ion,
-                                                  "firstchoice": qsTr("Yes") + api.tr,
-                                                  "secondchoice": "",
-                                                  "thirdchoice": qsTr("No") + api.tr});
-                        //to force change of focus
-                        confirmDialog.focus = true;
-                    }
-                    onFocusChanged: container.onFocus(this)
+                    visible: optWineBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optWineSoftRenderer
                 }
 
-                //****************************** section to manage wine version of this emulator*****************************************
+                //****************************** section to manage wine version of this emulator *****************************************
                 SectionTitle {
                     text: qsTr("Wine 'Renderer' configuration") + api.tr
                     first: true
@@ -767,6 +736,92 @@ FocusScope {
                         if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winefsync",false)){
                             api.internal.recalbox.setBoolParameter(prefix + ".winefsync",checked);
                         }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: btnCleanEmulatorBottles
+                }
+                //****************************** section to manage all wine version and bottles *****************************************
+                SectionTitle {
+                    text: qsTr("Wine 'Advanced' functions") + api.tr
+                    first: true
+                    symbol: "\uf26f"
+                    symbolFontFamily: globalFonts.ion
+                }
+
+                // to clean/delete "bottle" before re-installation
+                SimpleButton {
+                    id: btnCleanEmulatorBottles
+                    Rectangle {
+                        id: containerValidateCleanEmulatorBottles
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Clean All ") + " " + emulator + " " + qsTr("Wine bottle(s)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnCleanEmulatorBottles"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": emulator + " " + qsTr("Wine Bottles") + api.tr,
+                                                  "message": qsTr("Are you sure to delete existing bottles ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optWineBottle.count > 1 ? true : false
+                    KeyNavigation.down: btnManageWineEmbedded
+                }
+
+                // to install/uninstall wine/proton versions
+                SimpleButton {
+                    id: btnManageWineEmbedded
+                    Rectangle {
+                        id: containerValidateManageWineEmbedded
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Manage") + " " + qsTr("Wine engine(s)") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnManageWineEmbedded"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": qsTr("pixL ProtonUp-Qt") + api.tr,
+                                                  "message": qsTr("Ready to manage your Wine engine(s) ?") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineDebug
