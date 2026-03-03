@@ -9,6 +9,9 @@
 #include "audio/AudioController.h"
 #include "storage/StorageDevices.h"
 
+#include <QFile>
+#include <QDataStream>
+
 #include <QDir>
 #include <QDirIterator>
 
@@ -18,7 +21,17 @@
 #include <QMap>
 #include <QString>
 #include <QVariant>
+#include <QFile>
+#include <QDataStream>
+
 extern QMap<QString, QVariant> globalInMemorySettings; // Declare it as extern
+
+enum class BinaryArch {
+    Unknown,
+    Elf32,
+    Elf64,
+    NotElf
+};
 
 namespace {
 
@@ -54,6 +67,38 @@ QStringList loadQStringListFromGlobalMap(const QString& key) {
       //Log::debug(LOGMSG("List loaded from global QMap for key: %1").arg(key));
     }
     return list;
+}
+
+BinaryArch checkBinaryArchitecture(const QString &filePath) {
+    QFile file(filePath);
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        return BinaryArch::Unknown;
+    }
+
+    // On lit les 5 premiers octets (4 pour le magic number + 1 pour la classe)
+    QByteArray header = file.read(5);
+    file.close();
+
+    if (header.size() < 5) {
+        return BinaryArch::Unknown;
+    }
+
+    // Vérification du Magic Number ELF : 0x7F 'E' 'L' 'F'
+    if (!((header[0] == 0x7F) && (header[1] == 'E') && (header[2] == 'L') && (header[3] == 'F'))) {
+        return BinaryArch::NotElf;
+    }
+
+    // Le 5ème octet (index 4) donne l'architecture
+    unsigned char archByte = static_cast<unsigned char>(header[4]);
+
+    if (archByte == 1) {
+        return BinaryArch::Elf32;
+    } else if (archByte == 2) {
+        return BinaryArch::Elf64;
+    }
+
+    return BinaryArch::Unknown;
 }
 
 QString GetCommandOutput(const std::string& command)
@@ -447,6 +492,54 @@ QStringList GetParametersList(QString Parameter)
         return ListOfValue;
     }
     //******************************************** For Wine ***************************************************
+    else if (Parameter.endsWith(".winebottle", Qt::CaseInsensitive) == true)
+    {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.winebottles");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.winebottles");
+
+        if(ListOfValue.empty()){
+            //read subdirectories in /recalbox/ to take all wine bottles
+            QString targetPath = "/recalbox/";
+            QStringList nameFilters;
+            QString filter = ".*_wine-*";
+            nameFilters << filter ; // The wildcard '*' will match any characters after ".*_wine-*"
+
+            // Changed flag: removed QDirIterator::Subdirectories
+            QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
+            while (it.hasNext()) {
+                QString dir = it.next();
+                QString dirName = it.fileName();
+                // Condition d'exclusion : on ignore si le nom finit par "_dlls"
+                if (dirName.endsWith("_dlls")) {
+                    continue; // On passe au suivant sans rien faire
+                }
+                //it should contain /bottle.done directory if it is a valid wine bottle installed in pixL
+                QString relativedir = dir + "/bottle.done";
+                if (QFile::exists(relativedir)){
+                    ListOfValue.append(dir.replace("/recalbox/.","").replace("/",""));
+                    ListOfInternalValue.append(dir);
+                }
+            }
+            saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottles");
+            saveQStringListToGlobalMap(ListOfValue,"ListOfValue.winebottles");
+        }
+
+        //filter to return only for bottle linked to selected emulator
+        QString emulator = Parameter.section('.', 0, 0);
+
+        // Filter orginal list
+        ListOfInternalValue = ListOfInternalValue.filter("." + emulator +  "_", Qt::CaseInsensitive);
+        ListOfValue = ListOfValue.filter(emulator +  "_", Qt::CaseInsensitive);
+        ListOfValue.replaceInStrings(emulator +  "_", "");
+
+        // add auto in list to let default value from configgen if needed
+        ListOfValue.append(QObject::tr("New bottle"));
+        QString empty = "";
+        ListOfInternalValue.append(empty);
+
+        return ListOfValue;
+    }
     else if (Parameter.endsWith(".wine", Qt::CaseInsensitive) == true)
     {
         // load data from QSettings as cache (tip to speed up in menu browsing)
@@ -468,7 +561,7 @@ QStringList GetParametersList(QString Parameter)
             QString dir = it.next();
             //it should contain /bin directory if it is a valid wine installed in pixL
             QString relativedir = dir + "/bin";
-          //Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
+            //Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
             QString fulldir;
             QString winename;
             QString wineversion = "";
@@ -484,16 +577,12 @@ QStringList GetParametersList(QString Parameter)
             Command = relativedir + "/wine";
             bool wineIs32Bit = false;
             if (QFile::exists(Command)){
-                QString errorOutput = GetCommandOutputQtBlocking(Command, Arguments, true, true);
-                if(errorOutput.contains("ELFCLASS64")){
-                    //if wine is 32 bit, we will search the 64 bit one
-                    //else we consider than wine64 = wine (no need to display both version as engine)
-                    //as for modern wine using wow64 architecture
+                BinaryArch arch = checkBinaryArchitecture(Command);
+                if (arch == BinaryArch::Elf64) {
+                    wineIs32Bit = false;
+                } else if (arch == BinaryArch::Elf32) {
                     wineIs32Bit = true;
                 }
-            }
-            //check if file wine or wine64 exists to detect a valid wine directory
-            if (QFile::exists(relativedir + "/wine")) {
                 fulldir = relativedir + "/wine";
                 winename = relativedir;
                 winename = winename.replace("/usr/wine/","");
