@@ -854,11 +854,9 @@ FocusScope {
                 ToggleOption {
                     id: optDebugMode
 
-                    //label: qsTr("Debug mode") + api.tr
-                    //note: qsTr("Give me your log baby !!! ;-)") + api.tr
-
                     SectionTitle {
                         text: qsTr("Debug mode") + api.tr
+                        note: qsTr("Give me your log baby !!! ;-)") + api.tr
                         symbol: "\uf15c"
                         first: true
                         symbolFontFamily: globalFonts.awesome

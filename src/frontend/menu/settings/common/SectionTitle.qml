@@ -23,6 +23,7 @@ Text {
     property bool launchedAsDialogBox: false
     property bool first: false
     property alias symbol: symbolTitle.text
+    property alias note: sublabel.text
     property alias symbolFontSize: symbolTitle.font.pixelSize
     property alias symbolFontFamily: symbolTitle.font.family
     property int fontSize: vpx(22)
@@ -49,5 +50,17 @@ Text {
             pixelSize: fontSize * 1.25
             family: global.fonts.ion
         }
+    }
+
+    Text {
+        id: sublabel
+        anchors {
+            top: parent.bottom
+            left: parent.left
+        }
+        color: themeColor.textSublabel
+        font.pixelSize: fontSize * 0.8
+        font.family: globalFonts.sans
+        font.italic: true
     }
 }
