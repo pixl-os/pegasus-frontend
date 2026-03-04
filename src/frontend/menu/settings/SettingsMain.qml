@@ -882,7 +882,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optlogScript
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
                 }
                 ToggleOption {
                     id: optlogScript
@@ -896,7 +896,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optlogController
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
                 }
                 ToggleOption {
                     id: optlogController
@@ -910,7 +910,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optlogQml
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
                 }
                 ToggleOption {
                     id: optlogQml
@@ -924,7 +924,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optlogPulseAudio
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
                 }
                 ToggleOption {
                     id: optlogPulseAudio
@@ -938,7 +938,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optlogRetroachievements
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
                 }
                 ToggleOption {
                     id: optlogRetroachievements
@@ -952,7 +952,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optlogGamelist
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
                 }
                 ToggleOption {
                     id: optlogGamelist
@@ -966,7 +966,8 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optlogGamepadManagerSDL2
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
+
                 }
                 ToggleOption {
                     id: optlogGamepadManagerSDL2
@@ -980,7 +981,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optlogAudioDevice
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
                 }
                 ToggleOption {
                     id: optlogAudioDevice
@@ -994,7 +995,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optShowLogs
-                    visible: optDebugMode.checked
+                    visible: optDebugMode.checked && devModeActivated
                 }
                 SectionTitle {
                     text: qsTr("Developer menu") + api.tr
