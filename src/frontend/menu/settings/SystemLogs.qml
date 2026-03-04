@@ -16,6 +16,16 @@ FocusScope {
 
     enabled: focus
 
+    //obliged to manage size of logs viewer edit box :-(
+    onHeightChanged: {
+        //console.log("Window.height: " + Window.height);
+        //console.log("appWindow.height: " + appWindow.height);
+        //console.log("root.height:" + root.height);
+        //console.log("footer.y:" + footer.y);
+        //console.log("footer.y:" + footer.height);
+        logsViewer.contentHeight =  parseInt(root.height * 0.57);
+    }
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -78,6 +88,7 @@ FocusScope {
                 height: implicitHeight
 
                 Item {
+                    id: topItem
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
@@ -85,7 +96,7 @@ FocusScope {
                 ListModel {
                     id: systemLogsModel
                     ListElement { name: "Last game launched"; filepath: "/recalbox/share/system/logs/lastgamelaunch.log"}
-                    ListElement { name: "Global pixL"; filepath: "/recalbox/share/system/recalbox.log"}
+                    ListElement { name: "Global pixL"; filepath: "/recalbox/share/system/logs/recalbox.log"}
                     ListElement { name: "Pegasus-Frontend Last run"; filepath: "/recalbox/share/system/logs/lastrun.log"}
                     ListElement { name: "Virtual gamepads"; filepath: "/recalbox/share/system/logs/virtualgamepads.log"}
                     ListElement { name: "Sinden lightguns service"; filepath: "/recalbox/share/system/logs/sinden-lightguns.log"}
@@ -106,7 +117,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Log file") + api.tr
-                    note: qsTr("Select your log file to view below") + api.tr
+                    note: qsTr("Select your log file to view below (last 1000 lines as maximum)") + api.tr
 
                     currentIndex: 0
 
@@ -142,13 +153,13 @@ FocusScope {
 
                 function loadLogFile(filePath) {
                     //console.log("loadLogFile - filePath : " + filePath);
-                    logsViewer.fileContent = api.internal.system.run("cat '" + filePath + "'");
+                    logsViewer.fileContent = api.internal.system.run("tail -n 1000 '" + filePath + "'");
                 }
 
                 FileEditor {
                     id: logsViewer
                     visible: true
-                    contentHeight: isDebugEnv() ? 400 : Window.height - 120
+                    wrapMode: Text.NoWrap
 
                     Keys.onPressed: (event) => {
                         if (api.keys.isAccept(event) && !event.isAutoRepeat) {
@@ -159,6 +170,7 @@ FocusScope {
                 }
 
                 Item {
+                    id: bottomItem
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
