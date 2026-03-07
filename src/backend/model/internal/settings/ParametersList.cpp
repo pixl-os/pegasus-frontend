@@ -69,6 +69,14 @@ QStringList loadQStringListFromGlobalMap(const QString& key) {
     return list;
 }
 
+//rest now
+void resetQStringListInGlobalMap(const QString& key) {
+    if (globalInMemorySettings.contains(key)) {
+        globalInMemorySettings[key] = QStringList();
+        Log::debug(LOGMSG("List for key %1 has been cleared.").arg(key));
+    }
+}
+
 BinaryArch checkBinaryArchitecture(const QString &filePath) {
     QFile file(filePath);
 
@@ -241,6 +249,17 @@ QStringList GetParametersList(QString Parameter)
 
     //! Storage devices
     StorageDevices mStorageDevices;
+
+    //to reset parameterlist cache if exists
+    if (Parameter.endsWith(".resetcache", Qt::CaseInsensitive) == true){
+        Parameter = Parameter.replace(".resetcache", "");
+        Log::debug(LOGMSG("Parameter(%1)").arg(Parameter));
+        QString lastPart = Parameter.section('.', -1, -1);
+        Log::debug(LOGMSG("lastPart(%1)").arg(lastPart));
+        resetQStringListInGlobalMap("ListOfInternalValue."+ lastPart);
+        resetQStringListInGlobalMap("ListOfValue."+ lastPart);
+        resetQStringListInGlobalMap("ListOfPicture."+ lastPart);
+    }
 
     if (Parameter.endsWith(".ratio", Qt::CaseInsensitive) == true) // compatible for 'global.ratio' and '{system].ratio' (example: 'snes.ratio')
     {
@@ -495,8 +514,8 @@ QStringList GetParametersList(QString Parameter)
     else if (Parameter.endsWith(".winebottle", Qt::CaseInsensitive) == true)
     {
         // load data from QSettings as cache (tip to speed up in menu browsing)
-        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.winebottles");
-        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.winebottles");
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.winebottle");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.winebottle");
 
         //Log::debug(LOGMSG("ListOfValue.empty: %1").arg(ListOfValue.empty()));
 
@@ -506,28 +525,28 @@ QStringList GetParametersList(QString Parameter)
             QStringList nameFilters;
             QString filter = ".*_wine-*";
             nameFilters << filter ; // The wildcard '*' will match any characters after ".*_wine-*"
-            //Log::debug(LOGMSG("nameFilters: %1").arg(filter));
+            Log::debug(LOGMSG("nameFilters: %1").arg(filter));
             // Changed flag: removed QDirIterator::Subdirectories
             QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
             while (it.hasNext()) {
                 QString dir = it.next();
                 QString dirName = it.fileName();
-                //Log::debug(LOGMSG("dirName: %1").arg(dirName));
+                Log::debug(LOGMSG("dirName: %1").arg(dirName));
                 // Condition d'exclusion : on ignore si le nom finit par "_dlls"
                 if (dirName.endsWith("_dlls")) {
                     continue; // On passe au suivant sans rien faire
                 }
                 //it should contain /bottle.done directory if it is a valid wine bottle installed in pixL
                 QString relativedir = dir + "/bottle.done";
-                //Log::debug(LOGMSG("relativedir: %1").arg(relativedir));
+                Log::debug(LOGMSG("relativedir: %1").arg(relativedir));
                 if (QFile::exists(relativedir)){
                     //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
                     ListOfInternalValue.append(dir);
                     ListOfValue.append(dir.replace("/recalbox/.","").replace("/",""));
                 }
             }
-            saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottles");
-            saveQStringListToGlobalMap(ListOfValue,"ListOfValue.winebottles");
+            saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottle");
+            saveQStringListToGlobalMap(ListOfValue,"ListOfValue.winebottle");
         }
 
         //filter to return only for bottle linked to selected emulator
@@ -543,8 +562,8 @@ QStringList GetParametersList(QString Parameter)
         QString empty = "";
         ListOfInternalValue.append(empty);
 
-        //Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
-        //Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
+        Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
+        Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
 
         return ListOfValue;
     }
@@ -1413,8 +1432,8 @@ QStringList GetParametersList(QString Parameter)
     else if (Parameter == "boot.sharedevice")
     {
         // load data from QSettings as cache (tip to speed up in menu browsing)
-        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.boot.sharedevice");
-        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.boot.sharedevice");
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.sharedevice");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.sharedevice");
         if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
 
         /*
@@ -1455,8 +1474,8 @@ QStringList GetParametersList(QString Parameter)
                 ListOfInternalValue.append(QString::fromStdString(device.UUID));
             }
         }
-        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.boot.sharedevice");
-        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.boot.sharedevice");
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.sharedevice");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.sharedevice");
         return ListOfValue;
     }
     else if (Parameter.endsWith(".core", Qt::CaseInsensitive) == true) // compatible with all systems

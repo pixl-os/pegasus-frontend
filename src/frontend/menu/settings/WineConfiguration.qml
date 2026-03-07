@@ -152,7 +152,7 @@ FocusScope {
                     focus: true
 
                     label: qsTr("Wine 'bottle' to use") + api.tr
-                    note: qsTr("Select existing one or 'New bottle' in list") + api.tr
+                    note: qsTr("Select existing one or 'New bottle' to create one") + api.tr
 
                     value: api.internal.recalbox.parameterslist.currentName(parameterName)
                     internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
@@ -188,6 +188,141 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
+                    KeyNavigation.down: btnCleanSelectedBottle
+                }
+
+                //to display info on selected wine bottle
+                SimpleButton {
+                    id: optBootleInfo
+                    visible: optWineBottle.internalvalue !== "" ? true : false
+                    width: parent.width - ((height/9)*16)
+                    showUnderline: false
+                    wrapMode: Text.NoWrap
+                    launchedAsDialogBox: root.launchedAsDialogBox
+                    property string bottle_name: optWineBottle.value
+                    property string bottle_path: optWineBottle.internalvalue
+                    property string bottle_size : ""
+                    label: qsTr("Information about ") + api.tr + elideStringFromLeft(bottle_name,80)
+                    note:  qsTr("Size: ") + api.tr + bottle_size + "\n"
+                    Component.onCompleted: {
+                        wineInfoTimer.start();
+                    }
+                    pointerIcon: false
+
+                    //timer to update game information
+                    Timer {
+                        id: wineInfoTimer
+                        interval: 600 // Run the timer after 600 ms
+                        repeat: false
+                        running: false
+                        triggeredOnStart: false
+                        onTriggered: {
+                            optWineInfo.bottle_size = "";
+                            api.internal.system.runAsync("du -sh \"" + optWineInfo.bottle_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optWineInfo.bottle_name + ".size\"", "thread");
+                            directorySizeTimer.start();
+                        }
+                    }
+
+                    //timer to update game information
+                    Timer {
+                        id: directorySizeTimer
+                        interval: 500 // Run the timer every 500 ms
+                        repeat: true
+                        running: false
+                        triggeredOnStart: true
+                        onTriggered: {
+                            if(api.internal.system.run("test -f \"/tmp/" + optWineInfo.bottle_name + ".size\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                                optWineInfo.bottle_size = api.internal.system.run("cat \"/tmp/" + optWineInfo.bottle_name + ".size\"");
+                                optWineInfo.bottle_size = optWineInfo.bottle_size + qsTr("Bytes") + api.tr + " (" + qsTr("directory") + api.tr + ")";
+                                running = false; //to stop the timer
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        height: parent.height
+                        color: "transparent"
+                        width: (parent.height/9)*16
+
+                        anchors.left: parent.right
+                        anchors.leftMargin: vpx(45)
+                        visible: true
+                        Image {
+                            id: background
+                            asynchronous: true
+                            height: parent.height
+                            width: parent.width
+                            source: game ? game.assets.screenshot : ""
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
+                            visible: true
+                        }
+                        Image {
+                            id: logo
+                            asynchronous: true
+                            height: parent.height/2
+                            width: background.width
+                            source: game ? game.assets.logo : ""
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
+                            visible: true
+                        }
+                        Image {
+                            id: tplogo
+                            asynchronous: true
+                            height: game ? (((game.assets.logo === "") && (game.assets.screenshot === "")) ? (parent.height/4)*3 : parent.height/2) : (parent.height/4)*3
+                            width: background.width
+                            source: game ? (game.assets.logo === "" ? teknoParrotIcon(game) : "") : ""
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
+                            visible: true
+                        }
+                    }
+                }
+
+                // to clean/delete "bottle" selected
+                SimpleButton {
+                    id: btnCleanSelectedBottle
+                    Rectangle {
+                        id: containerValidateSelectedEmulatorBottles
+                        width: parent.width
+                        height: parent.height
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: parent.focus ? themeColor.underline : themeColor.secondary
+                        opacity : parent.focus ? 1 : 0.3
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: themeColor.textValue
+                            font.pixelSize: vpx(30)
+                            font.family: globalFonts.ion
+                            text : "\uf2ba  " + qsTr("Remove selected Wine bottle") + api.tr
+                        }
+                    }
+                    onActivate: {
+                        //to force change of focus
+                        confirmDialog.callerid = "btnCleanSelectedBottle"
+                        confirmDialog.focus = false;
+                        confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
+                                                { "title": qsTr("Wine Bottle") + api.tr,
+                                                  "message": qsTr("Are you sure to delete this bottle ?\n (" + optWineBottle.value + ")") + api.tr,
+                                                  "symbol": "\uf431",
+                                                  "symbolfont" : global.fonts.ion,
+                                                  "firstchoice": qsTr("Yes") + api.tr,
+                                                  "secondchoice": "",
+                                                  "thirdchoice": qsTr("No") + api.tr});
+                        //to force change of focus
+                        confirmDialog.focus = true;
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optWineBottle.internalvalue !== "" ? true : false
                     KeyNavigation.down: optWineEngine
                 }
 
@@ -1060,8 +1195,36 @@ FocusScope {
     Connections {
         target: confirmDialog.item
         function onAccept() {
+            //to remove only selected bottle
+            if (confirmDialog.callerid === "btnCleanSelectedBottle"){
+                if (!isDebugEnv()){
+                    //unlock file system and delete
+                    api.internal.system.run("mount -o remount,rw /");
+                    //kill wine/exe in memory that could block deletion
+                    api.internal.system.run('pkill -9 "/.exe"');
+                    api.internal.system.run('pkill -9 wine');
+                    api.internal.system.run("sleep 1.0");
+                    api.internal.system.run("rm -rf " + optWineBottle.internalvalue);
+                    api.internal.system.run("rm -rf " + optWineBottle.internalvalue + "*_dlls");
+
+                }
+                else{//for dev testing
+                    api.internal.system.run("sleep 1.0");
+                    api.internal.system.run("rm -rf " + optWineBottle.internalvalue);
+                    console.log("rm -rf " + optWineBottle.internalvalue);
+                    //api.internal.system.run("rm -rf " + optWineBottle.internalvalue + "*_dlls");
+                    //console.log("rm -rf " + optWineBottle.internalvalue + "*_dlls");
+                }
+                //reset parameterlist cache
+                optWineBottle.value = api.internal.recalbox.parameterslist.currentName(optWineBottle.parameterName + ".resetcache");
+                //to force update of display of selected value
+                optWineBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optWineBottle.parameterName);
+                optWineBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                optWineBottle.count = api.internal.recalbox.parameterslist.count;
+
+            }
             //remove emulator bottles
-            if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
+            else if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
                 if (!isDebugEnv()){
                     //unlock file system and delete
                     api.internal.system.run("mount -o remount,rw /");
@@ -1077,6 +1240,12 @@ FocusScope {
                 else{//for simulate and see more the spinner
                     api.internal.system.run("sleep 5");
                 }
+                //reset parameterlist cache
+                optWineBottle.value = api.internal.recalbox.parameterslist.currentName(optWineBottle.parameterName + ".resetcache");
+                //to force update of display of selected value
+                optWineBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optWineBottle.parameterName);
+                optWineBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                optWineBottle.count = api.internal.recalbox.parameterslist.count;
             }
             else if (confirmDialog.callerid === "btnManageWineEmbedded"){
                 var userDirectory = "";
