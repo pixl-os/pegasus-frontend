@@ -114,8 +114,6 @@ HEADERS += \
     $$PWD/rcheevos/include/rc_api_request.h \
     $$PWD/rcheevos/include/rc_api_runtime.h \
     $$PWD/rcheevos/include/rc_api_user.h \
-    $$PWD/rcheevos/include/rc_api_client.h \
-    $$PWD/rcheevos/include/rc_api_client_raintegration.h \
     $$PWD/rcheevos/include/rc_consoles.h \
     $$PWD/rcheevos/include/rc_error.h \
     $$PWD/rcheevos/include/rc_export.h \
@@ -127,7 +125,6 @@ HEADERS += \
     $$PWD/rcheevos/include/rcheevos.h \
     $$PWD/rcheevos/src/rc_client_external.h \
     $$PWD/rcheevos/src/rc_client_internal.h \
-    $$PWD/rcheevos/src/rc_client_ratintegration.h \
     $$PWD/rcheevos/src/rc_compat.h \
     $$PWD/rcheevos/src/rc_libretro.h \
     $$PWD/rcheevos/src/rc_version.h \

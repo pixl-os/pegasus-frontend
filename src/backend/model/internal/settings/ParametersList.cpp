@@ -478,7 +478,7 @@ QStringList GetParametersList(QString Parameter)
         //read subdirectories in /usr/proton
         QString targetPath = "/usr/proton/";
         QStringList nameFilters;
-        nameFilters << "*proton*"; // The wildcard '*' will match any characters after "*proton*"
+        nameFilters << "ge-proton*" << "umu-proton*"; // The wildcard '*' will match any characters after "*proton*"
         // Changed flag: removed QDirIterator::Subdirectories
         QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
         while (it.hasNext()) {
@@ -523,9 +523,7 @@ QStringList GetParametersList(QString Parameter)
             //read subdirectories in /recalbox/ to take all wine bottles
             QString targetPath = "/recalbox/";
             QStringList nameFilters;
-            QString filter = ".*_wine-*";
-            nameFilters << filter ; // The wildcard '*' will match any characters after ".*_wine-*"
-            Log::debug(LOGMSG("nameFilters: %1").arg(filter));
+            nameFilters << ".*_wine-*" << ".*_lutris-*" ; // The wildcard '*' will match any characters after ".*_wine-*"
             // Changed flag: removed QDirIterator::Subdirectories
             QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
             while (it.hasNext()) {
@@ -581,7 +579,7 @@ QStringList GetParametersList(QString Parameter)
         //read subdirectories in /usr/wine
         QString targetPath = "/usr/wine/";
         QStringList nameFilters;
-        nameFilters << "wine-*"; // The wildcard '*' will match any characters after "wine-"
+        nameFilters << "wine-*" << "lutris-*"; // The wildcard '*' will match any characters after "wine-"
         // Changed flag: removed QDirIterator::Subdirectories
         QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
         while (it.hasNext()) {

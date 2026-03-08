@@ -34,6 +34,22 @@ FocusScope {
         (system ? system.name + " > " + qsTr("Wine configuration") + api.tr :
          emulator + " > " + qsTr("Wine configuration") + api.tr)
 
+    //function to elide text string from right
+    function elideStringFromRight(text, maxLength) {
+      if (text.length > maxLength) {
+        return text.substring(0, maxLength - 3) + '...';
+      }
+      return text;
+    }
+
+    //function to elide text string from left
+    function elideStringFromLeft(text, maxLength) {
+      if (text.length > maxLength) {
+        return '...' + text.substring(text.length - (maxLength - 3));
+      }
+      return text;
+    }
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -158,6 +174,7 @@ FocusScope {
                     internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
                     currentIndex: api.internal.recalbox.parameterslist.currentIndex
                     count: api.internal.recalbox.parameterslist.count
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
@@ -168,6 +185,11 @@ FocusScope {
                         parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
                         //to transfer focus to parameterslistBox
                         parameterslistBox.focus = true;
+                    }
+
+                    onInternalvalueChanged: {
+                        console.log("onSelect - internalvalue: ", internalvalue);
+                        if(internalvalue !== "") wineInfoTimer.start();
                     }
 
                     onSelect: {
@@ -193,17 +215,30 @@ FocusScope {
 
                 //to display info on selected wine bottle
                 SimpleButton {
-                    id: optBootleInfo
+                    id: optBottleInfo
                     visible: optWineBottle.internalvalue !== "" ? true : false
-                    width: parent.width - ((height/9)*16)
+                    width: parseInt(parent.width/6)*5
                     showUnderline: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
-                    property string bottle_name: optWineBottle.value
+                    property string bottle_name: optWineBottle.internalvalue.split('/').pop()
                     property string bottle_path: optWineBottle.internalvalue
                     property string bottle_size : ""
-                    label: qsTr("Information about ") + api.tr + elideStringFromLeft(bottle_name,80)
-                    note:  qsTr("Size: ") + api.tr + bottle_size + "\n"
+                    property string bottle_engine : bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
+                    property string bottle_appimage : ""
+                    property string bottle_arch : "" //win32/win64/wow64
+                    property string bottle_winver : "" //win95 to win11
+                    property string bottle_env : ""
+
+                    label: qsTr("Information about selected bottle:")
+                    note:  qsTr("Size: ") + api.tr + bottle_size + "\n" +
+                           ((bottle_engine !== "" && bottle_appimage === "") ?   (qsTr("Engine used: ") + api.tr + bottle_engine + "\n") : "") +
+                           (bottle_appimage !== "" ? (qsTr("AppImage used: ") + api.tr + bottle_appimage + "\n") : "")  +
+                           qsTr("Architecture: ") + api.tr + bottle_arch + "\n" +
+                           qsTr("Windows version: ") + api.tr + bottle_winver + "\n" +
+                           qsTr("Environment: ") + api.tr + "\n" + bottle_env
+
+
                     Component.onCompleted: {
                         wineInfoTimer.start();
                     }
@@ -217,9 +252,28 @@ FocusScope {
                         running: false
                         triggeredOnStart: false
                         onTriggered: {
-                            optWineInfo.bottle_size = "";
-                            api.internal.system.runAsync("du -sh \"" + optWineInfo.bottle_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optWineInfo.bottle_name + ".size\"", "thread");
+                            //to calculate size
+                            optBottleInfo.bottle_size = "";
+                            api.internal.system.runAsync("du -sh \"" + optBottleInfo.bottle_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.bottle_name + ".size\"", "thread");
                             directorySizeTimer.start();
+                            //to get architecture
+                            //example: sed -n 's/^#arch=//p' user.reg
+                            optBottleInfo.bottle_arch = api.internal.system.run("sed -n 's/^#arch=//p' \"" + optBottleInfo.bottle_path + "/user.reg\" | tr -d '\\n' | tr -d '\\r'");
+                            //to get winver
+                            optBottleInfo.bottle_winver = api.internal.system.run("grep '\"ProductName\"' " + optBottleInfo.bottle_path + "/system.reg | grep 'Windows [0-9]' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_winver = optBottleInfo.bottle_winver + " / " + api.internal.system.run("grep '\"ProductName\"=\"Windows' " + optBottleInfo.bottle_path + "/system.reg -B10 | grep -i '\"DisplayVersion\"' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_winver = optBottleInfo.bottle_winver + " / " + api.internal.system.run("grep '\"ProductName\"=\"Windows' " + optBottleInfo.bottle_path + "/system.reg -B10 | grep -i '\"CurrentVersion\"' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
+                            //to get env details
+                            //xargs -n 10 < winetricks.log
+                            //keep only 2 lines for the moment
+                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 2") + "...";
+                            //check if AppImage exists
+                            if(api.internal.system.run("test -f \"/usr/wine/" + optBottleInfo.bottle_engine + ".AppImage\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                                optBottleInfo.bottle_appimage = optBottleInfo.bottle_engine + ".AppImage";
+                            }
+                            else{
+                                optBottleInfo.bottle_appimage = "";
+                            }
                         }
                     }
 
@@ -231,47 +285,70 @@ FocusScope {
                         running: false
                         triggeredOnStart: true
                         onTriggered: {
-                            if(api.internal.system.run("test -f \"/tmp/" + optWineInfo.bottle_name + ".size\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
-                                optWineInfo.bottle_size = api.internal.system.run("cat \"/tmp/" + optWineInfo.bottle_name + ".size\"");
-                                optWineInfo.bottle_size = optWineInfo.bottle_size + qsTr("Bytes") + api.tr + " (" + qsTr("directory") + api.tr + ")";
+                            if(api.internal.system.run("test -f \"/tmp/" + optBottleInfo.bottle_name + ".size\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                                optBottleInfo.bottle_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.bottle_name + ".size\"");
+                                optBottleInfo.bottle_size = optBottleInfo.bottle_size + qsTr("Bytes") + api.tr + " (" + qsTr("directory") + api.tr + ")";
                                 running = false; //to stop the timer
                             }
                         }
                     }
 
                     Rectangle {
-                        height: parent.height
                         color: "transparent"
-                        width: (parent.height/9)*16
-
+                        height: vpx(160)
+                        width: parseInt(parent.width/5)
+                        anchors.top: parent.top
+                        anchors.topMargin: vpx(15)
                         anchors.left: parent.right
-                        anchors.leftMargin: vpx(45)
+                        //anchors.leftMargin: vpx(15)
+                        anchors.right: optWineBottle.right
+                        //anchors.rightMargin: vpx(15)
+
+
                         visible: true
+
                         Image {
-                            id: background
+                            id: enginelogo
                             asynchronous: true
                             height: parent.height
-                            width: parent.width
-                            source: game ? game.assets.screenshot : ""
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            //width: parent.width
+                            source: {
+                                if(optBottleInfo.bottle_name.includes("lutris"))
+                                    return "qrc:/frontend/assets/lutris.png" //Wine from GloriousEggroll
+                                if(optBottleInfo.bottle_name.includes("ge") && optBottleInfo.bottle_name.includes("proton"))
+                                    return "qrc:/frontend/assets/ge-proton.png" //Wine from GloriousEggroll
+                                if(optBottleInfo.bottle_name.includes("wine"))
+                                    return "qrc:/frontend/assets/wine.png" //Wine from Kron4ek/Vanialla/Staging/TKG
+                                return "";
+                            }
+                            //anchors.verticalCenter: parent.verticalCenter
+                            //anchors.horizontalCenter: parent.horizontalCenter
+
+                            // Centering is still fine, it will center the "natural" sized image
+                            anchors.centerIn: parent
                             fillMode: Image.PreserveAspectFit
                             smooth: true
                             visible: true
                         }
+
                         Image {
-                            id: logo
+                            id: emulatorlogo
                             asynchronous: true
-                            height: parent.height/2
-                            width: background.width
-                            source: game ? game.assets.logo : ""
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            height: enginelogo.height/4
+                            source: {
+                                return "qrc:/frontend/assets/" + emulator + ".png"
+                            }
+                            //anchors.centerIn: parent
+
+                            anchors.verticalCenter: enginelogo.bottom
+                            anchors.horizontalCenter: enginelogo.right
                             fillMode: Image.PreserveAspectFit
                             smooth: true
                             visible: true
                         }
-                        Image {
+
+
+                        /*Image {
                             id: tplogo
                             asynchronous: true
                             height: game ? (((game.assets.logo === "") && (game.assets.screenshot === "")) ? (parent.height/4)*3 : parent.height/2) : (parent.height/4)*3
@@ -282,8 +359,13 @@ FocusScope {
                             fillMode: Image.PreserveAspectFit
                             smooth: true
                             visible: true
-                        }
+                        }*/
                     }
+
+                    /*Item {
+                        width: parent.width
+                        height: vpx(30)
+                    }*/
                 }
 
                 // to clean/delete "bottle" selected
