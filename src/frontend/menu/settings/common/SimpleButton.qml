@@ -22,7 +22,9 @@ FocusScope {
     id: root
 
     property alias label: label.text
+    property alias labelFormat: label.textFormat
     property alias note: sublabel.text
+    property alias noteFormat: sublabel.textFormat
     property alias pointerIcon: pointerConfigs.visible
     property bool showUnderline: true
     property bool selectButton: false

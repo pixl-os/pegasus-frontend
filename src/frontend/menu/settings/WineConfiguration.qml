@@ -155,7 +155,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Wine 'Bottle' configuration") + api.tr
                     first: true
-                    symbol: "\uf26f"
+                    symbol: "\uf2f2"
                     symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
@@ -188,8 +188,15 @@ FocusScope {
                     }
 
                     onInternalvalueChanged: {
-                        console.log("onSelect - internalvalue: ", internalvalue);
-                        if(internalvalue !== "") wineInfoTimer.start();
+                        console.log("onSelect - internalvalue: '", internalvalue, "'");
+                        if(internalvalue !== ""){
+                            wineInfoTimer.triggeredOnStart = true;
+                            wineInfoTimer.start();
+                        }
+                        else{
+                            //reset color
+                            optWineBottle.color = themeColor.textValue;
+                        }
                     }
 
                     onSelect: {
@@ -221,25 +228,28 @@ FocusScope {
                     showUnderline: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
-                    property string bottle_name: optWineBottle.internalvalue.split('/').pop()
-                    property string bottle_path: optWineBottle.internalvalue
+                    property string bottle_name: "" //optWineBottle.internalvalue.split('/').pop()
+                    property string bottle_path: "" //optWineBottle.internalvalue
                     property string bottle_size : ""
-                    property string bottle_engine : bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
+                    property string bottle_engine : "" //bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
                     property string bottle_appimage : ""
                     property string bottle_arch : "" //win32/win64/wow64
                     property string bottle_winver : "" //win95 to win11
                     property string bottle_env : ""
 
-                    label: qsTr("Information about selected bottle:")
-                    note:  qsTr("Size: ") + api.tr + bottle_size + "\n" +
-                           ((bottle_engine !== "" && bottle_appimage === "") ?   (qsTr("Engine used: ") + api.tr + bottle_engine + "\n") : "") +
-                           (bottle_appimage !== "" ? (qsTr("AppImage used: ") + api.tr + bottle_appimage + "\n") : "")  +
-                           qsTr("Architecture: ") + api.tr + bottle_arch + "\n" +
-                           qsTr("Windows version: ") + api.tr + bottle_winver + "\n" +
-                           qsTr("Environment: ") + api.tr + "\n" + bottle_env
-
+                    labelFormat: Text.RichText
+                    label: "<u>" + qsTr("Information about selected bottle:") + "</u>"
+                    // Set the format to RichText
+                    noteFormat: Text.RichText
+                    note:  "<i>" + qsTr("Size") + "</i>: " + api.tr + "<b>" + bottle_size + "</b>" + "<br>" +
+                           ((bottle_engine !== "" && bottle_appimage === "") ?   ("<i>" + qsTr("Engine used") + "</i>: " + api.tr + "<b>" + bottle_engine + "</b>" + "<br>") : "") +
+                           (bottle_appimage !== "" ? ("<i>" + qsTr("AppImage used") + "</i>: " + api.tr + "<b>" + bottle_appimage + "</b>" + "<br>") : "")  +
+                           "<i>" + qsTr("Architecture") + "</i>: " + api.tr + "<b>" + bottle_arch + "</b>" + "<br>" +
+                           "<i>" + qsTr("Windows version") + "</i>: " + api.tr + "<b>" + bottle_winver + "</b>" + "<br>" +
+                           "<i>" + qsTr("Environment") + "</i>: " + api.tr + "<br>" + "<b>" + bottle_env + "</b>"
 
                     Component.onCompleted: {
+                        wineInfoTimer.triggeredOnStart = false;
                         wineInfoTimer.start();
                     }
                     pointerIcon: false
@@ -252,6 +262,10 @@ FocusScope {
                         running: false
                         triggeredOnStart: false
                         onTriggered: {
+                            //to update
+                            optBottleInfo.bottle_name = optWineBottle.internalvalue.split('/').pop();
+                            optBottleInfo.bottle_path = optWineBottle.internalvalue;
+                            optBottleInfo.bottle_engine = optBottleInfo.bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
                             //to calculate size
                             optBottleInfo.bottle_size = "";
                             api.internal.system.runAsync("du -sh \"" + optBottleInfo.bottle_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.bottle_name + ".size\"", "thread");
@@ -266,13 +280,21 @@ FocusScope {
                             //to get env details
                             //xargs -n 10 < winetricks.log
                             //keep only 2 lines for the moment
-                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 2") + "...";
-                            //check if AppImage exists
+                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4") + "...";
+                            //reset color
+                            optWineBottle.color = themeColor.textValue;
+                            //check if AppImage file exists
                             if(api.internal.system.run("test -f \"/usr/wine/" + optBottleInfo.bottle_engine + ".AppImage\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
                                 optBottleInfo.bottle_appimage = optBottleInfo.bottle_engine + ".AppImage";
                             }
                             else{
                                 optBottleInfo.bottle_appimage = "";
+                                //check if engine "directory" exists
+                                console.log("test -d \"/usr/wine/" + optBottleInfo.bottle_engine + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'")
+                                if(api.internal.system.run("test -d \"/usr/wine/" + optBottleInfo.bottle_engine + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") !== "true"){
+                                    optBottleInfo.bottle_engine = optBottleInfo.bottle_engine + " " + "<font color='#FF0000'>" + qsTr("(missing - need to re-install before to use this prefix)") + api.tr + "</font>";
+                                    optWineBottle.color = "red";
+                                }
                             }
                         }
                     }
@@ -346,26 +368,7 @@ FocusScope {
                             smooth: true
                             visible: true
                         }
-
-
-                        /*Image {
-                            id: tplogo
-                            asynchronous: true
-                            height: game ? (((game.assets.logo === "") && (game.assets.screenshot === "")) ? (parent.height/4)*3 : parent.height/2) : (parent.height/4)*3
-                            width: background.width
-                            source: game ? (game.assets.logo === "" ? teknoParrotIcon(game) : "") : ""
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            fillMode: Image.PreserveAspectFit
-                            smooth: true
-                            visible: true
-                        }*/
                     }
-
-                    /*Item {
-                        width: parent.width
-                        height: vpx(30)
-                    }*/
                 }
 
                 // to clean/delete "bottle" selected
@@ -639,7 +642,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Wine 'Renderer' configuration") + api.tr
                     first: true
-                    symbol: "\uf26f"
+                    symbol: "\uf2dd"
                     symbolFontFamily: globalFonts.ion
                 }
                 ToggleOption {
@@ -803,7 +806,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Wine 'Software' configuration") + api.tr
                     first: true
-                    symbol: "\uf26f"
+                    symbol: "\uf22d"
                     symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
@@ -870,7 +873,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Wine 'Performance' configuration") + api.tr
                     first: true
-                    symbol: "\uf26f"
+                    symbol: "\uf37f"
                     symbolFontFamily: globalFonts.ion
                 }
                 ToggleOption {
@@ -961,7 +964,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Wine 'Advanced' functions") + api.tr
                     first: true
-                    symbol: "\uf26f"
+                    symbol: "\uf35d"
                     symbolFontFamily: globalFonts.ion
                 }
 
@@ -1046,7 +1049,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Wine 'Developer' configuration") + api.tr
                     first: true
-                    symbol: "\uf26f"
+                    symbol: "\uf2ce"
                     symbolFontFamily: globalFonts.ion
                 }
                 MulticheckOption {
@@ -1255,7 +1258,6 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.down: optWineRenderer
                 }
 
                 Item {
