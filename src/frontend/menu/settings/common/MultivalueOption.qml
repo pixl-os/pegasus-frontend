@@ -36,6 +36,7 @@ FocusScope {
     property int count : 0
 
     property alias font: valueText.font.family
+    property alias color: valueText.color
     property int fontSize: vpx(22)
     property int horizontalPadding: vpx(30)
 
