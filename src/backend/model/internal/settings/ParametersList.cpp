@@ -540,7 +540,7 @@ QStringList GetParametersList(QString Parameter)
                 if (QFile::exists(relativedir)){
                     //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
                     ListOfInternalValue.append(dir);
-                    ListOfValue.append(dir.replace("/recalbox/.","").replace("/",""));
+                    ListOfValue.append(dir.replace("/recalbox/.","").replace("/","").replace("__"," / "));
                 }
             }
             saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottle");
@@ -553,10 +553,13 @@ QStringList GetParametersList(QString Parameter)
         // Filter orginal list
         ListOfInternalValue = ListOfInternalValue.filter("." + emulator +  "_", Qt::CaseInsensitive);
         ListOfValue = ListOfValue.filter(emulator +  "_", Qt::CaseInsensitive);
-        ListOfValue.replaceInStrings(emulator +  "_", "");
+        ListOfValue.replaceInStrings(emulator +  "_", "(" + emulator + ") ");
 
         // add auto in list to let default value from configgen if needed
-        ListOfValue.append(QObject::tr("New bottle"));
+        // test command: df -kP /recalbox | awk 'NR==2 {printf "(free space: %.0fGo)", $4/1024/1024}'
+        QString freeSpaceCommand = "df -kP /recalbox | awk 'NR==2 {printf \"%.0fGo\", $4/1024/1024}'";
+        QString freeSpaceInfo = GetCommandOutput(freeSpaceCommand.toUtf8().constData());
+        ListOfValue.append(QObject::tr("New bottle") + " (" + QObject::tr("free space") + ": " + freeSpaceInfo + ")");
         QString empty = "";
         ListOfInternalValue.append(empty);
 
