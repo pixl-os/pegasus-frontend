@@ -464,6 +464,63 @@ QStringList GetParametersList(QString Parameter)
                             << "Magenta" << "Purple" << "Steel" << "Stone";
     }
     //******************************************** For Proton *************************************************
+    else if (Parameter.endsWith(".protonbottle", Qt::CaseInsensitive) == true)
+    {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.protonbottle");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.protonbottle");
+
+        //Log::debug(LOGMSG("ListOfValue.empty: %1").arg(ListOfValue.empty()));
+
+        if(ListOfValue.empty()){
+            //read subdirectories in /recalbox/ to take all wine bottles
+            QString targetPath = "/recalbox/";
+            QStringList nameFilters;
+            nameFilters << ".*_ge-proton*" << ".*_umu-proton*"; // The wildcard '*' will match any characters after ".*-proton*"
+            // Changed flag: removed QDirIterator::Subdirectories
+            QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden);
+            while (it.hasNext()) {
+                QString dir = it.next();
+                QString dirName = it.fileName();
+                Log::debug(LOGMSG("dirName: %1").arg(dirName));
+                // Condition d'exclusion : on ignore si le nom finit par "_dlls"
+                if (dirName.endsWith("_dlls")) {
+                    continue; // On passe au suivant sans rien faire
+                }
+                //it should contain /bottle.done directory if it is a valid wine bottle installed in pixL
+                QString relativedir = dir + "/bottle.done";
+                Log::debug(LOGMSG("relativedir: %1").arg(relativedir));
+                if (QFile::exists(relativedir)){
+                    //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
+                    ListOfInternalValue.append(dir);
+                    ListOfValue.append(dir.replace("/recalbox/.","").replace("/","").replace("__"," / "));
+                }
+            }
+            saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.protonbottle");
+            saveQStringListToGlobalMap(ListOfValue,"ListOfValue.protonbottle");
+        }
+
+        //filter to return only for bottle linked to selected emulator
+        QString emulator = Parameter.section('.', 0, 0);
+
+        // Filter orginal list
+        ListOfInternalValue = ListOfInternalValue.filter("." + emulator +  "_", Qt::CaseInsensitive);
+        ListOfValue = ListOfValue.filter(emulator +  "_", Qt::CaseInsensitive);
+        ListOfValue.replaceInStrings(emulator +  "_", "(" + emulator + ") ");
+
+        // add auto in list to let default value from configgen if needed
+        // test command: df -kP /recalbox | awk 'NR==2 {printf "(free space: %.0fGo)", $4/1024/1024}'
+        QString freeSpaceCommand = "df -kP /recalbox | awk 'NR==2 {printf \"%.0fGo\", $4/1024/1024}'";
+        QString freeSpaceInfo = GetCommandOutput(freeSpaceCommand.toUtf8().constData());
+        ListOfValue.append(QObject::tr("New bottle") + " (" + QObject::tr("free space") + ": " + freeSpaceInfo + ")");
+        QString empty = "";
+        ListOfInternalValue.append(empty);
+
+        Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
+        Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
+
+        return ListOfValue;
+    }
     else if (Parameter.endsWith(".proton", Qt::CaseInsensitive) == true)
     {
         // load data from QSettings as cache (tip to speed up in menu browsing)
