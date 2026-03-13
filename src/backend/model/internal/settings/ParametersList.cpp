@@ -543,15 +543,16 @@ QStringList GetParametersList(QString Parameter)
             //it should contain /bin directory if it is a valid wine installed in pixL
             QString fullpath = dir + "/proton";
             QString protonname = "";
-            QString wineversion = "";
-          //Log::debug(LOGMSG("File to find in Subdir : '%1'").arg(fullpath));
+            //Log::debug(LOGMSG("File to find in Subdir : '%1'").arg(fullpath));
             //check if file proton exists to detect a valid proton directory
             if (QFile::exists(fullpath)) {
                 // use name of directory from /usr/win for recalbox.conf
                 ListOfInternalValue.append(fullpath);
                 protonname = fullpath.replace("/usr/proton/","");
                 protonname = protonname.replace("/proton","");
-                //check if wineserver exists to get version (using wineserver --version command)
+                //depreacated / stop to add version in deplayed name now
+                /*//check if wineserver exists to get version (using wineserver --version command)
+                QString wineversion = "";
                 QString Command = dir + "/files/bin/wineserver";
                 QStringList Arguments = {"--version"};
                 if (QFile::exists(Command)){
@@ -560,7 +561,8 @@ QStringList GetParametersList(QString Parameter)
                     wineversion = wineversion.toLower().trimmed();
                 }
                 // remove file extension on menu
-                ListOfValue.append(protonname + " (" + wineversion + ")");
+                ListOfValue.append(protonname + " (" + wineversion + ")");*/
+                ListOfValue.append(protonname);
             }
         }
         saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.proton");
@@ -649,6 +651,9 @@ QStringList GetParametersList(QString Parameter)
             //Log::debug(LOGMSG("Directory found in Subdir : '%1'").arg(relativedir));
             QString fulldir;
             QString winename;
+
+            //depreacated / stop to add version in deplayed name now
+            /*
             QString wineversion = "";
             //check if wineserver exists to get version (using wineserver --version command)
             QString Command = relativedir + "/wineserver";
@@ -657,12 +662,13 @@ QStringList GetParametersList(QString Parameter)
                 wineversion = GetCommandOutputQtBlocking(Command, Arguments, true, true);
                 //to keep version as "9.22", "8.0", etc...
                 wineversion = wineversion.toLower().replace("wine","").trimmed();
-            }
-            //check if wine exists to get archi (using wine --version command)
-            Command = relativedir + "/wine";
+            }*/
+
+            //check if wine exists to get archi (checking binary now)
             bool wineIs32Bit = false;
-            if (QFile::exists(Command)){
-                BinaryArch arch = checkBinaryArchitecture(Command);
+            if (QFile::exists(relativedir + "/wine")){
+                fulldir = relativedir + "/wine";
+                BinaryArch arch = checkBinaryArchitecture(fulldir);
                 if (arch == BinaryArch::Elf64) {
                     wineIs32Bit = false;
                 } else if (arch == BinaryArch::Elf32) {
@@ -675,8 +681,11 @@ QStringList GetParametersList(QString Parameter)
                 // use name of directory from /usr/win for recalbox.conf
                 ListOfInternalValue.append(fulldir);
                 // remove file extension on menu
-                if(wineIs32Bit) ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
-                else ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
+                //depreacated / stop to add version in deplayed name now
+                /*if(wineIs32Bit) ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
+                else ListOfValue.append(winename + " "  + wineversion + " (64 bit)");*/
+                if(wineIs32Bit) ListOfValue.append(winename + " (32 bit)");
+                else ListOfValue.append(winename + " (64 bit)");
             }
             if (QFile::exists(relativedir + "/wine32")){
                 fulldir = relativedir + "/wine32";
@@ -686,7 +695,7 @@ QStringList GetParametersList(QString Parameter)
                 // use name of directory from /usr/win for recalbox.conf
                 ListOfInternalValue.append(fulldir);
                 // remove file extension on menu
-                ListOfValue.append(winename + " "  + wineversion + " (32 bit)");
+                ListOfValue.append(winename + " (32 bit)");
             }
             if (wineIs32Bit && QFile::exists(relativedir + "/wine64")){
                 fulldir = relativedir + "/wine64";
@@ -696,7 +705,7 @@ QStringList GetParametersList(QString Parameter)
                 // use name of directory from /usr/win for recalbox.conf
                 ListOfInternalValue.append(fulldir);
                 // remove file extension on menu
-                ListOfValue.append(winename + " "  + wineversion + " (64 bit)");
+                ListOfValue.append(winename + " (64 bit)");
             }
         }
 
