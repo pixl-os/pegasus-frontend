@@ -182,5 +182,6 @@
         <file>assets/lutris.png</file>
         <file>assets/model2emu.png</file>
         <file>assets/demul.png</file>
+        <file>assets/owc.png</file>
     </qresource>
 </RCC>
