@@ -316,13 +316,13 @@ FocusScope {
 
                     Rectangle {
                         color: "transparent"
-                        height: vpx(160)
+                        height: vpx(140)
                         width: parseInt(parent.width/5)
                         anchors.top: parent.top
                         anchors.topMargin: vpx(15)
                         anchors.left: parent.right
                         //anchors.leftMargin: vpx(15)
-                        anchors.right: optProtonbottle.right
+                        //anchors.right: optProtonbottle.right
                         //anchors.rightMargin: vpx(15)
 
 
@@ -332,14 +332,14 @@ FocusScope {
                             id: enginelogo
                             asynchronous: true
                             height: parent.height
-                            //width: parent.width
+                            width: parent.width
                             source: {
-                                if(optBottleInfo.bottle_name.includes("lutris"))
-                                    return "qrc:/frontend/assets/lutris.png" //Wine from GloriousEggroll
-                                if(optBottleInfo.bottle_name.includes("ge") && optBottleInfo.bottle_name.includes("proton"))
-                                    return "qrc:/frontend/assets/ge-proton.png" //Wine from GloriousEggroll
-                                if(optBottleInfo.bottle_name.includes("wine"))
-                                    return "qrc:/frontend/assets/wine.png" //Wine from Kron4ek/Vanialla/Staging/TKG
+                                // Store it in a temporary variable to avoid calling toLowerCase() multiple times
+                                let name = optBottleInfo.bottle_name.toLowerCase();
+                                if(name.includes("ge") && name.includes("proton"))
+                                    return "qrc:/frontend/assets/ge-proton.png"
+                                if(name.includes("umu") && name.includes("proton"))
+                                    return "qrc:/frontend/assets/owc.png" // umu-proton come from "Open Wine Components" repo
                                 return "";
                             }
                             //anchors.verticalCenter: parent.verticalCenter
@@ -355,7 +355,7 @@ FocusScope {
                         Image {
                             id: emulatorlogo
                             asynchronous: true
-                            height: enginelogo.height/4
+                            height: vpx(40)
                             source: {
                                 return "qrc:/frontend/assets/" + emulator + ".png"
                             }

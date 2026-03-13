@@ -317,13 +317,13 @@ FocusScope {
 
                     Rectangle {
                         color: "transparent"
-                        height: vpx(160)
+                        height: vpx(140)
                         width: parseInt(parent.width/5)
                         anchors.top: parent.top
                         anchors.topMargin: vpx(15)
                         anchors.left: parent.right
                         //anchors.leftMargin: vpx(15)
-                        anchors.right: optWineBottle.right
+                        //anchors.right: optWineBottle.right
                         //anchors.rightMargin: vpx(15)
 
 
@@ -333,13 +333,15 @@ FocusScope {
                             id: enginelogo
                             asynchronous: true
                             height: parent.height
-                            //width: parent.width
+                            width: parent.width
                             source: {
-                                if(optBottleInfo.bottle_name.includes("lutris"))
+                                // Store it in a temporary variable to avoid calling toLowerCase() multiple times
+                                let name = optBottleInfo.bottle_name.toLowerCase();
+                                if(name.includes("lutris"))
                                     return "qrc:/frontend/assets/lutris.png" //Wine from GloriousEggroll
-                                if(optBottleInfo.bottle_name.includes("ge") && optBottleInfo.bottle_name.includes("proton"))
+                                if(name.includes("ge") && name.includes("proton"))
                                     return "qrc:/frontend/assets/ge-proton.png" //Wine from GloriousEggroll
-                                if(optBottleInfo.bottle_name.includes("wine"))
+                                if(name.includes("wine"))
                                     return "qrc:/frontend/assets/wine.png" //Wine from Kron4ek/Vanialla/Staging/TKG
                                 return "";
                             }
@@ -347,7 +349,7 @@ FocusScope {
                             //anchors.horizontalCenter: parent.horizontalCenter
 
                             // Centering is still fine, it will center the "natural" sized image
-                            anchors.centerIn: parent
+                            //anchors.centerIn: parent
                             fillMode: Image.PreserveAspectFit
                             smooth: true
                             visible: true
@@ -356,7 +358,7 @@ FocusScope {
                         Image {
                             id: emulatorlogo
                             asynchronous: true
-                            height: enginelogo.height/4
+                            height: vpx(40)
                             source: {
                                 return "qrc:/frontend/assets/" + emulator + ".png"
                             }
