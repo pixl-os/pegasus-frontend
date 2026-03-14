@@ -52,10 +52,15 @@ public:
             const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
             // check if parameter is activated to hide this type of debug log
             if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
-                qDebug().noquote().nospace() << msg;
+                // Manually get the timestamp
+                QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz");
+
+                // Prepend it to the message
+                qDebug().noquote().nospace() << timestamp << " " << msg;
             }
         }
     }
+
     void info(const QString& msg) override {
         qInfo().noquote().nospace() << msg;
     }
@@ -81,7 +86,7 @@ public:
             const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
             // check if parameter is activated to hide this type of debug log
             if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
-                colorlog(m_pre_debug, m_marker_debug, msg);
+                colorlog(m_pre_debug, m_marker_debug, msg, true);
             }
         }
     }
@@ -120,15 +125,19 @@ private:
     //static constexpr auto m_fmt_reset = "\x1b[0m";
 #endif
 
-    void colorlog(const char* const prefix, const char* const marker, const QString& msg) {
+    void colorlog(const char* const prefix, const char* const marker, const QString& msg, bool includeMS = false) {
         try{
             //crash identified just after 06/03/20224
             //try/catch added to avoid it
             QDateTime dateTime = QDateTime::currentDateTime();
             if(dateTime.isValid()){
-                QString isoDate = dateTime.toString(Qt::ISODate);
-                m_stream << prefix << QChar(' ') << isoDate << QChar(' ')
+                // Pick the format based on the boolean parameter
+                QString format = includeMS ? "yyyy-MM-dd HH:mm:ss.zzz" : "yyyy-MM-dd HH:mm:ss";
+                QString timestamp = dateTime.toString(format);
+
+                m_stream << prefix << QChar(' ') << timestamp << QChar(' ')
                          << marker << QChar(' ') << msg << Qt::endl;
+
             }
         } catch ( const std::exception & Exp )
         {
@@ -163,7 +172,7 @@ public:
             const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
             // check if parameter is activated to hide this type of debug log
             if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
-                datelog(m_marker_debug, msg);
+                datelog(m_marker_debug, msg, true);
             }
         }
     }
@@ -205,20 +214,22 @@ private:
         return QString::fromStdString(folder.ToString());
     }
 
-    void datelog(const char* const marker, const QString& msg) {
-        try{
-            //crash identified here 10//03/2024 03h49
-            //try/catch added to avoid it
+    void datelog(const char* const marker, const QString& msg, bool includeMS = false) {
+        try {
             QDateTime dateTime = QDateTime::currentDateTime();
-            if(dateTime.isValid()){
-                QString isoDate = dateTime.toString(Qt::ISODate);
-                m_stream << isoDate << QChar(' ')
-                     << marker << QChar(' ')
-                     << msg << QChar('\n');
-                }
-        } catch ( const std::exception & Exp )
-        {
-            std::cout << "Exception catched : " << Exp.what() << std::endl;
+
+            if (dateTime.isValid()) {
+                // Pick the format based on the boolean parameter
+                QString format = includeMS ? "yyyy-MM-dd HH:mm:ss.zzz" : "yyyy-MM-dd HH:mm:ss";
+                QString timestamp = dateTime.toString(format);
+
+                m_stream << timestamp << QChar(' ')
+                         << marker << QChar(' ')
+                         << msg << Qt::endl;
+            }
+        } catch (const std::exception &exp) {
+            // Note: std::cerr is safer than std::cout for error reporting
+            std::cerr << "Exception caught in datelog: " << exp.what() << std::endl;
         }
     }
 };
