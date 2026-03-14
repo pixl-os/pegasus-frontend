@@ -1338,15 +1338,21 @@ FocusScope {
             }
             else if (confirmDialog.callerid === "btnManageProtonEmbedded"){
                 var userDirectory = "";
+                var initUserDirectory = "";
                 if (!isDebugEnv()){
                     //provide write access
                     api.internal.system.run("mount -o remount,rw /");
                     userDirectory = "/recalbox/share/system/";
+                    initUserDirectory = "/recalbox/share_init/system/";
                 }
                 else{
                     userDirectory = "~/";
+                    initUserDirectory = "/recalbox/share_init/system/";
                 }
-                //update protonUp-QT conf to select the good installation (proton or wine)
+                //always reset configuration file from share_init to be well configured
+                api.internal.system.run("cp " + initUserDirectory + ".config/pupgui/config.ini" + userDirectory + ".config/pupgui/config.ini")
+
+                //update ProtonUp-Qt conf to select the good installation (proton or wine)
                 api.internal.system.run("sed -i 's|^installdir = .*|installdir = /usr/proton/|' /recalbox/share/system/.config/pupgui/config.ini");
                 //update color for pixL Theme
                 // main:               background,
