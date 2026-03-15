@@ -311,11 +311,11 @@ FocusScope {
                             directorySizeTimer.start();
                             //to get architecture
                             //example: sed -n 's/^#arch=//p' user.reg
-                            optBottleInfo.bottle_arch = api.internal.system.run("sed -n 's/^#arch=//p' \"" + optBottleInfo.bottle_path + "/user.reg\" | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_arch = api.internal.system.run("sed -n 's/^#arch=//p' \"" + optBottleInfo.bottle_path + "/pfx/user.reg\" | tr -d '\\n' | tr -d '\\r'");
                             //to get winver
-                            optBottleInfo.bottle_winver = api.internal.system.run("grep '\"ProductName\"' " + optBottleInfo.bottle_path + "/system.reg | grep 'Windows [0-9]' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.bottle_winver = optBottleInfo.bottle_winver + " / " + api.internal.system.run("grep '\"ProductName\"=\"Windows' " + optBottleInfo.bottle_path + "/system.reg -B10 | grep -i '\"DisplayVersion\"' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.bottle_winver = optBottleInfo.bottle_winver + " / " + api.internal.system.run("grep '\"ProductName\"=\"Windows' " + optBottleInfo.bottle_path + "/system.reg -B10 | grep -i '\"CurrentVersion\"' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_winver = api.internal.system.run("grep '\"ProductName\"' " + optBottleInfo.bottle_path + "/pfx/system.reg | grep 'Windows [0-9]' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_winver = optBottleInfo.bottle_winver + " / " + api.internal.system.run("grep '\"ProductName\"=\"Windows' " + optBottleInfo.bottle_path + "/pfx/system.reg -B10 | grep -i '\"DisplayVersion\"' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_winver = optBottleInfo.bottle_winver + " / " + api.internal.system.run("grep '\"ProductName\"=\"Windows' " + optBottleInfo.bottle_path + "/pfx/system.reg -B10 | grep -i '\"CurrentVersion\"' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
                             //to get env details
                             //xargs -n 10 < winetricks.log
                             //keep only 2 lines for the moment
