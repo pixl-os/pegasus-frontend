@@ -1375,7 +1375,8 @@ FocusScope {
                 optProtonBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonBottle.parameterName);
                 optProtonBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optProtonBottle.count = api.internal.recalbox.parameterslist.count;
-
+                //to manage focus
+                content.focus = true;
             }
             //remove emulator bottles
             else if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
@@ -1400,6 +1401,8 @@ FocusScope {
                 optProtonBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonBottle.parameterName);
                 optProtonBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optProtonBottle.count = api.internal.recalbox.parameterslist.count;
+                //to manage focus
+                content.focus = true;
                 optProtonBottle.focus = false;
                 optProtonBottle.focus = true;
                 optProtonBottle.forceActiveFocus();
@@ -1446,6 +1449,8 @@ FocusScope {
                 }
                 //force refreash of list of WINE engine/appimage if needed
                 //TO DO
+                //to manage focus
+                content.focus = true;
             }
 	    //RFU
             /*else{
@@ -1487,7 +1492,6 @@ FocusScope {
                     api.internal.system.run("sleep 5");
                 }
             }*/
-            content.focus = true;
         }
         function onCancel() {
             //do nothing
