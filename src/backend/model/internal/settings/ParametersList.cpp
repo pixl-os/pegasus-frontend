@@ -24,6 +24,9 @@
 #include <QFile>
 #include <QDataStream>
 
+#include <QFileInfo>
+#include <QDateTime>
+
 extern QMap<QString, QVariant> globalInMemorySettings; // Declare it as extern
 
 enum class BinaryArch {
@@ -493,7 +496,17 @@ QStringList GetParametersList(QString Parameter)
                 if (QFile::exists(relativedir)){
                     //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
                     ListOfInternalValue.append(dir);
-                    ListOfValue.append(dir.replace("/recalbox/.","").replace("/","").replace("__","/"));
+                    // Attempt to get the creation date (birth time)
+                    QFileInfo dirInfo(dir);
+                    QDateTime creationTime = dirInfo.birthTime();
+                    // Fallback: Some file systems (like older Linux ext3) don't store birthTime.
+                    // If birthTime is invalid, we usually check the last metadata change.
+                    if (!creationTime.isValid()) {
+                        creationTime = dirInfo.metadataChangeTime();
+                    }
+                    ListOfValue.append(dir.replace("/recalbox/.","")
+                                           .replace("/","").split("__")[0]
+                                       + " (" + creationTime.toString("yyyy-MM-dd hh:mm") + ")"); //put a date/time for distinguish
                 }
             }
             //saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.protonbottle");
@@ -506,7 +519,9 @@ QStringList GetParametersList(QString Parameter)
         // Filter orginal list
         ListOfInternalValue = ListOfInternalValue.filter("." + emulator +  "_", Qt::CaseInsensitive);
         ListOfValue = ListOfValue.filter(emulator +  "_", Qt::CaseInsensitive);
-        ListOfValue.replaceInStrings(emulator +  "_", "(" + emulator + ") ");
+        //depreacated (remove emulator for the moment to reduce size of display)
+        //ListOfValue.replaceInStrings(emulator +  "_", "(" + emulator + ") ");
+        ListOfValue.replaceInStrings(emulator +  "_", "");
 
         // add auto in list to let default value from configgen if needed
         // test command: df -kP /recalbox | awk 'NR==2 {printf "(free space: %.0fGo)", $4/1024/1024}'
@@ -600,12 +615,22 @@ QStringList GetParametersList(QString Parameter)
                 if (QFile::exists(relativedir)){
                     //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
                     ListOfInternalValue.append(dir);
+                    // Attempt to get the creation date (birth time)
+                    QFileInfo dirInfo(dir);
+                    QDateTime creationTime = dirInfo.birthTime();
+                    // Fallback: Some file systems (like older Linux ext3) don't store birthTime.
+                    // If birthTime is invalid, we usually check the last metadata change.
+                    if (!creationTime.isValid()) {
+                        creationTime = dirInfo.metadataChangeTime();
+                    }
                     ListOfValue.append(dir.replace("/recalbox/.","")
-                                          .replace("/","")
-                                          .replace("__","/")
-                                          .replace("/wine32","") //remove wine binary info to reduce size on display
-                                          .replace("/wine64","") //but it's needed to ahve it in bottle name to discriminate better at launch
-                                          .replace("/wine",""));
+                                           .replace("/","").split("__")[0]
+                                           + " (" + creationTime.toString("yyyy-MM-dd hh:mm") + ")"); //put a date/time for distinguish
+                                           //to remove details already in info
+                                           //.replace("__","/")
+                                           //.replace("/wine32"," wine32")
+                                           //.replace("/wine64"," wine64")
+                                           //.replace("/wine"," wine"));
                 }
             }
             //saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottle");
@@ -618,7 +643,9 @@ QStringList GetParametersList(QString Parameter)
         // Filter orginal list
         ListOfInternalValue = ListOfInternalValue.filter("." + emulator +  "_", Qt::CaseInsensitive);
         ListOfValue = ListOfValue.filter(emulator +  "_", Qt::CaseInsensitive);
-        ListOfValue.replaceInStrings(emulator +  "_", "(" + emulator + ") ");
+        //depreacated (remove emulator for the moment to reduce size of display)
+        //ListOfValue.replaceInStrings(emulator +  "_", "(" + emulator + ") ");
+        ListOfValue.replaceInStrings(emulator +  "_", "");
 
         // add auto in list to let default value from configgen if needed
         // test command: df -kP /recalbox | awk 'NR==2 {printf "(free space: %.0fGo)", $4/1024/1024}'
