@@ -186,7 +186,7 @@ FocusScope {
                     symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
-                    id: optProtonbottle
+                    id: optProtonBottle
 
                     //property to manage parameter name
                     property string parameterName : prefix + ".protonbottle"
@@ -215,7 +215,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optProtonbottle;
+                        parameterslistBox.callerid = optProtonBottle;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -234,7 +234,7 @@ FocusScope {
                         else{
                             optBottleInfo.visible = false;
                             //reset color
-                            optProtonbottle.color = themeColor.textValue;
+                            optProtonBottle.color = themeColor.textValue;
                         }
                     }
 
@@ -267,8 +267,8 @@ FocusScope {
                     showUnderline: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
-                    property string bottle_name: "" //optProtonbottle.internalvalue.split('/').pop()
-                    property string bottle_path: "" //optProtonbottle.internalvalue
+                    property string bottle_name: "" //optProtonBottle.internalvalue.split('/').pop()
+                    property string bottle_path: "" //optProtonBottle.internalvalue
                     property string bottle_size : ""
                     property string bottle_engine : "" //bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
                     property string bottle_appimage : ""
@@ -302,8 +302,8 @@ FocusScope {
                         triggeredOnStart: false
                         onTriggered: {
                             //to update
-                            optBottleInfo.bottle_name = optProtonbottle.internalvalue.split('/').pop();
-                            optBottleInfo.bottle_path = optProtonbottle.internalvalue;
+                            optBottleInfo.bottle_name = optProtonBottle.internalvalue.split('/').pop();
+                            optBottleInfo.bottle_path = optProtonBottle.internalvalue;
                             optBottleInfo.bottle_engine = optBottleInfo.bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
                             //to calculate size
                             optBottleInfo.bottle_size = "";
@@ -321,7 +321,7 @@ FocusScope {
                             //keep only 2 lines for the moment
                             optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4") + "...";
                             //reset color
-                            optProtonbottle.color = themeColor.textValue;
+                            optProtonBottle.color = themeColor.textValue;
                             //check if AppImage file exists
                             if(api.internal.system.run("test -f \"/usr/proton/" + optBottleInfo.bottle_engine + ".AppImage\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
                                 optBottleInfo.bottle_appimage = optBottleInfo.bottle_engine + ".AppImage";
@@ -332,7 +332,7 @@ FocusScope {
                                 console.log("test -d \"/usr/wine/" + optBottleInfo.bottle_engine + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'")
                                 if(api.internal.system.run("test -d \"/usr/proton/" + optBottleInfo.bottle_engine + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") !== "true"){
                                     optBottleInfo.bottle_engine = optBottleInfo.bottle_engine + " " + "<font color='#FF0000'>" + qsTr("(missing - need to re-install before to use this prefix)") + api.tr + "</font>";
-                                    optProtonbottle.color = "red";
+                                    optProtonBottle.color = "red";
                                 }
                             }
                         }
@@ -362,7 +362,7 @@ FocusScope {
                         anchors.topMargin: vpx(15)
                         anchors.left: parent.right
                         //anchors.leftMargin: vpx(15)
-                        //anchors.right: optProtonbottle.right
+                        //anchors.right: optProtonBottle.right
                         //anchors.rightMargin: vpx(15)
 
 
@@ -436,7 +436,7 @@ FocusScope {
                         confirmDialog.focus = false;
                         confirmDialog.setSource("../../dialogs/Generic3ChoicesDialog.qml",
                                                 { "title": qsTr("Wine Bottle") + api.tr,
-                                                  "message": qsTr("Are you sure to delete this bottle ?\n (" + optProtonbottle.value + ")") + api.tr,
+                                                  "message": qsTr("Are you sure to delete this bottle ?\n (" + optProtonBottle.value + ")") + api.tr,
                                                   "symbol": "\uf431",
                                                   "symbolfont" : global.fonts.ion,
                                                   "firstchoice": qsTr("Yes") + api.tr,
@@ -446,7 +446,7 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    visible: optProtonbottle.internalvalue !== "" ? true : false
+                    visible: optProtonBottle.internalvalue !== "" ? true : false
                     KeyNavigation.down: optProtonEngine
                 }
 
@@ -497,7 +497,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: optProtonbottle.internalvalue === "" ? true : false
+                    visible: optProtonBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optProtonArch
                 }
 		//RFU
@@ -548,7 +548,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: optProtonbottle.internalvalue === "" ? true : false
+                    visible: optProtonBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optWineArch
                 }*/
                 MultivalueOption {
@@ -598,7 +598,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: optProtonbottle.internalvalue === "" ? true : false
+                    visible: optProtonBottle.internalvalue === "" ? true : false
                     //RFU: KeyNavigation.down: optWindowsVersion
                     KeyNavigation.down: optProtonSoftRenderer
                 }
@@ -649,7 +649,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-		    visible: optProtonbottle.internalvalue === "" ? true : false
+            visible: optProtonBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optProtonSoftRenderer
                 }*/
 		//RFU	
@@ -694,7 +694,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: optProtonbottle.internalvalue === "" ? true : false
+                    visible: optProtonBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optProtonSoftRenderer
                 }*/
 
@@ -1071,7 +1071,7 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    visible: optProtonbottle.count > 1 ? true : false
+                    visible: optProtonBottle.count > 1 ? true : false
                     KeyNavigation.down: btnManageProtonEmbedded
                 }
 
@@ -1361,20 +1361,20 @@ FocusScope {
                     api.internal.system.run('pkill -9 "/.exe"');
                     api.internal.system.run('pkill -9 wine');
                     api.internal.system.run("sleep 1.0");
-                    api.internal.system.run("rm -rf " + optProtonbottle.internalvalue);
+                    api.internal.system.run("rm -rf " + optProtonBottle.internalvalue);
 
                 }
                 else{//for dev testing
                     api.internal.system.run("sleep 1.0");
-                    api.internal.system.run("rm -rf " + optProtonbottle.internalvalue);
-                    console.log("rm -rf " + optProtonbottle.internalvalue);
+                    api.internal.system.run("rm -rf " + optProtonBottle.internalvalue);
+                    console.log("rm -rf " + optProtonBottle.internalvalue);
                 }
                 //reset parameterlist cache
-                optProtonbottle.value = api.internal.recalbox.parameterslist.currentName(optProtonbottle.parameterName + ".resetcache");
+                optProtonBottle.value = api.internal.recalbox.parameterslist.currentName(optProtonBottle.parameterName + ".resetcache");
                 //to force update of display of selected value
-                optProtonbottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonbottle.parameterName);
-                optProtonbottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                optProtonbottle.count = api.internal.recalbox.parameterslist.count;
+                optProtonBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonBottle.parameterName);
+                optProtonBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                optProtonBottle.count = api.internal.recalbox.parameterslist.count;
 
             }
             //remove emulator bottles
@@ -1395,11 +1395,12 @@ FocusScope {
                     api.internal.system.run("sleep 5");
                 }
                 //reset parameterlist cache
-                optProtonbottle.value = api.internal.recalbox.parameterslist.currentName(optProtonbottle.parameterName + ".resetcache");
+                optProtonBottle.value = api.internal.recalbox.parameterslist.currentName(optProtonBottle.parameterName + ".resetcache");
                 //to force update of display of selected value
-                optProtonbottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonbottle.parameterName);
-                optProtonbottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                optProtonbottle.count = api.internal.recalbox.parameterslist.count;
+                optProtonBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonBottle.parameterName);
+                optProtonBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                optProtonBottle.count = api.internal.recalbox.parameterslist.count;
+                optProtonBottle.focus = true;
             }
             else if (confirmDialog.callerid === "btnManageProtonEmbedded"){
                 var userDirectory = "";

@@ -467,8 +467,8 @@ QStringList GetParametersList(QString Parameter)
     else if (Parameter.endsWith(".protonbottle", Qt::CaseInsensitive) == true)
     {
         // load data from QSettings as cache (tip to speed up in menu browsing)
-        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.protonbottle");
-        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.protonbottle");
+        //ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.protonbottle");
+        //ListOfValue = loadQStringListFromGlobalMap("ListOfValue.protonbottle");
 
         //Log::debug(LOGMSG("ListOfValue.empty: %1").arg(ListOfValue.empty()));
 
@@ -496,8 +496,8 @@ QStringList GetParametersList(QString Parameter)
                     ListOfValue.append(dir.replace("/recalbox/.","").replace("/","").replace("__"," / "));
                 }
             }
-            saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.protonbottle");
-            saveQStringListToGlobalMap(ListOfValue,"ListOfValue.protonbottle");
+            //saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.protonbottle");
+            //saveQStringListToGlobalMap(ListOfValue,"ListOfValue.protonbottle");
         }
 
         //filter to return only for bottle linked to selected emulator
@@ -574,8 +574,8 @@ QStringList GetParametersList(QString Parameter)
     else if (Parameter.endsWith(".winebottle", Qt::CaseInsensitive) == true)
     {
         // load data from QSettings as cache (tip to speed up in menu browsing)
-        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.winebottle");
-        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.winebottle");
+        //ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.winebottle");
+        //ListOfValue = loadQStringListFromGlobalMap("ListOfValue.winebottle");
 
         //Log::debug(LOGMSG("ListOfValue.empty: %1").arg(ListOfValue.empty()));
 
@@ -603,8 +603,8 @@ QStringList GetParametersList(QString Parameter)
                     ListOfValue.append(dir.replace("/recalbox/.","").replace("/","").replace("__"," / "));
                 }
             }
-            saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottle");
-            saveQStringListToGlobalMap(ListOfValue,"ListOfValue.winebottle");
+            //saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottle");
+            //saveQStringListToGlobalMap(ListOfValue,"ListOfValue.winebottle");
         }
 
         //filter to return only for bottle linked to selected emulator
