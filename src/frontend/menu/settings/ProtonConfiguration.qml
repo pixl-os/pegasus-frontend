@@ -1400,7 +1400,10 @@ FocusScope {
                 optProtonBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonBottle.parameterName);
                 optProtonBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optProtonBottle.count = api.internal.recalbox.parameterslist.count;
+                optProtonBottle.focus = false;
                 optProtonBottle.focus = true;
+                optProtonBottle.forceActiveFocus();
+                optProtonBottle.underline.visible = true;
             }
             else if (confirmDialog.callerid === "btnManageProtonEmbedded"){
                 var userDirectory = "";
