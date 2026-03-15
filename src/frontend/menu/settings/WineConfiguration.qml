@@ -1373,8 +1373,10 @@ FocusScope {
                 optWineBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optWineBottle.parameterName);
                 optWineBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optWineBottle.count = api.internal.recalbox.parameterslist.count;
+                optWineBottle.focus = false;
                 optWineBottle.focus = true;
-
+                optWineBottle.forceActiveFocus();
+                optWineBottle.underline.visible = true;
             }
             //remove emulator bottles
             else if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
