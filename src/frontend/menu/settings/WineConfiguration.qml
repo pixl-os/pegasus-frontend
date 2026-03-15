@@ -287,7 +287,7 @@ FocusScope {
                            (bottle_appimage !== "" ? ("<i>" + qsTr("AppImage used") + "</i>: " + api.tr + "<b>" + bottle_appimage + "</b>" + "<br>") : "")  +
                            "<i>" + qsTr("Architecture") + "</i>: " + api.tr + "<b>" + bottle_arch + "</b>" + "<br>" +
                            "<i>" + qsTr("Windows version") + "</i>: " + api.tr + "<b>" + bottle_winver + "</b>" + "<br>" +
-                           "<i>" + qsTr("Wine binary") + "</i>: " + api.tr + "<br>" + "<b>" + bottle_wine + "</b>" +
+                           "<i>" + qsTr("Wine binary") + "</i>: " + api.tr + "<b>" + bottle_wine + "</b>" + "<br>" +
                            "<i>" + qsTr("Environment") + "</i>: " + api.tr + "<br>" + "<b>" + bottle_env + "</b>"
 
                     Component.onCompleted: {
