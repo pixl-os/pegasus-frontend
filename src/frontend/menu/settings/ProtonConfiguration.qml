@@ -103,7 +103,7 @@ FocusScope {
             onTriggered: {
                 for (var i = 0; i < contentColumn.children.length; i++) {
                     var child = contentColumn.children[i];
-                    if (child.hasOwnProperty("parameterName")) {
+                    if (child.hasOwnProperty("parameterName") && child.hasOwnProperty("visibleInFlickable")) {
                         contentColumn.checkVisibility(child);
                     }
                 }
@@ -197,13 +197,20 @@ FocusScope {
                     label: qsTr("Proton 'bottle' to use") + api.tr
                     note: qsTr("Select existing one or 'New bottle' to create one") + api.tr
 
-                    // Logic to update visibleInFlickable based on scroll position
-                    // This is less efficient as it's checked for ALL items
-                    property bool visibleInFlickable: false // Custom property to track visibility
-                    // Initial check
-                    Component.onCompleted: parent.checkVisibility(this)
-                    // check if visibility changed
-                    onVisibleChanged: parent.checkVisibility(this)
+                    //keep usual method of loading for this first list to force to be check as first one
+                    //because impact a lot the display of other parameter lists ;-)
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
+                    count: api.internal.recalbox.parameterslist.count
+
+                    // // Logic to update visibleInFlickable based on scroll position
+                    // // This is less efficient as it's checked for ALL items
+                    // property bool visibleInFlickable: false // Custom property to track visibility
+                    // // Initial check
+                    // Component.onCompleted: parent.checkVisibility(this)
+                    // // check if visibility changed
+                    // onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox

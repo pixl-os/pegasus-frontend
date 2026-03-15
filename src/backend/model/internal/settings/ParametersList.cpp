@@ -512,9 +512,10 @@ QStringList GetParametersList(QString Parameter)
         // test command: df -kP /recalbox | awk 'NR==2 {printf "(free space: %.0fGo)", $4/1024/1024}'
         QString freeSpaceCommand = "df -kP /recalbox | awk 'NR==2 {printf \"%.0fGo\", $4/1024/1024}'";
         QString freeSpaceInfo = GetCommandOutput(freeSpaceCommand.toUtf8().constData());
-        ListOfValue.append(QObject::tr("New bottle") + " (" + QObject::tr("free space") + ": " + freeSpaceInfo + ")");
+        //to put it at the beginning in all cases
+        ListOfValue.prepend(QObject::tr("New bottle") + " (" + QObject::tr("free space") + ": " + freeSpaceInfo + ")");
         QString empty = "";
-        ListOfInternalValue.append(empty);
+        ListOfInternalValue.prepend(empty);
 
         //Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
         //Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
@@ -618,9 +619,10 @@ QStringList GetParametersList(QString Parameter)
         // test command: df -kP /recalbox | awk 'NR==2 {printf "(free space: %.0fGo)", $4/1024/1024}'
         QString freeSpaceCommand = "df -kP /recalbox | awk 'NR==2 {printf \"%.0fGo\", $4/1024/1024}'";
         QString freeSpaceInfo = GetCommandOutput(freeSpaceCommand.toUtf8().constData());
-        ListOfValue.append(QObject::tr("New bottle") + " (" + QObject::tr("free space") + ": " + freeSpaceInfo + ")");
+        //to put it at the beginning in all cases
+        ListOfValue.prepend(QObject::tr("New bottle") + " (" + QObject::tr("free space") + ": " + freeSpaceInfo + ")");
         QString empty = "";
-        ListOfInternalValue.append(empty);
+        ListOfInternalValue.prepend(empty);
 
         //Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
         //Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
