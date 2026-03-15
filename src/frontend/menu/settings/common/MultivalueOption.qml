@@ -21,6 +21,9 @@ import QtQuick 2.12
 FocusScope {
     id: root
 
+    // Add this line at the top
+    readonly property bool isMultivalueOption: true
+
     property alias label: labeltext.text
     property alias note: sublabel.text
     property alias value: valueText.text

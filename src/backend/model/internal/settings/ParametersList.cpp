@@ -239,7 +239,7 @@ QStringList GetParametersListFromSystem(QString Parameter, QString SysCommand, Q
 
 QStringList GetParametersList(QString Parameter)
 {
-    Log::debug(LOGMSG("QStringList GetParametersList(%1)").arg(Parameter));
+    //Log::debug(LOGMSG("QStringList GetParametersList(%1)").arg(Parameter));
 
     QStringList ListOfValue;
 
@@ -482,14 +482,14 @@ QStringList GetParametersList(QString Parameter)
             while (it.hasNext()) {
                 QString dir = it.next();
                 QString dirName = it.fileName();
-                Log::debug(LOGMSG("dirName: %1").arg(dirName));
+                //Log::debug(LOGMSG("dirName: %1").arg(dirName));
                 // Condition d'exclusion : on ignore si le nom finit par "_dlls"
                 if (dirName.endsWith("_dlls")) {
                     continue; // On passe au suivant sans rien faire
                 }
                 //it should contain /bottle.done directory if it is a valid wine bottle installed in pixL
                 QString relativedir = dir + "/bottle.done";
-                Log::debug(LOGMSG("relativedir: %1").arg(relativedir));
+                //Log::debug(LOGMSG("relativedir: %1").arg(relativedir));
                 if (QFile::exists(relativedir)){
                     //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
                     ListOfInternalValue.append(dir);
@@ -516,8 +516,8 @@ QStringList GetParametersList(QString Parameter)
         QString empty = "";
         ListOfInternalValue.append(empty);
 
-        Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
-        Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
+        //Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
+        //Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
 
         return ListOfValue;
     }
@@ -588,14 +588,14 @@ QStringList GetParametersList(QString Parameter)
             while (it.hasNext()) {
                 QString dir = it.next();
                 QString dirName = it.fileName();
-                Log::debug(LOGMSG("dirName: %1").arg(dirName));
+                //Log::debug(LOGMSG("dirName: %1").arg(dirName));
                 // Condition d'exclusion : on ignore si le nom finit par "_dlls"
                 if (dirName.endsWith("_dlls")) {
                     continue; // On passe au suivant sans rien faire
                 }
                 //it should contain /bottle.done directory if it is a valid wine bottle installed in pixL
                 QString relativedir = dir + "/bottle.done";
-                Log::debug(LOGMSG("relativedir: %1").arg(relativedir));
+                //Log::debug(LOGMSG("relativedir: %1").arg(relativedir));
                 if (QFile::exists(relativedir)){
                     //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
                     ListOfInternalValue.append(dir);
@@ -622,8 +622,8 @@ QStringList GetParametersList(QString Parameter)
         QString empty = "";
         ListOfInternalValue.append(empty);
 
-        Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
-        Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
+        //Log::debug(LOGMSG("ListOfValue: %1").arg(ListOfValue.join(" | ")));
+        //Log::debug(LOGMSG("ListOfInternalValue: %1").arg(ListOfInternalValue.join(" | ")));
 
         return ListOfValue;
     }
@@ -2189,6 +2189,7 @@ QString ParametersList::currentName(const QString& Parameter, const QString& Int
             }
         }
     }
+    //Log::debug(LOGMSG("return m_parameterslist.at(m_current_idx).name: `%1`").arg(m_parameterslist.at(m_current_idx).name));
     return m_parameterslist.at(m_current_idx).name;
 }
 

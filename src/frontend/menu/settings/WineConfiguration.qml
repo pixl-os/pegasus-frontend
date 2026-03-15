@@ -95,6 +95,28 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
+
+        Timer {
+            id: visibilityThrottle
+            interval: 50 // Run check every 50ms during scroll
+            repeat: false
+            triggeredOnStart: false
+            onTriggered: {
+                for (var i = 0; i < contentColumn.children.length; i++) {
+                    var child = contentColumn.children[i];
+                    if (child.hasOwnProperty("parameterName")) {
+                        contentColumn.checkVisibility(child);
+                    }
+                }
+            }
+        }
+
+        // Trigger check whenever the user scrolls
+        onContentYChanged: {
+            if(!visibilityThrottle.running)
+                visibilityThrottle.start();
+        }
+
         FocusScope {
             id: content
 
@@ -116,40 +138,46 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
 
-                // Inside your delegate or item that needs to check visibility
+                // Your checkVisibility function stays here
                 function checkVisibility(item) {
-                    // Map the item's local coordinates to the Flickable's content coordinates
-                    // This gives you the item's rectangle relative to the Flickable's content.
-                    var itemXInContent = mapToItem(container.contentItem, 0, 0).x;
-                    var itemYInContent = mapToItem(container.contentItem, 0, 0).y;
-
-                    // Define the item's rectangle in the Flickable's content coordinate system
-                    var itemRectInContent = Qt.rect(itemXInContent, itemYInContent, item.width, item.height);
-
-                    // Define the Flickable's visible rectangle (its viewport)
-                    // This is relative to contentX and contentY, so it's (0,0, width, height) of the visible area
-                    // Adjust flickableRect to be in the content's coordinate system, shifted by contentX/contentY
-                    var flickableVisibleRect = Qt.rect(container.contentX, container.contentY, container.width, container.height);
-
-                    // Now, perform the intersection check manually or using helper functions if available.
-                    // The `intersects` property/method on QRectF is for C++ API.
-                    // For pure QML `Qt.rect`, you usually define an intersection logic like this:
+                    if (!item || !item.visible) return;
+                    //console.log("item.parameterName: ",item.parameterName);
+                    // mapToItem(container, ...) works because 'container' is
+                    // the visual viewport. This returns the position relative
+                    // to the top-left of the visible area on screen.
+                    var rectInFlickable = item.mapToItem(container, 0, 0);
+                    //console.log("rectInFlickable.x : ",rectInFlickable.x);
+                    //console.log("rectInFlickable.y : ",rectInFlickable.y);
+                    //console.log("container.width : ",container.width);
+                    //console.log("container.height : ",container.height);
+                    //console.log("item.width : ",item.width);
+                    //console.log("item.height : ",item.height);
 
                     var intersects =
-                        itemRectInContent.x < flickableVisibleRect.x + flickableVisibleRect.width &&
-                        itemRectInContent.x + itemRectInContent.width > flickableVisibleRect.x &&
-                        itemRectInContent.y < flickableVisibleRect.y + flickableVisibleRect.height &&
-                        itemRectInContent.y + itemRectInContent.height > flickableVisibleRect.y;
+                        rectInFlickable.x < container.width &&
+                        rectInFlickable.x + item.width > 0 &&
+                        rectInFlickable.y < container.height &&
+                        rectInFlickable.y + item.height > 0;
 
-                    var visibleInFlickable = intersects;
-                    if((item.visibleInFlickable !== visibleInFlickable) &&  (visibleInFlickable === true)){
-                        item.value = api.internal.recalbox.parameterslist.currentName(item.parameterName);
-                        item.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(item.parameterName);
-                        item.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                        item.count = api.internal.recalbox.parameterslist.count;
+                    //console.log("intersects : ",intersects);
+
+                    if (item.visibleInFlickable !== intersects) {
+                        if (intersects) {
+                            // Load data only when entering the screen
+                            if(item.isMultivalueOption){
+                                item.value = api.internal.recalbox.parameterslist.currentName(item.parameterName);
+                            }
+                            else if(item.isMulticheckOption){
+                                item.value = api.internal.recalbox.parameterslist.currentNameChecked(item.parameterName);
+                            }
+                            item.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(item.parameterName);
+                            item.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            item.count = api.internal.recalbox.parameterslist.count;
+                        }
+                        item.visibleInFlickable = intersects;
                     }
-                    item.visibleInFlickable = visibleInFlickable;
                 }
+
                 //put from here options
                 //****************************** section to manage wine version of this emulator*****************************************
                 SectionTitle {
@@ -170,10 +198,13 @@ FocusScope {
                     label: qsTr("Wine 'bottle' to use") + api.tr
                     note: qsTr("Select existing one or 'New bottle' to create one") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
-                    count: api.internal.recalbox.parameterslist.count
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -188,12 +219,14 @@ FocusScope {
                     }
 
                     onInternalvalueChanged: {
-                        console.log("onSelect - internalvalue: '", internalvalue, "'");
+                        //console.log("onSelect - internalvalue: '", internalvalue, "'");
                         if(internalvalue !== ""){
+                            optBottleInfo.visible = true;
                             wineInfoTimer.triggeredOnStart = true;
                             wineInfoTimer.start();
                         }
                         else{
+                            optBottleInfo.visible = false;
                             //reset color
                             optWineBottle.color = themeColor.textValue;
                         }
@@ -223,7 +256,7 @@ FocusScope {
                 //to display info on selected wine bottle
                 SimpleButton {
                     id: optBottleInfo
-                    visible: optWineBottle.internalvalue !== "" ? true : false
+                    visible: false
                     width: parseInt(parent.width/6)*5
                     showUnderline: false
                     wrapMode: Text.NoWrap
@@ -422,10 +455,14 @@ FocusScope {
                     label: qsTr("Wine 'engine'") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
-                    count: api.internal.recalbox.parameterslist.count
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
@@ -468,10 +505,13 @@ FocusScope {
                     label: qsTr("Wine AppImage") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
-                    count: api.internal.recalbox.parameterslist.count
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -515,10 +555,13 @@ FocusScope {
                     label: qsTr("Wine architecture") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    internalvalue: api.internal.recalbox.parameterslist.currentInternalName(parameterName)
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
-                    count: api.internal.recalbox.parameterslist.count
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -562,9 +605,13 @@ FocusScope {
                     label: qsTr("Windows version") + api.tr
                     note: qsTr("Select the one to use, keep 'AUTO' if you don't know") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex
-                    count: api.internal.recalbox.parameterslist.count
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -607,10 +654,13 @@ FocusScope {
                     label: qsTr("DLL overrides") + api.tr
                     note: qsTr("Select DLL overrides to apply (all selected by default)") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -674,9 +724,10 @@ FocusScope {
                     // Logic to update visibleInFlickable based on scroll position
                     // This is less efficient as it's checked for ALL items
                     property bool visibleInFlickable: false // Custom property to track visibility
-                    onXChanged: parent.checkVisibility(this)
                     // Initial check
                     Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -723,9 +774,10 @@ FocusScope {
                     // Logic to update visibleInFlickable based on scroll position
                     // This is less efficient as it's checked for ALL items
                     property bool visibleInFlickable: false // Custom property to track visibility
-                    onXChanged: parent.checkVisibility(this)
                     // Initial check
                     Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -770,9 +822,10 @@ FocusScope {
                     // Logic to update visibleInFlickable based on scroll position
                     // This is less efficient as it's checked for ALL items
                     property bool visibleInFlickable: false // Custom property to track visibility
-                    onXChanged: parent.checkVisibility(this)
                     // Initial check
                     Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -823,9 +876,10 @@ FocusScope {
                     // Logic to update visibleInFlickable based on scroll position
                     // This is less efficient as it's checked for ALL items
                     property bool visibleInFlickable: false // Custom property to track visibility
-                    onXChanged: parent.checkVisibility(this)
                     // Initial check
                     Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -1063,10 +1117,13 @@ FocusScope {
                     label: qsTr("Wine Debug") + api.tr
                     note: qsTr("Especially for developer/beta testers to help analysis from debug logs") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentNameChecked(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -1108,9 +1165,10 @@ FocusScope {
                     // Logic to update visibleInFlickable based on scroll position
                     // This is less efficient as it's checked for ALL items
                     property bool visibleInFlickable: false // Custom property to track visibility
-                    onXChanged: parent.checkVisibility(this)
                     // Initial check
                     Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -1143,6 +1201,7 @@ FocusScope {
                     }
                     KeyNavigation.down: btnLaunchWineCfg
                 }
+
                 //to launch wine cfg from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchWineCfg
