@@ -366,7 +366,7 @@ FocusScope {
 
                     Rectangle {
                         color: "transparent"
-                        height: vpx(140)
+                        height: vpx(150)
                         width: parseInt(parent.width/5)
                         anchors.top: parent.top
                         anchors.topMargin: vpx(15)
@@ -404,7 +404,7 @@ FocusScope {
                             visible: true
                         }
 
-                        Image {
+                        /*Image {
                             id: emulatorlogo
                             asynchronous: true
                             height: vpx(40)
@@ -418,7 +418,7 @@ FocusScope {
                             fillMode: Image.PreserveAspectFit
                             smooth: true
                             visible: true
-                        }
+                        }*/
                     }
                 }
 
