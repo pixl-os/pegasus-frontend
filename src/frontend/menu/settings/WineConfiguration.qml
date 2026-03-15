@@ -1456,7 +1456,9 @@ FocusScope {
                     api.internal.system.run("~/ProtonUp-Qt-pixL/ProtonUp-Qt-2.14.0-x86_64.AppImage");
                 }
                 //force refreash of list of WINE engine/appimage if needed
-                //TO DO
+                //reset parameterlist cache
+                optWineEngine.value = api.internal.recalbox.parameterslist.currentName(optWineEngine.parameterName + ".resetcache");
+
                 //to manage focus
                 content.focus = true;
             }
