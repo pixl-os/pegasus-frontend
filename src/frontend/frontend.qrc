@@ -183,5 +183,6 @@
         <file>assets/model2emu.png</file>
         <file>assets/demul.png</file>
         <file>assets/owc.png</file>
+        <file>assets/ge-proton-short.png</file>
     </qresource>
 </RCC>
