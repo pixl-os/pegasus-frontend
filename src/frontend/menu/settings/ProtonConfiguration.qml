@@ -377,7 +377,7 @@ FocusScope {
                                 // Store it in a temporary variable to avoid calling toLowerCase() multiple times
                                 let name = optBottleInfo.bottle_name.toLowerCase();
                                 if(name.includes("ge") && name.includes("proton"))
-                                    return "qrc:/frontend/assets/ge-proton.png"
+                                    return "qrc:/frontend/assets/ge-proton-short.png"
                                 if(name.includes("umu") && name.includes("proton"))
                                     return "qrc:/frontend/assets/owc.png" // umu-proton come from "Open Wine Components" repo
                                 return "";
