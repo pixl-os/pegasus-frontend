@@ -1373,6 +1373,9 @@ FocusScope {
                 optWineBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optWineBottle.parameterName);
                 optWineBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optWineBottle.count = api.internal.recalbox.parameterslist.count;
+
+                //to manage focus
+                content.focus = true;
                 optWineBottle.focus = false;
                 optWineBottle.focus = true;
                 optWineBottle.forceActiveFocus();
@@ -1401,6 +1404,8 @@ FocusScope {
                 optWineBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optWineBottle.parameterName);
                 optWineBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optWineBottle.count = api.internal.recalbox.parameterslist.count;
+                //to manage focus
+                content.focus = true;
             }
             else if (confirmDialog.callerid === "btnManageWineEmbedded"){
                 var userDirectory = "";
@@ -1443,6 +1448,8 @@ FocusScope {
                 }
                 //force refreash of list of WINE engine/appimage if needed
                 //TO DO
+                //to manage focus
+                content.focus = true;
             }
             else{
                 if (!isDebugEnv()){
@@ -1482,8 +1489,9 @@ FocusScope {
                 else{//for simulate and see more the spinner
                     api.internal.system.run("sleep 5");
                 }
+                //to manage focus
+                content.focus = true;
             }
-            content.focus = true;
         }
         function onCancel() {
             //do nothing
