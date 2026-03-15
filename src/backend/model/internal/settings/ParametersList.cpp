@@ -493,7 +493,7 @@ QStringList GetParametersList(QString Parameter)
                 if (QFile::exists(relativedir)){
                     //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
                     ListOfInternalValue.append(dir);
-                    ListOfValue.append(dir.replace("/recalbox/.","").replace("/","").replace("__"," / "));
+                    ListOfValue.append(dir.replace("/recalbox/.","").replace("/","").replace("__","/"));
                 }
             }
             //saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.protonbottle");
@@ -600,7 +600,12 @@ QStringList GetParametersList(QString Parameter)
                 if (QFile::exists(relativedir)){
                     //Log::debug(LOGMSG("ListOfInternalValue.append(%1)").arg(dir));
                     ListOfInternalValue.append(dir);
-                    ListOfValue.append(dir.replace("/recalbox/.","").replace("/","").replace("__"," / "));
+                    ListOfValue.append(dir.replace("/recalbox/.","")
+                                          .replace("/","")
+                                          .replace("__","/")
+                                          .replace("/wine32","") //remove wine binary info to reduce size on display
+                                          .replace("/wine64","") //but it's needed to ahve it in bottle name to discriminate better at launch
+                                          .replace("/wine",""));
                 }
             }
             //saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.winebottle");

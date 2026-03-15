@@ -273,6 +273,7 @@ FocusScope {
                     property string bottle_size : ""
                     property string bottle_engine : "" //bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
                     property string bottle_appimage : ""
+                    property string bottle_wine : "" //wine/wine32/wine64
                     property string bottle_arch : "" //win32/win64/wow64
                     property string bottle_winver : "" //win95 to win11
                     property string bottle_env : ""
@@ -286,6 +287,7 @@ FocusScope {
                            (bottle_appimage !== "" ? ("<i>" + qsTr("AppImage used") + "</i>: " + api.tr + "<b>" + bottle_appimage + "</b>" + "<br>") : "")  +
                            "<i>" + qsTr("Architecture") + "</i>: " + api.tr + "<b>" + bottle_arch + "</b>" + "<br>" +
                            "<i>" + qsTr("Windows version") + "</i>: " + api.tr + "<b>" + bottle_winver + "</b>" + "<br>" +
+                           "<i>" + qsTr("Wine binary") + "</i>: " + api.tr + "<br>" + "<b>" + bottle_wine + "</b>" +
                            "<i>" + qsTr("Environment") + "</i>: " + api.tr + "<br>" + "<b>" + bottle_env + "</b>"
 
                     Component.onCompleted: {
@@ -305,7 +307,14 @@ FocusScope {
                             //to update
                             optBottleInfo.bottle_name = optWineBottle.internalvalue.split('/').pop();
                             optBottleInfo.bottle_path = optWineBottle.internalvalue;
-                            optBottleInfo.bottle_engine = optBottleInfo.bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
+                            var parts = optBottleInfo.bottle_name.replace(/^\.[^_]*_/, "").split("__")
+                            optBottleInfo.bottle_engine = parts[0];
+                            if(parts.length > 1){
+                                optBottleInfo.bottle_wine = parts[1];
+                            }
+                            else{
+                                optBottleInfo.bottle_wine = "";
+                            }
                             //to calculate size
                             optBottleInfo.bottle_size = "";
                             api.internal.system.runAsync("du -sh \"" + optBottleInfo.bottle_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.bottle_name + ".size\"", "thread");
