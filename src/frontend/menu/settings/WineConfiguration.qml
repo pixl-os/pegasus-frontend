@@ -236,6 +236,9 @@ FocusScope {
                             optBottleInfo.visible = false;
                             //reset color
                             optWineBottle.color = themeColor.textValue;
+                            //in addition, we are writing empty value to force update of override if needed
+                            //when bottle is deleted for example and from an other game/system for wine
+                            api.internal.recalbox.setStringParameter(parameterName, "")
                         }
                     }
 
