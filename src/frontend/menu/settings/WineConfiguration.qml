@@ -1076,7 +1076,8 @@ FocusScope {
                         confirmDialog.focus = true;
                     }
                     onFocusChanged: container.onFocus(this)
-                    visible: optWineBottle.count > 1 ? true : false
+                    //keep visible all times now if any bottle is not well name and need to remove alls
+                    //visible: optWineBottle.count > 1 ? true : false
                     KeyNavigation.down: btnManageWineEmbedded
                 }
 
