@@ -319,7 +319,7 @@ FocusScope {
                             //to get env details
                             //xargs -n 10 < winetricks.log
                             //keep only 2 lines for the moment
-                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4") + "...";
+                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/pfx/winetricks.log | head -n 4") + "...";
                             //reset color
                             optProtonBottle.color = themeColor.textValue;
                             //check if AppImage file exists
@@ -1369,12 +1369,18 @@ FocusScope {
                     api.internal.system.run("rm -rf " + optProtonBottle.internalvalue);
                     console.log("rm -rf " + optProtonBottle.internalvalue);
                 }
+
+                //set to new bottle after removing one
+                api.internal.recalbox.setStringParameter(optProtonBottle.parameterName,"");
+
                 //reset parameterlist cache
                 optProtonBottle.value = api.internal.recalbox.parameterslist.currentName(optProtonBottle.parameterName + ".resetcache");
+
                 //to force update of display of selected value
                 optProtonBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonBottle.parameterName);
                 optProtonBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optProtonBottle.count = api.internal.recalbox.parameterslist.count;
+
                 //to manage focus
                 content.focus = true;
             }
@@ -1395,12 +1401,17 @@ FocusScope {
                 else{//for simulate and see more the spinner
                     api.internal.system.run("sleep 5");
                 }
+                //set to new bottle after removing all
+                api.internal.recalbox.setStringParameter(optProtonBottle.parameterName,"");
+
                 //reset parameterlist cache
                 optProtonBottle.value = api.internal.recalbox.parameterslist.currentName(optProtonBottle.parameterName + ".resetcache");
+
                 //to force update of display of selected value
                 optProtonBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optProtonBottle.parameterName);
                 optProtonBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optProtonBottle.count = api.internal.recalbox.parameterslist.count;
+
                 //to manage focus
                 content.focus = true;
                 optProtonBottle.focus = false;
