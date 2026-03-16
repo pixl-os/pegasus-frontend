@@ -1422,7 +1422,8 @@ FocusScope {
                     initUserDirectory = "/recalbox/share_init/system/";
                 }
                 //always reset configuration file from share_init to be well configured
-                api.internal.system.run("cp " + initUserDirectory + ".config/pupgui/config.ini" + userDirectory + ".config/pupgui/config.ini")
+                //console.log("cp " + initUserDirectory + ".config/pupgui/config.ini" + " " + userDirectory + ".config/pupgui/config.ini");
+                api.internal.system.run("cp " + initUserDirectory + ".config/pupgui/config.ini" + " " + userDirectory + ".config/pupgui/config.ini")
 
                 //update ProtonUp-Qt conf to select the good installation (proton or wine)
                 api.internal.system.run("sed -i 's|^installdir = .*|installdir = /usr/proton/|' /recalbox/share/system/.config/pupgui/config.ini");
