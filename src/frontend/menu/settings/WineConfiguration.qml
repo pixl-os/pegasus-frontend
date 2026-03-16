@@ -1376,8 +1376,13 @@ FocusScope {
                     //api.internal.system.run("rm -rf " + optWineBottle.internalvalue + "*_dlls");
                     //console.log("rm -rf " + optWineBottle.internalvalue + "*_dlls");
                 }
+
+                //set to new bottle after removing one
+                api.internal.recalbox.setStringParameter(optWineBottle.parameterName,"");
+
                 //reset parameterlist cache
                 optWineBottle.value = api.internal.recalbox.parameterslist.currentName(optWineBottle.parameterName + ".resetcache");
+
                 //to force update of display of selected value
                 optWineBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optWineBottle.parameterName);
                 optWineBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
@@ -1407,12 +1412,18 @@ FocusScope {
                 else{//for simulate and see more the spinner
                     api.internal.system.run("sleep 5");
                 }
+
+                //set to new bottle after removing all
+                api.internal.recalbox.setStringParameter(optWineBottle.parameterName,"");
+
                 //reset parameterlist cache
                 optWineBottle.value = api.internal.recalbox.parameterslist.currentName(optWineBottle.parameterName + ".resetcache");
+
                 //to force update of display of selected value
                 optWineBottle.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(optWineBottle.parameterName);
                 optWineBottle.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                 optWineBottle.count = api.internal.recalbox.parameterslist.count;
+
                 //to manage focus
                 content.focus = true;
             }
