@@ -235,6 +235,9 @@ FocusScope {
                             optBottleInfo.visible = false;
                             //reset color
                             optProtonBottle.color = themeColor.textValue;
+                            //in addition, we are writing empty value to force update of override if needed
+                            //when bottle is deleted for example and from an other game/system for proton
+                            api.internal.recalbox.setStringParameter(parameterName, "")
                         }
                     }
 
