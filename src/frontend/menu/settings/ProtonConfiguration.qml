@@ -501,8 +501,59 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: optProtonBottle.internalvalue === "" ? true : false
-                    KeyNavigation.down: optProtonArch
+                    KeyNavigation.down: optProtonSoftRenderer
                 }
+                //RFU
+                /*MultivalueOption {
+                    id: optProtonfix
+
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".protonfix"
+
+                    label: qsTr("Proton 'fix'") + api.tr
+                    note: qsTr("Select your prefered fix if exists, keep 'AUTO' if you don't know") + api.tr
+
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optProtonfix;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: optProtonBottle.internalvalue === "" ? true : false
+                    KeyNavigation.down: optProtonSoftRenderer
+                }*/
                 //RFU
                 /*MultivalueOption {
                     id: optWineAppImage
