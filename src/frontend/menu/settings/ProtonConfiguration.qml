@@ -275,7 +275,7 @@ FocusScope {
                     property string bottle_size : ""
                     property string bottle_engine : "" //bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
                     property string bottle_appimage : ""
-                    property string bottle_arch : "" //win32/win64/wow64
+                    property string bottle_arch : "" //win32/win64/wow64 (usually always to 64 bits with proton)
                     property string bottle_winver : "" //win95 to win11
                     property string bottle_env : ""
 
@@ -503,7 +503,7 @@ FocusScope {
                     visible: optProtonBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optProtonArch
                 }
-		//RFU
+                //RFU
                 /*MultivalueOption {
                     id: optWineAppImage
 
@@ -554,7 +554,8 @@ FocusScope {
                     visible: optProtonBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optWineArch
                 }*/
-                MultivalueOption {
+                //NOT USED, PROTON WILL ALWAYS FORCE ARCHITECTURE TO 64 BITS
+                /*MultivalueOption {
                     id: optProtonArch
 
                     //property to manage parameter name
@@ -604,7 +605,7 @@ FocusScope {
                     visible: optProtonBottle.internalvalue === "" ? true : false
                     //RFU: KeyNavigation.down: optWindowsVersion
                     KeyNavigation.down: optProtonSoftRenderer
-                }
+                }*/
                 //RFU
                 /*MultivalueOption {
                     id: optWindowsVersion
@@ -655,7 +656,7 @@ FocusScope {
             visible: optProtonBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optProtonSoftRenderer
                 }*/
-		//RFU	
+                //NOT USED: better to use overrides from proton fixes
                 /*MulticheckOption {
                     id: optWineDllOverrides
 
