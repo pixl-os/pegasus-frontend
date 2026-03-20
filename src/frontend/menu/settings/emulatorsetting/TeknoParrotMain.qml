@@ -80,6 +80,28 @@ FocusScope {
             if (item.focus)
                 contentY = Math.min(Math.max(0, item.y - yBreakpoint), maxContentY);
         }
+
+        Timer {
+            id: visibilityThrottle
+            interval: 50 // Run check every 50ms during scroll
+            repeat: false
+            triggeredOnStart: false
+            onTriggered: {
+                for (var i = 0; i < contentColumn.children.length; i++) {
+                    var child = contentColumn.children[i];
+                    if (child.hasOwnProperty("parameterName") && child.hasOwnProperty("visibleInFlickable")) {
+                        contentColumn.checkVisibility(child);
+                    }
+                }
+            }
+        }
+
+        // Trigger check whenever the user scrolls
+        onContentYChanged: {
+            if(!visibilityThrottle.running)
+                visibilityThrottle.start();
+        }
+
         FocusScope {
             id: content
 
@@ -101,6 +123,46 @@ FocusScope {
                     height: implicitHeight + vpx(30)
                 }
 
+                // Your checkVisibility function stays here
+                function checkVisibility(item) {
+                    if (!item || !item.visible) return;
+                    //console.log("item.parameterName: ",item.parameterName);
+                    // mapToItem(container, ...) works because 'container' is
+                    // the visual viewport. This returns the position relative
+                    // to the top-left of the visible area on screen.
+                    var rectInFlickable = item.mapToItem(container, 0, 0);
+                    //console.log("rectInFlickable.x : ",rectInFlickable.x);
+                    //console.log("rectInFlickable.y : ",rectInFlickable.y);
+                    //console.log("container.width : ",container.width);
+                    //console.log("container.height : ",container.height);
+                    //console.log("item.width : ",item.width);
+                    //console.log("item.height : ",item.height);
+
+                    var intersects =
+                        rectInFlickable.x < container.width &&
+                        rectInFlickable.x + item.width > 0 &&
+                        rectInFlickable.y < container.height &&
+                        rectInFlickable.y + item.height > 0;
+
+                    //console.log("intersects : ",intersects);
+
+                    if (item.visibleInFlickable !== intersects) {
+                        if (intersects) {
+                            // Load data only when entering the screen
+                            if(item.isMultivalueOption){
+                                item.value = api.internal.recalbox.parameterslist.currentName(item.parameterName);
+                            }
+                            else if(item.isMulticheckOption){
+                                item.value = api.internal.recalbox.parameterslist.currentNameChecked(item.parameterName);
+                            }
+                            item.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(item.parameterName);
+                            item.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            item.count = api.internal.recalbox.parameterslist.count;
+                        }
+                        item.visibleInFlickable = intersects;
+                    }
+                }
+
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
@@ -118,10 +180,13 @@ FocusScope {
                     label: qsTr("Screen/Window resolution") + api.tr
                     note: qsTr("To adpat resolution in full screen/windowed") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -164,10 +229,13 @@ FocusScope {
                     label: qsTr("Windowed") + api.tr
                     note: qsTr("Start as 'windowed' is adviced for some GPU/Game") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox
@@ -263,10 +331,13 @@ FocusScope {
                     label: qsTr("'Versus' games controller mapping") + api.tr
                     note: qsTr("To adapt mappings to your habit/controller/panel") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //to force update of list of parameters
@@ -496,10 +567,13 @@ FocusScope {
                     label: qsTr("'Runner' type used to launch TeknoParrot") + api.tr
                     note: qsTr("To manage different cases (if needed)") + api.tr
 
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
 
                     onActivate: {
                         //for callback by parameterslistBox

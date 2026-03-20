@@ -267,7 +267,7 @@ FocusScope {
                 SimpleButton {
                     id: optBottleInfo
                     visible: false
-                    width: parseInt(parent.width/6)*5
+                    width: parseInt(parent.width/5)*4
                     showUnderline: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
