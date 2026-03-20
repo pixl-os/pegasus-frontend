@@ -163,6 +163,139 @@ FocusScope {
                     }
                 }
 
+                //to display info on selected wine bottle
+                SimpleButton {
+                    id: optGameInfo
+                    visible: game ? true : false
+                    width: parseInt(parent.width/4)*3
+                    showUnderline: false
+                    wrapMode: Text.NoWrap
+                    launchedAsDialogBox: root.launchedAsDialogBox
+                    property string game_path: game ? game.files.get(0).path : ""
+                    property string rom_name: {
+                        if(optGameInfo.game_path !== ""){
+                            var words = optGameInfo.game_path.split('/')
+                            //add management of "-" to manage several versions of the same game in the same system
+                            //examples naming in this case:
+                            //DO6.tp or DO6-1.tp or DO6-proto.tp or DO6-v25.1.tp
+                            return words[words.length-1].split('.')[0].split('-')[0];
+                        }
+                        else return ""
+                    }
+                    property string game_genre: ""
+                    property string exe_path: ""
+                    property string exe_arch : "" // 32 or 64 bits
+                    property string teknoParrotDescription: "<br><br><br><br><br>"
+                    labelFormat: Text.RichText
+                    label: "<u>" + qsTr("TeknoParrot Information for this game:") + "</u>"
+                    // Set the format to RichText
+                    noteFormat: Text.RichText
+                    note:  "<i>" + qsTr("Teknoparrot Rom Name:") + "</i>: " + api.tr + "<b>" + rom_name + "</b>" + "<br>" +
+                           "<i>" + qsTr("Teknoparrot Game Genre:") + "</i>: " + api.tr + "<b>" + game_genre + "</b>" + "<br>" +
+                           //removed to limit number of lines/info already from previous screen in fact
+                           //"<i>" + qsTr("Teknoparrot Game path:") + "</i>: " + api.tr + "<b>" + game_path + "</b>" + "<br>" +
+                           "<i>" + qsTr("Executable Path") + "</i>: " + api.tr + "<b>" + exe_path + "</b>" + "<br>" +
+                           "<i>" + qsTr("Executable architecture") + "</i>: " + api.tr + "<b>" + exe_arch + "</b>" + "<br>" +
+                           teknoParrotDescription
+                    Component.onCompleted: {
+                        gameInfoTimer.triggeredOnStart = false;
+                        gameInfoTimer.start();
+                    }
+                    pointerIcon: false
+
+                    //timer to update game information
+                    Timer {
+                        id: gameInfoTimer
+                        interval: 200 // Run the timer after 200 ms
+                        repeat: false
+                        running: false
+                        triggeredOnStart: false
+                        onTriggered: {
+
+                            //MetaData JSON file format:
+                            // {
+                            //   "game_name": "Battle Fantasia",
+                            //   "game_genre": "Fighting",
+                            //   "icon_name": "BattleFantasia.png",
+                            //   "platform": "Taito Type X2",
+                            //   "release_year": "2007",
+                            //   "nvidia": "OK",
+                            //   "nvidia_issues": null,
+                            //   "amd": "OK",
+                            //   "amd_issues": null,
+                            //   "intel": "NO_INFO",
+                            //   "intel_issues": null,
+                            //   "general_issues": null
+                            // }
+                            var JSONpath = "/usr/bin/teknoparrot/Metadata/" + optGameInfo.rom_name + ".json";
+                            const fileContent = api.internal.system.run("cat \"" + JSONpath + "\"");
+                            const teknoParrotData = JSON.parse(fileContent);
+                            optGameInfo.game_genre = teknoParrotData.game_genre
+                            optGameInfo.teknoParrotDescription = "Platform: <b>" + teknoParrotData.platform + "</b><br>" +
+                                          "Known compatibilities:<br>" +
+                                          "+ AMD : " + teknoParrotData.amd +
+                                          ((teknoParrotData.amd_issues !== null) ? " - issues : " + teknoParrotData.amd_issues + "<br>" : "<br>") +
+                                          "+ Intel : " + teknoParrotData.intel +
+                                          ((teknoParrotData.intel_issues !== null) ? " - issues : " + teknoParrotData.intel_issues + "<br>" : "<br>") +
+                                          "+ Nvidia : " + teknoParrotData.nvidia +
+                                          ((teknoParrotData.nvidia_issues !== null) ? " - issues : " + teknoParrotData.nvidia_issues + "<br>" : "<br>") +
+                                          ((teknoParrotData.general_issues !== null) ? "General issues : " + teknoParrotData.general_issues : "")
+
+                            console.log("sed -n 's/.*<GameExecutableLocation>\\(.*\\)<\\/GameExecutableLocation>.*/\\1/p' /usr/bin/teknoparrot/GameSetup/" + optGameInfo.rom_name + ".xml | tr -d '\\n' | tr -d '\\r'");
+                            optGameInfo.exe_path = api.internal.system.run("sed -n 's/.*<GameExecutableLocation>\\(.*\\)<\\/GameExecutableLocation>.*/\\1/p' /usr/bin/teknoparrot/GameSetup/" + optGameInfo.rom_name + ".xml | tr -d '\\n' | tr -d '\\r'");
+                            optGameInfo.exe_path = optGameInfo.exe_path.replace(/\\/g, "/");
+                            //check if missing or not
+                            if(api.internal.system.run("test -f \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                                console.log("sh /recalbox/scripts/pixl-arch-exe.sh \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" | tr -d '\\n' | tr -d '\\r'");
+                                optGameInfo.exe_arch = api.internal.system.run("sh /recalbox/scripts/pixl-arch-exe.sh \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" | tr -d '\\n' | tr -d '\\r'");
+                                optGameInfo.exe_path = optGameInfo.exe_path + "<font color='#2ECC71'> (" + qsTr("Found") + api.tr + ")" + "</font>";
+                            }
+                            else{
+                                optGameInfo.exe_path = "<font color='#FF0000'>" + optGameInfo.exe_path + " (" + qsTr("Missing") + api.tr + ")" + "</font>";
+                                optGameInfo.exe_arch = qsTr("N/A") + api.tr;
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        color: "transparent"
+                        height: parseInt(parent.width/4) + vpx(15)
+                        width: parseInt(parent.width/4)
+                        anchors.top: parent.top
+                        anchors.topMargin: vpx(15)
+                        anchors.left: parent.right
+                        //anchors.leftMargin: vpx(15)
+                        //anchors.right: optWineBottle.right
+                        //anchors.rightMargin: vpx(15)
+
+                        visible: true
+
+                        Image {
+                            id: teknoparrotGameLogo
+                            asynchronous: true
+                            height: parent.height
+                            width: parent.width
+                            source: {
+                                if(game){
+                                    var path = game.files.get(0).path;
+                                    var words = path.split('/')
+                                    //add management of "-" to manage several versions of the same game in the same system
+                                    //examples naming in this case:
+                                    //DO6.tp or DO6-1.tp or DO6-proto.tp or DO6-v25.1.tp
+                                    var romname = words[words.length-1].split('.')[0].split('-')[0];
+                                    return "file:///usr/bin/teknoparrot/Icons/" + romname + ".png";
+                                }
+                                else return "";
+                            }
+
+                            // Centering is still fine, it will center the "natural" sized image
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
+                            visible: true
+                        }
+                    }
+                }
+
                 SectionTitle {
                     text: qsTr("Game screen") + api.tr
                     first: true
