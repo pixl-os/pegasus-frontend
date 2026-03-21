@@ -1222,7 +1222,7 @@ FocusScope {
 		//to launch wine cfg from bottle clearly defined (could create wineprefix if missing)
 		/*SimpleButton {
                     id: btnLaunchWineCfg
-                    visible: (optProtonEngine.internalvalue !== "") || (optProtonAppImage.internalvalue !== "") ? true : false
+                    visible: (optProtonBottle.internalvalue !== "") ? true : false
                     Rectangle {
                         id: containerValidateLaunchWineCfg
                         width: parent.width
@@ -1262,7 +1262,7 @@ FocusScope {
                 //to launch wine regedit from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchRegedit
-                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    visible: (optProtonBottle.internalvalue !== "") ? true : false
                     Rectangle {
                         id: containerValidateLaunchRegedit
                         width: parent.width
@@ -1302,7 +1302,7 @@ FocusScope {
                 //to launch wine control joy.cpl from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchControllerSettings
-                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    visible: (optProtonBottle.internalvalue !== "") ? true : false
                     Rectangle {
                         id: containerValidateControllerSettings
                         width: parent.width

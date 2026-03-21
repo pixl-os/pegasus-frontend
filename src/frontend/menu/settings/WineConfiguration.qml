@@ -512,7 +512,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: optWineBottle.internalvalue === "" ? true : false
+                    visible: (optWineBottle.internalvalue === "") ? true : false
                     KeyNavigation.down: optWineAppImage
                 }
                 MultivalueOption {
@@ -562,7 +562,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: optWineBottle.internalvalue === "" ? true : false
+                    visible: (optWineBottle.internalvalue === "") ? true : false
                     KeyNavigation.down: optWineArch
                 }
                 MultivalueOption {
@@ -1225,7 +1225,7 @@ FocusScope {
                 //to launch wine cfg from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchWineCfg
-                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    visible: (optWineBottle.internalvalue !== "") ? true : false
                     Rectangle {
                         id: containerValidateLaunchWineCfg
                         width: parent.width
@@ -1265,7 +1265,7 @@ FocusScope {
                 //to launch wine regedit from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchRegedit
-                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    visible: (optWineBottle.internalvalue !== "") ? true : false
                     Rectangle {
                         id: containerValidateLaunchRegedit
                         width: parent.width
@@ -1305,7 +1305,7 @@ FocusScope {
                 //to launch wine control joy.cpl from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchControllerSettings
-                    visible: (optWineEngine.internalvalue !== "") || (optWineAppImage.internalvalue !== "") ? true : false
+                    visible: (optWineBottle.internalvalue !== "") ? true : false
                     Rectangle {
                         id: containerValidateControllerSettings
                         width: parent.width
@@ -1485,13 +1485,14 @@ FocusScope {
                     var wine = ""
                     var command = ""
                     var prefixroot = api.internal.recalbox.getStringParameter(prefix + ".wineprefixroot","/recalbox")
-                    if(optWineEngine.internalvalue !== ""){
-                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
-                        wine = optWineEngine.internalvalue
-                    }
-                    else if(optWineAppImage.internalvalue !== ""){
-                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineAppImage.value.replace(" (embedded)","")
-                        wine = "/usr/wine/wine"
+                    if(optWineBottle.internalvalue !== ""){
+                        env = "WINEPREFIX=" + optWineBottle.internalvalue
+                        if(api.internal.system.run("test -f \"/usr/wine/" + optBottleInfo.bottle_engine + ".AppImage\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                            wine = "/usr/wine/" + optBottleInfo.bottle_engine + ".AppImage";
+                        }
+                        else{
+                            wine = optWineBottle.internalvalue.replace("/recalbox/","/usr/wine/").split("__")[0] + "/wine";
+                        }
                     }
                     if(env !== ""){
                         if(optWineArch.internalvalue !== "" ){
