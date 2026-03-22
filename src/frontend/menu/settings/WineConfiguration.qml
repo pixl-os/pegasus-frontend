@@ -1484,19 +1484,19 @@ FocusScope {
                     var env = ""
                     var wine = ""
                     var command = ""
-                    var prefixroot = api.internal.recalbox.getStringParameter(prefix + ".wineprefixroot","/recalbox")
                     if(optWineBottle.internalvalue !== ""){
                         env = "WINEPREFIX=" + optWineBottle.internalvalue
-                        if(api.internal.system.run("test -f \"/usr/wine/" + optBottleInfo.bottle_engine + ".AppImage\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
-                            wine = "/usr/wine/" + optBottleInfo.bottle_engine + ".AppImage";
+                        console.log("env: " + env);
+
+                        if(api.internal.system.run("test -d \"/usr/wine/" + optBottleInfo.bottle_engine + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                            wine = "/usr/wine/" + optBottleInfo.bottle_engine + "/bin/" + optWineBottle.internalvalue.split("__")[1];
                         }
-                        else{
-                            wine = optWineBottle.internalvalue.replace("/recalbox/","/usr/wine/").split("__")[0] + "/wine";
+                        else if(api.internal.system.run("test -f \"/usr/wine/" + optBottleInfo.bottle_engine + ".AppImage\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
+                            wine = "/usr/wine/" + optBottleInfo.bottle_engine + ".AppImage";
                         }
                     }
                     if(env !== ""){
                         if(optWineArch.internalvalue !== "" ){
-                            env = env + "_" + optWineArch.internalvalue;
                             if (confirmDialog.callerid === "btnLaunchWineCfg"){
                                 command = env + " " + wine + " winecfg";
                             }
@@ -1506,7 +1506,7 @@ FocusScope {
                             else if (confirmDialog.callerid === "btnLaunchControllerSettings"){
                                 command = env + " " + wine + " control joy.cpl";
                             }
-                            console.log("winecfg command: " + command);
+                            console.log("command: " + command);
                             api.internal.system.run(command);
                         }
                         else {//we can't determine the prefix to use from pegasus-fe
