@@ -928,14 +928,37 @@ QStringList GetParametersList(QString Parameter)
     }
     else if (Parameter == "teknoparrot.screen.resolution")
     {
-    // # screen resolution
-    // # if "auto" is selected, parameter will be empty (we let game manage its resolution)
-    // # if "default (720p)" is selected, parameter will be "1280x720" as major games are in HD
-    // # if "1080p" is selected, parameter will be "1920x1080" as Full HD
-    // # if "1440p" is selected, parameter will be "2560x1440" as Quad HD/2K
-    // # if "2160p" is selected, parameter will be "3840×2160" as Ultra HD/4K
+        // # screen resolution
+        // # if "auto" is selected, parameter will be empty (we let game manage its resolution)
+        // # if "default (720p)" is selected, parameter will be "1280x720" as major games are in HD
+        // # if "1080p" is selected, parameter will be "1920x1080" as Full HD
+        // # if "1440p" is selected, parameter will be "2560x1440" as Quad HD/2K
+        // # if "2160p" is selected, parameter will be "3840×2160" as Ultra HD/4K
         ListOfValue << QObject::tr("Auto") << QObject::tr("720p - HD") << QObject::tr("1080p - Full HD") << QObject::tr("1440p - Quad HD/2K") << QObject::tr("2160p - Ultra HD/4K");
         ListOfInternalValue << "" << "1280x720" << "1920x1080" << "2560x1440" << "3840x2160";
+    }
+    else if (Parameter == "teknoparrot.game.resolution")
+    {
+        //Arcade System   ,Typical Resolution(s),Aspect Ratio,Notable Games
+        //Sega RingEdge   ,1280x720 / 1360x768  ,16:9,"Initial D 6/7, Project DIVA Arcade"
+        //Sega RingWide   ,1280x720 / 1360x768  ,16:9,"Sega Racing Classic, Sonic & SEGA Racing"
+        //Sega Lindbergh  ,1024x768 / 1280x760  ,4:3 / 16:10,"Virtua Fighter 5, After Burner Climax"
+        //Namco System ES3,1920x1080            ,16:9    ,"Mario Kart Arcade GP DX, Tekken 7"
+        //Taito Type X2/X3,1280x720 / 1920x1080 ,16:9,"Street Fighter IV, Gunslinger Stratos"
+        //Sega Nu / Nu2   ,1920x1080            ,16:9     ,"Luigi's Mansion Arcade, Chunithm"
+        //Raw Thrills     ,1024x768 / 1360x768  ,4:3 / 16:9,"Terminator Salvation, FnF Supercars"
+
+        //Resolution, Type, Why it exists
+        //1360 x 768,VESA Standard,Clean math (divisible by 8). Best for Arcade tech.
+        //1024 x 768,VESA (XGA),The old 4:3 standard.
+
+        // # game resolution
+        // # if "auto" is selected, parameter will be empty (we let game manage its resolution)
+        // # if "768p - WXGA" is selected, parameter will be "1360x768" as Standard VESA resolution
+        // # if "768p - HD READY" is selected, parameter will be "1366x768" as Standard VESA resolution
+        // # if "900p - HD+" is selected, parameter will be "1600x900" as Standard VESA resolution
+        ListOfValue << QObject::tr("Auto") << QObject::tr("768p - WXGA") << QObject::tr("768p - HD Ready") << QObject::tr("900p - HD+");
+        ListOfInternalValue << "" << "1360x768" << "1366x768" << "1600x900";
     }
     else if (Parameter.endsWith(".runner.type"))
     {

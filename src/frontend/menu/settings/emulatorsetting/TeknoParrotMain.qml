@@ -351,6 +351,55 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: optTeknoparrotOption71
+                }
+                MultivalueOption {
+                    id: optTeknoparrotOption71
+
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".game.resolution"
+
+                    label: qsTr("Internal game resolution") + api.tr
+                    note: qsTr("To scale to internal game resolution (for specific case)") + api.tr
+
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optTeknoparrotOption71;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optTeknoparrotOption2
                 }
                 MultivalueOption {
