@@ -1416,7 +1416,6 @@ FocusScope {
                 else{//for simulate and see more the spinner
                     api.internal.system.run("sleep 5");
                 }
-
                 //set to new bottle after removing all
                 api.internal.recalbox.setStringParameter(optWineBottle.parameterName,"");
 

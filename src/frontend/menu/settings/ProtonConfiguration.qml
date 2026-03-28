@@ -1439,6 +1439,10 @@ FocusScope {
 
                 //to manage focus
                 content.focus = true;
+                optProtonBottle.focus = false;
+                optProtonBottle.focus = true;
+                optProtonBottle.forceActiveFocus();
+                optProtonBottle.underline.visible = true;
             }
             //remove emulator bottles
             else if (confirmDialog.callerid === "btnCleanEmulatorBottles"){
@@ -1470,10 +1474,6 @@ FocusScope {
 
                 //to manage focus
                 content.focus = true;
-                optProtonBottle.focus = false;
-                optProtonBottle.focus = true;
-                optProtonBottle.forceActiveFocus();
-                optProtonBottle.underline.visible = true;
             }
             else if (confirmDialog.callerid === "btnManageProtonEmbedded"){
                 var userDirectory = "";
