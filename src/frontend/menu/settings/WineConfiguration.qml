@@ -513,6 +513,20 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: (optWineBottle.internalvalue === "") ? true : false
+                    KeyNavigation.down: optWinePrefixWithLayers
+                }
+                ToggleOption {
+                    id: optWinePrefixWithLayers
+                    label: qsTr("Bottle with layers") + api.tr
+                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(Per game using a common bottle base)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithlayer", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithlayer", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".wine.prefixwithlayer",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineAppImage
                 }
                 MultivalueOption {
@@ -943,13 +957,28 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optWineNVapi
+                    KeyNavigation.down: optWinePrefixFromRAM
                 }
                 SectionTitle {
                     text: qsTr("Wine 'Performance' configuration") + api.tr
                     first: true
                     symbol: "\uf37f"
                     symbolFontFamily: globalFonts.ion
+                }
+                ToggleOption {
+                    id: optWinePrefixFromRAM
+                    label: qsTr("Bottle from RAM") + api.tr
+                    note: qsTr("Run the Wine prefix/bottle from RAM.\n(Improve significantly in-game I/O performance)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixfromram", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixfromram", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".wine.prefixfromram",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optWinePrefixWithLayers.checked
+                    KeyNavigation.down: optWineNVapi
                 }
                 ToggleOption {
                     id: optWineNVapi

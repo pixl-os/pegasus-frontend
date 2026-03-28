@@ -501,6 +501,20 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: optProtonBottle.internalvalue === "" ? true : false
+                    KeyNavigation.down: optProtonPrefixWithLayers
+                }
+                ToggleOption {
+                    id: optProtonPrefixWithLayers
+                    label: qsTr("Bottle with layers") + api.tr
+                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(Per game using a common bottle base)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithlayer", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithlayer", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.prefixwithlayer",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonSoftRenderer
                 }
                 //RFU
@@ -977,7 +991,7 @@ FocusScope {
                     }
                     //RFU
                     //KeyNavigation.down: optWineVirtualDesktop
-                    KeyNavigation.down: optProtonNVapi
+                    KeyNavigation.down: optProtonPrefixFromRAM
                 }                
 		//RFU
                 /*ToggleOption {
@@ -990,13 +1004,28 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(prefix + ".proton.winevirtualdesktop",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optProtonNVapi
+                    KeyNavigation.down: optProtonPrefixFromRAM
                 }*/
                 SectionTitle {
                     text: qsTr("Proton 'Performance' configuration") + api.tr
                     first: true
                     symbol: "\uf37f"
                     symbolFontFamily: globalFonts.ion
+                }
+                ToggleOption {
+                    id: optProtonPrefixFromRAM
+                    label: qsTr("Bottle from RAM") + api.tr
+                    note: qsTr("Run the Wine prefix/bottle from RAM.\n(Improve significantly in-game I/O performance)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixfromram", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixfromram", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.prefixfromram",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optProtonPrefixWithLayers.checked
+                    KeyNavigation.down: optProtonNVapi
                 }
                 ToggleOption {
                     id: optProtonNVapi
