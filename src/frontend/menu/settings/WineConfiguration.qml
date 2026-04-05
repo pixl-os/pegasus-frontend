@@ -792,12 +792,176 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-
-                    KeyNavigation.down: optWineDxvkFramerate
+                    visible: !optWineSoftRenderer.checked
+                    KeyNavigation.down: optWineDxvkVersion
                 }
                 MultivalueOption {
+                    id: optWineDxvkVersion
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".dxvk"
+
+                    label: qsTr("DXVK version (for DirectX 9, 10 et 11)") + api.tr
+                    note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
+                          qsTr("('auto' let engine to use default version)") + api.tr
+
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineDxvkVersion;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: !optWineSoftRenderer.checked
+                    KeyNavigation.down: optWineVkd3dVersion
+                }
+                MultivalueOption {
+                    id: optWineVkd3dVersion
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".vkd3d"
+
+                    label: qsTr("VKD3D version (for DirectX 12)") + api.tr
+                    note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
+                          qsTr("('auto' let engine to use default version)") + api.tr
+
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineVkd3dVersion;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: !optWineSoftRenderer.checked
+                    KeyNavigation.down: optWineNVapi
+                }
+                //to enable Nvidia-specific features (like DLSS, Ray Tracing, or Reflex)
+                ToggleOption {
+                    id: optWineNVapi
+                    label: qsTr("Wine NVAPI for Nvidia-specific features)") + api.tr
+                    note: qsTr("like DLSS, Ray Tracing, or Reflex running via DXVK/VKD3D") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winenvapi",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winenvapi",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: !optWineSoftRenderer.checked
+                    KeyNavigation.down: optWineDxvkNapiVersion
+                }
+                MultivalueOption {
+                    id: optWineDxvkNapiVersion
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".dxvknvapi"
+
+                    label: qsTr("DXVK-NVAPI version") + api.tr
+                    note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
+                          qsTr("('auto' let engine to use default version)") + api.tr
+
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optWineDxvkNapiVersion;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: !optWineSoftRenderer.checked && optWineNVapi.checked
+                    KeyNavigation.down: optWineDxvkFramerate
+                }
+
+                MultivalueOption {
                     id: optWineDxvkFramerate
-                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    visible: ((optWineRenderer.internalvalue !== "gl") && devModeActivated && !optWineSoftRenderer.checked)  ? true : false
                     //property to manage parameter name
                     property string parameterName : prefix + ".winedxvkframerate"
 
@@ -845,7 +1009,7 @@ FocusScope {
                 }
                 MultivalueOption {
                     id: optWineDxvkMethod
-                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    visible: ((optWineRenderer.internalvalue !== "gl") && devModeActivated && !optWineSoftRenderer.checked)  ? true : false
                     //property to manage parameter name
                     property string parameterName : prefix + ".winedxvkmethod"
 
@@ -978,20 +1142,6 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: optWinePrefixWithLayers.checked
-                    KeyNavigation.down: optWineNVapi
-                }
-                ToggleOption {
-                    id: optWineNVapi
-                    label: qsTr("Wine NVAPI") + api.tr
-                    note: qsTr("Enable NVIDIA api for wine") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winenvapi",false)){
-                            api.internal.recalbox.setBoolParameter(prefix + ".winenvapi",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineFullScreenFSR
                 }
                 ToggleOption {
@@ -1500,8 +1650,10 @@ FocusScope {
                     api.internal.system.run("~/ProtonUp-Qt-pixL/ProtonUp-Qt-2.14.0-x86_64.AppImage");
                 }
                 //force refreash of list of WINE engine/appimage if needed
-                //reset parameterlist cache
+                //reset parameterlist caches
                 optWineEngine.value = api.internal.recalbox.parameterslist.currentName(optWineEngine.parameterName + ".resetcache");
+                optWineDxvkVersion.value = api.internal.recalbox.parameterslist.currentName(optWineDxvkVersion.parameterName + ".resetcache");
+                optWineVkd3dVersion.value = api.internal.recalbox.parameterslist.currentName(optWineVkd3dVersion.parameterName + ".resetcache");
 
                 //to manage focus
                 content.focus = true;
