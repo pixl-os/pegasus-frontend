@@ -747,6 +747,112 @@ QStringList GetParametersList(QString Parameter)
         saveQStringListToGlobalMap(ListOfValue,"ListOfValue.wine");
         return ListOfValue;
     }
+    else if (Parameter.endsWith(".dxvk", Qt::CaseInsensitive) == true)
+    {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.dxvk");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.dxvk");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read subdirectories in /usr/wine
+        QString targetPath = "/usr/wine/";
+        QStringList nameFilters;
+        nameFilters << "dxvk-*"; // The wildcard '*' will match any characters after "dxvk-"
+        // Changed flag: removed QDirIterator::Subdirectories
+        QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            // Check if the folder name contains "nvapi"
+            if (dir.contains("nvapi", Qt::CaseInsensitive)) {
+                continue; // Skip this directory
+            }
+            //it should contain /bin directory if it is a valid wine installed in pixL
+            QString relativedir32 = dir + "/x32";
+            QString relativedir64 = dir + "/x64";
+            if (QFile::exists(relativedir32) && QFile::exists(relativedir64)){
+                // use name of directory from /usr/wine for recalbox.conf
+                ListOfInternalValue.append(dir);
+                // remove file extension on menu
+                ListOfValue.append(dir.replace("/usr/wine/","") + " (32/64 bit)");
+            }
+        }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.dxvk");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.dxvk");
+        return ListOfValue;
+    }
+    else if (Parameter.endsWith(".dxvknvapi", Qt::CaseInsensitive) == true)
+    {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.dxvknvapi");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.dxvknvapi");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read subdirectories in /usr/wine
+        QString targetPath = "/usr/wine/";
+        QStringList nameFilters;
+        nameFilters << "dxvk-nvapi-*"; // The wildcard '*' will match any characters after "dxvk-nvapi-"
+        // Changed flag: removed QDirIterator::Subdirectories
+        QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            //it should contain /bin directory if it is a valid wine installed in pixL
+            QString relativedir32 = dir + "/x32";
+            QString relativedir64 = dir + "/x64";
+            if (QFile::exists(relativedir32) && QFile::exists(relativedir64)){
+                // use name of directory from /usr/wine for recalbox.conf
+                ListOfInternalValue.append(dir);
+                // remove file extension on menu
+                ListOfValue.append(dir.replace("/usr/wine/","") + " (32/64 bit)");
+            }
+        }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.dxvknvapi");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.dxvknvapi");
+        return ListOfValue;
+    }
+    else if (Parameter.endsWith(".vkd3d", Qt::CaseInsensitive) == true)
+    {
+        // load data from QSettings as cache (tip to speed up in menu browsing)
+        ListOfInternalValue = loadQStringListFromGlobalMap("ListOfInternalValue.vkd3d");
+        ListOfValue = loadQStringListFromGlobalMap("ListOfValue.vkd3d");
+        if(!ListOfValue.empty()) return ListOfValue; //to exit if cache exsits
+
+        // add auto in list to let default value from configgen  if needed
+        ListOfValue << QObject::tr("auto");
+        QString empty = "";
+        ListOfInternalValue << empty;
+        //read subdirectories in /usr/wine
+        QString targetPath = "/usr/wine/";
+        QStringList nameFilters;
+        nameFilters << "vkd3d-*"; // The wildcard '*' will match any characters after "vkd3d-"
+        // Changed flag: removed QDirIterator::Subdirectories
+        QDirIterator it(targetPath, nameFilters, QDir::Dirs | QDir::NoDotAndDotDot);
+        while (it.hasNext()) {
+            QString dir = it.next();
+            //it should contain /bin directory if it is a valid wine installed in pixL
+            QString relativedir32 = dir + "/x86";
+            QString relativedir64 = dir + "/x64";
+            if (QFile::exists(relativedir32) && QFile::exists(relativedir64)){
+                // use name of directory from /usr/wine for recalbox.conf
+                ListOfInternalValue.append(dir);
+                // remove file extension on menu
+                ListOfValue.append(dir.replace("/usr/wine/","") + " (32/64 bit)");
+            }
+        }
+
+        saveQStringListToGlobalMap(ListOfInternalValue,"ListOfInternalValue.vkd3d");
+        saveQStringListToGlobalMap(ListOfValue,"ListOfValue.vkd3d");
+        return ListOfValue;
+    }
     else if (Parameter.endsWith(".winedlloverrides", Qt::CaseInsensitive) == true)
     {
         ListOfInternalValue << "mscoree=d" << "mshtml=d";
