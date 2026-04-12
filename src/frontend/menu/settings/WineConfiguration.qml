@@ -342,9 +342,21 @@ FocusScope {
                             optBottleInfo.emulator_layer_path = optWineBottle.internalvalue + "@" + (emulator ? emulator : "");
                             console.log("optBottleInfo.game_layer_path: " + optBottleInfo.game_layer_path);
                             //Game info (if exists)
-                            optBottleInfo.game_layer_name = optWineBottle.internalvalue.split('/').pop() + "@" + (game ? game.title : "");
-                            optBottleInfo.game_layer_path = optWineBottle.internalvalue  + "@" + (game ? game.title : "");
+                            if(game){
+                                var path = game.files.get(0).path; // full path of rom
+                                var word = path.split('/'); // to split by /
+                                var rom = word[word.length-1].split('.')[0]; // to keep rom name without extension
+                                optBottleInfo.game_layer_name = optWineBottle.internalvalue.split('/').pop() + "@" + rom;
+                                optBottleInfo.game_layer_path = optWineBottle.internalvalue  + "@" + rom;
+                            }
+                            else{
+                                //NA
+                                optBottleInfo.game_layer_name = "";
+                                optBottleInfo.game_layer_path = "";
+                            }
                             console.log("optBottleInfo.game_layer_path: " + optBottleInfo.game_layer_path);
+
+                            //To have Wine info
                             var parts = optBottleInfo.bottle_name.replace(/^\.[^_]*_/, "").split("__")
                             optBottleInfo.bottle_engine = parts[0];
                             if(parts.length > 1){
