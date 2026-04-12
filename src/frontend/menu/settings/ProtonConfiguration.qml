@@ -266,18 +266,35 @@ FocusScope {
                 SimpleButton {
                     id: optBottleInfo
                     visible: false
-                    width: parseInt(parent.width/6)*5
+                    width: parseInt(parent.width/5)*4
                     showUnderline: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
-                    property string bottle_name: "" //optProtonBottle.internalvalue.split('/').pop()
-                    property string bottle_path: "" //optProtonBottle.internalvalue
+		    //from base installation
+                    property string bottle_name: ""
+                    property string bottle_path: ""
                     property string bottle_size : ""
-                    property string bottle_engine : "" //bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
+                    property string bottle_engine : ""
                     property string bottle_appimage : ""
                     property string bottle_arch : "" //win32/win64/wow64 (usually always to 64 bits with proton)
                     property string bottle_winver : "" //win95 to win11
                     property string bottle_env : ""
+                    //from renderer installation
+                    property string renderer_layer_name : ""
+                    property string renderer_layer_path : ""
+                    property string renderer_env : ""
+                    //from emulatorfix
+                    property string emulator_layer_name : ""
+                    property string emulator_layer_path : ""
+                    property string emulator_env : ""
+                    //from systemfix
+                    property string system_layer_name : ""
+                    property string system_layer_path : ""
+                    property string system_env : ""
+                    //from gamefix
+                    property string game_layer_name : ""
+                    property string game_layer_path : ""
+                    property string game_env : ""
 
                     labelFormat: Text.RichText
                     label: "<u>" + qsTr("Information about selected bottle:") + "</u>"
@@ -288,7 +305,11 @@ FocusScope {
                            (bottle_appimage !== "" ? ("<i>" + qsTr("AppImage used") + "</i>: " + api.tr + "<b>" + bottle_appimage + "</b>" + "<br>") : "")  +
                            "<i>" + qsTr("Architecture") + "</i>: " + api.tr + "<b>" + bottle_arch + "</b>" + "<br>" +
                            "<i>" + qsTr("Windows version") + "</i>: " + api.tr + "<b>" + bottle_winver + "</b>" + "<br>" +
-                           "<i>" + qsTr("Environment") + "</i>: " + api.tr + "<br>" + "<b>" + bottle_env + "</b>"
+                           (optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (base)") + "</i>: ") :  ("<i>" + qsTr("Environment") + "</i>: ")) + api.tr + "<b>" + bottle_env + "</b>" + "<br>" +
+                           (renderer_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (renderer)") + "</i>: " + api.tr + "<b>" + renderer_env + "</b>" + "<br>")  : "") +
+                           (system_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (system tricks)") + "</i>: " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
+                           (emulator_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (emulator tricks)") + "</i>: " + api.tr + "<b>" + emulator_env+ "</b>" + "<br>") : "") +
+                           (game_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (game tricks)") + "</i>: " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
 
                     Component.onCompleted: {
                         wineInfoTimer.triggeredOnStart = false;
@@ -304,10 +325,34 @@ FocusScope {
                         running: false
                         triggeredOnStart: false
                         onTriggered: {
-                            //to update
+                            //Bottle info
                             optBottleInfo.bottle_name = optProtonBottle.internalvalue.split('/').pop();
                             optBottleInfo.bottle_path = optProtonBottle.internalvalue;
-                            optBottleInfo.bottle_engine = optBottleInfo.bottle_name.replace(/^\.[^_]*_/, "").split("__")[0];
+                            //Renderer info (if exists)
+                            optBottleInfo.renderer_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@renderer";
+                            optBottleInfo.renderer_layer_path = optProtonBottle.internalvalue + "@renderer";
+                            //System info (if exists)
+                            optBottleInfo.system_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@" + (system ? system.name : "");
+                            optBottleInfo.system_layer_path = optProtonBottle.internalvalue + "@" + (system ? system.name : "");
+                            //Emulator info (if exists)
+                            optBottleInfo.emulator_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@" + (emulator ? emulator : "");
+                            optBottleInfo.emulator_layer_path = optProtonBottle.internalvalue + "@" + (emulator ? emulator : "");
+                            console.log("optBottleInfo.game_layer_path: " + optBottleInfo.game_layer_path);
+                            //Game info (if exists)
+                            optBottleInfo.game_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@" + (game ? game.title : "");
+                            optBottleInfo.game_layer_path = optProtonBottle.internalvalue  + "@" + (game ? game.title : "");
+                            console.log("optBottleInfo.game_layer_path: " + optBottleInfo.game_layer_path);
+
+                            //RFU: if wine info is used in the future
+                            /*var parts = optBottleInfo.bottle_name.replace(/^\.[^_]*_/, "").split("__")
+                            optBottleInfo.bottle_engine = parts[0];
+                            if(parts.length > 1){
+                                optBottleInfo.bottle_wine = parts[1];
+                            }
+                            else{
+                                optBottleInfo.bottle_wine = "";
+                            }*/
+
                             //to calculate size
                             optBottleInfo.bottle_size = "";
                             api.internal.system.runAsync("du -sh \"" + optBottleInfo.bottle_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.bottle_name + ".size\"", "thread");
@@ -323,6 +368,11 @@ FocusScope {
                             //xargs -n 10 < winetricks.log
                             //keep only 2 lines for the moment
                             optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/pfx/winetricks.log | head -n 4") + "...";
+                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log | head -n 4");
+                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/pfx/winetricks.log | head -n 4");
+                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log | head -n 4");
+                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/pfx/winetricks.log | head -n 4");
+
                             //reset color
                             optProtonBottle.color = themeColor.textValue;
                             //check if AppImage file exists
