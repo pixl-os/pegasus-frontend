@@ -630,7 +630,7 @@ FocusScope {
                 }*/
                 //RFU
                 /*MultivalueOption {
-                    id: optWineAppImage
+                    id: optProtonAppImage
 
                     //property to manage parameter name
                     property string parameterName : prefix + ".wineappimage"
@@ -649,7 +649,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineAppImage;
+                        parameterslistBox.callerid = optProtonAppImage;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -677,7 +677,7 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: optProtonBottle.internalvalue === "" ? true : false
-                    KeyNavigation.down: optWineArch
+                    KeyNavigation.down: optProtonArch
                 }*/
                 //NOT USED, PROTON WILL ALWAYS FORCE ARCHITECTURE TO 64 BITS
                 /*MultivalueOption {
@@ -783,7 +783,7 @@ FocusScope {
                 }*/
                 //NOT USED: better to use overrides from proton fixes
                 /*MulticheckOption {
-                    id: optWineDllOverrides
+                    id: optProtonDllOverrides
 
                     //property to manage parameter name
                     property string parameterName : prefix + ".winedlloverrides"
@@ -802,7 +802,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterscheckBox.parameterName = parameterName;
-                        parameterscheckBox.callerid = optWineDllOverrides;
+                        parameterscheckBox.callerid = optProtonDllOverrides;
                         parameterscheckBox.isChecked = api.internal.recalbox.parameterslist.isChecked();
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentNameChecked(parameterName);
@@ -896,12 +896,176 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-
-                    KeyNavigation.down: optProtonDxvkFramerate
+                    visible: !optProtonSoftRenderer.checked
+                    KeyNavigation.down: optProtonDxvkVersion
                 }
                 MultivalueOption {
+                    id: optProtonDxvkVersion
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".dxvk"
+
+                    label: qsTr("DXVK version (for DirectX 9, 10 et 11)") + api.tr
+                    note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
+                          qsTr("('auto' let engine to use default version)") + api.tr
+
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optProtonDxvkVersion;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: !optProtonSoftRenderer.checked
+                    KeyNavigation.down: optProtonVkd3dVersion
+                }
+                MultivalueOption {
+                    id: optProtonVkd3dVersion
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".vkd3d"
+
+                    label: qsTr("VKD3D version (for DirectX 12)") + api.tr
+                    note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
+                          qsTr("('auto' let engine to use default version)") + api.tr
+
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optProtonVkd3dVersion;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: !optProtonSoftRenderer.checked
+                    KeyNavigation.down: optProtonNVapi
+                }
+                //to enable Nvidia-specific features (like DLSS, Ray Tracing, or Reflex)
+                ToggleOption {
+                    id: optProtonNVapi
+                    label: qsTr("Wine NVAPI for Nvidia-specific features)") + api.tr
+                    note: qsTr("like DLSS, Ray Tracing, or Reflex running via DXVK/VKD3D") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winenvapi",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".winenvapi",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: !optProtonSoftRenderer.checked
+                    KeyNavigation.down: optProtonDxvkNapiVersion
+                }
+                MultivalueOption {
+                    id: optProtonDxvkNapiVersion
+                    //property to manage parameter name
+                    property string parameterName : prefix + ".dxvknvapi"
+
+                    label: qsTr("DXVK-NVAPI version") + api.tr
+                    note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
+                          qsTr("('auto' let engine to use default version)") + api.tr
+
+                    // Logic to update visibleInFlickable based on scroll position
+                    // This is less efficient as it's checked for ALL items
+                    property bool visibleInFlickable: false // Custom property to track visibility
+                    // Initial check
+                    Component.onCompleted: parent.checkVisibility(this)
+                    // check if visibility changed
+                    onVisibleChanged: parent.checkVisibility(this)
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optProtonDxvkNapiVersion;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+                    visible: !optProtonSoftRenderer.checked && optProtonNVapi.checked
+                    KeyNavigation.down: optProtonDxvkFramerate
+                }
+		
+                MultivalueOption {
                     id: optProtonDxvkFramerate
-                    visible: optProtonRenderer.internalvalue !== "gl" ? true : false
+                    visible: ((optProtonRenderer.internalvalue !== "gl") && devModeActivated && !optProtonSoftRenderer.checked)  ? true : false
                     //property to manage parameter name
                     property string parameterName : prefix + ".proton.winedxvkframerate"
 
@@ -945,13 +1109,13 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    //KeyNavigation.down: optWineDxvkMethod
+                    //KeyNavigation.down: optProtonDxvkMethod
                     KeyNavigation.down: optProtonAudioDriver
                 }
 		//RFU
                 /*MultivalueOption {
-                    id: optWineDxvkMethod
-                    visible: optWineRenderer.internalvalue !== "gl" ? true : false
+                    id: optProtonDxvkMethod
+                    visible: optProtonRenderer.internalvalue !== "gl" ? true : false
                     //property to manage parameter name
                     property string parameterName : prefix + ".winedxvkmethod"
 
@@ -969,7 +1133,7 @@ FocusScope {
                     onActivate: {
                         //for callback by parameterslistBox
                         parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optWineDxvkMethod;
+                        parameterslistBox.callerid = optProtonDxvkMethod;
                         //to force update of list of parameters
                         api.internal.recalbox.parameterslist.currentName(parameterName);
                         parameterslistBox.model = api.internal.recalbox.parameterslist;
@@ -995,7 +1159,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    KeyNavigation.down: optWineAudioDriver
+                    KeyNavigation.down: optProtonAudioDriver
                 }*/
                 SectionTitle {
                     text: qsTr("Wine 'Software' configuration") + api.tr
@@ -1050,7 +1214,7 @@ FocusScope {
                         container.onFocus(this)
                     }
                     //RFU
-                    //KeyNavigation.down: optWineVirtualDesktop
+                    //KeyNavigation.down: optProtonVirtualDesktop
                     KeyNavigation.down: optProtonPrefixFromRAM
                 }                
 		//RFU
@@ -1085,20 +1249,6 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: optProtonPrefixWithLayers.checked
-                    KeyNavigation.down: optProtonNVapi
-                }
-                ToggleOption {
-                    id: optProtonNVapi
-                    label: qsTr("Proton NVAPI") + api.tr
-                    note: qsTr("Enable NVIDIA api for wine") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi", false)
-                    onCheckedChanged: {
-		                if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi",false)){
-                       	    api.internal.recalbox.setBoolParameter(prefix + ".proton.winenvapi",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFullScreenFSR
                 }
                 ToggleOption {
@@ -1607,6 +1757,8 @@ FocusScope {
                 //force refreash of list of WINE engine/appimage if needed
                 //reset parameterlist cache
                 optProtonEngine.value = api.internal.recalbox.parameterslist.currentName(optProtonEngine.parameterName + ".resetcache");
+                optProtonDxvkVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonDxvkVersion.parameterName + ".resetcache");
+                optProtonVkd3dVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonVkd3dVersion.parameterName + ".resetcache");
 
                 //to manage focus
                 content.focus = true;
@@ -1619,17 +1771,17 @@ FocusScope {
                     var wine = ""
                     var command = ""
                     var prefixroot = api.internal.recalbox.getStringParameter(prefix + ".wineprefixroot","/recalbox")
-                    if(optWineEngine.internalvalue !== ""){
-                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
-                        wine = optWineEngine.internalvalue
+                    if(optProtonEngine.internalvalue !== ""){
+                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonEngine.value.replace(" (32 bit)","").replace(" (64 bit)","").trim().replace(" ","_")
+                        wine = optProtonEngine.internalvalue
                     }
-                    else if(optWineAppImage.internalvalue !== ""){
-                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optWineAppImage.value.replace(" (embedded)","")
+                    else if(optProtonAppImage.internalvalue !== ""){
+                        env = "WINEPREFIX=" + prefixroot + "/." + emulator + "_" + optProtonAppImage.value.replace(" (embedded)","")
                         wine = "/usr/wine/wine"
                     }
                     if(env !== ""){
-                        if(optWineArch.internalvalue !== "" ){
-                            env = env + "_" + optWineArch.internalvalue;
+                        if(optProtonArch.internalvalue !== "" ){
+                            env = env + "_" + optProtonArch.internalvalue;
                             if (confirmDialog.callerid === "btnLaunchWineCfg"){
                                 command = env + " " + wine + " winecfg";
                             }
