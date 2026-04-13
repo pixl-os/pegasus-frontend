@@ -579,6 +579,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
                     KeyNavigation.down: optWineAppImage
                 }
                 MultivalueOption {
@@ -1193,7 +1194,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    visible: optWinePrefixWithLayers.checked
+                    visible: optWinePrefixWithLayers.checked && devModeActivated
                     KeyNavigation.down: optWineFullScreenFSR
                 }
                 ToggleOption {

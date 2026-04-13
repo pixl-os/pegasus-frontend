@@ -575,6 +575,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
                     KeyNavigation.down: optProtonSoftRenderer
                 }
                 //RFU
@@ -1248,7 +1249,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    visible: optProtonPrefixWithLayers.checked
+                    visible: optProtonPrefixWithLayers.checked && devModeActivated
                     KeyNavigation.down: optProtonFullScreenFSR
                 }
                 ToggleOption {
