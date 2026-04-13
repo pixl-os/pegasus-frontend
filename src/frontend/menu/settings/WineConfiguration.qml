@@ -772,7 +772,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: optWineBottle.internalvalue === "" ? true : false
+                    visible: optWineBottle.internalvalue === "" && devModeActivated ? true : false
                     KeyNavigation.down: optWineSoftRenderer
                 }
 

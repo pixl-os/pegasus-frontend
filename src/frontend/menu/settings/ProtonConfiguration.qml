@@ -824,7 +824,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: optProtonBottle.internalvalue === "" ? true : false
+                    visible: optProtonBottle.internalvalue === "" && devModeActivated ? true : false
                     KeyNavigation.down: optProtonSoftRenderer
                 }*/
 
