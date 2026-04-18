@@ -332,6 +332,11 @@ QStringList GetParametersList(QString Parameter)
         ListOfValue << QObject::tr("above") << QObject::tr("below") << QObject::tr("left") << QObject::tr("right");
         ListOfInternalValue << "above" << "below" << "left" << "right";
     }
+    else if (Parameter == "system.splash.select")
+    {
+        ListOfValue << QObject::tr("pixl videos") << QObject::tr("all videos") << QObject::tr("custom videos only");
+        ListOfInternalValue << "recalbox" << "all" << "custom";
+    }
     else if (Parameter.endsWith(".shaderset", Qt::CaseInsensitive) == true)
     {
         /*

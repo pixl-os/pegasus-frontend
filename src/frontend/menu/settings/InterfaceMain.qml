@@ -633,6 +633,90 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter("pegasus.gamelistinsubdirectories",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSplashSource
+                }
+                SectionTitle {
+                    text: qsTr("Boot videos") + api.tr
+                    first: true
+                    symbol: "\uf359"
+                }
+                MultivalueOption {
+                    id: optSplashSource
+
+                    //property to manage parameter name
+                    property string parameterName : "system.splash.select"
+
+                    label: qsTr("Source") + api.tr
+                    note: qsTr("To select source of videos to play at boot") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optSplashSource;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            count = api.internal.recalbox.parameterslist.count;
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                        }
+                        container.onFocus(this)
+                    }
+                    KeyNavigation.down: optSplashDelay
+                }
+                SliderOption {
+                    id: optSplashDelay
+
+                    //property to manage parameter name
+                    property string parameterName : "system.splash.length"
+                    //  0 : Video will be stopped when pegasus-frontend is ready to start.
+                    // -1 : All the video will be played before pegasus-frontend start (default)
+                    // >0 : Time the video will be played before pegasus-frontend start (in seconds)
+                    //property of SliderOption to set
+                    label: qsTr("Boot video time limit") + api.tr
+                    note: qsTr("the default value is -1 (min: -1 - max: 180).\n(-1: wait video / 0: stop when pegasus ready)") + api.tr
+                    // in slider object
+                    max : 180
+                    min : -1
+                    slidervalue : api.internal.recalbox.getIntParameter(parameterName,-1)
+                    // in text object
+                    value: api.internal.recalbox.getIntParameter(parameterName,-1) + "s"
+                    onActivate: {
+                        focus = true;
+                    }
+                    Keys.onLeftPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "s";
+                        sfxNav.play();
+                    }
+                    Keys.onRightPressed: {
+                        api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                        value = slidervalue + "s";
+                        sfxNav.play();
+                    }
+                    onFocusChanged: container.onFocus(this)
                 }
                 Item {
                     width: parent.width
