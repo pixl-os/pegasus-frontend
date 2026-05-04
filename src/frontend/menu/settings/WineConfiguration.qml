@@ -50,6 +50,55 @@ FocusScope {
       return text;
     }
 
+    /**
+     * Generates an 8-digit ID based on a CRC32 hash of three values.
+     * Mirroring the logic of Python's zlib.crc32(combined) % 100_000_000.
+     */
+    function generate8DigitId(val1, val2, val3) {
+        var combined = val1 + "|" + val2 + "|" + val3;
+        console.log("combined : " + combined);
+
+        // 1. Create the table locally if it doesn't exist
+        // Using a static-like pattern in JS
+        if (typeof generate8DigitId.crcTable === 'undefined') {
+            generate8DigitId.crcTable = [];
+            for (var n = 0; n < 256; n++) {
+                var c = n;
+                for (var k = 0; k < 8; k++) {
+                    c = ((c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+                }
+                generate8DigitId.crcTable[n] = c;
+            }
+        }
+
+        var table = generate8DigitId.crcTable;
+        var crc = 0 ^ (-1); // Equivalent to 0xFFFFFFFF
+
+        // 2. Process characters
+        for (var i = 0; i < combined.length; i++) {
+            var code = combined.charCodeAt(i);
+
+            // Handling UTF-8 encoding for multi-byte characters
+            if (code < 0x80) {
+                crc = (crc >>> 8) ^ table[(crc ^ code) & 0xFF];
+            } else if (code < 0x800) {
+                crc = (crc >>> 8) ^ table[(crc ^ (192 | (code >> 6))) & 0xFF];
+                crc = (crc >>> 8) ^ table[(crc ^ (128 | (code & 63))) & 0xFF];
+            } else {
+                crc = (crc >>> 8) ^ table[(crc ^ (224 | (code >> 12))) & 0xFF];
+                crc = (crc >>> 8) ^ table[(crc ^ (128 | ((code >> 6) & 63))) & 0xFF];
+                crc = (crc >>> 8) ^ table[(crc ^ (128 | (code & 63))) & 0xFF];
+            }
+        }
+
+        // 3. Finalize and force unsigned 32-bit
+        var finalCrc = (crc ^ (-1)) >>> 0;
+        console.log("finalCrc : " + finalCrc);
+
+        console.log("finalCrc % 100000000 : " + finalCrc % 100000000);
+        return (finalCrc % 100000000).toString().padStart(8, '0');
+    }
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -331,9 +380,24 @@ FocusScope {
                             //Bottle info
                             optBottleInfo.bottle_name = optWineBottle.internalvalue.split('/').pop();
                             optBottleInfo.bottle_path = optWineBottle.internalvalue;
+                            //Calculate 8 digit id
+                            var dxvk = api.internal.recalbox.getStringParameter(prefix + ".dxvk", "auto")
+                            if(dxvk === "") dxvk = "auto";
+                            console.log("dxvk : " + dxvk)
+                            var vkd3d = api.internal.recalbox.getStringParameter(prefix + ".vkd3d", "auto")
+                            if(vkd3d === "") vkd3d = "auto";
+                            console.log("vkd3d : " + vkd3d)
+                            var dxvknvapi = "none"
+                            if(api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)){
+                                dxvknvapi = api.internal.recalbox.getStringParameter(prefix + ".dxvknvapi", "auto")
+                                if(dxvknvapi === "") dxvknvapi = "auto";
+                            }
+                            console.log("dxvknvapi : " + dxvknvapi)
+                            var newId = root.generate8DigitId(dxvk, dxvknvapi, vkd3d);
+                            console.log("graphics ID generated : " + newId)
                             //Renderer info (if exists)
-                            optBottleInfo.renderer_layer_name = optWineBottle.internalvalue.split('/').pop() + "@renderer";
-                            optBottleInfo.renderer_layer_path = optWineBottle.internalvalue + "@renderer";
+                            optBottleInfo.renderer_layer_name = optWineBottle.internalvalue.split('/').pop() + "@graphics_" + newId;
+                            optBottleInfo.renderer_layer_path = optWineBottle.internalvalue + "@graphics_" + newId;
                             //System info (if exists)
                             optBottleInfo.system_layer_name = optWineBottle.internalvalue.split('/').pop() + "@" + (system ? system.name : "");
                             optBottleInfo.system_layer_path = optWineBottle.internalvalue + "@" + (system ? system.name : "");
