@@ -49,6 +49,73 @@ FocusScope {
       return text;
     }
 
+    /**
+     * Generates an 8-digit ID based on a CRC32 hash of three values.
+     * Mirroring the logic of Python's zlib.crc32(combined) % 100_000_000.
+     */
+    function generate8DigitId(val1, val2, val3) {
+        var combined = val1 + "|" + val2 + "|" + val3;
+        console.log("combined : " + combined);
+
+        // 1. Create the table locally if it doesn't exist
+        // Using a static-like pattern in JS
+        if (typeof generate8DigitId.crcTable === 'undefined') {
+            generate8DigitId.crcTable = [];
+            for (var n = 0; n < 256; n++) {
+                var c = n;
+                for (var k = 0; k < 8; k++) {
+                    c = ((c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+                }
+                generate8DigitId.crcTable[n] = c;
+            }
+        }
+
+        var table = generate8DigitId.crcTable;
+        var crc = 0 ^ (-1); // Equivalent to 0xFFFFFFFF
+
+        // 2. Process characters
+        for (var i = 0; i < combined.length; i++) {
+            var code = combined.charCodeAt(i);
+
+            // Handling UTF-8 encoding for multi-byte characters
+            if (code < 0x80) {
+                crc = (crc >>> 8) ^ table[(crc ^ code) & 0xFF];
+            } else if (code < 0x800) {
+                crc = (crc >>> 8) ^ table[(crc ^ (192 | (code >> 6))) & 0xFF];
+                crc = (crc >>> 8) ^ table[(crc ^ (128 | (code & 63))) & 0xFF];
+            } else {
+                crc = (crc >>> 8) ^ table[(crc ^ (224 | (code >> 12))) & 0xFF];
+                crc = (crc >>> 8) ^ table[(crc ^ (128 | ((code >> 6) & 63))) & 0xFF];
+                crc = (crc >>> 8) ^ table[(crc ^ (128 | (code & 63))) & 0xFF];
+            }
+        }
+
+        // 3. Finalize and force unsigned 32-bit
+        var finalCrc = (crc ^ (-1)) >>> 0;
+        console.log("finalCrc : " + finalCrc);
+
+        console.log("finalCrc % 100000000 : " + finalCrc % 100000000);
+        return (finalCrc % 100000000).toString().padStart(8, '0');
+    }
+
+    function removeExistingValues(firstString, secondString) {
+        // 1. Convert the first string into an array of words
+        // The regex /\s+/ splits by any whitespace (space, tabs, or newlines)
+        let firstArray = firstString.split(/\s+/);
+        //console.log("firstArray : " + firstArray)
+        // 2. Convert the second string into an array
+        let secondArray = secondString.split(/\s+/);
+        //console.log("secondArray : " + secondArray)
+
+        // 3. Filter the first array: Keep item ONLY if it's NOT in the second array
+        let filteredArray = firstArray.filter(item => {
+            return secondArray.indexOf(item) === -1;
+        });
+        //console.log("filteredArray : " + filteredArray)
+        // 4. Join the result back into a space-separated string
+        return filteredArray.join(" ");
+    }
+
     Keys.onPressed: {
         if (api.keys.isCancel(event) && !event.isAutoRepeat) {
             event.accepted = true;
@@ -280,18 +347,22 @@ FocusScope {
                     property string bottle_winver : "" //win95 to win11
                     property string bottle_env : ""
                     //from renderer installation
+                    property string renderer_layer_size : ""
                     property string renderer_layer_name : ""
                     property string renderer_layer_path : ""
                     property string renderer_env : ""
                     //from emulatorfix
+                    property string emulator_layer_size : ""
                     property string emulator_layer_name : ""
                     property string emulator_layer_path : ""
                     property string emulator_env : ""
                     //from systemfix
+                    property string system_layer_size : ""
                     property string system_layer_name : ""
                     property string system_layer_path : ""
                     property string system_env : ""
                     //from gamefix
+                    property string game_layer_size : ""
                     property string game_layer_name : ""
                     property string game_layer_path : ""
                     property string game_env : ""
@@ -300,16 +371,16 @@ FocusScope {
                     label: "<u>" + qsTr("Information about selected bottle:") + "</u>"
                     // Set the format to RichText
                     noteFormat: Text.RichText
-                    note:  "<i>" + qsTr("Size") + "</i>: " + api.tr + "<b>" + bottle_size + "</b>" + "<br>" +
-                           ((bottle_engine !== "" && bottle_appimage === "") ?   ("<i>" + qsTr("Engine used") + "</i>: " + api.tr + "<b>" + bottle_engine + "</b>" + "<br>") : "") +
+                    //note:  "<i>" + qsTr("Size") + "</i>: " + api.tr + "<b>" + bottle_size + "</b>" + "<br>" +
+                    note:  ((bottle_engine !== "" && bottle_appimage === "") ?   ("<i>" + qsTr("Engine used") + "</i>: " + api.tr + "<b>" + bottle_engine + "</b>" + "<br>") : "") +
                            (bottle_appimage !== "" ? ("<i>" + qsTr("AppImage used") + "</i>: " + api.tr + "<b>" + bottle_appimage + "</b>" + "<br>") : "")  +
                            "<i>" + qsTr("Architecture") + "</i>: " + api.tr + "<b>" + bottle_arch + "</b>" + "<br>" +
                            "<i>" + qsTr("Windows version") + "</i>: " + api.tr + "<b>" + bottle_winver + "</b>" + "<br>" +
-                           (optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (base)") + "</i>: ") :  ("<i>" + qsTr("Environment") + "</i>: ")) + api.tr + "<b>" + bottle_env + "</b>" + "<br>" +
-                           (renderer_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (renderer)") + "</i>: " + api.tr + "<b>" + renderer_env + "</b>" + "<br>")  : "") +
-                           (system_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (system tricks)") + "</i>: " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
-                           (emulator_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (emulator tricks)") + "</i>: " + api.tr + "<b>" + emulator_env+ "</b>" + "<br>") : "") +
-                           (game_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Environment (game tricks)") + "</i>: " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
+                           "<i>" + (optProtonPrefixWithLayers.checked ? qsTr("Env(base)") :  qsTr("Env"))  + "</i>" + " - " + bottle_size + " : " + api.tr + "<b>" + bottle_env + "</b>" + "<br>" +
+                           ((renderer_env && optProtonPrefixWithLayers.checked) ? ("<i>" + qsTr("Env (renderer)") + "</i>" + " - " + renderer_layer_size + " : " + api.tr + "<b>" + renderer_env + "</b>" + "<br>")  : "") +
+                           ((system_env && !emulator_env && !game_env && optProtonPrefixWithLayers.checked) ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
+                           ((emulator_env && !game_env && optProtonPrefixWithLayers.checked) ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>'" + emulator_env + "'</b>" + "<br>") : "") +
+                           (game_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Env (game tricks)") + "</i>" + " - " + game_layer_size + " : " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
 
                     Component.onCompleted: {
                         wineInfoTimer.triggeredOnStart = false;
@@ -328,16 +399,33 @@ FocusScope {
                             //Bottle info
                             optBottleInfo.bottle_name = optProtonBottle.internalvalue.split('/').pop();
                             optBottleInfo.bottle_path = optProtonBottle.internalvalue;
+                            //Calculate 8 digit id
+                            var dxvk = api.internal.recalbox.getStringParameter(prefix + ".dxvk", "auto")
+                            if(dxvk === "") dxvk = "auto";
+                            console.log("dxvk : " + dxvk)
+                            var vkd3d = api.internal.recalbox.getStringParameter(prefix + ".vkd3d", "auto")
+                            if(vkd3d === "") vkd3d = "auto";
+                            console.log("vkd3d : " + vkd3d)
+                            var dxvknvapi = "none"
+                            if(api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)){
+                                dxvknvapi = api.internal.recalbox.getStringParameter(prefix + ".dxvknvapi", "auto")
+                                if(dxvknvapi === "") dxvknvapi = "auto";
+                            }
+                            console.log("dxvknvapi : " + dxvknvapi)
+                            var newId = root.generate8DigitId(dxvk, dxvknvapi, vkd3d);
+                            console.log("graphics ID generated : " + newId)
                             //Renderer info (if exists)
-                            optBottleInfo.renderer_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@renderer";
-                            optBottleInfo.renderer_layer_path = optProtonBottle.internalvalue + "@renderer";
+                            optBottleInfo.renderer_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@graphics_" + newId;
+                            optBottleInfo.renderer_layer_path = optProtonBottle.internalvalue + "@graphics_" + newId;
+                            console.log("optBottleInfo.renderer_layer_path: " + optBottleInfo.renderer_layer_path);
                             //System info (if exists)
-                            optBottleInfo.system_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@" + (system ? system.name : "");
-                            optBottleInfo.system_layer_path = optProtonBottle.internalvalue + "@" + (system ? system.name : "");
+                            optBottleInfo.system_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@" + (system ? system.name : (game ? game.collections.get(0).shortName : ""));
+                            optBottleInfo.system_layer_path = optProtonBottle.internalvalue + "@" + (system ? system.name : (game ? game.collections.get(0).shortName : ""));
+                            console.log("optBottleInfo.system_layer_path: " + optBottleInfo.system_layer_path);
                             //Emulator info (if exists)
                             optBottleInfo.emulator_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@" + (emulator ? emulator : "");
                             optBottleInfo.emulator_layer_path = optProtonBottle.internalvalue + "@" + (emulator ? emulator : "");
-                            console.log("optBottleInfo.game_layer_path: " + optBottleInfo.game_layer_path);
+                            console.log("optBottleInfo.emulator_layer_path: " + optBottleInfo.emulator_layer_path);
                             //Game info (if exists)
                             if(game){
                                 var path = game.files.get(0).path; // full path of rom
@@ -366,7 +454,6 @@ FocusScope {
                             //to calculate size
                             optBottleInfo.bottle_size = "";
                             api.internal.system.runAsync("du -sh \"" + optBottleInfo.bottle_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.bottle_name + ".size\"", "thread");
-                            directorySizeTimer.start();
                             //to get architecture
                             //example: sed -n 's/^#arch=//p' user.reg
                             optBottleInfo.bottle_arch = api.internal.system.run("sed -n 's/^#arch=//p' \"" + optBottleInfo.bottle_path + "/pfx/user.reg\" | tr -d '\\n' | tr -d '\\r'");
@@ -376,12 +463,43 @@ FocusScope {
                             optBottleInfo.bottle_winver = optBottleInfo.bottle_winver + " / " + api.internal.system.run("grep '\"ProductName\"=\"Windows' " + optBottleInfo.bottle_path + "/pfx/system.reg -B10 | grep -i '\"CurrentVersion\"' | uniq | cut -d'\"' -f4 | tr -d '\\n' | tr -d '\\r'");
                             //to get env details
                             //xargs -n 10 < winetricks.log
-                            //keep only 2 lines for the moment
-                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/pfx/winetricks.log | head -n 4") + "...";
-                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log | head -n 4");
-                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/pfx/winetricks.log | head -n 4");
-                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log | head -n 4");
-                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/pfx/winetricks.log | head -n 4");
+                            //keep only 1/2 lines max for the moment (keep 8 verbs max)
+                            //"cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4"
+
+                            optBottleInfo.bottle_env = api.internal.system.run("cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.renderer_env = api.internal.system.run("cat " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.system_env = api.internal.system.run("cat " + optBottleInfo.system_layer_path + "/pfx/winetricks.log " + optBottleInfo.system_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.emulator_env = api.internal.system.run("cat " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.game_env = api.internal.system.run("cat " + optBottleInfo.game_layer_path + "/pfx/winetricks.log " + optBottleInfo.game_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+
+                            //remove "env" info from lower layers and prepare size
+                            if(optBottleInfo.game_env !==""){
+                                optBottleInfo.game_env = removeExistingValues(optBottleInfo.game_env,optBottleInfo.renderer_env)
+                                optBottleInfo.game_layer_size = "";
+                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.game_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.game_layer_name + ".size\"", "thread");
+                            }
+                            else if(optBottleInfo.emulator_env !==""){
+                                optBottleInfo.emulator_env = removeExistingValues(optBottleInfo.emulator_env,optBottleInfo.renderer_env)
+                                optBottleInfo.emulator_layer_size = "";
+                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.emulator_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.emulator_layer_name + ".size\"", "thread");
+                            }
+                            else if(optBottleInfo.system_env !==""){
+                                optBottleInfo.system_env = removeExistingValues(optBottleInfo.system_env,optBottleInfo.renderer_env)
+                                optBottleInfo.system_layer_size = "";
+                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.system_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.system_layer_name + ".size\"", "thread");
+                            }
+                            if(optBottleInfo.renderer_env !==""){
+                                optBottleInfo.renderer_env = removeExistingValues(optBottleInfo.renderer_env,optBottleInfo.bottle_env)
+                                optBottleInfo.renderer_layer_size = "";
+                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.renderer_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.renderer_layer_name + ".size\"", "thread");
+                            }
+                            directorySizeTimer.start();
+
+                            console.log("optBottleInfo.bottle_env : " + optBottleInfo.bottle_env)
+                            console.log("optBottleInfo.renderer_env : " + optBottleInfo.renderer_env)
+                            console.log("optBottleInfo.system_env : " + optBottleInfo.system_env)
+                            console.log("optBottleInfo.emulator_env : " + optBottleInfo.emulator_env)
+                            console.log("optBottleInfo.game_env : " + optBottleInfo.game_env)
 
                             //reset color
                             optProtonBottle.color = themeColor.textValue;
@@ -409,11 +527,25 @@ FocusScope {
                         running: false
                         triggeredOnStart: true
                         onTriggered: {
-                            if(api.internal.system.run("test -f \"/tmp/" + optBottleInfo.bottle_name + ".size\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
-                                optBottleInfo.bottle_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.bottle_name + ".size\"");
-                                optBottleInfo.bottle_size = optBottleInfo.bottle_size + qsTr("Bytes") + api.tr + " (" + qsTr("directory") + api.tr + ")";
-                                running = false; //to stop the timer
+                            if(optBottleInfo.renderer_env !==""){
+                                optBottleInfo.renderer_layer_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.renderer_layer_name + ".size\"");
+                                optBottleInfo.renderer_layer_size = optBottleInfo.renderer_layer_size + qsTr("B") + api.tr;
                             }
+                            if(optBottleInfo.game_env !==""){
+                                optBottleInfo.game_layer_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.game_layer_name + ".size\"");
+                                optBottleInfo.game_layer_size = optBottleInfo.game_layer_size + qsTr("B") + api.tr;
+                            }
+                            else if(optBottleInfo.emulator_env !==""){
+                                optBottleInfo.emulator_layer_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.emulator_layer_name + ".size\"");
+                                optBottleInfo.emulator_layer_size = optBottleInfo.emulator_layer_size + qsTr("B") + api.tr;
+                            }
+                            else if(optBottleInfo.system_env !==""){
+                                optBottleInfo.system_layer_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.system_layer_name + ".size\"");
+                                optBottleInfo.system_layer_size = optBottleInfo.system_layer_size + qsTr("B") + api.tr;
+                            }
+                            optBottleInfo.bottle_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.bottle_name + ".size\"");
+                            optBottleInfo.bottle_size = optBottleInfo.bottle_size + qsTr("B") + api.tr;
+                            running = false; //to stop the timer
                         }
                     }
 
@@ -449,7 +581,7 @@ FocusScope {
                             //anchors.horizontalCenter: parent.horizontalCenter
 
                             // Centering is still fine, it will center the "natural" sized image
-                            anchors.centerIn: parent
+                            //anchors.centerIn: parent
                             fillMode: Image.PreserveAspectFit
                             smooth: true
                             visible: true
@@ -578,57 +710,6 @@ FocusScope {
                     visible: devModeActivated
                     KeyNavigation.down: optProtonSoftRenderer
                 }
-                //RFU
-                /*MultivalueOption {
-                    id: optProtonfix
-
-                    //property to manage parameter name
-                    property string parameterName : prefix + ".protonfix"
-
-                    label: qsTr("Proton 'fix'") + api.tr
-                    note: qsTr("Select your prefered fix if exists, keep 'AUTO' if you don't know") + api.tr
-
-                    // Logic to update visibleInFlickable based on scroll position
-                    // This is less efficient as it's checked for ALL items
-                    property bool visibleInFlickable: false // Custom property to track visibility
-                    // Initial check
-                    Component.onCompleted: parent.checkVisibility(this)
-                    // check if visibility changed
-                    onVisibleChanged: parent.checkVisibility(this)
-
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optProtonfix;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                        internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                        }
-                        container.onFocus(this)
-                    }
-                    visible: optProtonBottle.internalvalue === "" ? true : false
-                    KeyNavigation.down: optProtonSoftRenderer
-                }*/
                 //RFU
                 /*MultivalueOption {
                     id: optProtonAppImage
