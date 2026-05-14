@@ -380,10 +380,10 @@ FocusScope {
                            "<i>" + qsTr("Windows version") + "</i>: " + api.tr + "<b>" + bottle_winver + "</b>" + "<br>" +
                            "<i>" + qsTr("Wine binary") + "</i>: " + api.tr + "<b>" + bottle_wine + "</b>" + "<br>" +
                            "<i>" + (optWinePrefixWithLayers.checked ? qsTr("Env(base)") :  qsTr("Env"))  + "</i>" + " - " + bottle_size + " : " + api.tr + "<b>" + bottle_env + "</b>" + "<br>" +
-                           (renderer_env && optWinePrefixWithLayers.checked ? ("<i>" + qsTr("Env (renderer)") + "</i>" + " - " + renderer_layer_size + " : " + api.tr + "<b>" + renderer_env + "</b>" + "<br>")  : "") +
-                           (system_env && optWinePrefixWithLayers.checked ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
-                           (emulator_env && optWinePrefixWithLayers.checked ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>" + emulator_env+ "</b>" + "<br>") : "") +
-                           (game_env && optWinePrefixWithLayers.checked ? ("<i>" + qsTr("Env (game tricks)") + "</i>" + " - " + game_layer_size + " : " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
+                           ((renderer_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (renderer)") + "</i>" + " - " + renderer_layer_size + " : " + api.tr + "<b>" + renderer_env + "</b>" + "<br>")  : "") +
+                           ((system_env && !emulator_env && !game_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
+                           ((emulator_env && !game_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>" + emulator_env+ "</b>" + "<br>") : "") +
+                           ((game_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (game tricks)") + "</i>" + " - " + game_layer_size + " : " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
 
                     Component.onCompleted: {
                         wineInfoTimer.triggeredOnStart = false;
@@ -467,11 +467,11 @@ FocusScope {
                             //to get env details
                             //xargs -n 10 < winetricks.log
                             //keep only 1/2 lines max for the moment (keep 8 verbs max)
-                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4");
-                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/winetricks.log | head -n 4");
-                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/winetricks.log | head -n 4");
-                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/winetricks.log | head -n 4");
-                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/winetricks.log | head -n 4");
+                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
 
                             //remove "env" info from lower layers and prepare size
                             if(optBottleInfo.game_env !==""){
