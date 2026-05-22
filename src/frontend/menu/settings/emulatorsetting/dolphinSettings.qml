@@ -363,8 +363,22 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(prefixgamecube + ".realgamecubepads",checked);
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optWiiSkylandersPortal
+                }
+
+                ToggleOption {
+                    id: optWiiSkylandersPortal
+                    //wii.skylanders.portal=0
+                    label: qsTr("Wii Skylanders portal") + api.tr
+                    note: qsTr("To activate usage of skylanders portal for wii games") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter(prefixwii + ".skylanders.portal",false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(prefixwii + ".skylanders.portal",checked);
+                    }
+                    onFocusChanged: container.onFocus(this)
                     //KeyNavigation.down: RFU
                 }
+
                 Item {
                     width: parent.width
                     height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)

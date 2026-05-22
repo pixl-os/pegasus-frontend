@@ -197,6 +197,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- first iteration to have a thead to shell command and to improve performance
 	- add 2 "interface" parameters to manage splash videos
 	- add QTQuick3D for nice animations ;-)
+	- add support of skylanders portal for wii games from dolphin
 
 ## [pixL-master] - 2025-05-16 - v0.1.11
 - Fixes:
