@@ -1027,7 +1027,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: !optProtonSoftRenderer.checked
+                    visible: !optProtonSoftRenderer.checked && devModeActivated
                     KeyNavigation.down: optProtonVkd3dVersion
                 }
                 MultivalueOption {
@@ -1076,7 +1076,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: !optProtonSoftRenderer.checked
+                    visible: !optProtonSoftRenderer.checked && devModeActivated
                     KeyNavigation.down: optProtonNVapi
                 }
                 //to enable Nvidia-specific features (like DLSS, Ray Tracing, or Reflex)
@@ -1092,7 +1092,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    visible: !optProtonSoftRenderer.checked
+                    visible: !optProtonSoftRenderer.checked && devModeActivated
                     KeyNavigation.down: optProtonDxvkNapiVersion
                 }
                 MultivalueOption {
@@ -1141,7 +1141,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: !optProtonSoftRenderer.checked && optProtonNVapi.checked
+                    visible: !optProtonSoftRenderer.checked && optProtonNVapi.checked && devModeActivated
                     KeyNavigation.down: optProtonDxvkFramerate
                 }
 		
@@ -1388,6 +1388,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonFSync
+                    visible: devModeActivated
                 }
                 ToggleOption {
                     id: optProtonFSync
@@ -1402,6 +1403,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: btnCleanEmulatorBottles
+                    visible: devModeActivated
                 }
                 //****************************** section to manage all proton version and bottles *****************************************
                 SectionTitle {
@@ -1489,6 +1491,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optProtonDebug
+                    visible: devModeActivated
                 }
                 SectionTitle {
                     text: qsTr("Proton 'Developer' configuration") + api.tr
