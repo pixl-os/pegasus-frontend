@@ -1027,7 +1027,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: !optWineSoftRenderer.checked
+                    visible: !optWineSoftRenderer.checked && devModeActivated
                     KeyNavigation.down: optWineVkd3dVersion
                 }
                 MultivalueOption {
@@ -1076,7 +1076,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: !optWineSoftRenderer.checked
+                    visible: !optWineSoftRenderer.checked && devModeActivated
                     KeyNavigation.down: optWineNVapi
                 }
                 //to enable Nvidia-specific features (like DLSS, Ray Tracing, or Reflex)
@@ -1092,7 +1092,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    visible: !optWineSoftRenderer.checked
+                    visible: !optWineSoftRenderer.checked && devModeActivated
                     KeyNavigation.down: optWineDxvkNapiVersion
                 }
                 MultivalueOption {
@@ -1141,7 +1141,7 @@ FocusScope {
                         }
                         container.onFocus(this)
                     }
-                    visible: !optWineSoftRenderer.checked && optWineNVapi.checked
+                    visible: !optWineSoftRenderer.checked && optWineNVapi.checked && devModeActivated
                     KeyNavigation.down: optWineDxvkFramerate
                 }
 
@@ -1308,6 +1308,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWinePrefixFromRAM
+                    visible: devModeActivated
                 }
                 SectionTitle {
                     text: qsTr("Wine 'Performance' configuration") + api.tr
@@ -1379,12 +1380,13 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".wineesync", true)
                     onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wineesync",false)){
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wineesync",true)){
                             api.internal.recalbox.setBoolParameter(prefix + ".wineesync",checked);
                         }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineFSync
+                    visible: devModeActivated
                 }
                 ToggleOption {
                     id: optWineFSync
@@ -1393,12 +1395,13 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".winefsync", true)
                     onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winefsync",false)){
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winefsync",true)){
                             api.internal.recalbox.setBoolParameter(prefix + ".winefsync",checked);
                         }
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: btnCleanEmulatorBottles
+                    visible: devModeActivated
                 }
                 //****************************** section to manage all wine version and bottles *****************************************
                 SectionTitle {
@@ -1486,6 +1489,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optWineDebug
+                    visible: devModeActivated
                 }
                 SectionTitle {
                     text: qsTr("Wine 'Developer' configuration") + api.tr
@@ -1590,7 +1594,7 @@ FocusScope {
                 //to launch wine cfg from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchWineCfg
-                    visible: (optWineBottle.internalvalue !== "") ? true : false
+                    visible: (optWineBottle.internalvalue !== "") && devModeActivated ? true : false
                     Rectangle {
                         id: containerValidateLaunchWineCfg
                         width: parent.width
@@ -1625,12 +1629,13 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: btnLaunchRegedit
+
                 }
 
                 //to launch wine regedit from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchRegedit
-                    visible: (optWineBottle.internalvalue !== "") ? true : false
+                    visible: (optWineBottle.internalvalue !== "")  && devModeActivated ? true : false
                     Rectangle {
                         id: containerValidateLaunchRegedit
                         width: parent.width
@@ -1670,7 +1675,7 @@ FocusScope {
                 //to launch wine control joy.cpl from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchControllerSettings
-                    visible: (optWineBottle.internalvalue !== "") ? true : false
+                    visible: (optWineBottle.internalvalue !== "")  && devModeActivated ? true : false
                     Rectangle {
                         id: containerValidateControllerSettings
                         width: parent.width
