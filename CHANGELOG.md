@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file (focus on ch
 	- optimize code to well display editbox "pointers" (not yet perfecy)
 	- add filtering about warnings about libpng
 	- quick fix to force bluetooth scan in all cases now
+	- add "note" label for section if needed
+	- remove unused parameters and add comments for understanding
+	- manage better multivalueoption display and speed loading
 
 - Features:
 	- introduction of dedicaced view for wine and proton configuration (to share with all emulators using wine):
@@ -25,16 +28,65 @@ All notable changes to this project will be documented in this file (focus on ch
 		- clean now engine prefix by type of engine (wine or proton)
 		- set condition to set parameter in case of boolean option (for proton also)
 		- fix proton prefix deletion
+		- New engine(s) management for wine/proton:
+			- protonUp-QT to be launched from "wine/proton" menu
+			- add runner selection to use wine or proton for model2emu
+			- reactivate audio driver configuration for proton
+			- fix nocase commands for bottles deletion
+			- manage 32/64-bit layer independently
+			- rewrite bottles deletions
+			- add color management for ProtonUp-QT
+			- kill .exe/wine process before bottle deletion tentative
+			- add selection of existing bottles
+			- add details and deletion of selected bottle
+			- add icon/logo/size for selected bottle
+			- add free space display when we create new bottle
+			- put in "red" prefix with missing engine + update icons
+			- rework QML code to reuse wine improvements and RFU
+			- add management of proton bottles parameterslist
+			- stop to add wineversion in displayed name (already in the name itself usually)
+			- add umu-proton repo icon
+			- resize logos and improve names matching
+			- add copy of config file from share_init systematically before launching
+			- speed up multi-value/check options using dynamic loading from scroling and visibility
+			- to reload list of bottles from menu (in all cases to update after installation)
+			- add wine binary management in bottle directory naming
+			- reduce naming and just add date/time to distinguigh bottles
+			- remove emulator logo for the moment to focus on engine logo
+			- add "short"  ge-proton logo for best display
+			- fix to read registry from /pfx
+			- reset cache for wine/proton engines after ProtonUp-Qt launch
+			- fix copy of ProtonUp-Qt config file
+			- fix to well reset after bottle(s) deletion
+			- finally keep button visible everytime to delete all bottles if needed
+			- force "empty" set when bottle are missing from bottle list due to a previous deletion
+			- add display of game info from teknoparrot metadata (json/xml)
+			- manage better visibility of buttons/lists and commands launch from "bottle" selected
+			- rework launch of windows tools (winecfg, regedit, control joy.cpl)
+			- fix to have common behavior for bottle deletion menu
+			- manage layer and loading in ram for prefix/bottle
+			- add options to manage versions of DXVK/VKD3D/NVAPI (for wine only for the moment)
+			- add display of dependencies environement for all layers (proton/wine)
+			- fix to change game title by game rom name without extension to manage layers info display
+			- display layers option only in dev mode
+			- wine dll override only configurable from dev mode activated
+			- manage new id using crc32 for graphics layer
+			- manage size for all layers  and env display
+			- simplify menu for non-dev users
+
 	- introduction of teknoparrot advance emulator settings:
 		- add arcade panel previews for tp controls mappings
 		- add alternate panel mapping preview image for tp in 6 buttons
 		- add test/service menu option
 		- set condition to set parameter in case of boolean option (for teknoparrot)
+		- manage some specific "internal" game resolution for teknoparrot
+	
 	- introduce possibility to display an image from list selection:
 		- add splitted listview with title/tab management
 		- add title for "Predefined shader" also
-		- add picture for "Predefined shader" alsooverride file deletion feature
+		- add picture for "Predefined shader" also
 		- add management of "none" preview for shader set
+	
 	- introduction to have access to emulator configuration from system/game menu:
 		- rename QML files for emulator settings to automate QML file call/detection
 		- add launch of advanced emulator settings from game/system settings
@@ -58,6 +110,7 @@ All notable changes to this project will be documented in this file (focus on ch
 		- add override file deletion feature
 		- add capacity for override to take into account empty  keys from override if exists
 		- restore icon display also in menu as modal dialog box
+	
 	- introduction to controller led management:
 		- add nrainbowslider component to be able to manage RGB color settings
 		- add menu to manage RGB Color for Dualshock 4 controller led for 4 players
@@ -69,6 +122,7 @@ All notable changes to this project will be documented in this file (focus on ch
 		- fix ps4 led management due to "fresh" skin management
 		- add support of "dualsense" color led management
 		- use finally a "common" script for all controller leds
+	
 	- introduce feature to manage skins:
 		- propose more xbox series visuals
 		- add access to "guid" property at qml level
@@ -110,6 +164,7 @@ All notable changes to this project will be documented in this file (focus on ch
 		- skin "human readable" naming management + fix assets loading
 		- skin "name" management + some fixes
 		- add "human readable name" to initial layout also from QML
+	
 	- introduce support of Epilogie GB Operator dumper/reader:
 		- add section for "actions" linked to this reader/dumper
 		- introduction timer for gboperator rom/save management
@@ -129,12 +184,19 @@ All notable changes to this project will be documented in this file (focus on ch
 		- finally add save writing in cartridge using binding for gb operator and retrode
 		- stop to use "extractions" directory for retrode/gb operator
 		- improve bind/cp for saves writing
+	
 	- for dev ;-):
 		- introduction log viewer - first iteration
+		- show logs hidding only in dev mode now
+		- improve logviewer resizing
+		- add miliseconds for debug
+
 	- display Advanced Emulator Settings if emulator present for some cases.
 	- add capacity to manage some "exclusion" to select layout/icon
 	- add capacity to call script/command/bin in background using "Qprocess" or "popen"
 	- first iteration to have a thead to shell command and to improve performance
+	- add 2 "interface" parameters to manage splash videos
+	- add QTQuick3D for nice animations ;-)
 
 ## [pixL-master] - 2025-05-16 - v0.1.11
 - Fixes:
