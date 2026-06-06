@@ -22,11 +22,15 @@
 #include "Paths.h"
 #include "RootFolders.h"
 #include "model/gaming/Assets.h"
+
 #include "model/gaming/Collection.h"
+#include "model/gaming/Game.h"
+#include "model/gaming/GameFile.h"
 #include "providers/SearchContext.h"
+#include "providers/es2/Es2Metadata.h"
 #include "providers/es2/Es2Systems.h"
+#include "providers/es2/Es2Metadata.h"
 #include "utils/PathTools.h"
-#include "utils/StdHelpers.h"
 
 #include <QDirIterator>
 #include <QFile>
@@ -34,6 +38,8 @@
 #include <QStringBuilder>
 #include <QTextStream>
 
+//For recalbox
+#include "RecalboxConf.h"
 
 namespace {
 QVector<QStringRef> split_list(const QString& str)
@@ -108,9 +114,14 @@ size_t create_collection_for(
 size_t find_games_for(
     const SystemEntry& sysentry,
     const QDir& system_dir,
-    SearchContext& sctx)
+    SearchContext& sctx,
+    Metadata& metahelper)
 {
     model::Collection& collection = *sctx.get_or_create_collection(sysentry.name);
+
+    /*if(sysentry.shortname == "systemes3"){
+        Log::debug("Es2Games Lightgun games",LOGMSG("systemes3 found"));
+    }*/
 
     // This vector will act as our queue for directories to process
     QVector<QString> dirs_to_scan;
@@ -125,6 +136,7 @@ size_t find_games_for(
     // Manual BFS traversal
     while (current_dir_index < dirs_to_scan.size()) {
         const QString current_dir_path = dirs_to_scan.at(current_dir_index++);
+        //Log::debug("Es2Games Lightgun games",LOGMSG("current_dir_path : %1").arg(current_dir_path));
 
         // Skip the specific "media" directory if it's the one under the system_dir.
         // We do this check here, so we don't even scan its contents.
@@ -142,6 +154,7 @@ size_t find_games_for(
         while (it.hasNext()) {
             it.next(); // Advance to the next entry (file or directory)
             QFileInfo fileinfo = it.fileInfo();
+            //Log::debug("Es2Games Lightgun games",LOGMSG("fileinfo.fileName() : %1").arg(fileinfo.fileName()));
 
             // Check if the current entry's name (file or directory name) matches any of the game extensions
             bool matches_extension = false;
@@ -161,12 +174,34 @@ size_t find_games_for(
                     // IMPORTANT: We DO NOT add this directory to 'dirs_to_scan',
                     // effectively preventing further scanning *inside* it.
                     QString path = ::clean_abs_path(fileinfo);
+                    QString const path2 = path;
+                    //Log::debug("Es2Games Lightgun games",LOGMSG("path : %1").arg(path));
+
                     model::Game* game_ptr = sctx.game_by_filepath(path);
                     if (!game_ptr) {
                         game_ptr = sctx.create_game_for(collection);
+                        //Log::debug("Es2Games Lightgun games",LOGMSG("game_add_filepath : %1").arg(path));
                         sctx.game_add_filepath(*game_ptr, std::move(path));
                     }
                     sctx.game_add_to(*game_ptr, collection);
+
+                    //add here if lightgun games
+                    //part after is dedicated to set flag for lightgun games from our "lightgun.cfg" xml file
+                    if(sysentry.lightgun != "no"){
+                        //Log::debug("Es2Games Lightgun games",LOGMSG("system: '%1' ").arg(sysentry.shortname));
+                        if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
+                        {
+                            //Log::debug("Es2Games Lightgun games",LOGMSG("pegasus.flaglightgungames = true"));
+                            model::GameFile* const gamefile_ptr = sctx.gamefile_by_filepath(path2);
+                            if (!gamefile_ptr){ // ie. the file was not picked up by the system's extension list
+                                //Log::debug("Es2Games Lightgun games",LOGMSG("continue"));
+                                continue;
+                            }
+                            //search game from lightgun db using lightgun.cfg
+                            //Log::debug("Es2Games Lightgun games",LOGMSG("game_ptr->setLightgunGame"));
+                            game_ptr->setLightgunGame(metahelper.isLightgunGames(game_ptr, gamefile_ptr, sysentry));
+                        }
+                    }
                     found_games++;
                 } else {
                     // Scenario: Regular directory (e.g., "Roms", "Games")
@@ -181,12 +216,26 @@ size_t find_games_for(
                 if (matches_extension) {
                     // Scenario: Regular file that is a game (e.g., "game.nes", "rom.zip")
                     QString path = ::clean_abs_path(fileinfo);
+                    QString const path2 = path;
                     model::Game* game_ptr = sctx.game_by_filepath(path);
                     if (!game_ptr) {
                         game_ptr = sctx.create_game_for(collection);
                         sctx.game_add_filepath(*game_ptr, std::move(path));
                     }
                     sctx.game_add_to(*game_ptr, collection);
+
+                    //add here if lightgun games
+                    //part after is dedicated to set flag for lightgun games from our "lightgun.cfg" xml file
+                    if(sysentry.lightgun != "no"){
+                        if(RecalboxConf::Instance().AsBool("pegasus.flaglightgungames", true))
+                        {
+                            model::GameFile* const gamefile_ptr = sctx.gamefile_by_filepath(path2);
+                            if (!gamefile_ptr) // ie. the file was not picked up by the system's extension list
+                                continue;
+                            //search game from lightgun db using lightgun.cfg
+                            game_ptr->setLightgunGame(metahelper.isLightgunGames(game_ptr, gamefile_ptr, sysentry));
+                        }
+                    }
                     found_games++;
                 }
             }

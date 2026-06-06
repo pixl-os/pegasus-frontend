@@ -101,6 +101,7 @@ model::Game* SearchContext::create_game()
 
 model::Game* SearchContext::game_by_filepath(const QString& can_path) const
 {
+    //Log::debug(LOGMSG("game_by_filepath - can_path: %1").arg(can_path));
     model::GameFile* const entry_ptr = gamefile_by_filepath(can_path);
     return entry_ptr
         ? entry_ptr->parentGame()
@@ -117,6 +118,7 @@ model::Game* SearchContext::game_by_uri(const QString& uri) const
 
 model::GameFile* SearchContext::gamefile_by_filepath(const QString& can_path) const
 {
+    //Log::debug(LOGMSG("gamefile_by_filepath - can_path (to find): %1").arg(can_path));
     const auto it = m_filepath_to_gamefile.find(can_path);
     return it != m_filepath_to_gamefile.cend()
         ? it->second
@@ -133,18 +135,23 @@ model::GameFile* SearchContext::gamefile_by_uri(const QString& uri) const
 
 model::GameFile* SearchContext::game_add_filepath(model::Game& game, QString can_path)
 {
+    //Log::debug(LOGMSG("can_path: %1").arg(can_path));
     model::GameFile* const registered_ptr = gamefile_by_filepath(can_path);
-    if (registered_ptr)
+    if (registered_ptr){
+        //Log::debug(LOGMSG("registered_ptr !!!"));
         return registered_ptr;
+    }
 
     auto* const entry_ptr = new model::GameFile(can_path, game);
     m_game_entries[&game].emplace_back(entry_ptr);
     m_filepath_to_gamefile.emplace(can_path, entry_ptr);
 
     if (game.title().isEmpty()) {
+        //Log::debug(LOGMSG("Title empty !!!"));
         game.setTitle(entry_ptr->name())
             .setSortBy(entry_ptr->name());
     }
+    //else Log::debug(LOGMSG("Title not empty !!!"));
 
     return entry_ptr;
 }
@@ -355,7 +362,7 @@ SearchContext& SearchContext::schedule_download(
 #endif
 
     QNetworkReply* const reply = m_netman->get(request);
-	Log::debug(LOGMSG("emit downloadScheduled();"));
+    //Log::debug(LOGMSG("emit downloadScheduled();"));
     //emit downloadScheduled();
 
 	QObject::connect(reply, &QNetworkReply::finished, [=]() {
@@ -363,7 +370,7 @@ SearchContext& SearchContext::schedule_download(
 		{
 			QByteArray response = reply->readAll();
 			// do something with the data...
-			Log::debug(LOGMSG("response searchcontext = %1").arg(QString::fromStdString(response.toStdString())));
+            //Log::debug(LOGMSG("response searchcontext = %1").arg(QString::fromStdString(response.toStdString())));
 		}
 		else // handle error
 		{
@@ -383,7 +390,7 @@ SearchContext& SearchContext::schedule_download(
             // emit downloadCompleted();
         // });
 		
-	Log::debug(LOGMSG("return *this;"));
+    //Log::debug(LOGMSG("return *this;"));
     return *this;
 }
 } // namespace providers
