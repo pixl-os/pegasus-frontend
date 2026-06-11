@@ -199,6 +199,51 @@ FocusScope {
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.challenge.indicators")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.challenge.indicators",checked);
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optLeaderboardIndicators
+                    visible: optRetroachievementActivate.checked
+                }
+                MultivalueOption {
+                    id: optLeaderboardIndicators
+                    //property to manage parameter name
+                    property string parameterName : "global.retroachievements.leaderboard.indicators"
+
+                    label: qsTr("Leaderboard indicators") + api.tr
+                    note: qsTr("Shows a message when a leaderboard activates..") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optLeaderboardIndicators;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optRAIconsInLists
                     visible: optRetroachievementActivate.checked
                 }
