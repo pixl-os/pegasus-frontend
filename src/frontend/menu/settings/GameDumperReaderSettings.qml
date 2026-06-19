@@ -212,7 +212,7 @@ FocusScope {
                     //dumpers.retrode.enabled=0
                     SectionTitle {
                         text: qsTr("RETRODE dumper") + api.tr
-                        symbol: "\uf25e / \uf26b"
+                        symbol: "\uf25e \uf26b \uf264"
                         symbolFontFamily: globalFonts.awesome
                         symbolFontSize: vpx(40)
                         first: true
@@ -625,8 +625,91 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSNOPERATORDumper
                     visible: optGBOPERATORDumper.checked
                 }
+                //for SN OPERATOR...
+                ToggleOption {
+                    id: optSNOPERATORDumper
+                    //dumpers.snoperator.enabled=0
+                    SectionTitle {
+                        text: qsTr("SN OPERATOR dumper") + api.tr
+                        first: true
+                        symbol: "\uf25e"
+
+                        symbolFontFamily: globalFonts.awesome
+                        symbolFontSize: vpx(40)
+                    }
+
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.snoperator.enabled",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.snoperator.enabled",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.snoperator.enabled",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSNOPERATORMoveSave
+                }
+                ToggleOption {
+                    id: optSNOPERATORMoveSave
+                    //dumpers.sboperator.movesave=0 by default
+                    label: qsTr("Cartridge RAM in your saves") + api.tr
+                    note: qsTr("Moved .sav from cartridge to your .srm saves to play with it (if not already moved/exists)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.snoperator.movesave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.snoperator.movesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.snoperator.movesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSNOPERATORWriteSave
+                    visible: optSNOPERATORDumper.checked && !optSNOPERATORWriteSave.checked
+                }
+                ToggleOption {
+                    id: optSNOPERATORWriteSave
+                    //dumpers.snoperator.writesave=0 by default
+                    label: qsTr("Cartridge RAM writing (Beta)") + api.tr
+                    note: qsTr("Create symlink from your saves to cartridge (if not already moved/exists)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.snoperator.writesave",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.snoperator.writesave",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.snoperator.writesave",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSNOPERATORSaveDump
+                    visible: optSNOPERATORDumper.checked && !optSNOPERATORMoveSave.checked
+                }
+                ToggleOption {
+                    id: optSNOPERATORSaveDump
+                    //dumpers.snoperator.savedump=0 by default
+                    label: qsTr("Cartridge ROM in your dumps") + api.tr
+                    note: qsTr("Copy and rename 'Rom' from cartridge to keep it\n(will be in 'dumps' share directory)") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.snoperator.savedump",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.snoperator.savedump",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.snoperator.savedump",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSNOPERATORSaveROMInfo
+                    visible: optSNOPERATORDumper.checked
+                }
+                ToggleOption {
+                    id: optSNOPERATORSaveROMInfo
+                    //dumpers.snoperator.romlist=0 by default
+                    label: qsTr("Save rom information in file") + api.tr
+                    note: qsTr("Enable saving of rom information identified by the dumper\n(stored in your roms directory and named 'snoperator.romlist.csv')") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("dumpers.snoperator.romlist",false);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("dumpers.snoperator.romlist",false)){
+                            api.internal.recalbox.setBoolParameter("dumpers.snoperator.romlist",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: optSNOPERATORDumper.checked
+                }
+
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
