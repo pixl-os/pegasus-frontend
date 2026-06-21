@@ -782,13 +782,14 @@ Window {
             }
             //For retrode & gb operator case (using multiple systems) and not as usbnes ;-)
             else if((gameCartridge_save !== "")
-                    && ((gameCartridge_dumper === "retrode") || (gameCartridge_dumper === "gboperator"))
+                    && ((gameCartridge_dumper === "retrode") || (gameCartridge_dumper === "gboperator") || (gameCartridge_dumper === "snoperator"))
                     && ( api.internal.recalbox.getBoolParameter("dumpers." + gameCartridge_dumper + ".movesave",false)
                       || api.internal.recalbox.getBoolParameter("dumpers." + gameCartridge_dumper + ".writesave",false))
                     ){
                 //get crc32 to ahve it in name of files as reference to improve unicity
                 if(gameCartridge_dumper === "retrode") romcrc32 = api.internal.system.run("cat /tmp/RETRODE.romcrc32 | tr -d '\\n' | tr -d '\\r'");
                 if(gameCartridge_dumper === "gboperator") romcrc32 = api.internal.system.run("cat /tmp/GBOPERATOR.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                if(gameCartridge_dumper === "snoperator") romcrc32 = api.internal.system.run("cat /tmp/SNOPERATOR.romcrc32 | tr -d '\\n' | tr -d '\\r'");
                 //copy with existing extension for the moment to retroarch cores and need to have same name than rom but just adding CRC32 ;-)
                 var resultArray = gameCartridge_rom.split("/");
                 var filename = resultArray[resultArray.length -1]; // Get the last component of the path
@@ -868,6 +869,7 @@ Window {
     property string usbnesVersion: "" //to store version at mount
     property string retrodeVersion: "" //to store version at mount
     property string gboperatorVersion: "" //to store version (RFU)
+    property string snoperatorVersion: "" //to store version (RFU)
 
     Component {
         id: cartridgeDialogBox
@@ -1485,6 +1487,165 @@ Window {
         }
     }
 
+    // Timer to show the dialog box for cartridge (SN OPERATOR)
+    Timer {
+        id: dialogBoxSNOPERATORTimer
+        interval: 5000
+        triggeredOnStart: true
+        repeat: true
+        running: (splashScreen.focus) ? false : true
+        property bool cartridge_plugged: false
+        onTriggered: {
+            if (!api.internal.recalbox.getBoolParameter("dumpers.snoperator.enabled",false)){
+                //do nothing if not enabled but we keep timer running for detection
+                return;
+            }
+            var mountpoint = "/tmp"; //use tmp directory for snoperator because no mountpoint exists in this case
+            console.log("snoperator 'virtual' mountpoint  - ", mountpoint)
+            if(mountpoint.includes("/tmp")) { //stupid test just to keep same structucode than USBNES ;-)
+                //console.log("SNOPERATOR: cartridge plugged - ", cartridge_plugged)
+                //check any change ?
+                var readflag = api.internal.system.run("cat " + mountpoint + "/SNOPERATOR.readflag" + " | tr -d '\\n' | tr -d '\\r'");
+                //console.log("SNOPERATOR: readflag - ", readflag);
+                if(readflag !== "true"){
+                    //in case of SN operator, the gameinfo contains the ROM file name with extension for the moment
+                    var romfile = api.internal.system.run("cat /tmp/SNOPERATOR.gamedumped | tr -d '\\n' | tr -d '\\r'");
+                    //just file name without extension for the moment in rominfo
+                    var parts = romfile.split(".");
+                    var rominfo = parts.slice(0, -1).join(".");
+                    //console.log("SNOPERATOR: rominfo - ", rominfo);
+                    //get system from romfile extension
+                    var system =  romfile.split('.').pop();
+                    //console.log("SNOPERATOR: system - ", system)
+                    //get size of the rom detected
+                    //console.log("SNOPERATOR: wc -c \""+ mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
+                    var romsize = api.internal.system.run("wc -c \""+ mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
+                    //console.log("SNOPERATOR: romsize - ", romsize)
+                    //get previous crc32 if exists (including complete path of rom) to be able to compare it with previous one
+                    var previousromcrc32 = api.internal.system.run("cat /tmp/SNOPERATOR.romcrc32 | tr -d '\\n' | tr -d '\\r'");
+                    //console.log("SNOPERATOR: previousromcrc32 - ", previousromcrc32)
+                    //generate crc32 of the rom detected (including complete path of rom) to be able to compare it with previous one
+                    //(don't try to match with screenscrapper one where header is added and/or done on zip file)
+                    //console.log("SNOPERATOR: crc32 \"" + mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'");
+                    var romcrc32 = api.internal.system.run("crc32 \"" + mountpoint + "/" + romfile + "\" | tr -d '\\n' | tr -d '\\r'").split(" ")[0];
+                    console.log("SNOPERATOR: romcrc32:", romcrc32)
+                    console.log("SNOPERATOR: parseInt(romsize):", parseInt(romsize).toString())
+                    if((parseInt(romsize) >= 32768)){
+                        cartridge_plugged = true;
+                        if(romcrc32 === previousromcrc32){
+                            gameCartridge_state = "reloaded";
+                            //show popup to say that is a reset
+                            apiconnection.onShowPopup(qsTr("Video game cartridge reader"), qsTr("SN OPERATOR cartridge reloaded"),"",2);
+                        }
+                        //just set "cartridge" as title of this game (optional)
+                        api.internal.singleplay.setTitle("cartridge");
+                        //set rom full path
+                        gameCartridge_rom = mountpoint + "/" + romfile;
+                        api.internal.singleplay.setFile(gameCartridge_rom);
+                        //set system to select to run this rom
+                        api.internal.singleplay.setSystem(system); //using shortName
+                        //store new crc32 (including complete path of rom) and store it for the moment
+                        api.internal.system.run("echo \"" + romcrc32.split(" ")[0] + "\" | tr -d '\\n' | tr -d '\\r' > /tmp/SNOPERATOR.romcrc32");
+                        //RFU: generate md5 (including complete path of rom) and store it for the moment
+                        //api.internal.system.run("md5sum " + mountpoint + "/rom.nes | tr -d '\\n' | tr -d '\\r' > /tmp/SNOPERATOR.rommd5");
+                        if(rominfo !== ""){
+                            //check also if sav game exist
+                            var savinfo=api.internal.system.run("ls \""+ mountpoint + "/" + rominfo + ".sav\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                            console.log("SNOPERATOR: savinfo - ", savinfo);
+                            var savinfoflag = "N";
+                            gameCartridge_save = "";
+                            if(savinfo !== ""){
+                                savinfoflag = "Y";
+                                //just communicate that sav is available
+                                gameCartridge_save = mountpoint + "/" + rominfo +".sav";
+                            }
+                            gameCartridge_state = "identified";
+                            gameCartridge = rominfo;
+                            gameCartridge_type = ""; // NA - not really possible t well discriminate
+                            //console.log("SNOPERATOR: gameCartridge_type - ", gameCartridge_type);
+                            gameCartridge_region = ""; // NA - not really possible t well discriminate
+                            //console.log("SNOPERATOR: region - ",gameCartridge_region);
+                            gameCartridge_region_regex = "";
+                            //check if option to save rominfo/crc32 is requested
+                            if(api.internal.recalbox.getBoolParameter("dumpers.snoperator.romlist",false)){
+                                var existingFile = ""
+                                existingFile = api.internal.system.run("ls /recalbox/share/roms/snoperator.romlist.csv 2>/dev/null | tr -d '\\n' | tr -d '\\r'");
+                                if(!existingFile.includes("snoperator.romlist.csv")){
+                                    //if no file exists, let create it with column titles
+                                    api.internal.system.run("echo 'GAME TITLE;EPILOGUEID(SNES);WORKS;SAVE FOUND;ROM CRC32;DUMPER VERSION;DUMPER HEADER HEXA;DUMPER HEADER ASCII;WHEN;COMMENT' >> /recalbox/share/roms/snoperator.romlist.csv");
+                                }
+
+                                var existingRom = ""
+                                existingRom = api.internal.system.run("grep -i " + romcrc32.split(" ")[0] + " /recalbox/share/roms/snoperator.romlist.csv | tr -d '\\n' | tr -d '\\r'");
+                                //console.log("SNOPERATOR: existingRom  - ",existingRom);
+                                if(existingRom === ""){
+                                    //format GAME TITLE,GAME ID,WORKS,SAVE FOUND;ROM CRC32,DUMPER VERSION,DUMPER HEADER HEXA,DUMPER HEADER ASCII,WHEN,COMMENT
+                                    var now = new Date();
+                                    var formattedDateTime = now.toString("yyyy-MM-dd hh:mm:ss");
+                                    //console.log("SNOPERATOR: Formatted date and time - ", formattedDateTime);
+                                    if(snoperatorVersion === ""){
+                                        //read SN OPERATOR version and store it in global variable
+                                        snoperatorVersion = "1.0" // fix version for the moment, need to investigate if possible to have it from SN OPERATOR ?!
+                                    }
+                                    //get gb operator epilogueid(SNES)
+                                    var gameid = api.internal.system.run("cat /tmp/SNOPERATOR.gameid | tr -d '\\n' | tr -d '\\r'");
+                                    //get also gb operator header info
+                                    var gboperatorHeaderHexa = api.internal.system.run("cat /tmp/SNOPERATOR.hexaheader | tr -d '\\n' | tr -d '\\r'");
+                                    var gboperatorHeaderAscii = api.internal.system.run("cat /tmp/SNOPERATOR.asciiheader | tr -d '\\n' | tr -d '\\r'");
+                                    //console.log('SNOPERATOR: echo "' + rominfo + ';' + gameid + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + snoperatorVersion  + ';' + snoperatorheaderhexa + ';' + snoperatorheaderascii + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/snoperator.romlist.csv');
+                                    api.internal.system.run('echo "' + rominfo + ';' + gameid + ';' +  'Y' + ';' + savinfoflag + ';' +  romcrc32 + ';' + snoperatorVersion  + ';' + snoperatorHeaderHexa + ';' + snoperatorHeaderAscii + ';' + formattedDateTime + ';' + 'no comment for the moment' + '" >> /recalbox/share/roms/snoperator.romlist.csv');
+
+                                }
+                            }
+                            gameCartridge_system = system;
+                            //to do last because will trig changes
+                            gameCartridge_crc32 = romcrc32.split(" ")[0];//need to take first part only because file name/path is inlcuded in result of CRC32 calculation
+                            console.log("SNOPERATOR: gameCartridge_crc32 - ", gameCartridge_crc32);
+                            gameCartridge_name = rominfo;
+                            //dump of rom if request
+                            if(api.internal.recalbox.getBoolParameter("dumpers.snoperator.savedump",false)){
+                                var targetedDump = "/recalbox/share/dumps/" + gameCartridge_name  + " [" + romcrc32.split(' ')[0] + "]." + gameCartridge_system;
+                                console.log("SNOPERATOR: ls \""+ targetedDump + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                                var existingDump = api.internal.system.run("ls \""+ targetedDump + "\" 2>/dev/null  | tr -d '\\n' | tr -d '\\r'");
+                                console.log("SNOPERATOR: existingDump  - ",existingDump);
+                                //for the moment: we don't dump rom if already exists in dumps directory / no proposal to erase in this case
+                                //manual move/erase to do in share dumps directory in this case
+                                if(!existingDump.includes("/recalbox/share/dumps/")){
+                                    //copy of rom as dump
+                                    console.log("SNOPERATOR: cp \"" + gameCartridge_rom + "\" \"" + targetedDump + "\"");
+                                    api.internal.system.run("cp \"" + gameCartridge_rom + "\" \"" + targetedDump + "\"");
+                                }
+                            }
+                        }
+                        else{
+                            //for message in dialog box
+                            gameCartridge = qsTr("unknown game / not recognized");
+                            //to set data of game
+                            gameCartridge_region = "";
+                            gameCartridge_system = "snes";
+                            gameCartridge_state = "unknown";
+                            gameCartridge_crc32 = "";
+                            gameCartridge_name = "";
+                        }
+
+                        //propose cartridge dialog box in this case
+                        gameCartridge_dumper = "gboperator";
+                        cartridgeDialogBoxLoader.visible = true; //to show
+                        cartridgeDialogBoxLoader.focus = true; //to have focus
+                    }
+                    console.log("SNOPERATOR: gameCartridge (full description) - ", gameCartridge);
+                    console.log("SNOPERATOR: gameCartridge_region (no-intro regions) - ", gameCartridge_region);
+                    console.log("SNOPERATOR: gameCartridge_system (pixL system shortname) - ", gameCartridge_system);
+                    console.log("SNOPERATOR: gameCartridge_state - ", gameCartridge_state);
+                    console.log("SNOPERATOR: gameCartridge_name (name extracted to help for search in gamelists) - ", gameCartridge_name);
+                    console.log("SNOPERATOR: gameCartridge_crc32 - ", gameCartridge_crc32);
+                    //set read.flag to "true"
+                    api.internal.system.run("echo '" + true + "' | tr -d '\\n' | tr -d '\\r' > " + mountpoint + "/SNOPERATOR.readflag");
+                }
+            }
+        }
+    }
+
     //Event from API Back-end
     Connections {
         id: apiconnection
@@ -1690,6 +1851,60 @@ Window {
                 gameCartridge_state = "disconnected";
                 gameCartridge_name = "";
             }
+            // FOR EPILOGUE SN OPERATOR...
+            else if(action.includes("snoperator-remove") && api.internal.recalbox.getBoolParameter("dumpers.snoperator.enabled",false)){
+                apiconnection.onShowPopup("Video game cartridge reader", "SN Operator unplugged","",3);
+                //remove cartridge also and stop timer to find roms/saves from SNOPERATOR
+                dialogBoxSNOPERATORTimer.cartridge_plugged = false;
+                dialogBoxSNOPERATORTimer.stop();
+                //for message in dialog box
+                gameCartridge = qsTr("sn operator removed");
+                //to set data of game
+                gameCartridge_region = "";
+                gameCartridge_state = "disconnected";
+                gameCartridge_name = "";
+                //remove potential previous files about rom
+                api.internal.system.run("rm /tmp/SNOPERATOR.romcrc32");
+                api.internal.system.run("rm /tmp/SNOPERATOR.readflag");
+                //RFU: api.internal.system.run("rm /tmp/SNOPERATOR.rommd5");
+            }
+            else if(action.includes("snoperator-add") && api.internal.recalbox.getBoolParameter("dumpers.snoperator.enabled",false)){
+                apiconnection.onShowPopup("Video game cartridge reader", "SN Operator plugged","",3);
+            }
+            else if(action.includes("snoperator-gameinserted") && api.internal.recalbox.getBoolParameter("dumpers.snoperator.enabled",false)){
+                //for test only
+                //apiconnection.onShowPopup("Video game cartridge reader", "SN Operator - Game inserted","",3);
+                dialogBoxSNOPERATORTimer.stop();
+                api.internal.system.run("rm /tmp/SNOPERATOR.readflag");
+                //start dumping animation
+                genericMessage.setSource("dialogs/GenericWaitDialog.qml",
+                                         { "title": qsTr("SN OPERATOR"), "message": qsTr("ROM is loading from reader/dumper...")});
+                genericMessage.focus = true;
+            }
+            else if(action.includes("snoperator-gamedumped") && api.internal.recalbox.getBoolParameter("dumpers.snoperator.enabled",false)){
+                //stop dumping animation
+                genericMessage.focus = false;
+                //run timer to find roms/saves from SN Operator
+                dialogBoxSNOPERATORTimer.cartridge_plugged = false;
+                dialogBoxSNOPERATORTimer.start();
+            }
+            else if(action.includes("snoperator-gameremoved") && api.internal.recalbox.getBoolParameter("dumpers.snoperator.enabled",false)){
+                apiconnection.onShowPopup("Video game cartridge reader", "SN Operator - Game removed","",3);
+                //RFU: api.internal.system.run("rm /tmp/SNOPERATOR.rommd5");
+                //remove cartridge also and stop timer to find roms/saves from SNOPERATOR
+                dialogBoxSNOPERATORTimer.cartridge_plugged = false;
+                dialogBoxSNOPERATORTimer.stop();
+                //remove potential previous files about rom
+                api.internal.system.run("rm /tmp/SNOPERATOR.romcrc32");
+                api.internal.system.run("rm /tmp/SNOPERATOR.readflag");
+                //for message in dialog box
+                gameCartridge = qsTr("game removed");
+                //to set data of game
+                gameCartridge_region = "";
+                gameCartridge_state = "disconnected";
+                gameCartridge_name = "";
+            }
+
         }
         function onEventLoadingStarted() {
             //console.log("onEventLoadingStarted()");
