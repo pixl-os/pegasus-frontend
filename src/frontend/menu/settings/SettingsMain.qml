@@ -994,6 +994,20 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optlogQSSG
+                    visible: optDebugMode.checked && devModeActivated
+                }
+                ToggleOption {
+                    id: optlogQSSG
+                    label: qsTr("Hide All Logs for 'QT Studio Scene Graph'") + api.tr
+                    note: qsTr("to reduce log by hidding 'QSSG' processing") + api.tr
+                    checked: api.internal.recalbox.getBoolParameter("pegasus.hide.qssg.alllogs",true);
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter("pegasus.hide.qssg.alllogs",true)){
+                            api.internal.recalbox.setBoolParameter("pegasus.hide.qssg.alllogs",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optShowLogs
                     visible: optDebugMode.checked && devModeActivated
                 }
