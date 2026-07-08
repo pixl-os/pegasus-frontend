@@ -620,7 +620,8 @@ FocusScope {
 
                 SimpleButton {
                     id: optGameConfiguration
-                    visible: ("'Game' configuration") + api.tr
+                    visible: true
+                    label: qsTr("'Game' configuration") + api.tr
                     onActivate: {
                         focus = true;
                         root.openGameConfiguration();
