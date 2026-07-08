@@ -72,6 +72,7 @@ FocusScope {
         onClose: root.close()
         onOpenWineConfiguration: root.openWithEmulator("../WineConfiguration.qml", "teknoparrot")
         onOpenProtonConfiguration: root.openWithEmulator("../ProtonConfiguration.qml", "teknoparrot")
+        onOpenGameConfiguration: root.openWithEmulator("../GameConfiguration.qml", "teknoparrot")
     }
     Loader {
         id: modal
