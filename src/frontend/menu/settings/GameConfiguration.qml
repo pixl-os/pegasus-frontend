@@ -152,7 +152,9 @@ FocusScope {
         contentWidth: content.width
         contentHeight: content.height
 
-        Behavior on contentY { PropertyAnimation { duration: 100 } }
+        //Behavior on contentY { PropertyAnimation { duration: 100 } }
+        Behavior on contentY { NumberAnimation { duration: 200; easing.type: Easing.OutQuad }}
+
         boundsBehavior: Flickable.StopAtBounds
         boundsMovement: Flickable.StopAtBounds
 
@@ -199,7 +201,10 @@ FocusScope {
                 spacing: vpx(5)
 
                 width: launchedAsDialogBox ? root.width * 0.9 : root.width * 0.7
+
                 height: implicitHeight
+
+                //implicitHeight: childrenRect.height
 
                 Item {
                     width: parent.width
@@ -208,7 +213,7 @@ FocusScope {
 
                 // Your checkVisibility function stays here
                 function checkVisibility(item) {
-                    if (!item || !item.visible) return;
+                    if (!item || !item.visible) return false;
                     //console.log("item.parameterName: ",item.parameterName);
                     // mapToItem(container, ...) works because 'container' is
                     // the visual viewport. This returns the position relative
@@ -518,74 +523,285 @@ FocusScope {
 
 
                 // Define the XML Parser Model
-                    XmlListModel {
-                        id: xmlModel
-                        source: "file://usr/bin/teknoparrot/GameProfiles/TC5.xml"
-                        //xml:     contentColumn.xmlDataTC5
-                        query: "/GameProfile/ConfigValues/FieldInformation"
+                XmlListModel {
+                    id: xmlModel
+                    source: "file://usr/bin/teknoparrot/GameProfiles/TC5.xml"
+                    //xml:     contentColumn.xmlDataTC5
+                    query: "/GameProfile/ConfigValues/FieldInformation"
 
-                        // Map the XML tags to model roles
-                        XmlRole { name: "category"; query: "CategoryName/string()" }
-                        XmlRole { name: "name"; query: "FieldName/string()" }
-                        XmlRole { name: "value"; query: "FieldValue/string()" }
-                        XmlRole { name: "type"; query: "FieldType/string()" }
-                    }
+                    // Map the XML tags to model roles
+                    XmlRole { name: "category"; query: "CategoryName/string()" }
+                    XmlRole { name: "name"; query: "FieldName/string()" }
+                    XmlRole { name: "value"; query: "FieldValue/string()" }
+                    XmlRole { name: "type"; query: "FieldType/string()" }
+                }
 
                 Repeater {
                     id: gameOptions
                     model: xmlModel
+                    property int selectedButtonIndex : 0
 
-                    ToggleOption {
-                        // Normalize configuration keys to lowercase if needed
-                        property string configKey: prefix + "." + model.category.toLowerCase()
+                    delegate: Item {
+                        id: rowContainer
+                        width: parent.width
+                        visible: true
+                        height: visible ? (showSection ? (sectionHeader.height + toggleItem.height) : toggleItem.height) : 0
 
-                        // set focus only on first item
-                        focus: index === 0 ? true : false
-                        visible: model.type === "Bool"
+                        property bool showSection: {
+                            if (index === 0) return true;
+                            var prev = xmlModel.get(index - 1);
+                            return prev ? (prev.category !== model.category) : false;
+                        }
 
-                        label: qsTr(model.category) + api.tr
-                        note: qsTr(model.name + " " + model.category) + api.tr
+                        // Expose le bouton interne pour que les lignes voisines puissent le cibler
+                        //property alias targetItem: toggleItem
 
-                        // Determine the default value from the XML file ('1' or 'true' implies true)
-                        property bool defaultVal: (model.value === "1" || model.value === "true")
+                        SectionTitle {
+                            id: sectionHeader
+                            width: parent.width
+                            text: qsTr(model.category) + api.tr
+                            first: index === 0
+                            //symbol: "\uf11c"
+                            visible: rowContainer.showSection
+                            height: visible ? implicitHeight : 0
+                            anchors.top: parent.top
+                        }
 
-                        checked: api.internal.recalbox.getBoolParameter(configKey, defaultVal)
+                        MultivalueOption {
+                            id: multivalueItem
+                            width: parent.width
+                            anchors.top: sectionHeader.bottom
 
-                        onCheckedChanged: {
-                            var currentSaved = api.internal.recalbox.getBoolParameter(configKey, defaultVal);
-                            if (checked !== currentSaved) {
-                                api.internal.recalbox.setBoolParameter(configKey, checked);
+                            //property to manage parameter name
+                            property string parameterName: prefix + "." + model.category.toLowerCase() + "." + model.name.toLowerCase()
+
+                            visible: model.type === "Dropdown"
+
+                            focus:{
+                                if (index === gameOptions.selectedButtonIndex){
+                                    if(visible){
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+
+                            label: qsTr(model.category) + " - " + qsTr(model.name) + api.tr
+                            note: "for debug - index : " + index.toString()
+
+                            value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                            internalvalue: api.internal.recalbox.audioDevice
+
+                            currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                            count: api.internal.recalbox.parameterslist.count;
+
+                            font: globalFonts.awesome
+
+                            onInternalvalueChanged: {
+                                value = api.internal.recalbox.parameterslist.currentName(parameterName, internalvalue);
+                                //console.log("value = ", value);
+                                count = api.internal.recalbox.parameterslist.count;
+                                //console.log("count = ", count);
+                                currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                                //console.log("currentIndex = ", currentIndex);unt);
+                            }
+
+                            onActivate: {
+                                //for callback by parameterslistBox
+                                parameterslistBox.parameterName = parameterName;
+                                parameterslistBox.callerid = multivalueItem;
+                                //to force update of list of parameters
+                                api.internal.recalbox.parameterslist.currentName(parameterName);
+                                parameterslistBox.model = api.internal.recalbox.parameterslist;
+                                parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                                //to transfer focus to parameterslistBox
+                                parameterslistBox.focus = true;
+                            }
+
+                            onSelect: {
+                                //to force to be on the good parameter selected
+                                api.internal.recalbox.parameterslist.currentName(parameterName);
+                                //to update index of parameterlist QAbstractList
+                                api.internal.recalbox.parameterslist.currentIndex = index;
+                                //to force update of display of selected value
+                                value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                            }
+
+                            onFocusChanged:{
+                                if(focus){
+                                    api.internal.recalbox.parameterslist.currentName(parameterName);
+                                    currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                                    count = api.internal.recalbox.parameterslist.count;
+                                }
+                                container.onFocus(this)
                             }
                         }
 
-                        onFocusChanged: container.onFocus(this)
-                        KeyNavigation.up: (index !== 0) ?  gameOptions.itemAt(index-1) : gameOptions.itemAt(0)
-                        KeyNavigation.down: (index < gameOptions.count) ? gameOptions.itemAt(index+1) : gameOptions.itemAt(index)
+                        ToggleOption {
+                            id: toggleItem
+                            width: parent.width
+                            anchors.top: sectionHeader.bottom
+
+                            visible: model.type === "Bool"
+
+                            focus:{
+                                if (index === gameOptions.selectedButtonIndex){
+                                    if(visible){
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+
+                            label: qsTr(model.category) + " - " + qsTr(model.name) + api.tr
+                            note: "for debug - index : " + index.toString()
+
+                            property string configKey: prefix + "." + model.category.toLowerCase() + "." + model.name.toLowerCase()
+                            property bool defaultVal: (model.value === "1" || model.value === "true")
+                            checked: api.internal.recalbox.getBoolParameter(configKey, defaultVal)
+
+                            onFocusChanged:{
+                                container.onFocus(this);
+                            }
+                        }
+
+                        SliderOption {
+                            id: sliderItem
+                            width: parent.width
+                            anchors.top: sectionHeader.bottom
+
+                            //property to manage parameter name
+                            property string parameterName: prefix + "." + model.category.toLowerCase() + "." + model.name.toLowerCase()
+
+                            visible: model.type === "Slider"
+
+                            focus:{
+                                if (index === gameOptions.selectedButtonIndex){
+                                    if(visible){
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+
+                            label: qsTr(model.category) + " - " + qsTr(model.name) + api.tr
+                            note: "for debug - index : " + index.toString()
+
+                            // in slider object
+                            max : 100
+                            min : 0
+                            slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+                            // in text object
+                            value: api.internal.recalbox.getIntParameter(parameterName) + "%"
+
+                            onActivate: {
+                                focus = true;
+                            }
+
+                            Keys.onLeftPressed: {
+                                api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                                value = slidervalue + "%";
+                            }
+
+                            Keys.onRightPressed: {
+                                api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                                value = slidervalue + "%";
+                            }
+
+                            onFocusChanged: container.onFocus(this)
+                        }
+
+                        SimpleButton {
+                            id: textItem
+                            width: parent.width
+                            anchors.top: sectionHeader.bottom
+
+                            //property to manage parameter name
+                            property string parameterName: prefix + "." + model.category.toLowerCase() + "." + model.name.toLowerCase()
+
+                            visible: model.type === "Text"
+
+                            focus:{
+                                if (index === gameOptions.selectedButtonIndex){
+                                    if(visible){
+                                        return true;
+                                  }
+                                }
+                                return false;
+                            }
+
+                            label: qsTr(model.category) + " - " + qsTr(model.name) + api.tr
+                            note: "for debug - index : " + index.toString()
+
+                            TextFieldOption {
+                                id: textFieldItem
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                horizontalAlignment: TextInput.AlignRight
+                                placeholderText: "                       "
+                                text: api.internal.recalbox.getStringParameter(parent.parameterName)
+                                echoMode: TextInput.Normal
+                                inputMethodHints: Qt.ImhNoPredictiveText
+                                onEditingFinished: api.internal.recalbox.setStringParameter(parent.parameterName, textFieldItem.text)
+                            }
+                            onFocusChanged: container.onFocus(this)
+                        }
+
+                        onFocusChanged: {
+                            if (focus) {
+                                // On signale le focus à l'API Recalbox si nécessaire
+                                container.onFocus(this);
+                            }
+                        }
+
+                        Keys.onPressed: {
+                            //verify if finally other lists are empty or not when we are just before to change list
+                            //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
+                            //console.log("index before: ",index)
+                            if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
+                                if (index !== 0) {
+                                    KeyNavigation.up = gameOptions.itemAt(index-1);
+                                    gameOptions.selectedButtonIndex = index-1;
+                                }
+                                else {
+                                    KeyNavigation.up = gameOptions.itemAt(0)
+                                    gameOptions.selectedButtonIndex = 0;
+                                }
+                                event.accepted = true;
+                            }
+                            else if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
+                                if (index < gameOptions.count-1){
+                                    KeyNavigation.down = gameOptions.itemAt(index+1);
+                                    gameOptions.selectedButtonIndex = index+1;
+                                }
+                                else {
+                                    KeyNavigation.down = gameOptions.itemAt(gameOptions.count-1);
+                                    gameOptions.selectedButtonIndex = gameOptions.count-1;
+                                }
+                                event.accepted = true;
+                            }
+                            else{
+                                event.accepted = false;
+                            }
+                            console.log("gameOptions.selectedButtonIndex aftre: ",gameOptions.selectedButtonIndex)
+
+                            // On applique le défilement au Flickable/ScrollView
+                            console.log("container.contentY - before: ", container.contentY);
+                            var absoluteY = contentColumn.children[index].y;
+
+                            // Ta formule mathématique corrigée pour centrer l'élément
+                            var targetY = Math.min(
+                                Math.max(0, absoluteY - (container.height * 0.4)),
+                                container.contentHeight - container.height
+                            );
+
+                            container.contentY = targetY;
+                            //console.log("container.contentY - after: ", container.contentY);
+                            //container.contentY = Math.min(Math.max(0, y - (height * 0.7)), container.contentHeight - height);
+                        }
                     }
-
-                    // SimpleButton {
-                    //     label: qsTr(modelData.name) + api.tr
-
-                    //     // set focus only on first item
-                    //     focus: index === 0 ? true : false
-
-                    //     onActivate: {
-                    //         //console.log("root.openSystemsEmulatorConfiguration()");
-                    //         focus = true;
-                    //         root.openSystemsEmulatorConfiguration(modelData);
-
-                    //     }
-
-                    //     onFocusChanged: container.onFocus(this)
-                    //     KeyNavigation.up: (index !== 0) ?  systemButtons.itemAt(index-1) : systemButtons.itemAt(systemButtons.count-1)
-                    //     KeyNavigation.down: (index < systemButtons.count) ? systemButtons.itemAt(index+1) : systemButtons.itemAt(0)
-                    //     //pointer moved in SimpleButton desactived on default
-                    //     pointerIcon: true
-                    // }
-
                 }
 
-                //put from here options from .xml File using repeater
                 Item {
                     width: parent.width
                     height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)

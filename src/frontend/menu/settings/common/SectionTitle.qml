@@ -35,10 +35,11 @@ Text {
         family: globalFonts.sans
         italic: true
     }
-    topPadding: font.pixelSize * (first ? 0.25 : 2.25)
+    topPadding: font.pixelSize * ((first || symbolTitle.text === "") ? 0.25 : 2.25)
 
     Text {
         id: symbolTitle
+        text: ""
         anchors {
             verticalCenter: parent.verticalCenter
             right: parent.left
