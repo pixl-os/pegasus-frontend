@@ -620,7 +620,7 @@ FocusScope {
 
                 SimpleButton {
                     id: optGameConfiguration
-                    visible: true
+                    visible: game ? true : false
                     label: qsTr("'Game' configuration") + api.tr
                     onActivate: {
                         focus = true;

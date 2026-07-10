@@ -30,8 +30,8 @@ FocusScope {
     //to manage overloading
     property string prefix : game ? ("override." + emulator) : emulator
     //to manage better title in screen ScreenHeader (if we want to change it during loading)
-    property string titleHeader: game ? game.title +  " > " + qsTr("Wine configuration") + api.tr :
-        (system ? system.name + " > " + qsTr("Wine configuration") + api.tr :
+    property string titleHeader: game ? game.title +  " > " + emulator + " > " + qsTr("Wine configuration") + api.tr :
+        (system ? system.name + " > " + emulator + " > " + qsTr("Wine configuration") + api.tr :
          emulator + " > " + qsTr("Wine configuration") + api.tr)
 
     //function to elide text string from right

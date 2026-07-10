@@ -30,8 +30,8 @@ FocusScope {
     //to manage overloading
     property string prefix : game ? ("override." + emulator) : emulator
     //to manage better title in screen ScreenHeader (if we want to change it during loading)
-    property string titleHeader: game ? game.title +  " > " + qsTr("Proton configuration") + api.tr :
-        (system ? system.name + " > " + qsTr("Proton configuration") + api.tr :
+    property string titleHeader: game ? game.title +  " > " + emulator + " > " + qsTr("Proton configuration") + api.tr :
+        (system ? system.name + " > " + emulator + " > " + qsTr("Proton configuration") + api.tr :
          emulator + " > " + qsTr("Proton configuration") + api.tr)
     //function to elide text string from right
     function elideStringFromRight(text, maxLength) {
