@@ -251,282 +251,215 @@ FocusScope {
                     }
                 }
 
-                // Inline XML for demonstration (you can change 'source' to a file path like "file:///path/to/file.xml")
-                readonly property string xmlData: '<?xml version="1.0" encoding="utf-8"?>
-                <GameProfile>
-                    <ConfigValues>
-                        <FieldInformation>
-                            <CategoryName>General</CategoryName>
-                            <FieldName>FreePlay</FieldName>
-                            <FieldValue>0</FieldValue>
-                            <FieldType>Bool</FieldType>
-                        </FieldInformation>
-                        <FieldInformation>
-                            <CategoryName>Crosshair</CategoryName>
-                            <FieldName>Enable</FieldName>
-                            <FieldValue>0</FieldValue>
-                            <FieldType>Bool</FieldType>
-                        </FieldInformation>
-                    </ConfigValues>
-                </GameProfile>'
-                readonly property string xmlDataTC5: '<?xml version="1.0" encoding="utf-8"?>
-<GameProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <GamePath></GamePath>
-    <TestMenuParameter></TestMenuParameter>
-    <TestMenuIsExecutable>false</TestMenuIsExecutable>
-    <ExtraParameters></ExtraParameters>
-    <TestMenuExtraParameters></TestMenuExtraParameters>
-    <EmulationProfile>TimeCrisis5</EmulationProfile>
-    <GameProfileRevision>17</GameProfileRevision>
-    <HasSeparateTestMode>false</HasSeparateTestMode>
-    <EmulatorType>TeknoParrot</EmulatorType>
-    <ExecutableName>RSLauncher.exe</ExecutableName>
-    <Is64Bit>true</Is64Bit>
-    <InvertedMouseAxis>true</InvertedMouseAxis>
-    <GunGame>true</GunGame>
-    <xAxisMin>0</xAxisMin>
-    <xAxisMax>255</xAxisMax>
-    <yAxisMin>0</yAxisMin>
-    <yAxisMax>255</yAxisMax>
-    <ConfigValues>
-        <FieldInformation>
-            <CategoryName>General</CategoryName>
-            <FieldName>Input API</FieldName>
-            <FieldValue>RawInput</FieldValue>
-            <FieldType>Dropdown</FieldType>
-            <FieldOptions>
-                <string>DirectInput</string>
-                <string>XInput</string>
-                <string>RawInput</string>
-            </FieldOptions>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>General</CategoryName>
-            <FieldName>FreePlay</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Crosshair</CategoryName>
-            <FieldName>Enable</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Crosshair</CategoryName>
-            <FieldName>Use Custom</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-            <Hint>Place P1.png into TC5\Binaries\Win64</Hint>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Border</CategoryName>
-            <FieldName>Enable</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-            <Hint>Place Border.png into TC5\Binaries\Win64</Hint>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Border</CategoryName>
-            <FieldName>Scale</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-            <Hint>Scale image to resolution</Hint>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>General</CategoryName>
-            <FieldName>Render Hook</FieldName>
-            <FieldValue>Present</FieldValue>
-            <FieldType>Dropdown</FieldType>
-            <FieldOptions>
-                <string>EndScene</string>
-                <string>Present</string>
-            </FieldOptions>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>General</CategoryName>
-            <FieldName>Windowed</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>General</CategoryName>
-            <FieldName>Player 2</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>General</CategoryName>
-            <FieldName>Use Relative Input</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>General</CategoryName>
-            <FieldName>Player 1 Relative Sensitivity</FieldName>
-            <FieldValue>8</FieldValue>
-            <FieldType>Slider</FieldType>
-            <FieldMin>1</FieldMin>
-            <FieldMax>50</FieldMax>
-            <FieldOptions></FieldOptions>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>General</CategoryName>
-            <FieldName>Player 2 Relative Sensitivity</FieldName>
-            <FieldValue>8</FieldValue>
-            <FieldType>Slider</FieldType>
-            <FieldMin>1</FieldMin>
-            <FieldMax>50</FieldMax>
-            <FieldOptions></FieldOptions>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Arguments</CategoryName>
-            <FieldName>Text Language</FieldName>
-            <FieldValue>English</FieldValue>
-            <FieldType>Dropdown</FieldType>
-            <FieldOptions>
-                <string>English</string>
-                <string>Spanish</string>
-                <string>Portuguese</string>
-                <string>Russian</string>
-                <string>Thai</string>
-                <string>Korean</string>
-                <string>Italian</string>
-                <string>Indonesian</string>
-            </FieldOptions>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Arguments</CategoryName>
-            <FieldName>Voice Language</FieldName>
-            <FieldValue>English</FieldValue>
-            <FieldType>Dropdown</FieldType>
-            <FieldOptions>
-                <string>English</string>
-                <string>Japanese</string>
-            </FieldOptions>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Arguments</CategoryName>
-            <FieldName>Custom Arguments</FieldName>
-            <FieldValue></FieldValue>
-            <FieldType>Text</FieldType>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Score</CategoryName>
-            <FieldName>Enable Submission</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-            <FieldOptions></FieldOptions>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Score</CategoryName>
-            <FieldName>Enable GUI</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-            <FieldOptions></FieldOptions>
-        </FieldInformation>
-        <FieldInformation>
-            <CategoryName>Score</CategoryName>
-            <FieldName>Enable Capture</FieldName>
-            <FieldValue>0</FieldValue>
-            <FieldType>Bool</FieldType>
-            <FieldOptions></FieldOptions>
-        </FieldInformation>
-    </ConfigValues>
-    <JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Coin</ButtonName>
-            <InputMapping>Coin1</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Test</ButtonName>
-            <InputMapping>Test</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Service Sw</ButtonName>
-            <InputMapping>Service1</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Gun Trigger</ButtonName>
-            <InputMapping>P1Button1</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Gun Button</ButtonName>
-            <InputMapping>P1Button2</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Left Pedal</ButtonName>
-            <InputMapping>P1Button3</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Right Pedal</ButtonName>
-            <InputMapping>P1Button4</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Up Select Sw</ButtonName>
-            <InputMapping>P2Button1</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Down Select Sw</ButtonName>
-            <InputMapping>P2Button2</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Enter Sw</ButtonName>
-            <InputMapping>P2Button3</InputMapping>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Player 1 Gun X</ButtonName>
-            <InputMapping>Analog0</InputMapping>
-            <AnalogType>AnalogJoystick</AnalogType>
-            <HideWithRawInput>true</HideWithRawInput>
-            <HideWithRelativeAxis>true</HideWithRelativeAxis>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Player 1 Gun Y</ButtonName>
-            <InputMapping>Analog2</InputMapping>
-            <AnalogType>AnalogJoystickReverse</AnalogType>
-            <HideWithRawInput>true</HideWithRawInput>
-            <HideWithRelativeAxis>true</HideWithRelativeAxis>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Player 1 Light Gun</ButtonName>
-            <InputMapping>P1LightGun</InputMapping>
-            <HideWithDirectInput>true</HideWithDirectInput>
-            <HideWithXInput>true</HideWithXInput>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Player 1 Gun Y Up</ButtonName>
-            <InputMapping>P1RelativeUp</InputMapping>
-            <HideWithoutRelativeAxis>true</HideWithoutRelativeAxis>
-            <HideWithRawInput>true</HideWithRawInput>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Player 1 Gun Y Down</ButtonName>
-            <InputMapping>P1RelativeDown</InputMapping>
-            <HideWithoutRelativeAxis>true</HideWithoutRelativeAxis>
-            <HideWithRawInput>true</HideWithRawInput>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Player 1 Gun X Left</ButtonName>
-            <InputMapping>P1RelativeLeft</InputMapping>
-            <HideWithoutRelativeAxis>true</HideWithoutRelativeAxis>
-            <HideWithRawInput>true</HideWithRawInput>
-        </JoystickButtons>
-        <JoystickButtons>
-            <ButtonName>Player 1 Gun X Right</ButtonName>
-            <InputMapping>P1RelativeRight</InputMapping>
-            <HideWithoutRelativeAxis>true</HideWithoutRelativeAxis>
-            <HideWithRawInput>true</HideWithRawInput>
-        </JoystickButtons>
-    </JoystickButtons>
-</GameProfile>'
+                //to let display spinner during loading of gameprofile xml file
+                Timer {
+                    id: loadingTimer
+                    interval: 1 // wait 1s before reading xml file
+                    repeat: false
+                    running: true
+                    triggeredOnStart: false
+                    onTriggered: {
+                        if(game){
+                            var path = game.files.get(0).path; // full path of rom
+                            var word = path.split('/'); // to split by /
+                            var rom = word[word.length-1].split('.')[0]; // to keep rom name without extension
+                            xmlModel.source = "file://usr/bin/teknoparrot/GameProfiles/" + rom + ".xml";
+                        }
+                    }
+                }
 
+                SectionTitle {
+                    id: gameProfileLoading
+                    text: qsTr("Read TeknoParrot XML Game Profie file...") + api.tr
+                    first: false
+                    visible: true
+                    //Spinner Loader for discovered devices section
+                    Loader {
+                        id: spinnerloader
+                        anchors.left: parent.right
+                        anchors.leftMargin: vpx(30)
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: vpx(30)
+                        active: gameProfileLoading.visible
+                        sourceComponent: spinner
+                    }
+
+                    Component {
+                        id: spinner
+                        Rectangle{
+                            Image {
+                                id: imageSpinner
+                                source: "../../assets/loading.png"
+                                width: vpx(30)
+                                height: vpx(30)
+                                asynchronous: true
+                                sourceSize { width: vpx(50); height: vpx(50) }
+                                RotationAnimator on rotation {
+                                    loops: Animator.Infinite;
+                                    from: 0;
+                                    to: 360;
+                                    duration: 3000
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //teknoaprrot xml file content example... with ConfigValues only
+                // <?xml version="1.0" encoding="utf-8"?>
+                // <GameProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                // ....
+                //     <ConfigValues>
+                //         <FieldInformation>
+                //             <CategoryName>General</CategoryName>
+                //             <FieldName>Input API</FieldName>
+                //             <FieldValue>RawInput</FieldValue>
+                //             <FieldType>Dropdown</FieldType>
+                //             <FieldOptions>
+                //                 <string>DirectInput</string>
+                //                 <string>XInput</string>
+                //                 <string>RawInput</string>
+                //             </FieldOptions>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>General</CategoryName>
+                //             <FieldName>FreePlay</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Crosshair</CategoryName>
+                //             <FieldName>Enable</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Crosshair</CategoryName>
+                //             <FieldName>Use Custom</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //             <Hint>Place P1.png into TC5\Binaries\Win64</Hint>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Border</CategoryName>
+                //             <FieldName>Enable</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //             <Hint>Place Border.png into TC5\Binaries\Win64</Hint>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Border</CategoryName>
+                //             <FieldName>Scale</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //             <Hint>Scale image to resolution</Hint>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>General</CategoryName>
+                //             <FieldName>Render Hook</FieldName>
+                //             <FieldValue>Present</FieldValue>
+                //             <FieldType>Dropdown</FieldType>
+                //             <FieldOptions>
+                //                 <string>EndScene</string>
+                //                 <string>Present</string>
+                //             </FieldOptions>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>General</CategoryName>
+                //             <FieldName>Windowed</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>General</CategoryName>
+                //             <FieldName>Player 2</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>General</CategoryName>
+                //             <FieldName>Use Relative Input</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>General</CategoryName>
+                //             <FieldName>Player 1 Relative Sensitivity</FieldName>
+                //             <FieldValue>8</FieldValue>
+                //             <FieldType>Slider</FieldType>
+                //             <FieldMin>1</FieldMin>
+                //             <FieldMax>50</FieldMax>
+                //             <FieldOptions></FieldOptions>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>General</CategoryName>
+                //             <FieldName>Player 2 Relative Sensitivity</FieldName>
+                //             <FieldValue>8</FieldValue>
+                //             <FieldType>Slider</FieldType>
+                //             <FieldMin>1</FieldMin>
+                //             <FieldMax>50</FieldMax>
+                //             <FieldOptions></FieldOptions>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Arguments</CategoryName>
+                //             <FieldName>Text Language</FieldName>
+                //             <FieldValue>English</FieldValue>
+                //             <FieldType>Dropdown</FieldType>
+                //             <FieldOptions>
+                //                 <string>English</string>
+                //                 <string>Spanish</string>
+                //                 <string>Portuguese</string>
+                //                 <string>Russian</string>
+                //                 <string>Thai</string>
+                //                 <string>Korean</string>
+                //                 <string>Italian</string>
+                //                 <string>Indonesian</string>
+                //             </FieldOptions>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Arguments</CategoryName>
+                //             <FieldName>Voice Language</FieldName>
+                //             <FieldValue>English</FieldValue>
+                //             <FieldType>Dropdown</FieldType>
+                //             <FieldOptions>
+                //                 <string>English</string>
+                //                 <string>Japanese</string>
+                //             </FieldOptions>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Arguments</CategoryName>
+                //             <FieldName>Custom Arguments</FieldName>
+                //             <FieldValue></FieldValue>
+                //             <FieldType>Text</FieldType>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Score</CategoryName>
+                //             <FieldName>Enable Submission</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //             <FieldOptions></FieldOptions>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Score</CategoryName>
+                //             <FieldName>Enable GUI</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //             <FieldOptions></FieldOptions>
+                //         </FieldInformation>
+                //         <FieldInformation>
+                //             <CategoryName>Score</CategoryName>
+                //             <FieldName>Enable Capture</FieldName>
+                //             <FieldValue>0</FieldValue>
+                //             <FieldType>Bool</FieldType>
+                //             <FieldOptions></FieldOptions>
+                //         </FieldInformation>
+                //     </ConfigValues>
+                // </GameProfile>'
 
                 // Define the XML Parser Model
                 XmlListModel {
                     id: xmlModel
-                    source: "file://usr/bin/teknoparrot/GameProfiles/TC5.xml"
-                    //xml:     contentColumn.xmlDataTC5
+                    source: ""
                     query: "/GameProfile/ConfigValues/FieldInformation"
 
                     // Map the XML tags to model roles
@@ -792,6 +725,14 @@ FocusScope {
                             container.contentY = targetY;
                             //console.log("container.contentY - after: ", container.contentY);
                             //container.contentY = Math.min(Math.max(0, y - (height * 0.7)), container.contentHeight - height);
+                        }
+                    }
+
+                    onCountChanged: {
+                        if (count > 0 && count === xmlModel.count) {
+                            Qt.callLater(function() {
+                                gameProfileLoading.visible = false;
+                            });
                         }
                     }
                 }
