@@ -755,27 +755,21 @@ FocusScope {
                         }
 
                         Keys.onPressed: {
-                            //verify if finally other lists are empty or not when we are just before to change list
-                            //it's a tip to refresh the KeyNavigations value just before to change from one list to an other
                             //console.log("index before: ",index)
                             if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
                                 if (index !== 0) {
-                                    KeyNavigation.up = gameOptions.itemAt(index-1);
                                     gameOptions.selectedButtonIndex = index-1;
                                 }
                                 else {
-                                    KeyNavigation.up = gameOptions.itemAt(0)
                                     gameOptions.selectedButtonIndex = 0;
                                 }
                                 event.accepted = true;
                             }
                             else if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
                                 if (index < gameOptions.count-1){
-                                    KeyNavigation.down = gameOptions.itemAt(index+1);
                                     gameOptions.selectedButtonIndex = index+1;
                                 }
                                 else {
-                                    KeyNavigation.down = gameOptions.itemAt(gameOptions.count-1);
                                     gameOptions.selectedButtonIndex = gameOptions.count-1;
                                 }
                                 event.accepted = true;
