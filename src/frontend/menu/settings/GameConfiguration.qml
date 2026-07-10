@@ -756,7 +756,7 @@ FocusScope {
 
                         Keys.onPressed: {
                             //console.log("index before: ",index)
-                            if ((event.key === Qt.Key_Up) && !event.isAutoRepeat) {
+                            if (event.key === Qt.Key_Up) {
                                 if (index !== 0) {
                                     gameOptions.selectedButtonIndex = index-1;
                                 }
@@ -765,8 +765,8 @@ FocusScope {
                                 }
                                 event.accepted = true;
                             }
-                            else if ((event.key === Qt.Key_Down) && !event.isAutoRepeat) {
-                                if (index < gameOptions.count-1){
+                            else if (event.key === Qt.Key_Down) {
+                                if (index < gameOptions.count-1) {
                                     gameOptions.selectedButtonIndex = index+1;
                                 }
                                 else {
@@ -774,7 +774,7 @@ FocusScope {
                                 }
                                 event.accepted = true;
                             }
-                            else{
+                            else {
                                 event.accepted = false;
                             }
                             console.log("gameOptions.selectedButtonIndex aftre: ",gameOptions.selectedButtonIndex)
