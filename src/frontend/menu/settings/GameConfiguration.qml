@@ -467,11 +467,58 @@ FocusScope {
                     XmlRole { name: "name"; query: "FieldName/string()" }
                     XmlRole { name: "value"; query: "FieldValue/string()" }
                     XmlRole { name: "type"; query: "FieldType/string()" }
+                    XmlRole { name: "hint"; query: "Hint/string()" }
+
+                    // 1. Storage for our final sorted data
+                    property var sortedConfigData: []
+
+                    // Triggered automatically when the XML data is fully loaded
+                    onCountChanged: {
+                        if (count > 0 && count === xmlModel.count) {
+                            var tempArray = [];
+
+                            // Step 1: Extract all items into a plain JavaScript array
+                            for (var i = 0; i < count; i++) {
+                                tempArray.push({
+                                    "category": get(i).category,
+                                    "name": get(i).name,
+                                    "value": get(i).value,
+                                    "type": get(i).type,
+                                    "hint": get(i).hint
+                                });
+                            }
+
+                            // Step 2: Multi-level Sort (Category first, then Name)
+                            tempArray.sort(function(a, b) {
+                                var catA = a.category.toLowerCase();
+                                var catB = b.category.toLowerCase();
+
+                                // 1st Level: Handle "general" priority
+                                if (catA === "general" && catB !== "general") return -1;
+                                if (catB === "general" && catA !== "general") return 1;
+
+                                // 2nd Level: Compare categories alphabetically
+                                var catCompare = catA.localeCompare(catB);
+
+                                // 3rd Level: If categories are identical, sort by name alphabetically
+                                if (catCompare === 0) {
+                                    var nameA = a.name.toLowerCase();
+                                    var nameB = b.name.toLowerCase();
+                                    return nameA.localeCompare(nameB);
+                                }
+
+                                return catCompare;
+                            });
+
+                            // Step 3: Assign the beautifully sorted array to our local property
+                            xmlModel.sortedConfigData = tempArray;
+                        }
+                    }
                 }
 
                 Repeater {
                     id: gameOptions
-                    model: xmlModel
+                    model: xmlModel.sortedConfigData
                     property int selectedButtonIndex : 0
 
                     delegate: Item {
@@ -482,8 +529,8 @@ FocusScope {
 
                         property bool showSection: {
                             if (index === 0) return true;
-                            var prev = xmlModel.get(index - 1);
-                            return prev ? (prev.category !== model.category) : false;
+                            var prev = xmlModel.sortedConfigData[index - 1];
+                            return prev ? (prev.category !== modelData.category) : false;
                         }
 
                         // Expose le bouton interne pour que les lignes voisines puissent le cibler
@@ -492,7 +539,7 @@ FocusScope {
                         SectionTitle {
                             id: sectionHeader
                             width: parent.width
-                            text: qsTr(model.category) + api.tr
+                            text: qsTr(modelData.category) + api.tr
                             first: index === 0
                             //symbol: "\uf11c"
                             visible: rowContainer.showSection
@@ -506,9 +553,9 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + model.category.toLowerCase() + "." + model.name.toLowerCase()
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase()
 
-                            visible: model.type === "Dropdown"
+                            visible: modelData.type === "Dropdown"
 
                             focus:{
                                 if (index === gameOptions.selectedButtonIndex){
@@ -519,8 +566,8 @@ FocusScope {
                                 return false;
                             }
 
-                            label: qsTr(model.category) + " - " + qsTr(model.name) + api.tr
-                            note: "for debug - index : " + index.toString()
+                            label: qsTr(modelData.name) + api.tr
+                            note: modelData.hint ? modelData.hint : null
 
                             value: api.internal.recalbox.parameterslist.currentName(parameterName)
                             internalvalue: api.internal.recalbox.audioDevice
@@ -575,7 +622,7 @@ FocusScope {
                             width: parent.width
                             anchors.top: sectionHeader.bottom
 
-                            visible: model.type === "Bool"
+                            visible: modelData.type === "Bool"
 
                             focus:{
                                 if (index === gameOptions.selectedButtonIndex){
@@ -586,11 +633,11 @@ FocusScope {
                                 return false;
                             }
 
-                            label: qsTr(model.category) + " - " + qsTr(model.name) + api.tr
-                            note: "for debug - index : " + index.toString()
+                            label: qsTr(modelData.name) + api.tr
+                            note: modelData.hint ? modelData.hint : null
 
-                            property string configKey: prefix + "." + model.category.toLowerCase() + "." + model.name.toLowerCase()
-                            property bool defaultVal: (model.value === "1" || model.value === "true")
+                            property string configKey: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase()
+                            property bool defaultVal: (modelData.value === "1" || modelData.value === "true")
                             checked: api.internal.recalbox.getBoolParameter(configKey, defaultVal)
 
                             onFocusChanged:{
@@ -604,9 +651,9 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + model.category.toLowerCase() + "." + model.name.toLowerCase()
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase()
 
-                            visible: model.type === "Slider"
+                            visible: modelData.type === "Slider"
 
                             focus:{
                                 if (index === gameOptions.selectedButtonIndex){
@@ -617,8 +664,8 @@ FocusScope {
                                 return false;
                             }
 
-                            label: qsTr(model.category) + " - " + qsTr(model.name) + api.tr
-                            note: "for debug - index : " + index.toString()
+                            label: qsTr(modelData.name) + api.tr
+                            note: modelData.hint ? modelData.hint : null
 
                             // in slider object
                             max : 100
@@ -650,9 +697,9 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + model.category.toLowerCase() + "." + model.name.toLowerCase()
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase()
 
-                            visible: model.type === "Text"
+                            visible: modelData.type === "Text"
 
                             focus:{
                                 if (index === gameOptions.selectedButtonIndex){
@@ -663,8 +710,8 @@ FocusScope {
                                 return false;
                             }
 
-                            label: qsTr(model.category) + " - " + qsTr(model.name) + api.tr
-                            note: "for debug - index : " + index.toString()
+                            label: qsTr(modelData.name) + api.tr
+                            note: modelData.hint ? modelData.hint : null
 
                             TextFieldOption {
                                 id: textFieldItem
