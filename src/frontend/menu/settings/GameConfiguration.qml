@@ -568,7 +568,7 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase()
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_");
 
                             visible: modelData.type === "Dropdown"
 
@@ -651,7 +651,7 @@ FocusScope {
                             label: qsTr(modelData.name) + api.tr
                             note: modelData.hint ? modelData.hint : null
 
-                            property string configKey: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase()
+                            property string configKey: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
                             property bool defaultVal: (modelData.value === "1" || modelData.value === "true")
                             checked: api.internal.recalbox.getBoolParameter(configKey, defaultVal)
 
@@ -666,7 +666,7 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase()
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
 
                             visible: modelData.type === "Slider"
 
@@ -712,7 +712,7 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase()
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
 
                             visible: modelData.type === "Text"
 
