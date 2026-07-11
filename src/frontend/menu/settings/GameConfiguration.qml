@@ -484,14 +484,20 @@ FocusScope {
                             // Step 1: Extract all items into a plain JavaScript array
                             for (var i = 0; i < count; i++) {
                                 var currentItem = get(i);
-                                var optionsList = [];
+                                // FIX: Create a real dynamic ListModel instance for this specific item's options
+                                var optionsModel = Qt.createQmlObject('import QtQuick 2.0; ListModel {}', xmlModel);
 
                                 // Parse the raw FieldOptions string if it exists
                                 if (currentItem.optionsRaw) {
-                                    // Split the text by whitespaces/newlines and filter out any empty tokens
-                                    optionsList = currentItem.optionsRaw.split(/\s+/).filter(function(token) {
+                                    var rawTokens = currentItem.optionsRaw.split(/\s+/).filter(function(token) {
                                         return token.length > 0;
                                     });
+
+                                    // Append each option as an object into our dynamic options ListModel
+                                    for (var k = 0; k < rawTokens.length; k++) {
+                                        var cleanedOption = rawTokens[k].replace(/ /g, "_");
+                                        optionsModel.append({ "name": cleanedOption });
+                                    }
                                 }
 
                                 tempArray.push({
@@ -502,7 +508,7 @@ FocusScope {
                                     "max": currentItem.max,
                                     "type": currentItem.type,
                                     "hint": currentItem.hint,
-                                    "options": optionsList // Contains clean JavaScript array like ["DirectInput", "XInput", "RawInput"]
+                                    "options": optionsModel // Now a true ListModel component!
                                 });
                             }
 
@@ -585,15 +591,23 @@ FocusScope {
                             label: qsTr(modelData.name) + api.tr
                             note: modelData.hint ? modelData.hint : null
 
-                            value: visible ? api.internal.recalbox.parameterslist.currentName(parameterName) : ""
+                            value: visible ? api.internal.recalbox.getStringParameter(parent.parameterName, modelData.value) : ""
                             //internalvalue: api.internal.recalbox.audioDevice
 
-                            currentIndex: visible ? api.internal.recalbox.parameterslist.currentIndex : 0
-                            count: visible ? api.internal.recalbox.parameterslist.count : 0
+                            currentIndex:{
+                                if(visible){
+                                    for(var i=0; i < modelData.options.count; i++){
+                                        if(modelData.options.get(i).name === modelData.value) return i;
+                                    }
+                                    return 0;
+                                }
+                                return 0;
+                            }
+                            count: visible ? modelData.options.count : 0
 
                             font: globalFonts.awesome
 
-                            onInternalvalueChanged: {
+                            /*onInternalvalueChanged: {
                                 if(visible){
                                     value = api.internal.recalbox.parameterslist.currentName(parameterName, internalvalue);
                                     //console.log("value = ", value);
@@ -603,6 +617,7 @@ FocusScope {
                                     //console.log("currentIndex = ", currentIndex);unt);
                                 }
                             }
+                            */
 
                             onActivate: {
                                 if(visible){
@@ -610,9 +625,9 @@ FocusScope {
                                     parameterslistBox.parameterName = parameterName;
                                     parameterslistBox.callerid = multivalueItem;
                                     //to force update of list of parameters
-                                    api.internal.recalbox.parameterslist.currentName(parameterName);
-                                    parameterslistBox.model = api.internal.recalbox.parameterslist;
-                                    parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                                    //api.internal.recalbox.parameterslist.currentName(parameterName);
+                                    parameterslistBox.model = modelData.options;
+                                    parameterslistBox.index = currentIndex;
                                     //to transfer focus to parameterslistBox
                                     parameterslistBox.focus = true;
                                 }
@@ -620,21 +635,19 @@ FocusScope {
 
                             onSelect: {
                                 if(visible){
-                                    //to force to be on the good parameter selected
-                                    api.internal.recalbox.parameterslist.currentName(parameterName);
                                     //to update index of parameterlist QAbstractList
-                                    api.internal.recalbox.parameterslist.currentIndex = index;
+                                    //api.internal.recalbox.parameterslist.currentIndex = index;
                                     //to force update of display of selected value
-                                    value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                                    value = modelData.options.get(index).name;
                                 }
                             }
 
                             onFocusChanged:{
-                                if(focus && visible){
+                                /*if(focus && visible){
                                     api.internal.recalbox.parameterslist.currentName(parameterName);
                                     currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                                     count = api.internal.recalbox.parameterslist.count;
-                                }
+                                }*/
                                 container.onFocus(this)
                             }
                         }
@@ -749,7 +762,7 @@ FocusScope {
                                 anchors.verticalCenter: parent.verticalCenter
                                 horizontalAlignment: TextInput.AlignRight
                                 placeholderText: "                       "
-                                text: visible ? api.internal.recalbox.getStringParameter(parent.parameterName) : ""
+                                text: visible ? api.internal.recalbox.getStringParameter(parent.parameterName, modelData.value) : ""
                                 echoMode: TextInput.Normal
                                 inputMethodHints: Qt.ImhNoPredictiveText
                                 onEditingFinished: {
