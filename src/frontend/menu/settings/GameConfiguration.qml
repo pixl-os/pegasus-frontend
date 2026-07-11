@@ -470,6 +470,8 @@ FocusScope {
                     XmlRole { name: "max"; query: "FieldMax/string()"}
                     XmlRole { name: "type"; query: "FieldType/string()" }
                     XmlRole { name: "hint"; query: "Hint/string()" }
+                    // Fetch the raw concatenated string content of all child <string> tags inside FieldOptions
+                    XmlRole { name: "optionsRaw"; query: "FieldOptions/string()" }
 
                     // 1. Storage for our final sorted data
                     property var sortedConfigData: []
@@ -482,6 +484,15 @@ FocusScope {
                             // Step 1: Extract all items into a plain JavaScript array
                             for (var i = 0; i < count; i++) {
                                 var currentItem = get(i);
+                                var optionsList = [];
+
+                                // Parse the raw FieldOptions string if it exists
+                                if (currentItem.optionsRaw) {
+                                    // Split the text by whitespaces/newlines and filter out any empty tokens
+                                    optionsList = currentItem.optionsRaw.split(/\s+/).filter(function(token) {
+                                        return token.length > 0;
+                                    });
+                                }
 
                                 tempArray.push({
                                     "category": currentItem.category,
@@ -491,6 +502,7 @@ FocusScope {
                                     "max": currentItem.max,
                                     "type": currentItem.type,
                                     "hint": currentItem.hint,
+                                    "options": optionsList // Contains clean JavaScript array like ["DirectInput", "XInput", "RawInput"]
                                 });
                             }
 
