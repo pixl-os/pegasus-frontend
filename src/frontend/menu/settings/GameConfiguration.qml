@@ -466,6 +466,8 @@ FocusScope {
                     XmlRole { name: "category"; query: "CategoryName/string()" }
                     XmlRole { name: "name"; query: "FieldName/string()" }
                     XmlRole { name: "value"; query: "FieldValue/string()" }
+                    XmlRole { name: "min"; query: "FieldMin/string()"}
+                    XmlRole { name: "max"; query: "FieldMax/string()"}
                     XmlRole { name: "type"; query: "FieldType/string()" }
                     XmlRole { name: "hint"; query: "Hint/string()" }
 
@@ -479,12 +481,16 @@ FocusScope {
 
                             // Step 1: Extract all items into a plain JavaScript array
                             for (var i = 0; i < count; i++) {
+                                var currentItem = get(i);
+
                                 tempArray.push({
-                                    "category": get(i).category,
-                                    "name": get(i).name,
-                                    "value": get(i).value,
-                                    "type": get(i).type,
-                                    "hint": get(i).hint
+                                    "category": currentItem.category,
+                                    "name": currentItem.name,
+                                    "value": currentItem.value,
+                                    "min": currentItem.min,
+                                    "max": currentItem.max,
+                                    "type": currentItem.type,
+                                    "hint": currentItem.hint,
                                 });
                             }
 
@@ -533,9 +539,6 @@ FocusScope {
                             return prev ? (prev.category !== modelData.category) : false;
                         }
 
-                        // Expose le bouton interne pour que les lignes voisines puissent le cibler
-                        //property alias targetItem: toggleItem
-
                         SectionTitle {
                             id: sectionHeader
                             width: parent.width
@@ -570,7 +573,7 @@ FocusScope {
                             note: modelData.hint ? modelData.hint : null
 
                             value: api.internal.recalbox.parameterslist.currentName(parameterName)
-                            internalvalue: api.internal.recalbox.audioDevice
+                            //internalvalue: api.internal.recalbox.audioDevice
 
                             currentIndex: api.internal.recalbox.parameterslist.currentIndex;
                             count: api.internal.recalbox.parameterslist.count;
@@ -668,11 +671,11 @@ FocusScope {
                             note: modelData.hint ? modelData.hint : null
 
                             // in slider object
-                            max : 100
-                            min : 0
-                            slidervalue : api.internal.recalbox.getIntParameter(parameterName)
+                            max : parseFloat(modelData.max)
+                            min : parseFloat(modelData.min)
+                            slidervalue : api.internal.recalbox.getIntParameter(parameterName, modelData.value)
                             // in text object
-                            value: api.internal.recalbox.getIntParameter(parameterName) + "%"
+                            value: api.internal.recalbox.getIntParameter(parameterName, modelData.value)
 
                             onActivate: {
                                 focus = true;
@@ -680,12 +683,12 @@ FocusScope {
 
                             Keys.onLeftPressed: {
                                 api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-                                value = slidervalue + "%";
+                                value = slidervalue;
                             }
 
                             Keys.onRightPressed: {
                                 api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-                                value = slidervalue + "%";
+                                value = slidervalue;
                             }
 
                             onFocusChanged: container.onFocus(this)
@@ -757,10 +760,10 @@ FocusScope {
                             else {
                                 event.accepted = false;
                             }
-                            console.log("gameOptions.selectedButtonIndex aftre: ",gameOptions.selectedButtonIndex)
+                            //console.log("gameOptions.selectedButtonIndex after: ",gameOptions.selectedButtonIndex)
 
                             // On applique le défilement au Flickable/ScrollView
-                            console.log("container.contentY - before: ", container.contentY);
+                            //console.log("container.contentY - before: ", container.contentY);
                             var absoluteY = contentColumn.children[index].y;
 
                             // Ta formule mathématique corrigée pour centrer l'élément
