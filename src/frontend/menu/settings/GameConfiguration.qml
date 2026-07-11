@@ -567,10 +567,11 @@ FocusScope {
                             width: parent.width
                             anchors.top: sectionHeader.bottom
 
+                            visible: modelData.type === "Dropdown"
+
                             //property to manage parameter name
                             property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_");
 
-                            visible: modelData.type === "Dropdown"
 
                             focus:{
                                 if (index === gameOptions.selectedButtonIndex){
@@ -584,46 +585,52 @@ FocusScope {
                             label: qsTr(modelData.name) + api.tr
                             note: modelData.hint ? modelData.hint : null
 
-                            value: api.internal.recalbox.parameterslist.currentName(parameterName)
+                            value: visible ? api.internal.recalbox.parameterslist.currentName(parameterName) : ""
                             //internalvalue: api.internal.recalbox.audioDevice
 
-                            currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                            count: api.internal.recalbox.parameterslist.count;
+                            currentIndex: visible ? api.internal.recalbox.parameterslist.currentIndex : 0
+                            count: visible ? api.internal.recalbox.parameterslist.count : 0
 
                             font: globalFonts.awesome
 
                             onInternalvalueChanged: {
-                                value = api.internal.recalbox.parameterslist.currentName(parameterName, internalvalue);
-                                //console.log("value = ", value);
-                                count = api.internal.recalbox.parameterslist.count;
-                                //console.log("count = ", count);
-                                currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                                //console.log("currentIndex = ", currentIndex);unt);
+                                if(visible){
+                                    value = api.internal.recalbox.parameterslist.currentName(parameterName, internalvalue);
+                                    //console.log("value = ", value);
+                                    count = api.internal.recalbox.parameterslist.count;
+                                    //console.log("count = ", count);
+                                    currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                                    //console.log("currentIndex = ", currentIndex);unt);
+                                }
                             }
 
                             onActivate: {
-                                //for callback by parameterslistBox
-                                parameterslistBox.parameterName = parameterName;
-                                parameterslistBox.callerid = multivalueItem;
-                                //to force update of list of parameters
-                                api.internal.recalbox.parameterslist.currentName(parameterName);
-                                parameterslistBox.model = api.internal.recalbox.parameterslist;
-                                parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                                //to transfer focus to parameterslistBox
-                                parameterslistBox.focus = true;
+                                if(visible){
+                                    //for callback by parameterslistBox
+                                    parameterslistBox.parameterName = parameterName;
+                                    parameterslistBox.callerid = multivalueItem;
+                                    //to force update of list of parameters
+                                    api.internal.recalbox.parameterslist.currentName(parameterName);
+                                    parameterslistBox.model = api.internal.recalbox.parameterslist;
+                                    parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                                    //to transfer focus to parameterslistBox
+                                    parameterslistBox.focus = true;
+                                }
                             }
 
                             onSelect: {
-                                //to force to be on the good parameter selected
-                                api.internal.recalbox.parameterslist.currentName(parameterName);
-                                //to update index of parameterlist QAbstractList
-                                api.internal.recalbox.parameterslist.currentIndex = index;
-                                //to force update of display of selected value
-                                value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                                if(visible){
+                                    //to force to be on the good parameter selected
+                                    api.internal.recalbox.parameterslist.currentName(parameterName);
+                                    //to update index of parameterlist QAbstractList
+                                    api.internal.recalbox.parameterslist.currentIndex = index;
+                                    //to force update of display of selected value
+                                    value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                                }
                             }
 
                             onFocusChanged:{
-                                if(focus){
+                                if(focus && visible){
                                     api.internal.recalbox.parameterslist.currentName(parameterName);
                                     currentIndex = api.internal.recalbox.parameterslist.currentIndex;
                                     count = api.internal.recalbox.parameterslist.count;
@@ -638,6 +645,8 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             visible: modelData.type === "Bool"
+                            //property to manage parameter name
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
 
                             focus:{
                                 if (index === gameOptions.selectedButtonIndex){
@@ -651,13 +660,15 @@ FocusScope {
                             label: qsTr(modelData.name) + api.tr
                             note: modelData.hint ? modelData.hint : null
 
-                            property string configKey: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
                             property bool defaultVal: (modelData.value === "1" || modelData.value === "true")
-                            checked: api.internal.recalbox.getBoolParameter(configKey, defaultVal)
-
-                            onFocusChanged:{
-                                container.onFocus(this);
+                            checked: visible ? api.internal.recalbox.getBoolParameter(parameterName, defaultVal) : false
+                            onCheckedChanged: {
+                                if(visible){
+                                    api.internal.recalbox.setBoolParameter(parameterName,checked);
+                                }
                             }
+
+                            onFocusChanged: container.onFocus(this)
                         }
 
                         SliderOption {
@@ -683,24 +694,28 @@ FocusScope {
                             note: modelData.hint ? modelData.hint : null
 
                             // in slider object
-                            max : parseFloat(modelData.max)
-                            min : parseFloat(modelData.min)
-                            slidervalue : api.internal.recalbox.getIntParameter(parameterName, modelData.value)
+                            max : visible ? parseFloat(modelData.max) : 0
+                            min : visible ? parseFloat(modelData.min) : 0
+                            slidervalue : visible ? api.internal.recalbox.getIntParameter(parameterName, modelData.value) : min
                             // in text object
-                            value: api.internal.recalbox.getIntParameter(parameterName, modelData.value)
+                            value: visible ? api.internal.recalbox.getIntParameter(parameterName, modelData.value) : 0
 
                             onActivate: {
                                 focus = true;
                             }
 
                             Keys.onLeftPressed: {
-                                api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-                                value = slidervalue;
+                                if(visible){
+                                    api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                                    value = slidervalue;
+                                }
                             }
 
                             Keys.onRightPressed: {
-                                api.internal.recalbox.setIntParameter(parameterName,slidervalue);
-                                value = slidervalue;
+                                if(visible){
+                                    api.internal.recalbox.setIntParameter(parameterName,slidervalue);
+                                    value = slidervalue;
+                                }
                             }
 
                             onFocusChanged: container.onFocus(this)
@@ -734,10 +749,12 @@ FocusScope {
                                 anchors.verticalCenter: parent.verticalCenter
                                 horizontalAlignment: TextInput.AlignRight
                                 placeholderText: "                       "
-                                text: api.internal.recalbox.getStringParameter(parent.parameterName)
+                                text: visible ? api.internal.recalbox.getStringParameter(parent.parameterName) : ""
                                 echoMode: TextInput.Normal
                                 inputMethodHints: Qt.ImhNoPredictiveText
-                                onEditingFinished: api.internal.recalbox.setStringParameter(parent.parameterName, textFieldItem.text)
+                                onEditingFinished: {
+                                    if(visible) api.internal.recalbox.setStringParameter(parent.parameterName, textFieldItem.text);
+                                }
                             }
                             onFocusChanged: container.onFocus(this)
                         }
