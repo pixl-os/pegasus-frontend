@@ -609,7 +609,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGameConfiguration
+                    KeyNavigation.down: optTeknoparrotAdvancedConf
                 }
 
                 // SectionTitle {
@@ -617,20 +617,6 @@ FocusScope {
                 //     first: true
                 //     symbol: "\uf179"
                 // }
-
-                SimpleButton {
-                    id: optGameConfiguration
-                    visible: game ? true : false
-                    label: qsTr("'Game' configuration") + api.tr
-                    onActivate: {
-                        focus = true;
-                        root.openGameConfiguration();
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    //pointer moved in SimpleButton desactived on default
-                    pointerIcon: true
-                    KeyNavigation.down: optTeknoparrotAdvancedConf
-                }
 
                 // ToggleOption {
                 //     id: optTeknoparrotOption3
@@ -676,6 +662,20 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGameConfiguration
+                }
+                SimpleButton {
+                    id: optGameConfiguration
+                    visible: (game && optTeknoparrotAdvancedConf.checked) ? true : false
+                    label: qsTr("Teknoparrot 'Game' configuration") + api.tr
+                    note: qsTr("To customize directly configuration especially for this game") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openGameConfiguration();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
                     KeyNavigation.down: optTeknoparrotOption4
                 }
                 ToggleOption {
