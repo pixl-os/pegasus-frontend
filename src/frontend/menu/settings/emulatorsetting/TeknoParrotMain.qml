@@ -242,12 +242,12 @@ FocusScope {
                                           ((teknoParrotData.nvidia_issues !== null) ? " - issues : " + teknoParrotData.nvidia_issues + "<br>" : "<br>") +
                                           ((teknoParrotData.general_issues !== null) ? "General issues : " + teknoParrotData.general_issues : "")
 
-                            console.log("sed -n 's/.*<GameExecutableLocation>\\(.*\\)<\\/GameExecutableLocation>.*/\\1/p' /usr/bin/teknoparrot/GameSetup/" + optGameInfo.rom_name + ".xml | tr -d '\\n' | tr -d '\\r'");
+                            //console.log("sed -n 's/.*<GameExecutableLocation>\\(.*\\)<\\/GameExecutableLocation>.*/\\1/p' /usr/bin/teknoparrot/GameSetup/" + optGameInfo.rom_name + ".xml | tr -d '\\n' | tr -d '\\r'");
                             optGameInfo.exe_path = api.internal.system.run("sed -n 's/.*<GameExecutableLocation>\\(.*\\)<\\/GameExecutableLocation>.*/\\1/p' /usr/bin/teknoparrot/GameSetup/" + optGameInfo.rom_name + ".xml | tr -d '\\n' | tr -d '\\r'");
                             optGameInfo.exe_path = optGameInfo.exe_path.replace(/\\/g, "/");
                             //check if missing or not
                             if(api.internal.system.run("test -f \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
-                                console.log("sh /recalbox/scripts/pixl-arch-exe.sh \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" | tr -d '\\n' | tr -d '\\r'");
+                                //console.log("sh /recalbox/scripts/pixl-arch-exe.sh \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" | tr -d '\\n' | tr -d '\\r'");
                                 optGameInfo.exe_arch = api.internal.system.run("sh /recalbox/scripts/pixl-arch-exe.sh \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" | tr -d '\\n' | tr -d '\\r'");
                                 optGameInfo.exe_path = optGameInfo.exe_path + "<font color='#2ECC71'> (" + qsTr("Found") + api.tr + ")" + "</font>";
                             }

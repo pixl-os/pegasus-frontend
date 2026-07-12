@@ -32,10 +32,10 @@ FocusScope {
     }
 
     function openModal(url) {
-        console.log("openModal - url : ", url);
-        console.log("openModal - root.launchedAsDialogBox : ", root.launchedAsDialogBox);
-        if(root.game) console.log("openModal - root.game.title : ", root.game.title);
-        if(root.system) console.log("openModal - root.system.name : ", root.system.name);
+        //console.log("openModal - url : ", url);
+        //console.log("openModal - root.launchedAsDialogBox : ", root.launchedAsDialogBox);
+        //if(root.game) console.log("openModal - root.game.title : ", root.game.title);
+        //if(root.system) console.log("openModal - root.system.name : ", root.system.name);
 
         if (root.launchedAsDialogBox) modal.fullscreen = false;
         if(root.game){

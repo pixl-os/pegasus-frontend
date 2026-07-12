@@ -29,7 +29,7 @@ FocusScope {
     property var game
     property var system
     //to manage overloading
-    property string prefix : game ? ("override." + emulator) : emulator
+    property string prefix : game ? ("override." + emulator + ".gameconfig") : (emulator + ".gameconfig")
     //to manage better title in screen ScreenHeader (if we want to change it during loading)
     property string titleHeader: game ? game.title +  " > " + emulator + " > " + qsTr("Game configuration") + api.tr :
         (system ? system.name + " > " + emulator + " > " + qsTr("Game configuration") + api.tr :
