@@ -534,7 +534,7 @@ FocusScope {
                             visible: modelData.type === "Dropdown"
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_");
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.type.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_");
 
 
                             focus:{
@@ -607,7 +607,7 @@ FocusScope {
 
                             visible: modelData.type === "Bool"
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.type.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
 
                             focus:{
                                 if (index === gameOptions.selectedButtonIndex){
@@ -638,7 +638,7 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.type.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
 
                             visible: modelData.type === "Slider"
 
@@ -688,7 +688,7 @@ FocusScope {
                             anchors.top: sectionHeader.bottom
 
                             //property to manage parameter name
-                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
+                            property string parameterName: prefix + "." + modelData.category.toLowerCase() + "." + modelData.type.toLowerCase() + "." + modelData.name.toLowerCase().replace(/ /g, "_")
 
                             visible: modelData.type === "Text"
 
