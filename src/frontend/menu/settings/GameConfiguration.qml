@@ -204,51 +204,9 @@ FocusScope {
 
                 height: implicitHeight
 
-                //implicitHeight: childrenRect.height
-
                 Item {
                     width: parent.width
                     height: implicitHeight + vpx(30)
-                }
-
-                // Your checkVisibility function stays here
-                function checkVisibility(item) {
-                    if (!item || !item.visible) return false;
-                    //console.log("item.parameterName: ",item.parameterName);
-                    // mapToItem(container, ...) works because 'container' is
-                    // the visual viewport. This returns the position relative
-                    // to the top-left of the visible area on screen.
-                    var rectInFlickable = item.mapToItem(container, 0, 0);
-                    //console.log("rectInFlickable.x : ",rectInFlickable.x);
-                    //console.log("rectInFlickable.y : ",rectInFlickable.y);
-                    //console.log("container.width : ",container.width);
-                    //console.log("container.height : ",container.height);
-                    //console.log("item.width : ",item.width);
-                    //console.log("item.height : ",item.height);
-
-                    var intersects =
-                        rectInFlickable.x < container.width &&
-                        rectInFlickable.x + item.width > 0 &&
-                        rectInFlickable.y < container.height &&
-                        rectInFlickable.y + item.height > 0;
-
-                    //console.log("intersects : ",intersects);
-
-                    if (item.visibleInFlickable !== intersects) {
-                        if (intersects) {
-                            // Load data only when entering the screen
-                            if(item.isMultivalueOption){
-                                item.value = api.internal.recalbox.parameterslist.currentName(item.parameterName);
-                            }
-                            else if(item.isMulticheckOption){
-                                item.value = api.internal.recalbox.parameterslist.currentNameChecked(item.parameterName);
-                            }
-                            item.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(item.parameterName);
-                            item.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            item.count = api.internal.recalbox.parameterslist.count;
-                        }
-                        item.visibleInFlickable = intersects;
-                    }
                 }
 
                 //to let display spinner during loading of gameprofile xml file
@@ -591,13 +549,15 @@ FocusScope {
                             label: qsTr(modelData.name) + api.tr
                             note: modelData.hint ? modelData.hint : null
 
-                            value: visible ? api.internal.recalbox.getStringParameter(parent.parameterName, modelData.value) : ""
-                            //internalvalue: api.internal.recalbox.audioDevice
+                            value: visible ? api.internal.recalbox.getStringParameter(parameterName, modelData.value) : ""
 
                             currentIndex:{
                                 if(visible){
                                     for(var i=0; i < modelData.options.count; i++){
-                                        if(modelData.options.get(i).name === modelData.value) return i;
+                                        //console.log("MultivalueOption currentIndex : ",i);
+                                        //console.log("modelData.options.get(i).name : ",modelData.options.get(i).name);
+                                        //console.log("modelData.value : ",value);
+                                        if(modelData.options.get(i).name === value) return i;
                                     }
                                     return 0;
                                 }
@@ -607,17 +567,11 @@ FocusScope {
 
                             font: globalFonts.awesome
 
-                            /*onInternalvalueChanged: {
+                            onValueChanged: {
                                 if(visible){
-                                    value = api.internal.recalbox.parameterslist.currentName(parameterName, internalvalue);
-                                    //console.log("value = ", value);
-                                    count = api.internal.recalbox.parameterslist.count;
-                                    //console.log("count = ", count);
-                                    currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                                    //console.log("currentIndex = ", currentIndex);unt);
+                                    api.internal.recalbox.setStringParameter(parameterName, value)
                                 }
                             }
-                            */
 
                             onActivate: {
                                 if(visible){
@@ -625,7 +579,6 @@ FocusScope {
                                     parameterslistBox.parameterName = parameterName;
                                     parameterslistBox.callerid = multivalueItem;
                                     //to force update of list of parameters
-                                    //api.internal.recalbox.parameterslist.currentName(parameterName);
                                     parameterslistBox.model = modelData.options;
                                     parameterslistBox.index = currentIndex;
                                     //to transfer focus to parameterslistBox
@@ -635,19 +588,11 @@ FocusScope {
 
                             onSelect: {
                                 if(visible){
-                                    //to update index of parameterlist QAbstractList
-                                    //api.internal.recalbox.parameterslist.currentIndex = index;
-                                    //to force update of display of selected value
                                     value = modelData.options.get(index).name;
                                 }
                             }
 
                             onFocusChanged:{
-                                /*if(focus && visible){
-                                    api.internal.recalbox.parameterslist.currentName(parameterName);
-                                    currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                                    count = api.internal.recalbox.parameterslist.count;
-                                }*/
                                 container.onFocus(this)
                             }
                         }
@@ -845,41 +790,6 @@ FocusScope {
         property string callerid: ""
     }
 
-    MulticheckBox {
-        id: parameterscheckBox
-        z: 3
-
-        //properties to manage parameter
-        property string parameterName
-        property string previousValue
-        property MulticheckOption callerid
-
-        //reuse same model
-        model: api.internal.recalbox.parameterslist.model
-        //to use index from parameterlist QAbstractList
-        index: api.internal.recalbox.parameterslist.currentIndex
-        //to load "checked" status for each indexes
-        isChecked: api.internal.recalbox.parameterslist.isChecked()
-
-        onClose: {
-            content.focus = true
-        }
-
-        onCheck: {
-            //console.log("parameterscheckBox::onCheck index : ", index, " checked : ", checked, " callerid.parameterName : ", callerid.parameterName);
-            callerid.keypressed = true;
-            //to use the good parameter
-            api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
-            //to update index of parameterlist QAbstractList
-            api.internal.recalbox.parameterslist.currentIndex = index;
-            api.internal.recalbox.parameterslist.currentIndexChecked = checked;
-            //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentNameChecked(callerid.parameterName);
-            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-            callerid.count = api.internal.recalbox.parameterslist.count;
-        }
-    }
-
     MultivalueBox {
         id: parameterslistBox
         z: 3
@@ -889,35 +799,14 @@ FocusScope {
         property MultivalueOption callerid
 
         //to use index from parameterlist QAbstractList
-        index: api.internal.recalbox.parameterslist.currentIndex
+        //index: callerid.currentIndex
         //reuse same model
-        model: api.internal.recalbox.parameterslist
+        //model: callerid.modelData.options
         onClose: content.focus = true
         onSelect: {
-            /*console.log(callerid.label," onSelect count : ", callerid.count);
-            console.log(callerid.label," onSelect currentindex : ", callerid.currentIndex);
-            console.log(callerid.label," onSelect newindex : ", index);
-            console.log(callerid.label," onSelect value : ", callerid.value);
-            console.log(callerid.label," onSelect internalvalue : ", callerid.internalvalue);*/
-            //to use the good parameter
-
-            if(typeof(callerid.command) === "undefined") api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-            else api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
-
             callerid.keypressed = true;
-            //to update index of parameterlist QAbstractList
-            api.internal.recalbox.parameterslist.currentIndex = index;
-            callerid.count = api.internal.recalbox.parameterslist.count;
             callerid.currentIndex = index;
-
-            //to force update of display of selected value
-            if(typeof(callerid.command) === "undefined"){
-                callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-                callerid.internalvalue = api.internal.recalbox.parameterslist.currentInternalName(parameterName);
-            }
-            else {
-                callerid.value = api.internal.recalbox.parameterslist.currentNameFromSystem(callerid.parameterName,callerid.command,callerid.optionsList);
-            }
+            callerid.value = model.get(index).name;
         }
     }
     Item {

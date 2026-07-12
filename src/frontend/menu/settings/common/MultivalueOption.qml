@@ -95,6 +95,15 @@ FocusScope {
         visible: parent.focus || mouseArea.containsMouse
     }
 
+    //added to force update of pointer
+    onCurrentIndexChanged: {
+        //console.log("MultivalueOption Object Label", label, "currentIndex : ", currentIndex)
+        leftPointer.visible =  (currentIndex === 0) ? false : true ;
+        //console.log("MultivalueOption Object leftPointer.visible : ", leftPointer.visible)
+        rightPointer.visible = (currentIndex === (count - 1)) ? false : true ;
+        //console.log("MultivalueOption Object rightPointer.visible : ", rightPointer.visible)
+    }
+
     Column {
         id: labelContainer
         anchors {
