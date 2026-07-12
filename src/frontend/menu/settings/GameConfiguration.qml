@@ -569,7 +569,10 @@ FocusScope {
 
                             onValueChanged: {
                                 if(visible){
-                                    api.internal.recalbox.setStringParameter(parameterName, value)
+                                    if(api.internal.recalbox.getStringParameter(parameterName, modelData.value) !==  value){
+                                        //only write override .conf file if any value change
+                                        api.internal.recalbox.setStringParameter(parameterName, value)
+                                    }
                                 }
                             }
 
@@ -711,7 +714,12 @@ FocusScope {
                                 echoMode: TextInput.Normal
                                 inputMethodHints: Qt.ImhNoPredictiveText
                                 onEditingFinished: {
-                                    if(visible) api.internal.recalbox.setStringParameter(parent.parameterName, textFieldItem.text);
+                                    if(visible){
+                                        if(api.internal.recalbox.getStringParameter(parameterName, modelData.value) !==  value){
+                                            //only write override .conf file if any value change
+                                            api.internal.recalbox.setStringParameter(parameterName, textFieldItem.text)
+                                        }
+                                    }
                                 }
                             }
                             onFocusChanged: container.onFocus(this)
