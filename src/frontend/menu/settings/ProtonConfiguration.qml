@@ -466,11 +466,11 @@ FocusScope {
                             //keep only 1/2 lines max for the moment (keep 8 verbs max)
                             //"cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4"
 
-                            optBottleInfo.bottle_env = api.internal.system.run("cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.renderer_env = api.internal.system.run("cat " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.system_env = api.internal.system.run("cat " + optBottleInfo.system_layer_path + "/pfx/winetricks.log " + optBottleInfo.system_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.emulator_env = api.internal.system.run("cat " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.game_env = api.internal.system.run("cat " + optBottleInfo.game_layer_path + "/pfx/winetricks.log " + optBottleInfo.game_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_env = api.internal.system.run("cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            optBottleInfo.renderer_env = api.internal.system.run("cat " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            optBottleInfo.system_env = api.internal.system.run("cat " + optBottleInfo.system_layer_path + "/pfx/winetricks.log " + optBottleInfo.system_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            optBottleInfo.emulator_env = api.internal.system.run("cat " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            optBottleInfo.game_env = api.internal.system.run("cat " + optBottleInfo.game_layer_path + "/pfx/winetricks.log " + optBottleInfo.game_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
 
                             //remove "env" info from lower layers and prepare size
                             if(optBottleInfo.game_env !==""){

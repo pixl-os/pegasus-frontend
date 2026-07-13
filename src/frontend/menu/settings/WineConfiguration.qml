@@ -467,11 +467,11 @@ FocusScope {
                             //to get env details
                             //xargs -n 10 < winetricks.log
                             //keep only 1/2 lines max for the moment (keep 8 verbs max)
-                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
 
                             //remove "env" info from lower layers and prepare size
                             if(optBottleInfo.game_env !==""){
