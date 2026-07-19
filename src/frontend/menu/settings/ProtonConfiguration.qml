@@ -415,6 +415,7 @@ FocusScope {
                             var newId = root.generate8DigitId(dxvk, dxvknvapi, vkd3d);
                             console.log("graphics ID generated : " + newId)
                             //Renderer info (if exists)
+                            //-> RFU: not used in proton for the moment DXVK/VKD3D/DXVKNVAPI are already installed in base
                             optBottleInfo.renderer_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@graphics_" + newId;
                             optBottleInfo.renderer_layer_path = optProtonBottle.internalvalue + "@graphics_" + newId;
                             console.log("optBottleInfo.renderer_layer_path: " + optBottleInfo.renderer_layer_path);
@@ -994,12 +995,12 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: !optProtonSoftRenderer.checked
-                    KeyNavigation.down: optProtonDxvkVersion
+                    KeyNavigation.down: optProtonNVapi
                 }
-                MultivalueOption {
+                /*MultivalueOption {
                     id: optProtonDxvkVersion
                     //property to manage parameter name
-                    property string parameterName : prefix + ".dxvk"
+                    property string parameterName : prefix + ".proton.dxvk"
 
                     label: qsTr("DXVK version (for DirectX 9, 10 et 11)") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -1048,7 +1049,7 @@ FocusScope {
                 MultivalueOption {
                     id: optProtonVkd3dVersion
                     //property to manage parameter name
-                    property string parameterName : prefix + ".vkd3d"
+                    property string parameterName : prefix + ".proton.vkd3d"
 
                     label: qsTr("VKD3D version (for DirectX 12)") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -1093,27 +1094,27 @@ FocusScope {
                     }
                     visible: !optProtonSoftRenderer.checked && devModeActivated
                     KeyNavigation.down: optProtonNVapi
-                }
+                }*/
                 //to enable Nvidia-specific features (like DLSS, Ray Tracing, or Reflex)
                 ToggleOption {
                     id: optProtonNVapi
                     label: qsTr("Wine NVAPI for Nvidia-specific features)") + api.tr
                     note: qsTr("like DLSS, Ray Tracing, or Reflex running via DXVK/VKD3D") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi", false)
                     onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winenvapi",false)){
-                            api.internal.recalbox.setBoolParameter(prefix + ".winenvapi",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.winenvapi",checked);
                         }
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: !optProtonSoftRenderer.checked && devModeActivated
-                    KeyNavigation.down: optProtonDxvkNapiVersion
+                    KeyNavigation.down: optProtonDxvkFramerate
                 }
-                MultivalueOption {
+                /*MultivalueOption {
                     id: optProtonDxvkNapiVersion
                     //property to manage parameter name
-                    property string parameterName : prefix + ".dxvknvapi"
+                    property string parameterName : prefix + ".proton.dxvknvapi"
 
                     label: qsTr("DXVK-NVAPI version") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -1158,8 +1159,7 @@ FocusScope {
                     }
                     visible: !optProtonSoftRenderer.checked && optProtonNVapi.checked && devModeActivated
                     KeyNavigation.down: optProtonDxvkFramerate
-                }
-		
+                }*/
                 MultivalueOption {
                     id: optProtonDxvkFramerate
                     visible: ((optProtonRenderer.internalvalue !== "gl") && devModeActivated && !optProtonSoftRenderer.checked)  ? true : false
