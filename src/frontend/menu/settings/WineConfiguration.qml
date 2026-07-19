@@ -703,7 +703,7 @@ FocusScope {
                 ToggleOption {
                     id: optWinePrefixWithLayers
                     label: qsTr("Bottle with layers") + api.tr
-                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(Per game using a common bottle base)") + api.tr
+                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(per emulator, system or game using a common bottle base)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithlayer", true)
                     onCheckedChanged: {
@@ -906,6 +906,21 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: optWineBottle.internalvalue === "" && devModeActivated ? true : false
+                    KeyNavigation.down: optWinePrefixWithGamefixes
+                }
+                ToggleOption {
+                    id: optWinePrefixWithGamefixes
+                    label: qsTr("Bottle with gamefix") + api.tr
+                    note: qsTr("Install gamefix if exists in Wine Prefix/Bottle layers\n(per emulator, system or game)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithgamefix", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithgamefix", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".wine.prefixwithgamefix",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
                     KeyNavigation.down: optWineSoftRenderer
                 }
 

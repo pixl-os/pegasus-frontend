@@ -698,7 +698,7 @@ FocusScope {
                 ToggleOption {
                     id: optProtonPrefixWithLayers
                     label: qsTr("Bottle with layers") + api.tr
-                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(Per game using a common bottle base)") + api.tr
+                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(per emulator, system or game using a common bottle base)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithlayer", true)
                     onCheckedChanged: {
@@ -708,7 +708,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: devModeActivated
-                    KeyNavigation.down: optProtonSoftRenderer
+                    KeyNavigation.down: optProtonPrefixWithGamefixes
                 }
                 //RFU
                 /*MultivalueOption {
@@ -908,6 +908,21 @@ FocusScope {
                     visible: optProtonBottle.internalvalue === "" && devModeActivated ? true : false
                     KeyNavigation.down: optProtonSoftRenderer
                 }*/
+                ToggleOption {
+                    id: optProtonPrefixWithGamefixes
+                    label: qsTr("Bottle with gamefix") + api.tr
+                    note: qsTr("Install gamefix if exists in Wine Prefix/Bottle layers\n(per emulator, system or game)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithgamefix", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithgamefix", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.prefixwithgamefix",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
+                    KeyNavigation.down: optProtonSoftRenderer
+                }
 
                 //****************************** section to manage wine version of this emulator*****************************************
                 SectionTitle {
