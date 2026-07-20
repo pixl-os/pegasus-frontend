@@ -1867,8 +1867,8 @@ FocusScope {
                 //force refreash of list of WINE engine/appimage if needed
                 //reset parameterlist cache
                 optProtonEngine.value = api.internal.recalbox.parameterslist.currentName(optProtonEngine.parameterName + ".resetcache");
-                optProtonDxvkVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonDxvkVersion.parameterName + ".resetcache");
-                optProtonVkd3dVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonVkd3dVersion.parameterName + ".resetcache");
+                //optProtonDxvkVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonDxvkVersion.parameterName + ".resetcache");
+                //optProtonVkd3dVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonVkd3dVersion.parameterName + ".resetcache");
 
                 //to manage focus
                 content.focus = true;
