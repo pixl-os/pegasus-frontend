@@ -467,11 +467,17 @@ FocusScope {
                             //keep only 1/2 lines max for the moment (keep 8 verbs max)
                             //"cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4"
 
-                            optBottleInfo.bottle_env = api.internal.system.run("cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
-                            optBottleInfo.renderer_env = api.internal.system.run("cat " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
-                            optBottleInfo.system_env = api.internal.system.run("cat " + optBottleInfo.system_layer_path + "/pfx/winetricks.log " + optBottleInfo.system_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
-                            optBottleInfo.emulator_env = api.internal.system.run("cat " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
-                            optBottleInfo.game_env = api.internal.system.run("cat " + optBottleInfo.game_layer_path + "/pfx/winetricks.log " + optBottleInfo.game_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'");
+                            //get version of proton from bottle selected
+                            var protonEngine = optProtonBottle.value.split('(')[0].trim();
+
+                            //get version of dxvk from proton itself
+                            optBottleInfo.bottle_env = "dxvk " + api.internal.system.run("cat /usr/proton/" + protonEngine + "/files/lib/wine/dxvk/version").split(' ')[3];
+                            //get version of vkd3d from proton itself
+                            optBottleInfo.bottle_env = optBottleInfo.bottle_env + " vkd3d-proton " + api.internal.system.run("cat /usr/proton/" + protonEngine + "/files/lib/wine/vkd3d-proton/version").split(' ')[3];
+                            //get version of nvapi from proton itself
+                            optBottleInfo.bottle_env = optBottleInfo.bottle_env + " nvapi " + api.internal.system.run("cat /usr/proton/" + protonEngine + "/files/lib/wine/nvapi/version").split(' ')[3];
+
+                            optBottleInfo.bottle_env = optBottleInfo.bottle_env + " " + api.internal.system.run("cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
                             optBottleInfo.renderer_env = api.internal.system.run("cat " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
                             optBottleInfo.system_env = api.internal.system.run("cat " + optBottleInfo.system_layer_path + "/pfx/winetricks.log " + optBottleInfo.system_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
                             optBottleInfo.emulator_env = api.internal.system.run("cat " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
