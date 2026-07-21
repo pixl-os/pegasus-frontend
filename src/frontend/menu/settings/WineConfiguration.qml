@@ -1853,7 +1853,7 @@ FocusScope {
                 }
                 else{
                     //Launch protonUp-QT AppImage from dev project / or from home specific directory
-                    api.internal.system.run("~/ProtonUp-Qt-pixL/ProtonUp-Qt-2.14.0-x86_64.AppImage");
+                    api.internal.system.run("~/ProtonUp-Qt-pixL/ProtonUp-Qt-2.15.1-x86_64.AppImage");
                 }
                 //force refreash of list of WINE engine/appimage if needed
                 //reset parameterlist caches
