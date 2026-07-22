@@ -221,6 +221,8 @@ FocusScope {
                             var path = game.files.get(0).path; // full path of rom
                             var word = path.split('/'); // to split by /
                             var rom = word[word.length-1].split('.')[0]; // to keep rom name without extension
+                            rom = rom.split('-')[0]; //to keep rom name with '-' if used to manage "variant" of a game
+                                                     // as for SF5 3.53/4.12 ;-)
                             xmlModel.source = "file://usr/bin/teknoparrot/GameProfiles/" + rom + ".xml";
                         }
                     }
