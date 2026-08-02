@@ -61,6 +61,7 @@ private:
     QString getFullName_by_path(QString);
     void add_controller_by_idx(int);
     void remove_pad_by_iid(SDL_JoystickID);
+    void save_last_controller_used_by_iid(SDL_JoystickID);
     void fwd_button_event(SDL_JoystickID, Uint8, bool);
     void fwd_axis_event(SDL_JoystickID, Uint8, Sint16);
 
