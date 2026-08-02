@@ -1123,6 +1123,10 @@ void GamepadManagerSDL2::poll()
                 // also ignore input from other (non-recording) gamepads
                 if (!m_recording.is_active()) {
                     const bool pressed = event.cbutton.state == SDL_PRESSED;
+
+                    //tentative now to save last controller used for tips ;-)
+                    save_last_controller_used_by_iid(event.cdevice.which);
+
                     fwd_button_event(event.cbutton.which, event.cbutton.button, pressed);
                 }
                 break;
@@ -1538,6 +1542,51 @@ void GamepadManagerSDL2::remove_pad_by_iid(SDL_JoystickID instance_id)
     catch ( const std::out_of_range & ) 
     { 
         Log::error(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n")); 
+    }
+}
+
+void GamepadManagerSDL2::save_last_controller_used_by_iid(SDL_JoystickID instance_id){
+    try{
+        Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid(%1)").arg(QString::number(instance_id)));
+
+        //check if instance_id exists because it could be already erased
+        if(m_iid_to_idx.count(instance_id) == 1 && m_iid_to_device.count(instance_id) == 1){
+            const int device_idx = m_iid_to_idx.at(instance_id);
+            Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid - device_idx : %1").arg(device_idx));
+            Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid - instance_id : %1").arg(instance_id));
+            //save index in file for future use
+            QString path = "/tmp/last_controller_used_index";
+            QFile tmp_file(path);
+
+            // Open in WriteOnly mode (and Text mode)
+            if (!tmp_file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
+                Log::debug(m_log_tag, LOGMSG("Could not open %1 for writing !").arg(path));
+            }
+            else{
+                // Write the integer to the file
+                QTextStream out(&tmp_file);
+                out << device_idx;
+                // Close the file when done
+                tmp_file.close();
+                Log::debug(m_log_tag, LOGMSG("%1 saved with last controller index used !").arg(path));
+            }
+        }
+    }
+    catch ( const std::exception & Exp )
+        {
+            Log::debug(m_log_tag, LOGMSG("Catched error : %1.\n").arg(Exp.what()));
+        }
+    catch ( const std::exception & Exp )
+    {
+        Log::error(m_log_tag, LOGMSG("Erreur 2: %1.\n").arg(Exp.what()));
+    }
+    catch ( const std::bad_alloc & )
+    {
+        Log::error(m_log_tag, LOGMSG("Erreur : mémoire insuffisante.\n"));
+    }
+    catch ( const std::out_of_range & )
+    {
+        Log::error(m_log_tag, LOGMSG("Erreur : débordement de mémoire.\n"));
     }
 }
 
