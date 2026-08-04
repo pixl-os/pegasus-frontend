@@ -68,7 +68,7 @@ public:
     Q_INVOKABLE void resetButton(int deviceId, model::GamepadManager::GMButton button);
     Q_INVOKABLE void resetAxis(int deviceId, model::GamepadManager::GMAxis axis);
     Q_INVOKABLE void cancelConfiguration();
-    Q_INVOKABLE void swap(int, int);
+    Q_INVOKABLE void swap(int device_id1, int device_id2);
 
 signals:
     void buttonConfigured(int deviceId, model::GamepadManager::GMButton button);
@@ -77,11 +77,13 @@ signals:
     
     void showPopup(QString title, QString message, QString icon, int delay);
 	void newController(int device_idx, QString message);
+    void swapController(int device_id1, int device_id2);
 
 private slots:
     void bkOnConnected(int, QString, QString, QString, QString, int);
     void bkOnDisconnected(int);
     void bkOnNewController(int, QString);
+    void bkOnSwapController(int, int);
     void bkOnNameChanged(int, QString);
 	void bkOnIndexChanged(int, int);
     void bkOnLayoutChanged(int, QString);
