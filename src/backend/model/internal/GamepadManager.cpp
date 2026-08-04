@@ -91,7 +91,9 @@ GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
     connect(m_backend, &GamepadManagerBackend::disconnected,
             this, &GamepadManager::bkOnDisconnected);
     connect(m_backend, &GamepadManagerBackend::newController,
-            this, &GamepadManager::bkOnNewController);			            
+            this, &GamepadManager::bkOnNewController);
+    connect(m_backend, &GamepadManagerBackend::swapController,
+            this, &GamepadManager::bkOnSwapController);
     connect(m_backend, &GamepadManagerBackend::nameChanged,
             this, &GamepadManager::bkOnNameChanged);
     connect(m_backend, &GamepadManagerBackend::indexChanged,
@@ -299,6 +301,14 @@ void GamepadManager::bkOnNewController(int device_idx, QString name)
     Log::debug(m_log_tag, LOGMSG("New Controller #%1 (%2)").arg(QString::number(device_idx), name));
     
     emit newController(device_idx, name);
+}
+
+void GamepadManager::bkOnSwapController(int device_idx1, int device_idx2)
+{
+    Log::debug(m_log_tag, LOGMSG("Swap Controller: #%1 <> #%2").arg(QString::number(device_idx1), QString::number(device_idx2)));
+
+    //call swap command
+    swap(device_idx1, device_idx2);
 }
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)

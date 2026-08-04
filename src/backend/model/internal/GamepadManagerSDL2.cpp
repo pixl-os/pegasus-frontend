@@ -1569,6 +1569,11 @@ void GamepadManagerSDL2::save_last_controller_used_by_iid(SDL_JoystickID instanc
                 // Close the file when done
                 tmp_file.close();
                 Log::debug(m_log_tag, LOGMSG("%1 saved with last controller index used !").arg(path));
+                //emit swap with 0
+                //to propose to configure or not the new controller
+                if(device_idx != 0){
+                    emit swapController(device_idx, 0);
+                }
             }
         }
     }
