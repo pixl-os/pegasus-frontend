@@ -91,7 +91,7 @@ private:
     void load_user_gamepaddb(const QString&);
     std::string get_user_gamepaddb_mapping(const QString&, const QString&);
 	std::string get_user_gamepaddb_mapping_with_name(const QString&, const QString&, const QString&);
-	
+    int m_last_device_idx = -1; //initialized to -1 by default
 };
 
 } // namespace model

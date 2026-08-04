@@ -91,7 +91,9 @@ GamepadManager::GamepadManager(const backend::CliArgs& args, QObject* parent)
     connect(m_backend, &GamepadManagerBackend::disconnected,
             this, &GamepadManager::bkOnDisconnected);
     connect(m_backend, &GamepadManagerBackend::newController,
-            this, &GamepadManager::bkOnNewController);			            
+            this, &GamepadManager::bkOnNewController);
+    connect(m_backend, &GamepadManagerBackend::swapController,
+            this, &GamepadManager::bkOnSwapController);
     connect(m_backend, &GamepadManagerBackend::nameChanged,
             this, &GamepadManager::bkOnNameChanged);
     connect(m_backend, &GamepadManagerBackend::indexChanged,
@@ -299,6 +301,31 @@ void GamepadManager::bkOnNewController(int device_idx, QString name)
     Log::debug(m_log_tag, LOGMSG("New Controller #%1 (%2)").arg(QString::number(device_idx), name));
     
     emit newController(device_idx, name);
+}
+
+void GamepadManager::bkOnSwapController(int device_idx1, int device_idx2)
+{
+    //idx2 no defind, it's to confirm that we are searching first one and to swap with it
+    if(device_idx2 == -1){
+        //take first device as idx2
+        //search & backup first device
+        const auto it = find_by_deviceid(*m_devices, 0);
+        if (it != m_devices->constEnd()) {
+            device_idx2 = (*it)->deviceIndex();
+        }
+    }
+    if(device_idx1 != device_idx2){
+        Log::debug(m_log_tag, LOGMSG("Swap of Controllers (idx): #%1 <> #%2").arg(QString::number(device_idx1), QString::number(device_idx2)));
+        const auto it = find_by_deviceidx(*m_devices, device_idx1);
+        if (it != m_devices->constEnd()) {
+            int device_id1 = (*it)->deviceId();
+            Log::debug(m_log_tag, LOGMSG("Swap of Controllers (id): #%1 <> #%2").arg(QString::number(device_id1), QString::number(0)));
+            swap(device_id1, 0);
+        }
+    }
+    else{
+        Log::debug(m_log_tag, LOGMSG("No Swap of Controllers: #%1 <> #%2").arg(QString::number(device_idx1), QString::number(device_idx2)));
+    }
 }
 
 void GamepadManager::bkOnNameChanged(int device_id, QString name)

@@ -46,6 +46,7 @@ signals:
     void connected(int, QString, QString, QString, QString,int);
     void disconnected(int);
 	void newController(int, QString);
+    void swapController(int, int);
     void nameChanged(int, QString);
     void indexChanged(int, int);
     void layoutChanged(int, QString);

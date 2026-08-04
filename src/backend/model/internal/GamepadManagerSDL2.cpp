@@ -1550,25 +1550,18 @@ void GamepadManagerSDL2::save_last_controller_used_by_iid(SDL_JoystickID instanc
         Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid(%1)").arg(QString::number(instance_id)));
 
         //check if instance_id exists because it could be already erased
+        Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid - instance_id used : %1").arg(instance_id));
         if(m_iid_to_idx.count(instance_id) == 1 && m_iid_to_device.count(instance_id) == 1){
             const int device_idx = m_iid_to_idx.at(instance_id);
-            Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid - device_idx : %1").arg(device_idx));
-            Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid - instance_id : %1").arg(instance_id));
-            //save index in file for future use
-            QString path = "/tmp/last_controller_used_index";
-            QFile tmp_file(path);
-
-            // Open in WriteOnly mode (and Text mode)
-            if (!tmp_file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
-                Log::debug(m_log_tag, LOGMSG("Could not open %1 for writing !").arg(path));
+            //save index in memory
+            if(device_idx != m_last_device_idx){
+                Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid - new device_idx saved : %1").arg(device_idx));
+                m_last_device_idx = device_idx;
+                //emit swap with 0
+                emit swapController(device_idx, -1);
             }
             else{
-                // Write the integer to the file
-                QTextStream out(&tmp_file);
-                out << device_idx;
-                // Close the file when done
-                tmp_file.close();
-                Log::debug(m_log_tag, LOGMSG("%1 saved with last controller index used !").arg(path));
+                Log::debug(m_log_tag, LOGMSG("save_last_controller_used_by_iid - device_idx already saved : %1").arg(device_idx));
             }
         }
     }
