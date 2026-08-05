@@ -139,6 +139,8 @@ enum class MetaType : unsigned char {
     THUMBNAIL,
     VIDEO,
     MARQUEE,
+    BOX_3DFRONT,
+    MANUAL,
     FAVORITE,
     HASH,
     MD5,
@@ -152,6 +154,7 @@ const QHash<QString, QList<AssetType>> DIR_ASSETS {
     { QStringLiteral("box2dfront"), {AssetType::BOX_FRONT, AssetType::BOX_2DFRONT, AssetType::FULLMEDIA}},
     { QStringLiteral("box2dside"), {AssetType::BOX_SPINE}},
     { QStringLiteral("box3d"), {AssetType::BOX_FRONT, AssetType::BOX_3DFRONT, AssetType::FULLMEDIA}},
+    { QStringLiteral("boxes"), {AssetType::BOX_FRONT, AssetType::BOX_3DFRONT, AssetType::FULLMEDIA}},
     { QStringLiteral("boxtexture"), {AssetType::BOX_FULL, AssetType::FULLMEDIA}},
     { QStringLiteral("extra1"), {AssetType::EXTRA1, AssetType::FULLMEDIA}},
     { QStringLiteral("fanart"), {AssetType::BACKGROUND, AssetType::FANART, AssetType::FULLMEDIA}},
@@ -176,6 +179,7 @@ const QHash<QString, QList<AssetType>> DIR_ASSETS {
     { QStringLiteral("videos"), {AssetType::VIDEO}},
     { QStringLiteral("videomix"), {AssetType::VIDEOMIX}},
     { QStringLiteral("wheel"), {AssetType::LOGO, AssetType::WHEEL}},
+    { QStringLiteral("wheels"), {AssetType::LOGO, AssetType::WHEEL}},
     { QStringLiteral("wheelcarbon"), {AssetType::WHEEL_CARBON}},
     { QStringLiteral("wheelsteel"), {AssetType::WHEEL_STEEL}}
 };
@@ -199,6 +203,8 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
         { QStringLiteral("thumbnail"), MetaType::THUMBNAIL },
         { QStringLiteral("video"), MetaType::VIDEO },
         { QStringLiteral("marquee"), MetaType::MARQUEE },
+        { QStringLiteral("box"), MetaType::BOX_3DFRONT },
+        { QStringLiteral("manual"), MetaType::MANUAL },
         { QStringLiteral("favorite"), MetaType::FAVORITE },
         { QStringLiteral("hash"), MetaType::HASH },
         { QStringLiteral("md5"), MetaType::MD5 },

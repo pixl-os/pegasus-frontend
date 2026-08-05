@@ -58,16 +58,13 @@ public:
             QStringLiteral("images"),
         }},
         { AssetType::BOX_FRONT, {
-            QStringLiteral("box3d"),
-            QStringLiteral("support"),
             QStringLiteral("boxfront"),
             QStringLiteral("boxFront"),
             QStringLiteral("box2dfront"),
-            QStringLiteral("supporttexture"),
-            QStringLiteral("thumbnail"),
         }},
         { AssetType::LOGO, {
             QStringLiteral("wheel"),
+            QStringLiteral("wheels"),
             QStringLiteral("wheelcarbon"),
             QStringLiteral("wheelsteel"),
         }},
@@ -87,6 +84,7 @@ public:
             QStringLiteral("thumbnail"),
             QStringLiteral("extra1"),
             QStringLiteral("box3d"),
+            QStringLiteral("boxes"),
             QStringLiteral("boxfront"),
             QStringLiteral("boxFront"),
             QStringLiteral("box2dfront"),
@@ -124,9 +122,10 @@ public:
             QStringLiteral("boxSide"),
             QStringLiteral("box2dside"),
         }},
-        // for tag <box3d></box3d>
+        // for tag <box3d></box3d> or <boxes></boxes>
         { AssetType::BOX_3DFRONT, {
             QStringLiteral("box3d"),
+            QStringLiteral("boxes"),
         }},
         // for tag <boxtexture></boxtexture>
         { AssetType::BOX_FULL, {
@@ -213,6 +212,7 @@ public:
         // for tag <wheel></wheel>
         { AssetType::WHEEL, {
             QStringLiteral("wheel"),
+            QStringLiteral("wheels"),
         }},
         // for tag <wheelcarbon></wheelcarbon>
         { AssetType::WHEEL_CARBON, {

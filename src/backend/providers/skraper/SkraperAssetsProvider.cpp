@@ -71,16 +71,13 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
             QStringLiteral("images"),
         }},
         { AssetType::BOX_FRONT, {
-            QStringLiteral("box3d"),
-            QStringLiteral("support"),
             QStringLiteral("boxfront"),
             QStringLiteral("boxFront"),
             QStringLiteral("box2dfront"),
-            QStringLiteral("supporttexture"),
-            QStringLiteral("thumbnail"),
         }},
         { AssetType::LOGO, {
             QStringLiteral("wheel"),
+            QStringLiteral("wheels"),
             QStringLiteral("wheelcarbon"),
             QStringLiteral("wheelsteel"),
         }},
@@ -100,6 +97,7 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
             QStringLiteral("thumbnail"),
             QStringLiteral("extra1"),
             QStringLiteral("box3d"),
+            QStringLiteral("boxes"),
             QStringLiteral("boxfront"),
             QStringLiteral("boxFront"),
             QStringLiteral("box2dfront"),
@@ -137,9 +135,11 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
             QStringLiteral("boxSide"),
             QStringLiteral("box2dside"),
         }},
-        // for tag <box3d></box3d>
+        // for tag <box3d></box3d> or <boxes></boxes>
         { AssetType::BOX_3DFRONT, {
             QStringLiteral("box3d"),
+            QStringLiteral("boxes"),
+
         }},
         // for tag <boxtexture></boxtexture>
         { AssetType::BOX_FULL, {
@@ -155,12 +155,12 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         { AssetType::FANART, {
             QStringLiteral("fanart"),
         }},
-        // for tag <images></images>
+        // for tag <images></images> or <image></image>
         { AssetType::IMAGES, {
             QStringLiteral("image"),
             QStringLiteral("images"),
         }},
-        // for tag <manuals></manuals>
+        // for tag <manuals></manuals> or <manual></manual>
         { AssetType::MANUAL, {
             QStringLiteral("manual"),
             QStringLiteral("manuals"),
@@ -226,6 +226,7 @@ Provider& SkraperAssetsProvider::run(SearchContext& sctx)
         // for tag <wheel></wheel>
         { AssetType::WHEEL, {
             QStringLiteral("wheel"),
+            QStringLiteral("wheels"),
         }},
         // for tag <wheelcarbon></wheelcarbon>
         { AssetType::WHEEL_CARBON, {
