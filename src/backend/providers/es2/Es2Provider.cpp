@@ -156,7 +156,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
 
                 //check if games exists only if no gamelist exists
                 if(found_gamelists == 0){
-                    const size_t found_games = find_games_for(sysentry, xml_dir, sctx);
+                    const size_t found_games = find_games_for(sysentry, xml_dir, sctx, metahelper);
                     Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from %3")
                                                    .arg(sysentry.name, QString::number(found_games), romsDir));
                 }
@@ -165,7 +165,7 @@ Provider& Es2Provider::run(SearchContext& sctx)
             else if(!RecalboxConf::Instance().AsBool("pegasus.gamelistonly"))
             {
                 //check if game exists
-                size_t found_games = find_games_for(sysentry, xml_dir, sctx);
+                size_t found_games = find_games_for(sysentry, xml_dir, sctx, metahelper);
                 Log::debug(display_name(), LOGMSG("System `%1` provided %2 games from %3")
                                                .arg(sysentry.name, QString::number(found_games), romsDir));
             }

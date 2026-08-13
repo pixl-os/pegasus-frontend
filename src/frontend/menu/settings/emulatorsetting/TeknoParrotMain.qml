@@ -15,6 +15,7 @@ FocusScope {
     signal close
     signal openWineConfiguration
     signal openProtonConfiguration
+    signal openGameConfiguration
 
     width: parent.width
     height: parent.height
@@ -241,12 +242,12 @@ FocusScope {
                                           ((teknoParrotData.nvidia_issues !== null) ? " - issues : " + teknoParrotData.nvidia_issues + "<br>" : "<br>") +
                                           ((teknoParrotData.general_issues !== null) ? "General issues : " + teknoParrotData.general_issues : "")
 
-                            console.log("sed -n 's/.*<GameExecutableLocation>\\(.*\\)<\\/GameExecutableLocation>.*/\\1/p' /usr/bin/teknoparrot/GameSetup/" + optGameInfo.rom_name + ".xml | tr -d '\\n' | tr -d '\\r'");
+                            //console.log("sed -n 's/.*<GameExecutableLocation>\\(.*\\)<\\/GameExecutableLocation>.*/\\1/p' /usr/bin/teknoparrot/GameSetup/" + optGameInfo.rom_name + ".xml | tr -d '\\n' | tr -d '\\r'");
                             optGameInfo.exe_path = api.internal.system.run("sed -n 's/.*<GameExecutableLocation>\\(.*\\)<\\/GameExecutableLocation>.*/\\1/p' /usr/bin/teknoparrot/GameSetup/" + optGameInfo.rom_name + ".xml | tr -d '\\n' | tr -d '\\r'");
                             optGameInfo.exe_path = optGameInfo.exe_path.replace(/\\/g, "/");
                             //check if missing or not
                             if(api.internal.system.run("test -f \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" && echo \"true\" | tr -d '\\n' | tr -d '\\r'") === "true"){
-                                console.log("sh /recalbox/scripts/pixl-arch-exe.sh \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" | tr -d '\\n' | tr -d '\\r'");
+                                //console.log("sh /recalbox/scripts/pixl-arch-exe.sh \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" | tr -d '\\n' | tr -d '\\r'");
                                 optGameInfo.exe_arch = api.internal.system.run("sh /recalbox/scripts/pixl-arch-exe.sh \"" + optGameInfo.game_path + "/" + optGameInfo.exe_path + "\" | tr -d '\\n' | tr -d '\\r'");
                                 optGameInfo.exe_path = optGameInfo.exe_path + "<font color='#2ECC71'> (" + qsTr("Found") + api.tr + ")" + "</font>";
                             }
@@ -449,6 +450,20 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: optTeknoparrotOption6
+                }
+                ToggleOption {
+                    id: optTeknoparrotOption6
+                    label: qsTr("Rotate 'Tate' Game") + api.tr
+                    note: qsTr("To rotate gamez from Open Parrot") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".rotate.tate", false)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".rotate.tate",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".rotate.tate",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotOption1
                 }
 
@@ -594,56 +609,43 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTeknoparrotOption3
-                }
-
-                SectionTitle {
-                    text: qsTr("'Game' configuration") + api.tr
-                    first: true
-                    symbol: "\uf179"
-                }
-                ToggleOption {
-                    id: optTeknoparrotOption3
-                    label: qsTr("Frame limiter") + api.tr
-                    note: qsTr("Activated to prevent games running too fast") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".framelimiter", true)
-                    onCheckedChanged: {
-                       if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".framelimiter",true)){
-                           api.internal.recalbox.setBoolParameter(prefix + ".framelimiter",checked);
-                       }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTeknoparrotOption6
-                }
-                ToggleOption {
-                    id: optTeknoparrotOption6
-                    label: qsTr("Rotate 'Tate' Game") + api.tr
-                    note: qsTr("To rotate gamez from Open Parrot") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".rotate.tate", false)
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".rotate.tate",false)){
-                            api.internal.recalbox.setBoolParameter(prefix + ".rotate.tate",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optTeknoparrotOption31
-                }
-                ToggleOption {
-                    id: optTeknoparrotOption31
-                    label: qsTr("Force Free Play") + api.tr
-                    note: qsTr("Activate Free Play automatically if manageable by emulator") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".force.freeplay", true)
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".force.freeplay",true)){
-                            api.internal.recalbox.setBoolParameter(prefix + ".force.freeplay",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optTeknoparrotAdvancedConf
                 }
+
+                // SectionTitle {
+                //     text: qsTr("'Game' configuration") + api.tr
+                //     first: true
+                //     symbol: "\uf179"
+                // }
+
+                // ToggleOption {
+                //     id: optTeknoparrotOption3
+                //     label: qsTr("Frame limiter") + api.tr
+                //     note: qsTr("Activated to prevent games running too fast") + api.tr
+
+                //     checked: api.internal.recalbox.getBoolParameter(prefix + ".framelimiter", true)
+                //     onCheckedChanged: {
+                //        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".framelimiter",true)){
+                //            api.internal.recalbox.setBoolParameter(prefix + ".framelimiter",checked);
+                //        }
+                //     }
+                //     onFocusChanged: container.onFocus(this)
+                //     KeyNavigation.down: optTeknoparrotOption6
+                // }
+                // ToggleOption {
+                //     id: optTeknoparrotOption31
+                //     label: qsTr("Force Free Play") + api.tr
+                //     note: qsTr("Activate Free Play automatically if manageable by emulator") + api.tr
+
+                //     checked: api.internal.recalbox.getBoolParameter(prefix + ".force.freeplay", true)
+                //     onCheckedChanged: {
+                //         if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".force.freeplay",true)){
+                //             api.internal.recalbox.setBoolParameter(prefix + ".force.freeplay",checked);
+                //         }
+                //     }
+                //     onFocusChanged: container.onFocus(this)
+                //     KeyNavigation.down: optTeknoparrotAdvancedConf
+                // }
 
                 ToggleOption {
                     id: optTeknoparrotAdvancedConf
@@ -660,6 +662,20 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optGameConfiguration
+                }
+                SimpleButton {
+                    id: optGameConfiguration
+                    visible: (game && optTeknoparrotAdvancedConf.checked) ? true : false
+                    label: qsTr("Teknoparrot 'Game' configuration") + api.tr
+                    note: qsTr("To customize directly configuration especially for this game") + api.tr
+                    onActivate: {
+                        focus = true;
+                        root.openGameConfiguration();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    //pointer moved in SimpleButton desactived on default
+                    pointerIcon: true
                     KeyNavigation.down: optTeknoparrotOption4
                 }
                 ToggleOption {

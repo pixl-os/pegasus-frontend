@@ -30,8 +30,8 @@ FocusScope {
     //to manage overloading
     property string prefix : game ? ("override." + emulator) : emulator
     //to manage better title in screen ScreenHeader (if we want to change it during loading)
-    property string titleHeader: game ? game.title +  " > " + qsTr("Proton configuration") + api.tr :
-        (system ? system.name + " > " + qsTr("Proton configuration") + api.tr :
+    property string titleHeader: game ? game.title +  " > " + emulator + " > " + qsTr("Proton configuration") + api.tr :
+        (system ? system.name + " > " + emulator + " > " + qsTr("Proton configuration") + api.tr :
          emulator + " > " + qsTr("Proton configuration") + api.tr)
     //function to elide text string from right
     function elideStringFromRight(text, maxLength) {
@@ -415,6 +415,7 @@ FocusScope {
                             var newId = root.generate8DigitId(dxvk, dxvknvapi, vkd3d);
                             console.log("graphics ID generated : " + newId)
                             //Renderer info (if exists)
+                            //-> RFU: not used in proton for the moment DXVK/VKD3D/DXVKNVAPI are already installed in base
                             optBottleInfo.renderer_layer_name = optProtonBottle.internalvalue.split('/').pop() + "@graphics_" + newId;
                             optBottleInfo.renderer_layer_path = optProtonBottle.internalvalue + "@graphics_" + newId;
                             console.log("optBottleInfo.renderer_layer_path: " + optBottleInfo.renderer_layer_path);
@@ -466,40 +467,50 @@ FocusScope {
                             //keep only 1/2 lines max for the moment (keep 8 verbs max)
                             //"cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4"
 
-                            optBottleInfo.bottle_env = api.internal.system.run("cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.renderer_env = api.internal.system.run("cat " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.system_env = api.internal.system.run("cat " + optBottleInfo.system_layer_path + "/pfx/winetricks.log " + optBottleInfo.system_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.emulator_env = api.internal.system.run("cat " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.game_env = api.internal.system.run("cat " + optBottleInfo.game_layer_path + "/pfx/winetricks.log " + optBottleInfo.game_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            //get version of proton from bottle selected
+                            var protonEngine = optProtonBottle.value.split('(')[0].trim();
+
+                            //get version of dxvk from proton itself
+                            optBottleInfo.bottle_env = "dxvk " + api.internal.system.run("cat /usr/proton/" + protonEngine + "/files/lib/wine/dxvk/version").split(' ')[3];
+                            //get version of vkd3d from proton itself
+                            optBottleInfo.bottle_env = optBottleInfo.bottle_env + " vkd3d-proton " + api.internal.system.run("cat /usr/proton/" + protonEngine + "/files/lib/wine/vkd3d-proton/version").split(' ')[3];
+                            //get version of nvapi from proton itself
+                            optBottleInfo.bottle_env = optBottleInfo.bottle_env + " nvapi " + api.internal.system.run("cat /usr/proton/" + protonEngine + "/files/lib/wine/nvapi/version").split(' ')[3];
+
+                            optBottleInfo.bottle_env = optBottleInfo.bottle_env + " " + api.internal.system.run("cat " + optBottleInfo.bottle_path + "/pfx/winetricks.log " + optBottleInfo.bottle_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.renderer_env = api.internal.system.run("cat " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log " + optBottleInfo.renderer_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.system_env = api.internal.system.run("cat " + optBottleInfo.system_layer_path + "/pfx/winetricks.log " + optBottleInfo.system_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.emulator_env = api.internal.system.run("cat " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log " + optBottleInfo.emulator_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.game_env = api.internal.system.run("cat " + optBottleInfo.game_layer_path + "/pfx/winetricks.log " + optBottleInfo.game_layer_path + "/pfx/winetricks.log.forced 2>/dev/null | xargs -n 8 | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
 
                             //remove "env" info from lower layers and prepare size
                             if(optBottleInfo.game_env !==""){
-                                optBottleInfo.game_env = removeExistingValues(optBottleInfo.game_env,optBottleInfo.renderer_env)
+                                optBottleInfo.game_env = removeExistingValues(optBottleInfo.game_env,optBottleInfo.renderer_env).trim()
                                 optBottleInfo.game_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.game_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.game_layer_name + ".size\"", "thread");
                             }
                             else if(optBottleInfo.emulator_env !==""){
-                                optBottleInfo.emulator_env = removeExistingValues(optBottleInfo.emulator_env,optBottleInfo.renderer_env)
+                                optBottleInfo.emulator_env = removeExistingValues(optBottleInfo.emulator_env,optBottleInfo.renderer_env).trim()
                                 optBottleInfo.emulator_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.emulator_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.emulator_layer_name + ".size\"", "thread");
                             }
                             else if(optBottleInfo.system_env !==""){
-                                optBottleInfo.system_env = removeExistingValues(optBottleInfo.system_env,optBottleInfo.renderer_env)
+                                optBottleInfo.system_env = removeExistingValues(optBottleInfo.system_env,optBottleInfo.renderer_env).trim()
                                 optBottleInfo.system_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.system_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.system_layer_name + ".size\"", "thread");
                             }
                             if(optBottleInfo.renderer_env !==""){
-                                optBottleInfo.renderer_env = removeExistingValues(optBottleInfo.renderer_env,optBottleInfo.bottle_env)
+                                optBottleInfo.renderer_env = removeExistingValues(optBottleInfo.renderer_env,optBottleInfo.bottle_env).trim()
                                 optBottleInfo.renderer_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.renderer_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.renderer_layer_name + ".size\"", "thread");
                             }
                             directorySizeTimer.start();
 
-                            console.log("optBottleInfo.bottle_env : " + optBottleInfo.bottle_env)
-                            console.log("optBottleInfo.renderer_env : " + optBottleInfo.renderer_env)
-                            console.log("optBottleInfo.system_env : " + optBottleInfo.system_env)
-                            console.log("optBottleInfo.emulator_env : " + optBottleInfo.emulator_env)
-                            console.log("optBottleInfo.game_env : " + optBottleInfo.game_env)
+                            console.log("optBottleInfo.bottle_env : '" + optBottleInfo.bottle_env + "'")
+                            console.log("optBottleInfo.renderer_env : '" + optBottleInfo.renderer_env + "'")
+                            console.log("optBottleInfo.system_env : '" + optBottleInfo.system_env + "'")
+                            console.log("optBottleInfo.emulator_env : '" + optBottleInfo.emulator_env + "'")
+                            console.log("optBottleInfo.game_env : '" + optBottleInfo.game_env + "'")
 
                             //reset color
                             optProtonBottle.color = themeColor.textValue;
@@ -698,7 +709,7 @@ FocusScope {
                 ToggleOption {
                     id: optProtonPrefixWithLayers
                     label: qsTr("Bottle with layers") + api.tr
-                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(Per game using a common bottle base)") + api.tr
+                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(per emulator, system or game using a common bottle base)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithlayer", true)
                     onCheckedChanged: {
@@ -708,7 +719,7 @@ FocusScope {
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: devModeActivated
-                    KeyNavigation.down: optProtonSoftRenderer
+                    KeyNavigation.down: optProtonPrefixWithGamefixes
                 }
                 //RFU
                 /*MultivalueOption {
@@ -908,6 +919,21 @@ FocusScope {
                     visible: optProtonBottle.internalvalue === "" && devModeActivated ? true : false
                     KeyNavigation.down: optProtonSoftRenderer
                 }*/
+                ToggleOption {
+                    id: optProtonPrefixWithGamefixes
+                    label: qsTr("Bottle with gamefix") + api.tr
+                    note: qsTr("Install gamefix if exists in Wine Prefix/Bottle layers\n(per emulator, system or game)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithgamefix", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithgamefix", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.prefixwithgamefix",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
+                    KeyNavigation.down: optProtonSoftRenderer
+                }
 
                 //****************************** section to manage wine version of this emulator*****************************************
                 SectionTitle {
@@ -979,12 +1005,12 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: !optProtonSoftRenderer.checked
-                    KeyNavigation.down: optProtonDxvkVersion
+                    KeyNavigation.down: optProtonNVapi
                 }
-                MultivalueOption {
+                /*MultivalueOption {
                     id: optProtonDxvkVersion
                     //property to manage parameter name
-                    property string parameterName : prefix + ".dxvk"
+                    property string parameterName : prefix + ".proton.dxvk"
 
                     label: qsTr("DXVK version (for DirectX 9, 10 et 11)") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -1033,7 +1059,7 @@ FocusScope {
                 MultivalueOption {
                     id: optProtonVkd3dVersion
                     //property to manage parameter name
-                    property string parameterName : prefix + ".vkd3d"
+                    property string parameterName : prefix + ".proton.vkd3d"
 
                     label: qsTr("VKD3D version (for DirectX 12)") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -1078,27 +1104,27 @@ FocusScope {
                     }
                     visible: !optProtonSoftRenderer.checked && devModeActivated
                     KeyNavigation.down: optProtonNVapi
-                }
+                }*/
                 //to enable Nvidia-specific features (like DLSS, Ray Tracing, or Reflex)
                 ToggleOption {
                     id: optProtonNVapi
                     label: qsTr("Wine NVAPI for Nvidia-specific features)") + api.tr
                     note: qsTr("like DLSS, Ray Tracing, or Reflex running via DXVK/VKD3D") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".winenvapi", false)
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi", false)
                     onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".winenvapi",false)){
-                            api.internal.recalbox.setBoolParameter(prefix + ".winenvapi",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.winenvapi",false)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.winenvapi",checked);
                         }
                     }
                     onFocusChanged: container.onFocus(this)
                     visible: !optProtonSoftRenderer.checked && devModeActivated
-                    KeyNavigation.down: optProtonDxvkNapiVersion
+                    KeyNavigation.down: optProtonDxvkFramerate
                 }
-                MultivalueOption {
+                /*MultivalueOption {
                     id: optProtonDxvkNapiVersion
                     //property to manage parameter name
-                    property string parameterName : prefix + ".dxvknvapi"
+                    property string parameterName : prefix + ".proton.dxvknvapi"
 
                     label: qsTr("DXVK-NVAPI version") + api.tr
                     note: qsTr("Select the one to use, keep 'auto' if you don't know") + "\n" +
@@ -1143,8 +1169,7 @@ FocusScope {
                     }
                     visible: !optProtonSoftRenderer.checked && optProtonNVapi.checked && devModeActivated
                     KeyNavigation.down: optProtonDxvkFramerate
-                }
-		
+                }*/
                 MultivalueOption {
                     id: optProtonDxvkFramerate
                     visible: ((optProtonRenderer.internalvalue !== "gl") && devModeActivated && !optProtonSoftRenderer.checked)  ? true : false
@@ -1842,8 +1867,8 @@ FocusScope {
                 //force refreash of list of WINE engine/appimage if needed
                 //reset parameterlist cache
                 optProtonEngine.value = api.internal.recalbox.parameterslist.currentName(optProtonEngine.parameterName + ".resetcache");
-                optProtonDxvkVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonDxvkVersion.parameterName + ".resetcache");
-                optProtonVkd3dVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonVkd3dVersion.parameterName + ".resetcache");
+                //optProtonDxvkVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonDxvkVersion.parameterName + ".resetcache");
+                //optProtonVkd3dVersion.value = api.internal.recalbox.parameterslist.currentName(optProtonVkd3dVersion.parameterName + ".resetcache");
 
                 //to manage focus
                 content.focus = true;

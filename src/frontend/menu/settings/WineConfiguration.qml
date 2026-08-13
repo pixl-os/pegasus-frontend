@@ -30,8 +30,8 @@ FocusScope {
     //to manage overloading
     property string prefix : game ? ("override." + emulator) : emulator
     //to manage better title in screen ScreenHeader (if we want to change it during loading)
-    property string titleHeader: game ? game.title +  " > " + qsTr("Wine configuration") + api.tr :
-        (system ? system.name + " > " + qsTr("Wine configuration") + api.tr :
+    property string titleHeader: game ? game.title +  " > " + emulator + " > " + qsTr("Wine configuration") + api.tr :
+        (system ? system.name + " > " + emulator + " > " + qsTr("Wine configuration") + api.tr :
          emulator + " > " + qsTr("Wine configuration") + api.tr)
 
     //function to elide text string from right
@@ -467,40 +467,40 @@ FocusScope {
                             //to get env details
                             //xargs -n 10 < winetricks.log
                             //keep only 1/2 lines max for the moment (keep 8 verbs max)
-                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
-                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/winetricks.log | head -n 4 | tr -d '\\n' | tr -d '\\r'");
+                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
 
                             //remove "env" info from lower layers and prepare size
                             if(optBottleInfo.game_env !==""){
-                                optBottleInfo.game_env = removeExistingValues(optBottleInfo.game_env,optBottleInfo.renderer_env)
+                                optBottleInfo.game_env = removeExistingValues(optBottleInfo.game_env,optBottleInfo.renderer_env).trim();
                                 optBottleInfo.game_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.game_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.game_layer_name + ".size\"", "thread");
                             }
                             else if(optBottleInfo.emulator_env !==""){
-                                optBottleInfo.emulator_env = removeExistingValues(optBottleInfo.emulator_env,optBottleInfo.renderer_env)
+                                optBottleInfo.emulator_env = removeExistingValues(optBottleInfo.emulator_env,optBottleInfo.renderer_env).trim();
                                 optBottleInfo.emulator_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.emulator_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.emulator_layer_name + ".size\"", "thread");
                             }
                             else if(optBottleInfo.system_env !==""){
-                                optBottleInfo.system_env = removeExistingValues(optBottleInfo.system_env,optBottleInfo.renderer_env)
+                                optBottleInfo.system_env = removeExistingValues(optBottleInfo.system_env,optBottleInfo.renderer_env).trim();
                                 optBottleInfo.system_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.system_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.system_layer_name + ".size\"", "thread");
                             }
                             if(optBottleInfo.renderer_env !==""){
-                                optBottleInfo.renderer_env = removeExistingValues(optBottleInfo.renderer_env,optBottleInfo.bottle_env)
+                                optBottleInfo.renderer_env = removeExistingValues(optBottleInfo.renderer_env,optBottleInfo.bottle_env).trim();
                                 optBottleInfo.renderer_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.renderer_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.renderer_layer_name + ".size\"", "thread");
                             }
                             directorySizeTimer.start();
 
-                            console.log("optBottleInfo.bottle_env : " + optBottleInfo.bottle_env)
-                            console.log("optBottleInfo.renderer_env : " + optBottleInfo.renderer_env)
-                            console.log("optBottleInfo.system_env : " + optBottleInfo.system_env)
-                            console.log("optBottleInfo.emulator_env : " + optBottleInfo.emulator_env)
-                            console.log("optBottleInfo.game_env : " + optBottleInfo.game_env)
+                            console.log("optBottleInfo.bottle_env : '" + optBottleInfo.bottle_env + "'")
+                            console.log("optBottleInfo.renderer_env : '" + optBottleInfo.renderer_env + "'")
+                            console.log("optBottleInfo.system_env : '" + optBottleInfo.system_env + "'")
+                            console.log("optBottleInfo.emulator_env : '" + optBottleInfo.emulator_env + "'")
+                            console.log("optBottleInfo.game_env : '" + optBottleInfo.game_env + "'")
 
                             //reset color
                             optWineBottle.color = themeColor.textValue;
@@ -703,7 +703,7 @@ FocusScope {
                 ToggleOption {
                     id: optWinePrefixWithLayers
                     label: qsTr("Bottle with layers") + api.tr
-                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(Per game using a common bottle base)") + api.tr
+                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(per emulator, system or game using a common bottle base)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithlayer", true)
                     onCheckedChanged: {
@@ -906,6 +906,21 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: optWineBottle.internalvalue === "" && devModeActivated ? true : false
+                    KeyNavigation.down: optWinePrefixWithGamefixes
+                }
+                ToggleOption {
+                    id: optWinePrefixWithGamefixes
+                    label: qsTr("Bottle with gamefix") + api.tr
+                    note: qsTr("Install gamefix if exists in Wine Prefix/Bottle layers\n(per emulator, system or game)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithgamefix", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithgamefix", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".wine.prefixwithgamefix",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
                     KeyNavigation.down: optWineSoftRenderer
                 }
 
@@ -1838,7 +1853,7 @@ FocusScope {
                 }
                 else{
                     //Launch protonUp-QT AppImage from dev project / or from home specific directory
-                    api.internal.system.run("~/ProtonUp-Qt-pixL/ProtonUp-Qt-2.14.0-x86_64.AppImage");
+                    api.internal.system.run("~/ProtonUp-Qt-pixL/ProtonUp-Qt-2.15.1-x86_64.AppImage");
                 }
                 //force refreash of list of WINE engine/appimage if needed
                 //reset parameterlist caches

@@ -30,10 +30,10 @@ FocusScope {
     }
 
     function openModalWithEmulator(url, emulator) {
-        console.log("openModal - url : ", url);
-        console.log("openModal - root.launchedAsDialogBox : ", root.launchedAsDialogBox);
-        if(root.game) console.log("openModal - root.game.title : ", root.game.title);
-        if(root.system) console.log("openModal - root.system.name : ", root.system.name);
+        //console.log("openModal - url : ", url);
+        //console.log("openModal - root.launchedAsDialogBox : ", root.launchedAsDialogBox);
+        //if(root.game) console.log("openModal - root.game.title : ", root.game.title);
+        //if(root.system) console.log("openModal - root.system.name : ", root.system.name);
 
         if (root.launchedAsDialogBox) modal.fullscreen = false;
         if(root.game){
@@ -72,6 +72,7 @@ FocusScope {
         onClose: root.close()
         onOpenWineConfiguration: root.openWithEmulator("../WineConfiguration.qml", "teknoparrot")
         onOpenProtonConfiguration: root.openWithEmulator("../ProtonConfiguration.qml", "teknoparrot")
+        onOpenGameConfiguration: root.openWithEmulator("../GameConfiguration.qml", "teknoparrot")
     }
     Loader {
         id: modal

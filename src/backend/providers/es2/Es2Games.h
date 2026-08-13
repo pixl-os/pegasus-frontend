@@ -21,17 +21,16 @@
 
 #include <QDir>
 #include <QString>
-#include <vector>
 
 namespace model { class Game; }
 namespace providers { class SearchContext; }
 namespace providers { namespace es2 { struct SystemEntry; } }
-
+namespace providers { namespace es2 { class Metadata; } }
 
 namespace providers {
 namespace es2 {
 
-size_t find_games_for(const SystemEntry&, const QDir&, SearchContext&);
+size_t find_games_for(const SystemEntry&, const QDir&, SearchContext&, Metadata&);
 size_t create_collection_for(const SystemEntry&, SearchContext&);
 size_t find_system_videos_for(const SystemEntry&, SearchContext&);
 

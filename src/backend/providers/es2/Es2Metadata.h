@@ -53,6 +53,7 @@ public:
     explicit Metadata(QString, std::vector<QString>);
     size_t find_metadata_for_system(const SystemEntry&, const QDir&, providers::SearchContext&) const;
     void prepare_lightgun_games_metadata();
+    bool isLightgunGames(model::Game*, const model::GameFile*, const SystemEntry&) const;
     QString find_gamelist_xml(const QDir& system_dir, const SystemEntry&) const;
     std::vector<QString> find_gamelist_xml_files(const QDir& system_dir) const;
     QString find_media_xml(const QDir& system_dir, const SystemEntry&) const;
@@ -74,7 +75,6 @@ private:
     void add_skraper_media_metadata_v2(const QDir&, providers::SearchContext&, const SystemEntry&, bool generateMediaXML = false) const;
     size_t import_media_from_xml(const QDir&, providers::SearchContext&, const SystemEntry&) const;
     size_t import_lightgun_games_from_xml(const QString&);
-    bool isLightgunGames(model::Game*, const model::GameFile*, const SystemEntry&) const;
     bool compareLightgunGames(const lightgunGameData&, const lightgunGameData&) const;
 
 

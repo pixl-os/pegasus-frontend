@@ -184,5 +184,6 @@
         <file>assets/demul.png</file>
         <file>assets/owc.png</file>
         <file>assets/ge-proton-short.png</file>
+        <file>menu/settings/GameConfiguration.qml</file>
     </qresource>
 </RCC>

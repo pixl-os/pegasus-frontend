@@ -50,13 +50,18 @@ namespace {
 
 std::vector<QString> default_config_paths()
 {
-    QString shareInitPath = paths::homePath() % QStringLiteral("/.pegasus-frontend/");
+    QString sharePath;
+    if(paths::homePath().contains("share/system")){ // to confirm that user is on /recalbox/share/system/ or /pixl/share/system/
+        sharePath = paths::homePath() % QStringLiteral("/.pegasus-frontend/");
+    }
+    else{
+        sharePath = "/recalbox/share/system" % QStringLiteral("/.pegasus-frontend/");
+    }
+    QString shareInitPath = sharePath;
     shareInitPath.replace("/share/","/share_init/");
-
     return {
-        paths::homePath() % QStringLiteral("/.pegasus-frontend/"),
-        shareInitPath,
-        QStringLiteral("/etc/pegasus-frontend/"),
+        sharePath,
+        shareInitPath
     };
 }
 
@@ -64,6 +69,7 @@ QString lightgun_xml(const std::vector<QString>& possible_config_dirs)
 {
     for (const QString& dir_path : possible_config_dirs) {
         QString xml_path = dir_path + QStringLiteral("lightgun.cfg");
+        //Log::info("lightgun_xml", LOGMSG("xml_path: `%1`").arg(xml_path));
         if (QFileInfo::exists(xml_path))
             return xml_path;
     }
@@ -420,7 +426,12 @@ bool Metadata::isLightgunGames(model::Game* game, const model::GameFile* gamefil
 {
     QString log_tag = "lightgun.cfg ";
     QString simplified_game_name = game->title();
+
     //Log::debug(log_tag, LOGMSG("game name to simplified : %1").arg(simplified_game_name));
+
+    /*if(systementry.shortname == "systemes3"){
+        Log::debug(log_tag, LOGMSG("systementry.shortname : %1").arg(systementry.shortname));
+    }*/
 
     //lowercase
     simplified_game_name = simplified_game_name.toLower();
@@ -428,24 +439,31 @@ bool Metadata::isLightgunGames(model::Game* game, const model::GameFile* gamefil
     const QRegularExpression replace_regex(QStringLiteral("[^a-z0-9!]"));
     simplified_game_name.remove(replace_regex);
     //Log::debug(log_tag, LOGMSG("simplified game name : %1").arg(simplified_game_name));
+    //Log::debug(log_tag, LOGMSG("system entry short name : %1").arg(systementry.shortname));
+    //Log::debug(log_tag, LOGMSG("file info base name : %1").arg(gamefile->fileinfo().baseName()));
 
     //parse m_lightgun_games to know if this game is a lightgun game one or not
     lightgunGameData lightgunGameToFind = {simplified_game_name, gamefile->fileinfo().baseName(), systementry.shortname};
     QList<lightgunGameData>::const_iterator it = std::find_if(m_lightgun_games.begin(),m_lightgun_games.end(),
                                                               [&](const lightgunGameData& input){
-                                                                    //Log::debug(log_tag, LOGMSG("lightgunGameToFind.system : %1").arg(lightgunGameToFind.system));
-                                                                    //Log::debug(log_tag, LOGMSG("input.system : %1").arg(input.system));
+                                                                    /*if(systementry.shortname == "systemes3"){
+                                                                        Log::debug(log_tag, LOGMSG("lightgunGameToFind.system : %1").arg(lightgunGameToFind.system));
+                                                                        Log::debug(log_tag, LOGMSG("input.system : %1").arg(input.system));
+                                                                        Log::debug(log_tag, LOGMSG("input.roms : %1").arg(input.roms));
+                                                                    }*/
                                                                     if(input.roms == ""){
-                                                                        return lightgunGameToFind.name.contains(input.name) && input.system.contains("'" + lightgunGameToFind.system + "'");
+                                                                        //Log::debug(log_tag, LOGMSG("input.name : %1").arg(input.name));
+                                                                        return lightgunGameToFind.name.contains(input.name,Qt::CaseInsensitive) && input.system.contains("'" + lightgunGameToFind.system + "'");
                                                                     }
                                                                     else{
-                                                                        return input.roms.contains(lightgunGameToFind.roms) && input.system.contains("'" + lightgunGameToFind.system + "'");
+                                                                        //Log::debug(log_tag, LOGMSG("input.roms : %1").arg(input.roms));
+                                                                        return input.roms.contains(lightgunGameToFind.roms,Qt::CaseInsensitive) && input.system.contains("'" + lightgunGameToFind.system + "'");
                                                                     }
                                                               }
     );
 
     if ((it != m_lightgun_games.end())) {
-        //Log::debug(log_tag, LOGMSG("%1 is lightgun game for %2").arg(game->title(), systementry.name));
+        Log::debug(log_tag, LOGMSG("%1 is lightgun game for %2").arg(game->title(), systementry.name));
         return true;
     }
     else {
