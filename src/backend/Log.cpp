@@ -49,7 +49,7 @@ public:
             // 1. Extract everything before the first ':'
             // section(separator, start, end)
             // to generate the good parameter
-            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".debuglogs";
             // check if parameter is activated to hide this type of debug log
             if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
                 // Manually get the timestamp
@@ -62,13 +62,37 @@ public:
     }
 
     void info(const QString& msg) override {
-        qInfo().noquote().nospace() << msg;
+        // 1. Extract everything before the first ':'
+        // section(separator, start, end)
+        // to generate the good parameter
+        const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+        // check if parameter is activated to hide this type of debug log
+        if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+            // Prepend it to the message
+            qInfo().noquote().nospace() << msg;
+        }
     }
     void warning(const QString& msg) override {
-        qWarning().noquote().nospace() << msg;
+        // 1. Extract everything before the first ':'
+        // section(separator, start, end)
+        // to generate the good parameter
+        const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+        // check if parameter is activated to hide this type of debug log
+        if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+            // Prepend it to the message
+            qWarning().noquote().nospace() << msg;
+        }
     }
     void error(const QString& msg) override {
-        qWarning().noquote().nospace() << "Error: " << msg;
+        // 1. Extract everything before the first ':'
+        // section(separator, start, end)
+        // to generate the good parameter
+        const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+        // check if parameter is activated to hide this type of debug log
+        if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+            // Prepend it to the message
+            qWarning().noquote().nospace() << "Error: " << msg;
+        }
     }
 };
 
@@ -83,7 +107,7 @@ public:
             // 1. Extract everything before the first ':'
             // section(separator, start, end)
             // to generate the good parameter
-            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".debuglogs";
             // check if parameter is activated to hide this type of debug log
             if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
                 colorlog(m_pre_debug, m_marker_debug, msg, true);
@@ -91,17 +115,41 @@ public:
         }
     }
     void info(const QString& msg) override {
-        colorlog(m_pre_info, m_marker_info, msg);
+        // 1. Extract everything before the first ':'
+        // section(separator, start, end)
+        // to generate the good parameter
+        const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+        // check if parameter is activated to hide this type of debug log
+        if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+            colorlog(m_pre_info, m_marker_info, msg);
+        }
     }
     void warning(const QString& msg) override {
         //just simple exclusion for the moment, TO DO: add filetring mechanism to manage more cases in the future
         if (msg.contains("libpng warning:")){
             //do nothing for the moment and just ignore to avoid to warning from libpng due to format of png files in scrap
         }
-        else colorlog(m_pre_warning, m_marker_warning, msg);
+        else {
+            // 1. Extract everything before the first ':'
+            // section(separator, start, end)
+            // to generate the good parameter
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+            // check if parameter is activated to hide this type of debug log
+            if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                colorlog(m_pre_warning, m_marker_warning, msg);
+            }
+        }
+
     }
     void error(const QString& msg) override {
-        colorlog(m_pre_error, m_marker_error, msg);
+        // 1. Extract everything before the first ':'
+        // section(separator, start, end)
+        // to generate the good parameter
+        const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+        // check if parameter is activated to hide this type of debug log
+        if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+            colorlog(m_pre_error, m_marker_error, msg);
+        }
     }
 
 private:
@@ -169,7 +217,7 @@ public:
             // 1. Extract everything before the first ':'
             // section(separator, start, end)
             // to generate the good parameter
-            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".debuglogs";
             // check if parameter is activated to hide this type of debug log
             if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
                 datelog(m_marker_debug, msg, true);
@@ -180,7 +228,14 @@ public:
         if (Q_UNLIKELY(!m_file.isOpen()))
             return;
 
-        datelog(m_marker_info, msg);
+        // 1. Extract everything before the first ':'
+        // section(separator, start, end)
+        // to generate the good parameter
+        const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+        // check if parameter is activated to hide this type of debug log
+        if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+            datelog(m_marker_info, msg);
+        }
     }
     void warning(const QString& msg) override {
         if (Q_UNLIKELY(!m_file.isOpen()))
@@ -189,14 +244,29 @@ public:
         if (msg.contains("libpng warning:")){
             //do nothing for the moment and just ignore to avoid to warning from libpng due to format of png files in scrap
         }
-        else datelog(m_marker_warning, msg);
+        else{
+            // 1. Extract everything before the first ':'
+            // section(separator, start, end)
+            // to generate the good parameter
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+            // check if parameter is activated to hide this type of debug log
+            if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                datelog(m_marker_warning, msg);
+            }
+        }
         m_stream.flush();
     }
     void error(const QString& msg) override {
         if (Q_UNLIKELY(!m_file.isOpen()))
             return;
-
-        datelog(m_marker_error, msg);
+        // 1. Extract everything before the first ':'
+        // section(separator, start, end)
+        // to generate the good parameter
+        const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+        // check if parameter is activated to hide this type of debug log
+        if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+            datelog(m_marker_error, msg);
+        }
         m_stream.flush();
     }
 
@@ -270,28 +340,53 @@ void on_qt_message(QtMsgType type, const QMessageLogContext& context, const QStr
 {
     const QString prepared_msg = qFormatLogMessage(type, context, msg);
     switch (type) {
-        case QtMsgType::QtDebugMsg:
+        case QtMsgType::QtDebugMsg:{
             if (RecalboxConf::Instance().AsBool("pegasus.debuglogs")){
                 // 1. Extract everything before the first ':'
                 // section(separator, start, end)
                 // to generate the good parameter
-                const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower() + ".debuglogs";
+                const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".debuglogs";
                 // check if parameter is activated to hide this type of debug log
                 if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
                     Log::debug(prepared_msg);
                 }
             }
-            break;
-        case QtMsgType::QtInfoMsg:
-            Log::info(prepared_msg);
-            break;
-        case QtMsgType::QtWarningMsg:
-            Log::warning(prepared_msg);
-            break;
+        }
+        break;
+        case QtMsgType::QtInfoMsg:{
+            // 1. Extract everything before the first ':'
+            // section(separator, start, end)
+            // to generate the good parameter
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+            // check if parameter is activated to hide this type of debug log
+            if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                Log::info(prepared_msg);
+            }
+        }
+        break;
+        case QtMsgType::QtWarningMsg:{
+            // 1. Extract everything before the first ':'
+            // section(separator, start, end)
+            // to generate the good parameter
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+            // check if parameter is activated to hide this type of debug log
+            if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                Log::warning(prepared_msg);
+            }
+        }
+        break;
         case QtMsgType::QtCriticalMsg:
-        case QtMsgType::QtFatalMsg:
-            Log::error(prepared_msg);
-            break;
+        case QtMsgType::QtFatalMsg:{
+            // 1. Extract everything before the first ':'
+            // section(separator, start, end)
+            // to generate the good parameter
+            const QString parameter = "pegasus.hide." + msg.section(':', 0, 0).trimmed().toLower().split('.')[0] + ".alllogs";
+            // check if parameter is activated to hide this type of debug log
+            if (!RecalboxConf::Instance().AsBool(parameter.toStdString())){
+                Log::error(prepared_msg);
+            }
+        }
+        break;
         default:
             Q_UNREACHABLE();
             break;
