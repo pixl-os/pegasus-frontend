@@ -43,7 +43,7 @@ enum class AssetType : unsigned char {
     // for tag <box2dside></box2dside>
     BOX_SPINE,
 
-    // for tag <box3d></box3d>
+    // for tag <box3d></box3d> or <boxes></boxes>
     BOX_3DFRONT,
     
     // for tag <boxtexture></boxtexture>
@@ -55,10 +55,10 @@ enum class AssetType : unsigned char {
     // for tag <fanart></fanart>
     FANART,    
 
-    // for tag <images></images>
+    // for tag <images></images> or <image></image>
     IMAGES,
 
-    // for tag <manuals></manuals>
+    // for tag <manuals></manuals> or <manual><manuals>
     MANUAL,
 
     // for tag <map></map>
@@ -97,7 +97,7 @@ enum class AssetType : unsigned char {
     // for tag <thumbnail></thumbnail>
     THUMBNAIL,
     
-    // for tag <videos></videos>
+    // for tag <videos></videos> or <video></video>
     VIDEO,
 
     // for tag <videomix></videomix>

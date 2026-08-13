@@ -57,6 +57,8 @@ AssetType str_to_type(const QString& str)
         { QStringLiteral("cart"), AssetType::CARTRIDGE },
         { QStringLiteral("logo"), AssetType::LOGO },
         { QStringLiteral("wheel"), AssetType::LOGO },
+        { QStringLiteral("wheels"), AssetType::LOGO },
+
         { QStringLiteral("marquee"), AssetType::ARCADE_MARQUEE },
         { QStringLiteral("bezel"), AssetType::ARCADE_BEZEL },
         { QStringLiteral("screenmarquee"), AssetType::ARCADE_BEZEL },
@@ -88,6 +90,7 @@ AssetType str_to_type(const QString& str)
         { QStringLiteral("titlescreen"), AssetType::TITLESCREEN },
 
         { QStringLiteral("manuals"), AssetType::MANUAL },
+        { QStringLiteral("manual"), AssetType::MANUAL },
 
         { QStringLiteral("maps"), AssetType::MAPS },
     };
