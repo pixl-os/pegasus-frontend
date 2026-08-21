@@ -153,7 +153,12 @@ enum class MetaType : unsigned char {
     VIDEO,
     MARQUEE,
     BOX_3DFRONT,
+    BOX_2DFRONT,
+    BOX_TEXTURE,
+    FANART,
+    WHEEL,
     MANUAL,
+    MAP,
     FAVORITE,
     HASH,
     MD5,
@@ -212,12 +217,24 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
         { QStringLiteral("playcount"), MetaType::PLAYCOUNT },
         { QStringLiteral("lastplayed"), MetaType::LASTPLAYED },
         { QStringLiteral("releasedate"), MetaType::RELEASE },
+
         { QStringLiteral("image"), MetaType::IMAGE },
         { QStringLiteral("thumbnail"), MetaType::THUMBNAIL },
         { QStringLiteral("video"), MetaType::VIDEO },
+
+        { QStringLiteral("fanart"), MetaType::FANART },
+        { QStringLiteral("wheel"), MetaType::WHEEL },
+
         { QStringLiteral("marquee"), MetaType::MARQUEE },
-        { QStringLiteral("box"), MetaType::BOX_3DFRONT },
+
+        { QStringLiteral("box3d"), MetaType::BOX_3DFRONT },
+        { QStringLiteral("box2dfront"), MetaType::BOX_2DFRONT },
+
+        { QStringLiteral("boxtexture"), MetaType::BOX_TEXTURE },
+
         { QStringLiteral("manual"), MetaType::MANUAL },
+        { QStringLiteral("map"), MetaType::MAP },
+
         { QStringLiteral("favorite"), MetaType::FAVORITE },
         { QStringLiteral("hash"), MetaType::HASH },
         { QStringLiteral("md5"), MetaType::MD5 },
@@ -230,9 +247,23 @@ Metadata::Metadata(QString log_tag, std::vector<QString> possible_config_dirs)
     , m_asset_type_map {  // TODO: C++14 with constexpr pair ctor
         { MetaType::IMAGE, AssetType::BOX_FRONT },
         { MetaType::THUMBNAIL, AssetType::SCREENSHOT },
+        { MetaType::VIDEO, AssetType::VIDEO },
+
+        { MetaType::FANART, AssetType::FANART},
+
+        { MetaType::WHEEL, AssetType::LOGO},
+
         { MetaType::MARQUEE, AssetType::ARCADE_MARQUEE },
         { MetaType::MARQUEE, AssetType::MARQUEE },
-        { MetaType::VIDEO, AssetType::VIDEO },
+
+        { MetaType::BOX_3DFRONT, AssetType::BOX_3DFRONT },
+        { MetaType::BOX_2DFRONT, AssetType::BOX_2DFRONT },
+
+        { MetaType::BOX_TEXTURE, AssetType::BOX_FULL},
+
+        { MetaType::MANUAL, AssetType::MANUAL},
+        { MetaType::MAP, AssetType::MAPS},
+
     }
 {}
 
