@@ -15,6 +15,7 @@ FocusScope {
 
     signal close
     signal openEmulatorSettings(var emulator)
+    signal openScraperSettings()
     width: parent.width
     height: parent.height
     
@@ -614,10 +615,113 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: emulatorButtons.count > 1 ? optAutoCoreSelection : emulatorButtons.itemAt(0)
+                    KeyNavigation.down: optSystemScrapAuto
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
+                SectionTitle {
+                    text: qsTr("'Scrap' options") + api.tr
+                    first: true
+                    symbol: "\uf179"
+                }
+                ToggleOption {
+                    id: optSystemScrapAuto
+
+                    //property to manage parameter name
+                    property string suffix: ".scrap.auto"
+                    property string parameterName : prefix + suffix
+
+                    label: qsTr("Auto-scrap") + api.tr
+                    note: qsTr("Let pixL manage your scrap in background ;-) \n (pixL will propose to restart Pegasus if necessary)") + api.tr
+
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
+                    }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSystemRealtimeScrap
+                }
+                ToggleOption {
+                    id: optSystemRealtimeScrap
+
+                    //property to manage parameter name
+                    property string suffix: ".scrap.realtime"
+                    property string parameterName : prefix + suffix
+
+                    label: qsTr("'Realtime' scrap") + api.tr
+                    note: qsTr("Let pixL to use media/info downloaded during scrap ;-) \n (Pegasus doesn't need to reload gamelist)") + api.tr
+
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
+                    }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSystemClearCacheScrap
+                    visible: !optSystemScrapAuto.checked
+                }
+                ToggleOption {
+                    id: optSystemClearCacheScrap
+
+                    //property to manage parameter name
+                    property string suffix: ".scrap.clear.cache"
+                    property string parameterName : prefix + suffix
+
+                    label: qsTr("Clear cache after scrap") + api.tr
+                    note: qsTr("Advice to avoid to keep too data and saturate your storage ;-) \n(but could be useful when you test scrap display)") + api.tr
+
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
+                    }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optLaunchScrapSettings
+                    visible: !optSystemScrapAuto.checked
+
+                }
+                SimpleButton {
+                    id: optLaunchScrapSettings
+                    label: qsTr("Scraper management") + api.tr
+                    note: ""
+                    pointerIcon: true
+                    onActivate: {
+                        focus = true;
+                        root.openScraperSettings();
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: emulatorButtons.count > 1 ? optAutoCoreSelection : emulatorButtons.itemAt(0)
+                    visible: !optSystemScrapAuto.checked
+                }
+
                 SectionTitle {
                     text: qsTr("Core options") + api.tr
                     first: true

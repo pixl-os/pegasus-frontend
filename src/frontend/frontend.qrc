@@ -185,5 +185,6 @@
         <file>assets/owc.png</file>
         <file>assets/ge-proton-short.png</file>
         <file>menu/settings/GameConfiguration.qml</file>
+        <file>menu/settings/ScraperSettings.qml</file>
     </qresource>
 </RCC>
