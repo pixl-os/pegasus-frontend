@@ -80,6 +80,12 @@ FocusScope {
             }
             else root.openScreen("emulatorsetting/" + emulator + "Settings.qml")
         }
+        onOpenScraperSettings: {
+            if (launchedAsDialogBox){
+                root.openModal("ScraperSettings.qml")
+            }
+            else root.openScreen("ScraperSettings.qml")
+        }
     }
     Loader {
         id: modal
