@@ -619,6 +619,127 @@ FocusScope {
                     visible : isLibretroCore
                 }
                 SectionTitle {
+                    text: qsTr("'Scrap' options") + api.tr
+                    first: true
+                    symbol: "\uf179"
+                }
+                ToggleOption {
+                    id: optSystemScrapAuto
+
+                    //property to manage parameter name
+                    property string suffix: ".scrap.auto"
+                    property string parameterName : prefix + suffix
+
+                    label: qsTr("Auto-scrap") + api.tr
+                    note: qsTr("Let pixL manage your scrap in background ;-) \n (pixL will propose to restart Pegasus if necessary)") + api.tr
+
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
+                    }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSystemRealtimeScrap
+                }
+                ToggleOption {
+                    id: optSystemRealtimeScrap
+
+                    //property to manage parameter name
+                    property string suffix: ".scrap.realtime"
+                    property string parameterName : prefix + suffix
+
+                    label: qsTr("'Realtime' scrap") + api.tr
+                    note: qsTr("Let pixL to use media/info already download during scrap ;-) \n (Pegasus doesn't need to reload gamelist)") + api.tr
+
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
+                    }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSystemGameRewind
+                }
+                ToggleOption {
+                    id: optSystemClearCacheScrap
+
+                    //property to manage parameter name
+                    property string suffix: ".scrap.clear.cache"
+                    property string parameterName : prefix + suffix
+
+                    label: qsTr("Clear cacher after scrap") + api.tr
+                    note: qsTr("Advice to avoid to keep too data and saturate your storage ;-) \n") + api.tr
+
+                    checked:{
+                        if(prefix === system.shortName){
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter("global" + suffix))
+                        }
+                        else{
+                            return api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))
+                        }
+                    }
+                    onCheckedChanged:{
+                        if(checked !== api.internal.recalbox.getBoolParameter(parameterName, api.internal.recalbox.getBoolParameter(system.shortName + suffix, api.internal.recalbox.getBoolParameter("global" + suffix)))){
+                            api.internal.recalbox.setBoolParameter(parameterName,checked);
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optSystemGameRewind
+                }
+                SimpleButton {
+                    id: optLaunchScrapSettings
+                    label: qsTr("Scraper configuration and launch") + api.tr
+                    note: ""
+                    pointerIcon: true
+                    visible: false
+                    onActivate: {
+                        focus = true;
+                        root.openScraperSettings(emulator);
+                    }
+                    // loader to check if QML file exists
+                    Loader {
+                        id: myLoader
+                        // Attempt to load the file
+                        source: typeof(emulator) !== "undefined" && emulator !== "" ? "emulatorsetting/" + emulator + "Settings.qml" : ""
+                        onStatusChanged: {
+                            if (status === Loader.Error) {
+                                console.log("Failed to load component !");
+                                // Handle the error, e.g., show a placeholder UI
+                                parent.visible = false;
+                            }
+                        }
+                        onLoaded: {
+                            //console.log("Content loaded!");
+                            // You can access properties and functions of the loaded item
+                            if (item) {
+                                //console.log("Object acessibled!");
+                                parent.visible = true;
+                            }
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: containerDeleteOverrideFile
+                }
+
+                SectionTitle {
                     text: qsTr("Core options") + api.tr
                     first: true
                     symbol: "\uf179"
