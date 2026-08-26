@@ -15,6 +15,7 @@ FocusScope {
 
     signal close
     signal openEmulatorSettings(var emulator)
+    signal openScraperSettings()
     width: parent.width
     height: parent.height
     
@@ -614,7 +615,7 @@ FocusScope {
                         }
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: emulatorButtons.count > 1 ? optAutoCoreSelection : emulatorButtons.itemAt(0)
+                    KeyNavigation.down: optSystemScrapAuto
                     // not visible if not libretro Core
                     visible : isLibretroCore
                 }
@@ -658,7 +659,7 @@ FocusScope {
                     property string parameterName : prefix + suffix
 
                     label: qsTr("'Realtime' scrap") + api.tr
-                    note: qsTr("Let pixL to use media/info already download during scrap ;-) \n (Pegasus doesn't need to reload gamelist)") + api.tr
+                    note: qsTr("Let pixL to use media/info downloaded during scrap ;-) \n (Pegasus doesn't need to reload gamelist)") + api.tr
 
                     checked:{
                         if(prefix === system.shortName){
@@ -675,7 +676,8 @@ FocusScope {
                     }
 
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSystemGameRewind
+                    KeyNavigation.down: optSystemClearCacheScrap
+                    visible: !optSystemScrapAuto.checked
                 }
                 ToggleOption {
                     id: optSystemClearCacheScrap
@@ -684,8 +686,8 @@ FocusScope {
                     property string suffix: ".scrap.clear.cache"
                     property string parameterName : prefix + suffix
 
-                    label: qsTr("Clear cacher after scrap") + api.tr
-                    note: qsTr("Advice to avoid to keep too data and saturate your storage ;-) \n") + api.tr
+                    label: qsTr("Clear cache after scrap") + api.tr
+                    note: qsTr("Advice to avoid to keep too data and saturate your storage ;-) \n(but could be useful when you test scrap display)") + api.tr
 
                     checked:{
                         if(prefix === system.shortName){
@@ -702,41 +704,22 @@ FocusScope {
                     }
 
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSystemGameRewind
+                    KeyNavigation.down: optLaunchScrapSettings
+                    visible: !optSystemScrapAuto.checked
+
                 }
                 SimpleButton {
                     id: optLaunchScrapSettings
-                    label: qsTr("Scraper configuration and launch") + api.tr
+                    label: qsTr("Scraper management") + api.tr
                     note: ""
                     pointerIcon: true
-                    visible: false
                     onActivate: {
                         focus = true;
-                        root.openScraperSettings(emulator);
-                    }
-                    // loader to check if QML file exists
-                    Loader {
-                        id: myLoader
-                        // Attempt to load the file
-                        source: typeof(emulator) !== "undefined" && emulator !== "" ? "emulatorsetting/" + emulator + "Settings.qml" : ""
-                        onStatusChanged: {
-                            if (status === Loader.Error) {
-                                console.log("Failed to load component !");
-                                // Handle the error, e.g., show a placeholder UI
-                                parent.visible = false;
-                            }
-                        }
-                        onLoaded: {
-                            //console.log("Content loaded!");
-                            // You can access properties and functions of the loaded item
-                            if (item) {
-                                //console.log("Object acessibled!");
-                                parent.visible = true;
-                            }
-                        }
+                        root.openScraperSettings();
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: containerDeleteOverrideFile
+                    KeyNavigation.down: emulatorButtons.count > 1 ? optAutoCoreSelection : emulatorButtons.itemAt(0)
+                    visible: !optSystemScrapAuto.checked
                 }
 
                 SectionTitle {
