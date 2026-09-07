@@ -105,10 +105,14 @@ FocusScope {
                   default:
                       root.updateSindenPlayersConfValue("EnableRecoil","0");
                 }
-                api.internal.system.run("/etc/init.d/S99sindenlightgun restart");
+                //we prefer to runasync to detach service from Pegasus-fe
+                api.internal.system.runAsync("/etc/init.d/S99sindenlightgun restart");
+                //we wait after ;-)
+                api.internal.system.run("sleep 5");
             }
             else{//for debug and see spinner
-                api.internal.system.run("sleep 5; /etc/init.d/S99sindenlightgun restart");
+                api.internal.system.run("sleep 5");
+                api.internal.system.runAsync("/etc/init.d/S99sindenlightgun restart");
             }
             content.focus = true;
         }
@@ -147,13 +151,13 @@ FocusScope {
     }
     //functions to manage XML configuration file for sinden lightgun service
     function updateSindenConfValue(key,value) {
-        console.log('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
+        //console.log('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
         api.internal.system.run('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
     }
     function updateSindenPlayersConfValue(key,value) {
-        console.log('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
+        //console.log('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
         api.internal.system.run('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
-        console.log('sed -i \'s\/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
+        //console.log('sed -i \'s\/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
         api.internal.system.run('sed -i \'s\/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
     }
     //ONLY FOR DUALSENSE/DS4 Controllers for the moment
