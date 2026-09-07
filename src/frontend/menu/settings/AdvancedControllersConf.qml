@@ -100,11 +100,11 @@ FocusScope {
     }
     //functions to manage XML configuration file for sinden lightgun service
     function updateSindenConfValue(key,value) {
-        api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+        api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
     }
     function updateSindenPlayersConfValue(key,value) {
-        api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
-        api.internal.system.run('sed -i \'s/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+        api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
+        api.internal.system.run('sed -i \'s/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
     }
     //ONLY FOR DUALSENSE/DS4 Controllers for the moment
     //to update color of DUALSENSE/DS4 controllers when we change color value
@@ -1003,7 +1003,7 @@ FocusScope {
 
                         switch (recoilmode) {
                           case 'none':
-                              //example of full command: api.internal.system.run('sed -i \'s/<add key=\\"EnableRecoil\\" value=\\".*\\"\\/>/<add key=\\"EnableRecoil\\" value=\\"0\\"\\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+                              //example of full command: api.internal.system.run('sed -i \'s/<add key=\\"EnableRecoil\\" value=\\".*\\"\\/>/<add key=\\"EnableRecoil\\" value=\\"0\\"\\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
                               root.updateSindenPlayersConfValue("EnableRecoil","0");
                               break;
                           case 'stronger':
