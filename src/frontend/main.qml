@@ -2822,10 +2822,11 @@ Window {
     property int nb_lightgun: nb_sinden_lightgun + nb_dolphinbar_lightgun
     //zone to detect if gun is triggered
     MouseArea {
+        z: 200
         anchors.fill: parent
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton |  Qt.RightButton
         propagateComposedEvents: true
-        hoverEnabled: ((nb_lightgun > 0) && (lightgunCrosshair.visible === true)) ? true : false
+        hoverEnabled: (nb_lightgun > 0) ? true : false
         cursorShape: ((nb_lightgun > 0) && (lightgunCrosshair.visible === true)) ? Qt.BlankCursor : api.internal.settings.mouseSupport ? Qt.PointingHandCursor : Qt.BlankCursor
 
         onPositionChanged: {
@@ -2838,9 +2839,12 @@ Window {
         }
 
         onClicked: {
+            //console.log("onClicked lightgun");
             //for sinden lightgun only
             if(nb_sinden_lightgun > 0) {
+                //console.log("nb_sinden_lightgun > 0");
                 if(sindenBorderImage.visible === false || sindenInnerBorderRectangle.visible === false){
+                    //console.log("if sindenBorderImage.visible === false || sindenInnerBorderRectangle.visible === false");
                     //sindenBorderImage.visible = true;
                     sindenInnerBorderRectangle.visible = true;
                     sindenOuterBorderRectangle.visible = true;
