@@ -161,7 +161,7 @@ FocusScope {
                     id: optHardcoreRetroachievementActivate
 
                     label: qsTr("Hardcore retroachievement") + api.tr
-                    note: qsTr("Unlock trophies without cheats and rewind. \nOnly work with Retroarch cores.") + api.tr
+                    note: qsTr("Unlock trophies without cheats and rewind. \nWork with Retroarch and some standalone emulators.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.hardcore")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.hardcore",checked);
@@ -172,7 +172,7 @@ FocusScope {
                 ToggleOption {
                     id: optScreenshootsAchievementActivate
                     label: qsTr("Auto screenshot") + api.tr
-                    note: qsTr("Take an screenshot when an achievement is triggere.") + api.tr
+                    note: qsTr("Take an screenshot when an achievement is triggered.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.screenshot")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.screenshot",checked);
@@ -183,10 +183,32 @@ FocusScope {
                 ToggleOption {
                     id: optUnlockSoundsAchievementActivate
                     label: qsTr("Activate unlock sounds") + api.tr
-                    note: qsTr("Play Sounds if you unlock a trophies.") + api.tr
+                    note: qsTr("Play Sounds if you unlock any trophy.") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.unlock.sound")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.unlock.sound",checked);
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optEncoreMode
+                    visible: optRetroachievementActivate.checked
+                }
+                ToggleOption {
+                    id: optEncoreMode
+                    label: qsTr("Activate 'Encore' mode") + api.tr
+                    note: qsTr("To see when we reach a trophy again.") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.encore")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.encore",checked);
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optRichPresence
+                    visible: optRetroachievementActivate.checked
+                }
+                ToggleOption {
+                    id: optRichPresence
+                    label: qsTr("Rich presence") + api.tr
+                    note: qsTr("Update your status during a game session to retroachievements.org") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.richpresence")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.richpresence",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optChallengeIndicators
                     visible: optRetroachievementActivate.checked
@@ -198,6 +220,17 @@ FocusScope {
 
                     checked: api.internal.recalbox.getBoolParameter("global.retroachievements.challenge.indicators")
                     onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.challenge.indicators",checked);
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optLeaderboards
+                    visible: optRetroachievementActivate.checked
+                }
+                ToggleOption {
+                    id: optLeaderboards
+                    label: qsTr("Leaderboards") + api.tr
+                    note: qsTr("Competitive score and time tracking challenges integrated directly into games") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter("global.retroachievements.leaderboards")
+                    onCheckedChanged: api.internal.recalbox.setBoolParameter("global.retroachievements.leaderboards",checked);
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRAIconsInLists
                     visible: optRetroachievementActivate.checked
