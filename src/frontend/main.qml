@@ -2829,17 +2829,27 @@ Window {
         hoverEnabled: (nb_lightgun > 0) ? true : false
         cursorShape: ((nb_lightgun > 0) && (lightgunCrosshair.visible === true)) ? Qt.BlankCursor : api.internal.settings.mouseSupport ? Qt.PointingHandCursor : Qt.BlankCursor
 
-        onPositionChanged: {
-            if (nb_lightgun > 0){
+        function crosshairUpdate(mouse, onClick){
+            //to manage directly crosshair display
+            if(nb_lightgun > 0) {
                 lightgunCrosshair.x = mouse.x - (lightgunCrosshair.width/2);
                 lightgunCrosshair.y = mouse.y - (lightgunCrosshair.height/2);
-                lightgunCrosshair.visible = true;
+                if(lightgunCrosshair.visible === false){
+                    lightgunCrosshair.visible = true;
+                    //for first click to display border
+                    if(onClick) mouse.accepted = true;
+                }
+                else if (onClick) mouse.accepted = false;
+                //to start or restart timer to let display the border/crosshair if click
+                crossHairBorderHidingDelay.restart();
             }
-            else lightgunCrosshair.visible = false;
+            else {
+                lightgunCrosshair.visible = false;
+                if(onClick) mouse.accepted = false;
+            }
         }
 
-        onClicked: {
-            //console.log("onClicked lightgun");
+        function sinderBorderUpdate(){
             //for sinden lightgun only
             if(nb_sinden_lightgun > 0) {
                 //console.log("nb_sinden_lightgun > 0");
@@ -2903,22 +2913,20 @@ Window {
                 sindenOuterBorderRectangle.visible = false;
                 sindenInnerBorderRectangle.visible = false;
             }
-            //to manage directly crosshair display
-            if(nb_lightgun > 0) {
-                if(lightgunCrosshair.visible === false){
-                    lightgunCrosshair.visible = true;
-                    //for first click to display border
-                    mouse.accepted = true;
-                }
-                else mouse.accepted = false;
-                //to start or restart timer to let display the border/crosshair if click
-                crossHairBorderHidingDelay.restart();
-            }
-            else {
-                lightgunCrosshair.visible = false;
-                mouse.accepted = false;
-            }
         }
+
+        onPositionChanged: {
+            //console.log("onPositionChanged lightgun");
+            crosshairUpdate(mouse, false);
+            sinderBorderUpdate();
+        }
+
+        onClicked: {
+            //console.log("onClicked lightgun");
+            crosshairUpdate(mouse, true);
+            sinderBorderUpdate();
+        }
+
         /*onReleased: mouse.accepted = false;
         onPressed: mouse.accepted = false;
         onDoubleClicked: mouse.accepted = false;
