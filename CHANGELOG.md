@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file (focus on ch
 - Fixes:
 	- game parsing:
 		- be able to select directory as game and avoid to parse inside this type of directory in this case (quicker parsing)
+		- feature to be able to flag game for lightguns without scraps
+		- code optimization/performance for lightgun games parsing
 	- add cache management using QMap to browse quicker in some menu (not yet perfect)
 	- optimize code to well display editbox "pointers" (not yet perfecy)
 	- add filtering about warnings about libpng
@@ -12,6 +14,9 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add "note" label for section if needed
 	- remove unused parameters and add comments for understanding
 	- manage better multivalueoption display and speed loading
+	- fix to add more tag/directory to be compatible with default recalbox conf from Skraper 1.4.X
+	- fix to reduce number of directories scanned for skraper media.xml
+	- fix to manage QSSG logs from QT3D to avoid too verbose logs
 
 - Features:
 	- introduction of dedicaced view for wine and proton configuration (to share with all emulators using wine):
@@ -73,6 +78,13 @@ All notable changes to this project will be documented in this file (focus on ch
 			- manage new id using crc32 for graphics layer
 			- manage size for all layers  and env display
 			- simplify menu for non-dev users
+			- fix to well display tricks installed
+			- add options to activate/deactivate Gamefixes
+			- remove dxvk/vkd3d/nvapi version management for proton
+			- fix to avoid to display missing layers due to "space" in strings
+			- add info on dxvk/vkd3d/nvapi versions from "proton" bottle (base)
+			- remove unused cache now about dxvk/vkd3d
+			- update ProtonUp-Qt to call last dev version if exists/possible
 
 	- introduction of teknoparrot advance emulator settings:
 		- add arcade panel previews for tp controls mappings
@@ -80,7 +92,24 @@ All notable changes to this project will be documented in this file (focus on ch
 		- add test/service menu option
 		- set condition to set parameter in case of boolean option (for teknoparrot)
 		- manage some specific "internal" game resolution for teknoparrot
-	
+		- introduction of gameConfiguration for Teknoparrot games:
+			- generate configuration menu  from xml (just for boolean option first)
+			- with section and 4 types
+			- xml game profile file loading management
+			- add emulator info for Game Configuration / Proton & Wine Configuration pages
+			- add sorting by category/name
+			- put "game" configuration in "advanced configuration" 
+			- manage more parameters from xml and especially for SliderOptions
+			- feature to manage options also as an array from xmlModel
+			- feature to manage name with space and to replace by underscore for .conf file
+			- to load quicker from menu: only do actions if visible
+			- convert array to model for ParameterListBox/MultiValueOptions
+			- adapt MultiValueOption used for xmlModel options
+			- add ".gameconfig" suffix for override conf
+			- feature to update override only for values changes especially for MultiValueOption and TextFieldOption
+			- add "type" in game config names
+			- fix to add management of game with "-" to  use different versions of the same game
+
 	- introduce possibility to display an image from list selection:
 		- add splitted listview with title/tab management
 		- add title for "Predefined shader" also
@@ -184,7 +213,10 @@ All notable changes to this project will be documented in this file (focus on ch
 		- finally add save writing in cartridge using binding for gb operator and retrode
 		- stop to use "extractions" directory for retrode/gb operator
 		- improve bind/cp for saves writing
-	
+
+	- introduce internal scrapping system:
+		- add more media tags from gamelist due to future internal pixL scrap
+
 	- for dev ;-):
 		- introduction log viewer - first iteration
 		- show logs hidding only in dev mode now
@@ -198,6 +230,15 @@ All notable changes to this project will be documented in this file (focus on ch
 	- add 2 "interface" parameters to manage splash videos
 	- add QTQuick3D for nice animations ;-)
 	- add support of skylanders portal for wii games from dolphin
+	- feat to add more parameters that will be use by PCSX2,Retroarch and more...	
+
+	- hardware:
+		- Sinden fixes ands improvements:
+			- change name of the config file now
+			- rewrite configuration file, just before restart
+			- restart asychronously service from pegasus to unlink process
+			- fix to have the crossair/whiteborder easily displayed
+			- refactor to activate crosshairs and sinden borders on moves or clicks
 
 ## [pixL-master] - 2025-05-16 - v0.1.11
 - Fixes:

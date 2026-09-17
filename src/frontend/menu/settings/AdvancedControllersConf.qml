@@ -58,10 +58,61 @@ FocusScope {
         function onAccept() {
             //restart service
             if (!isDebugEnv()){
-                api.internal.system.run("/etc/init.d/S99sindenlightgun restart");
+                let bordercolor = api.internal.recalbox.getStringParameter("lightgun.sinden.bordercolor","white");
+                switch (bordercolor) {
+                  case 'white':
+                      //<add key="ColourMatchRGB" value="255,255,255" />
+                      root.updateSindenConfValue("ColourMatchRGB","255,255,255");
+                  break;
+                  case 'red':
+                      root.updateSindenConfValue("ColourMatchRGB","255,0,0");
+                    break;
+                  case 'green':
+                      root.updateSindenConfValue("ColourMatchRGB","0,128,0");
+                    break;
+                  case 'blue':
+                      root.updateSindenConfValue("ColourMatchRGB","0,0,255");
+                    break;
+                  default:
+                      root.updateSindenConfValue("ColourMatchRGB","255,255,255");
+                }
+                let recoilmode = api.internal.recalbox.getStringParameter("lightgun.sinden.recoilmode","none");
+                switch (recoilmode) {
+                  case 'none':
+                      //example of full command: api.internal.system.run('sed -i \'s/<add key=\\"EnableRecoil\\" value=\\".*\\"\\/>/<add key=\\"EnableRecoil\\" value=\\"0\\"\\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
+                      root.updateSindenPlayersConfValue("EnableRecoil","0");
+                      break;
+                  case 'stronger':
+                      root.updateSindenPlayersConfValue("EnableRecoil","1");
+                      root.updateSindenPlayersConfValue("RecoilStrength","100");
+                      root.updateSindenPlayersConfValue("TriggerRecoilNormalOrRepeat","0");
+                      break;
+                  case 'softer':
+                      root.updateSindenPlayersConfValue("EnableRecoil","1");
+                      root.updateSindenPlayersConfValue("RecoilStrength","50");
+                      root.updateSindenPlayersConfValue("TriggerRecoilNormalOrRepeat","0");
+                    break;
+                  case 'strongmachinegun':
+                      root.updateSindenPlayersConfValue("EnableRecoil","1");
+                      root.updateSindenPlayersConfValue("AutoRecoilStrength","80");
+                      root.updateSindenPlayersConfValue("TriggerRecoilNormalOrRepeat","1");
+                    break;
+                  case 'softmachinegun':
+                      root.updateSindenPlayersConfValue("EnableRecoil","1");
+                      root.updateSindenPlayersConfValue("AutoRecoilStrength","30");
+                      root.updateSindenPlayersConfValue("TriggerRecoilNormalOrRepeat","1");
+                    break;
+                  default:
+                      root.updateSindenPlayersConfValue("EnableRecoil","0");
+                }
+                //we prefer to runasync to detach service from Pegasus-fe
+                api.internal.system.runAsync("/etc/init.d/S99sindenlightgun restart");
+                //we wait after ;-)
+                api.internal.system.run("sleep 5");
             }
             else{//for debug and see spinner
-                api.internal.system.run("sleep 5; /etc/init.d/S99sindenlightgun restart");
+                api.internal.system.run("sleep 5");
+                api.internal.system.runAsync("/etc/init.d/S99sindenlightgun restart");
             }
             content.focus = true;
         }
@@ -100,11 +151,14 @@ FocusScope {
     }
     //functions to manage XML configuration file for sinden lightgun service
     function updateSindenConfValue(key,value) {
-        api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+        //console.log('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
+        api.internal.system.run('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
     }
     function updateSindenPlayersConfValue(key,value) {
-        api.internal.system.run('sed -i \'s/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
-        api.internal.system.run('sed -i \'s/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+        //console.log('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
+        api.internal.system.run('sed -i \'s\/<add key=\\"' + key + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
+        //console.log('sed -i \'s\/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config')
+        api.internal.system.run('sed -i \'s\/<add key=\\"' + key + 'P2' + '\\" value=\\".*\\".*\\/>/<add key=\\"' + key + 'P2' + '\\" value=\\"' + value + '\\" \\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
     }
     //ONLY FOR DUALSENSE/DS4 Controllers for the moment
     //to update color of DUALSENSE/DS4 controllers when we change color value
@@ -1000,10 +1054,9 @@ FocusScope {
 
                     onValueChanged: {
                         let recoilmode = api.internal.recalbox.getStringParameter("lightgun.sinden.recoilmode","none");
-
                         switch (recoilmode) {
                           case 'none':
-                              //example of full command: api.internal.system.run('sed -i \'s/<add key=\\"EnableRecoil\\" value=\\".*\\"\\/>/<add key=\\"EnableRecoil\\" value=\\"0\\"\\/>/\' /recalbox/share/system/.config/sinden/LightgunMono.exe.config');
+                              //example of full command: api.internal.system.run('sed -i \'s/<add key=\\"EnableRecoil\\" value=\\".*\\"\\/>/<add key=\\"EnableRecoil\\" value=\\"0\\"\\/>/\' /recalbox/share/system/.config/sinden/SindenLightgun.config');
                               root.updateSindenPlayersConfValue("EnableRecoil","0");
                               break;
                           case 'stronger':
