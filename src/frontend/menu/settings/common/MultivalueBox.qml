@@ -95,6 +95,7 @@ FocusScope {
     visible: focus || animClosing.running
 
     Keys.onPressed: {
+        //console.log("Keys.onPressed:");
         if (event.isAutoRepeat)
             return;
 
@@ -293,25 +294,43 @@ FocusScope {
     onModelChanged: {
         //console.log("onModelChanged - root.index : " + root.index);
         populatePrefixModel();
-        //console.log("onTextChanged - model.picture : " + model.picture)
+        //console.log("onModelChanged - index : " + index);
+        //console.log("onModelChanged - model.name : " + root.model.get(index, "name"))
+        //console.log("onModelChanged - typeof(model.name) : " + typeof(root.model.get(index, "name")))
+        //console.log("onModelChanged - model.name : " + root.model.get(index).name)
+        //console.log("onModelChanged - typeof(model.name) : " + typeof(root.model.get(index).name))
         if(typeof(root.model) !== 'undefined'){
-            //console.log("onTextChanged - model.picture : " + model.picture)
-            if(has_picture && (typeof(root.model.get(index, "picture")) !== 'undefined')){
-                selected_picture = root.model.get(index, "picture");
+            //console.log("onModelChanged - model.picture : " + root.model.get(index, "picture"))
+            if(has_picture && (typeof(root.model.get(index, "picture")) === "string")){
+                    selected_picture = root.model.get(index, "picture");
             }
+            else if(has_picture && (typeof(root.model.get(index).picture) === "string")){
+                selected_picture = root.model.get(index).picture;
+            }
+            else selected_picture = "";
         }
+        //console.log("onModelChanged - selected_picture : " + selected_picture);
     }
 
     onIndexChanged: {
         //console.log("onIndexChanged - root.index : " + root.index);
         selectPrefixIndex();
-        //console.log("onTextChanged - model.picture : " + model.picture)
+        //console.log("onIndexChanged - index : " + index);
+        //console.log("onIndexChanged - model.name : " + root.model.get(index, "name"))
+        //console.log("onIndexChanged - typeof(model.name) : " + typeof(root.model.get(index, "name")))
+        //console.log("onIndexChanged - model.name : " + root.model.get(index).name)
+        //console.log("onIndexChanged - typeof(model.name) : " + typeof(root.model.get(index).name))
         if(typeof(root.model) !== 'undefined'){
-            //console.log("onTextChanged - model.picture : " + model.picture)
-            if(has_picture && (typeof(root.model.get(index, "picture")) !== 'undefined')){
-                selected_picture = root.model.get(index, "picture");
+            //console.log("onIndexChanged - model.picture : " + root.model.get(index, "picture"))
+            if(has_picture && (typeof(root.model.get(index, "picture")) === "string")){
+                    selected_picture = root.model.get(index, "picture");
             }
+            else if(has_picture && (typeof(root.model.get(index).picture) === "string")){
+                selected_picture = root.model.get(index).picture;
+            }
+            else selected_picture = "";
         }
+        //console.log("onIndexChanged - selected_picture : " + selected_picture);
     }
 
     Rectangle {
@@ -537,8 +556,9 @@ FocusScope {
             readonly property bool highlighted: ListView.isCurrentItem || (mouseArea.containsMouse && api.internal.settings.mouseSupport)
             clip: true
             onHighlightedChanged:{
-                //console.log("onTextChanged - model.picture : " + model.picture)
-                if(has_picture && !splitted_list) selected_picture = model.picture;
+                //console.log("onHighlightedChanged - model.picture : " + model.picture)
+                if(has_picture && !splitted_list && model.picture) selected_picture = model.picture;
+                else selected_picture = "";
             }
 
             width: ListView.view.width
@@ -605,10 +625,11 @@ FocusScope {
             clip: true
             onHighlightedChanged:{
                 if(typeof(model) !== 'undefined'){
-                    //console.log("onTextChanged - model.picture : " + model.picture)
+                    //console.log("onHighlightedChanged - model.picture : " + model.picture)
                     if(has_picture && splitted_list && (typeof(model.picture) !== 'undefined')){
                         selected_picture = model.picture;
                     }
+                    else selected_picture = "";
                 }
              }
             width: ListView.view.width

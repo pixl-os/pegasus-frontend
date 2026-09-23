@@ -105,34 +105,34 @@ FocusScope {
                 // add more info as preview: ""; size: ""; type: "" (as arcade, cd, cartridge, etc...)
                 ListModel {
                     id: imageModel
-                    ListElement { name: qsTr("Game Screenshot"); internal: "screenshot"}
-                    ListElement { name: qsTr("Title Screenshot"); internal: "screenshottitle"}
-                    ListElement { name: qsTr("2D Box"); internal: "box2d"}
-                    ListElement { name: qsTr("3D Box"); internal: "box3d"}
-                    ListElement { name: qsTr("Support"); internal: "support"}
-                    ListElement { name: qsTr("Images Mix (V1)"); internal: "mixv1"}
-                    ListElement { name: qsTr("Images Mix (V2)"); internal: "mixv2"}
+                    ListElement { name: qsTr("Game Screenshot"); internal: "screenshot"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/screenshot.png"}
+                    ListElement { name: qsTr("Title Screenshot"); internal: "screenshottitle"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/screenshottitle.png"}
+                    ListElement { name: qsTr("2D Box"); internal: "box2d"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/box2d.png"}
+                    ListElement { name: qsTr("3D Box"); internal: "box3d"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/box3d.png"}
+                    ListElement { name: qsTr("Support"); internal: "support"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/support.png"}
+                    ListElement { name: qsTr("Images Mix (V1)"); internal: "mixv1"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/mixv1.png"}
+                    ListElement { name: qsTr("Images Mix (V2)"); internal: "mixv2"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/mixv2.png"}
                     //RFU: ListElement { name: qsTr("2 Images Mix"); internal: "2mix"}
                     //RFU: ListElement { name: qsTr("3 Images Mix"); internal: "3mix"}
-                    ListElement { name: qsTr("4 Images Mix"); internal: "4mix"}
-                    ListElement { name: qsTr("5 Images Mix"); internal: "5mix"}
+                    //RFU: ListElement { name: qsTr("4 Images Mix"); internal: "4mix"}
+                    //RFU: ListElement { name: qsTr("5 Images Mix"); internal: "5mix"}
                 }
 
                 ListModel {
                     id: wheelModel
                     ListElement { name: qsTr("No Wheel"); internal: "nowheel"}
-                    ListElement { name: qsTr("Wheel"); internal: "wheel"}
-                    ListElement { name: qsTr("Carbon Wheel"); internal: "carbonwheel"}
-                    ListElement { name: qsTr("Steel Wheel"); internal: "steelwheel"}
+                    ListElement { name: qsTr("Wheel"); internal: "wheel"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/wheel.png"}
+                    ListElement { name: qsTr("Carbon Wheel"); internal: "carbonwheel"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/carbonwheel.png"}
+                    ListElement { name: qsTr("Steel Wheel"); internal: "steelwheel"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/steelwheel.png"}
                 }
 
                 ListModel {
                     id: marqueeModel
                     ListElement { name: qsTr("No Marquee"); internal: "nomarquee"}
-                    ListElement { name: qsTr("Arcade Marquee"); internal: "arcademarquee"}
-                    ListElement { name: qsTr("Screen Marquee"); internal: "screenmarquee"}
-                    ListElement { name: qsTr("Small Screen Marquee"); internal: "smallmarquee"}
-                    ListElement { name: qsTr("Steam Grid"); internal: "steamgrid"}
+                    ListElement { name: qsTr("Arcade Marquee"); internal: "arcademarquee"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/arcademarquee.png"}
+                    ListElement { name: qsTr("Screen Marquee"); internal: "screenmarquee"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/screenmarquee.png"}
+                    ListElement { name: qsTr("Small Screen Marquee"); internal: "smallmarquee"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/smallscreenmarquee.png"}
+                    ListElement { name: qsTr("Steam Grid"); internal: "steamgrid"; picture: "file://recalbox/share_init/system/.pegasus-frontend/assets/scrap-examples/console-cartridge/steamgrid.png"}
                 }
 
                 ListModel {
@@ -172,6 +172,13 @@ FocusScope {
 
                     onActivate: {
                         if(visible){
+                            //to customize Box display
+                            parameterslistBox.firstlist_title = qsTr("Available medias") + api.tr
+                            parameterslistBox.has_picture = true;
+                            parameterslistBox.firstlist_minimum_width_purcentage = 0.30
+                            parameterslistBox.firstlist_maximum_width_purcentage = 0.30
+                            parameterslistBox.max_listitem_displayed = 9;
+
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
                             parameterslistBox.callerid = refid;
@@ -191,7 +198,7 @@ FocusScope {
                     }
 
                     onInternalvalueChanged: {
-                        console.log("onInternalvalueChanged visible : ",visible);
+                        //console.log("onInternalvalueChanged visible : ",visible);
                         if(visible){
                             if((api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue) || !value){
                                 //console.log("internalvalue : ",internalvalue);
@@ -236,6 +243,12 @@ FocusScope {
 
                     onActivate: {
                         if(visible){
+                            //to customize Box display
+                            parameterslistBox.firstlist_title = qsTr("Available medias") + api.tr
+                            parameterslistBox.has_picture = true;
+                            parameterslistBox.firstlist_minimum_width_purcentage = 0.30
+                            parameterslistBox.firstlist_maximum_width_purcentage = 0.30
+                            parameterslistBox.max_listitem_displayed = 9;
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
                             parameterslistBox.callerid = refid;
@@ -301,6 +314,12 @@ FocusScope {
 
                     onActivate: {
                         if(visible){
+                            //to customize Box display
+                            parameterslistBox.firstlist_title = qsTr("Available medias") + api.tr
+                            parameterslistBox.has_picture = true;
+                            parameterslistBox.firstlist_minimum_width_purcentage = 0.30
+                            parameterslistBox.firstlist_maximum_width_purcentage = 0.30
+                            parameterslistBox.max_listitem_displayed = 9;
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
                             parameterslistBox.callerid = refid;
@@ -437,6 +456,12 @@ FocusScope {
 
                     onActivate: {
                         if(visible){
+                            //to customize Box display
+                            parameterslistBox.firstlist_title = qsTr("Available medias") + api.tr
+                            parameterslistBox.has_picture = true;
+                            parameterslistBox.firstlist_minimum_width_purcentage = 0.30
+                            parameterslistBox.firstlist_maximum_width_purcentage = 0.30
+                            parameterslistBox.max_listitem_displayed = 9;
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
                             parameterslistBox.callerid = refid;
