@@ -100,145 +100,436 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
+                SectionTitle {
+                    text: qsTr("Scraping source") + api.tr
+                    first: true
+                    symbol: "\uf17f"
+                }
+                MultivalueOption {
+                    id: optScraperSource
+
+                    // set focus only on first item
+                    focus: true
+
+                    internalvalue: "screenscraper"
+                    value: "ScreenScraper"
+                    property string parameterName: prefix + ".scraper.source"
+                    label: qsTr("from") + api.tr
+                    note: qsTr("select your prefered scrapping source") + api.tr
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScraperImage
+                }
+                SectionTitle {
+                    text: qsTr("Primary Scraping Media") + api.tr
+                    first: true
+                    symbol: "\uf17f"
+                }
+
+                //TO DO:
+                // add more info as preview: ""; size: ""; type: "" (as arcade, cd, cartridge, etc...)
+                ListModel {
+                    id: imageModel
+                    ListElement { name: qsTr("Game Screenshot"); internal: "screenshot"}
+                    ListElement { name: qsTr("Title Screenshot"); internal: "screenshottitle"}
+                    ListElement { name: qsTr("2D Box"); internal: "box2d"}
+                    ListElement { name: qsTr("3D Box"); internal: "bod3d"}
+                    ListElement { name: qsTr("Support"); internal: "support"}
+                    ListElement { name: qsTr("Images Mix (V1)"); internal: "mixv1"}
+                    ListElement { name: qsTr("Images Mix (V2)"); internal: "mixv2"}
+                    ListElement { name: qsTr("2 Images Mix"); internal: "2mix"}
+                    ListElement { name: qsTr("3 Images Mix"); internal: "3mix"}
+                    ListElement { name: qsTr("4 Images Mix"); internal: "4mix"}
+                    ListElement { name: qsTr("5 Images Mix"); internal: "5mix"}
+                }
+
+                ListModel {
+                    id: wheelModel
+                    ListElement { name: qsTr("No Wheel"); internal: "nowheel"}
+                    ListElement { name: qsTr("Wheel"); internal: "wheel"}
+                    ListElement { name: qsTr("Carbon Wheel"); internal: "carbonwheel"}
+                    ListElement { name: qsTr("Steel Wheel"); internal: "steelwheel"}
+                }
+
+                ListModel {
+                    id: marqueeModel
+                    ListElement { name: qsTr("No Marquee"); internal: "nomarquee"}
+                    ListElement { name: qsTr("Arcade Marquee"); internal: "arcademarquee"}
+                    ListElement { name: qsTr("Screen Marquee"); internal: "screenmarquee"}
+                    ListElement { name: qsTr("Small Screen Marquee"); internal: "smallmarquee"}
+                    ListElement { name: qsTr("Steam Grid"); internal: "steamgrid"}
+                }
+
+                ListModel {
+                    id: videoModel
+                    ListElement { name: qsTr("No Video"); internal: "novideo"}
+                    ListElement { name: qsTr("Video"); internal: "video"}
+                    ListElement { name: qsTr("Normalized Video"); internal: "normalizedvideo"}
+                }
+
+                MultivalueOption {
+                    id: optScraperImage
+
+                    //property to manage parameter name
+                    property string parameterName: prefix + ".scraper.image";
+
+                    label: qsTr("'Image' scraped") + api.tr
+                    note: qsTr("Media scraped for <image> tag") + api.tr
+
+                    internalvalue: api.internal.recalbox.getStringParameter(parameterName, "box3d")
+
+                    count: imageModel.count
+
+                    font: globalFonts.awesome
+
+                    onActivate: {
+                        if(visible){
+                            //for callback by parameterslistBox
+                            parameterslistBox.parameterName = parameterName;
+                            parameterslistBox.callerid = optScraperImage;
+                            //to force update of list of parameters
+                            parameterslistBox.model = imageModel;
+                            parameterslistBox.index = currentIndex;
+                            //to transfer focus to parameterslistBox
+                            parameterslistBox.focus = true;
+                        }
+                    }
+
+                    onSelect: {
+                        if(visible){
+                            value = imageModel.get(index).name;
+                            internalvalue = imageModel.get(index).internal;
+                        }
+                    }
+
+                    onInternalvalueChanged: {
+                        if(visible){
+                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                                //only write override .conf file if any value change
+                                api.internal.recalbox.setStringParameter(parameterName, internalvalue)
+                                for(var i=0; i < imageModel.count; i++){
+                                    //console.log("MultivalueOption currentIndex : ",i);
+                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
+                                    //console.log("value : ",value);
+                                    //console.log("internalvalue : ",internalvalue);
+                                    if(imageModel.get(i).internal === internalvalue){
+                                        value = imageModel.get(i).name;
+                                        currentIndex = i;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScraperThumbnail
+                }
+
+                MultivalueOption {
+                    id: optScraperThumbnail
+
+                    //property to manage parameter name
+                    property string parameterName: prefix + ".scraper.thumbnail";
+
+                    label: qsTr("'Thumbnail' scraped") + api.tr
+                    note: qsTr("Media scraped for <thumbnail> tag") + api.tr
+
+                    internalvalue: api.internal.recalbox.getStringParameter(parameterName, "screenshot")
+
+                    count: imageModel.count
+
+                    font: globalFonts.awesome
+
+                    onActivate: {
+                        if(visible){
+                            //for callback by parameterslistBox
+                            parameterslistBox.parameterName = parameterName;
+                            parameterslistBox.callerid = optScraperThumbnail;
+                            //to force update of list of parameters
+                            parameterslistBox.model = imageModel;
+                            parameterslistBox.index = currentIndex;
+                            //to transfer focus to parameterslistBox
+                            parameterslistBox.focus = true;
+                        }
+                    }
+
+                    onSelect: {
+                        if(visible){
+                            value = imageModel.get(index).name;
+                            internalvalue = imageModel.get(index).internal;
+                        }
+                    }
+
+                    onInternalvalueChanged: {
+                        if(visible){
+                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                                //only write override .conf file if any value change
+                                api.internal.recalbox.setStringParameter(parameterName, internalvalue)
+                                for(var i=0; i < imageModel.count; i++){
+                                    //console.log("MultivalueOption currentIndex : ",i);
+                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
+                                    //console.log("value : ",value);
+                                    //console.log("internalvalue : ",internalvalue);
+                                    if(imageModel.get(i).internal === internalvalue){
+                                        value = imageModel.get(i).name;
+                                        currentIndex = i;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScraperWheel
+                }
+
+                MultivalueOption {
+                    id: optScraperWheel
+
+                    //property to manage parameter name
+                    property string parameterName: prefix + ".scraper.wheel";
+
+                    label: qsTr("Wheel scraped") + api.tr
+                    note: qsTr("Media scraped for <wheel> tag") + api.tr
+
+                    internalvalue: api.internal.recalbox.getStringParameter(parameterName, "wheel")
+
+                    count: wheelModel.count
+
+                    font: globalFonts.awesome
+
+                    onActivate: {
+                        if(visible){
+                            //for callback by parameterslistBox
+                            parameterslistBox.parameterName = parameterName;
+                            parameterslistBox.callerid = optScraperWheel;
+                            //to force update of list of parameters
+                            parameterslistBox.model = wheelModel;
+                            parameterslistBox.index = currentIndex;
+                            //to transfer focus to parameterslistBox
+                            parameterslistBox.focus = true;
+                        }
+                    }
+
+                    onSelect: {
+                        if(visible){
+                            value = wheelModel.get(index).name;
+                            internalvalue = wheelModel.get(index).internal;
+                        }
+                    }
+
+                    onInternalvalueChanged: {
+                        if(visible){
+                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                                //only write override .conf file if any value change
+                                api.internal.recalbox.setStringParameter(parameterName, internalvalue)
+                                for(var i=0; i < wheelModel.count; i++){
+                                    //console.log("MultivalueOption currentIndex : ",i);
+                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
+                                    //console.log("value : ",value);
+                                    //console.log("internalvalue : ",internalvalue);
+                                    if(wheelModel.get(i).internal === internalvalue){
+                                        value = wheelModel.get(i).name;
+                                        currentIndex = i;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScraperVideo
+                }
+
+                MultivalueOption {
+                    id: optScraperVideo
+
+                    //property to manage parameter name
+                    property string parameterName: prefix + ".scraper.video";
+
+                    label: qsTr("Video scraped") + api.tr
+                    note: qsTr("Media scraped for <video> tag") + api.tr
+
+                    internalvalue: api.internal.recalbox.getStringParameter(parameterName, "novideo")
+
+                    count: videoModel.count
+
+                    font: globalFonts.awesome
+
+                    onActivate: {
+                        if(visible){
+                            //for callback by parameterslistBox
+                            parameterslistBox.parameterName = parameterName;
+                            parameterslistBox.callerid = optScraperVideo;
+                            //to force update of list of parameters
+                            parameterslistBox.model = videoModel;
+                            parameterslistBox.index = currentIndex;
+                            //to transfer focus to parameterslistBox
+                            parameterslistBox.focus = true;
+                        }
+                    }
+
+                    onSelect: {
+                        if(visible){
+                            value = videoModel.get(index).name;
+                            internalvalue = videoModel.get(index).internal;
+                        }
+                    }
+
+                    onInternalvalueChanged: {
+                        if(visible){
+                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                                //only write override .conf file if any value change
+                                api.internal.recalbox.setStringParameter(parameterName, internalvalue)
+                                for(var i=0; i < videoModel.count; i++){
+                                    //console.log("MultivalueOption currentIndex : ",i);
+                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
+                                    //console.log("value : ",value);
+                                    //console.log("internalvalue : ",internalvalue);
+                                    if(videoModel.get(i).internal === internalvalue){
+                                        value = videoModel.get(i).name;
+                                        currentIndex = i;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScraperMarquee
+                }
+
+                MultivalueOption {
+                    id: optScraperMarquee
+
+                    //property to manage parameter name
+                    property string parameterName: prefix + ".scraper.wheel";
+
+                    label: qsTr("Marquee scraped") + api.tr
+                    note: qsTr("Media scraped for <marquee> tag") + api.tr
+
+                    internalvalue: api.internal.recalbox.getStringParameter(parameterName, "nomarqee")
+
+                    count: wheelModel.count
+
+                    font: globalFonts.awesome
+
+                    onActivate: {
+                        if(visible){
+                            //for callback by parameterslistBox
+                            parameterslistBox.parameterName = parameterName;
+                            parameterslistBox.callerid = optScraperMarquee;
+                            //to force update of list of parameters
+                            parameterslistBox.model = marqueeModel;
+                            parameterslistBox.index = currentIndex;
+                            //to transfer focus to parameterslistBox
+                            parameterslistBox.focus = true;
+                        }
+                    }
+
+                    onSelect: {
+                        if(visible){
+                            value = marqueeModel.get(index).name;
+                            internalvalue = marqueeModel.get(index).internal;
+                        }
+                    }
+
+                    onInternalvalueChanged: {
+                        if(visible){
+                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                                //only write override .conf file if any value change
+                                api.internal.recalbox.setStringParameter(parameterName, internalvalue)
+                                for(var i=0; i < marqueeModel.count; i++){
+                                    //console.log("MultivalueOption currentIndex : ",i);
+                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
+                                    //console.log("value : ",value);
+                                    //console.log("internalvalue : ",internalvalue);
+                                    if(marqueeModel.get(i).internal === internalvalue){
+                                        value = marqueeModel.get(i).name;
+                                        currentIndex = i;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    onFocusChanged: container.onFocus(this)
+                    KeyNavigation.down: optScraperManual
+                }
 
                 SectionTitle {
-                    text: qsTr("Game screen") + api.tr
+                    text: qsTr("Additional Scraping Media") + api.tr
                     first: true
                     symbol: "\uf17f"
                 }
                 ToggleOption {
-                    id: optPixelPerfect
-                    // set focus only on first item
-                    focus: true
+                    id: optScraperManual
 
-                    label: qsTr("Pixel perfect") + api.tr
-                    note: qsTr("Once enabled, your screen will be cropped, and you will have a pixel perfect image.") + api.tr
+                    label: qsTr("Manual") + api.tr
+                    note: qsTr("Once enabled, pixL will scrap manual also") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefixglobal + ".integerscale")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".scraper.manual", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefixglobal + ".integerscale",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".scraper.video",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSmoothGame
+                    KeyNavigation.down: optScraperMap
                 }
                 ToggleOption {
-                    id: optSmoothGame
+                    id: optScraperMap
 
-                    label: qsTr("Smooth games") + api.tr
-                    note: qsTr("Set smooth for all Retroarch core.") + api.tr
+                    label: qsTr("Map") + api.tr
+                    note: qsTr("Once enabled, pixL will scrap map also") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefixglobal + ".smooth")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".scraper.map", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefixglobal + ".smooth",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".scraper.map",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optGameRewind
-                }
-                SectionTitle {
-                    text: qsTr("Gameplay options") + api.tr
-                    first: true
-                    symbol: "\uf412"
+                    KeyNavigation.down: optScraperTips
                 }
                 ToggleOption {
-                    id: optGameRewind
+                    id: optScraperTips
 
-                    label: qsTr("Game rewind") + api.tr
-                    note: qsTr("Set rewind for all Retroarch core.") + api.tr
+                    label: qsTr("Tips") + api.tr
+                    note: qsTr("Once enabled, pixL will scrap tips also") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefixglobal + ".rewind")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".scraper.tips", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefixglobal + ".rewind",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".scraper.tips",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optAutoSave
+                    KeyNavigation.down: optScraperP2K
                 }
                 ToggleOption {
-                    id: optAutoSave
+                    id: optScraperP2K
 
-                    label: qsTr("Auto save/load") + api.tr
-                    note: qsTr("Set autosave/load savestate for all Retroarch core.") + api.tr
+                    label: qsTr("Pad to Keys") + api.tr
+                    note: qsTr("Once enabled, pixL will scrap pad to keys parameters also") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefixglobal + ".autosave")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".scraper.p2k", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefixglobal + ".autosave",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".scraper.p2k",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optSwapmenucontrol
-                }
-                SectionTitle {
-                    text: qsTr("Menu options") + api.tr
-                    first: true
-                    symbol: "\uf412"
+                    KeyNavigation.down: optScraperOverlay
                 }
                 ToggleOption {
-                    id: optSwapmenucontrol
+                    id: optScraperOverlay
 
-                    label: qsTr("Swap menu validate") + api.tr
-                    note: qsTr("Swap buttons for OK/Cancel in retroarch menu only.") + api.tr
+                    label: qsTr("16/9 Overlay") + api.tr
+                    note: qsTr("Once enabled, pixL will scrap 16/9 overlay also") + api.tr
 
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".swap.menu.button")
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".scraper.overlay", false)
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".swap.menu.button",checked);
+                        api.internal.recalbox.setBoolParameter(prefix + ".scraper.overlay",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optLoadContentAnimation
-                }
-                ToggleOption {
-                    id: optLoadContentAnimation
-
-                    label: qsTr("Load content animations") + api.tr
-                    note: qsTr("Show a little animation on launch game.") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".load.content.animation")
-                    onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter(prefix + ".load.content.animation",checked);
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optOzoneMenucolorTheme
-                }
-                MultivalueOption {
-                    id: optOzoneMenucolorTheme
-                    //property to manage parameter name
-                    property string parameterName : prefix + ".color.theme.menu"
-
-                    label: qsTr("Change menu color") + api.tr
-                    note: qsTr("Change color of retroarch interface.") + api.tr
-
-                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
-
-                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
-                    count: api.internal.recalbox.parameterslist.count;
-
-                    onActivate: {
-                        //for callback by parameterslistBox
-                        parameterslistBox.parameterName = parameterName;
-                        parameterslistBox.callerid = optOzoneMenucolorTheme;
-                        //to force update of list of parameters
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        parameterslistBox.model = api.internal.recalbox.parameterslist;
-                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
-                        //to transfer focus to parameterslistBox
-                        parameterslistBox.focus = true;
-                    }
-
-                    onSelect: {
-                        //to force to be on the good parameter selected
-                        api.internal.recalbox.parameterslist.currentName(parameterName);
-                        //to update index of parameterlist QAbstractList
-                        api.internal.recalbox.parameterslist.currentIndex = index;
-                        //to force update of display of selected value
-                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
-                    }
-
-                    onFocusChanged:{
-                        if(focus){
-                            api.internal.recalbox.parameterslist.currentName(parameterName);
-                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-                            count = api.internal.recalbox.parameterslist.count;
-                        }
-                        container.onFocus(this)
-                    }
-
+                    //KeyNavigation.down: optScraperTips
                 }
                 Item {
                     width: parent.width
@@ -257,22 +548,18 @@ FocusScope {
         property MultivalueOption callerid
 
         //to use index from parameterlist QAbstractList
-        index: api.internal.recalbox.parameterslist.currentIndex
+        //index: callerid.currentIndex
         //reuse same model
-        model: api.internal.recalbox.parameterslist
+        //model: callerid.modelData.options
         onClose: content.focus = true
         onSelect: {
             callerid.keypressed = true;
-            //to use the good parameter
-            api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-            //to update index of parameterlist QAbstractList
-            api.internal.recalbox.parameterslist.currentIndex = index;
-            //to force update of display of selected value
-            callerid.value = api.internal.recalbox.parameterslist.currentName(callerid.parameterName);
-            callerid.currentIndex = api.internal.recalbox.parameterslist.currentIndex;
-            callerid.count = api.internal.recalbox.parameterslist.count;
+            callerid.currentIndex = index;
+            callerid.value = model.get(index).name;
+            callerid.internalvalue = model.get(index).internal;
         }
     }
+
     Item {
         id: footer
         width: parent.width
