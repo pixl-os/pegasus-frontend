@@ -100,30 +100,6 @@ FocusScope {
                     width: parent.width
                     height: implicitHeight + vpx(30)
                 }
-                SectionTitle {
-                    text: qsTr("Scraping source") + api.tr
-                    first: true
-                    symbol: "\uf17f"
-                }
-                MultivalueOption {
-                    id: optScraperSource
-
-                    // set focus only on first item
-                    focus: true
-
-                    internalvalue: "screenscraper"
-                    value: "ScreenScraper"
-                    property string parameterName: prefix + ".scraper.source"
-                    label: qsTr("from") + api.tr
-                    note: qsTr("select your prefered scrapping source") + api.tr
-                    onFocusChanged: container.onFocus(this)
-                    KeyNavigation.down: optScraperImage
-                }
-                SectionTitle {
-                    text: qsTr("Primary Scraping Media") + api.tr
-                    first: true
-                    symbol: "\uf17f"
-                }
 
                 //TO DO:
                 // add more info as preview: ""; size: ""; type: "" (as arcade, cd, cartridge, etc...)
@@ -132,12 +108,12 @@ FocusScope {
                     ListElement { name: qsTr("Game Screenshot"); internal: "screenshot"}
                     ListElement { name: qsTr("Title Screenshot"); internal: "screenshottitle"}
                     ListElement { name: qsTr("2D Box"); internal: "box2d"}
-                    ListElement { name: qsTr("3D Box"); internal: "bod3d"}
+                    ListElement { name: qsTr("3D Box"); internal: "box3d"}
                     ListElement { name: qsTr("Support"); internal: "support"}
                     ListElement { name: qsTr("Images Mix (V1)"); internal: "mixv1"}
                     ListElement { name: qsTr("Images Mix (V2)"); internal: "mixv2"}
-                    ListElement { name: qsTr("2 Images Mix"); internal: "2mix"}
-                    ListElement { name: qsTr("3 Images Mix"); internal: "3mix"}
+                    //RFU: ListElement { name: qsTr("2 Images Mix"); internal: "2mix"}
+                    //RFU: ListElement { name: qsTr("3 Images Mix"); internal: "3mix"}
                     ListElement { name: qsTr("4 Images Mix"); internal: "4mix"}
                     ListElement { name: qsTr("5 Images Mix"); internal: "5mix"}
                 }
@@ -166,8 +142,17 @@ FocusScope {
                     ListElement { name: qsTr("Normalized Video"); internal: "normalizedvideo"}
                 }
 
+                SectionTitle {
+                    text: qsTr("Primary Scraping Media for theme") + api.tr
+                    first: true
+                    symbol: "\uf17f"
+                }
+
                 MultivalueOption {
                     id: optScraperImage
+
+                    // set focus only on first item
+                    focus: true
 
                     //property to manage parameter name
                     property string parameterName: prefix + ".scraper.image";
@@ -177,7 +162,11 @@ FocusScope {
 
                     internalvalue: api.internal.recalbox.getStringParameter(parameterName, "box3d")
 
-                    count: imageModel.count
+                    property var model: imageModel //used to store model used
+                    property var refid: optScraperImage //used to provide if to MultivalueBox using generic way
+
+                    /***** begin of replicable part for reuse ********/
+                    count: model.count
 
                     font: globalFonts.awesome
 
@@ -185,9 +174,9 @@ FocusScope {
                         if(visible){
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
-                            parameterslistBox.callerid = optScraperImage;
+                            parameterslistBox.callerid = refid;
                             //to force update of list of parameters
-                            parameterslistBox.model = imageModel;
+                            parameterslistBox.model = model;
                             parameterslistBox.index = currentIndex;
                             //to transfer focus to parameterslistBox
                             parameterslistBox.focus = true;
@@ -196,32 +185,33 @@ FocusScope {
 
                     onSelect: {
                         if(visible){
-                            value = imageModel.get(index).name;
-                            internalvalue = imageModel.get(index).internal;
+                            value = model.get(index).name;
+                            internalvalue = model.get(index).internal;
                         }
                     }
 
                     onInternalvalueChanged: {
+                        console.log("onInternalvalueChanged visible : ",visible);
                         if(visible){
-                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                            if((api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue) || !value){
+                                //console.log("internalvalue : ",internalvalue);
                                 //only write override .conf file if any value change
                                 api.internal.recalbox.setStringParameter(parameterName, internalvalue)
-                                for(var i=0; i < imageModel.count; i++){
+                                for(var i=0; i < model.count; i++){
                                     //console.log("MultivalueOption currentIndex : ",i);
-                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
-                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
-                                    //console.log("value : ",value);
-                                    //console.log("internalvalue : ",internalvalue);
-                                    if(imageModel.get(i).internal === internalvalue){
-                                        value = imageModel.get(i).name;
+                                    //console.log("modelData.options.get(i).name : ",model.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",model.get(i).internal);
+                                    if(model.get(i).internal === internalvalue){
+                                        value = model.get(i).name;
+                                        //console.log("value : ",value);
                                         currentIndex = i;
                                     }
                                 }
                             }
                         }
                     }
-
                     onFocusChanged: container.onFocus(this)
+                    /***** end of replicable part for reuse ********/
                     KeyNavigation.down: optScraperThumbnail
                 }
 
@@ -236,7 +226,11 @@ FocusScope {
 
                     internalvalue: api.internal.recalbox.getStringParameter(parameterName, "screenshot")
 
-                    count: imageModel.count
+                    property var model: imageModel //used to store model used
+                    property var refid: optScraperThumbnail //used to provide if to MultivalueBox using generic way
+
+                    /***** begin of replicable part for reuse ********/
+                    count: model.count
 
                     font: globalFonts.awesome
 
@@ -244,9 +238,9 @@ FocusScope {
                         if(visible){
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
-                            parameterslistBox.callerid = optScraperThumbnail;
+                            parameterslistBox.callerid = refid;
                             //to force update of list of parameters
-                            parameterslistBox.model = imageModel;
+                            parameterslistBox.model = model;
                             parameterslistBox.index = currentIndex;
                             //to transfer focus to parameterslistBox
                             parameterslistBox.focus = true;
@@ -255,32 +249,34 @@ FocusScope {
 
                     onSelect: {
                         if(visible){
-                            value = imageModel.get(index).name;
-                            internalvalue = imageModel.get(index).internal;
+                            value = model.get(index).name;
+                            internalvalue = model.get(index).internal;
                         }
                     }
 
                     onInternalvalueChanged: {
+                        //console.log("onInternalvalueChanged visible : ",visible);
                         if(visible){
-                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                            if((api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue) || !value){
+                                //console.log("internalvalue : ",internalvalue);
                                 //only write override .conf file if any value change
                                 api.internal.recalbox.setStringParameter(parameterName, internalvalue)
-                                for(var i=0; i < imageModel.count; i++){
+                                for(var i=0; i < model.count; i++){
                                     //console.log("MultivalueOption currentIndex : ",i);
-                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
-                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
-                                    //console.log("value : ",value);
-                                    //console.log("internalvalue : ",internalvalue);
-                                    if(imageModel.get(i).internal === internalvalue){
-                                        value = imageModel.get(i).name;
+                                    //console.log("modelData.options.get(i).name : ",model.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",model.get(i).internal);
+                                    if(model.get(i).internal === internalvalue){
+                                        value = model.get(i).name;
+                                        //console.log("value : ",value);
                                         currentIndex = i;
                                     }
                                 }
                             }
                         }
                     }
-
                     onFocusChanged: container.onFocus(this)
+                    /***** end of replicable part for reuse ********/
+
                     KeyNavigation.down: optScraperWheel
                 }
 
@@ -295,7 +291,11 @@ FocusScope {
 
                     internalvalue: api.internal.recalbox.getStringParameter(parameterName, "wheel")
 
-                    count: wheelModel.count
+                    property var model: wheelModel //used to store model used
+                    property var refid: optScraperWheel //used to provide if to MultivalueBox using generic way
+
+                    /***** begin of replicable part for reuse ********/
+                    count: model.count
 
                     font: globalFonts.awesome
 
@@ -303,9 +303,9 @@ FocusScope {
                         if(visible){
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
-                            parameterslistBox.callerid = optScraperWheel;
+                            parameterslistBox.callerid = refid;
                             //to force update of list of parameters
-                            parameterslistBox.model = wheelModel;
+                            parameterslistBox.model = model;
                             parameterslistBox.index = currentIndex;
                             //to transfer focus to parameterslistBox
                             parameterslistBox.focus = true;
@@ -314,33 +314,41 @@ FocusScope {
 
                     onSelect: {
                         if(visible){
-                            value = wheelModel.get(index).name;
-                            internalvalue = wheelModel.get(index).internal;
+                            value = model.get(index).name;
+                            internalvalue = model.get(index).internal;
                         }
                     }
 
                     onInternalvalueChanged: {
+                        //console.log("onInternalvalueChanged visible : ",visible);
                         if(visible){
-                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                            if((api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue) || !value){
+                                //console.log("internalvalue : ",internalvalue);
                                 //only write override .conf file if any value change
                                 api.internal.recalbox.setStringParameter(parameterName, internalvalue)
-                                for(var i=0; i < wheelModel.count; i++){
+                                for(var i=0; i < model.count; i++){
                                     //console.log("MultivalueOption currentIndex : ",i);
-                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
-                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
-                                    //console.log("value : ",value);
-                                    //console.log("internalvalue : ",internalvalue);
-                                    if(wheelModel.get(i).internal === internalvalue){
-                                        value = wheelModel.get(i).name;
+                                    //console.log("modelData.options.get(i).name : ",model.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",model.get(i).internal);
+                                    if(model.get(i).internal === internalvalue){
+                                        value = model.get(i).name;
+                                        //console.log("value : ",value);
                                         currentIndex = i;
                                     }
                                 }
                             }
                         }
                     }
-
                     onFocusChanged: container.onFocus(this)
+                    /***** end of replicable part for reuse ********/
+
                     KeyNavigation.down: optScraperVideo
+                }
+
+                SectionTitle {
+                    text: qsTr("Secondary Scraping Media for theme") + api.tr
+                    first: true
+                    symbol: "\uf17f"
                 }
 
                 MultivalueOption {
@@ -354,7 +362,11 @@ FocusScope {
 
                     internalvalue: api.internal.recalbox.getStringParameter(parameterName, "novideo")
 
-                    count: videoModel.count
+                    property var model: videoModel //used to store model used
+                    property var refid: optScraperVideo //used to provide if to MultivalueBox using generic way
+
+                    /***** begin of replicable part for reuse ********/
+                    count: model.count
 
                     font: globalFonts.awesome
 
@@ -362,9 +374,9 @@ FocusScope {
                         if(visible){
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
-                            parameterslistBox.callerid = optScraperVideo;
+                            parameterslistBox.callerid = refid;
                             //to force update of list of parameters
-                            parameterslistBox.model = videoModel;
+                            parameterslistBox.model = model;
                             parameterslistBox.index = currentIndex;
                             //to transfer focus to parameterslistBox
                             parameterslistBox.focus = true;
@@ -373,47 +385,53 @@ FocusScope {
 
                     onSelect: {
                         if(visible){
-                            value = videoModel.get(index).name;
-                            internalvalue = videoModel.get(index).internal;
+                            value = model.get(index).name;
+                            internalvalue = model.get(index).internal;
                         }
                     }
 
                     onInternalvalueChanged: {
+                        //console.log("onInternalvalueChanged visible : ",visible);
                         if(visible){
-                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                            if((api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue) || !value){
+                                //console.log("internalvalue : ",internalvalue);
                                 //only write override .conf file if any value change
                                 api.internal.recalbox.setStringParameter(parameterName, internalvalue)
-                                for(var i=0; i < videoModel.count; i++){
+                                for(var i=0; i < model.count; i++){
                                     //console.log("MultivalueOption currentIndex : ",i);
-                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
-                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
-                                    //console.log("value : ",value);
-                                    //console.log("internalvalue : ",internalvalue);
-                                    if(videoModel.get(i).internal === internalvalue){
-                                        value = videoModel.get(i).name;
+                                    //console.log("modelData.options.get(i).name : ",model.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",model.get(i).internal);
+                                    if(model.get(i).internal === internalvalue){
+                                        value = model.get(i).name;
+                                        //console.log("value : ",value);
                                         currentIndex = i;
                                     }
                                 }
                             }
                         }
                     }
-
                     onFocusChanged: container.onFocus(this)
+                    /***** end of replicable part for reuse ********/
+
                     KeyNavigation.down: optScraperMarquee
                 }
 
                 MultivalueOption {
                     id: optScraperMarquee
 
-                    //property to manage parameter name
-                    property string parameterName: prefix + ".scraper.wheel";
+                    //properties to manage parameter name, model and reference
+                    property string parameterName: prefix + ".scraper.marquee";
 
                     label: qsTr("Marquee scraped") + api.tr
                     note: qsTr("Media scraped for <marquee> tag") + api.tr
 
-                    internalvalue: api.internal.recalbox.getStringParameter(parameterName, "nomarqee")
+                    internalvalue: api.internal.recalbox.getStringParameter(parameterName, "nomarquee")
 
-                    count: wheelModel.count
+                    property var model: marqueeModel //used to store model used
+                    property var refid: optScraperMarquee //used to provide if to MultivalueBox using generic way
+
+                    /***** begin of replicable part for reuse ********/
+                    count: model.count
 
                     font: globalFonts.awesome
 
@@ -421,9 +439,9 @@ FocusScope {
                         if(visible){
                             //for callback by parameterslistBox
                             parameterslistBox.parameterName = parameterName;
-                            parameterslistBox.callerid = optScraperMarquee;
+                            parameterslistBox.callerid = refid;
                             //to force update of list of parameters
-                            parameterslistBox.model = marqueeModel;
+                            parameterslistBox.model = model;
                             parameterslistBox.index = currentIndex;
                             //to transfer focus to parameterslistBox
                             parameterslistBox.focus = true;
@@ -432,31 +450,47 @@ FocusScope {
 
                     onSelect: {
                         if(visible){
-                            value = marqueeModel.get(index).name;
-                            internalvalue = marqueeModel.get(index).internal;
+                            value = model.get(index).name;
+                            internalvalue = model.get(index).internal;
                         }
                     }
 
                     onInternalvalueChanged: {
+                        //console.log("onInternalvalueChanged visible : ",visible);
                         if(visible){
-                            if(api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue || !value){
+                            if((api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue) || !value){
+                                //console.log("internalvalue : ",internalvalue);
                                 //only write override .conf file if any value change
                                 api.internal.recalbox.setStringParameter(parameterName, internalvalue)
-                                for(var i=0; i < marqueeModel.count; i++){
+                                for(var i=0; i < model.count; i++){
                                     //console.log("MultivalueOption currentIndex : ",i);
-                                    //console.log("modelData.options.get(i).name : ",options.get(i).name);
-                                    //console.log("modelData.options.get(i).internal : ",options.get(i).internal);
-                                    //console.log("value : ",value);
-                                    //console.log("internalvalue : ",internalvalue);
-                                    if(marqueeModel.get(i).internal === internalvalue){
-                                        value = marqueeModel.get(i).name;
+                                    //console.log("modelData.options.get(i).name : ",model.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",model.get(i).internal);
+                                    if(model.get(i).internal === internalvalue){
+                                        value = model.get(i).name;
+                                        //console.log("value : ",value);
                                         currentIndex = i;
                                     }
                                 }
                             }
                         }
                     }
+                    onFocusChanged: container.onFocus(this)
+                    /***** end of replicable part for reuse ********/
 
+                    KeyNavigation.down: optScraperFullTexture
+                }
+
+                ToggleOption {
+                    id: optScraperFullTexture
+
+                    label: qsTr("Full Texture") + api.tr
+                    note: qsTr("Once enabled, pixL will scrap Full Texture also \n (used for 3d box animation)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".scraper.fulltexture", false)
+                    onCheckedChanged: {
+                        api.internal.recalbox.setBoolParameter(prefix + ".scraper.fulltexture",checked);
+                    }
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optScraperManual
                 }
@@ -466,6 +500,7 @@ FocusScope {
                     first: true
                     symbol: "\uf17f"
                 }
+
                 ToggleOption {
                     id: optScraperManual
 
@@ -479,6 +514,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optScraperMap
                 }
+
                 ToggleOption {
                     id: optScraperMap
 
@@ -492,6 +528,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optScraperTips
                 }
+
                 ToggleOption {
                     id: optScraperTips
 
@@ -505,6 +542,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optScraperP2K
                 }
+
                 ToggleOption {
                     id: optScraperP2K
 
@@ -518,6 +556,7 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optScraperOverlay
                 }
+
                 ToggleOption {
                     id: optScraperOverlay
 
@@ -529,8 +568,26 @@ FocusScope {
                         api.internal.recalbox.setBoolParameter(prefix + ".scraper.overlay",checked);
                     }
                     onFocusChanged: container.onFocus(this)
-                    //KeyNavigation.down: optScraperTips
+                    KeyNavigation.down: optScraperSource
                 }
+
+                SectionTitle {
+                    text: qsTr("Scraping source") + api.tr
+                    first: true
+                    symbol: "\uf17f"
+                }
+
+                MultivalueOption {
+                    id: optScraperSource
+
+                    internalvalue: "screenscraper"
+                    value: "ScreenScraper"
+                    property string parameterName: prefix + ".scraper.source"
+                    label: qsTr("from") + api.tr
+                    note: qsTr("select your prefered scrapping source") + api.tr
+                    onFocusChanged: container.onFocus(this)
+                }
+
                 Item {
                     width: parent.width
                     height: launchedAsDialogBox ? implicitHeight + vpx(50) : implicitHeight + vpx(30)
