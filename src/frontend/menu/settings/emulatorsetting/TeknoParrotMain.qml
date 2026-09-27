@@ -473,21 +473,78 @@ FocusScope {
                     symbol: "\uf181"
                     symbolFontFamily: globalFonts.ion
                 }
-                ToggleOption {
+
+                ListModel {
+                    id: xinputModel
+                    ListElement { name: qsTr("No");   internal: "0"} // as false
+                    ListElement { name: qsTr("Yes");  internal: "1"} // as true
+                    ListElement { name: qsTr("Auto"); internal: "2"} // as auto mode
+                }
+
+                MultivalueOption {
                     id: optTeknoparrotOption1
 
-                    label: qsTr("Xinput") + api.tr
-                    note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used. (on change, need reboot)") + api.tr
+                    //property to manage parameter name
+                    property string parameterName: prefix + ".xinput";
 
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".xinput",false) //deactivated by default to use Dinput
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".xinput",false)){
-                            api.internal.recalbox.setBoolParameter(prefix + ".xinput",checked);
+                    label: qsTr("Xinput") + api.tr
+                    note: qsTr("Enable Xinput mode for controllers (auto mapping forced and manage vibration) \nelse Dinput will be used.") + api.tr
+
+                    internalvalue: api.internal.recalbox.getStringParameter(parameterName, "2")
+
+                    property var model: xinputModel //used to store model used
+                    property var refid: optTeknoparrotOption1 //used to provide if to MultivalueBox using generic way
+
+                    /***** begin of replicable part for reuse ********/
+                    count: model.count
+
+                    font: globalFonts.awesome
+
+                    onActivate: {
+                        if(visible){
+                            //for callback by parameterslistBox
+                            listModelBox.parameterName = parameterName;
+                            listModelBox.callerid = refid;
+                            //to force update of list of parameters
+                            listModelBox.model = model;
+                            listModelBox.index = currentIndex;
+                            //to transfer focus to parameterslistBox
+                            listModelBox.focus = true;
+                        }
+                    }
+
+                    onSelect: {
+                        if(visible){
+                            value = model.get(index).name;
+                            internalvalue = model.get(index).internal;
+                        }
+                    }
+
+                    onInternalvalueChanged: {
+                        //console.log("onInternalvalueChanged visible : ",visible);
+                        if(visible){
+                            if((api.internal.recalbox.getStringParameter(parameterName) !==  internalvalue) || !value){
+                                //console.log("internalvalue : ",internalvalue);
+                                //only write override .conf file if any value change
+                                api.internal.recalbox.setStringParameter(parameterName, internalvalue)
+                                for(var i=0; i < model.count; i++){
+                                    //console.log("MultivalueOption currentIndex : ",i);
+                                    //console.log("modelData.options.get(i).name : ",model.get(i).name);
+                                    //console.log("modelData.options.get(i).internal : ",model.get(i).internal);
+                                    if(model.get(i).internal === internalvalue){
+                                        value = model.get(i).name;
+                                        //console.log("value : ",value);
+                                        currentIndex = i;
+                                    }
+                                }
+                            }
                         }
                     }
                     onFocusChanged: container.onFocus(this)
+                    /***** end of replicable part for reuse ********/
                     KeyNavigation.down: optTeknoparrotDeadZone
                 }
+
                 SliderOption {
                     id: optTeknoparrotDeadZone
 
@@ -668,7 +725,7 @@ FocusScope {
                     id: optGameConfiguration
                     visible: (game && optTeknoparrotAdvancedConf.checked) ? true : false
                     label: qsTr("Teknoparrot 'Game' configuration") + api.tr
-                    note: qsTr("To customize directly configuration especially for this game") + api.tr
+                    note: qsTr("To customize directly configuration especially for this game\n(only applied if 'Advanced' configuration activated)") + api.tr
                     onActivate: {
                         focus = true;
                         root.openGameConfiguration();
@@ -681,7 +738,7 @@ FocusScope {
                 ToggleOption {
                     id: optTeknoparrotOption4
                     label: qsTr("Launch UI first") + api.tr
-                    note: qsTr("Start UI first to be able to change/verify conf if needed.\n(need mouse/keyboard to navigate)") + api.tr
+                    note: qsTr("Start UI first to be able to change/verify conf if needed.\n(only applied if 'Advanced' configuration activated and need mouse/keyboard to navigate)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".launch.ui", false)
                     onCheckedChanged: {
@@ -696,7 +753,7 @@ FocusScope {
                 ToggleOption {
                     id: optTeknoparrotOption8
                     label: qsTr("Use UI Game Profile(s) if exists") + api.tr
-                    note: qsTr("To let you use your own Game/Controller Settings.\n(for testing usually)") + api.tr
+                    note: qsTr("To let you use your own Game/Controller Settings.\n(only applied if 'Advanced' configuration activated and for testing usually)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".keep.userprofile.from.ui", false)
                     onCheckedChanged: {
@@ -726,7 +783,7 @@ FocusScope {
                 ToggleOption {
                     id: optTeknoparrotOption5
                     label: qsTr("Show launcher") + api.tr
-                    note: qsTr("To show launcher console from Open Parrot") + api.tr
+                    note: qsTr("To show launcher console from Open Parrot\n(only applied if 'Advanced' configuration activated)") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".show.launcher", false)
                     onCheckedChanged: {
@@ -839,6 +896,28 @@ FocusScope {
             }
         }
     }
+
+    MultivalueBox {
+        id: listModelBox
+        z: 3
+
+        //properties to manage parameter
+        property string parameterName
+        property MultivalueOption callerid
+
+        //to use index from parameterlist QAbstractList
+        //index: callerid.currentIndex
+        //reuse same model
+        //model: callerid.modelData.options
+        onClose: content.focus = true
+        onSelect: {
+            callerid.keypressed = true;
+            callerid.currentIndex = index;
+            callerid.value = model.get(index).name;
+            callerid.internalvalue = model.get(index).internal;
+        }
+    }
+
     MultivalueBox {
         id: parameterslistBox
         z: 3
