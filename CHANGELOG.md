@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix to add more tag/directory to be compatible with default recalbox conf from Skraper 1.4.X
 	- fix to reduce number of directories scanned for skraper media.xml
 	- fix to manage QSSG logs from QT3D to avoid too verbose logs
+	- remove useless "warning: unknown emulator" message from retroachievements badge
 
 - Features:
 	- introduction of dedicaced view for wine and proton configuration (to share with all emulators using wine):

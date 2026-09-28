@@ -291,20 +291,23 @@ bool apply_game_json(model::Game& game, QString log_tag, const QJsonDocument& js
 		const auto BadgeName = Achievement[QL1("BadgeName")].toString();
 		Log::debug(log_tag, LOGMSG("BadgeName=%1").arg(BadgeName)); 
 		const auto Flags = Achievement[QL1("Flags")].toInt();
-		
-		if ((Title != "") || (BadgeName != ""))
-		{
-			//Add game retro achievement one by one
-			AllRetroAchievements.append({ID
-										   ,Title
-										   ,Description
-										   ,Points
-										   ,Author
-										   ,BadgeName
-										   ,Flags
-										   ,false
-										   ,false});
-		}
+
+        //quick win: exclude "Unknown Emulator" now due to check of user agent by RA server using 'dorequest.php'
+        if (!Title.contains("Unknown Emulator")){
+            if ((Title != "") || (BadgeName != ""))
+            {
+                //Add game retro achievement one by one
+                AllRetroAchievements.append({ID
+                                               ,Title
+                                               ,Description
+                                               ,Points
+                                               ,Author
+                                               ,BadgeName
+                                               ,Flags
+                                               ,false
+                                               ,false});
+            }
+        }
     }
 	//Set all game retro achievements in game.
 	game.setRetroAchievements(AllRetroAchievements);
