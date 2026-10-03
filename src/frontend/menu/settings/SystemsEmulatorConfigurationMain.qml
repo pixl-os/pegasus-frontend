@@ -739,6 +739,9 @@ FocusScope {
                                       case 'xemu':
                                           hasOverlaySupport = true;
                                         break;
+                                      case 'teknoparrot':
+                                          hasOverlaySupport = true;
+                                        break;
                                       default:
                                           hasOverlaySupport = false;
                                     }
