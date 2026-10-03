@@ -1063,13 +1063,87 @@ QStringList GetParametersList(QString Parameter)
         //1360 x 768,VESA Standard,Clean math (divisible by 8). Best for Arcade tech.
         //1024 x 768,VESA (XGA),The old 4:3 standard.
 
-        // # game resolution
-        // # if "auto" is selected, parameter will be empty (we let game manage its resolution)
-        // # if "768p - WXGA" is selected, parameter will be "1360x768" as Standard VESA resolution
-        // # if "768p - HD READY" is selected, parameter will be "1366x768" as Standard VESA resolution
-        // # if "900p - HD+" is selected, parameter will be "1600x900" as Standard VESA resolution
-        ListOfValue << QObject::tr("Auto") << QObject::tr("768p - WXGA") << QObject::tr("768p - HD Ready") << QObject::tr("900p - HD+");
-        ListOfInternalValue << "" << "1360x768" << "1366x768" << "1600x900";
+        // Local structure to map display label with internal resolution value
+        struct ResolutionEntry {
+            QString label;
+            QString internalValue;
+        };
+
+        // Master list of display resolutions
+        // REMARKS : some formats are volontary in comments to activate it later and if really needed
+        const std::vector<ResolutionEntry> resolutions = {
+            // -------------------------------------------------------------------------
+            // Automatic Option
+            // -------------------------------------------------------------------------
+            { QObject::tr("Auto"), "" },
+
+            // -------------------------------------------------------------------------
+            // Retro & Arcade Formats / Vintage PC
+            // -------------------------------------------------------------------------
+            //{ QObject::tr("200p - CGA (4/3)"), "320x200" },
+            //{ QObject::tr("200p - NTSC (4/3)"), "256x224" },
+            //{ QObject::tr("240p - NTSC Direct (4/3)"), "320x240" },
+            //{ QObject::tr("288p - PAL Direct (4/3)"), "384x288" },
+            //{ QObject::tr("350p - EGA (16/10)"), "640x350" },
+            //{ QObject::tr("400p - VGA Text (18/10)"), "720x400" },
+            { QObject::tr("480p - VGA (4/3)"), "640x480" },
+
+            // -------------------------------------------------------------------------
+            // Standard PC (4/3 and 5/4)
+            // -------------------------------------------------------------------------
+            { QObject::tr("600p - SVGA (4/3)"), "800x600" },
+            { QObject::tr("768p - XGA (4/3)"), "1024x768" },
+            { QObject::tr("960p - UVGA (4/3)"), "1280x960" },
+            { QObject::tr("1024p - SXGA (5/4)"), "1280x1024" },
+            { QObject::tr("1200p - UXGA (4/3)"), "1600x1200" },
+            //{ QObject::tr("1536p - QXGA (4/3)"), "2048x1536" },
+
+            // -------------------------------------------------------------------------
+            // 16/10 Formats (Handhelds, PC Displays)
+            // -------------------------------------------------------------------------
+            //{ QObject::tr("480p - WVGA (16/10)"), "854x480" },
+            //{ QObject::tr("800p - WXGA (16/10)"), "1280x800" },
+            //{ QObject::tr("1050p - WSXGA+ (16/10)"), "1680x1050" },
+            //{ QObject::tr("1200p - WUXGA (16/10)"), "1920x1200" },
+            //{ QObject::tr("1600p - WQXGA (16/10)"), "2560x1600" },
+
+            // -------------------------------------------------------------------------
+            // 16/9 Widescreen Formats (TVs / PC Displays)
+            // -------------------------------------------------------------------------
+            //{ QObject::tr("360p - nHD (16/9)"), "640x360" },
+            //{ QObject::tr("540p - qHD (16/9)"), "960x540" },
+            { QObject::tr("720p - HD (16/9)"), "1280x720" },
+            { QObject::tr("768p - WXGA (16/9)"), "1360x768" },
+            { QObject::tr("768p - HD Ready (16/9)"), "1366x768" },
+            { QObject::tr("900p - HD+ (16/9)"), "1600x900" },
+            { QObject::tr("1080p - Full HD (16/9)"), "1920x1080" },
+            //{ QObject::tr("1440p - QHD / 2K (16/9)"), "2560x1440" },
+            //{ QObject::tr("1800p - QHD+ (16/9)"), "3200x1800" },
+            //{ QObject::tr("2160p - 4K UHD (16/9)"), "3840x2160" },
+            //{ QObject::tr("2880p - 5K (16/9)"), "5120x2880" },
+            //{ QObject::tr("4320p - 8K UHD (16/9)"), "7680x4320" },
+
+            // -------------------------------------------------------------------------
+            // Ultra-Wide Formats (21/9 & 24/10)
+            // -------------------------------------------------------------------------
+            //{ QObject::tr("1080p - WFHD (21/9)"), "2560x1080" },
+            //{ QObject::tr("1440p - UWQHD (21/9)"), "3440x1440" },
+            //{ QObject::tr("1600p - UWQHD+ (24/10)"), "3840x1600" },
+            //{ QObject::tr("2160p - WUHD / 5K2K (21/9)"), "5120x2160" },
+
+            // -------------------------------------------------------------------------
+            // Super Ultra-Wide Formats (32/9)
+            // -------------------------------------------------------------------------
+            //{ QObject::tr("1080p - DFHD (32/9)"), "3840x1080" },
+            //{ QObject::tr("1440p - DQHD (32/9)"), "5120x1440" }
+        };
+
+        // Populate QLists from the master resolution table
+        for (const auto& res : resolutions) {
+            ListOfValue << res.label;
+            ListOfInternalValue << res.internalValue;
+        }
+
     }
     else if (Parameter.endsWith(".runner.type"))
     {
