@@ -381,8 +381,8 @@ FocusScope {
                            "<i>" + qsTr("Wine binary") + "</i>: " + api.tr + "<b>" + bottle_wine + "</b>" + "<br>" +
                            "<i>" + (optWinePrefixWithLayers.checked ? qsTr("Env(base)") :  qsTr("Env"))  + "</i>" + " - " + bottle_size + " : " + api.tr + "<b>" + bottle_env + "</b>" + "<br>" +
                            ((renderer_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (renderer)") + "</i>" + " - " + renderer_layer_size + " : " + api.tr + "<b>" + renderer_env + "</b>" + "<br>")  : "") +
-                           ((system_env && !emulator_env && !game_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
-                           ((emulator_env && !game_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>" + emulator_env+ "</b>" + "<br>") : "") +
+                           ((emulator_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>" + emulator_env+ "</b>" + "<br>") : "") +
+                           ((system_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
                            ((game_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (game tricks)") + "</i>" + " - " + game_layer_size + " : " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
 
                     Component.onCompleted: {
@@ -421,14 +421,14 @@ FocusScope {
                             optBottleInfo.renderer_layer_name = optWineBottle.internalvalue.split('/').pop() + "@graphics_" + newId;
                             optBottleInfo.renderer_layer_path = optWineBottle.internalvalue + "@graphics_" + newId;
                             console.log("optBottleInfo.renderer_layer_path: " + optBottleInfo.renderer_layer_path);
-                            //System info (if exists)
-                            optBottleInfo.system_layer_name = optWineBottle.internalvalue.split('/').pop() + "@" + (system ? system.name : (game ? game.collections.get(0).shortName : ""));
-                            optBottleInfo.system_layer_path = optWineBottle.internalvalue + "@" + (system ? system.name : (game ? game.collections.get(0).shortName : ""));
-                            console.log("optBottleInfo.system_layer_path: " + optBottleInfo.system_layer_path);
                             //Emulator info (if exists)
                             optBottleInfo.emulator_layer_name = optWineBottle.internalvalue.split('/').pop() + "@" + (emulator ? emulator : "");
                             optBottleInfo.emulator_layer_path = optWineBottle.internalvalue + "@" + (emulator ? emulator : "");
                             console.log("optBottleInfo.emulator_layer_path: " + optBottleInfo.emulator_layer_path);
+                            //System info (if exists)
+                            optBottleInfo.system_layer_name = optWineBottle.internalvalue.split('/').pop() + "@" + (system ? system.name : (game ? game.collections.get(0).shortName : ""));
+                            optBottleInfo.system_layer_path = optWineBottle.internalvalue + "@" + (system ? system.name : (game ? game.collections.get(0).shortName : ""));
+                            console.log("optBottleInfo.system_layer_path: " + optBottleInfo.system_layer_path);
                             //Game info (if exists)
                             if(game){
                                 var path = game.files.get(0).path; // full path of rom
@@ -467,39 +467,41 @@ FocusScope {
                             //to get env details
                             //xargs -n 10 < winetricks.log
                             //keep only 1/2 lines max for the moment (keep 8 verbs max)
-                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
-                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
-                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
-                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
-                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/winetricks.log | head -n 4 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.bottle_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.bottle_path + "/winetricks.log | head -n 6 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.renderer_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.renderer_layer_path + "/winetricks.log | head -n 6 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.system_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.system_layer_path + "/winetricks.log | head -n 6 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.emulator_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.emulator_layer_path + "/winetricks.log | head -n 6 | tr '\\n' ' ' | tr -d '\\r'").trim();
+                            optBottleInfo.game_env = api.internal.system.run("xargs -n 8 < " + optBottleInfo.game_layer_path + "/winetricks.log | head -n 6 | tr '\\n' ' ' | tr -d '\\r'").trim();
 
                             //remove "env" info from lower layers and prepare size
-                            if(optBottleInfo.game_env !==""){
-                                optBottleInfo.game_env = removeExistingValues(optBottleInfo.game_env,optBottleInfo.renderer_env).trim();
-                                optBottleInfo.game_layer_size = "";
-                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.game_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.game_layer_name + ".size\"", "thread");
-                            }
-                            else if(optBottleInfo.emulator_env !==""){
-                                optBottleInfo.emulator_env = removeExistingValues(optBottleInfo.emulator_env,optBottleInfo.renderer_env).trim();
-                                optBottleInfo.emulator_layer_size = "";
-                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.emulator_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.emulator_layer_name + ".size\"", "thread");
-                            }
-                            else if(optBottleInfo.system_env !==""){
-                                optBottleInfo.system_env = removeExistingValues(optBottleInfo.system_env,optBottleInfo.renderer_env).trim();
-                                optBottleInfo.system_layer_size = "";
-                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.system_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.system_layer_name + ".size\"", "thread");
-                            }
                             if(optBottleInfo.renderer_env !==""){
                                 optBottleInfo.renderer_env = removeExistingValues(optBottleInfo.renderer_env,optBottleInfo.bottle_env).trim();
                                 optBottleInfo.renderer_layer_size = "";
                                 api.internal.system.runAsync("du -sh \"" + optBottleInfo.renderer_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.renderer_layer_name + ".size\"", "thread");
                             }
+                            if(optBottleInfo.emulator_env !==""){
+                                optBottleInfo.emulator_env = removeExistingValues(optBottleInfo.emulator_env,optBottleInfo.bottle_env + " " + optBottleInfo.renderer_env).trim();
+                                optBottleInfo.emulator_layer_size = "";
+                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.emulator_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.emulator_layer_name + ".size\"", "thread");
+                            }
+                            if(optBottleInfo.system_env !==""){
+                                optBottleInfo.system_env = removeExistingValues(optBottleInfo.system_env,optBottleInfo.bottle_env + " " + optBottleInfo.renderer_env + " " + optBottleInfo.emulator_env).trim();
+                                optBottleInfo.system_layer_size = "";
+                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.system_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.system_layer_name + ".size\"", "thread");
+                            }
+                            if(optBottleInfo.game_env !==""){
+                                optBottleInfo.game_env = removeExistingValues(optBottleInfo.game_env,optBottleInfo.bottle_env + " " + optBottleInfo.renderer_env + " " + optBottleInfo.emulator_env + " " + optBottleInfo.system_env).trim();
+                                optBottleInfo.game_layer_size = "";
+                                api.internal.system.runAsync("du -sh \"" + optBottleInfo.game_layer_path + "\" | awk '{print $1}' | tr -d '\\n' | tr -d '\\r' > \"/tmp/" + optBottleInfo.game_layer_name + ".size\"", "thread");
+                            }
+
+
                             directorySizeTimer.start();
 
                             console.log("optBottleInfo.bottle_env : '" + optBottleInfo.bottle_env + "'")
                             console.log("optBottleInfo.renderer_env : '" + optBottleInfo.renderer_env + "'")
-                            console.log("optBottleInfo.system_env : '" + optBottleInfo.system_env + "'")
                             console.log("optBottleInfo.emulator_env : '" + optBottleInfo.emulator_env + "'")
+                            console.log("optBottleInfo.system_env : '" + optBottleInfo.system_env + "'")
                             console.log("optBottleInfo.game_env : '" + optBottleInfo.game_env + "'")
 
                             //reset color
@@ -536,11 +538,11 @@ FocusScope {
                                 optBottleInfo.game_layer_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.game_layer_name + ".size\"");
                                 optBottleInfo.game_layer_size = optBottleInfo.game_layer_size + qsTr("B") + api.tr;
                             }
-                            else if(optBottleInfo.emulator_env !==""){
+                            if(optBottleInfo.emulator_env !==""){
                                 optBottleInfo.emulator_layer_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.emulator_layer_name + ".size\"");
                                 optBottleInfo.emulator_layer_size = optBottleInfo.emulator_layer_size + qsTr("B") + api.tr;
                             }
-                            else if(optBottleInfo.system_env !==""){
+                            if(optBottleInfo.system_env !==""){
                                 optBottleInfo.system_layer_size = api.internal.system.run("cat \"/tmp/" + optBottleInfo.system_layer_name + ".size\"");
                                 optBottleInfo.system_layer_size = optBottleInfo.system_layer_size + qsTr("B") + api.tr;
                             }
