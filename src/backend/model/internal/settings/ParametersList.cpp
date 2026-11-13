@@ -1095,6 +1095,7 @@ QStringList GetParametersList(QString Parameter)
             //{ QObject::tr("288p - PAL Direct (4/3)"), "384x288" },
             //{ QObject::tr("350p - EGA (16/10)"), "640x350" },
             //{ QObject::tr("400p - VGA Text (18/10)"), "720x400" },
+            { QObject::tr("448i - CRT (4/3)"), "640x448" },
             { QObject::tr("480p - VGA (4/3)"), "640x480" },
 
             // -------------------------------------------------------------------------
