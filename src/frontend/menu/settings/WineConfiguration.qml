@@ -381,9 +381,9 @@ FocusScope {
                            "<i>" + qsTr("Wine binary") + "</i>: " + api.tr + "<b>" + bottle_wine + "</b>" + "<br>" +
                            "<i>" + (optWinePrefixWithLayers.checked ? qsTr("Env(base)") :  qsTr("Env"))  + "</i>" + " - " + bottle_size + " : " + api.tr + "<b>" + bottle_env + "</b>" + "<br>" +
                            ((renderer_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (renderer)") + "</i>" + " - " + renderer_layer_size + " : " + api.tr + "<b>" + renderer_env + "</b>" + "<br>")  : "") +
-                           ((emulator_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>" + emulator_env+ "</b>" + "<br>") : "") +
-                           ((system_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
-                           ((game_env && optWinePrefixWithLayers.checked) ? ("<i>" + qsTr("Env (game tricks)") + "</i>" + " - " + game_layer_size + " : " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
+                           ((emulator_env && optWinePrefixWithLayers.checked && optWinePrefixWithEmulatorfixes.checked) ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>" + emulator_env+ "</b>" + "<br>") : "") +
+                           ((system_env && optWinePrefixWithLayers.checked && optWinePrefixWithSystemfixes.checked) ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
+                           ((game_env && optWinePrefixWithLayers.checked && optWinePrefixWithGamefixes.checked) ? ("<i>" + qsTr("Env (game tricks)") + "</i>" + " - " + game_layer_size + " : " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
 
                     Component.onCompleted: {
                         wineInfoTimer.triggeredOnStart = false;
@@ -701,21 +701,6 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: (optWineBottle.internalvalue === "") ? true : false
-                    KeyNavigation.down: optWinePrefixWithLayers
-                }
-                ToggleOption {
-                    id: optWinePrefixWithLayers
-                    label: qsTr("Bottle with layers") + api.tr
-                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(per emulator, system or game using a common bottle base)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithlayer", true)
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithlayer", true)){
-                            api.internal.recalbox.setBoolParameter(prefix + ".wine.prefixwithlayer",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    visible: devModeActivated
                     KeyNavigation.down: optWineAppImage
                 }
                 MultivalueOption {
@@ -909,12 +894,66 @@ FocusScope {
                         container.onFocus(this)
                     }
                     visible: optWineBottle.internalvalue === "" && devModeActivated ? true : false
+                    KeyNavigation.down: optWinePrefixWithLayers
+                }
+
+                //****************************** section to manage wine layer/fixes of this emulator/system/game *******************************
+                SectionTitle {
+                    text: qsTr("Wine 'Layer' and 'Fixes' configuration") + api.tr
+                    first: true
+                    visible: devModeActivated
+                    symbol: "\uf22d"
+                    symbolFontFamily: globalFonts.ion
+                }
+                ToggleOption {
+                    id: optWinePrefixWithLayers
+                    label: qsTr("Bottle with layers") + api.tr
+                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(per emulator, system or game using a common bottle base)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithlayer", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithlayer", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".wine.prefixwithlayer",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
+                    KeyNavigation.down: optWinePrefixWithEmulatorfixes
+                }
+                ToggleOption {
+                    id: optWinePrefixWithEmulatorfixes
+                    label: qsTr("Bottle with emulator fix") + api.tr
+                    note: qsTr("Install emulator fix if exists in Wine Prefix/Bottle layers") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithemulatorfix", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithemulatorfix", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".wine.prefixwithemulatorfix",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
+                    KeyNavigation.down: optWinePrefixWithSystemfixes
+                }
+                ToggleOption {
+                    id: optWinePrefixWithSystemfixes
+                    label: qsTr("Bottle with system fix") + api.tr
+                    note: qsTr("Install system fix if exists in Wine Prefix/Bottle layers") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithsystemfix", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithsystemfix", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".wine.prefixwithsystemfix",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
                     KeyNavigation.down: optWinePrefixWithGamefixes
                 }
                 ToggleOption {
                     id: optWinePrefixWithGamefixes
-                    label: qsTr("Bottle with gamefix") + api.tr
-                    note: qsTr("Install gamefix if exists in Wine Prefix/Bottle layers\n(per emulator, system or game)") + api.tr
+                    label: qsTr("Bottle with game fix") + api.tr
+                    note: qsTr("Install game fix if exists in Wine Prefix/Bottle layers") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".wine.prefixwithgamefix", true)
                     onCheckedChanged: {
@@ -1262,7 +1301,7 @@ FocusScope {
                 SectionTitle {
                     text: qsTr("Wine 'Software' configuration") + api.tr
                     first: true
-                    symbol: "\uf22d"
+                    symbol: "\uf2a3"
                     symbolFontFamily: globalFonts.ion
                 }
                 MultivalueOption {
