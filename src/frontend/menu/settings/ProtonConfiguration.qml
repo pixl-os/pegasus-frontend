@@ -378,9 +378,9 @@ FocusScope {
                            "<i>" + qsTr("Windows version") + "</i>: " + api.tr + "<b>" + bottle_winver + "</b>" + "<br>" +
                            "<i>" + (optProtonPrefixWithLayers.checked ? qsTr("Env(base)") :  qsTr("Env"))  + "</i>" + " - " + bottle_size + " : " + api.tr + "<b>" + bottle_env + "</b>" + "<br>" +
                            ((renderer_env && optProtonPrefixWithLayers.checked) ? ("<i>" + qsTr("Env (renderer)") + "</i>" + " - " + renderer_layer_size + " : " + api.tr + "<b>" + renderer_env + "</b>" + "<br>")  : "") +
-                           ((emulator_env && optProtonPrefixWithLayers.checked) ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>'" + emulator_env + "'</b>" + "<br>") : "") +
-                           ((system_env && optProtonPrefixWithLayers.checked) ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
-                           (game_env && optProtonPrefixWithLayers.checked ? ("<i>" + qsTr("Env (game tricks)") + "</i>" + " - " + game_layer_size + " : " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
+                           ((emulator_env && optProtonPrefixWithLayers.checked && optProtonPrefixWithEmulatorfixes.checked) ? ("<i>" + qsTr("Env (emulator tricks)") + "</i>" + " - " + emulator_layer_size + " : " + api.tr + "<b>'" + emulator_env + "'</b>" + "<br>") : "") +
+                           ((system_env && optProtonPrefixWithLayers.checked && optProtonPrefixWithSystemfixes.checked) ? ("<i>" + qsTr("Env (system tricks)") + "</i>" + " - " + system_layer_size + " : " + api.tr + "<b>" + system_env + "</b>" + "<br>")  : "") +
+                           ((game_env && optProtonPrefixWithLayers.checked && optProtonPrefixWithGamefixes.checked) ? ("<i>" + qsTr("Env (game tricks)") + "</i>" + " - " + game_layer_size + " : " + api.tr + "<b>" + game_env + "</b>" + "<br>") : "")
 
                     Component.onCompleted: {
                         wineInfoTimer.triggeredOnStart = false;
@@ -707,21 +707,6 @@ FocusScope {
                     visible: optProtonBottle.internalvalue === "" ? true : false
                     KeyNavigation.down: optProtonPrefixWithLayers
                 }
-                ToggleOption {
-                    id: optProtonPrefixWithLayers
-                    label: qsTr("Bottle with layers") + api.tr
-                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(per emulator, system or game using a common bottle base)") + api.tr
-
-                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithlayer", true)
-                    onCheckedChanged: {
-                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithlayer", true)){
-                            api.internal.recalbox.setBoolParameter(prefix + ".proton.prefixwithlayer",checked);
-                        }
-                    }
-                    onFocusChanged: container.onFocus(this)
-                    visible: devModeActivated
-                    KeyNavigation.down: optProtonPrefixWithGamefixes
-                }
                 //RFU
                 /*MultivalueOption {
                     id: optProtonAppImage
@@ -920,10 +905,63 @@ FocusScope {
                     visible: optProtonBottle.internalvalue === "" && devModeActivated ? true : false
                     KeyNavigation.down: optProtonSoftRenderer
                 }*/
+                //****************************** section to manage Wine layer/fixes of this emulator/system/game *******************************
+                SectionTitle {
+                    text: qsTr("Wine 'Layer' and 'Fixes' configuration") + api.tr
+                    first: true
+                    visible: devModeActivated
+                    symbol: "\uf22d"
+                    symbolFontFamily: globalFonts.ion
+                }
+                ToggleOption {
+                    id: optProtonPrefixWithLayers
+                    label: qsTr("Bottle with layers") + api.tr
+                    note: qsTr("Install dependencies and execute Wine Prefix/Bottle layers\n(per emulator, system or game using a common bottle base)") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithlayer", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithlayer", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.prefixwithlayer",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
+                    KeyNavigation.down: optProtonPrefixWithEmulatorfixes
+                }
+                ToggleOption {
+                    id: optProtonPrefixWithEmulatorfixes
+                    label: qsTr("Bottle with emulator fix") + api.tr
+                    note: qsTr("Install emulator fix if exists in Wine Prefix/Bottle layers") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithemulatorfix", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithemulatorfix", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.prefixwithemulatorfix",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
+                    KeyNavigation.down: optProtonPrefixWithSystemfixes
+                }
+                ToggleOption {
+                    id: optProtonPrefixWithSystemfixes
+                    label: qsTr("Bottle with system fix") + api.tr
+                    note: qsTr("Install system fix if exists in Wine Prefix/Bottle layers") + api.tr
+
+                    checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithsystemfix", true)
+                    onCheckedChanged: {
+                        if(checked !== api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithsystemfix", true)){
+                            api.internal.recalbox.setBoolParameter(prefix + ".proton.prefixwithsystemfix",checked);
+                        }
+                    }
+                    onFocusChanged: container.onFocus(this)
+                    visible: devModeActivated
+                    KeyNavigation.down: optProtonPrefixWithGamefixes
+                }
                 ToggleOption {
                     id: optProtonPrefixWithGamefixes
-                    label: qsTr("Bottle with gamefix") + api.tr
-                    note: qsTr("Install gamefix if exists in Wine Prefix/Bottle layers\n(per emulator, system or game)") + api.tr
+                    label: qsTr("Bottle with game fix") + api.tr
+                    note: qsTr("Install game fix if exists in Wine Prefix/Bottle layers") + api.tr
 
                     checked: api.internal.recalbox.getBoolParameter(prefix + ".proton.prefixwithgamefix", true)
                     onCheckedChanged: {
