@@ -34,16 +34,26 @@ FocusScope {
     width: parent.width
     height: labelContainer.height + fontSize * 1.25
 
+    //******************************** section to manage design in menu selection*******************************************
+    property string focusStyle: "glossy" // [ADDED - "glossy" or "underline"]
     readonly property bool isHighlighted: root.activeFocus || toggle.activeFocus || mouseArea.containsMouse // [CHANGED - keyboard focus]
+    ClassicUnderline { // [ADDED - classic underline option]
+        id: classicUnderline
+        anchors.fill: parent
+        active: root.isHighlighted && root.focusStyle === "underline"
+        baseColor: themeColor.underline
+    }
     GlossyFocusCard { // [CHANGED - extracted glossy highlight to reusable component]
         id: focusCard
         anchors.fill: parent
         anchors.topMargin: vpx(3)
         anchors.bottomMargin: vpx(3)
         cornerRadius: vpx(8)
-        active: root.isHighlighted
+        active: root.isHighlighted && root.focusStyle === "glossy"
         baseColor: themeColor.underline
     }
+    //*********************************************************************************************************************
+
     Text {
         id: symbolSubMenu
         anchors {

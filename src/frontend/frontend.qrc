@@ -186,5 +186,6 @@
         <file>assets/ge-proton-short.png</file>
         <file>menu/settings/GameConfiguration.qml</file>
         <file>menu/settings/common/GlossyFocusCard.qml</file>
+        <file>menu/settings/common/ClassicUnderline.qml</file>
     </qresource>
 </RCC>
