@@ -76,6 +76,7 @@ Window {
     property string backgroundThemeColor : api.internal.recalbox.getStringParameter("system.menu.color")
     property string selectedThemeColor : api.internal.recalbox.getStringParameter("system.selected.color")
     property string textThemeColor : api.internal.recalbox.getStringParameter("system.text.color")
+    property string focusThemeStyle : api.internal.recalbox.getStringParameter("system.focus.style")
     property var themeColor: {
 
         var background = "#404040"

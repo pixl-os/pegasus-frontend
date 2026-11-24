@@ -254,10 +254,60 @@ FocusScope {
                         container.onFocus(this)
                     }
 
+                    KeyNavigation.down: optFocusStyleConfig
+
+                }
+                MultivalueOption {
+                    id: optFocusStyleConfig
+
+                    //property to manage parameter name
+                    property string parameterName : "system.focus.style"
+
+                    label: qsTr("choose focus style interface") + api.tr
+                    note: qsTr("Change focus style only in interface") + api.tr
+
+                    value: api.internal.recalbox.parameterslist.currentName(parameterName)
+
+                    currentIndex: api.internal.recalbox.parameterslist.currentIndex;
+                    count: api.internal.recalbox.parameterslist.count;
+
+                    onActivate: {
+                        //for callback by parameterslistBox
+                        parameterslistBox.parameterName = parameterName;
+                        parameterslistBox.callerid = optFocusStyleConfig;
+                        //to force update of list of parameters
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        parameterslistBox.model = api.internal.recalbox.parameterslist;
+                        parameterslistBox.index = api.internal.recalbox.parameterslist.currentIndex;
+                        //to transfer focus to parameterslistBox
+                        parameterslistBox.focus = true;
+                    }
+
+                    onValueChanged: {
+                            focusThemeStyle = api.internal.recalbox.getStringParameter(parameterName);
+                    }
+
+                    onSelect: {
+                        //to force to be on the good parameter selected
+                        api.internal.recalbox.parameterslist.currentName(parameterName);
+                        //to update index of parameterlist QAbstractList
+                        api.internal.recalbox.parameterslist.currentIndex = index;
+                        //to force update of display of selected value
+                        value = api.internal.recalbox.parameterslist.currentName(parameterName);
+                    }
+
+                    onFocusChanged:{
+                        if(focus){
+                            api.internal.recalbox.parameterslist.currentName(parameterName);
+                            currentIndex = api.internal.recalbox.parameterslist.currentIndex;
+                            count = api.internal.recalbox.parameterslist.count;
+                        }
+                        container.onFocus(this)
+                    }
+
                     KeyNavigation.down: optDialogBoxScale
 
                 }
-
                 SliderOption {
                     id: optDialogBoxScale
 

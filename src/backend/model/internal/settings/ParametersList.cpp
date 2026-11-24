@@ -1091,6 +1091,13 @@ QStringList GetParametersList(QString Parameter)
         ListOfInternalValue << "Original" << "Black" << "White" << "Gray"
                             << "Blue" << "Green" << "Red" << "Purple";
     }
+    //******************************************* For Style Management **********************************************
+    else if (Parameter.endsWith(".focus.style"))
+    {
+        /* "glossy" or "underline" for the moment */
+        ListOfValue << QObject::tr("Glossy Box") << QObject::tr("Underline");
+        ListOfInternalValue << "glossy" << "underline";
+    }
     else if (Parameter.endsWith(".controller.skin"))
     {
         // add auto in list to let default value from configgen  if needed
