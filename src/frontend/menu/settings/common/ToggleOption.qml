@@ -34,16 +34,15 @@ FocusScope {
     width: parent.width
     height: labelContainer.height + fontSize * 1.25
 
-
-    Rectangle {
-        id: underline
-
-        width: parent.width
-        height: vpx(3)
-        anchors.bottom: parent.bottom
-
-        color: themeColor.underline
-        visible: parent.focus || mouseArea.containsMouse
+    readonly property bool isHighlighted: root.activeFocus || toggle.activeFocus || mouseArea.containsMouse // [CHANGED - keyboard focus]
+    GlossyFocusCard { // [CHANGED - extracted glossy highlight to reusable component]
+        id: focusCard
+        anchors.fill: parent
+        anchors.topMargin: vpx(3)
+        anchors.bottomMargin: vpx(3)
+        cornerRadius: vpx(8)
+        active: root.isHighlighted
+        baseColor: themeColor.underline
     }
     Text {
         id: symbolSubMenu
