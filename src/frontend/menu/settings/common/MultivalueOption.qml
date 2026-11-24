@@ -84,16 +84,25 @@ FocusScope {
         }
     }
 
-    Rectangle {
-        id: underline
-
-        width: parent.width
-        height: vpx(3)
-        anchors.bottom: parent.bottom
-
-        color: themeColor.underline
-        visible: parent.focus || mouseArea.containsMouse
+    //******************************** section to manage design in menu selection*******************************************
+    readonly property bool isHighlighted: root.activeFocus || mouseArea.containsMouse // [CHANGED - keyboard focus]
+    ClassicUnderline { // [ADDED - classic underline option]
+        id: classicUnderline
+        anchors.fill: parent
+        active: root.isHighlighted && focusThemeStyle === "underline"
+        baseColor: themeColor.underline
     }
+    GlossyFocusCard { // [CHANGED - extracted glossy highlight to reusable component]
+        id: focusCard
+        anchors.fill: parent
+        anchors.topMargin: vpx(3)
+        anchors.bottomMargin: vpx(3)
+        cornerRadius: vpx(8)
+        active: root.isHighlighted && focusThemeStyle === "glossy"
+        baseColor: themeColor.underline
+    }
+    //*********************************************************************************************************************
+
 
     //added to force update of pointer
     onCurrentIndexChanged: {
