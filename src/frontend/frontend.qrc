@@ -187,5 +187,6 @@
         <file>menu/settings/GameConfiguration.qml</file>
         <file>menu/settings/common/GlossyFocusCard.qml</file>
         <file>menu/settings/common/ClassicUnderline.qml</file>
+        <file>menu/settings/common/FocusStyleLoader.qml</file>
     </qresource>
 </RCC>

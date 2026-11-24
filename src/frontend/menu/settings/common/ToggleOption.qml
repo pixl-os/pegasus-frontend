@@ -36,19 +36,11 @@ FocusScope {
 
     //******************************** section to manage design in menu selection*******************************************
     readonly property bool isHighlighted: root.activeFocus || mouseArea.containsMouse // [CHANGED - keyboard focus]
-    ClassicUnderline { // [ADDED - classic underline option]
-        id: classicUnderline
+    FocusStyleLoader {
+        id: focusBackground
         anchors.fill: parent
-        active: root.isHighlighted && focusThemeStyle === "underline"
-        baseColor: themeColor.underline
-    }
-    GlossyFocusCard { // [CHANGED - extracted glossy highlight to reusable component]
-        id: focusCard
-        anchors.fill: parent
-        anchors.topMargin: vpx(3)
-        anchors.bottomMargin: vpx(3)
-        cornerRadius: vpx(8)
-        active: root.isHighlighted && focusThemeStyle === "glossy"
+        styleType: focusThemeStyle
+        active: root.isHighlighted
         baseColor: themeColor.underline
     }
     //*********************************************************************************************************************
