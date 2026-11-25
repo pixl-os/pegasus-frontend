@@ -103,6 +103,13 @@ FocusScope {
 
     clip: launchedAsDialogBox
 
+    //to well set background color for modal window also
+    Rectangle {
+        anchors.fill: parent
+        color: themeColor.main
+        opacity: 1.0
+    }
+
     Flickable {
         id: container
 

@@ -6,8 +6,8 @@ FocusScope {
     visible: true
     width: 600
     height: 800
-    property color popupBackGroundColor: "#b44"
-    property color popupTextCOlor: "#ffffff"
+    property color popupBackGroundColor: themeColor.screenHeader
+    property color popupTextColor: themeColor.textTitle
 
     property alias message: popup.popMessage
     property alias delay : Timer.delay
@@ -29,7 +29,7 @@ FocusScope {
                 id: message
                 anchors.centerIn: parent
                 font.pointSize: 12
-                color: popupTextCOlor
+                color: popupTextColor
             }
             onOpened: popupClose.start()
         }
