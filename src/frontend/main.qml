@@ -72,11 +72,95 @@ Window {
         api.internal.system.quit();
     }*/
 
+    // Adjusts the brightness of a hex color by adding `amount` to each RGB channel.
+    function shiftColor(hexColor, amount) {
+        // Normalize input by trimming spaces and removing a leading '#'.
+        var clean = hexColor.trim().replace(/^#/, "");
+
+        // Drop the alpha byte if an 8-digit (#AARRGGBB) hex string is passed.
+        if (clean.length === 8) {
+            clean = clean.slice(2);
+        }
+
+        // Fall back to the original value if the result is not a standard 6-digit RRGGBB hex string.
+        if (clean.length !== 6) {
+            return hexColor;
+        }
+
+        // Parse red, green, and blue channels from base-16 hex pairs.
+        var r = parseInt(clean.slice(0, 2), 16);
+        var g = parseInt(clean.slice(2, 4), 16);
+        var b = parseInt(clean.slice(4, 6), 16);
+
+        // Clamp a channel value to the valid [0, 255] byte range.
+        function clampByte(val) {
+            return Math.max(0, Math.min(255, Math.round(val)));
+        }
+
+        // Shift each RGB channel while staying within valid bounds.
+        r = clampByte(r + amount);
+        g = clampByte(g + amount);
+        b = clampByte(b + amount);
+
+        // Convert a single channel byte back into a zero-padded 2-digit lowercase hex string.
+        function toHex(val) {
+            var h = val.toString(16);
+            return h.length === 1 ? "0" + h : h;
+        }
+
+        // Reassemble the adjusted #RRGGBB hex color.
+        return "#" + toHex(r) + toHex(g) + toHex(b);
+    }
+
+    // Generates a subtle secondary color from a background hex color based on perceived luminance.
+    function autoSecondary(bgHex) {
+        // Normalize input and strip a leading '#'.
+        var clean = bgHex.trim().replace(/^#/, "");
+
+        // Strip leading alpha if an 8-digit hex string is provided.
+        if (clean.length === 8) {
+            clean = clean.slice(2);
+        }
+
+        // Return the default fallback color if the hex string is not 6 characters long.
+        if (clean.length !== 6) {
+            return "#202a44";
+        }
+
+        // Normalize RGB channels to the [0.0, 1.0] range for luminance calculation.
+        var r = parseInt(clean.slice(0, 2), 16) / 255;
+        var g = parseInt(clean.slice(2, 4), 16) / 255;
+        var b = parseInt(clean.slice(4, 6), 16) / 255;
+
+        // Compute approximate relative/perceived luminance (0 = dark, 1 = light).
+        var luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+        // Lighten dark backgrounds (+18) and darken light backgrounds (-18) for subtle contrast.
+        var delta = luminance < 0.5 ? 18 : -18;
+        return shiftColor(bgHex, delta);
+    }
+
     // Color palette set with 'themeColor.main' or else
     property string backgroundThemeColor : api.internal.recalbox.getStringParameter("system.menu.color")
     property string selectedThemeColor : api.internal.recalbox.getStringParameter("system.selected.color")
     property string textThemeColor : api.internal.recalbox.getStringParameter("system.text.color")
     property string focusThemeStyle : api.internal.recalbox.getStringParameter("system.focus.style")
+
+    // Computes three text palette colors (title, label, sublabel) from a base color.
+    function computeTextPalette(baseColor) {
+        // Shift slightly lighter for title, keep base for label, and shift slightly darker for sublabel.
+        var title = shiftColor(baseColor, 14);
+        var label = baseColor;
+        var sublabel = shiftColor(baseColor, -14);
+
+        // Return the three computed colors as an object.
+        return {
+            title: title,
+            label: label,
+            sublabel: sublabel
+        };
+    }
+
     property var themeColor: {
 
         var background = "#404040"
@@ -88,140 +172,28 @@ Window {
 
         var accent = "#32CD32"
 
-        if (backgroundThemeColor === "Original") {
-            background = "#404040"
-            _secondary = "#535353"
+        if ((backgroundThemeColor === "Original") || (backgroundThemeColor === "From Theme")) {
+            //keep default one
         }
-        else if (backgroundThemeColor === "Black") {
-            background = "#1a1a1a"
-            _secondary = "#303030"
-        }
-        else if (backgroundThemeColor === "White") {
-            background = "#ebebeb"
-            _secondary = "#dfdfdf"
-        }
-        else if (backgroundThemeColor === "Gray") {
-            background = "#666666"
-            _secondary = "#757575"
-        }
-        else if (backgroundThemeColor === "Blue") {
-            background = "#1d253d"
-            _secondary = "#333A50"
-        }
-        else if (backgroundThemeColor === "Green") {
-            background = "#054b16"
-            _secondary = "#1D5D2D"
-        }
-        else if (backgroundThemeColor === "Red") {
-            background = "#520000"
-            _secondary = "#631919"
-        }
-        else if (backgroundThemeColor === "Purple") {
-            background = "#684791"
-            _secondary = "#77599C"
+        else {
+            background =     backgroundThemeColor;
+            _secondary = autoSecondary(background);
         }
 
-        if (textThemeColor === "Original") {
-            _textTitle = "#bfe6eb"
-            _textLabel = "#b7e3e8"
-            _textSublabel = "#B0E0E6"
+        if ((textThemeColor === "Original") || (textThemeColor === "From Theme")) {
+            //keep default one
         }
-        else if (textThemeColor === "Black") {
-            _textTitle = "#000000"
-            _textLabel = "#000000"
-            _textSublabel = "#000000"
-        }
-        else if (textThemeColor === "White") {
-            _textTitle = "#e5e5e5"
-            _textLabel = "#f2f2f2"
-            _textSublabel = "#ffffff"
-        }
-        else if (textThemeColor === "Gray") {
-            _textTitle = "#9a9a9a"
-            _textLabel = "#8d8d8d"
-            _textSublabel = "#818181"
-        }
-        else if (textThemeColor === "Blue") {
-            _textTitle = "#52a3d8"
-            _textLabel = "#3d98d3"
-            _textSublabel = "#288dcf"
-        }
-        else if (textThemeColor === "Green") {
-            _textTitle = "#83bf5a"
-            _textLabel = "#74b746"
-            _textSublabel = "#65b032"
-        }
-        else if (textThemeColor === "Red") {
-            _textTitle = "#ea5360"
-            _textLabel = "#e73e4c"
-            _textSublabel = "#e52939"
-        }
-        else if (textThemeColor === "Purple") {
-            _textTitle = "#9b7ec0"
-            _textLabel = "#8e6fb8"
-            _textSublabel = "#825fb1"
+        else{
+            var palette = computeTextPalette(textThemeColor);
+            _textTitle    = palette.title;
+            _textLabel    = palette.label;
+            _textSublabel = palette.sublabel;
         }
 
-        if (selectedThemeColor === "Dark Green") {
-            accent = "#288928";
+        if ((selectedThemeColor === "Original") || (selectedThemeColor === "From Theme")) {
+            //keep default one
         }
-        else if (selectedThemeColor === "Light Green") {
-            accent = "#65b032";
-        }
-        else if (selectedThemeColor === "Turquoise") {
-            accent = "#288e80";
-        }
-        else if (selectedThemeColor === "Dark Red") {
-            accent = "#ab283b";
-        }
-        else if (selectedThemeColor === "Light Red") {
-            accent = "#e52939";
-        }
-        else if (selectedThemeColor === "Dark Pink") {
-            accent = "#c52884";
-        }
-        else if (selectedThemeColor === "Light Pink") {
-            accent = "#ee6694";
-        }
-        else if (selectedThemeColor === "Dark Blue") {
-            accent = "#30519c";
-        }
-        else if (selectedThemeColor === "Light Blue") {
-            accent = "#288dcf";
-        }
-        else if (selectedThemeColor === "Orange") {
-            accent = "#ed5b28";
-        }
-        else if (selectedThemeColor === "Yellow") {
-            accent = "#ed9728";
-        }
-        else if (selectedThemeColor === "Magenta") {
-            accent = "#b857c6";
-        }
-        else if (selectedThemeColor === "Purple") {
-            accent = "#825fb1";
-        }
-        else if (selectedThemeColor === "Dark Gray") {
-            accent = "#5e5c5d";
-        }
-        else if (selectedThemeColor === "Light Gray") {
-            accent = "#818181";
-        }
-        else if (selectedThemeColor === "Dark Gray") {
-            accent = "#5e5c5d";
-        }
-        else if (selectedThemeColor === "Steel") {
-            accent = "#768294";
-        }
-        else if (selectedThemeColor === "Stone") {
-            accent = "#658780";
-        }
-        else if (selectedThemeColor === "Dark Brown") {
-            accent = "#806044";
-        }
-        else if (selectedThemeColor === "Light Brown") {
-            accent = "#7e715c";
-        }
+        else accent = selectedThemeColor;
 
         return {
             main:               background,
