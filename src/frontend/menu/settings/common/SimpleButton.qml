@@ -47,16 +47,17 @@ FocusScope {
         }
     }
 
-    Rectangle {
-        id: underline
-
-        width: parent.width
-        height: vpx(3)
-        anchors.bottom: parent.bottom
-
-        color: themeColor.underline
-        visible: (parent.focus || mouseArea.containsMouse) && showUnderline
+    //******************************** section to manage design in menu selection*******************************************
+    readonly property bool isHighlighted: root.activeFocus || mouseArea.containsMouse // [CHANGED - keyboard focus]
+    FocusStyleLoader {
+        id: focusBackground
+        anchors.fill: parent
+        styleType: focusThemeStyle
+        active: root.isHighlighted && pointerConfigs.visible
+        baseColor: themeColor.underline
     }
+    //*********************************************************************************************************************
+
     Rectangle {
         id: buttonSelection
 
@@ -87,7 +88,7 @@ FocusScope {
             color: themeColor.textLabel
             font.pixelSize: fontSize
             font.family: globalFonts.sans
-            width: underline.width
+            width: focusBackground.width
             wrapMode: root.wrapMode
         }
 
@@ -98,7 +99,7 @@ FocusScope {
             font.pixelSize: fontSize * 0.8
             font.family: globalFonts.sans
             font.italic: true
-            width: underline.width
+            width: focusBackground.width
             wrapMode: Text.WordWrap
         }
     }

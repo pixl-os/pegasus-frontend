@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file (focus on change done on recalbox-integration branch).
 
-## [pixL-master] - 2025-XX-XX - v0.1.12
+## [pixL-master] - 2026-12-XX - v0.1.12
 - Fixes:
 	- game parsing:
 		- be able to select directory as game and avoid to parse inside this type of directory in this case (quicker parsing)
@@ -18,6 +18,15 @@ All notable changes to this project will be documented in this file (focus on ch
 	- fix to reduce number of directories scanned for skraper media.xml
 	- fix to manage QSSG logs from QT3D to avoid too verbose logs
 	- remove useless "warning: unknown emulator" message from retroachievements badge
+	- New Focus & Color management:
+		- start by changing "ToggleOption" using new way to focus in menu (GlossyFocusCard)
+		- keeping previous way to focus in menu (ClassicUnderline)
+		- using multiple style from interface menu
+		- add underline or glossybox style in "MultipleValueOption" also
+		- introduce focus style loader for maintenance
+		- improve interface colors management and be able to use colors "From Theme"
+		- fix "colors" to well display background/main color in case of modal window
+		- add underline or glossybox style in "all" options
 
 - Features:
 	- introduction of dedicaced view for wine and proton configuration (to share with all emulators using wine):

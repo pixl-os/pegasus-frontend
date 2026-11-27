@@ -12,6 +12,7 @@ TextField {
     font.pixelSize: vpx(22)
     font.family: globalFonts.sans
     readOnly: true
+    anchors.rightMargin: vpx(20)
 
     //custom parameter to inverse color
     property color activeFocusColor : themeColor.secondary
@@ -19,7 +20,7 @@ TextField {
     property color activeBorderColor: themeColor.screenHeader
 
     background: Rectangle {
-        radius: vpx(20)
+        radius: vpx(5)
         color: control.activeFocus ? activeFocusColor : inactiveColor
         border.color: control.activeFocus ? activeBorderColor : inactiveColor
     }

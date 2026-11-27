@@ -50,16 +50,16 @@ FocusScope {
         }
     }
 
-    Rectangle {
-        id: underline
-
-        width: parent.width
-        height: vpx(3)
-        anchors.bottom: parent.bottom
-
-        color: themeColor.underline
-        visible: parent.focus || mouseArea.containsMouse
+    //******************************** section to manage design in menu selection*******************************************
+    readonly property bool isHighlighted: root.activeFocus || mouseArea.containsMouse // [CHANGED - keyboard focus]
+    FocusStyleLoader {
+        id: focusBackground
+        anchors.fill: parent
+        styleType: focusThemeStyle
+        active: root.isHighlighted
+        baseColor: themeColor.underline
     }
+    //*********************************************************************************************************************
 
     Column {
         id: labelContainer
