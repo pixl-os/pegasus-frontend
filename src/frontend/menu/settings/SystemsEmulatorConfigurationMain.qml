@@ -103,6 +103,13 @@ FocusScope {
 
     clip: launchedAsDialogBox
 
+    //to well set background color for modal window also
+    Rectangle {
+        anchors.fill: parent
+        color: themeColor.main
+        opacity: 1.0
+    }
+
     Flickable {
         id: container
 
@@ -150,7 +157,7 @@ FocusScope {
                     id: optGameInfo
                     visible: game ? true : false
                     width: parent.width - ((height/9)*16)
-                    showUnderline: false
+                    showFocus: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
                     property string override_exists: "false"
@@ -739,8 +746,9 @@ FocusScope {
                             }
                             ButtonGroup.group: radioGroup
                         }
+
                         Text {
-                            id: pointer
+                            id: defaultIndo
 
                             anchors.right: radioButton.left
                             anchors.rightMargin: horizontalPadding
@@ -792,6 +800,7 @@ FocusScope {
                 //to be able to delete "override" file
                 SimpleButton {
                     id: btnDeleteOverrideFile
+                    showFocus: false
                     visible: game ? (optGameInfo.override_exists === "true" ? true : false) : false
                     Rectangle {
                         id: containerDeleteOverrideFile

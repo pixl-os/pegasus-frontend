@@ -393,6 +393,7 @@ FocusScope {
                 // to apply settings
                 SimpleButton {
                     id: btnLaunchEuropeBIOS
+                    showFocus: false
                     Rectangle {
                         //id: containerValidate
                         width: parent.width
@@ -431,6 +432,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: btnLaunchJapanBIOS
+                    showFocus: false
                     Rectangle {
                         //id: containerValidate
                         width: parent.width
@@ -469,6 +471,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: btnLaunchUsaBIOS
+                    showFocus: false
                     Rectangle {
                         //id: containerValidate
                         width: parent.width
@@ -507,6 +510,7 @@ FocusScope {
                 }
                 SimpleButton {
                     id: btnLaunchAsiaBIOS
+                    showFocus: false
                     Rectangle {
                         id: containerValidate
                         width: parent.width

@@ -803,6 +803,7 @@ FocusScope {
                 // to validate first and second screen
                 SimpleButton {
                     id: optValidateChange
+                    showFocus: false
                     Rectangle {
                         id: containerValidate
                         width: parent.width
@@ -964,6 +965,7 @@ FocusScope {
                 // to validate first and second screen
                 SimpleButton {
                     id: optStartWeylusService
+                    showFocus: false
                     visible: optRemoteDisplayActivate.checked
                     Rectangle {
                         id: containerWeylusService

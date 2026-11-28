@@ -457,19 +457,28 @@ QStringList GetParametersList(QString Parameter)
         return ListOfValue;
 
     }
-    else if (Parameter == "system.selected.color")
+    else if((Parameter == "system.menu.color") || (Parameter == "system.text.color") || (Parameter == "system.selected.color"))
     {
-        /* "Original,Black,Gray,Blue,Green,Red" */
-        ListOfValue << QObject::tr("Original") << QObject::tr("Dark Green") << QObject::tr("Light Green") << QObject::tr("Dark Gray")
-                    << QObject::tr("Light Gray") << QObject::tr("Dark Red") << QObject::tr("Light Red") << QObject::tr("Dark Pink")
-                    << QObject::tr("Light Pink") << QObject::tr("Dark Brown") << QObject::tr("Light Brown") << QObject::tr("Dark Blue")
-                    << QObject::tr("Light Blue") << QObject::tr("Orange") << QObject::tr("Yellow") << QObject::tr("Turquoise")
-                    << QObject::tr("Magenta") << QObject::tr("Purple") << QObject::tr("Steel") << QObject::tr("Stone");
-        ListOfInternalValue << "Original" << "Dark Green" << "Light Green" << "Dark Gray"
-                            << "Light Gray" << "Dark Red" << "Light Red" << "Dark Pink"
-                            << "Light Pink" << "Dark Brown" << "Light Brown" << "Dark Blue"
-                            << "Light Blue" << "Orange" << "Yellow" << "Turquoise"
-                            << "Magenta" << "Purple" << "Steel" << "Stone";
+        // Keep display labels in exact 1:1 order with internal hex color values.
+        ListOfValue << QObject::tr("Original") << QObject::tr("From Theme")
+                    << QObject::tr("White") << QObject::tr("Black") << QObject::tr("Gold")
+                    << QObject::tr("Cyan") << QObject::tr("Coral") << QObject::tr("Light Green") << QObject::tr("Light Blue")
+                    << QObject::tr("Lavender") << QObject::tr("Orange") << QObject::tr("Yellow") << QObject::tr("Dark Pink")
+                    << QObject::tr("Light Pink") << QObject::tr("Light Red") << QObject::tr("Green") << QObject::tr("Blue")
+                    << QObject::tr("Red") << QObject::tr("Magenta") << QObject::tr("Purple") << QObject::tr("Turquoise")
+                    << QObject::tr("Lime") << QObject::tr("Dark Green") << QObject::tr("Dark Blue") << QObject::tr("Dark Red")
+                    << QObject::tr("Steel") << QObject::tr("Stone") << QObject::tr("Dark Brown") << QObject::tr("Light Brown")
+                    << QObject::tr("Gray") << QObject::tr("Dark Gray") << QObject::tr("Light Gray") << QObject::tr("Silver");
+
+        ListOfInternalValue << "Original" << "From Theme"
+                            << "#FFFFFF" << "#000000" << "#FFD700"
+                            << "#00FFFF" << "#FF7F50" << "#90EE90" << "#ADD8E6"
+                            << "#E6E6FA" << "#FFA500" << "#FFFF00" << "#FF69B4"
+                            << "#FFB6C1" << "#FF7F7F" << "#008000" << "#0000FF"
+                            << "#FF0000" << "#FF00FF" << "#800080" << "#40E0D0"
+                            << "#00FF00" << "#006400" << "#00008B" << "#8B0000"
+                            << "#4682B4" << "#8B8589" << "#5C4033" << "#C4A484"
+                            << "#808080" << "#404040" << "#D3D3D3" << "#C0C0C0";
     }
     //******************************************** For Proton *************************************************
     else if (Parameter.endsWith(".protonbottle", Qt::CaseInsensitive) == true)
@@ -1090,6 +1099,13 @@ QStringList GetParametersList(QString Parameter)
                     << QObject::tr("Blue") << QObject::tr("Green") << QObject::tr("Red") << QObject::tr("Purple");
         ListOfInternalValue << "Original" << "Black" << "White" << "Gray"
                             << "Blue" << "Green" << "Red" << "Purple";
+    }
+    //******************************************* For Style Management **********************************************
+    else if (Parameter.endsWith(".focus.style"))
+    {
+        /* "glossy" or "underline" for the moment */
+        ListOfValue << QObject::tr("Glossy Box") << QObject::tr("Underline");
+        ListOfInternalValue << "glossy" << "underline";
     }
     else if (Parameter.endsWith(".controller.skin"))
     {

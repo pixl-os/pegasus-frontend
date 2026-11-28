@@ -285,65 +285,53 @@ FocusScope {
                     visible: optNetworkStatut.checked
                     KeyNavigation.down: optRpcs3RpcnUsername
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optRpcs3RpcnUsername
 
                     label: qsTr("Username") + api.tr
                     note: qsTr("If you don't have an account go to setting emulator and create on menu") + api.tr
 
-                    TextFieldOption {
-                        id: rpcnUsername
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: TextInput.AlignRight
-                        placeholderText: qsTr("Username") + api.tr
-                        text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.username")
-                        echoMode: TextInput.Normal
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.username", rpcnUsername.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("1971") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.username")
+                    textfield.echoMode: TextInput.Normal
+                    textfield.inputMethodHints: Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.username", textfield.text)
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRpcs3RpcnPassword
                     visible: optRpcnStatut.checked && optNetworkStatut.checked
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optRpcs3RpcnPassword
 
                     label: qsTr("Password") + api.tr
                     note: qsTr("then login with your username and password") + api.tr
 
-                    TextFieldOption {
-                        id: rpcnPassword
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        placeholderText: qsTr("Password") + api.tr
-                        text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.password")
-                        horizontalAlignment: TextInput.AlignRight
-                        echoMode: TextInput.PasswordEchoOnEdit
-                        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.password", rpcnPassword.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("Password") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.password")
+                    textfield.echoMode: TextInput.PasswordEchoOnEdit
+                    textfield.inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.password", textfield.text)
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRpcs3RpcnToken
                     visible: optRpcnStatut.checked && optNetworkStatut.checked
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optRpcs3RpcnToken
 
                     label: qsTr("Token") + api.tr
                     note: qsTr("If you don't have an token check your mail after create an account") + api.tr
 
-                    TextFieldOption {
-                        id: rpcnToken
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: TextInput.AlignRight
-                        placeholderText: qsTr("Token") + api.tr
-                        text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.token")
-                        echoMode: TextInput.PasswordEchoOnEdit
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.token", rpcnToken.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("Token") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter(prefix + ".rpcn.token")
+                    textfield.echoMode: TextInput.Normal
+                    textfield.inputMethodHints: Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".rpcn.token", textfield.text)
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRpcs3Theme
                     visible: optRpcnStatut.checked && optNetworkStatut.checked

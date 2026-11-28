@@ -449,6 +449,7 @@ FocusScope {
                 // to restart bluetooth stack if needed
                 SimpleButton {
                     id: optRestartBluetoothStack
+                    showFocus: false
                     Rectangle {
                         width: parent.width
                         height: parent.height
@@ -552,13 +553,12 @@ FocusScope {
                     id: optControllersLed
                     SectionTitle {
                         text: qsTr("Controllers LED management") + api.tr
-                        first: true
-                        visible: optBluetoothControllers.checked
                     }
-
                     checked: api.internal.recalbox.getBoolParameter("controllers.led.management")
                     onCheckedChanged: {
-                        api.internal.recalbox.setBoolParameter("controllers.led.management",checked);
+                        if(checked !== api.internal.recalbox.getBoolParameter("controllers.led.management",false)){
+                            api.internal.recalbox.setBoolParameter("controllers.led.management",checked);
+                        }
                     }
                     symbol: "\uf2d2"
                     onFocusChanged: container.onFocus(this)
@@ -1107,6 +1107,7 @@ FocusScope {
                 // to apply settings
                 SimpleButton {
                     id: optSindenLightgunSettingsApply
+                    showFocus: false
                     Rectangle {
                         width: parent.width
                         height: parent.height
