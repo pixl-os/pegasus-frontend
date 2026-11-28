@@ -29,6 +29,11 @@ Text {
     property int fontSize: vpx(22)
     property int horizontalPadding: launchedAsDialogBox ? vpx(10) : vpx(20)
 
+    anchors {
+        left: parent.left
+        leftMargin: horizontalPadding/2
+    }
+
     color: themeColor.textSectionTitle
     font {
         pixelSize: fontSize

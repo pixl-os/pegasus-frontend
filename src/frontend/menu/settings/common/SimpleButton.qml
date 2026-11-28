@@ -26,7 +26,7 @@ FocusScope {
     property alias note: sublabel.text
     property alias noteFormat: sublabel.textFormat
     property alias pointerIcon: pointerConfigs.visible
-    property bool showUnderline: true
+    property bool showFocus: true
     property bool selectButton: false
     property int wrapMode: Text.WordWrap
     property bool launchedAsDialogBox: false
@@ -53,7 +53,7 @@ FocusScope {
         id: focusBackground
         anchors.fill: parent
         styleType: focusThemeStyle
-        active: root.isHighlighted && pointerConfigs.visible
+        active: root.isHighlighted && showFocus
         baseColor: themeColor.underline
     }
     //*********************************************************************************************************************

@@ -449,6 +449,7 @@ FocusScope {
                 // to restart bluetooth stack if needed
                 SimpleButton {
                     id: optRestartBluetoothStack
+                    showFocus: false
                     Rectangle {
                         width: parent.width
                         height: parent.height
@@ -1106,6 +1107,7 @@ FocusScope {
                 // to apply settings
                 SimpleButton {
                     id: optSindenLightgunSettingsApply
+                    showFocus: false
                     Rectangle {
                         width: parent.width
                         height: parent.height

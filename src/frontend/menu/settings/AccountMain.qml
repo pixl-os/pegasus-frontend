@@ -115,44 +115,36 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRetroachievementUsername
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optRetroachievementUsername
 
                     label: qsTr("Username") + api.tr
                     note: qsTr("If you don't have an account go to the site :\n https://retroachievements.org/") + api.tr
 
-                    TextFieldOption {
-                        id: retroachievementUsername
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: TextInput.AlignRight
-                        placeholderText: qsTr("Pseudo") + api.tr
-                        text: api.internal.recalbox.getStringParameter("global.retroachievements.username")
-                        echoMode: TextInput.Normal
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.username", retroachievementUsername.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("Pseudo") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter("global.retroachievements.username")
+                    textfield.echoMode: TextInput.Normal
+                    textfield.inputMethodHints: Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.username", textfield.text)
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optRetroachievementPassword
                     visible: optRetroachievementActivate.checked
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optRetroachievementPassword
 
                     label: qsTr("Password") + api.tr
                     note: qsTr("then login with your username and password") + api.tr
 
-                    TextFieldOption {
-                        id: retroachievementPassword
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        placeholderText: qsTr("Password") + api.tr
-                        text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
-                        horizontalAlignment: TextInput.AlignRight
-                        echoMode: TextInput.PasswordEchoOnEdit
-                        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.password", retroachievementPassword.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("Password") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter("global.retroachievements.password")
+                    textfield.echoMode: TextInput.PasswordEchoOnEdit
+                    textfield.inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter("global.retroachievements.password", textfield.text)
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optHardcoreRetroachievementActivate
                     visible: optRetroachievementActivate.checked
@@ -261,23 +253,18 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayNickname
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optNetplayNickname
 
                     label: qsTr("Netplay nickname") + api.tr
                     note: qsTr("Set your netplay nickname") + api.tr
 
-                    TextFieldOption {
-                        id: netplayNickname
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: TextInput.AlignRight
-                        placeholderText: qsTr("Nickname") + api.tr
-                        text: api.internal.recalbox.getStringParameter("global.netplay.nickname")
-                        echoMode: TextInput.Normal
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter("global.netplay.nickname", netplayNickname.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("Nickname") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter("global.netplay.nickname")
+                    textfield.echoMode: TextInput.Normal
+                    textfield.inputMethodHints: Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter("global.netplay.nickname", textfield.text)
 
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optNetplayRooms

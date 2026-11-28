@@ -684,8 +684,9 @@ FocusScope {
                             onFocusChanged: container.onFocus(this)
                         }
 
-                        SimpleButton {
+                        TextFieldOption {
                             id: textItem
+
                             width: parent.width
                             anchors.top: sectionHeader.bottom
 
@@ -706,24 +707,20 @@ FocusScope {
                             label: qsTr(modelData.name) + api.tr
                             note: modelData.hint ? modelData.hint : null
 
-                            TextFieldOption {
-                                id: textFieldItem
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                horizontalAlignment: TextInput.AlignRight
-                                placeholderText: "                       "
-                                text: visible ? api.internal.recalbox.getStringParameter(parent.parameterName, modelData.value) : ""
-                                echoMode: TextInput.Normal
-                                inputMethodHints: Qt.ImhNoPredictiveText
-                                onEditingFinished: {
-                                    if(visible){
-                                        if(api.internal.recalbox.getStringParameter(parameterName, modelData.value) !==  value){
-                                            //only write override .conf file if any value change
-                                            api.internal.recalbox.setStringParameter(parameterName, textFieldItem.text)
-                                        }
+                            textfield.horizontalAlignment: TextInput.AlignRight
+                            textfield.placeholderText: "                       "
+                            textfield.text: visible ? api.internal.recalbox.getStringParameter(parent.parameterName, modelData.value) : ""
+                            textfield.echoMode: TextInput.Normal
+                            textfield.inputMethodHints: Qt.ImhNoPredictiveText
+                            textfield.onEditingFinished:{
+                                if(visible){
+                                    if(api.internal.recalbox.getStringParameter(parameterName, modelData.value) !==  textfield.text){
+                                        //only write override .conf file if any value change
+                                        api.internal.recalbox.setStringParameter(parameterName, textfield.text)
                                     }
                                 }
                             }
+
                             onFocusChanged: container.onFocus(this)
                         }
 

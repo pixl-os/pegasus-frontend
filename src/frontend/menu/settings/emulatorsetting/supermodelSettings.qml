@@ -373,62 +373,53 @@ FocusScope {
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optAddressOut
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optAddressOut
+
                     label: qsTr("Address Out") + api.tr
                     note: qsTr("type your output address for next net cab's.") + api.tr
 
-                    TextFieldOption {
-                        id: addressOut
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: TextInput.AlignRight
-                        placeholderText: qsTr("127.0.0.1") + api.tr
-                        text: api.internal.recalbox.getStringParameter(prefix + ".address.out")
-                        echoMode: TextInput.Normal
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".address.out", addressOut.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("127.0.0.1") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter(prefix + ".address.out")
+                    textfield.echoMode: TextInput.Normal
+                    textfield.inputMethodHints: Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".address.out", textfield.text)
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPortIn
                     visible: optNetwork.checked
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optPortIn
+
                     label: qsTr("Port In") + api.tr
                     note: qsTr("type your Input port for next net cab's.") + api.tr
 
-                    TextFieldOption {
-                        id: portIn
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: TextInput.AlignRight
-                        placeholderText: qsTr("1970") + api.tr
-                        text: api.internal.recalbox.getStringParameter(prefix + ".port.in")
-                        echoMode: TextInput.Normal
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".port.in", portIn.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("1970") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter(prefix + ".port.in")
+                    textfield.echoMode: TextInput.Normal
+                    textfield.inputMethodHints: Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".port.in", textfield.text)
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optPortOut
                     visible: optNetwork.checked
                 }
-                SimpleButton {
+                TextFieldOption {
                     id: optPortOut
+
                     label: qsTr("Port Out") + api.tr
                     note: qsTr("type your Input port for next net cab's.") + api.tr
 
-                    TextFieldOption {
-                        id: portOut
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        horizontalAlignment: TextInput.AlignRight
-                        placeholderText: qsTr("1971") + api.tr
-                        text: api.internal.recalbox.getStringParameter(prefix + ".port.out")
-                        echoMode: TextInput.Normal
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".port.out", portOut.text)
-                    }
+                    textfield.horizontalAlignment: TextInput.AlignRight
+                    textfield.placeholderText: qsTr("1971") + api.tr
+                    textfield.text: api.internal.recalbox.getStringParameter(prefix + ".port.out")
+                    textfield.echoMode: TextInput.Normal
+                    textfield.inputMethodHints: Qt.ImhNoPredictiveText
+                    textfield.onEditingFinished: api.internal.recalbox.setStringParameter(prefix + ".port.out", textfield.text)
+
                     onFocusChanged: container.onFocus(this)
                     KeyNavigation.down: optLegacySoundEngine
                     visible: optNetwork.checked

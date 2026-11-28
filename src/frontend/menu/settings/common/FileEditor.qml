@@ -13,7 +13,7 @@ FocusScope {
     property alias fileContent: textContent.text
     property alias contentHeight: fileArea.height
     property alias activeScroll: textContent.focus
-    property bool showUnderline: true
+    property bool showFocus: true
     property int wrapMode: Text.WordWrap
     property bool launchedAsDialogBox: false
     readonly property int fontSize: vpx(22)
@@ -42,7 +42,7 @@ FocusScope {
         anchors.bottom: parent.bottom
 
         color: themeColor.underline
-        visible: (parent.focus || mouseArea.containsMouse) && showUnderline
+        visible: (parent.focus || mouseArea.containsMouse) && showFocus
     }
 
     Column {

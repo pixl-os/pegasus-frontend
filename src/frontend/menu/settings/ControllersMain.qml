@@ -208,7 +208,7 @@ FocusScope {
 
                     SimpleButton {
                         selectButton: controllersList.moveMode && focus
-                        showUnderline: !selectButton
+                        showFocus: !selectButton
                         Text {
                             id: deviceIcon
 

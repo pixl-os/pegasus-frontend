@@ -211,7 +211,7 @@ FocusScope {
         ;wifi3.ssid=new ssid
         ;wifi3.key=new key*/
 
-        SimpleButton {
+        TextFieldOption {
             id: optWifiSSID
             Rectangle {
                 width: parent.width
@@ -222,25 +222,21 @@ FocusScope {
             label: qsTr("Wifi SSID") + api.tr
             note: ssid === "" ? qsTr("Thanks to enter your hidden SSID here") + api.tr : ""
 
-            TextFieldOption {
-                id: ssidtextfieldoption
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                horizontalAlignment: TextInput.AlignRight
-                placeholderText: qsTr("your hidden ssid") + api.tr
-                text: ""
-                visible: ssid === "" ? true : false
-                active: ssid === "" ? true : false
-                echoMode: TextInput.Normal
-                inputMethodHints: Qt.ImhNoPredictiveText
+            textfield.horizontalAlignment: TextInput.AlignRight
+            textfield.placeholderText: qsTr("your hidden ssid") + api.tr
+            property string initialValue;
+            textfield.echoMode: TextInput.Normal
+            textfield.inputMethodHints: Qt.ImhNoPredictiveText
+            textfield.text: ""
+            textfield.visible: ssid === "" ? true : false
+            textfield.active: ssid === "" ? true : false
 
-                activeFocusColor : themeColor.main
-                inactiveColor: themeColor.secondary
-                activeBorderColor: themeColor.screenHeader
+            textfield.activeFocusColor : themeColor.main
+            textfield.inactiveColor: themeColor.secondary
+            textfield.activeBorderColor: themeColor.screenHeader
 
-                onEditingFinished: {
-                    //do nothing save by "save" or "connect" button
-                }
+            textfield.onEditingFinished: {
+                //do nothing save by "save" or "connect" button
             }
 
             Text {
@@ -276,7 +272,7 @@ FocusScope {
             visible: true
         }
 
-        SimpleButton {
+        TextFieldOption {
             id: optWifiKey
             Rectangle {
                 width: parent.width
@@ -287,49 +283,43 @@ FocusScope {
             label: qsTr("Wifi Network security key") + api.tr
             note: qsTr("Thanks to enter your security key here") + api.tr
 
-            TextFieldOption {
-                id: keyfield
-                anchors.right: parent.right
-                anchors.rightMargin: horizontalPadding
-                anchors.verticalCenter: parent.verticalCenter
-                horizontalAlignment: TextInput.AlignRight
-                placeholderText: qsTr("your key") + api.tr
-                property string initialValue;
-                text: {
-                    //find if a parameter has already this SSID to take and know if a key exists
-                    var index = "";
-                    for(var i = 1; i <= 3; i++){
-                        if(i === 1){
-                            index = ""; //first one is "wifi."
-                        }
-                        else
-                        {
-                            index = (i).toString(); //other one is from "wifi2."
-                        }
-                        if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
-                        {
-                            initialValue = api.internal.recalbox.getStringParameter("wifi" + index + ".key");
-                            return initialValue;
-                        }
+            textfield.horizontalAlignment: TextInput.AlignRight
+            textfield.placeholderText: qsTr("your key") + api.tr
+            property string initialValue;
+            textfield.text: {
+                //find if a parameter has already this SSID to take and know if a key exists
+                var index = "";
+                for(var i = 1; i <= 3; i++){
+                    if(i === 1){
+                        index = ""; //first one is "wifi."
                     }
-                    //if no existing SSID found in parameters
-                    return "";
+                    else
+                    {
+                        index = (i).toString(); //other one is from "wifi2."
+                    }
+                    if(api.internal.recalbox.getStringParameter("wifi"+ index + ".ssid") === ssid)
+                    {
+                        initialValue = api.internal.recalbox.getStringParameter("wifi" + index + ".key");
+                        return initialValue;
+                    }
                 }
-                echoMode: TextInput.PasswordEchoOnEdit
-                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+                //if no existing SSID found in parameters
+                return "";
+            }
+            textfield.echoMode: TextInput.PasswordEchoOnEdit
+            textfield.inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
 
-                activeFocusColor : themeColor.main
-                inactiveColor: themeColor.secondary
-                activeBorderColor: themeColor.screenHeader
+            textfield.activeFocusColor : themeColor.main
+            textfield.inactiveColor: themeColor.secondary
+            textfield.activeBorderColor: themeColor.screenHeader
 
-                onEditingFinished: {
-                    //do nothing save by "save" or "connect" button
-                    //but just store that key has been udpated
-                    //console.log("onEditingFinished");
-                    if(keyfield.initialValue !==  keyfield.text){
-                        //console.log("keyfield.text updated");
-                        keyUpdated = true;
-                    }
+            textfield.onEditingFinished: {
+                //do nothing save by "save" or "connect" button
+                //but just store that key has been udpated
+                //console.log("onEditingFinished");
+                if(textfield.initialValue !==  textfield.text){
+                    //console.log("keyfield.text updated");
+                    keyUpdated = true;
                 }
             }
             onFocusChanged: container.onFocus(this)

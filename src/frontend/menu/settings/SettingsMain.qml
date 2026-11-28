@@ -1036,7 +1036,7 @@ FocusScope {
                 SimpleButton {
                     id: btnCancelDevMode
                     visible: devModeActivated
-
+                    showFocus: false
                     Rectangle {
                         id: containerValidateCancelDevMode
                         width: parent.width

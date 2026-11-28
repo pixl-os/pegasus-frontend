@@ -335,7 +335,7 @@ FocusScope {
                     id: optBottleInfo
                     visible: false
                     width: parseInt(parent.width/5)*4
-                    showUnderline: false
+                    showFocus: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
                     //from base installation
@@ -613,6 +613,7 @@ FocusScope {
                 // to clean/delete "bottle" selected
                 SimpleButton {
                     id: btnCleanSelectedBottle
+                    showFocus: false
                     Rectangle {
                         id: containerValidateSelectedEmulatorBottles
                         width: parent.width
@@ -1429,6 +1430,7 @@ FocusScope {
                 // to clean/delete "bottle" before re-installation
                 SimpleButton {
                     id: btnCleanEmulatorBottles
+                    showFocus: false
                     Rectangle {
                         id: containerValidateCleanEmulatorBottles
                         width: parent.width
@@ -1470,6 +1472,7 @@ FocusScope {
                 // to install/uninstall wine/proton versions
                 SimpleButton {
                     id: btnManageWineEmbedded
+                    showFocus: false
                     Rectangle {
                         id: containerValidateManageWineEmbedded
                         width: parent.width
@@ -1609,6 +1612,7 @@ FocusScope {
                 //to launch wine cfg from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchWineCfg
+                    showFocus: false
                     visible: (optWineBottle.internalvalue !== "") && devModeActivated ? true : false
                     Rectangle {
                         id: containerValidateLaunchWineCfg
@@ -1650,6 +1654,7 @@ FocusScope {
                 //to launch wine regedit from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchRegedit
+                    showFocus: false
                     visible: (optWineBottle.internalvalue !== "")  && devModeActivated ? true : false
                     Rectangle {
                         id: containerValidateLaunchRegedit
@@ -1690,6 +1695,7 @@ FocusScope {
                 //to launch wine control joy.cpl from bottle clearly defined (could create wineprefix if missing)
                 SimpleButton {
                     id: btnLaunchControllerSettings
+                    showFocus: false
                     visible: (optWineBottle.internalvalue !== "")  && devModeActivated ? true : false
                     Rectangle {
                         id: containerValidateControllerSettings

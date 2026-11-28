@@ -169,7 +169,7 @@ FocusScope {
                     id: optGameInfo
                     visible: game ? true : false
                     width: parseInt(parent.width/4)*3
-                    showUnderline: false
+                    showFocus: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
                     property string game_path: game ? game.files.get(0).path : ""

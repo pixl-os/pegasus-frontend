@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file (focus on ch
 		- improve interface colors management and be able to use colors "From Theme"
 		- fix "colors" to well display background/main color in case of modal window
 		- add underline or glossybox style in "all" options
+		- fix "TextFieldOption" to be an element independant as other options
 
 - Features:
 	- introduction of dedicaced view for wine and proton configuration (to share with all emulators using wine):

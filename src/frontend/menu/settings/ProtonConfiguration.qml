@@ -334,7 +334,7 @@ FocusScope {
                     id: optBottleInfo
                     visible: false
                     width: parseInt(parent.width/5)*4
-                    showUnderline: false
+                    showFocus: false
                     wrapMode: Text.NoWrap
                     launchedAsDialogBox: root.launchedAsDialogBox
 		    //from base installation
@@ -619,6 +619,7 @@ FocusScope {
                 // to clean/delete "bottle" selected
                 SimpleButton {
                     id: btnCleanSelectedBottle
+                    showFocus: false
                     Rectangle {
                         id: containerValidateSelectedEmulatorBottles
                         width: parent.width
@@ -1441,6 +1442,7 @@ FocusScope {
                 // to clean/delete "bottle" before re-installation
                 SimpleButton {
                     id: btnCleanEmulatorBottles
+                    showFocus: false
                     Rectangle {
                         id: containerValidateCleanEmulatorBottles
                         width: parent.width
@@ -1482,6 +1484,7 @@ FocusScope {
                 // to install/uninstall wine/proton versions
                 SimpleButton {
                     id: btnManageProtonEmbedded
+                    showFocus: false
                     Rectangle {
                         id: containerValidateManageProtonEmbedded
                         width: parent.width
